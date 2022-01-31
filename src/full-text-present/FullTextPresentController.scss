@@ -1,0 +1,12 @@
+@import '../helper/variables.scss';
+
+#full-text-present-controller {
+  .card-body {
+    padding: 3px;
+  }
+
+  .scroll-manager {
+    border-color: var(--bs-gray-600);
+  }
+
+}

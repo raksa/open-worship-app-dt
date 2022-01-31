@@ -1,0 +1,111 @@
+@import './helper/variables.scss';
+
+#app {
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: var(--bs-gray-800);
+  color: var(--bs-white);
+
+  & * {
+    user-select: none;
+  }
+
+  & .select-text {
+    user-select: text;
+  }
+
+  &>.app-header {
+    height: $header-height;
+
+    .highlight-border-bottom {
+      border-bottom: 1px solid var(--bs-gray-600);
+    }
+  }
+
+  &>.app-body {
+    background-color: var(--bs-gray-700);
+    margin-bottom: 2px;
+  }
+
+  &>.footer {
+    height: 5px;
+    background-color: var(--bs-dark);
+  }
+
+  .flex {
+    display: flex;
+    overflow: hidden;
+
+    &.h {
+      flex-direction: row;
+    }
+
+    &.v {
+      flex-direction: column;
+    }
+
+    .flex-item {
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .right {
+    padding: 0;
+
+    .card-body,
+    .card-footer {
+      padding: 0;
+    }
+  }
+
+  .pointer {
+    cursor: pointer;
+  }
+
+  .background-blank {
+    background-image: linear-gradient(45deg,
+        #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  .rotating-hover:hover {
+    i:before {
+      animation: rotating-hover 1s linear infinite;
+
+      @keyframes rotating-hover {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
+
+  .overflow-hidden {
+    overflow: hidden;
+  }
+
+  .border-white-round {
+    border: 1px solid var(--bs-gray-600);
+    border-radius: 5px;
+  }
+
+}

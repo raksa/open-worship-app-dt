@@ -1,0 +1,11 @@
+@import '../helper/variables.scss';
+
+.lyric-view {
+  min-width: 200px;
+
+  .card-header {
+    .btn-close {
+      margin: 5px;
+    }
+  }
+}

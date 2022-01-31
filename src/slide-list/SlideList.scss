@@ -1,0 +1,7 @@
+@import '../helper/variables.scss';
+
+#slide-list {
+  .card-body {
+    height: calc(100% - $card-header-height);
+  }
+}

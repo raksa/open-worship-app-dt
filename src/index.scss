@@ -1,0 +1,16 @@
+@font-face {
+  font-family: "Battambang";
+  src: url("./fonts/Battambang/Battambang-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Battambang";
+  src: url("./fonts/Battambang/Battambang-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+
+body {
+  margin: 0;
+  font-family: Battambang, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}

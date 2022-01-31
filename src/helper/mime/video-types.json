@@ -1,0 +1,26 @@
+[
+    {
+        "type": "MPEG-4",
+        "title": "",
+        "mimeType": "video/mp4",
+        "extension": [
+            ".mp4"
+        ]
+    },
+    {
+        "type": "WebM",
+        "title": "",
+        "mimeType": "video/webm",
+        "extension": [
+            ".webm"
+        ]
+    },
+    {
+        "type": "MOV",
+        "title": "Apple QuickTime Movie",
+        "mimeType": "video/quicktime",
+        "extension": [
+            ".mov"
+        ]
+    }
+]

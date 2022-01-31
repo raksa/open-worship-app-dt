@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 135.46667 135.46667"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="open-worship.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:zoom="1.7830932"
+     inkscape:cx="399.58651"
+     inkscape:cy="182.26753"
+     inkscape:window-width="3840"
+     inkscape:window-height="2066"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer4">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3191" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <marker
+       style="overflow:visible"
+       id="Arrow1Lstart"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lstart"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.8) translate(12.5,0)"
+         style="fill-rule:evenodd;fill:context-stroke;stroke:context-stroke;stroke-width:1.0pt"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path2612" />
+    </marker>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Layer 2"
+     style="display:inline" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Layer 4"
+     style="display:inline" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Layer 3"
+     style="display:inline">
+    <rect
+       style="display:inline;fill:#ff00ff;fill-rule:evenodd;stroke-width:0.48842"
+       id="rect43"
+       width="131.87354"
+       height="90.357796"
+       x="1.7965704"
+       y="21.861837"
+       rx="4.8842053"
+       ry="4.8842053" />
+    <path
+       id="rect846"
+       style="display:inline;fill:#000000;fill-opacity:0.445344;fill-rule:evenodd;stroke-width:0.48842;opacity:0.2"
+       d="M 131.96035,23.032928 3.5057479,111.04783 c 0.852977,0.72954 1.9592009,1.17145 3.174732,1.17145 H 128.7856 c 2.70586,0 4.88422,-2.17836 4.88422,-4.88421 V 26.745691 c 0,-1.490806 -0.66309,-2.818299 -1.70947,-3.712763 z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15.5151px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.457534;opacity:0.2"
+       x="7.505352"
+       y="40.342644"
+       id="text3540"><tspan
+         sodipodi:role="line"
+         id="tspan3538"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15.5151px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke-width:0.457534"
+         x="7.505352"
+         y="40.342644">PSA.150.6</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Layer 5"
+     style="display:none">
+    <g
+       id="g299">
+      <rect
+         style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+         id="rect47"
+         width="8.9772606"
+         height="7.0482621"
+         x="33.784595"
+         y="21.842157" />
+      <rect
+         style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+         id="rect129"
+         width="8.9772606"
+         height="7.0482621"
+         x="-40.835369"
+         y="1.8077422"
+         transform="rotate(-90)" />
+      <rect
+         style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+         id="rect131"
+         width="8.9772606"
+         height="7.0482621"
+         x="-60.846943"
+         y="-93.679947"
+         transform="rotate(145.44364)" />
+    </g>
+  </g>
+</svg>

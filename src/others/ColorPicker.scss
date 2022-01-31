@@ -1,0 +1,16 @@
+@import '../helper/variables.scss';
+
+.color-picker {
+  .item {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+
+    &:hover {
+      border: 1px solid gray;
+    }
+  }
+}

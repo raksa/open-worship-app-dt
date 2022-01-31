@@ -1,0 +1,14 @@
+@import '../helper/variables.scss';
+
+#slide-item-editor-popup {
+  width: calc(100vw - 10px);
+  height: calc(100vh - $header-height);
+
+  .header {
+    height: $header-height;
+  }
+
+  .body {
+    padding: 5px;
+  }
+}

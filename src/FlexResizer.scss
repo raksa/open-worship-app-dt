@@ -1,0 +1,51 @@
+@import './helper/variables.scss';
+
+.flex-resizer {
+  flex: 0 0 4px;
+  background: var(--bs-dark);
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: padding 0.2s ease-out;
+
+  &.v {
+    cursor: ns-resize;
+    background-size: 10px;
+    border-top: 1px solid var(--bs-dark);
+    border-bottom: 1px solid var(--bs-dark);
+
+    &:hover,
+    &.active {
+      background-image: url($vertical-move-icon);
+    }
+
+    &.active {
+      padding: 3px;
+    }
+  }
+
+  &.h {
+    cursor: ew-resize;
+    background-size: 4px;
+    border-left: 1px solid var(--bs-dark);
+    border-right: 1px solid var(--bs-dark);
+
+    &:hover,
+    &.active {
+      background-image: url($horizontal-move-icon);
+    }
+
+    &.active {
+      padding: 3px;
+    }
+  }
+
+  &:hover {
+    padding: 3px;
+    transition: padding 0.1s ease-in 0.5s;
+  }
+
+  &.active {
+    background-color: rgba(0, 255, 0, 0.048);
+    background-image: url($horizontal-move-icon);
+  }
+}

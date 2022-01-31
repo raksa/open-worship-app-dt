@@ -1,0 +1,132 @@
+@import "../../node_modules/bootstrap/scss/bootstrap";
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons";
+
+@import './variables.scss';
+
+#app {
+
+  // Start: Boootstrap
+  .card-header {
+    height: $card-header-height;
+    padding: 5px;
+  }
+
+  .card-body {
+    padding: 5px;
+    overflow-y: auto;
+  }
+
+  .list-group-item:hover {
+    border: 1px solid var(--bs-gray-800);
+    background-color: rgba(100, 0, 131, 0.342);
+  }
+
+  .form-select.bible {
+    border: none;
+    background-size: 16px;
+    cursor: pointer;
+
+    .dark & {
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
+    }
+
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
+  }
+
+  .nav-tabs {
+    background-color: var(--bs-gray-800);
+  }
+
+  // End: Boootstrap
+
+
+}
+
+.dark {
+
+  $enable-gradients: true;
+
+  /* redefine theme colors for dark theme */
+  $primary: #ad0090;
+  $secondary: #6b6b6b;
+  $success: #00b418;
+  $warning: #c9ab00;
+  $info: #0069af;
+  $dark: #000;
+
+  $theme-colors: ("primary": $primary,
+      "secondary": $secondary,
+      "success": $success,
+      "warning": $warning,
+      "danger": $danger,
+      "info": $info,
+      "dark": $dark,
+      "light": #aaa,
+    );
+
+  /* redefine theme color variables */
+  @each $color,
+  $value in $theme-colors {
+    --#{$variable-prefix}#{$color}: #{$value};
+  }
+
+  $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
+
+  @each $color,
+  $value in $theme-colors-rgb {
+    --#{$variable-prefix}#{$color}-rgb: #{$value};
+  }
+
+  $body-color: #eeeeee;
+  $body-bg: #263C5C;
+  $input-color: var(--bs-body-color);
+  $input-bg: var(--bs-gray-800);
+  $input-border-color: var(--bs-gray-700);
+  $input-focus-color: var(--bs-body-color);
+  $input-focus-bg: var(--bs-gray-800);
+  $input-focus-border-color: var(--bs-gray-700);
+  $form-select-color: var(--bs-body-color);
+  $form-select-bg: var(--bs-gray-800);
+  $form-select-border-color: var(--bs-gray-700);
+  $input-group-addon-color: var(--bs-body-color);
+  $input-group-addon-bg: var(--bs-gray-800);
+  $input-group-addon-border-color: var(--bs-gray-700);
+  $btn-border-radius-lg: 0.15rem;
+  $btn-border-radius: 0.1rem;
+  $btn-border-radius-sm: 0.05rem;
+  $list-group-color: var(--bs-body-color);
+  $list-group-bg: var(--bs-gray-800);
+  $list-group-border-color: var(--bs-gray-700);
+  $btn-close-color: red;
+  $btn-close-bg: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-x-lg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"/><path fill-rule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"/></svg>');
+  $text-muted: rgb(211, 211, 211);
+  $card-bg: var(--bs-gray-700);
+  $toast-color: var(--bs-body-color);
+  $toast-background-color: var(--bs-gray-800);
+  $toast-header-color: var(--bs-body-color);
+  $toast-header-background-color: var(--bs-gray-900);
+  $toast-header-border-color: var(--bs-gray-800);
+  $toast-box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  $nav-tabs-link-active-color: var(--bs-body-color);
+  $nav-tabs-link-active-bg: var(--bs-gray-700);
+  $nav-tabs-link-active-border-color: var(--bs-gray-700);
+  $nav-tabs-border-color: var(--bs-gray-700);
+  $nav-link-color: #ffffba;
+  $nav-link-hover-color: #ffffff;
+
+  .toast-body {
+    padding: $toast-padding-x; // apply to both vertical and horizontal
+    word-wrap: break-word;
+  }
+
+
+  --#{$variable-prefix}body-color: #{$body-color};
+  --#{$variable-prefix}body-bg: #{$body-bg};
+
+  .active .text-muted,
+  .btn:hover .text-muted {
+    color: rgb(211, 211, 211) !important;
+  }
+
+  @import "bootstrap";
+}

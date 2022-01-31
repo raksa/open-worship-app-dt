@@ -1,0 +1,32 @@
+@import '../helper/variables.scss';
+
+#bible-search-popup {
+  width: 700px;
+
+  .header {
+    height: $header-height;
+  }
+
+  .body {
+    padding: 5px;
+
+    .chapter-select {
+      width: 85px;
+      font-size: 13px;
+    }
+
+    .found {
+      height: 700px;
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      .btn {
+        flex: 1 1 auto;
+      }
+    }
+
+    .select {
+      padding: 0;
+    }
+  }
+}

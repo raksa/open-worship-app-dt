@@ -1,0 +1,13 @@
+@import '../helper/variables.scss';
+
+.background {
+  &>.background-header {
+    height: $header-height;
+  }
+
+  &>.background-body {
+    background-color: var(--bs-gray-700);
+    overflow-y: auto;
+    padding: 5px;
+  }
+}

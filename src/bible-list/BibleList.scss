@@ -1,0 +1,15 @@
+@import '../helper/variables.scss';
+
+#bible-list {
+  .card-header {
+    height: $card-header-height;
+  }
+
+  .card-body {
+    height: calc(100% - $card-header-height);
+    .item {
+      cursor: pointer;
+    }
+  }
+
+}

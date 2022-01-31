@@ -1,0 +1,10 @@
+[
+    {
+        "type": "OpenWorship Playlist",
+        "title": "Json file for OpenWorship playlist",
+        "mimeType": "application/json",
+        "extension": [
+            ".owp"
+        ]
+    }
+]

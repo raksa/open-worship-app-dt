@@ -1,0 +1,135 @@
+"use strict";
+
+const { ipcRenderer } = require('electron')
+document.onkeydown = function (evt) {
+    evt = evt || window.event;
+    var isEscape = false;
+    if ("key" in evt) {
+        isEscape = (evt.key === "Escape" || evt.key === "Esc");
+    } else {
+        isEscape = (evt.keyCode === 27);
+    }
+    if (isEscape && !removeClassName('selected')) {
+        closeWin();
+    }
+};
+function getRendered() {
+    return {
+        background: !!getShadow('background').innerHTML,
+        foreground: !!getShadow('foreground').innerHTML,
+        bible: !!getBible().innerHTML,
+        alert: !!getShadow('alert').innerHTML,
+    };
+}
+ipcRenderer.on('app:present:get-rendering-info', (event, arg) => {
+    const rendered = getRendered();
+    ipcRenderer.send(arg, rendered);
+});
+
+function closeWin() {
+    ipcRenderer.send('present:app:hide-present');
+}
+function sendPreview() {
+    ipcRenderer.send('present:app:capture-preview');
+}
+function getBible() {
+    return document.getElementById('bible');
+}
+function getShadow(id) {
+    const element = document.getElementById(id);
+    const shadow = element.shadowRoot ? element.shadowRoot : element.attachShadow({ mode: 'open' })
+    return shadow;
+}
+function observe(target) {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            sendPreview();
+        });
+    });
+    observer.observe(target, {
+        subtree: true,
+        childList: true,
+    });
+}
+function backup() {
+    localStorage.setItem('backup', JSON.stringify({
+        background: getShadow('background').innerHTML || '',
+        foreground: getShadow('foreground').innerHTML || '',
+        bible: getBible().innerHTML || '',
+        alert: getShadow('alert').innerHTML || '',
+    }));
+}
+function removeClassName(className) {
+    const targets = document.getElementsByClassName(className);
+    const length = targets.length;
+    Array.from(targets).forEach((target) => {
+        target.classList.remove(className);
+    });
+    return !!length;
+}
+function resetClassName(blockId, className, isAdd) {
+    const currentBlocks = document.querySelectorAll(`[data-highlight="${blockId}"]`);
+    Array.from(currentBlocks).forEach((currentBlock) => {
+        if (isAdd) {
+            currentBlock.classList.add(className);
+        } else {
+            currentBlock.classList.remove(className);
+        }
+    });
+}
+function addHighlightEvent() {
+    const spans = document.getElementsByClassName('highlight');
+    Array.from(spans).forEach((span) => {
+        span.addEventListener('mouseover', function () {
+            resetClassName(this.dataset.highlight, 'hover', true);
+        });
+        span.addEventListener('mouseout', function () {
+            resetClassName(this.dataset.highlight, 'hover', false);
+        });
+        span.addEventListener('click', function () {
+            removeClassName('selected');
+            resetClassName(this.dataset.highlight, 'selected', true);
+        });
+    });
+}
+function restore() {
+    try {
+        const data = JSON.parse(localStorage.getItem('backup'));
+        getShadow('background').innerHTML = data.background || '';
+        getShadow('foreground').innerHTML = data.foreground || '';
+        getBible().innerHTML = data.bible || '';
+        getShadow('alert').innerHTML = data.alert || '';
+        addHighlightEvent();
+    } catch (error) { }
+}
+function clearOldBackground() {
+    setTimeout(() => {
+        const background = getShadow('background');
+        Array.from(background.children).reverse().forEach((e, i) => {
+            if (i !== 0) {
+                background.removeChild(e);
+            }
+        });
+    }, 3e3);
+}
+function onLoad() {
+    restore();
+    observe(getShadow('background'));
+    observe(getShadow('foreground'));
+    observe(getBible());
+    observe(getShadow('alert'));
+    setInterval(sendPreview, 1e3);
+    document.addEventListener('wheel', function (e) {
+        if (e.ctrlKey && getRendered().bible) {
+            const isUp = e.deltaY < 0;
+            ipcRenderer.send('present:app:ctrl-scrolling', isUp);
+        }
+    });
+    document.addEventListener('keyup', function (e) {
+        if (e.ctrlKey && getRendered().bible) {
+            console.log(e.key);
+            const isNext = e.key === 'ArrowRight';
+            ipcRenderer.send('present:app:change-bible', isNext);
+        }
+    });
+}

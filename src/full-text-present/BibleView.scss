@@ -1,0 +1,23 @@
+@import '../helper/variables.scss';
+
+.bible-view {
+  min-width: 200px;
+
+  .card-header {
+    .btn-close {
+      margin: 5px;
+    }
+
+    .input-group-text {
+      padding: 0;
+      background-color: transparent;
+
+      .form-select {
+        padding: 0;
+        padding-left: 5px;
+        padding-right: 25px;
+        background-color: var(--bs-gray-800);
+      }
+    }
+  }
+}
