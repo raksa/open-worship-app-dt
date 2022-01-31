@@ -2,6 +2,42 @@
 
 Open source and always free for worship presenter.
 
+## Tech Stack
+* [Typescript](https://www.typescriptlang.org/)
+* [React](https://reactjs.org/)
+* [Electron](https://www.electronjs.org/)
+* [Bootstrap](https://getbootstrap.com/)
+
+Special Thanks
+* [Bootstrap Icons](https://icons.getbootstrap.com/)
+* [sass css](https://sass-lang.com/)
+* [Sqlite3](https://www.sqlite.org/index.html)
+* [React I18Next](https://react.i18next.com/)
+
+And Thanks others framework and tool
+* sqlite3
+* @testing-library/jest-dom
+* @testing-library/react
+* @testing-library/user-event
+* @types/jest
+* @types/react
+* @types/react-color
+* @types/react-dom
+* bootstrap
+* bootstrap-icons
+* concurrently
+* electron
+* electron-builder
+* env-cmd
+* i18next
+* react
+* react-dom
+* react-i18next
+* react-scripts
+* sass
+* typescript
+* wait-on
+
 ## Install
 
 * copy .env.example to .env
