@@ -1,5 +1,7 @@
 # OpenWorship app (PSA.150.6, Praise the Lord)
 
+![OpenWorship app 01/30/22](./docs/open-worship-app-01-30-22.png)
+
 Open source and always free for worship presenter.
 
 ## Tech Stack
