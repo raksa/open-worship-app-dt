@@ -7,12 +7,13 @@ Open source and always free for worship presenter.
 * [React](https://reactjs.org/)
 * [Electron](https://www.electronjs.org/)
 * [Bootstrap](https://getbootstrap.com/)
+* [SASS](https://sass-lang.com/)
 
 Special Thanks
 * [Bootstrap Icons](https://icons.getbootstrap.com/)
-* [sass css](https://sass-lang.com/)
 * [Sqlite3](https://www.sqlite.org/index.html)
 * [React I18Next](https://react.i18next.com/)
+* and other frameworks
 
 And Thanks others framework and tool
 * sqlite3
