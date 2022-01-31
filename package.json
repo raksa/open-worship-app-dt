@@ -62,7 +62,7 @@
     },
     "build": {
         "extends": null,
-        "productName": "Open Worship",
+        "productName": "Open Worship app",
         "appId": "app.openworship.desktop",
         "nodeGypRebuild": "true",
         "files": [
