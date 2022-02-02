@@ -3,7 +3,13 @@ import './Videos.scss';
 import { createRef, useEffect, useState } from 'react';
 import { copyToClipboard, isMac, openExplorer } from '../helper/electronHelper';
 import { presentEventListener } from '../event/PresentEventListener';
-import { copyFileToPath, FileResult, isSupportedMimetype, listFiles, useStateSettingString } from '../helper/helpers';
+import {
+    copyFileToPath,
+    FileResult,
+    isSupportedMimetype,
+    listFiles,
+    useStateSettingString,
+} from '../helper/helpers';
 import PathSelector from '../helper/PathSelector';
 import { renderBGVideo } from '../slide-presenting/slidePresentHelpers';
 import { showAppContextMenu } from '../helper/AppContextMenu';
@@ -34,8 +40,7 @@ export default function Videos() {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
                 Array.from(event.dataTransfer.files).forEach((file) => {
-                    console.log(file);
-                    
+
                     if (!isSupportedMimetype(file.type, 'video')) {
                         toastEventListener.showSimpleToast({
                             title: 'copy video file',

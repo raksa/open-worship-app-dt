@@ -97,7 +97,7 @@ export default function BibleList() {
                     <i className="bi bi-file-earmark-plus" />
                 </button>
             </div>
-            <div className="card-body" onContextMenu={(e) => {
+            <div className="card-body pb-5" onContextMenu={(e) => {
                 showAppContextMenu(e, [
                     {
                         title: 'Delete All', onClick: () => {

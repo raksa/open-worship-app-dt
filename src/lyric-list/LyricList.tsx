@@ -123,7 +123,7 @@ Block3
                     <i className="bi bi-file-earmark-plus" />
                 </button>
             </div>
-            <div className="card-body" onContextMenu={(e) => {
+            <div className="card-body pb-5" onContextMenu={(e) => {
                 showAppContextMenu(e, [
                     {
                         title: 'Delete All', onClick: () => {
@@ -163,12 +163,6 @@ Block3
                                         if (list[i]) {
                                             presentLyric(list[i], i);
                                         }
-                                    }
-                                },
-                                {
-                                    title: 'Edit', onClick: () => {
-                                        setSetting('lyric-list-editing-index', `${i}`);
-                                        openBibleSearch();
                                     }
                                 },
                                 {
