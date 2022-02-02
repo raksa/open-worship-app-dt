@@ -185,7 +185,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
             fontSize: `${data.fontSize}px`,
             color: data.color,
             alignItems: data.verticalAlignment,
-            justifyContent: data.horizontalAlignment,
+            textAlign: data.horizontalAlignment,
             backgroundColor: data.backgroundColor,
         };
         return style;

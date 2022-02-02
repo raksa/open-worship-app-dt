@@ -5,7 +5,7 @@ import {
     slideListEventListener,
     useSlideBoxEditing,
 } from '../event/SlideListEventListener';
-import ColorPicker from '../others/ColorPicker';
+import ColorPicker, { WHITE_COLOR } from '../others/ColorPicker';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
 import { useStateSettingString } from '../helper/helpers';
 
@@ -64,7 +64,7 @@ export default function Tools({ scale, setScale }: {
     );
 }
 function ToolsText({ data }: { data: HTML2ReactChildType | null }) {
-    const [color, setColor] = useState<string>('#ffffff');
+    const [color, setColor] = useState<string>(WHITE_COLOR);
     const [fontSize, setFontSize] = useState<number>(30);
     const onColorChange = (color: string) => {
         setColor(color);
@@ -75,11 +75,11 @@ function ToolsText({ data }: { data: HTML2ReactChildType | null }) {
         slideListEventListener.tooling({ text: { fontSize: n } });
     };
     useEffect(() => {
-        setColor(data === null ? '#ffffff' : data.color);
+        setColor(data === null ? WHITE_COLOR : data.color);
     }, [data]);
     return (
-        <>
-            <Tool title='Text Color'>
+        <div className='d-flex'>
+            <Tool>
                 <ColorPicker color={color} onColorChange={onColorChange} />
             </Tool>
             <Tool title='Text Alignment'>
@@ -102,11 +102,11 @@ function ToolsText({ data }: { data: HTML2ReactChildType | null }) {
                 }}
                 >UnRotate</button>
             </Tool>
-        </>
+        </div>
     );
 }
 function ToolsBackground({ data }: { data: HTML2ReactChildType | null }) {
-    const [color, setColor] = useState<string>('#ffffff');
+    const [color, setColor] = useState<string>(WHITE_COLOR);
     const onColorChange = (color: string) => {
         setColor(color);
         slideListEventListener.tooling({ box: { backgroundColor: color } });
@@ -132,10 +132,10 @@ function ToolsBackground({ data }: { data: HTML2ReactChildType | null }) {
         </>
     );
 }
-function Tool({ title, children }: { title: string, children: ReactChild | ReactChild[] }) {
+function Tool({ title, children }: { title?: string, children: ReactChild | ReactChild[] }) {
     return (
-        <div className='tool' style={{ maxWidth: '200px' }}>
-            <div>{title}</div>
+        <div className='tool'>
+            {title && <div>{title}</div>}
             <div>{children}</div>
         </div>
     );

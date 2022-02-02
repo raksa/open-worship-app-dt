@@ -2,7 +2,6 @@ import './LyricList.scss';
 
 import { useState } from 'react';
 import { getSetting, setSetting } from '../helper/settings';
-import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { showAppContextMenu } from '../helper/AppContextMenu';
 import { lyricListEventListener, useLyricUpdating } from '../event/LyricListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';

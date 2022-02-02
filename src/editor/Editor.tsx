@@ -100,6 +100,9 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
     useEffect(() => {
         setBoxEditors(data.children);
     }, [data]);
+    useEffect(() => {
+        applyUpdate();
+    }, [boxEditors.length]);
     return (
         <>
             <div className='editor' style={{
@@ -132,6 +135,13 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                                 {
                                     title: 'Duplicate', onClick: () => {
                                         duplicate(i);
+                                    }
+                                },
+                                {
+                                    title: 'Edit', onClick: () => {
+                                        mapper.getByIndex(i)?.stopAllModes(() => {
+                                            mapper.getByIndex(i)?.startEditingMode();
+                                        });
                                     }
                                 },
                                 {

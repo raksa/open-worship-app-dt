@@ -1,4 +1,5 @@
-import { getRotationDeg, removePX, rgb2HexColor } from "../helper/helpers";
+import { getRotationDeg, removePX } from "../helper/helpers";
+import { WHITE_COLOR } from "../others/ColorPicker";
 
 export enum HAlignmentEnum {
     Left = 'left',
@@ -37,13 +38,13 @@ export function parseChildHTML(html: string) {
     const d: HTML2ReactChildType = {
         text: element.innerHTML,
         fontSize: removePX(style.fontSize) || 30,
-        color: rgb2HexColor(style.color) || '#ffffff',
+        color: style.color || WHITE_COLOR,
         top: removePX(style.top) || 3,
         left: removePX(style.left) || 3,
         rotate: getRotationDeg(style.transform),
         width: removePX(style.width) || 500,
         height: removePX(style.height) || 150,
-        horizontalAlignment: (style.justifyContent || HAlignmentEnum.Left) as HAlignmentEnum,
+        horizontalAlignment: (style.textAlign || HAlignmentEnum.Left) as HAlignmentEnum,
         verticalAlignment: (style.alignItems || VAlignmentEnum.Top) as VAlignmentEnum,
         backgroundColor: style.backgroundColor || 'transparent',
         zIndex: +style.zIndex || 0,

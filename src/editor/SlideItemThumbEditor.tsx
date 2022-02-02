@@ -14,6 +14,9 @@ export default function SlideItemThumbEditor() {
     const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(
         getValidSlideItemThumbSelected());
     useSlideItemThumbSelecting((item) => {
+        if (item?.id === slideItemThumb?.id) {
+            return;
+        }
         if (mapper.selectedBoxEditor) {
             mapper.selectedBoxEditor.stopAllModes(() => {
                 setSlideItemThumb(item);

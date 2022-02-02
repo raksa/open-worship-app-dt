@@ -286,26 +286,8 @@ const cleanDiv = (children: HTMLCollection) => {
             cleanDiv(ele.children);
         }
     }
-}
+};
 
-export const rgb2HexColor = (orig: string, isNoAlpha?: boolean) => {
-    if (orig[0] === '#') {
-        return orig;
-    }
-    try {
-        const toHex = (n: number) => (Math.min(n, (1 << 8) - 1) | (1 << 8)).toString(16).slice(1);
-        const rgba = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i);
-        if (rgba !== null) {
-            const hex = toHex(+rgba[1]) + toHex(+rgba[2]) +
-                toHex(+rgba[3]) +
-                (isNoAlpha ? '' : toHex(~~(+(rgba[4] || '1') * 255)));
-            return '#' + hex;
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return '#ffffff'
-}
 export const getRotationDeg = (str: string) => {
     const match = str.match(/rotate\((.+)deg\)/);
     return match ? +match[1] : 0;
