@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "hediet.vscode-drawio",
-        "hookyqr.beautify"
+        "hookyqr.beautify",
+        "sonarsource.sonarlint-vscode"
     ]
 }
