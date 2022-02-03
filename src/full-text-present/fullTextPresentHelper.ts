@@ -4,7 +4,7 @@ import { renderPresent } from '../helper/electronHelper';
 import { removePX } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settings';
 import { LyricPresentType } from '../lyric-list/LyricList';
-import { WHITE_COLOR } from '../others/ColorPicker';
+import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
 
 export type BiblePresentType = {
@@ -34,7 +34,7 @@ class FullTextPresentHelper {
         `;
     }
     get textColor() {
-        return this.textStyle.color || WHITE_COLOR;
+        return this.textStyle.color || BLACK_COLOR;
     }
     get textFontSize() {
         const fontSize = this.textStyle.fontSize || '111px';

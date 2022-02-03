@@ -3,11 +3,34 @@ import './EditorControllerBoxWrapper.scss';
 
 import { Component, CSSProperties } from 'react';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
-import { getInnerHTML } from '../helper/helpers';
 import { ToolingType } from './slideType';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../helper/AppContextMenu';
+
+function tooling2BoxProps(toolingData: ToolingType, state: {
+    parentWidth: number, parentHeight: number, width: number, height: number,
+}) {
+    const { box } = toolingData;
+    const boxProps: { top?: number, left?: number } = {};
+    if (box) {
+        if (box.verticalAlignment === VAlignmentEnum.Top) {
+            boxProps.top = 0;
+        } else if (box.verticalAlignment === VAlignmentEnum.Center) {
+            boxProps.top = state.parentHeight / 2 - state.height / 2;
+        } else if (box.verticalAlignment === VAlignmentEnum.Bottom) {
+            boxProps.top = state.parentHeight - state.height;
+        }
+        if (box.horizontalAlignment === HAlignmentEnum.Left) {
+            boxProps.left = 0;
+        } else if (box.horizontalAlignment === HAlignmentEnum.Center) {
+            boxProps.left = state.parentWidth / 2 - state.width / 2;
+        } else if (box.horizontalAlignment === HAlignmentEnum.Right) {
+            boxProps.left = state.parentWidth - state.width;
+        }
+    }
+    return boxProps;
+}
 
 type PropsType = {
     data: HTML2ReactChildType,
@@ -59,24 +82,10 @@ export class BoxEditor extends Component<PropsType, StateType>{
     }
     tooling(toolingData: ToolingType) {
         const { text, box } = toolingData;
-        const boxProps: { top?: number, left?: number } = {};
-        if (box) {
-            if (box.verticalAlignment === VAlignmentEnum.Top) {
-                boxProps.top = 0;
-            } else if (box.verticalAlignment === VAlignmentEnum.Center) {
-                boxProps.top = this.props.parentHeight / 2 - this.state.data.height / 2;
-            } else if (box.verticalAlignment === VAlignmentEnum.Bottom) {
-                boxProps.top = this.props.parentHeight - this.state.data.height;
-            }
-            if (box.horizontalAlignment === HAlignmentEnum.Left) {
-                boxProps.left = 0;
-            } else if (box.horizontalAlignment === HAlignmentEnum.Center) {
-                boxProps.left = this.props.parentWidth / 2 - this.state.data.width / 2;
-            } else if (box.horizontalAlignment === HAlignmentEnum.Right) {
-                boxProps.left = this.props.parentWidth - this.state.data.width;
-            }
-        }
-
+        const boxProps = tooling2BoxProps(toolingData, {
+            width: this.state.data.width, height: this.state.data.height,
+            parentWidth: this.props.parentWidth, parentHeight: this.props.parentHeight,
+        });
         this.setState((preState) => {
             const newData: HTML2ReactChildType = { ...preState.data, ...text, ...boxProps };
             newData.rotate = box && box.rotate !== undefined ? box.rotate : newData.rotate;
@@ -91,19 +100,14 @@ export class BoxEditor extends Component<PropsType, StateType>{
         return this.state.data;
     }
     toString() {
-        if (this.divRef === null) {
-            return '';
-        }
         const div = document.createElement('div');
-        div.innerHTML = this.divRef.outerHTML;
-        const target = div.firstChild as HTMLDivElement;
-        const targetStyle = target.style as any;
-        const normalStyle = this.genNormalStyle() as any;
-        Object.keys(normalStyle).forEach((k) => {
-            targetStyle[k] = normalStyle[k];
+        div.innerText = this.state.data.text;
+        const targetStyle = div.style as any;
+        const style = { ...this.genStyle(), ...this.genNormalStyle() } as any;
+        Object.keys(style).forEach((k) => {
+            targetStyle[k] = style[k];
         });
-        const html = getInnerHTML(target);
-        return html;
+        return div.outerHTML;
     }
     startControllingMode(callback?: () => void) {
         this.setState({ isControllable: true }, () => {
@@ -157,18 +161,8 @@ export class BoxEditor extends Component<PropsType, StateType>{
         });
     }
     applyTextChange(callback?: () => void) {
-        const target = this.divRef;
-        if (target === null) {
-            return;
-        }
-        this.setState((preState) => {
-            const text = target.innerText;
-            preState.data.text = text;
-            return { data: preState.data };
-        }, () => {
-            callback && callback();
-            this.props.onUpdate();
-        });
+        callback && callback();
+        this.props.onUpdate();
     }
     UNSAFE_componentWillReceiveProps(props: PropsType) {
         this.setState({ data: props.data });
@@ -185,7 +179,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
             fontSize: `${data.fontSize}px`,
             color: data.color,
             alignItems: data.verticalAlignment,
-            textAlign: data.horizontalAlignment,
+            justifyContent: data.horizontalAlignment,
             backgroundColor: data.backgroundColor,
         };
         return style;
@@ -234,9 +228,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
                     }}>
                     <div ref={(r) => {
                         this.divRef = r;
-                    }} className='w-100 h-100' style={style} dangerouslySetInnerHTML={{
-                        __html: data.text.split('\n').join('<br/>'),
-                    }} />
+                    }} className='w-100 h-100' style={style}>{data.text}</div>
                     <div className='tools'>
                         <div className={`object ${this.editingController.rotatorCN}`} />
                         <div className="rotate-link" />
@@ -251,6 +243,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
     normalGen() {
         const { data, isEditable } = this.state;
         const style = { ...this.genStyle(), ...this.genNormalStyle() };
+
         return (
             <div onContextMenu={this.props.onContextMenu}
                 className={`box-editor pointer ${isEditable ? 'editable' : ''}`}
@@ -258,7 +251,6 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 ref={(r) => {
                     this.divRef = r;
                 }}
-                contentEditable={isEditable}
                 onKeyUp={(e) => {
                     if (e.key === 'Escape' || (e.key === 'Enter' && e.ctrlKey)) {
                         this.stopEditingMode();
@@ -266,7 +258,6 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 }}
                 onClick={(e) => {
                     e.stopPropagation();
-
                     if (this.isEditable) {
                         return;
                     }
@@ -276,14 +267,20 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 }}
                 onDoubleClick={(e) => {
                     e.stopPropagation();
-
                     this.stopAllModes(() => {
                         this.startEditingMode();
                     });
                 }}
-                dangerouslySetInnerHTML={{
-                    __html: data.text.split('\n').join('<br/>'),
-                }}>
+            >
+                {isEditable ?
+                    <textarea style={{ color: style.color }}
+                        className='w-100 h-100' value={data.text} onChange={(e) => {
+                            this.setState((preState) => {
+                                preState.data.text = e.target.value;
+                                return preState;
+                            }, () => this.applyTextChange());
+                        }} />
+                    : data.text}
             </div>
         );
     }

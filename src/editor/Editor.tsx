@@ -21,10 +21,6 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
     const [boxEditors, setBoxEditors] = useState(data.children);
     const [boxEditorCopiedIndex, setBoxEditorCopiedIndex] = useState<number | null>(null);
 
-    const getNewBoxEditors = () => {
-        const newBoxEditors = boxEditors.map((data) => data);
-        return newBoxEditors;
-    };
     const cloneBoxEditor = (be: HTML2ReactChildType) => {
         const newBoxEditor = cloneObject(be) as HTML2ReactChildType;
         newBoxEditor.top += 10;
@@ -32,17 +28,17 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
         return newBoxEditor;
     };
     const duplicate = (index: number) => {
-        const newBoxEditors = getNewBoxEditors();
+        const newBoxEditors = [...boxEditors];
         const newBoxEditor = cloneBoxEditor(newBoxEditors[index]);
         newBoxEditors.splice(index + 1, 0, newBoxEditor);
         setBoxEditors(newBoxEditors);
     };
     const deleteItem = (index: number) => {
-        const newBoxEditors = boxEditors.filter((data, i) => i !== index);
+        const newBoxEditors = boxEditors.filter((_, i) => i !== index);
         setBoxEditors(newBoxEditors);
     };
     const paste = () => {
-        const newBoxEditors = getNewBoxEditors();
+        const newBoxEditors = [...boxEditors];
         if (boxEditorCopiedIndex !== null && newBoxEditors[boxEditorCopiedIndex]) {
             const newBoxEditor = cloneBoxEditor(newBoxEditors[boxEditorCopiedIndex]);
             newBoxEditors.push(newBoxEditor);
@@ -50,7 +46,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
         }
     };
     const newBox = () => {
-        const newBoxEditors = getNewBoxEditors();
+        const newBoxEditors = [...boxEditors];
         const newBoxEditor = getDefaultBoxHTML();
         newBoxEditors.push(parseChildHTML(newBoxEditor));
         setBoxEditors(newBoxEditors);
@@ -67,29 +63,29 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
             if (editingIndex !== undefined) {
                 const be = mapper.getByIndex(editingIndex);
                 if (be !== null) {
-                    const newBoxEditors = getNewBoxEditors();
+                    const newBoxEditors = [...boxEditors];
                     newBoxEditors[editingIndex] = cloneObject(be.state.data);
                     setBoxEditors(newBoxEditors);
                 }
             }
         }
     };
-    useSlideItemThumbTooling((data) => {
+    useSlideItemThumbTooling((newData) => {
         if (~mapper.selectedIndex &&
-            (data.box?.layerBack || data.box?.layerFront)) {
+            (newData.box?.layerBack || newData.box?.layerFront)) {
             const index = mapper.selectedIndex;
-            let newBoxEditors = getNewBoxEditors();
+            let newBoxEditors = [...boxEditors];
             newBoxEditors = newBoxEditors.map((be, i) => {
                 if (i === index) {
-                    be.zIndex = data.box?.layerBack ? 1 : 2;
+                    be.zIndex = newData.box?.layerBack ? 1 : 2;
                 } else {
-                    be.zIndex = data.box?.layerBack ? 2 : 1;
+                    be.zIndex = newData.box?.layerBack ? 2 : 1;
                 }
                 return be;
             })
             setBoxEditors(newBoxEditors);
         }
-        mapper.selectedBoxEditor?.tooling(data);
+        mapper.selectedBoxEditor?.tooling(newData);
     });
 
     useKeyboardRegistering({
@@ -105,7 +101,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
     }, [boxEditors.length]);
     return (
         <>
-            <div className='editor' style={{
+            <div className='editor blank-bg border-white-round' style={{
                 width: `${width}px`,
                 height: `${height}px`,
                 transform: 'translate(-50%, -50%)',

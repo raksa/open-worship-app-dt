@@ -1,11 +1,11 @@
 import './Tools.scss';
 
-import { ReactChild, useEffect, useState } from 'react';
+import { ReactChild, useState } from 'react';
 import {
     slideListEventListener,
     useSlideBoxEditing,
 } from '../event/SlideListEventListener';
-import ColorPicker, { WHITE_COLOR } from '../others/ColorPicker';
+import ColorPicker from '../others/ColorPicker';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
 import { useStateSettingString } from '../helper/helpers';
 
@@ -15,8 +15,8 @@ export default function Tools({ scale, setScale }: {
     const [data, setData] = useState<HTML2ReactChildType | null>(null);
     // t: text, b: box
     const [tabType, setTabType] = useStateSettingString('editor-tools-tab', 't');
-    useSlideBoxEditing((data) => {
-        setData(data);
+    useSlideBoxEditing((newData) => {
+        setData(newData);
     });
     return (
         <div className="tools d-flex flex-column w-100 h-100">
@@ -57,39 +57,41 @@ export default function Tools({ scale, setScale }: {
                 </div>
             </div>
             <div className='tools-body d-flex flex-row flex-fill'>
-                {tabType === 't' && <ToolsText data={data} />}
-                {tabType === 'b' && <ToolsBackground data={data} />}
+                {data && <>
+                    {tabType === 't' && <ToolsText data={data} />}
+                    {tabType === 'b' && <ToolsBackground data={data} />}
+                </>}
             </div>
         </div>
     );
 }
-function ToolsText({ data }: { data: HTML2ReactChildType | null }) {
-    const [color, setColor] = useState<string>(WHITE_COLOR);
-    const [fontSize, setFontSize] = useState<number>(30);
-    const onColorChange = (color: string) => {
-        setColor(color);
-        slideListEventListener.tooling({ text: { color } });
+function ToolsText({ data }: { data: HTML2ReactChildType }) {
+    const [color, setColor] = useState<string>(data.color);
+    const [fontSize, setFontSize] = useState<number>(data.fontSize);
+    const onColorChange = (newColor: string) => {
+        setColor(newColor);
+        slideListEventListener.tooling({ text: { color: newColor } });
     };
     const onFontSizeChange = (n: number) => {
         setFontSize(n);
         slideListEventListener.tooling({ text: { fontSize: n } });
     };
-    useEffect(() => {
-        setColor(data === null ? WHITE_COLOR : data.color);
-    }, [data]);
     return (
         <div className='d-flex'>
             <Tool>
                 <ColorPicker color={color} onColorChange={onColorChange} />
             </Tool>
             <Tool title='Text Alignment'>
-                <Align isText onData={(data) => slideListEventListener.tooling({ text: data, })} />
+                <Align isText onData={(newData) => slideListEventListener.tooling({ text: newData, })} />
             </Tool>
             <Tool title='Font Size'>
+                <input className='form-control' type="number" style={{ maxWidth: '100px' }}
+                    value={fontSize} onChange={(e) => onFontSizeChange(+e.target.value)} />
                 <select className="form-select form-select-sm" value={fontSize}
                     onChange={(e) => {
                         onFontSizeChange(+e.target.value);
                     }} >
+                    <option>--</option>
                     {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
                         .reverse().map((n, i) => {
                             return <option key={`${i}`} value={n}>{n}px</option>
@@ -105,11 +107,11 @@ function ToolsText({ data }: { data: HTML2ReactChildType | null }) {
         </div>
     );
 }
-function ToolsBackground({ data }: { data: HTML2ReactChildType | null }) {
-    const [color, setColor] = useState<string>(WHITE_COLOR);
-    const onColorChange = (color: string) => {
-        setColor(color);
-        slideListEventListener.tooling({ box: { backgroundColor: color } });
+function ToolsBackground({ data }: { data: HTML2ReactChildType }) {
+    const [color, setColor] = useState<string>(data.backgroundColor);
+    const onColorChange = (newColor: string) => {
+        setColor(newColor);
+        slideListEventListener.tooling({ box: { backgroundColor: newColor } });
     };
     return (
         <>
@@ -117,8 +119,8 @@ function ToolsBackground({ data }: { data: HTML2ReactChildType | null }) {
                 <ColorPicker color={color} onColorChange={onColorChange} />
             </Tool>
             <Tool title='Box Alignment'>
-                <Align onData={(data) => {
-                    slideListEventListener.tooling({ box: data })
+                <Align onData={(newData) => {
+                    slideListEventListener.tooling({ box: newData })
                 }} />
             </Tool>
             <Tool title='Box Layer'>

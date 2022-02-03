@@ -1,7 +1,7 @@
 import { saveSlideItemThumbs } from '../helper/helpers';
 import { SlideItemThumbType } from '../editor/slideType';
-import { useSlideItemThumbSaving } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
+import { keyboardEventListener, LinuxControlEnum, MacControlEnum, useKeyboardRegistering, WindowsControlEnum } from '../event/KeyboardEventListener';
 
 export type ChangeHistory = { items: SlideItemThumbType[] };
 export default function SlideItemThumbListMenu({
@@ -60,14 +60,20 @@ export default function SlideItemThumbListMenu({
             console.log(error);
         }
     };
-    useSlideItemThumbSaving(save);
+    const eventMapper = {
+        wControlKey: [WindowsControlEnum.Ctrl],
+        mControlKey: [MacControlEnum.Ctrl],
+        lControlKey: [LinuxControlEnum.Ctrl],
+        key: 's',
+    };
+    useKeyboardRegistering(eventMapper, save);
     return (
         <div style={{
             borderBottom: '1px solid #00000024',
             backgroundColor: '#00000020',
             minHeight: (!!undo.length || !!redo.length || isModifying) ? '35px' : '0px',
         }}>
-            <div className="btn-group control float-end">
+            <div className="btn-group control d-flex justify-content-center'">
                 {!!undo.length &&
                     <button type="button" className="btn btn-sm btn-info"
                         title="clear all"
@@ -83,12 +89,10 @@ export default function SlideItemThumbListMenu({
                         <i className="bi bi-arrow-90deg-right"></i></button>
                 }
                 {isModifying &&
-                    <div className='me-2'>
-                        <button type="button" className="btn btn-sm btn-success"
-                            title="clear background"
-                            onClick={save}>
-                            save</button>
-                    </div>
+                    <button type="button" className="btn btn-sm btn-success tool-tip tool-tip-fade"
+                    data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+                        title="save slide thumbs"
+                        onClick={save}>save</button>
                 }
             </div>
         </div>

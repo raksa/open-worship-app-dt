@@ -8,7 +8,6 @@ export enum SlideListEnum {
     SELECT = 'select',
     ITEM_THUMB_SELECT = 'item-thumb-select',
     BOX_EDITING = 'box-editing',
-    SAVE = 'save',
     UPDATE_ITEM_THUMB = 'update-item-thumb',
     ITEM_THUMB_ORDERING = 'item-thumb-ordering',
     TOOLING = 'tooling',
@@ -18,9 +17,6 @@ export type RegisteredEventType<T> = {
     listener: ListenerType<T>,
 };
 export default class SlideListEventListener extends EventHandler {
-    save() {
-        this._addPropEvent(SlideListEnum.SAVE);
-    }
     selectSlideItem(filePath: string | null) {
         this._addPropEvent(SlideListEnum.SELECT, filePath);
     }
@@ -67,15 +63,6 @@ export function useSlideItemThumbSelecting(listener: ListenerType<SlideItemThumb
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.ITEM_THUMB_SELECT, listener);
-        return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
-        };
-    });
-}
-export function useSlideItemThumbSaving(listener: ListenerType<void>) {
-    useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
-            SlideListEnum.SAVE, listener);
         return () => {
             slideListEventListener.unregisterSlideListEventListener(event);
         };

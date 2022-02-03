@@ -4,7 +4,7 @@ import { RgbaColorPicker } from "react-colorful";
 import { showAppContextMenu } from '../helper/AppContextMenu';
 import { copyToClipboard } from '../helper/electronHelper';
 
-export const WHITE_COLOR = 'rgba(255,255,255,1)';
+export const BLACK_COLOR = 'rgba(0,0,0,1)';
 type RGBAType = { r: number, g: number, b: number, a: number };
 const rgba2Object = (orig: string): RGBAType => {
     try {
@@ -15,7 +15,7 @@ const rgba2Object = (orig: string): RGBAType => {
     } catch (error) {
         console.log(error);
     }
-    return rgba2Object(WHITE_COLOR);
+    return rgba2Object(BLACK_COLOR);
 };
 function objectToRGBA(rbga: RGBAType): string {
     return `rgba(${rbga.r},${rbga.g},${rbga.b},${rbga.a})`;
@@ -37,8 +37,8 @@ export default function ColorPicker({ color, onColorChange }: {
                 }}>{color}</button>
                 <RgbaColorPicker
                     color={rgba2Object(color)}
-                    onChange={(color) => {
-                        onColorChange(objectToRGBA(color));
+                    onChange={(newColor) => {
+                        onColorChange(objectToRGBA(newColor));
                     }}
                 />
             </div>

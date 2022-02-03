@@ -80,7 +80,7 @@ export default function RenderFound({
         if (key === null) {
             return null;
         }
-        const biblePresent = {
+        return {
             bible: bibleSelected,
             target: {
                 book: key,
@@ -89,7 +89,6 @@ export default function RenderFound({
                 endVerse: +fromLocaleNumber(bibleSelected, eVerse),
             },
         };
-        return biblePresent;
     };
     const addListListener = () => {
         const biblePresent = genBiblePresent();
@@ -144,8 +143,8 @@ export default function RenderFound({
     });
     const [found, setFound] = useState<ConsumeVerseType | null>(null);
     useEffect(() => {
-        consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected).then((found) => {
-            setFound(found);
+        consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected).then((newFound) => {
+            setFound(newFound);
         });
     }, [book, chapter, startVerse, endVerse, bibleSelected]);
     if (found === null) {

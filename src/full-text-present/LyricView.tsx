@@ -22,11 +22,11 @@ export default function LyricView({ i, lyricPresent, onLyricChange, onClose }: {
                 }
             </div>
             <textarea className='w-100 h-100 form-control'
-            placeholder='Lyric, use "===" to break text block'
+                placeholder='Lyric, use "===" to break text block'
                 value={lyricPresent.text} onChange={(e) => {
                     lyricPresent.text = e.target.value;
                     onLyricChange(lyricPresent);
-                }}></textarea>
+                }} />
         </div >
     );
 }

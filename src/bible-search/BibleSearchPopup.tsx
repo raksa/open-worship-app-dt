@@ -92,19 +92,19 @@ export default function BibleSearchPopup() {
     const { book, chapter, startVerse, endVerse } = bibleResult;
 
 
-    const applyBookSelection = (book: string) => {
-        const count = getChapterCount(bibleSelected, book);
+    const applyBookSelection = (newBook: string) => {
+        const count = getChapterCount(bibleSelected, newBook);
         if (count !== null) {
-            setInputText(toInputText(bibleSelected, book));
+            setInputText(toInputText(bibleSelected, newBook));
             return;
         }
         alert('Fail to generate input text');
     };
-    const applyChapterSelection = (chapter: number) => {
-        setInputText(`${toInputText(bibleSelected, book, chapter)}:`);
+    const applyChapterSelection = (newChapter: number) => {
+        setInputText(`${toInputText(bibleSelected, book, newChapter)}:`);
     };
-    const applyVerseSelection = (startVerse?: number, endVerse?: number) => {
-        const txt = toInputText(bibleSelected, book, chapter, startVerse, endVerse);
+    const applyVerseSelection = (newStartVerse?: number, newEndVerse?: number) => {
+        const txt = toInputText(bibleSelected, book, chapter, newStartVerse, newEndVerse);
         setInputText(txt);
     };
     const handleBibleChange = async (preBible: string) => {

@@ -1,5 +1,4 @@
 import { HAlignmentEnum, VAlignmentEnum } from "./slideParser";
-import { WHITE_COLOR } from "../others/ColorPicker";
 import { getAppInfo } from "../helper/helpers";
 
 export type ToolingType = {
@@ -63,12 +62,11 @@ export const validateSlide = (json: any) => {
     return true;
 }
 
-export const getDefaultBoxHTML = (width: number = 500, height: number = 300) =>
-    '<div style="top: 3px; left: 3px; transform: rotate(0deg); display: flex; font-size: 60px; '
-    + `color: ${WHITE_COLOR}; align-items: center; text-align: center; background-color: transparent; `
-    + `width: ${width}px; height: ${height}px; position: absolute; z-index: 2;">`
-    + getAppInfo().name
-    + '</div>';
+export const getDefaultBoxHTML = (width: number = 700, height: number = 400) =>
+    '<div class="box-editor pointer " style="top: 279px; left: 356px; transform: rotate(0deg); '
+    + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
+    + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
+    + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
 export const defaultSlide = (width: number, height: number) => {
     return {
         metadata: {
