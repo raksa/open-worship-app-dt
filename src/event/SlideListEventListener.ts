@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { HTML2ReactChildType } from "../editor/slideParser";
-import { SlideItemThumbType, ToolingType } from "../helper/slideType";
+import { SlideItemThumbType, ToolingType } from "../editor/slideType";
 import EventHandler from "./EventHandler";
 
 type ListenerType<T> = (data: T) => void;

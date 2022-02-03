@@ -12,7 +12,7 @@ import {
     setSlideFilePathSetting,
     useStateSettingString
 } from '../helper/helpers';
-import { defaultSlide } from '../helper/slideType';
+import { defaultSlide } from '../editor/slideType';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
@@ -51,8 +51,8 @@ export default function SlideList() {
     const [slides, setSlides] = useState<FileResult[] | null>(null);
     useEffect(() => {
         if (slides === null) {
-            const slides = listFiles(dir, 'slide');
-            setSlides(slides === null ? [] : slides);
+            const newSlideList = listFiles(dir, 'slide');
+            setSlides(newSlideList === null ? [] : newSlideList);
         }
     }, [slides, dir]);
     const creatNewSlide = () => {

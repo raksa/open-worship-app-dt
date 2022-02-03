@@ -1,5 +1,5 @@
 import { saveSlideItemThumbs } from '../helper/helpers';
-import { SlideItemThumbType } from '../helper/slideType';
+import { SlideItemThumbType } from '../editor/slideType';
 import { useSlideItemThumbSaving } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 
@@ -59,7 +59,7 @@ export default function SlideItemThumbListMenu({
         } catch (error) {
             console.log(error);
         }
-    }
+    };
     useSlideItemThumbSaving(save);
     return (
         <div style={{

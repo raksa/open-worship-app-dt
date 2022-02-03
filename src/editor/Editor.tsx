@@ -2,7 +2,7 @@ import {
     slideListEventListener,
     useSlideItemThumbTooling
 } from '../event/SlideListEventListener';
-import { getDefaultBoxHTML, SlideItemThumbType } from '../helper/slideType';
+import { getDefaultBoxHTML, SlideItemThumbType } from './slideType';
 import { HTML2ReactChildType, HTML2ReactType, parseChildHTML, parseHTML } from './slideParser';
 import { BoxEditor } from './BoxEditor';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';

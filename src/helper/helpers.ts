@@ -3,10 +3,14 @@ import { BiblePresentType } from "../full-text-present/fullTextPresentHelper";
 import electronProvider from "./electronProvider";
 import { PlaylistType, validatePlaylist } from "./playlistType";
 import { getSetting, setSetting } from "./settings";
-import { SlidePresentType, SlideItemThumbType, validateSlide } from "./slideType";
+import { SlidePresentType, SlideItemThumbType, validateSlide } from "../editor/slideType";
 
 export const getAppInfo = () => {
-    const info = electronProvider.ipcRenderer.sendSync('main:app:info');
+    const info = electronProvider.ipcRenderer.sendSync('main:app:info') as {
+        name: string,
+        version: string,
+        description: string,
+    };
     return info;
 };
 

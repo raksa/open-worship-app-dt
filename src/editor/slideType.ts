@@ -1,6 +1,6 @@
-import { HAlignmentEnum, VAlignmentEnum } from "../editor/slideParser";
+import { HAlignmentEnum, VAlignmentEnum } from "./slideParser";
 import { WHITE_COLOR } from "../others/ColorPicker";
-import { getAppInfo } from "./helpers";
+import { getAppInfo } from "../helper/helpers";
 
 export type ToolingType = {
     text?: {
@@ -67,7 +67,7 @@ export const getDefaultBoxHTML = (width: number = 500, height: number = 300) =>
     '<div style="top: 3px; left: 3px; transform: rotate(0deg); display: flex; font-size: 60px; '
     + `color: ${WHITE_COLOR}; align-items: center; text-align: center; background-color: transparent; `
     + `width: ${width}px; height: ${height}px; position: absolute; z-index: 2;">`
-    + getAppInfo().description
+    + getAppInfo().name
     + '</div>';
 export const defaultSlide = (width: number, height: number) => {
     return {

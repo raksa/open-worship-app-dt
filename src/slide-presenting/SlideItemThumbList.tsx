@@ -9,7 +9,7 @@ import {
 } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { clearFG } from './slidePresentHelpers';
-import { SlideItemThumbType } from '../helper/slideType';
+import { SlideItemThumbType } from '../editor/slideType';
 import {
     slideListEventListener,
     useSlideItemThumbOrdering,

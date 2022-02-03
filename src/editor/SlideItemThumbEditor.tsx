@@ -2,7 +2,7 @@ import './SlideItemThumbEditor.scss';
 
 import { useState } from 'react';
 import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
-import { SlideItemThumbType } from '../helper/slideType';
+import { SlideItemThumbType } from './slideType';
 import { getValidSlideItemThumbSelected, useStateSettingNumber } from '../helper/helpers';
 import Tools from './Tools';
 import Editor from './Editor';

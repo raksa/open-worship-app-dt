@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { cloneObject } from '../helper/helpers';
-import { SlideItemThumbType } from '../helper/slideType';
+import { SlideItemThumbType } from '../editor/slideType';
 import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';

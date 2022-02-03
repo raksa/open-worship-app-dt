@@ -4,7 +4,7 @@ import './EditorControllerBoxWrapper.scss';
 import { Component, CSSProperties } from 'react';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
 import { getInnerHTML } from '../helper/helpers';
-import { ToolingType } from '../helper/slideType';
+import { ToolingType } from './slideType';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../helper/AppContextMenu';

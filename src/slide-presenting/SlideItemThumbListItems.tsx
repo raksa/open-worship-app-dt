@@ -1,7 +1,7 @@
 import SlideItemThumb, { DragReceiver, ItemThumbGhost } from './SlideItemThumb';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { WindowEnum } from '../event/WindowEventListener';
-import { SlideItemThumbType } from '../helper/slideType';
+import { SlideItemThumbType } from '../editor/slideType';
 import {
     slideListEventListener,
     useSlideItemThumbUpdating
