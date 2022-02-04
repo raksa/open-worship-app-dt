@@ -21,6 +21,7 @@ import SlideItemThumbListMenu, { ChangeHistory } from './SlideItemThumbListMenu'
 import SlideItemThumbListItems from './SlideItemThumbListItems';
 import SlideItemThumbListContextMenu, { contextObject } from './SlideItemThumbListContextMenu';
 import { getSetting } from '../helper/settings';
+import { toastEventListener } from '../event/ToastEventListener';
 
 const SETTING_NAME = 'slide-item-thumb-selected';
 export const getValidSlideItemThumbSelected = () => {
@@ -81,6 +82,7 @@ function Controller({
     slideItemThumbs: SlideItemThumbType[] | null,
     setSlideItemThumbs: (items: SlideItemThumbType[] | null) => void,
 }) {
+    const [isWrongDimension, setIsWrongDimension] = useState(true);
     const [slideItemThumbSelected, setSlideItemThumbSelected] = useStateSettingString(SETTING_NAME, '');
 
     const [slideItemThumbCopied, setSetSlideItemThumbCopied] = useState<number | null>(null);
@@ -142,6 +144,14 @@ function Controller({
                 setSlideItemThumbs={setSlideItemThumbs}
                 setRedo={setRedo}
                 setUndo={setUndo}
+                isWrongDimension={isWrongDimension}
+                fixSlideDimension={() => {
+                    toastEventListener.showSimpleToast({
+                        title: 'Fix Slide Dimension',
+                        message: 'Slide dimension has been fixed',
+                    });
+                    setIsWrongDimension(false);
+                }}
             />
             <SlideItemThumbListItems
                 thumbWidth={thumbWidth}

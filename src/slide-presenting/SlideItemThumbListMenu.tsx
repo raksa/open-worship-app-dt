@@ -9,19 +9,23 @@ export default function SlideItemThumbListMenu({
     undo,
     redo,
     slideItemThumbs,
+    isWrongDimension,
     setIsModifying,
     setSlideItemThumbs,
     setUndo,
     setRedo,
+    fixSlideDimension,
 }: {
     isModifying: boolean,
     undo: ChangeHistory[],
     redo: ChangeHistory[],
     slideItemThumbs: SlideItemThumbType[],
+    isWrongDimension: boolean,
     setIsModifying: (b: boolean) => void
     setSlideItemThumbs: (newItemThumbs: SlideItemThumbType[]) => void,
     setUndo: (undo: ChangeHistory[]) => void,
     setRedo: (redo: ChangeHistory[]) => void,
+    fixSlideDimension?: () => void,
 }) {
     const undoChanges = () => {
         const lastDone = undo.pop() as ChangeHistory;
@@ -90,9 +94,14 @@ export default function SlideItemThumbListMenu({
                 }
                 {isModifying &&
                     <button type="button" className="btn btn-sm btn-success tool-tip tool-tip-fade"
-                    data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+                        data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
                         title="save slide thumbs"
                         onClick={save}>save</button>
+                }
+                {isWrongDimension &&
+                    <button type="button" className="btn btn-sm btn-warning"
+                        title="⚠️ slide dimension is not match with present screen"
+                        onClick={fixSlideDimension}>Fix Slide Dimension</button>
                 }
             </div>
         </div>
