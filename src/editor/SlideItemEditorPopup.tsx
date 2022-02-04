@@ -6,7 +6,7 @@ import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEvent
 import Modal from '../helper/Modal';
 import { SlideItemThumbEditorController } from './SlideItemThumbEditor';
 import { SlideItemThumbType } from './slideType';
-import { mapper } from './EditorBoxMapper';
+import { editorMapper } from './EditorBoxMapper';
 
 export const openItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,
@@ -23,11 +23,7 @@ export const closeItemSlideEdit = () => {
     const close = () => {
         windowEventListener.fireEvent(closeItemSlideEditEvent);
     }
-    if (mapper.selectedBoxEditor) {
-        mapper.selectedBoxEditor?.stopAllModes(close);
-    } else {
-        close();
-    }
+    editorMapper.stopAllModes().then(close);
 };
 
 export default function SlideItemEditorPopup({ slideItemThumb }: {

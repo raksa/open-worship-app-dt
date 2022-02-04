@@ -6,7 +6,7 @@ import { getDefaultBoxHTML, SlideItemThumbType } from './slideType';
 import { HTML2ReactChildType, HTML2ReactType, parseChildHTML, parseHTML } from './slideParser';
 import { BoxEditor } from './BoxEditor';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { mapper } from './EditorBoxMapper';
+import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../helper/AppContextMenu';
@@ -53,7 +53,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
     };
 
     const applyUpdate = (editingIndex?: number) => {
-        const boxListHTML = mapper.htmlHTMLList();
+        const boxListHTML = editorMapper.htmlHTMLList();
         const parsedHTMLData = parseHTML(slideItemThumb.html);
         const newHtml = `<div style="width: ${parsedHTMLData.width}px; height: ${parsedHTMLData.height}px;">` +
             `${boxListHTML.join('')}</div>`;
@@ -61,7 +61,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
             slideItemThumb.html = newHtml;
             slideListEventListener.updateSlideItemThumb(slideItemThumb);
             if (editingIndex !== undefined) {
-                const be = mapper.getByIndex(editingIndex);
+                const be = editorMapper.getByIndex(editingIndex);
                 if (be !== null) {
                     const newBoxEditors = [...boxEditors];
                     newBoxEditors[editingIndex] = cloneObject(be.state.data);
@@ -71,9 +71,9 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
         }
     };
     useSlideItemThumbTooling((newData) => {
-        if (~mapper.selectedIndex &&
+        if (~editorMapper.selectedIndex &&
             (newData.box?.layerBack || newData.box?.layerFront)) {
-            const index = mapper.selectedIndex;
+            const index = editorMapper.selectedIndex;
             let newBoxEditors = [...boxEditors];
             newBoxEditors = newBoxEditors.map((be, i) => {
                 if (i === index) {
@@ -85,14 +85,10 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
             })
             setBoxEditors(newBoxEditors);
         }
-        mapper.selectedBoxEditor?.tooling(newData);
+        editorMapper.selectedBoxEditor?.tooling(newData);
     });
 
-    useKeyboardRegistering({
-        key: KeyEnum.Escape,
-    }, () => {
-        mapper.stopAllEditing();
-    });
+    useKeyboardRegistering({ key: KeyEnum.Escape }, () => editorMapper.stopAllModes());
     useEffect(() => {
         setBoxEditors(data.children);
     }, [data]);
@@ -116,7 +112,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                         onClick: paste,
                     },
                 ]);
-            }} onDoubleClick={() => mapper.stopAllEditing()} >
+            }} onDoubleClick={() => editorMapper.stopAllModes()} >
                 {boxEditors.map((d, i) => {
                     return <BoxEditor parentWidth={width} parentHeight={height}
                         scale={scale} key={`${i}`} onContextMenu={(e) => {
@@ -132,10 +128,9 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                                     }
                                 },
                                 {
-                                    title: 'Edit', onClick: () => {
-                                        mapper.getByIndex(i)?.stopAllModes(() => {
-                                            mapper.getByIndex(i)?.startEditingMode();
-                                        });
+                                    title: 'Edit', onClick: async () => {
+                                        await editorMapper.getByIndex(i)?.stopAllModes();
+                                        editorMapper.getByIndex(i)?.startEditingMode();
                                     }
                                 },
                                 {
@@ -145,11 +140,8 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                                 },
                             ]);
                         }} ref={(be) => {
-                            mapper.setEditor(`${i}`, be)
-                        }} data={d} onUpdate={() => applyUpdate(i)}
-                        onMode={() => {
-                            mapper.stopAllEditing(i);
-                        }} />
+                            editorMapper.setEditor(`${i}`, be)
+                        }} data={d} onUpdate={() => applyUpdate(i)} />
                 })}
             </div>
         </>

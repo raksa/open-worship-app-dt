@@ -20,22 +20,21 @@ export default class EditorBoxMapper {
         return vs ? this.boxEditors.indexOf(vs) : -1;
     }
     get boxEditors() {
-        return Object.values(this._editors);
-    }
-    stopAllEditing(exceptIndex?: number) {
-        this.boxEditors.forEach((be, i) => {
-            if (i !== exceptIndex) {
-                be?.stopAllModes();
-            }
-        });
+        return Object.values(this._editors).filter((boxEditor) => !!boxEditor) as BoxEditor[];
     }
     htmlHTMLList() {
-        return this.boxEditors.filter((be) => {
-            return !!be;
-        }).map((be) => {
-            return be?.toString();
+        return this.boxEditors.map((boxEditor) => {
+            return boxEditor.toString();
+        });
+    }
+    stopAllModes() {
+        return new Promise<boolean>((resolve) => {
+            const promises = this.boxEditors.map((boxEditor) => boxEditor.stopAllModes());
+            return Promise.all(promises).then((isSelectedList) => {
+                resolve(isSelectedList.some((isSelected) => isSelected));
+            });
         });
     }
 }
 
-export const mapper = new EditorBoxMapper();
+export const editorMapper = new EditorBoxMapper();

@@ -7,6 +7,7 @@ import { ToolingType } from './slideType';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../helper/AppContextMenu';
+import { editorMapper } from './EditorBoxMapper';
 
 function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,
@@ -38,7 +39,6 @@ type PropsType = {
     parentHeight: number,
     onUpdate: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
-    onMode: () => void,
     scale: number,
 };
 type StateType = {
@@ -109,59 +109,71 @@ export class BoxEditor extends Component<PropsType, StateType>{
         });
         return div.outerHTML;
     }
-    startControllingMode(callback?: () => void) {
-        this.setState({ isControllable: true }, () => {
-            slideListEventListener.boxEditing(this.state.data);
-            callback && callback();
-            this.props.onMode();
-        });
-    }
-    startEditingMode(callback?: () => void) {
-        this.setState({ isEditable: true }, () => {
-            slideListEventListener.boxEditing(this.state.data);
-            callback && callback();
-            this.props.onMode();
-        });
-    }
-    stopControllingMode(callback?: () => void) {
-        this.applyControl(() => {
-            this.setState({ isControllable: false }, () => {
-                this.editingController.release();
-                callback && callback();
+    startControllingMode() {
+        return new Promise<void>((resolve) => {
+            this.setState({ isControllable: true }, () => {
+                slideListEventListener.boxEditing(this.state.data);
+                resolve();
             });
         });
     }
-    stopEditingMode(callback?: () => void) {
-        this.applyTextChange(() => {
-            this.setState({ isEditable: false }, () => {
-                callback && callback();
+    startEditingMode() {
+        return new Promise<void>((resolve) => {
+            this.setState({ isEditable: true }, () => {
+                slideListEventListener.boxEditing(this.state.data);
+                resolve();
             });
         });
     }
-    stopAllModes(callback?: () => void) {
-        this.stopEditingMode(() => {
-            this.stopControllingMode(() => {
-                slideListEventListener.boxEditing(null);
-                callback && callback();
-            });
-        });
-    }
-    applyControl(callback?: () => void) {
-        const info = this.editingController.getInfo();
-        if (info === null) {
-            callback && callback();
-            return;
+    stopControllingMode() {
+        if (!this.isControllable) {
+            return Promise.resolve(false);
         }
-        this.setState((preState) => {
-            const newData = { ...preState.data, ...info };
-            return { data: newData };
-        }, () => {
-            callback && callback();
-            this.props.onUpdate();
+        return new Promise<boolean>((resolve) => {
+            this.applyControl().then(() => {
+                this.setState({ isControllable: false }, () => {
+                    this.editingController.release();
+                    resolve(true);
+                });
+            });
         });
     }
-    applyTextChange(callback?: () => void) {
-        callback && callback();
+    stopEditingMode() {
+        if (!this.isEditable) {
+            return Promise.resolve(false);
+        }
+        return new Promise<boolean>((resolve) => {
+            this.applyTextChange().then(() => {
+                this.setState({ isEditable: false }, () => resolve(true));
+            });
+        });
+    }
+    stopAllModes() {
+        return new Promise<boolean>(async (resolve) => {
+            const isEditing = await this.stopEditingMode();
+            const isControlling = await this.stopControllingMode();
+            if (isEditing || isControlling) {
+                slideListEventListener.boxEditing(null);
+            }
+            resolve(isEditing || isControlling);
+        });
+    }
+    applyControl() {
+        return new Promise<void>((resolve) => {
+            const info = this.editingController.getInfo();
+            if (info === null) {
+                return resolve();
+            }
+            this.setState((preState) => {
+                const newData = { ...preState.data, ...info };
+                return { data: newData };
+            }, () => {
+                resolve();
+                this.props.onUpdate();
+            });
+        });
+    }
+    async applyTextChange() {
         this.props.onUpdate();
     }
     UNSAFE_componentWillReceiveProps(props: PropsType) {
@@ -216,11 +228,10 @@ export class BoxEditor extends Component<PropsType, StateType>{
             }}>
                 <div className={`box-editor ${isControllable ? 'controllable' : ''}`}
                     onContextMenu={this.props.onContextMenu}
-                    onDoubleClick={(e) => {
+                    onDoubleClick={async (e) => {
                         e.stopPropagation();
-                        this.stopAllModes(() => {
-                            this.startEditingMode();
-                        });
+                        await editorMapper.stopAllModes();
+                        this.startEditingMode();
                     }}
                     style={{
                         transform: 'translate(-50%, -50%)',
@@ -256,22 +267,19 @@ export class BoxEditor extends Component<PropsType, StateType>{
                         this.stopEditingMode();
                     }
                 }}
-                onClick={(e) => {
+                onClick={async (e) => {
                     e.stopPropagation();
                     if (this.isEditable) {
                         return;
                     }
-                    this.stopAllModes(() => {
-                        this.startControllingMode();
-                    });
+                    await editorMapper.stopAllModes();
+                    this.startControllingMode();
                 }}
-                onDoubleClick={(e) => {
+                onDoubleClick={async (e) => {
                     e.stopPropagation();
-                    this.stopAllModes(() => {
-                        this.startEditingMode();
-                    });
-                }}
-            >
+                    await editorMapper.stopAllModes();
+                    this.startEditingMode()
+                }}>
                 {isEditable ?
                     <textarea style={{ color: style.color }}
                         className='w-100 h-100' value={data.text} onChange={(e) => {

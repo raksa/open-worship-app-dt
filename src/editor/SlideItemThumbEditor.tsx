@@ -8,7 +8,7 @@ import Tools from './Tools';
 import Editor from './Editor';
 import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
 import { parseHTML } from './slideParser';
-import { mapper } from './EditorBoxMapper';
+import { editorMapper } from './EditorBoxMapper';
 
 export default function SlideItemThumbEditor() {
     const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(
@@ -17,13 +17,9 @@ export default function SlideItemThumbEditor() {
         if (item?.id === slideItemThumb?.id) {
             return;
         }
-        if (mapper.selectedBoxEditor) {
-            mapper.selectedBoxEditor.stopAllModes(() => {
-                setSlideItemThumb(item);
-            });
-        } else {
+        editorMapper.stopAllModes().then(() => {
             setSlideItemThumb(item);
-        }
+        });
     });
     if (slideItemThumb === null) {
         return (
