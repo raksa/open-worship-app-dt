@@ -1,6 +1,6 @@
 import FlexResizer, { getPresentingFlexSize } from "./FlexResizer";
 import SlideList from './slide-list/SlideList';
-import ItemThumbEditor from './editor/SlideItemThumbEditor';
+import SlideItemThumbEditor from './editor/SlideItemThumbEditor';
 import SlideItemThumbList from "./slide-presenting/SlideItemThumbList";
 import { getWindowMode } from "./App";
 
@@ -25,7 +25,7 @@ export default function AppEditing() {
             </div>
             <FlexResizer settingName={resizeSettingName} type={'h'} />
             <div data-fs="h2" className="flex v" style={{ flex: flexSize["h2"] || 1 }}>
-                <ItemThumbEditor />
+                <SlideItemThumbEditor />
             </div>
         </>
     )

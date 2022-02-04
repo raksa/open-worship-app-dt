@@ -9,8 +9,9 @@ import ColorPicker from '../others/ColorPicker';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
 import { useStateSettingString } from '../helper/helpers';
 
-export default function Tools({ scale, setScale }: {
-    scale: number, setScale: (s: number) => void
+export default function Tools({ scale, applyScale, setScale, minScale, maxScale, scaleStep }: {
+    scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
+    minScale: number, maxScale: number, scaleStep: number
 }) {
     const [data, setData] = useState<HTML2ReactChildType | null>(null);
     // t: text, b: box
@@ -42,17 +43,8 @@ export default function Tools({ scale, setScale }: {
                     <div style={{ maxWidth: '200px' }}>
                         <input type="range" className='form-range'
                             onChange={(e) => setScale(+e.target.value)}
-                            min="0.2" max="3" step="0.1" value={scale} onWheel={(e) => {
-                                const isUp = e.deltaY > 0;
-                                let newScale = scale += (isUp ? -1 : 1) * 0.1;
-                                if (newScale < 0.2) {
-                                    newScale = 0.2;
-                                }
-                                if (newScale > 3) {
-                                    newScale = 3;
-                                }
-                                setScale(newScale);
-                            }} />
+                            min={minScale} max={maxScale} step={scaleStep}
+                            value={scale} onWheel={(e) => applyScale(e.deltaY > 0)} />
                     </div>
                 </div>
             </div>

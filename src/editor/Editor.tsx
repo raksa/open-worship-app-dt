@@ -116,9 +116,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                         onClick: paste,
                     },
                 ]);
-            }} onDoubleClick={() => {
-                mapper.stopAllEditing();
-            }} >
+            }} onDoubleClick={() => mapper.stopAllEditing()} >
                 {boxEditors.map((d, i) => {
                     return <BoxEditor parentWidth={width} parentHeight={height}
                         scale={scale} key={`${i}`} onContextMenu={(e) => {

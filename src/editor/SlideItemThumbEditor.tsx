@@ -46,8 +46,25 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
     });
     const [scale, setScale] = useStateSettingNumber('editor-scale', 1);
     const data = parseHTML(slideItemThumb.html);
+    const maxScale = 3;
+    const minScale = 0.2;
+    const scaleStep = 0.1;
+    const applyScale = (isUp: boolean) => {
+        let newScale = scale + (isUp ? -1 : 1) * scaleStep;
+        if (newScale < minScale) {
+            newScale = minScale;
+        }
+        if (newScale > maxScale) {
+            newScale = maxScale;
+        }
+        setScale(newScale);
+    };
     return (
-        <div className='slide-item-thumb-editor flex v w-100 h-100'>
+        <div className='slide-item-thumb-editor flex v w-100 h-100' onWheel={(e) => {
+            if (e.ctrlKey) {
+                applyScale(e.deltaY > 0);
+            }
+        }}>
             <div data-fs='editor-v1' className='flex-item' style={{ flex: flexSize['editor-v1'] || 1 }}>
                 <div className='editor-container w-100 h-100'>
                     <div className='overflow-hidden' style={{
@@ -65,7 +82,8 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
             </div>
             <FlexResizer settingName={resizeSettingName} type='v' />
             <div data-fs='editor-v2' className='flex-item' style={{ flex: flexSize['editor-v2'] || 1 }}>
-                <Tools scale={scale} setScale={(s: number) => setScale(s)} />
+                <Tools scale={scale} applyScale={applyScale} setScale={setScale}
+                    minScale={minScale} maxScale={maxScale} scaleStep={scaleStep} />
             </div>
         </div>
     );
