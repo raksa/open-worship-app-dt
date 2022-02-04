@@ -82,8 +82,6 @@ export default function SlideItemThumbListContextMenu({
             ]);
         };
         contextObject.showItemThumbnailContextMenu = (e: any, data: { index: number }) => {
-            console.log(data);
-            
             showAppContextMenu(e, [
                 {
                     title: 'Copy', onClick: () => {
