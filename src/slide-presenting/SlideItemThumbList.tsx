@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
-    getSlideItemThumbSelectedSetting,
     getSlideDataByFilePath,
     getSlideFilePathSetting,
-    setSlideItemThumbSelectedSetting,
     toSlideItemThumbSelected,
     parseSlideItemThumbSelected,
+    useStateSettingString,
 } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { clearFG } from './slidePresentHelpers';
@@ -21,6 +20,21 @@ import { isWindowEditingMode } from '../App';
 import SlideItemThumbListMenu, { ChangeHistory } from './SlideItemThumbListMenu';
 import SlideItemThumbListItems from './SlideItemThumbListItems';
 import SlideItemThumbListContextMenu, { contextObject } from './SlideItemThumbListContextMenu';
+import { getSetting } from '../helper/settings';
+
+const SETTING_NAME = 'slide-item-thumb-selected';
+export const getValidSlideItemThumbSelected = () => {
+    const filePath = getSlideFilePathSetting();
+    const slideItemThumbSelected = getSetting(SETTING_NAME) || '';
+    const result = parseSlideItemThumbSelected(slideItemThumbSelected, filePath);
+    if (result !== null) {
+        const data = getSlideDataByFilePath(filePath as string);
+        if (data !== null) {
+            return data.items.find((item) => item.id === result.id) || null;
+        }
+    }
+    return null;
+}
 
 function Empty() {
     return <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
@@ -67,8 +81,7 @@ function Controller({
     slideItemThumbs: SlideItemThumbType[] | null,
     setSlideItemThumbs: (items: SlideItemThumbType[] | null) => void,
 }) {
-    const defaultSlideItemThumbSelected = getSlideItemThumbSelectedSetting();
-    const [slideItemThumbSelected, setSlideItemThumbSelected] = useState<string | null>(defaultSlideItemThumbSelected);
+    const [slideItemThumbSelected, setSlideItemThumbSelected] = useStateSettingString(SETTING_NAME, '');
 
     const [slideItemThumbCopied, setSetSlideItemThumbCopied] = useState<number | null>(null);
     const [isModifying, setIsModifying] = useState(false);
@@ -78,14 +91,10 @@ function Controller({
 
     const setSelectedWithPath = (i: number | null) => {
         if (slideItemThumbs === null || i === null || !slideItemThumbs[i]) {
-            return unSelectSlidItemThumb();
+            return setSlideItemThumbSelected('');
         }
         const selected = toSlideItemThumbSelected(slideFilePathSelected, slideItemThumbs[i].id);
-        if (selected === null) {
-            unSelectSlidItemThumb();
-        }
-        setSlideItemThumbSelected(selected);
-        setSlideItemThumbSelectedSetting(JSON.stringify({ selected: selected || '' }));
+        setSlideItemThumbSelected(selected || '');
     }
     const unSelectSlidItemThumb = () => {
         if (isWindowEditingMode()) {

@@ -159,8 +159,8 @@ export const extractSlideItemThumbSelected = (slideFilePathId: string) => {
     const [slideFilePath, id] = slideFilePathId.split(',');
     return { slideFilePath, id };
 }
-export const parseSlideItemThumbSelected = (selected: string | null, filePath: string | null) => {
-    if (selected === null || filePath === null) {
+export const parseSlideItemThumbSelected = (selected: string, filePath: string | null) => {
+    if (!selected || filePath === null) {
         return null;
     }
     try {
@@ -175,38 +175,12 @@ export const parseSlideItemThumbSelected = (selected: string | null, filePath: s
     }
     return null;
 }
-export const getValidSlideItemThumbSelected = () => {
-    const filePath = getSlideFilePathSetting();
-    const slideItemThumbSelected = getSlideItemThumbSelectedSetting();
-    const result = parseSlideItemThumbSelected(slideItemThumbSelected, filePath);
-    if (result !== null) {
-        const data = getSlideDataByFilePath(filePath as string);
-        if (data !== null) {
-            return data.items.find((item) => item.id === result.id) || null;
-        }
-    }
-    return null;
-}
+
 export const getSlideFilePathSetting = () => {
     return getSetting('slide-item-selected') || null;
 }
 export const setSlideFilePathSetting = (filePath: string) => {
     setSetting('slide-item-selected', filePath);
-}
-export const getSlideItemThumbSelectedSetting = () => {
-    const str = getSetting('slide-item-thumb-selected');
-    if (str) {
-        try {
-            const selected = JSON.parse(str).selected as string;
-            return selected
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    return null;
-}
-export const setSlideItemThumbSelectedSetting = (selected: string) => {
-    setSetting('slide-item-thumb-selected', selected);
 }
 export const saveSlideItemThumbs = (itemThumbs: SlideItemThumbType[]) => {
     // TODO: merge with present
