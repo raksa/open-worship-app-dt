@@ -1,4 +1,4 @@
-@import '../helper/variables.scss';
+@import '../others/variables.scss';
 
 .box-editor {
     border: 1px solid transparent;
@@ -19,6 +19,10 @@
     &.controllable {
         border: 1px solid black;
         cursor: move;
+    }
+
+    textarea {
+        background: transparent;
     }
 
 }

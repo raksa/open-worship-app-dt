@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import fullTextPresentHelper from "../full-text-present/fullTextPresentHelper";
-import EventHandler from "./EventHandler";
+import { useEffect } from 'react';
+import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
+import EventHandler from './EventHandler';
 
 export enum PresentTypeEnum {
     Data = 'data',

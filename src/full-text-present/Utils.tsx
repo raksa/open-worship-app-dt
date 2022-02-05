@@ -1,4 +1,4 @@
-import { useStateSettingBoolean } from '../helper/helpers';
+import { useStateSettingBoolean } from '../helper/settingHelper';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import ScrollController from './ScrollController';
 

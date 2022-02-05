@@ -15,7 +15,7 @@ export default function RenderChapterOption({
     inputText: string,
     onSelect: (chapter: number) => void,
 }) {
-    const chapterCount = getChapterCount(bibleSelected, bookSelected)
+    const chapterCount = getChapterCount(bibleSelected, bookSelected);
     let matches: number[] | null = null;
     if (chapterCount !== null) {
         const chapterList = Array.from({ length: chapterCount }, (_, i) => i + 1);
@@ -33,9 +33,9 @@ export default function RenderChapterOption({
 
     const [attemptChapterIndex, setAttemptChapterIndex] = useState(0);
     const arrowListener = (e: KeyboardEvent) => {
-        const chapterCount = getChapterCount(bibleSelected, bookSelected);
-        if (chapterCount !== null) {
-            let ind = genInd(attemptChapterIndex, chapterCount, e.key as KeyEnum, 6);
+        const newChapterCount = getChapterCount(bibleSelected, bookSelected);
+        if (newChapterCount !== null) {
+            const ind = genInd(attemptChapterIndex, newChapterCount, e.key as KeyEnum, 6);
             setAttemptChapterIndex(ind);
         }
     };
@@ -82,7 +82,7 @@ export default function RenderChapterOption({
                                 </> : <span>{chapter}</span>}
                             </button>
                         </div>
-                    )
+                    );
                 })}
         </div>
     </>;

@@ -1,42 +1,46 @@
 import './Playlist.scss';
 
 import { Fragment, useEffect, useState } from 'react';
-import PathSelector from '../helper/PathSelector';
+import PathSelector from '../others/PathSelector';
 import {
-    createFile,
-    deleteFile,
     extractSlideItemThumbSelected,
-    FileResult,
-    getAppMimetype,
     getPlaylistDataByFilePath,
     getSlideDataByFilePath,
-    listFiles,
     savePlaylist,
-    useStateSettingBoolean,
-    useStateSettingString
 } from '../helper/helpers';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
     copyToClipboard,
     isMac,
     openExplorer,
-} from '../helper/electronHelper';
-import { showAppContextMenu } from '../helper/AppContextMenu';
-import { PlaylistType } from '../helper/playlistType';
+} from '../helper/appHelper';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import { PlaylistType } from '../helper/playlistHelper';
 import { BibleItem } from '../bible-list/BibleList';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumb';
 import { slideListEventListener } from '../event/SlideListEventListener';
+import {
+    FileSourceType,
+    listFiles,
+    getAppMimetype,
+    createFile,
+    deleteFile,
+} from '../helper/fileHelper';
+import {
+    useStateSettingString,
+    useStateSettingBoolean,
+} from '../helper/settingHelper';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [creatingNewFileName, setCreatingNewFileName] = useState('');
     const [dir, setDir] = useStateSettingString('playlist-selected-dir', '');
-    const [playlists, setPlaylists] = useState<FileResult[] | null>(null);
+    const [playlists, setPlaylists] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (playlists === null) {
-            const playlists = listFiles(dir, 'playlist');
-            setPlaylists(playlists === null ? [] : playlists);
+            const newPlaylists = listFiles(dir, 'playlist');
+            setPlaylists(newPlaylists === null ? [] : newPlaylists);
         }
     }, [playlists, dir]);
     const creatNewPlaylist = () => {
@@ -48,7 +52,7 @@ export default function Playlist() {
                 fileVersion: 1,
                 app: 'OpenWorship',
                 initDate: (new Date()).toJSON(),
-            }
+            },
         }), dir, playlistName)) {
             setPlaylists(null);
         } else {
@@ -59,9 +63,9 @@ export default function Playlist() {
         }
         setCreatingNewFileName('');
         setIsCreatingNew(false);
-    }
-    const applyDir = (dir: string) => {
-        setDir(dir);
+    };
+    const applyDir = (newDir: string) => {
+        setDir(newDir);
         setPlaylists(null);
     };
     const mapPlaylists = playlists || [];
@@ -113,7 +117,7 @@ export default function Playlist() {
                                 {
                                     title: 'Copy Path to Clipboard ', onClick: () => {
                                         copyToClipboard(data.filePath);
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Delete', onClick: () => {
@@ -125,13 +129,13 @@ export default function Playlist() {
                                                 message: 'Unable to delete playlist due to internal error',
                                             });
                                         }
-                                    }
+                                    },
                                 },
                                 {
                                     title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                                     onClick: () => {
                                         openExplorer(data.filePath);
-                                    }
+                                    },
                                 },
                             ]);
                         }} />;
@@ -142,10 +146,10 @@ export default function Playlist() {
 }
 
 type PlaylistItemProps = {
-    fileData: FileResult,
+    fileData: FileSourceType,
     onContextMenu: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
 }
-function ListItem({ fileData, onContextMenu
+function ListItem({ fileData, onContextMenu,
 }: PlaylistItemProps) {
     const playlistName = fileData.fileName.substring(0, fileData.fileName.lastIndexOf('.'));
     const [isOpened, setIsOpened] = useStateSettingBoolean(`playlist-item-${playlistName}`);
@@ -153,14 +157,14 @@ function ListItem({ fileData, onContextMenu
     const [data, setData] = useState<PlaylistType | null>(null);
     useEffect(() => {
         if (data === null) {
-            const data = getPlaylistDataByFilePath(fileData.filePath);
-            setData(data);
+            const newData = getPlaylistDataByFilePath(fileData.filePath);
+            setData(newData);
         }
     }, [data, fileData.filePath]);
     if (data === null) {
         return <div className='card pointer' onContextMenu={onContextMenu}>
             <div className='card-header'>not found</div>
-        </div>
+        </div>;
     }
     return (
         <div className={`playlist-item card pointer mt-1 ${isReceivingChild ? 'receiving-child' : ''}`}
@@ -175,7 +179,7 @@ function ListItem({ fileData, onContextMenu
                 setIsReceivingChild(false);
             }}
             onDrop={(event) => {
-                const receivedData = event.dataTransfer.getData("text");
+                const receivedData = event.dataTransfer.getData('text');
                 try {
                     JSON.parse(receivedData);
                     data.items.push({
@@ -222,7 +226,7 @@ function SlideItemThumbPlaylist({
 }) {
     const { id, slideFilePath } = extractSlideItemThumbSelected(slideItemThumbPath);
     const slideData = getSlideDataByFilePath(slideFilePath);
-    const item = slideData === null ? null : (slideData.items.find((item) => item.id === id) || null);
+    const item = slideData === null ? null : (slideData.items.find((newItem) => newItem.id === id) || null);
     if (item === null) {
         return (
             <div className='card' style={{ width }}>Not Found</div>

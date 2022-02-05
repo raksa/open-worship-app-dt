@@ -1,6 +1,6 @@
 import './TextShadow.scss';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import fullTextPresentHelper from './fullTextPresentHelper';
 
 
@@ -20,8 +20,8 @@ export default function TextShadow() {
         return () => {
             listenList.forEach((listen) => {
                 listen.d.removeEventListener('click', listen.listener);
-            })
-        }
+            });
+        };
     });
     return (
         <div className='card-body'>

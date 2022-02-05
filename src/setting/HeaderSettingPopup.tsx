@@ -3,7 +3,7 @@ import {
     LinuxControlEnum,
     MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum
+    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { closeSetting } from './SettingPopup';
 

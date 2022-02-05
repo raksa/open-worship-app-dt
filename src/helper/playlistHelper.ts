@@ -1,14 +1,16 @@
-import { BiblePresentType } from "../full-text-present/fullTextPresentHelper";
+import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 
 export type PlaylistType = {
     items: PlaylistItemType[]
 };
+
 export type PlaylistItemType = {
     type: 'slide' | 'bible',
     slideItemThumbPath?: string,
     bible?: BiblePresentType,
-};
-export const validateMeta = (meta: any) => {
+}
+
+export function validateMeta(meta: any) {
     try {
         if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
             return true;
@@ -18,7 +20,8 @@ export const validateMeta = (meta: any) => {
     }
     return false;
 }
-export const validatePlaylistItem = (item: any) => {
+
+export function validatePlaylistItem(item: any) {
     try {
         if ((item.type === 'slide' && (item.slideItemThumbPath)) ||
             (item.type === 'bible' && (item.bible))
@@ -30,7 +33,8 @@ export const validatePlaylistItem = (item: any) => {
     }
     return false;
 }
-export const validatePlaylist = (json: any) => {
+
+export function validatePlaylist(json: any) {
     try {
         json.items = json.items || [];
         if (!(json.items as any[]).every((item) => validatePlaylistItem(item))) {

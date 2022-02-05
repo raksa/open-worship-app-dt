@@ -1,20 +1,19 @@
 import './App.scss';
-import './helper/bootstrap-override.scss';
-import './helper/scrollbar.scss';
-import './helper/tool-tip.scss';
-import './helper/variables.scss';
+import './others/bootstrap-override.scss';
+import './others/scrollbar.scss';
+import './others/tool-tip.scss';
+import './others/variables.scss';
 
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
 import HandleBibleSearch from './bible-search/HandleBibleSearch';
-import Toast from './helper/Toast';
+import Toast from './others/Toast';
 import HandleItemSlideEdit from './slide-presenting/HandleItemSlideEdit';
-import { getSetting } from './helper/settings';
+import { getSetting, useStateSettingString } from './helper/settingHelper';
 import AppPresenting from './AppPresenting';
 import AppEditing from './AppEditing';
-import AppContextMenu from './helper/AppContextMenu';
+import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
-import { useStateSettingString } from './helper/helpers';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {

@@ -1,9 +1,10 @@
 import { biblePresentToTitle, getVerses } from '../bible-helper/helpers';
 import { toLocaleNumber } from '../bible-search/bibleSearchHelpers';
-import { renderPresent } from '../helper/electronHelper';
-import { rgb2HexColor, removePX } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settings';
+import { renderPresent } from '../helper/appHelper';
+import { removePX } from '../helper/helpers';
+import { getSetting, setSetting } from '../helper/settingHelper';
 import { LyricPresentType } from '../lyric-list/LyricList';
+import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
 
 export type BiblePresentType = {
@@ -33,8 +34,7 @@ class FullTextPresentHelper {
         `;
     }
     get textColor() {
-        const color = this.textStyle.color || 'rgb(0,0,0)';
-        return rgb2HexColor(color, true);
+        return this.textStyle.color || BLACK_COLOR;
     }
     get textFontSize() {
         const fontSize = this.textStyle.fontSize || '111px';

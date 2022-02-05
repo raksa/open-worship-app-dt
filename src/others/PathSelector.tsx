@@ -5,14 +5,14 @@ import {
     isMac,
     openExplorer,
     selectDirs,
-} from './electronHelper';
+} from '../helper/appHelper';
 import { showAppContextMenu } from './AppContextMenu';
 
 export default function PathSelector({
     dirPath,
     onRefresh,
     onChangeDirPath,
-    onSelectDirPath
+    onSelectDirPath,
 }: {
     dirPath: string,
     onRefresh: () => void,
@@ -26,13 +26,13 @@ export default function PathSelector({
                     title: 'Copy to Clipboard',
                     onClick: () => {
                         copyToClipboard(dirPath);
-                    }
+                    },
                 },
                 {
                     title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                     onClick: () => {
                         openExplorer(dirPath);
-                    }
+                    },
                 },
             ]);
         }}>

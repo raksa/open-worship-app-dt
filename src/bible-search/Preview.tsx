@@ -1,4 +1,4 @@
-import { copyToClipboard } from '../helper/electronHelper';
+import { copyToClipboard } from '../helper/appHelper';
 import { toInputText } from './bibleSearchHelpers';
 import { consumeStartVerseEndVerse } from './RenderFound';
 import { useEffect, useState } from 'react';
@@ -27,13 +27,13 @@ export default function Preview({
             }
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
-            const title = toInputText(bibleSelected, book, chapter, sVerse, eVerse);
-            const text = await biblePresentToText({
+            const newTitle = toInputText(bibleSelected, book, chapter, sVerse, eVerse);
+            const newText = await biblePresentToText({
                 bible: bibleSelected,
                 target: { book: bookToKey(bibleSelected, book) || '', chapter, startVerse: sVerse, endVerse: eVerse },
             });
-            if (title !== null && text !== null) {
-                setRendered({ title, text });
+            if (newTitle !== null && newText !== null) {
+                setRendered({ title: newTitle, text: newText });
             } else {
                 setRendered(null);
             }

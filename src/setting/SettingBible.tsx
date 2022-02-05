@@ -17,7 +17,7 @@ export function SettingBible() {
                             if (!isSuccess) {
                                 toastEventListener.showSimpleToast({
                                     title: 'Refreshing bible list',
-                                    message: 'Unable to get bible list, please check your internet connection and try again!'
+                                    message: 'Unable to get bible list, please check your internet connection and try again!',
                                 });
                             }
                             setBbList(bibleHelper.getBibleList());
@@ -53,7 +53,7 @@ function BibleItem({ bible }: { bible: string }) {
                                     onStart: (totalSize) => {
                                         toastEventListener.showSimpleToast({
                                             title: `Start downloading ${bible}`,
-                                            message: `Total size${totalSize}mb`
+                                            message: `Total size${totalSize}mb`,
                                         });
                                     },
                                     onProgress: (percentage) => {
@@ -68,7 +68,7 @@ function BibleItem({ bible }: { bible: string }) {
                                         }
                                         setDProgress(null);
                                     },
-                                })
+                                });
                             }} onDelete={() => {
                                 bibleHelper.delete(bible);
                                 setIsDownloaded(false);

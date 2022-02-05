@@ -2,7 +2,7 @@ import './BibleSearchPopup.scss';
 
 import { useEffect, useState } from 'react';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { getSetting, setSetting } from '../helper/settings';
+import { getSetting, setSetting } from '../helper/settingHelper';
 import InputHandler from './InputHandler';
 import RenderBookOption from './RenderBookOption';
 import RenderChapterOption from './RenderChapterOption';
@@ -19,7 +19,7 @@ import {
     WindowEnum,
     windowEventListener,
 } from '../event/WindowEventListener';
-import Modal from '../helper/Modal';
+import Modal from '../others/Modal';
 import Preview from './Preview';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { getChapterCount, getBookKVList, biblePresentToTitle } from '../bible-helper/helpers';
@@ -34,15 +34,15 @@ export const closeBibleSearchEvent = {
     window: WindowEnum.BibleSearch,
     state: StateEnum.Close,
 };
-export const openBibleSearch = () => {
+export function openBibleSearch() {
     windowEventListener.fireEvent(openBibleSearchEvent);
-};
-export const closeBibleSearch = () => {
+}
+export function closeBibleSearch() {
     clearBibleListEditingIndex();
     windowEventListener.fireEvent(closeBibleSearchEvent);
-};
+}
 
-export const getSelectedBible = (): string => {
+export function getSelectedBible(): string {
     const editingIndex = getBibleListEditingIndex();
     if (editingIndex !== null) {
         const bibleList = getDefaultBibleList();
@@ -51,7 +51,7 @@ export const getSelectedBible = (): string => {
             return biblePresent.bible;
         }
     }
-    let bible = getSetting('selected-bible');
+    const bible = getSetting('selected-bible');
     if (!bible) {
         const bibles = bibleHelper.getDownloadedBibleList();
         if (!bibles || !bibles.length) {
@@ -61,7 +61,7 @@ export const getSelectedBible = (): string => {
         return getSelectedBible();
     }
     return bible;
-};
+}
 
 function getDefaultInputText() {
     const editingIndex = getBibleListEditingIndex();
@@ -92,33 +92,33 @@ export default function BibleSearchPopup() {
     const { book, chapter, startVerse, endVerse } = bibleResult;
 
 
-    const applyBookSelection = (book: string) => {
-        const count = getChapterCount(bibleSelected, book);
+    const applyBookSelection = (newBook: string) => {
+        const count = getChapterCount(bibleSelected, newBook);
         if (count !== null) {
-            setInputText(toInputText(bibleSelected, book));
+            setInputText(toInputText(bibleSelected, newBook));
             return;
         }
         alert('Fail to generate input text');
     };
-    const applyChapterSelection = (chapter: number) => {
-        setInputText(`${toInputText(bibleSelected, book, chapter)}:`);
+    const applyChapterSelection = (newChapter: number) => {
+        setInputText(`${toInputText(bibleSelected, book, newChapter)}:`);
     };
-    const applyVerseSelection = (startVerse?: number, endVerse?: number) => {
-        const txt = toInputText(bibleSelected, book, chapter, startVerse, endVerse);
+    const applyVerseSelection = (newStartVerse?: number, newEndVerse?: number) => {
+        const txt = toInputText(bibleSelected, book, chapter, newStartVerse, newEndVerse);
         setInputText(txt);
     };
     const handleBibleChange = async (preBible: string) => {
         const bible = getSelectedBible();
         setBibleSelected(bible);
         const result = await extractBible(preBible, inputText);
-        const { book, chapter, startVerse, endVerse } = result;
-        if (book !== null) {
+        const { book: newBook, chapter: newChapter, startVerse: newStartVerse, endVerse: newEndVerse } = result;
+        if (newBook !== null) {
             const bookObj = getBookKVList(preBible);
-            const key = bookObj === null ? null : Object.keys(bookObj).find((k) => bookObj[k] === book);
+            const key = bookObj === null ? null : Object.keys(bookObj).find((k) => bookObj[k] === newBook);
             if (key) {
                 const newBookObj = getBookKVList(bible);
                 if (newBookObj !== null) {
-                    setInputText(toInputText(bible, newBookObj[key], chapter, startVerse, endVerse));
+                    setInputText(toInputText(bible, newBookObj[key], newChapter, newStartVerse, newEndVerse));
                     return;
                 }
             }
@@ -160,8 +160,8 @@ export default function BibleSearchPopup() {
                             startVerse={startVerse}
                             endVerse={endVerse}
                             applyChapterSelection={applyChapterSelection}
-                            onVerseChange={(startVerse, endVerse) => {
-                                applyVerseSelection(startVerse, endVerse)
+                            onVerseChange={(newStartVerse, newEndVerse) => {
+                                applyVerseSelection(newStartVerse, newEndVerse);
                             }}
                         />}
                         {book && chapter !== null && <Preview

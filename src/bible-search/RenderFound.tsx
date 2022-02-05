@@ -7,7 +7,7 @@ import {
     LinuxControlEnum,
     MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum
+    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { closeBibleSearch } from './BibleSearchPopup';
 import { fromLocaleNumber, toLocaleNumber } from './bibleSearchHelpers';
@@ -17,22 +17,22 @@ import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers';
 import { toastEventListener } from '../event/ToastEventListener';
 
 let mouseDownInd: number | null = null;
-const mouseUp = () => {
+function mouseUp() {
     mouseDownInd = null;
-};
+}
 
 export type ConsumeVerseType = {
     sVerse: number,
     eVerse: number,
     verses: VerseList,
 };
-export const consumeStartVerseEndVerse = async (
+export async function consumeStartVerseEndVerse(
     book: string,
     chapter: number,
     startVerse: number | null,
     endVerse: number | null,
-    bibleSelected: string
-) => {
+    bibleSelected: string,
+) {
     const bookKey = bookToKey(bibleSelected, book);
     if (bookKey === null) {
         return null;
@@ -42,8 +42,8 @@ export const consumeStartVerseEndVerse = async (
         return null;
     }
     const verseCount = Object.keys(verses).length;
-    let sVerse = startVerse !== null ? startVerse : 1;
-    let eVerse = endVerse !== null ? endVerse : verseCount;
+    const sVerse = startVerse !== null ? startVerse : 1;
+    const eVerse = endVerse !== null ? endVerse : verseCount;
     const result: ConsumeVerseType = {
         verses,
         sVerse,
@@ -80,7 +80,7 @@ export default function RenderFound({
         if (key === null) {
             return null;
         }
-        const biblePresent = {
+        return {
             bible: bibleSelected,
             target: {
                 book: key,
@@ -89,12 +89,11 @@ export default function RenderFound({
                 endVerse: +fromLocaleNumber(bibleSelected, eVerse),
             },
         };
-        return biblePresent;
     };
     const addListListener = () => {
         const biblePresent = genBiblePresent();
         if (biblePresent !== null) {
-            addBibleItem(biblePresent)
+            addBibleItem(biblePresent);
             closeBibleSearch();
         } else {
             toastEventListener.showSimpleToast({
@@ -140,12 +139,12 @@ export default function RenderFound({
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
             document.body.removeEventListener('mouseup', mouseUp);
-        }
+        };
     });
     const [found, setFound] = useState<ConsumeVerseType | null>(null);
     useEffect(() => {
-        consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected).then((found) => {
-            setFound(found);
+        consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected).then((newFound) => {
+            setFound(newFound);
         });
     }, [book, chapter, startVerse, endVerse, bibleSelected]);
     if (found === null) {

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const sqlite3 = require('sqlite3');
 

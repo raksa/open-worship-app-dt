@@ -1,0 +1,6 @@
+#include test folder for linting later
+dist/
+node_modules/
+.vscode/
+webpack.config.*
+.eslintrc.js

@@ -1,40 +1,47 @@
 import './ColorPicker.scss';
 
-import { copyToClipboard } from '../helper/electronHelper';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import { RgbaColorPicker } from 'react-colorful';
+import { showAppContextMenu } from './AppContextMenu';
+import { copyToClipboard } from '../helper/appHelper';
 
-
+export const BLACK_COLOR = 'rgba(0,0,0,1)';
+type RGBAType = { r: number, g: number, b: number, a: number };
+const rgba2Object = (orig: string): RGBAType => {
+    try {
+        const rgba = orig.replace(/\s/g, '').match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i);
+        if (rgba !== null) {
+            return { r: +rgba[1], g: +rgba[2], b: +rgba[1], a: +(rgba[4] || '1') };
+        }
+    } catch (error) {
+        console.log(error);
+    }
+    return rgba2Object(BLACK_COLOR);
+};
+function objectToRGBA(rbga: RGBAType): string {
+    return `rgba(${rbga.r},${rbga.g},${rbga.b},${rbga.a})`;
+}
 export default function ColorPicker({ color, onColorChange }: {
     color: string, onColorChange: (color: string) => void
 }) {
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const color = e.target.value;
-        onColorChange(color);
-    };
     return (
         <div className="color-picker">
-            <div>
-                <input type="color" onChange={onChange} onInput={onChange} value={color} />
-            </div>
-            {[
-                '#55efc4', '#81ecec', '#74b9ff', '#a29bfe', '#dfe6e9', '#b2bec3', '#6c5ce7', '#0984e3', '#00cec9',
-                '#00b894', '#ffeaa7', '#fab1a0', '#ff7675', '#fd79a8', '#636e72', '#2d3436', '#e84393', '#d63031',
-                '#e17055', '#fdcb6e',
-            ].map((color, i) => {
-                return <div key={`${i}`} className="item" style={{
-                    backgroundColor: color,
-                }} title={color} onContextMenu={(e) => {
+            <div className='p-2 overflow-hidden'>
+                <button className='btn btn-sm btn-info' onClick={(e) => {
                     showAppContextMenu(e, [
                         {
-                            title: `Copy to Clipboard`, onClick: () => {
+                            title: 'Copy to Clipboard', onClick: () => {
                                 copyToClipboard(color);
-                            }
+                            },
                         },
                     ]);
-                }} onClick={() => {
-                    onColorChange(color);
-                }} />;
-            })}
+                }}>{color}</button>
+                <RgbaColorPicker
+                    color={rgba2Object(color)}
+                    onChange={(newColor) => {
+                        onColorChange(objectToRGBA(newColor));
+                    }}
+                />
+            </div>
         </div>
     );
 }

@@ -32,7 +32,7 @@ function initMainScreen(appManager) {
     });
 
     // TODO: use shareProps.mainWin.on or shareProps.presentWin.on
-    let presentShown = false
+    let presentShown = false;
     ipcMain.on('main:app:show-present', () => {
         appManager.presentWin.show();
         appManager.mainWin.focus();
@@ -65,7 +65,7 @@ function initMainScreen(appManager) {
     ipcMain.on('main:app:select-dirs', async (event) => {
         const result = await dialog.showOpenDialog(appManager.mainWin, {
             properties: ['openDirectory'],
-        })
+        });
         event.returnValue = result.filePaths;
     });
 
@@ -80,9 +80,9 @@ function initMainScreen(appManager) {
     });
 
     ipcMain.on('main:app:is-rendered', (event, replyEventName) => {
-        ipcMain.once(replyEventName, (event, data) => {
+        ipcMain.once(replyEventName, (event1, data) => {
             data.show = presentShown;
-            appManager.mainWin.webContents.send(replyEventName, data)
+            appManager.mainWin.webContents.send(replyEventName, data);
         });
         appManager.presentWin.webContents.send('app:present:get-rendering-info', replyEventName);
     });

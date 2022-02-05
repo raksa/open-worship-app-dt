@@ -3,7 +3,7 @@ import './SettingPopup.scss';
 import { useState } from 'react';
 import HeaderEditorPopup from './HeaderSettingPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
-import Modal from '../helper/Modal';
+import Modal from '../others/Modal';
 import { useTranslation } from 'react-i18next';
 import { SettingGeneral } from './SettingGeneral';
 import { SettingBible } from './SettingBible';
@@ -13,12 +13,8 @@ export const openSettingEvent = {
     window: WindowEnum.Setting,
     state: StateEnum.Open,
 };
-export const openSetting = () => {
-    windowEventListener.fireEvent(openSettingEvent);
-};
-export const closeSetting = () => {
-    window.location.reload();
-};
+export const openSetting = () => windowEventListener.fireEvent(openSettingEvent);
+export const closeSetting = () => window.location.reload();
 
 export default function SettingPopup() {
     return (

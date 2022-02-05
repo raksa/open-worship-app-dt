@@ -6,16 +6,16 @@ import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import { getDefaultLyricItem, LyricPresentType } from '../lyric-list/LyricList';
 import { lyricListEventListener, useLyricPresenting } from '../event/LyricListEventListener';
-import { getSetting } from '../helper/settings';
+import { getSetting } from '../helper/settingHelper';
 
 let isMounted = false;
 export default function LyricPreviewer() {
     const defaultLyricItem = getDefaultLyricItem();
     const [lyricPresents, setLyricPresents] = useState<LyricPresentType[]>(
         defaultLyricItem !== null ? defaultLyricItem.items : []);
-    const applyPresents = (lyricPresents: LyricPresentType[]) => {
-        setLyricPresents(lyricPresents);
-        lyricListEventListener.update(lyricPresents)
+    const applyPresents = (newLyricPresents: LyricPresentType[]) => {
+        setLyricPresents(newLyricPresents);
+        lyricListEventListener.update(newLyricPresents);
     };
     useLyricPresenting(setLyricPresents);
     useEffect(() => {
@@ -31,7 +31,7 @@ export default function LyricPreviewer() {
         }
         return () => {
             isMounted = false;
-        }
+        };
     });
     if (lyricPresents === null) {
         return (
@@ -43,9 +43,9 @@ export default function LyricPreviewer() {
             {lyricPresents.length ? lyricPresents.map((lyricPresent, i) => {
                 return (
                     <LyricView key={`${i}`} lyricPresent={lyricPresent}
-                        i={i} onLyricChange={(lyricPresent) => {
+                        i={i} onLyricChange={(newLyricPresent) => {
                             const newLyricPresents = [...lyricPresents];
-                            newLyricPresents[i] = lyricPresent;
+                            newLyricPresents[i] = newLyricPresent;
                             applyPresents(newLyricPresents);
                         }}
                         onClose={() => {

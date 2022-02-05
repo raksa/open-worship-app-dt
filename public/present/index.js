@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-const { ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron');
 document.onkeydown = function (evt) {
     evt = evt || window.event;
     var isEscape = false;
-    if ("key" in evt) {
-        isEscape = (evt.key === "Escape" || evt.key === "Esc");
+    if ('key' in evt) {
+        isEscape = (evt.key === 'Escape' || evt.key === 'Esc');
     } else {
         isEscape = (evt.keyCode === 27);
     }
@@ -37,8 +37,7 @@ function getBible() {
 }
 function getShadow(id) {
     const element = document.getElementById(id);
-    const shadow = element.shadowRoot ? element.shadowRoot : element.attachShadow({ mode: 'open' })
-    return shadow;
+    return element.shadowRoot ? element.shadowRoot : element.attachShadow({ mode: 'open' });
 }
 function observe(target) {
     const observer = new MutationObserver((mutations) => {

@@ -1,33 +1,33 @@
-import { useEffect } from "react";
-import { isLinux, isMac, isWindows } from "../helper/electronHelper";
-import EventHandler from "./EventHandler";
-import { WindowEnum } from "./WindowEventListener";
+import { useEffect } from 'react';
+import { isLinux, isMac, isWindows } from '../helper/appHelper';
+import EventHandler from './EventHandler';
+import { WindowEnum } from './WindowEventListener';
 
 export enum KeyEnum {
-    ArrowUp = "ArrowUp",
-    ArrowRight = "ArrowRight",
-    ArrowDown = "ArrowDown",
-    ArrowLeft = "ArrowLeft",
-    Enter = "Enter",
-    Tab = "Tab",
-    Escape = "Escape",
-    SpaceBar = " ",
+    ArrowUp = 'ArrowUp',
+    ArrowRight = 'ArrowRight',
+    ArrowDown = 'ArrowDown',
+    ArrowLeft = 'ArrowLeft',
+    Enter = 'Enter',
+    Tab = 'Tab',
+    Escape = 'Escape',
+    SpaceBar = ' ',
 }
 export enum WindowsControlEnum {
-    Ctrl = "Ctrl",
-    Alt = "Alt",
-    Shift = "Shift",
+    Ctrl = 'Ctrl',
+    Alt = 'Alt',
+    Shift = 'Shift',
 }
 export enum LinuxControlEnum {
-    Ctrl = "Ctrl",
-    Alt = "Alt",
-    Shift = "Shift",
+    Ctrl = 'Ctrl',
+    Alt = 'Alt',
+    Shift = 'Shift',
 }
 export enum MacControlEnum {
-    Ctrl = "Ctrl",
-    Option = "Option",
-    Shift = "Shift",
-    Command = "Command",
+    Ctrl = 'Ctrl',
+    Option = 'Option',
+    Shift = 'Shift',
+    Command = 'Command',
 }
 export interface EventMapper {
     wControlKey?: WindowsControlEnum[];
@@ -91,7 +91,7 @@ export default class KeyboardEventListener extends EventHandler {
         return k;
     }
     toEventMapperKey(eventMapper: EventMapper) {
-        let k = this.toShortcutKey(eventMapper);
+        const k = this.toShortcutKey(eventMapper);
         return eventMapper.layer ? `${eventMapper.layer}:${k}` : k;
     }
     registerShortcutEventListener(eventMapper: EventMapper,

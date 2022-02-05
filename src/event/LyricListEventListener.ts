@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { LyricPresentType } from "../lyric-list/LyricList";
-import EventHandler from "./EventHandler";
+import { useEffect } from 'react';
+import { LyricPresentType } from '../lyric-list/LyricList';
+import EventHandler from './EventHandler';
 
 enum LyricListEnum {
     PRESENT = 'present',

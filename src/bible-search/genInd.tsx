@@ -1,6 +1,6 @@
 import { KeyEnum } from '../event/KeyboardEventListener';
 
-export const genInd = (index: number, total: number, key: KeyEnum, offset: number) => {
+export function genInd(index: number, total: number, key: KeyEnum, offset: number) {
     const preOffset = offset - 1;
     const mod = index % offset;
     let ind = index;

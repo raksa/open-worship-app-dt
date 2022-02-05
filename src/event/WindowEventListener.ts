@@ -1,16 +1,16 @@
-import { useEffect } from "react";
-import EventHandler from "./EventHandler";
-import { keyboardEventListener } from "./KeyboardEventListener";
+import { useEffect } from 'react';
+import EventHandler from './EventHandler';
+import { keyboardEventListener } from './KeyboardEventListener';
 
 export enum WindowEnum {
-    Root = "root",
-    BibleSearch = "BibleSearch",
-    ItemSlideEdit = "ItemSlideEdit",
-    Setting = "Setting",
+    Root = 'root',
+    BibleSearch = 'BibleSearch',
+    ItemSlideEdit = 'ItemSlideEdit',
+    Setting = 'Setting',
 }
 export enum StateEnum {
-    Open = "open",
-    Close = "close",
+    Open = 'open',
+    Close = 'close',
 }
 export type EventMapper = {
     window: WindowEnum,

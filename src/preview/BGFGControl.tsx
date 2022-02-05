@@ -1,11 +1,14 @@
-import { keyboardEventListener, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    keyboardEventListener,
+    useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import {
     presentEventListener,
     usePresentBGRendering,
-    usePresentFGRendering
+    usePresentFGRendering,
 } from '../event/PresentEventListener';
-import { getPresentRendered } from '../helper/electronHelper';
-import { useStateSettingBoolean } from '../helper/helpers';
+import { getPresentRendered } from '../helper/appHelper';
+import { useStateSettingBoolean } from '../helper/settingHelper';
 
 export default function BGFGControl() {
     const [isPresentingBG, setIsShowingBG] = useStateSettingBoolean('bgfg-control-bg');

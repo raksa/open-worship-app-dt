@@ -1,9 +1,8 @@
 import './LyricList.scss';
 
 import { useState } from 'react';
-import { getSetting, setSetting } from '../helper/settings';
-import { openBibleSearch } from '../bible-search/BibleSearchPopup';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import { getSetting, setSetting } from '../helper/settingHelper';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import { lyricListEventListener, useLyricUpdating } from '../event/LyricListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 
@@ -19,7 +18,7 @@ const presentLyric = (lyricItem: LyricItemType, index: number) => {
     // TODO: change to fileName
     setSetting('lyric-list-editing-index', `${index}`);
     lyricListEventListener.present(lyricItem.items);
-}
+};
 
 function LyricItem({ index, lyricItem, onContextMenu }: {
     index: number,
@@ -30,7 +29,7 @@ function LyricItem({ index, lyricItem, onContextMenu }: {
         <li className="list-group-item item"
             draggable
             onDragStart={(e) => {
-                e.dataTransfer.setData("text/plain", JSON.stringify(lyricItem));
+                e.dataTransfer.setData('text/plain', JSON.stringify(lyricItem));
             }}
             onContextMenu={onContextMenu ? onContextMenu : () => { }}
             onClick={() => presentLyric(lyricItem, index)}>
@@ -81,11 +80,11 @@ export default function LyricList() {
         if (isExist) {
             toastEventListener.showSimpleToast({
                 title: 'Creating Lyric',
-                message: 'Lyric with file name already exist!'
-            })
+                message: 'Lyric with file name already exist!',
+            });
             return;
         }
-        let newList = [...list, {
+        const newList = [...list, {
             fileName: creatingNewFileName,
             items: [{
                 title: creatingNewFileName, text: `
@@ -123,12 +122,12 @@ Block3
                     <i className="bi bi-file-earmark-plus" />
                 </button>
             </div>
-            <div className="card-body" onContextMenu={(e) => {
+            <div className="card-body pb-5" onContextMenu={(e) => {
                 showAppContextMenu(e, [
                     {
                         title: 'Delete All', onClick: () => {
                             applyList([]);
-                        }
+                        },
                     },
                 ]);
             }}>
@@ -163,13 +162,7 @@ Block3
                                         if (list[i]) {
                                             presentLyric(list[i], i);
                                         }
-                                    }
-                                },
-                                {
-                                    title: 'Edit', onClick: () => {
-                                        setSetting('lyric-list-editing-index', `${i}`);
-                                        openBibleSearch();
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Delete', onClick: () => {
@@ -181,10 +174,10 @@ Block3
                                                 lyricListEventListener.present([]);
                                             }
                                         }
-                                    }
+                                    },
                                 },
                             ]);
-                        }} />
+                        }} />;
                     })}
                 </ul>
             </div>

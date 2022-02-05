@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -22,7 +22,7 @@ const appManager = {
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: `${__dirname}/preload.js`,
-            }
+            },
         });
         if (isDev) {
             this.mainWin.loadURL('http://localhost:3000');
@@ -35,7 +35,7 @@ const appManager = {
         }
     },
     createPresentWindow() {
-        const isWin32 = process.platform === "win32";
+        const isWin32 = process.platform === 'win32';
         const isPresentCanFullScreen = isWin32;
         this.presentWin = new electron.BrowserWindow({
             show: false,
@@ -59,14 +59,14 @@ const appManager = {
     init() {
         const displays = electron.screen.getAllDisplays();
         this.externalDisplay = displays.find((display) => {
-            return display.bounds.x !== 0 || display.bounds.y !== 0
+            return display.bounds.x !== 0 || display.bounds.y !== 0;
         }) || displays[0];
         this.showWinWidth = this.externalDisplay.bounds.width;
         this.showWinHeight = this.externalDisplay.bounds.height;
         this.previewResizeDim = {
             width: this.showWinWidth / 3,
             height: this.showWinHeight / 3,
-        }
+        };
         this.createMainWindow();
         this.createPresentWindow();
         electron.app.on('activate', () => {
@@ -75,7 +75,7 @@ const appManager = {
                 this.createPresentWindow();
             }
         });
-    }
+    },
 };
 
 electron.app.whenReady().then(() => appManager.init());

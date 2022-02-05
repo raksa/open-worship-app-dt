@@ -5,7 +5,7 @@ import { usePresentBGClearing } from '../event/PresentEventListener';
 import Images from './Images';
 import Videos from './Videos';
 import { clearBG } from '../slide-presenting/slidePresentHelpers';
-import { useStateSettingString } from '../helper/helpers';
+import { useStateSettingString } from '../helper/settingHelper';
 
 export default function Background() {
     // c: color, i: image, v: video

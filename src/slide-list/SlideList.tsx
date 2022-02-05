@@ -1,18 +1,20 @@
 import './SlideList.scss';
 
 import { useEffect, useState } from 'react';
-import PathSelector from '../helper/PathSelector';
+import PathSelector from '../others/PathSelector';
 import {
     createFile,
     deleteFile,
-    FileResult,
+    FileSourceType,
     getAppMimetype,
-    getSlideFilePathSetting,
     listFiles,
+} from '../helper/fileHelper';
+import {
+    getSlideFilePathSetting,
     setSlideFilePathSetting,
-    useStateSettingString
-} from '../helper/helpers';
-import { defaultSlide } from '../helper/slideType';
+    useStateSettingString,
+} from '../helper/settingHelper';
+import { defaultSlide } from '../editor/slideType';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
@@ -20,17 +22,16 @@ import {
     getPresentScreenInfo,
     isMac,
     openExplorer,
-} from '../helper/electronHelper';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+} from '../helper/appHelper';
+import { showAppContextMenu } from '../others/AppContextMenu';
 
 type SlideItemProps = {
-    data: FileResult,
+    data: FileSourceType,
     selected: boolean,
     itemClick: () => void,
     onContextMenu: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
 }
-function ListItem({ data, itemClick, selected, onContextMenu
-}: SlideItemProps) {
+function ListItem({ data, itemClick, selected, onContextMenu }: SlideItemProps) {
     const slideName = data.fileName.substring(0, data.fileName.lastIndexOf('.'));
     return (
         <li className={`list-group-item ${selected ? 'active' : ''} pointer`}
@@ -48,11 +49,11 @@ export default function SlideList() {
     const [creatingNewFileName, setCreatingNewFileName] = useState('');
     const [dir, setDir] = useStateSettingString('slide-selected-dir', '');
     const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(defaultSelected);
-    const [slides, setSlides] = useState<FileResult[] | null>(null);
+    const [slides, setSlides] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (slides === null) {
-            const slides = listFiles(dir, 'slide');
-            setSlides(slides === null ? [] : slides);
+            const newSlideList = listFiles(dir, 'slide');
+            setSlides(newSlideList === null ? [] : newSlideList);
         }
     }, [slides, dir]);
     const creatNewSlide = () => {
@@ -70,7 +71,7 @@ export default function SlideList() {
         }
         setCreatingNewFileName('');
         setIsCreatingNew(false);
-    }
+    };
     const mapSlides = slides || [];
     return (
         <div id="slide-list" className="card w-100 h-100">
@@ -130,7 +131,7 @@ export default function SlideList() {
                                     {
                                         title: 'Copy Path to Clipboard ', onClick: () => {
                                             copyToClipboard(data.filePath);
-                                        }
+                                        },
                                     },
                                     {
                                         title: 'Delete', onClick: () => {
@@ -146,13 +147,13 @@ export default function SlideList() {
                                                     message: 'Unable to delete slide due to internal error',
                                                 });
                                             }
-                                        }
+                                        },
                                     },
                                     {
                                         title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                                         onClick: () => {
                                             openExplorer(data.filePath);
-                                        }
+                                        },
                                     },
                                 ]);
                             }} />;

@@ -1,13 +1,13 @@
 const tran = {
-  "bible-search": "Bible Search",
-  "bible-present": "Bible Present",
-  "general": "General",
-  "bible": "Bible",
-  "about": "About",
+  'bible-search': 'Bible Search',
+  'bible-present': 'Bible Present',
+  'general': 'General',
+  'bible': 'Bible',
+  'about': 'About',
 };
 const data = {
-  name: "English",
-  locale: "en",
+  name: 'English',
+  locale: 'en',
   flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-gb" viewBox="0 0 640 480">
     <path fill="#012169" d="M0 0h640v480H0z"/>
     <path fill="#FFF" d="m75 0 244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>

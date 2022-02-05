@@ -6,17 +6,16 @@ import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
 import Utils from './Utils';
 import Previewer, { previewer } from './Previewer';
 
-export const convertPresent = (present: BiblePresentType,
-    oldPresents: BiblePresentType[]) => {
+export function convertPresent(present: BiblePresentType,
+    oldPresents: BiblePresentType[]) {
     if (oldPresents.length < 2) {
         return [present];
     }
-    const newPresents = oldPresents.map((oldPresent) => {
+    return oldPresents.map((oldPresent) => {
         oldPresent.target = present.target;
         return oldPresent;
     });
-    return newPresents;
-};
+}
 
 export default function FullTextPresentController() {
     const resizeSettingName = 'full-text-present-window-size';
