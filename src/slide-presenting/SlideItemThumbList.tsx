@@ -19,7 +19,7 @@ import SlideItemThumbListItems from './SlideItemThumbListItems';
 import SlideItemThumbListContextMenu, { contextObject } from './SlideItemThumbListContextMenu';
 import {
     getSetting,
-    getSlideFilePathSetting,
+    getSlideItemSelectedSetting,
     useStateSettingString,
 } from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
@@ -27,7 +27,7 @@ import { slideListEventListener } from '../slide-list/SlideList';
 
 const SETTING_NAME = 'slide-item-thumb-selected';
 export function getValidSlideItemThumbSelected() {
-    const filePath = getSlideFilePathSetting();
+    const filePath = getSlideItemSelectedSetting();
     const slideItemThumbSelected = getSetting(SETTING_NAME) || '';
     const result = parseSlideItemThumbSelected(slideItemThumbSelected, filePath);
     if (result !== null) {
@@ -55,7 +55,7 @@ export default function SlideItemThumbList({ thumbWidth }: { thumbWidth?: number
         }
         return items;
     };
-    const defaultSlideFilePathSelected = getSlideFilePathSetting();
+    const defaultSlideFilePathSelected = getSlideItemSelectedSetting();
     const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(defaultSlideFilePathSelected);
     const [slideItemThumbs, setSlideItemThumbs] = useState<SlideItemThumbType[] | null>(
         getItemsFromFilePath(defaultSlideFilePathSelected));

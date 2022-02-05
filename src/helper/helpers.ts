@@ -1,6 +1,6 @@
 import appProvider from './appProvider';
 import { PlaylistType, validatePlaylist } from './playlistHelper';
-import { getSlideFilePathSetting } from './settingHelper';
+import { getSlideItemSelectedSetting } from './settingHelper';
 import { SlidePresentType, SlideItemThumbType, validateSlide } from '../editor/slideType';
 import { readFile, deleteFile, createFile } from './fileHelper';
 
@@ -98,7 +98,7 @@ export function parseSlideItemThumbSelected(selected: string, filePath: string |
 export function saveSlideItemThumbs(itemThumbs: SlideItemThumbType[]) {
     // TODO: merge with present
     try {
-        const filePath = getSlideFilePathSetting();
+        const filePath = getSlideItemSelectedSetting();
         if (filePath !== null) {
             const str = readFile(filePath);
             if (str !== null) {

@@ -1,5 +1,5 @@
 import appProvider from './appProvider';
-import { setSlideFilePathSetting } from './settingHelper';
+import { setSlideItemSelectedSetting } from './settingHelper';
 
 type MimeType = {
     type: string,
@@ -105,7 +105,7 @@ export function readFile(filePath: string) {
         return appProvider.fs.readFileSync(filePath, 'utf8');
     } catch (error) {
         console.log(error);
-        setSlideFilePathSetting('');
+        setSlideItemSelectedSetting('');
     }
     return null;
 }

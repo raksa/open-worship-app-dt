@@ -43,18 +43,16 @@ export function useStateSettingNumber(settingName: string, defaultNumber: number
     return [data, setDataSetting];
 }
 
-export function setSlideFilePathSetting(filePath: string) {
+export function setSlideItemSelectedSetting(filePath: string) {
     setSetting('slide-item-selected', filePath);
+}
+export function getSlideItemSelectedSetting() {
+    return getSetting('slide-item-selected') || null;
 }
 
 export function setBiblePresentingSetting(biblePresent: BiblePresentType[]) {
     setSetting('bible-present', JSON.stringify(biblePresent));
 }
-
-export function getSlideFilePathSetting() {
-    return getSetting('slide-item-selected') || null;
-}
-
 export function getBiblePresentingSetting() {
     let defaultPresent: BiblePresentType[];
     try {

@@ -10,8 +10,8 @@ import {
     listFiles,
 } from '../helper/fileHelper';
 import {
-    getSlideFilePathSetting,
-    setSlideFilePathSetting,
+    getSlideItemSelectedSetting,
+    setSlideItemSelectedSetting,
     useStateSettingString,
 } from '../helper/settingHelper';
 import { defaultSlide } from '../editor/slideType';
@@ -46,7 +46,7 @@ function ListItem({ data, itemClick, selected, onContextMenu }: SlideItemProps) 
 export const slideListEventListener = new SlideListEventListener();
 
 export default function SlideList() {
-    const defaultSelected = getSlideFilePathSetting();
+    const defaultSelected = getSlideItemSelectedSetting();
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [creatingNewFileName, setCreatingNewFileName] = useState('');
     const [dir, setDir] = useStateSettingString('slide-selected-dir', '');
@@ -122,7 +122,7 @@ export default function SlideList() {
                     {mapSlides.map((data, i) => {
                         return <ListItem key={`${i}`}
                             itemClick={() => {
-                                setSlideFilePathSetting(data.filePath);
+                                setSlideItemSelectedSetting(data.filePath);
                                 setSlideFilePathSelected(data.filePath);
                                 slideListEventListener.selectSlideItem(data.filePath);
                             }}

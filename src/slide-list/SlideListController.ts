@@ -12,8 +12,11 @@ export default class SlideListController {
         this._dir = dir;
         this.eventListener = new SlideListEventListener();
     }
-    get slideController() {
+    get slideControllers() {
         return this._slideControllers;
+    }
+    get selectedSlideController() {
+        return this._slideControllers.find((slideController) => slideController.isSelected) || null;
     }
     loadSlide() {
         this._slideControllers = [];
@@ -34,7 +37,7 @@ export default class SlideListController {
         const slideController = SlideController.createSlideController(this._dir, fileName);
         if (slideController !== null) {
             this._slideControllers.push(slideController);
-            this.eventListener.slideItemAdded(slideController);
+            this.eventListener.refresh();
         }
         return slideController;
     }
@@ -52,8 +55,15 @@ export default class SlideListController {
             this._slideControllers = this._slideControllers.filter((_, i) => {
                 return i !== index;
             });
-            this.eventListener.slideItemRemoved(slideController);
+            this.eventListener.refresh();
         }
         return slideController;
+    }
+    select(slideController: SlideController) {
+        if (this.selectedSlideController !== null) {
+            this.selectedSlideController.isSelected = false;
+        }
+        slideController.isSelected = true;
+        this.eventListener.refresh();
     }
 }

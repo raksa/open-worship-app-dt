@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { HTML2ReactChildType } from '../editor/slideParser';
 import { SlideItemThumbType, ToolingType } from '../editor/slideType';
-import SlideController from '../slide-list/SlideController';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;
@@ -12,8 +11,6 @@ export enum SlideListEnum {
     UPDATE_ITEM_THUMB = 'update-item-thumb',
     ITEM_THUMB_ORDERING = 'item-thumb-ordering',
     TOOLING = 'tooling',
-    SLIDE_ITEM_ADDED = 'slide-item-added',
-    SLIDE_ITEM_REMOVED = 'slide-item-remove',
     REFRESH = 'refresh',
 }
 export type RegisteredEventType<T> = {
@@ -39,22 +36,13 @@ export default class SlideListEventListener extends EventHandler {
     updateSlideItemThumb(slideItemThumb: SlideItemThumbType) {
         this._addPropEvent(SlideListEnum.UPDATE_ITEM_THUMB, slideItemThumb);
     }
-    slideItemAdded(slideItem: SlideController) {
-        this._addPropEvent(SlideListEnum.SLIDE_ITEM_ADDED, slideItem);
-    }
-    slideItemRemoved(slideItem: SlideController) {
-        this._addPropEvent(SlideListEnum.SLIDE_ITEM_REMOVED, slideItem);
-    }
     refresh() {
         this._addPropEvent(SlideListEnum.REFRESH);
     }
     registerSlideListEventListener(type: SlideListEnum, listener: ListenerType<any>):
         RegisteredEventType<any> {
         this._addOnEventListener(type, listener);
-        return {
-            type,
-            listener,
-        };
+        return { type, listener };
     }
     unregisterSlideListEventListener({ type, listener }: RegisteredEventType<any>) {
         this._removeOnEventListener(type, listener);

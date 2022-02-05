@@ -9,27 +9,38 @@ import {
     genFileSource,
     renameFile,
 } from '../helper/fileHelper';
+import { getSlideItemSelectedSetting, setSlideItemSelectedSetting } from '../helper/settingHelper';
 
 // TODO: implement class
 export default class SlideController {
-    _file: FileSourceType;
-    constructor(file: FileSourceType) {
-        this._file = file;
+    _fileSource: FileSourceType;
+    _isSelected = false;
+    constructor(fileSource: FileSourceType) {
+        this._fileSource = fileSource;
+        const filePathSelected = getSlideItemSelectedSetting();
+        this._isSelected = this.filePath === filePathSelected;
     }
     get basePath() {
-        return this._file.basePath;
+        return this._fileSource.basePath;
     }
     get fileName() {
-        return this._file.fileName;
+        return this._fileSource.fileName;
     }
     get filePath() {
-        return this._file.filePath;
+        return this._fileSource.filePath;
     }
     get fileSrc() {
-        return this._file.src;
+        return this._fileSource.src;
+    }
+    get isSelected() {
+        return this._isSelected;
+    }
+    set isSelected(isSelected: boolean) {
+        setSlideItemSelectedSetting(isSelected ? this.filePath : '');
+        this._isSelected = isSelected;
     }
     deleteFile() {
-        return deleteFile(this._file.filePath);
+        return deleteFile(this._fileSource.filePath);
     }
     static createSlideController(basePath: string, slideName: string): SlideController | null {
         if (checkFileExist(basePath, slideName)) {
