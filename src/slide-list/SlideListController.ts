@@ -2,14 +2,13 @@ import SlideListEventListener from '../event/SlideListEventListener';
 import { listFiles, MimetypeNameType } from '../helper/fileHelper';
 import SlideController from './SlideController';
 
-// TODO: implement class
 const FILE_TYPE: MimetypeNameType = 'slide';
 export default class SlideListController {
-    _dir: string;
+    _basePath: string;
     _slideControllers: SlideController[] = [];
     eventListener: SlideListEventListener;
-    constructor(dir: string) {
-        this._dir = dir;
+    constructor(basePath: string) {
+        this._basePath = basePath;
         this.eventListener = new SlideListEventListener();
     }
     get slideControllers() {
@@ -20,8 +19,8 @@ export default class SlideListController {
     }
     loadSlide() {
         this._slideControllers = [];
-        if (this._dir !== null) {
-            const slideList = listFiles(this._dir, FILE_TYPE);
+        if (this._basePath !== null) {
+            const slideList = listFiles(this._basePath, FILE_TYPE);
             if (slideList !== null) {
                 slideList.forEach((slideSource) => {
                     this._slideControllers.push(new SlideController(slideSource));
@@ -34,7 +33,7 @@ export default class SlideListController {
         return this._slideControllers[index] || null;
     }
     addSlideController(fileName: string): SlideController | null {
-        const slideController = SlideController.createSlideController(this._dir, fileName);
+        const slideController = SlideController.createSlideController(this._basePath, fileName);
         if (slideController !== null) {
             this._slideControllers.push(slideController);
             this.eventListener.refresh();
