@@ -1,14 +1,15 @@
-import SlideItemThumb, { DragReceiver, ItemThumbGhost } from './SlideItemThumb';
+import SlideItemThumb, {
+    DragReceiver,
+    ItemThumbGhost,
+} from './SlideItemThumb';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { WindowEnum } from '../event/WindowEventListener';
 import { SlideItemThumbType } from '../editor/slideType';
-import {
-    slideListEventListener,
-    useSlideItemThumbUpdating,
-} from '../event/SlideListEventListener';
+import { useSlideItemThumbUpdating } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { contextObject } from './SlideItemThumbListContextMenu';
 import { Fragment, useState } from 'react';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function SlideItemThumbListItems({
     thumbWidth,
@@ -26,7 +27,7 @@ export default function SlideItemThumbListItems({
     setSlideItemThumbs: (slideItemThumbs: SlideItemThumbType[]) => void,
 }) {
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useSlideItemThumbUpdating((itemThumb) => {
+    useSlideItemThumbUpdating(slideListEventListener, (itemThumb) => {
         itemThumb.isEditing = true;
         const slideThumbList = slideItemThumbs.map((item) => {
             if (item.id === itemThumb.id) {

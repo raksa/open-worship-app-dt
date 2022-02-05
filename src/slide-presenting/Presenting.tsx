@@ -6,13 +6,14 @@ import { useBiblePresenting } from '../event/BibleListEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { useStateSettingString } from '../helper/settingHelper';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function Presenting() {
     // s: slides, f: full text
     const [tabType, setTabType] = useStateSettingString('slide-presenting-tab', 's');
     useBiblePresenting(() => setTabType('f'));
-    useSlideSelecting(() => setTabType('s'));
-    useSlideItemThumbSelecting(() => setTabType('s'));
+    useSlideSelecting(slideListEventListener, () => setTabType('s'));
+    useSlideItemThumbSelecting(slideListEventListener, () => setTabType('s'));
     return (
         <div id="presenting" className="w-100 h-100">
             <ul className="header nav nav-tabs">

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { HTML2ReactChildType } from '../editor/slideParser';
 import { SlideItemThumbType, ToolingType } from '../editor/slideType';
+import SlideController from '../slide-list/SlideController';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;
@@ -11,7 +12,10 @@ export enum SlideListEnum {
     UPDATE_ITEM_THUMB = 'update-item-thumb',
     ITEM_THUMB_ORDERING = 'item-thumb-ordering',
     TOOLING = 'tooling',
-};
+    SLIDE_ITEM_ADDED = 'slide-item-added',
+    SLIDE_ITEM_REMOVED = 'slide-item-remove',
+    REFRESH = 'refresh',
+}
 export type RegisteredEventType<T> = {
     type: SlideListEnum,
     listener: ListenerType<T>,
@@ -35,6 +39,15 @@ export default class SlideListEventListener extends EventHandler {
     updateSlideItemThumb(slideItemThumb: SlideItemThumbType) {
         this._addPropEvent(SlideListEnum.UPDATE_ITEM_THUMB, slideItemThumb);
     }
+    slideItemAdded(slideItem: SlideController) {
+        this._addPropEvent(SlideListEnum.SLIDE_ITEM_ADDED, slideItem);
+    }
+    slideItemRemoved(slideItem: SlideController) {
+        this._addPropEvent(SlideListEnum.SLIDE_ITEM_REMOVED, slideItem);
+    }
+    refresh() {
+        this._addPropEvent(SlideListEnum.REFRESH);
+    }
     registerSlideListEventListener(type: SlideListEnum, listener: ListenerType<any>):
         RegisteredEventType<any> {
         this._addOnEventListener(type, listener);
@@ -48,9 +61,8 @@ export default class SlideListEventListener extends EventHandler {
     }
 }
 
-export const slideListEventListener = new SlideListEventListener();
-
-export function useSlideSelecting(listener: ListenerType<string | null>) {
+export function useSlideSelecting(slideListEventListener: SlideListEventListener,
+    listener: ListenerType<string | null>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.SELECT, listener);
@@ -59,7 +71,8 @@ export function useSlideSelecting(listener: ListenerType<string | null>) {
         };
     });
 }
-export function useSlideItemThumbSelecting(listener: ListenerType<SlideItemThumbType | null>) {
+export function useSlideItemThumbSelecting(slideListEventListener: SlideListEventListener,
+    listener: ListenerType<SlideItemThumbType | null>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.ITEM_THUMB_SELECT, listener);
@@ -68,7 +81,8 @@ export function useSlideItemThumbSelecting(listener: ListenerType<SlideItemThumb
         };
     });
 }
-export function useSlideItemThumbUpdating(listener: ListenerType<SlideItemThumbType>) {
+export function useSlideItemThumbUpdating(slideListEventListener: SlideListEventListener,
+    listener: ListenerType<SlideItemThumbType>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.UPDATE_ITEM_THUMB, listener);
@@ -77,7 +91,8 @@ export function useSlideItemThumbUpdating(listener: ListenerType<SlideItemThumbT
         };
     });
 }
-export function useSlideItemThumbOrdering(listener: ListenerType<void>) {
+export function useSlideItemThumbOrdering(slideListEventListener: SlideListEventListener,
+    listener: ListenerType<void>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.ITEM_THUMB_ORDERING, listener);
@@ -86,7 +101,8 @@ export function useSlideItemThumbOrdering(listener: ListenerType<void>) {
         };
     });
 }
-export function useSlideBoxEditing(listener: ListenerType<HTML2ReactChildType | null>) {
+export function useSlideBoxEditing(slideListEventListener: SlideListEventListener,
+    listener: ListenerType<HTML2ReactChildType | null>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.BOX_EDITING, listener);
@@ -95,7 +111,8 @@ export function useSlideBoxEditing(listener: ListenerType<HTML2ReactChildType | 
         };
     });
 }
-export function useSlideItemThumbTooling(listener: ListenerType<ToolingType>) {
+export function useSlideItemThumbTooling(slideListEventListener: SlideListEventListener,
+    listener: ListenerType<ToolingType>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.TOOLING, listener);

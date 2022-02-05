@@ -15,7 +15,6 @@ import {
     useStateSettingString,
 } from '../helper/settingHelper';
 import { defaultSlide } from '../editor/slideType';
-import { slideListEventListener } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
     copyToClipboard,
@@ -24,6 +23,7 @@ import {
     openExplorer,
 } from '../helper/appHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
+import SlideListEventListener from '../event/SlideListEventListener';
 
 type SlideItemProps = {
     data: FileSourceType,
@@ -42,6 +42,8 @@ function ListItem({ data, itemClick, selected, onContextMenu }: SlideItemProps) 
         </li>
     );
 }
+
+export const slideListEventListener = new SlideListEventListener();
 
 export default function SlideList() {
     const defaultSelected = getSlideFilePathSetting();

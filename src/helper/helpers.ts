@@ -1,11 +1,11 @@
-import electronProvider from './appProvider';
+import appProvider from './appProvider';
 import { PlaylistType, validatePlaylist } from './playlistHelper';
 import { getSlideFilePathSetting } from './settingHelper';
 import { SlidePresentType, SlideItemThumbType, validateSlide } from '../editor/slideType';
 import { readFile, deleteFile, createFile } from './fileHelper';
 
 export function getAppInfo() {
-    return electronProvider.ipcRenderer.sendSync('main:app:info') as {
+    return appProvider.ipcRenderer.sendSync('main:app:info') as {
         name: string,
         version: string,
         description: string,

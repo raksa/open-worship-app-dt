@@ -5,7 +5,7 @@ import EventHandler from './EventHandler';
 export enum BibleListEnum {
     ADD = 'add',
     PRESENT = 'present',
-};
+}
 type ListenerType<T> = (data: T) => void | (() => void);
 export type RegisteredEventType<T> = {
     type: BibleListEnum,

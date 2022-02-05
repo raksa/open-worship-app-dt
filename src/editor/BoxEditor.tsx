@@ -4,10 +4,10 @@ import './EditorControllerBoxWrapper.scss';
 import { Component, CSSProperties } from 'react';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
 import { ToolingType } from './slideType';
-import { slideListEventListener } from '../event/SlideListEventListener';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,

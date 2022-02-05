@@ -19,7 +19,6 @@ import { PlaylistType } from '../helper/playlistHelper';
 import { BibleItem } from '../bible-list/BibleList';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumb';
-import { slideListEventListener } from '../event/SlideListEventListener';
 import {
     FileSourceType,
     listFiles,
@@ -31,6 +30,7 @@ import {
     useStateSettingString,
     useStateSettingBoolean,
 } from '../helper/settingHelper';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);

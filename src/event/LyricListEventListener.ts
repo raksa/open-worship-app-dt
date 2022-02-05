@@ -5,7 +5,7 @@ import EventHandler from './EventHandler';
 enum LyricListEnum {
     PRESENT = 'present',
     UPDATE = 'update',
-};
+}
 type ListenerType<T> = (data: T) => void | (() => void);
 export type RegisteredEventType<T> = {
     type: LyricListEnum,

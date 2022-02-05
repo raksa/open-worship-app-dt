@@ -10,11 +10,12 @@ import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
 import { parseHTML } from './slideParser';
 import { editorMapper } from './EditorBoxMapper';
 import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function SlideItemThumbEditor() {
     const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(
         getValidSlideItemThumbSelected());
-    useSlideItemThumbSelecting((item) => {
+    useSlideItemThumbSelecting(slideListEventListener, (item) => {
         if (item?.id === slideItemThumb?.id) {
             return;
         }

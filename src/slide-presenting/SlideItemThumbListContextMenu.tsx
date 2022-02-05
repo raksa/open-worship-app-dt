@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { SlideItemThumbType } from '../editor/slideType';
 import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
-import { slideListEventListener } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { ChangeHistory } from './SlideItemThumbListMenu';
 import { ContextMenuEventType, showAppContextMenu } from '../others/AppContextMenu';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 export const contextObject = {
     paste: () => { },

@@ -8,7 +8,6 @@ import { usePresentFGClearing } from '../event/PresentEventListener';
 import { clearFG } from './slidePresentHelpers';
 import { SlideItemThumbType } from '../editor/slideType';
 import {
-    slideListEventListener,
     useSlideItemThumbOrdering,
     useSlideItemThumbTooling,
     useSlideItemThumbUpdating,
@@ -24,6 +23,7 @@ import {
     useStateSettingString,
 } from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 const SETTING_NAME = 'slide-item-thumb-selected';
 export function getValidSlideItemThumbSelected() {
@@ -59,7 +59,7 @@ export default function SlideItemThumbList({ thumbWidth }: { thumbWidth?: number
     const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(defaultSlideFilePathSelected);
     const [slideItemThumbs, setSlideItemThumbs] = useState<SlideItemThumbType[] | null>(
         getItemsFromFilePath(defaultSlideFilePathSelected));
-    useSlideSelecting((filePath) => {
+    useSlideSelecting(slideListEventListener, (filePath) => {
         setSlideFilePathSelected(filePath);
         setSlideItemThumbs(getItemsFromFilePath(filePath));
     });
@@ -122,9 +122,9 @@ function Controller({
         setSelectedWithPath(null);
         clearFG();
     });
-    useSlideItemThumbUpdating(() => setIsModifying(true));
-    useSlideItemThumbOrdering(() => setIsModifying(true));
-    useSlideItemThumbTooling(() => setIsModifying(true));
+    useSlideItemThumbUpdating(slideListEventListener, () => setIsModifying(true));
+    useSlideItemThumbOrdering(slideListEventListener, () => setIsModifying(true));
+    useSlideItemThumbTooling(slideListEventListener, () => setIsModifying(true));
     if (slideItemThumbs === null) {
         return <Empty />;
     }

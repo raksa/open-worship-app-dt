@@ -1,10 +1,7 @@
 import './Tools.scss';
 
 import { ReactChild, useState } from 'react';
-import {
-    slideListEventListener,
-    useSlideBoxEditing,
-} from '../event/SlideListEventListener';
+import { useSlideBoxEditing } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
 import {
     HAlignmentEnum,
@@ -12,6 +9,7 @@ import {
     VAlignmentEnum,
 } from './slideParser';
 import { useStateSettingString } from '../helper/settingHelper';
+import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function Tools({ scale, applyScale, setScale, minScale, maxScale, scaleStep }: {
     scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
@@ -20,7 +18,7 @@ export default function Tools({ scale, applyScale, setScale, minScale, maxScale,
     const [data, setData] = useState<HTML2ReactChildType | null>(null);
     // t: text, b: box
     const [tabType, setTabType] = useStateSettingString('editor-tools-tab', 't');
-    useSlideBoxEditing((newData) => {
+    useSlideBoxEditing(slideListEventListener, (newData) => {
         setData(newData);
     });
     return (

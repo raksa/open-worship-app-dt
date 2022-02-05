@@ -6,10 +6,11 @@ import {
 } from './helpers';
 import { getUserWritablePath } from '../helper/appHelper';
 import { toBase64, fromBase64 } from '../helper/helpers';
-import electronProvider from '../helper/appProvider';
+import appProvider from '../helper/appProvider';
 import { setSetting, getSetting } from '../helper/settingHelper';
+import { checkFileExist } from '../helper/fileHelper';
 
-const bibleObj = electronProvider.bibleObj;
+const bibleObj = appProvider.bibleObj;
 
 export type BookType = {
     key: string,
@@ -89,22 +90,22 @@ const bibleHelper = {
         return this.getBibleList().map((bible) => this.getBibleWithStatus(bible));
     },
     getWritablePath() {
-        const dirPath = electronProvider.path.join(getUserWritablePath(), 'bibles');
+        const dirPath = appProvider.path.join(getUserWritablePath(), 'bibles');
         try {
-            electronProvider.fs.mkdirSync(dirPath);
+            appProvider.fs.mkdirSync(dirPath);
         } catch (error: any) {
             if (!~error.message.indexOf('file already exists')) {
                 return null;
             }
         }
-        return electronProvider.path.join(getUserWritablePath(), 'bibles');
+        return appProvider.path.join(getUserWritablePath(), 'bibles');
     },
     toDbPath(bible: string) {
         const dirPath = this.getWritablePath();
         if (dirPath === null) {
             return null;
         }
-        const biblePath = electronProvider.path.join(dirPath, bible);
+        const biblePath = appProvider.path.join(dirPath, bible);
         return biblePath;
 
     },
@@ -116,14 +117,14 @@ const bibleHelper = {
         if (this.getBibleCipherKey(bible) === null) {
             return false;
         }
-        return !!electronProvider.fs.existsSync(biblePath);
+        return !!checkFileExist(biblePath);
 
     },
     delete(bible: string) {
         try {
             const basePath = this.getWritablePath() as string;
-            const filePath = electronProvider.path.join(basePath, bible);
-            electronProvider.fs.unlinkSync(filePath);
+            const filePath = appProvider.path.join(basePath, bible);
+            appProvider.fs.unlinkSync(filePath);
             this.setBibleCipherKey(bible, null);
         } catch (error) {
             console.log(error);

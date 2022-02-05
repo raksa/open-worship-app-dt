@@ -4,7 +4,7 @@ import fullTextPresentHelper, {
 } from '../full-text-present/fullTextPresentHelper';
 import { toLocaleNumber } from '../bible-search/bibleSearchHelpers';
 import { sqlite3ReadValue } from '../helper/appHelper';
-import electronProvider from '../helper/appProvider';
+import appProvider from '../helper/appProvider';
 import bibleHelper from './bibleHelper';
 
 export function sqlite3Read(bible: string, key: string, cipherKey: string) {
@@ -17,11 +17,11 @@ export function sqlite3Read(bible: string, key: string, cipherKey: string) {
             callback = () => { };
             resolve(data);
         };
-        const encryptKey = electronProvider.cipher.encrypt(key, cipherKey);
+        const encryptKey = appProvider.cipher.encrypt(key, cipherKey);
         const value = await sqlite3ReadValue(dbFilePath, 'bibles', encryptKey);
         if (value !== null) {
             try {
-                const decrypted = electronProvider.cipher.decrypt(value, cipherKey);
+                const decrypted = appProvider.cipher.decrypt(value, cipherKey);
                 const json = JSON.parse(decrypted);
                 callback(json);
                 return;
@@ -34,7 +34,7 @@ export function sqlite3Read(bible: string, key: string, cipherKey: string) {
 }
 
 export function httpsRequest(pathName: string, callback: (error: Error | null, response?: any) => void) {
-    const request = electronProvider.https.request({
+    const request = appProvider.https.request({
         port: 443,
         path: pathName,
         method: 'GET',
@@ -83,15 +83,15 @@ export type DownloadOptionsType = {
 
 export function startDownloading(url: string, downloadPath: string, fileName: string,
     { onStart, onProgress, onDone }: DownloadOptionsType) {
-    const filePath = electronProvider.path.join(downloadPath, fileName);
+    const filePath = appProvider.path.join(downloadPath, fileName);
     const removeFile = () => {
         try {
-            electronProvider.fs.unlinkSync(filePath);
+            appProvider.fs.unlinkSync(filePath);
         } catch (error) { }
     };
     removeFile();
     httpsRequest(url, (error, response: any) => {
-        const writeStream = electronProvider.fs.createWriteStream(filePath);
+        const writeStream = appProvider.fs.createWriteStream(filePath);
         try {
             if (error || response.statusCode !== 200) {
                 console.log(error);
