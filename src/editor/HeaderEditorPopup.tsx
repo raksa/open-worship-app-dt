@@ -4,7 +4,7 @@ import {
     LinuxControlEnum,
     MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum
+    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { closeItemSlideEdit } from './SlideItemEditorPopup';
 

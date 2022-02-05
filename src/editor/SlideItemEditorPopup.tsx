@@ -3,7 +3,7 @@ import './SlideItemEditorPopup.scss';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
 import HeaderEditorPopup from './HeaderEditorPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
-import Modal from '../helper/Modal';
+import Modal from '../others/Modal';
 import { SlideItemThumbEditorController } from './SlideItemThumbEditor';
 import { SlideItemThumbType } from './slideType';
 import { editorMapper } from './EditorBoxMapper';
@@ -16,15 +16,15 @@ export const closeItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,
     state: StateEnum.Close,
 };
-export const openItemSlideEdit = (slideItemThumb: SlideItemThumbType) => {
+export function openItemSlideEdit(slideItemThumb: SlideItemThumbType) {
     windowEventListener.fireEvent(openItemSlideEditEvent, slideItemThumb);
-};
-export const closeItemSlideEdit = () => {
+}
+export function closeItemSlideEdit() {
     const close = () => {
         windowEventListener.fireEvent(closeItemSlideEditEvent);
-    }
+    };
     editorMapper.stopAllModes().then(close);
-};
+}
 
 export default function SlideItemEditorPopup({ slideItemThumb }: {
     slideItemThumb: SlideItemThumbType

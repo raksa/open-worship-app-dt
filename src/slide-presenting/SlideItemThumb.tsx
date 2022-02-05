@@ -2,7 +2,7 @@ import './SlideItemThumb.scss';
 
 import { SlideItemThumbType } from '../editor/slideType';
 import { parseHTML } from '../editor/slideParser';
-import { ContextMenuEventType } from '../helper/AppContextMenu';
+import { ContextMenuEventType } from '../others/AppContextMenu';
 import { extractSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
 
 export function SlideItemThumbIFrame({
@@ -21,7 +21,7 @@ export function SlideItemThumbIFrame({
                 frameBorder="0"
                 style={{
                     pointerEvents: 'none',
-                    borderStyle: "none",
+                    borderStyle: 'none',
                     width: `${parsedHTMLData.width}px`,
                     height: `${parsedHTMLData.height}px`,
                     transform: 'translate(-50%, -50%)',
@@ -57,7 +57,7 @@ export default function SlideItemThumb({
             draggable
             onDragStart={(e) => {
                 const path = toSlideItemThumbSelected(data.slideFilePath, data.id) || '';
-                e.dataTransfer.setData("text/plain", path);
+                e.dataTransfer.setData('text/plain', path);
                 onDragStart(e);
             }}
             onDragEnd={(e) => {
@@ -98,7 +98,7 @@ export function DragReceiver({ onDrop }: {
                 (event.currentTarget as HTMLDivElement).style.opacity = '0.1';
             }}
             onDrop={(event) => {
-                const path = event.dataTransfer.getData("text");
+                const path = event.dataTransfer.getData('text');
                 const result = extractSlideItemThumbSelected(path);
                 onDrop(result.id);
             }}></div>

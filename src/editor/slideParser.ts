@@ -1,5 +1,5 @@
-import { getRotationDeg, removePX } from "../helper/helpers";
-import { BLACK_COLOR } from "../others/ColorPicker";
+import { getRotationDeg, removePX } from '../helper/helpers';
+import { BLACK_COLOR } from '../others/ColorPicker';
 
 export enum HAlignmentEnum {
     Left = 'left',
@@ -58,10 +58,9 @@ export function parseHTML(html: string): HTML2ReactType {
     const children = Array.from(mainDiv.children).map((ele): HTML2ReactChildType => {
         return parseChildHTML(ele.outerHTML);
     });
-    const data = {
+    return {
         width: removePX(mainDiv.style.width) || 500,
         height: removePX(mainDiv.style.height) || 150,
         children,
     };
-    return data;
 }

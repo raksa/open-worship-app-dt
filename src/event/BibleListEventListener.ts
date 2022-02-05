@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { BiblePresentType } from "../full-text-present/fullTextPresentHelper";
-import EventHandler from "./EventHandler";
+import { useEffect } from 'react';
+import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import EventHandler from './EventHandler';
 
 export enum BibleListEnum {
     ADD = 'add',

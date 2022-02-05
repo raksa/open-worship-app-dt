@@ -1,4 +1,4 @@
-import { renderPresent } from '../helper/electronHelper';
+import { renderPresent } from '../helper/appHelper';
 
 export function renderFG(html: string) {
     renderPresent({
@@ -24,7 +24,7 @@ ele.style.height = '100%';
 }
 
 export function renderBGImage(path: string) {
-    const src = (new URL(path)).toString()
+    const src = (new URL(path)).toString();
     renderPresent({
         script: `
 const shadow = getShadow('background');

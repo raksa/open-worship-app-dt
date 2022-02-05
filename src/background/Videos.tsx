@@ -1,33 +1,33 @@
 import './Videos.scss';
 
 import { createRef, useEffect, useState } from 'react';
-import { copyToClipboard, isMac, openExplorer } from '../helper/electronHelper';
+import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
 import { presentEventListener } from '../event/PresentEventListener';
+import { useStateSettingString } from '../helper/settingHelper';
 import {
     copyFileToPath,
-    FileResult,
+    FileSourceType,
     isSupportedMimetype,
     listFiles,
-    useStateSettingString,
-} from '../helper/helpers';
-import PathSelector from '../helper/PathSelector';
+} from '../helper/fileHelper';
+import PathSelector from '../others/PathSelector';
 import { renderBGVideo } from '../slide-presenting/slidePresentHelpers';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import { toastEventListener } from '../event/ToastEventListener';
 
 export default function Videos() {
     const [dir, setDir] = useStateSettingString('video-selected-dir', '');
-    const [list, setList] = useState<FileResult[] | null>(null);
+    const [list, setList] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (list === null) {
             const videos = listFiles(dir, 'video');
             setList(videos === null ? [] : videos);
         }
     }, [list, dir]);
-    const applyDir = (dir: string) => {
-        setDir(dir);
+    const applyDir = (newDir: string) => {
+        setDir(newDir);
         setList(null);
-    }
+    };
     return (
         <div className="background-video" draggable={dir !== null}
             onDragOver={(event) => {
@@ -44,19 +44,19 @@ export default function Videos() {
                     if (!isSupportedMimetype(file.type, 'video')) {
                         toastEventListener.showSimpleToast({
                             title: 'copy video file',
-                            message: 'Unsupported video file!'
+                            message: 'Unsupported video file!',
                         });
                     } else {
                         if (copyFileToPath(file.path, file.name, dir)) {
                             setList(null);
                             toastEventListener.showSimpleToast({
                                 title: 'copy video file',
-                                message: 'File has been copied'
+                                message: 'File has been copied',
                             });
                         } else {
                             toastEventListener.showSimpleToast({
                                 title: 'copy video file',
-                                message: 'Fail to copy file!'
+                                message: 'Fail to copy file!',
                             });
                         }
                     }
@@ -77,13 +77,13 @@ export default function Videos() {
                                     {
                                         title: 'Copy Path to Clipboard ', onClick: () => {
                                             copyToClipboard(d.filePath);
-                                        }
+                                        },
                                     },
                                     {
                                         title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                                         onClick: () => {
                                             openExplorer(d.filePath);
-                                        }
+                                        },
                                     },
                                 ]);
                             }}

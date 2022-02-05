@@ -3,7 +3,7 @@ import './SlideItemThumbEditor.scss';
 import { useState } from 'react';
 import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
 import { SlideItemThumbType } from './slideType';
-import { useStateSettingNumber } from '../helper/helpers';
+import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
 import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
@@ -27,7 +27,7 @@ export default function SlideItemThumbEditor() {
             <div className='item-thumb-editor empty' style={{ fontSize: '3em', padding: '20px' }}>
                 No Slide Item Thumb Selected 😐
             </div>
-        )
+        );
     }
     return (
         <SlideItemThumbEditorController slideItemThumb={slideItemThumb} />

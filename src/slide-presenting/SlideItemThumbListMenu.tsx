@@ -35,7 +35,7 @@ export default function SlideItemThumbListMenu({
             items: [...slideItemThumbs],
         }]);
         setIsModifying(true);
-    }
+    };
     const redoChanges = () => {
         const lastRollback = redo.pop() as ChangeHistory;
         setRedo([...redo]);
@@ -44,15 +44,15 @@ export default function SlideItemThumbListMenu({
             items: [...slideItemThumbs],
         }]);
         setIsModifying(true);
-    }
+    };
     const save = () => {
         try {
             const newItemThumbs = slideItemThumbs.map((item) => {
                 item.isEditing = false;
                 return item;
-            })
+            });
             if (saveSlideItemThumbs(newItemThumbs)) {
-                setIsModifying(false)
+                setIsModifying(false);
                 setSlideItemThumbs(newItemThumbs);
             } else {
                 toastEventListener.showSimpleToast({

@@ -5,7 +5,7 @@ import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { ChangeHistory } from './SlideItemThumbListMenu';
-import { ContextMenuEventType, showAppContextMenu } from '../helper/AppContextMenu';
+import { ContextMenuEventType, showAppContextMenu } from '../others/AppContextMenu';
 
 export const contextObject = {
     paste: () => { },
@@ -39,13 +39,13 @@ export default function SlideItemThumbListContextMenu({
         setIsModifying(true);
         setSlideItemThumbs(newItems);
         setUndo([...undo, {
-            items: [...oldItems]
+            items: [...oldItems],
         }]);
         setRedo([]);;
     };
     const paste = () => {
         if (slideItemThumbCopied !== null && slideItemThumbs[slideItemThumbCopied]) {
-            const newItem = cloneObject(slideItemThumbs[slideItemThumbCopied]) as SlideItemThumbType;
+            const newItem: SlideItemThumbType = cloneObject(slideItemThumbs[slideItemThumbCopied]);
             newItem.id = `${maxId(slideItemThumbs) + 1}`;
             const newItems: SlideItemThumbType[] = [...slideItemThumbs, newItem];
             setItemsWithHistory(slideItemThumbs, newItems);
@@ -54,10 +54,10 @@ export default function SlideItemThumbListContextMenu({
     const maxId = (items: SlideItemThumbType[]) => {
         const list = items.map((item) => +item.id).sort();
         return (list[list.length - 1] || 0) + 1;
-    }
+    };
     const duplicate = (index: number) => {
         const newItems = slideItemThumbs.map((data) => data);
-        const newItem = cloneObject(newItems[index]) as SlideItemThumbType;
+        const newItem: SlideItemThumbType = cloneObject(newItems[index]);
         newItem.id = `${maxId(slideItemThumbs) + 1}`;
         newItems.splice(index + 1, 0, newItem);
         setItemsWithHistory(slideItemThumbs, newItems);
@@ -75,9 +75,7 @@ export default function SlideItemThumbListContextMenu({
             showAppContextMenu(e, [
                 {
                     title: 'Paste', disabled: slideItemThumbCopied === null,
-                    onClick: (e) => {
-                        paste();
-                    }
+                    onClick: () => paste(),
                 },
             ]);
         };
@@ -86,12 +84,12 @@ export default function SlideItemThumbListContextMenu({
                 {
                     title: 'Copy', onClick: () => {
                         setSetSlideItemThumbCopied(data.index);
-                    }
+                    },
                 },
                 {
                     title: 'Duplicate', onClick: () => {
                         duplicate(data.index);
-                    }
+                    },
                 },
                 {
                     title: 'Edit', onClick: () => {
@@ -102,12 +100,12 @@ export default function SlideItemThumbListContextMenu({
                         } else {
                             openItemSlideEdit(slideItemThumbs[data.index]);
                         }
-                    }
+                    },
                 },
                 {
                     title: 'Delete', onClick: () => {
                         deleteItem(data.index);
-                    }
+                    },
                 },
             ]);
         };
@@ -115,7 +113,7 @@ export default function SlideItemThumbListContextMenu({
             contextObject.paste = () => { };
             contextObject.showSlideItemContextMenu = () => { };
             contextObject.showItemThumbnailContextMenu = () => { };
-        }
+        };
     });
 
     return (<></>);

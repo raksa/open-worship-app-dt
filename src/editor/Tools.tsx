@@ -6,8 +6,12 @@ import {
     useSlideBoxEditing,
 } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
-import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
-import { useStateSettingString } from '../helper/helpers';
+import {
+    HAlignmentEnum,
+    HTML2ReactChildType,
+    VAlignmentEnum,
+} from './slideParser';
+import { useStateSettingString } from '../helper/settingHelper';
 
 export default function Tools({ scale, applyScale, setScale, minScale, maxScale, scaleStep }: {
     scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
@@ -74,7 +78,7 @@ function ToolsText({ data }: { data: HTML2ReactChildType }) {
                 <ColorPicker color={color} onColorChange={onColorChange} />
             </Tool>
             <Tool title='Text Alignment'>
-                <Align isText onData={(newData) => slideListEventListener.tooling({ text: newData, })} />
+                <Align isText onData={(newData) => slideListEventListener.tooling({ text: newData })} />
             </Tool>
             <Tool title='Font Size'>
                 <input className='form-control' type="number" style={{ maxWidth: '100px' }}
@@ -86,7 +90,7 @@ function ToolsText({ data }: { data: HTML2ReactChildType }) {
                     <option>--</option>
                     {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
                         .reverse().map((n, i) => {
-                            return <option key={`${i}`} value={n}>{n}px</option>
+                            return <option key={`${i}`} value={n}>{n}px</option>;
                         })}
                 </select>
             </Tool>
@@ -112,7 +116,7 @@ function ToolsBackground({ data }: { data: HTML2ReactChildType }) {
             </Tool>
             <Tool title='Box Alignment'>
                 <Align onData={(newData) => {
-                    slideListEventListener.tooling({ box: newData })
+                    slideListEventListener.tooling({ box: newData });
                 }} />
             </Tool>
             <Tool title='Box Layer'>

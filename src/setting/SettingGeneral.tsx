@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import languages from '../lang';
-import { getSetting, setSetting } from '../helper/settings';
+import { getSetting, setSetting } from '../helper/settingHelper';
 import { useTranslation } from 'react-i18next';
 
 export function getSelectedLangLocale() {
@@ -16,11 +16,11 @@ export function SettingGeneral() {
         <div className='d-flex'>
             <div className='lang'>
                 <button className={
-                    `btn btn-info flag-item`}
-                    onClick={() => { setIsSelecting(!isSelecting) }}>
+                    'btn btn-info flag-item'}
+                    onClick={() => { setIsSelecting(!isSelecting); }}>
                     {selected.name}
                     <div className='icon' dangerouslySetInnerHTML={{
-                        __html: selected.flagSVG
+                        __html: selected.flagSVG,
                     }} />
                 </button>
                 {isSelecting &&

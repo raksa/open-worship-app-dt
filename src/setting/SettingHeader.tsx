@@ -1,4 +1,4 @@
-import { openSetting } from "./SettingPopup";
+import { openSetting } from './SettingPopup';
 
 export default function SettingHeader() {
     return (

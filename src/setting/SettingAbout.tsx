@@ -1,5 +1,5 @@
 import { toInputText } from '../bible-search/bibleSearchHelpers';
-import electronProvider from '../helper/electronProvider';
+import electronProvider from '../helper/appProvider';
 import { usePresentRenderText } from '../bible-helper/helpers';
 
 export function SettingAbout() {

@@ -4,7 +4,7 @@ import { WindowEnum } from '../event/WindowEventListener';
 import { SlideItemThumbType } from '../editor/slideType';
 import {
     slideListEventListener,
-    useSlideItemThumbUpdating
+    useSlideItemThumbUpdating,
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { contextObject } from './SlideItemThumbListContextMenu';
@@ -30,7 +30,7 @@ export default function SlideItemThumbListItems({
         itemThumb.isEditing = true;
         const slideThumbList = slideItemThumbs.map((item) => {
             if (item.id === itemThumb.id) {
-                return itemThumb
+                return itemThumb;
             }
             return item;
         });
@@ -62,7 +62,7 @@ export default function SlideItemThumbListItems({
         arrows.forEach(useCallback);
     }
     const move = (id: string, toIndex: number) => {
-        const fromIndex = slideItemThumbs.findIndex((item) => item.id === id) as number;
+        const fromIndex: number = slideItemThumbs.findIndex((item) => item.id === id);
         const newList = [...slideItemThumbs];
         const target = newList.splice(fromIndex, 1)[0];
         newList.splice(toIndex, 0, target);

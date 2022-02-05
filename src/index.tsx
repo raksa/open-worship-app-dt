@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import i18next from 'i18next';
 import App from './App';
-import { initReactI18next } from "react-i18next";
+import { initReactI18next } from 'react-i18next';
 import languages from './lang';
 import { initApp } from './bible-helper/helpers';
 import { getSelectedLangLocale } from './setting/SettingGeneral';
@@ -21,15 +21,15 @@ i18next.use(initReactI18next) // passes i18n down to react-i18next
     fallbackLng: languages.en.locale,
 
     interpolation: {
-      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
-    }
+      escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+    },
   });
 initApp().then(() => {
   ReactDOM.render(
     <React.StrictMode>
       <App />
     </React.StrictMode>,
-    document.getElementById('root')
+    document.getElementById('root'),
   );
 });
 

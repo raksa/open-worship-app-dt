@@ -1,13 +1,13 @@
 const tran = {
-    "bible-search": "ស្វែងរកខគម្ពីរ",
-    "bible-present": "បទបញ្ហាញ​ព្រះ​គម្ពីរ",
-    "general":"ទូទៅ",
-    "bible":"ព្រះគម្ពីរ",
-    "about": "អារម្មណ៏កថា",
+    'bible-search': 'ស្វែងរកខគម្ពីរ',
+    'bible-present': 'បទបញ្ហាញ​ព្រះ​គម្ពីរ',
+    'general':'ទូទៅ',
+    'bible':'ព្រះគម្ពីរ',
+    'about': 'អារម្មណ៏កថា',
 };
 const data = {
-    name: "Khmer",
-    locale: "km",
+    name: 'Khmer',
+    locale: 'km',
     flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
     <path fill="#032ea1" d="M0 0h640v480H0z"/>
     <path fill="#e00025" d="M0 120h640v240H0z"/>

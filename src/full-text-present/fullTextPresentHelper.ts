@@ -1,8 +1,8 @@
 import { biblePresentToTitle, getVerses } from '../bible-helper/helpers';
 import { toLocaleNumber } from '../bible-search/bibleSearchHelpers';
-import { renderPresent } from '../helper/electronHelper';
+import { renderPresent } from '../helper/appHelper';
 import { removePX } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settings';
+import { getSetting, setSetting } from '../helper/settingHelper';
 import { LyricPresentType } from '../lyric-list/LyricList';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';

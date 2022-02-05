@@ -1,8 +1,8 @@
 import './ColorPicker.scss';
 
-import { RgbaColorPicker } from "react-colorful";
-import { showAppContextMenu } from '../helper/AppContextMenu';
-import { copyToClipboard } from '../helper/electronHelper';
+import { RgbaColorPicker } from 'react-colorful';
+import { showAppContextMenu } from './AppContextMenu';
+import { copyToClipboard } from '../helper/appHelper';
 
 export const BLACK_COLOR = 'rgba(0,0,0,1)';
 type RGBAType = { r: number, g: number, b: number, a: number };
@@ -29,9 +29,9 @@ export default function ColorPicker({ color, onColorChange }: {
                 <button className='btn btn-sm btn-info' onClick={(e) => {
                     showAppContextMenu(e, [
                         {
-                            title: `Copy to Clipboard`, onClick: () => {
+                            title: 'Copy to Clipboard', onClick: () => {
                                 copyToClipboard(color);
-                            }
+                            },
                         },
                     ]);
                 }}>{color}</button>

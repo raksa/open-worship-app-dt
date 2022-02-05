@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
     getSlideDataByFilePath,
-    getSlideFilePathSetting,
     toSlideItemThumbSelected,
     parseSlideItemThumbSelected,
-    useStateSettingString,
 } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { clearFG } from './slidePresentHelpers';
@@ -20,11 +18,15 @@ import { isWindowEditingMode } from '../App';
 import SlideItemThumbListMenu, { ChangeHistory } from './SlideItemThumbListMenu';
 import SlideItemThumbListItems from './SlideItemThumbListItems';
 import SlideItemThumbListContextMenu, { contextObject } from './SlideItemThumbListContextMenu';
-import { getSetting } from '../helper/settings';
+import {
+    getSetting,
+    getSlideFilePathSetting,
+    useStateSettingString,
+} from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
 
 const SETTING_NAME = 'slide-item-thumb-selected';
-export const getValidSlideItemThumbSelected = () => {
+export function getValidSlideItemThumbSelected() {
     const filePath = getSlideFilePathSetting();
     const slideItemThumbSelected = getSetting(SETTING_NAME) || '';
     const result = parseSlideItemThumbSelected(slideItemThumbSelected, filePath);
@@ -40,7 +42,7 @@ export const getValidSlideItemThumbSelected = () => {
 function Empty() {
     return <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
         Nothing to show 😐
-    </div>
+    </div>;
 }
 export default function SlideItemThumbList({ thumbWidth }: { thumbWidth?: number }) {
     const getItemsFromFilePath = (filePath: string | null) => {
@@ -97,7 +99,7 @@ function Controller({
         }
         const selected = toSlideItemThumbSelected(slideFilePathSelected, slideItemThumbs[i].id);
         setSlideItemThumbSelected(selected || '');
-    }
+    };
     const unSelectSlidItemThumb = () => {
         if (isWindowEditingMode()) {
             slideListEventListener.selectSlideItemThumb(null);

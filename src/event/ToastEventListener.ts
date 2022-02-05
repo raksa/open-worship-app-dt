@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { SimpleToastType } from "../helper/Toast";
-import EventHandler from "./EventHandler";
+import { useEffect } from 'react';
+import { SimpleToastType } from '../others/Toast';
+import EventHandler from './EventHandler';
 
 type ListenerType = (toast: SimpleToastType) => void;
 export enum ToastTypeEnum {

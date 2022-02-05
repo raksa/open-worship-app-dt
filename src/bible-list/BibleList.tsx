@@ -2,18 +2,22 @@ import './BibleList.scss';
 
 import { useState } from 'react';
 import { bibleListEventListener, useBibleAdding } from '../event/BibleListEventListener';
-import { getSetting, setSetting } from '../helper/settings';
+import {
+    getBiblePresentingSetting,
+    getSetting,
+    setBiblePresentingSetting,
+    setSetting,
+} from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { openBibleSearch, openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
-import { getBiblePresentingSetting, setBiblePresentingSetting } from '../helper/helpers';
 import { convertPresent } from '../full-text-present/FullTextPresentController';
 import { windowEventListener } from '../event/WindowEventListener';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { biblePresentToTitle } from '../bible-helper/helpers';
 
-export const addBibleItem = (biblePresent: BiblePresentType, openPresent?: boolean) => {
+export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
     bibleListEventListener.add({ biblePresent, index });
@@ -25,9 +29,9 @@ export const addBibleItem = (biblePresent: BiblePresentType, openPresent?: boole
     if (openPresent) {
         presentBible(biblePresent);
     }
-};
+}
 
-export const presentBible = (item: BiblePresentType) => {
+export function presentBible(item: BiblePresentType) {
     setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
     bibleListEventListener.present(item);
 }
@@ -37,12 +41,12 @@ export function BibleItem({ item, onContextMenu }: {
     onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
 }) {
     const title = biblePresentToTitle(item);
-    const bibleStatus = bibleHelper.getBibleWithStatus(item.bible)
+    const bibleStatus = bibleHelper.getBibleWithStatus(item.bible);
     return (
         <li className="list-group-item item"
             draggable
             onDragStart={(e) => {
-                e.dataTransfer.setData("text/plain", JSON.stringify(item));
+                e.dataTransfer.setData('text/plain', JSON.stringify(item));
             }}
             onContextMenu={onContextMenu ? onContextMenu : () => { }}
             onClick={() => presentBible(item)}>
@@ -78,7 +82,7 @@ export default function BibleList() {
         setSetting('bible-list', JSON.stringify(newList));
     };
     useBibleAdding(({ biblePresent, index }) => {
-        let newList = [...list];
+        const newList = [...list];
         if (index !== undefined && list[index]) {
             newList[index] = biblePresent;
         } else {
@@ -102,7 +106,7 @@ export default function BibleList() {
                     {
                         title: 'Delete All', onClick: () => {
                             applyList([]);
-                        }
+                        },
                     },
                 ]);
             }}>
@@ -115,13 +119,13 @@ export default function BibleList() {
                                         if (list[i]) {
                                             presentBible(list[i]);
                                         }
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Edit', onClick: () => {
                                         setSetting('bible-list-editing', `${i}`);
                                         openBibleSearch();
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Delete', onClick: () => {
@@ -129,10 +133,10 @@ export default function BibleList() {
                                             const newList = list.filter((_, i1) => i1 !== i);
                                             applyList(newList);
                                         }
-                                    }
+                                    },
                                 },
                             ]);
-                        }} />
+                        }} />;
                     })}
                 </ul>
             </div>

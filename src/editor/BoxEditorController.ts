@@ -1,4 +1,4 @@
-import { getRotationDeg, removePX } from "../helper/helpers";
+import { getRotationDeg, removePX } from '../helper/helpers';
 
 type ResizerType = {
   left: boolean, top: boolean, xResize: boolean, yResize: boolean,
@@ -60,17 +60,17 @@ export default class BoxEditorController {
     this.target = this.editor.firstChild as HTMLDivElement;
     // drag support
     const moveHandler = (event: MouseEvent) => this.moveHandler(event);
-    this.addEvent({ eventName: 'mousedown', target: this.target, listener: moveHandler, });
+    this.addEvent({ eventName: 'mousedown', target: this.target, listener: moveHandler });
     // handle resize
     for (const [key, value] of Object.entries(this.resizerList)) {
       const ele = this.target.querySelector(`.${key}`) as HTMLDivElement;
       const resizeHandler = (event: MouseEvent) => this.resizeHandler(event, value);
-      this.addEvent({ eventName: 'mousedown', target: ele, listener: resizeHandler, });
+      this.addEvent({ eventName: 'mousedown', target: ele, listener: resizeHandler });
     }
     // handle rotation
     const rotator = this.target.querySelector(`.${this.rotatorCN}`) as HTMLDivElement;
     const rotateHandler = (event: MouseEvent) => this.rotateHandler(event);
-    this.addEvent({ eventName: 'mousedown', target: rotator, listener: rotateHandler, });
+    this.addEvent({ eventName: 'mousedown', target: rotator, listener: rotateHandler });
   }
   moveHandler(event: MouseEvent) {
     if (this.editor === null || this.target === null) {
@@ -78,7 +78,7 @@ export default class BoxEditorController {
     }
     event.stopPropagation();
     const target = event.currentTarget as HTMLDivElement;
-    if (target.className.indexOf("dot") > -1) {
+    if (target.className.indexOf('dot') > -1) {
       return;
     }
     this.initX = this.editor.offsetLeft;
@@ -86,33 +86,33 @@ export default class BoxEditorController {
     this.mousePressX = event.clientX;
     this.mousePressY = event.clientY;
 
-    const eventMouseMoveHandler = (event: MouseEvent) => {
-      event.stopPropagation();
+    const eventMouseMoveHandler = (movingEvent: MouseEvent) => {
+      movingEvent.stopPropagation();
       this.repositionElement(
-        this.initX + (event.clientX - this.mousePressX) / this.scaleFactor,
-        this.initY + (event.clientY - this.mousePressY) / this.scaleFactor,
+        this.initX + (movingEvent.clientX - this.mousePressX) / this.scaleFactor,
+        this.initY + (movingEvent.clientY - this.mousePressY) / this.scaleFactor,
       );
-    }
-    const eventMouseUpHandler = (event: MouseEvent) => {
+    };
+    const eventMouseUpHandler = (endingEvent: MouseEvent) => {
       if (this.editor === null || this.target === null) {
         return;
       }
-      event.stopPropagation();
+      endingEvent.stopPropagation();
       if (this.onDone !== null) {
         this.onDone();
       }
-      window.removeEventListener("mousemove", eventMouseMoveHandler, false);
-      window.removeEventListener("mouseup", eventMouseUpHandler);
-    }
-    window.addEventListener("mousemove", eventMouseMoveHandler, false);
-    window.addEventListener("mouseup", eventMouseUpHandler, false);
+      window.removeEventListener('mousemove', eventMouseMoveHandler, false);
+      window.removeEventListener('mouseup', eventMouseUpHandler);
+    };
+    window.addEventListener('mousemove', eventMouseMoveHandler, false);
+    window.addEventListener('mouseup', eventMouseUpHandler, false);
   }
   rotationFromStyle(st: CSSStyleDeclaration) {
-    const tm = st.getPropertyValue("transform");
-    if (tm !== "none") {
-      const values = tm.split("(")[1].split(")")[0].split(",");
+    const tm = st.getPropertyValue('transform');
+    if (tm !== 'none') {
+      const values = tm.split('(')[1].split(')')[0].split(',');
       const angle = Math.round(
-        Math.atan2(+values[1], +values[0]) * (180 / Math.PI)
+        Math.atan2(+values[1], +values[0]) * (180 / Math.PI),
       );
       return angle < 0 ? angle + 360 : angle;
     }
@@ -146,7 +146,7 @@ export default class BoxEditorController {
     if (this.editor === null) {
       return;
     }
-    this.editor.style.transform = `rotate(0deg)`;
+    this.editor.style.transform = 'rotate(0deg)';
   }
   rotateHandler(event: MouseEvent) {
     if (this.target === null) {
@@ -157,23 +157,23 @@ export default class BoxEditorController {
     const arrowX = arrowRects.left + arrowRects.width / 2;
     const arrowY = arrowRects.top + arrowRects.height / 2;
 
-    const eventMoveHandler = (event: MouseEvent) => {
-      event.stopPropagation();
+    const eventMoveHandler = (movingEvent: MouseEvent) => {
+      movingEvent.stopPropagation();
       const angle =
-        Math.atan2(event.clientY - arrowY, event.clientX - arrowX) +
+        Math.atan2(movingEvent.clientY - arrowY, movingEvent.clientX - arrowX) +
         Math.PI / 2;
       this.rotateBox((angle * 180) / Math.PI);
-    }
-    const eventEndHandler = (event: MouseEvent) => {
-      event.stopPropagation();
+    };
+    const eventEndHandler = (endingEvent: MouseEvent) => {
+      endingEvent.stopPropagation();
       if (this.onDone !== null) {
         this.onDone();
       }
-      window.removeEventListener("mousemove", eventMoveHandler, false);
-      window.removeEventListener("mouseup", eventEndHandler);
+      window.removeEventListener('mousemove', eventMoveHandler, false);
+      window.removeEventListener('mouseup', eventEndHandler);
     };
-    window.addEventListener("mousemove", eventMoveHandler, false);
-    window.addEventListener("mouseup", eventEndHandler, false);
+    window.addEventListener('mousemove', eventMoveHandler, false);
+    window.addEventListener('mouseup', eventEndHandler, false);
   }
   resizeHandler(event: MouseEvent, options: ResizerType) {
     if (this.editor === null || this.target === null) {
@@ -186,18 +186,18 @@ export default class BoxEditorController {
     this.mousePressX = event.clientX;
     this.mousePressY = event.clientY;
 
-    let initW = this.target.offsetWidth;
-    let initH = this.target.offsetHeight;
+    const initW = this.target.offsetWidth;
+    const initH = this.target.offsetHeight;
 
-    let initRotate = this.getCurrentRotation(this.editor);
+    const initRotate = this.getCurrentRotation(this.editor);
     const initRadians = (initRotate * Math.PI) / 180;
     const cosFraction = Math.cos(initRadians);
     const sinFraction = Math.sin(initRadians);
 
-    const eventMouseMoveHandler = (event: MouseEvent) => {
-      event.stopPropagation();
-      const wDiff = (event.clientX - this.mousePressX) / this.scaleFactor;
-      const hDiff = (event.clientY - this.mousePressY) / this.scaleFactor;
+    const eventMouseMoveHandler = (movingEvent: MouseEvent) => {
+      movingEvent.stopPropagation();
+      const wDiff = (movingEvent.clientX - this.mousePressX) / this.scaleFactor;
+      const hDiff = (movingEvent.clientY - this.mousePressY) / this.scaleFactor;
       let rotatedWDiff = cosFraction * wDiff + sinFraction * hDiff;
       let rotatedHDiff = cosFraction * hDiff - sinFraction * wDiff;
 
@@ -244,14 +244,14 @@ export default class BoxEditorController {
 
       this.resizeBox(newW, newH);
       this.repositionElement(newX, newY);
-    }
-    const eventMouseUpHandler = (event: MouseEvent) => {
-      event.stopPropagation();
-      window.removeEventListener("mousemove", eventMouseMoveHandler, false);
-      window.removeEventListener("mouseup", eventMouseUpHandler);
-    }
-    window.addEventListener("mousemove", eventMouseMoveHandler, false);
-    window.addEventListener("mouseup", eventMouseUpHandler, false);
+    };
+    const eventMouseUpHandler = (endingEvent: MouseEvent) => {
+      endingEvent.stopPropagation();
+      window.removeEventListener('mousemove', eventMouseMoveHandler, false);
+      window.removeEventListener('mouseup', eventMouseUpHandler);
+    };
+    window.addEventListener('mousemove', eventMouseMoveHandler, false);
+    window.addEventListener('mouseup', eventMouseUpHandler, false);
   }
   getInfo(): BoxInfoType | null {
     if (this.editor === null || this.target === null) {

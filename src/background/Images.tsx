@@ -1,17 +1,23 @@
 import './Images.scss';
 
 import { useEffect, useState } from 'react';
-import { copyToClipboard, isMac, openExplorer } from '../helper/electronHelper';
+import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
 import { presentEventListener } from '../event/PresentEventListener';
-import { copyFileToPath, FileResult, isSupportedMimetype, listFiles, useStateSettingString } from '../helper/helpers';
-import PathSelector from '../helper/PathSelector';
+import {
+    copyFileToPath,
+    FileSourceType,
+    isSupportedMimetype,
+    listFiles,
+} from '../helper/fileHelper';
+import { useStateSettingString } from '../helper/settingHelper';
+import PathSelector from '../others/PathSelector';
 import { renderBGImage } from '../slide-presenting/slidePresentHelpers';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import { toastEventListener } from '../event/ToastEventListener';
 
 export default function Images() {
     const [dir, setDir] = useStateSettingString('image-selected-dir', '');
-    const [list, setList] = useState<FileResult[] | null>(null);
+    const [list, setList] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (list === null) {
             const images = listFiles(dir, 'image');
@@ -21,7 +27,7 @@ export default function Images() {
     const applyDir = (dir: string) => {
         setDir(dir);
         setList(null);
-    }
+    };
     return (
         <div className="background-image" draggable={dir !== null}
             onDragOver={(event) => {
@@ -37,19 +43,19 @@ export default function Images() {
                     if (!isSupportedMimetype(file.type, 'image')) {
                         toastEventListener.showSimpleToast({
                             title: 'copy image file',
-                            message: 'Unsupported image file!'
+                            message: 'Unsupported image file!',
                         });
                     } else {
                         if (copyFileToPath(file.path, file.name, dir)) {
                             setList(null);
                             toastEventListener.showSimpleToast({
                                 title: 'copy image file',
-                                message: 'File has been copied'
+                                message: 'File has been copied',
                             });
                         } else {
                             toastEventListener.showSimpleToast({
                                 title: 'copy image file',
-                                message: 'Fail to copy file!'
+                                message: 'Fail to copy file!',
                             });
                         }
                     }
@@ -69,13 +75,13 @@ export default function Images() {
                                     {
                                         title: 'Copy Path to Clipboard ', onClick: () => {
                                             copyToClipboard(d.filePath);
-                                        }
+                                        },
                                     },
                                     {
                                         title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                                         onClick: () => {
                                             openExplorer(d.filePath);
-                                        }
+                                        },
                                     },
                                 ]);
                             }}

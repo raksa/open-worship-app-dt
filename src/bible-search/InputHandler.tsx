@@ -4,7 +4,7 @@ import {
     KeyEnum,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { setSetting } from '../helper/settings';
+import { setSetting } from '../helper/settingHelper';
 import { toInputText } from './bibleSearchHelpers';
 
 export function BibleSelectOption({ b }: { b: string }) {

@@ -1,5 +1,5 @@
-import { HAlignmentEnum, VAlignmentEnum } from "./slideParser";
-import { getAppInfo } from "../helper/helpers";
+import { HAlignmentEnum, VAlignmentEnum } from './slideParser';
+import { getAppInfo } from '../helper/helpers';
 
 export type ToolingType = {
     text?: {
@@ -26,7 +26,8 @@ export type SlideItemThumbType = {
     isEditing?: boolean,
     slideFilePath: string,
 };
-export const validateMeta = (meta: any) => {
+
+export function validateMeta(meta: any) {
     try {
         if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
             return true;
@@ -36,7 +37,8 @@ export const validateMeta = (meta: any) => {
     }
     return false;
 }
-export const validateSlideItemThumb = (item: any) => {
+
+export function validateSlideItemThumb(item: any) {
     try {
         if (item.html && item.id) {
             return true;
@@ -46,7 +48,8 @@ export const validateSlideItemThumb = (item: any) => {
     }
     return false;
 }
-export const validateSlide = (json: any) => {
+
+export function validateSlide(json: any) {
     try {
         if (!json.items.length ||
             !(json.items as any[]).every((item) => validateSlideItemThumb(item))) {
@@ -67,7 +70,8 @@ export const getDefaultBoxHTML = (width: number = 700, height: number = 400) =>
     + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
     + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
     + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
-export const defaultSlide = (width: number, height: number) => {
+
+export function defaultSlide(width: number, height: number) {
     return {
         metadata: {
             fileVersion: 1,
@@ -80,7 +84,7 @@ export const defaultSlide = (width: number, height: number) => {
                 html: `<div style="width: ${width}px; height: ${height}px;">`
                     + getDefaultBoxHTML()
                     + '</div>',
-            }
-        ]
+            },
+        ],
     };
-};
+}

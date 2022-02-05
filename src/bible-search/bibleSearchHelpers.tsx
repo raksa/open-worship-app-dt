@@ -4,11 +4,11 @@ import {
     getBookVKList,
     getChapterCount,
     getVerses,
-} from "../bible-helper/helpers";
-import { cloneObject } from "../helper/helpers";
+} from '../bible-helper/helpers';
+import { cloneObject } from '../helper/helpers';
 
-export const toInputText = (bible: string, book?: string | null, chapter?: number | null,
-    startVerse?: number | null, endVerse?: number | null) => {
+export function toInputText(bible: string, book?: string | null, chapter?: number | null,
+    startVerse?: number | null, endVerse?: number | null) {
     let txt = '';
     if (book) {
         txt += `${book} `;
@@ -23,9 +23,9 @@ export const toInputText = (bible: string, book?: string | null, chapter?: numbe
         }
     }
     return txt;
-};
+}
 
-export const toLocaleNumber = (bible: string, n: string | number | null) => {
+export function toLocaleNumber(bible: string, n: string | number | null) {
     if (n === null) {
         return '';
     }
@@ -39,8 +39,9 @@ export const toLocaleNumber = (bible: string, n: string | number | null) => {
         }
         return n1;
     }).join('');
-};
-export const fromLocaleNumber = (bible: string, localeNum: string | number) => {
+}
+
+export function fromLocaleNumber(bible: string, localeNum: string | number) {
     const numList = getBibleNumList(bible);
     if (numList === null) {
         return +`${localeNum}`;
@@ -48,11 +49,11 @@ export const fromLocaleNumber = (bible: string, localeNum: string | number) => {
     return +`${localeNum}`.split('').map(n => {
         const ind = numList.indexOf(n);
         if (~ind) {
-            return ind
+            return ind;
         }
         return n;
     }).join('');
-};
+}
 
 
 export type ExtractedBibleResult = {
@@ -62,16 +63,17 @@ export type ExtractedBibleResult = {
     endVerse: number | null,
 }
 
-export const defaultExtractedBible:ExtractedBibleResult = {
+export const defaultExtractedBible: ExtractedBibleResult = {
     book: null,
     chapter: null,
     startVerse: null,
     endVerse: null,
 };
-export const extractBible = async (bible: string, str: string) => {
+
+export async function extractBible(bible: string, str: string) {
     str = str.trim();
     const arr = str.split(/\s+/);
-    let result: ExtractedBibleResult = cloneObject(defaultExtractedBible);
+    const result: ExtractedBibleResult = cloneObject(defaultExtractedBible);
     const bookVKList = getBookVKList(bible);
     if (bookVKList === null) {
         return result;
@@ -137,13 +139,3 @@ export const extractBible = async (bible: string, str: string) => {
     result.endVerse = endVerse;
     return result;
 }
-// setTimeout(() => {
-//     [
-//         ['KJV', 'GENESIS    1:1-15'],
-//         ['KJV', 'GENESIS    :1- 15'],
-//         ['KJV', 'GENESIS 1:1- 15 '],
-//         ['ពគប', 'យ៉ូហាន  ៣:១-១៥'],
-//         ['ពគប', '២ របាក្សត្រ ៣:១-១៥'],
-//         ['ពគប', 'GENESIS 1:1- 15 '],
-//     ].forEach(s => console.log(s[0], s[1], extractBible(s[0], s[1])));
-// }, 2e3);

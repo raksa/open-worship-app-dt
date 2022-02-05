@@ -4,14 +4,14 @@ import fullTextPresentHelper, {
     BiblePresentType,
 } from './fullTextPresentHelper';
 import BibleView from './BibleView';
-import {
-    getBiblePresentingSetting,
-    setBiblePresentingSetting,
-} from '../helper/helpers';
 import { previewer } from './Previewer';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
-import { getSetting } from '../helper/settings';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import {
+    getBiblePresentingSetting,
+    getSetting,
+    setBiblePresentingSetting,
+} from '../helper/settingHelper';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { useChangingBible } from '../event/PresentEventListener';
 
@@ -20,19 +20,18 @@ const convertPresent = (present: BiblePresentType,
     if (oldPresents.length < 2) {
         return [present];
     }
-    const newPresents = oldPresents.map((oldPresent) => {
+    return oldPresents.map((oldPresent) => {
         oldPresent.target = present.target;
         return oldPresent;
     });
-    return newPresents;
 };
 
 let isMounted = false;
 export default function BiblePreviewer() {
     const [biblePresents, setBiblePresents] = useState<BiblePresentType[]>(getBiblePresentingSetting());
-    const applyPresents = (biblePresents: BiblePresentType[]) => {
-        setBiblePresents(biblePresents);
-        setBiblePresentingSetting(biblePresents);
+    const applyPresents = (newBiblePresents: BiblePresentType[]) => {
+        setBiblePresents(newBiblePresents);
+        setBiblePresentingSetting(newBiblePresents);
     };
 
     useEffect(() => {
@@ -48,7 +47,7 @@ export default function BiblePreviewer() {
         }
         return () => {
             isMounted = false;
-        }
+        };
     });
     useBiblePresenting((present) => {
         applyPresents(convertPresent(present, biblePresents));
@@ -108,7 +107,7 @@ export default function BiblePreviewer() {
                     return {
                         title: bible, disabled: !isAvailable, onClick: () => {
                             addBibleView(bible);
-                        }
+                        },
                     };
                 }));
             }}>

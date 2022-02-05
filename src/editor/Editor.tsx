@@ -1,6 +1,6 @@
 import {
     slideListEventListener,
-    useSlideItemThumbTooling
+    useSlideItemThumbTooling,
 } from '../event/SlideListEventListener';
 import { getDefaultBoxHTML, SlideItemThumbType } from './slideType';
 import { HTML2ReactChildType, HTML2ReactType, parseChildHTML, parseHTML } from './slideParser';
@@ -9,7 +9,7 @@ import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener'
 import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
-import { showAppContextMenu } from '../helper/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenu';
 
 export default function Editor({ slideItemThumb, data, width, height, scale }: {
     slideItemThumb: SlideItemThumbType,
@@ -82,7 +82,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                     be.zIndex = newData.box?.layerBack ? 2 : 1;
                 }
                 return be;
-            })
+            });
             setBoxEditors(newBoxEditors);
         }
         editorMapper.selectedBoxEditor?.tooling(newData);
@@ -120,28 +120,28 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                                 {
                                     title: 'Copy', onClick: () => {
                                         setBoxEditorCopiedIndex(i);
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Duplicate', onClick: () => {
                                         duplicate(i);
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Edit', onClick: async () => {
                                         await editorMapper.getByIndex(i)?.stopAllModes();
                                         editorMapper.getByIndex(i)?.startEditingMode();
-                                    }
+                                    },
                                 },
                                 {
                                     title: 'Delete', onClick: () => {
                                         deleteItem(i);
-                                    }
+                                    },
                                 },
                             ]);
                         }} ref={(be) => {
-                            editorMapper.setEditor(`${i}`, be)
-                        }} data={d} onUpdate={() => applyUpdate(i)} />
+                            editorMapper.setEditor(`${i}`, be);
+                        }} data={d} onUpdate={() => applyUpdate(i)} />;
                 })}
             </div>
         </>

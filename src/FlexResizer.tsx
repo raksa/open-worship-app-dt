@@ -1,7 +1,7 @@
 import './FlexResizer.scss';
 
 import React from 'react';
-import { getSetting, setSetting } from './helper/settings';
+import { getSetting, setSetting } from './helper/settingHelper';
 
 export interface Props {
     type: 'v' | 'h',
@@ -60,8 +60,8 @@ export default class FlexResizer extends React.Component<Props, {}> {
         this.nextGrow = Number(next.style.flexGrow);
         this.sumGrow = this.prevGrow + this.nextGrow;
 
-        window.addEventListener("mousemove", this.mouseMoveListener);
-        window.addEventListener("mouseup", this.mouseUpListener);
+        window.addEventListener('mousemove', this.mouseMoveListener);
+        window.addEventListener('mouseup', this.mouseUpListener);
     }
     onMouseMove(mm: MouseEvent) {
         let pos = this.getMousePagePos(mm);
@@ -93,13 +93,13 @@ export default class FlexResizer extends React.Component<Props, {}> {
             return;
         }
         current.classList.remove('active');
-        window.removeEventListener("mousemove", this.mouseMoveListener);
-        window.removeEventListener("mouseup", this.mouseUpListener);
+        window.removeEventListener('mousemove', this.mouseMoveListener);
+        window.removeEventListener('mouseup', this.mouseUpListener);
 
         checkSize(this.props.settingName);
     }
     componentDidMount() {
-        this.myRef.current?.addEventListener("mousedown", (md) => this.onMouseDown(md));
+        this.myRef.current?.addEventListener('mousedown', (md) => this.onMouseDown(md));
     }
     render() {
         return (

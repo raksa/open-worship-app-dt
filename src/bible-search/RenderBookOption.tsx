@@ -15,7 +15,7 @@ const genMatches = (bible: string, inputText: string) => {
         if (~v1.toLowerCase().indexOf(v2.toLowerCase())) {
             return true;
         }
-    }
+    };
     const keys = Object.keys(bookKVList);
     const matches = keys.filter((k) => {
         const kjvV = kjvKeyValue[k];
@@ -47,7 +47,7 @@ export default function RenderBookOption({
     const useCallback = (key: KeyEnum) => {
         useKeyboardRegistering({ key }, (e: KeyboardEvent) => {
             if (matches !== null && matches.length) {
-                let ind = genInd(attemptMatchIndex, matches.length, e.key as KeyEnum, 2);
+                const ind = genInd(attemptMatchIndex, matches.length, e.key as KeyEnum, 2);
                 setAttemptMatchIndex(ind);
             }
         });

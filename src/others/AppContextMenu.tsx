@@ -1,7 +1,7 @@
 import './AppContextMenu.scss';
 
 import { keyboardEventListener, KeyEnum } from '../event/KeyboardEventListener';
-import getWindowDim from './dim';
+import { getWindowDim } from '../helper/helpers';
 import { useEffect, useState } from 'react';
 
 export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
@@ -19,8 +19,8 @@ const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement,
         menu.style.bottom = '';
         event.preventDefault();
         event.stopPropagation();
-        let x = event.clientX;
-        let y = event.clientY;
+        const x = event.clientX;
+        const y = event.clientY;
         const bc = menu.getBoundingClientRect();
         const wd = getWindowDim();
         if ((x + bc.width) > wd.width) {
@@ -34,7 +34,7 @@ const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement,
             menu.style.top = `${y}px`;
         }
     }
-}
+};
 
 type PropsType = {
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -42,9 +42,9 @@ type PropsType = {
 };
 let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
-export const showAppContextMenu = (
+export function showAppContextMenu(
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    items: ContextMenuItemType[]) => {
+    items: ContextMenuItemType[]) {
     event.stopPropagation();
     setDataDelegator && setDataDelegator({ event, items });
     const listener = (e: MouseEvent) => {
@@ -67,8 +67,8 @@ export default function AppContextMenu() {
         items: ContextMenuItemType[]
     } | null>(null);
     useEffect(() => {
-        setDataDelegator = (data) => {
-            setData(data);
+        setDataDelegator = (newData) => {
+            setData(newData);
         };
         return () => {
             setDataDelegator = null;

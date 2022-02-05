@@ -3,7 +3,10 @@ import './CustomStyle.scss';
 import { useState } from 'react';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import TextShadow from './TextShadow';
-import { useStateSettingBoolean, useStateSettingString } from '../helper/helpers';
+import {
+    useStateSettingBoolean,
+    useStateSettingString,
+} from '../helper/settingHelper';
 import { usePresentCtrlScrolling } from '../event/PresentEventListener';
 
 export default function CustomStyle() {
@@ -53,13 +56,13 @@ function Body() {
 function Appearance() {
     const [color, setColor] = useState(fullTextPresentHelper.textColor);
     const [fontSize, setFontSize] = useState(fullTextPresentHelper.textFontSize);
-    const setColorToStyle = (color: string) => {
-        setColor(color);
-        fullTextPresentHelper.setStyle({ color });
+    const setColorToStyle = (newColor: string) => {
+        setColor(newColor);
+        fullTextPresentHelper.setStyle({ color: newColor });
     };
-    const setFontSizeToStyle = (fontSize: number) => {
-        setFontSize(fontSize);
-        fullTextPresentHelper.setStyle({ fontSize });
+    const setFontSizeToStyle = (newFontSize: number) => {
+        setFontSize(newFontSize);
+        fullTextPresentHelper.setStyle({ fontSize: newFontSize });
     };
     usePresentCtrlScrolling((isUp) => {
         setFontSize(fullTextPresentHelper.textFontSize);
@@ -78,8 +81,8 @@ function Appearance() {
                     }}>{'>'}</button>
             </div>
             <input className="float-end" type="color" onChange={(e) => {
-                const color = e.target.value;
-                setColorToStyle(color);
+                const newColor = e.target.value;
+                setColorToStyle(newColor);
             }} value={color} />
             <div>
                 <input type="range" className="form-range" min="1" max="200"

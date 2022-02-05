@@ -5,7 +5,7 @@ import FullTextPresentController from '../full-text-present/FullTextPresentContr
 import { useBiblePresenting } from '../event/BibleListEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
-import { useStateSettingString } from '../helper/helpers';
+import { useStateSettingString } from '../helper/settingHelper';
 
 export default function Presenting() {
     // s: slides, f: full text

@@ -1,5 +1,5 @@
 import { useBiblePresenting } from '../event/BibleListEventListener';
-import { useStateSettingString } from '../helper/helpers';
+import { useStateSettingString } from '../helper/settingHelper';
 import BiblePreviewer from './BiblePreviewer';
 import LyricPreviewer from './LyricPreviewer';
 

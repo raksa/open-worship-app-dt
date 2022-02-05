@@ -6,7 +6,7 @@ import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slidePars
 import { ToolingType } from './slideType';
 import { slideListEventListener } from '../event/SlideListEventListener';
 import BoxEditorController from './BoxEditorController';
-import { ContextMenuEventType } from '../helper/AppContextMenu';
+import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
 
 function tooling2BoxProps(toolingData: ToolingType, state: {
@@ -278,7 +278,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 onDoubleClick={async (e) => {
                     e.stopPropagation();
                     await editorMapper.stopAllModes();
-                    this.startEditingMode()
+                    this.startEditingMode();
                 }}>
                 {isEditable ?
                     <textarea style={{ color: style.color }}

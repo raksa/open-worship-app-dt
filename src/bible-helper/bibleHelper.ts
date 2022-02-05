@@ -3,11 +3,11 @@ import {
     getInfo,
     startDownloading,
     fetch,
-} from "./helpers";
-import { getUserWritablePath } from "../helper/electronHelper";
-import { toBase64, fromBase64 } from "../helper/helpers";
-import electronProvider from "../helper/electronProvider";
-import { setSetting, getSetting } from "../helper/settings";
+} from './helpers';
+import { getUserWritablePath } from '../helper/appHelper';
+import { toBase64, fromBase64 } from '../helper/helpers';
+import electronProvider from '../helper/appProvider';
+import { setSetting, getSetting } from '../helper/settingHelper';
 
 const bibleObj = electronProvider.bibleObj;
 
@@ -50,7 +50,7 @@ const bibleHelper = {
     },
     getBibleListOnline() {
         return new Promise<boolean>((resolve) => {
-            fetch(`/info.json`).then((data: {
+            fetch('/info.json').then((data: {
                 bibleList: string[],
             }) => {
                 this.setBibleList(data.bibleList);
@@ -182,7 +182,7 @@ const bibleHelper = {
         return index;
     },
     toFileName(bookKey: string, chapterNum: number) {
-        let index = this.toIndex(bookKey, chapterNum);
+        const index = this.toIndex(bookKey, chapterNum);
         if (index < 0) {
             throw new Error('Invalid chapter number');
         }
@@ -193,14 +193,14 @@ const bibleHelper = {
     toBookKey(bible: string, book: string) {
         const info = getInfo(bible);
         if (info !== null) {
-            for (let k in info.books) {
+            for (const k in info.books) {
                 if (info.books[k] === book) {
                     return k;
                 }
             }
         }
         return null;
-    }
+    },
 };
 
 export default bibleHelper;
