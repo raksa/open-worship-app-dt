@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useBiblePresenting } from '../event/BibleListEventListener';
+import { useBiblePresenting } from '../event/FullTextPresentEventListener';
 import fullTextPresentHelper, {
     BiblePresentType,
 } from './fullTextPresentHelper';

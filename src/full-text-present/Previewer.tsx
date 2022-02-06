@@ -1,4 +1,4 @@
-import { useBiblePresenting } from '../event/BibleListEventListener';
+import { useBiblePresenting } from '../event/FullTextPresentEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
 import BiblePreviewer from './BiblePreviewer';
 import LyricPreviewer from './LyricPreviewer';

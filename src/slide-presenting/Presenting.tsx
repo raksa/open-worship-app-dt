@@ -2,7 +2,7 @@ import './Presenting.scss';
 
 import SlidePreview from './SlidePresentingController';
 import FullTextPresentController from '../full-text-present/FullTextPresentController';
-import { useBiblePresenting } from '../event/BibleListEventListener';
+import { useBiblePresenting } from '../event/FullTextPresentEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { useStateSettingString } from '../helper/settingHelper';

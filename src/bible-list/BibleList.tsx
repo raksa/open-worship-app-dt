@@ -1,7 +1,10 @@
 import './BibleList.scss';
 
 import { useState } from 'react';
-import { bibleListEventListener, useBibleAdding } from '../event/BibleListEventListener';
+import {
+    fullTextPresentEventListener,
+    useBibleAdding,
+} from '../event/FullTextPresentEventListener';
 import {
     getBiblePresentingSetting,
     getSetting,
@@ -20,7 +23,7 @@ import { biblePresentToTitle } from '../bible-helper/helpers';
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
-    bibleListEventListener.addBibleItem({ biblePresent, index });
+    fullTextPresentEventListener.addBibleItem({ biblePresent, index });
     const title = biblePresentToTitle(biblePresent);
     toastEventListener.showSimpleToast({
         title: 'Bible List',
@@ -33,7 +36,7 @@ export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boole
 
 export function presentBible(item: BiblePresentType) {
     setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
-    bibleListEventListener.present(item);
+    fullTextPresentEventListener.presentBible(item);
 }
 
 export function BibleItem({ item, onContextMenu }: {
