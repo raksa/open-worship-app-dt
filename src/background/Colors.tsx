@@ -1,7 +1,7 @@
 import { presentEventListener } from '../event/PresentEventListener';
 import { useState } from 'react';
 import ColorPicker from '../others/ColorPicker';
-import { renderBGColor } from '../slide-presenting/slidePresentHelpers';
+import { renderBGColor } from '../helper/presentingHelpers';
 
 
 export default function Colors() {

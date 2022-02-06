@@ -1,7 +1,6 @@
 import { Component, useRef } from 'react';
 import { parseSlideItemThumbSelected } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
-import { clearFG } from './slidePresentHelpers';
 import { getSlideDataByFilePath } from '../helper/slideHelper';
 import SlideListEventListener, {
     useRefreshing,
@@ -95,10 +94,7 @@ class Controller extends Component<PropsType, StateType> {
 function View({ controller }: {
     controller: SlideThumbsController,
 }) {
-    usePresentFGClearing(() => {
-        controller.select(null);
-        clearFG();
-    });
+    usePresentFGClearing(() => controller.select(null));
     const setIsModifying = (isModifying: boolean) => {
         controller.isModifying = isModifying;
     };

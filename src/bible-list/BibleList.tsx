@@ -93,7 +93,7 @@ export default function BibleList() {
     return (
         <div id="bible-list" className="card w-100 h-100">
             <div className="card-header">
-                <span>Bible List</span>
+                <span>Bibles</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
                     onClick={() => {
                         windowEventListener.fireEvent(openBibleSearchEvent);

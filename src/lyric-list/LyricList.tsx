@@ -116,7 +116,7 @@ Block3
     return (
         <div id="lyric-list" className="card w-100 h-100">
             <div className="card-header">
-                <span>Lyric List</span>
+                <span>Lyrics</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
                     onClick={() => setIsCreatingNew(true)}>
                     <i className="bi bi-file-earmark-plus" />

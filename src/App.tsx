@@ -14,6 +14,8 @@ import AppEditing from './AppEditing';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
+import { usePresentBGClearing, usePresentFGClearing } from './event/PresentEventListener';
+import { clearBackground, clearForeground } from './helper/presentingHelpers';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
@@ -28,6 +30,8 @@ export function isWindowEditingMode() {
 export default function App() {
     // e: editing, p: presenting
     const [tabType, setTabType] = useStateSettingString(WINDOW_TYPE, 'p');
+    usePresentFGClearing(clearForeground);
+    usePresentBGClearing(clearBackground);
     return (
         <div id="app" className="dark d-flex flex-column">
             <div className="app-header d-flex">

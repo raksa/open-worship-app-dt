@@ -72,7 +72,7 @@ export default function Playlist() {
     return (
         <div id="playlist" className="card w-100 h-100">
             <div className="card-header">
-                <span>Playlist</span>
+                <span>Playlists</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new playlist list"
                     onClick={() => setIsCreatingNew(true)}>
                     <i className="bi bi-file-earmark-plus" />

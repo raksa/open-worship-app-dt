@@ -1,16 +1,13 @@
 import './Background.scss';
 
 import Colors from './Colors';
-import { usePresentBGClearing } from '../event/PresentEventListener';
 import Images from './Images';
 import Videos from './Videos';
-import { clearBG } from '../slide-presenting/slidePresentHelpers';
 import { useStateSettingString } from '../helper/settingHelper';
 
 export default function Background() {
     // c: color, i: image, v: video
     const [tabType, setTabType] = useStateSettingString('background-tab', 'i');
-    usePresentBGClearing(clearBG);
     return (
         <div className="background w-100 d-flex flex-column">
             <div className='background-header'>

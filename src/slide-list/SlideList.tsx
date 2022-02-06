@@ -3,24 +3,25 @@ import './SlideList.scss';
 import { Component, useRef, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import { useStateSettingString } from '../helper/settingHelper';
-import SlideListEventListener, { useRefreshing } from '../event/SlideListEventListener';
+import SlideListEventListener, { useRefreshing, useSlideItemThumbSelecting } from '../event/SlideListEventListener';
 import SlideListController from './SlideListController';
 import SlideController from './SlideController';
 import { getAppMimetype } from '../helper/fileHelper';
+import { usePresentFGClearing } from '../event/PresentEventListener';
 
 export default function SlideList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [basePath, setNewBasePath] = useStateSettingString('slide-selected-dir', '');
     const slideListView = useRef<SlideListView>(null);
-    const refresh = () => {
-        slideListView.current?.refresh();
-    };
+    const refresh = () => slideListView.current?.refresh();
     const eventListener = new SlideListEventListener();
     useRefreshing(eventListener, refresh);
+    useSlideItemThumbSelecting(refresh);
+    usePresentFGClearing(refresh);
     return (
         <div id="slide-list" className="card w-100 h-100">
             <div className="card-header">
-                <span>Slide</span>
+                <span>Slides</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
                     onClick={() => setIsCreatingNew(true)}>
                     <i className="bi bi-file-earmark-plus" />
@@ -143,7 +144,9 @@ function ListItem({ controller, itemClick, onContextMenu }: SlideItemProps) {
                 }
             }}
             onContextMenu={onContextMenu}>
-            <i className="bi bi-file-earmark-slides" /> {slideName}
+            <i className="bi bi-file-earmark-slides" style={{
+                color: controller.isThumbSelected ? 'green' : undefined,
+            }} /> {slideName}
         </li>
     );
 }

@@ -10,8 +10,10 @@ import {
     genFileSource,
     renameFile,
 } from '../helper/fileHelper';
-import { getSlideItemSelectedSetting, setSlideItemSelectedSetting } from '../helper/settingHelper';
+import { getSetting, getSlideItemSelectedSetting, setSlideItemSelectedSetting } from '../helper/settingHelper';
 import FileController from '../others/FileController';
+import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
+import { parseSlideItemThumbSelected } from '../helper/helpers';
 
 export default class SlideController extends FileController {
     _isSelected = false;
@@ -32,6 +34,11 @@ export default class SlideController extends FileController {
 
         }
         this._isSelected = isSelected;
+    }
+    get isThumbSelected() {
+        const slideItemThumbSelected = getSetting(THUMB_SELECTED_SETTING_NAME, '');
+        const parsed = parseSlideItemThumbSelected(slideItemThumbSelected, this.filePath);
+        return !!parsed;
     }
     deleteFile() {
         const isDeleted = deleteFile(this._fileSource.filePath);

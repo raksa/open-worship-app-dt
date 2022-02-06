@@ -1,15 +1,13 @@
 import './SlidePresentingController.scss';
 
 import SlideItemThumbList from './SlideItemThumbList';
-import { clearFG, renderFG } from './slidePresentHelpers';
-import { useEffect } from 'react';
+import { renderFG } from '../helper/presentingHelpers';
 import { useSlideItemThumbSelecting, useThumbSizing } from '../event/SlideListEventListener';
 import { presentEventListener } from '../event/PresentEventListener';
 import { DEFAULT_THUMB_SIZE, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
 
 export default function SlidePresentingController() {
     const [thumbSize, setThumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
-    useEffect(clearFG);
     useSlideItemThumbSelecting((item) => {
         if (item !== null) {
             renderFG(item.html);
