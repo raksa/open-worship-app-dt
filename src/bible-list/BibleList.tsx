@@ -20,7 +20,7 @@ import { biblePresentToTitle } from '../bible-helper/helpers';
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
-    bibleListEventListener.add({ biblePresent, index });
+    bibleListEventListener.addBibleItem({ biblePresent, index });
     const title = biblePresentToTitle(biblePresent);
     toastEventListener.showSimpleToast({
         title: 'Bible List',

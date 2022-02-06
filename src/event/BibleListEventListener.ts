@@ -13,7 +13,7 @@ export type RegisteredEventType<T> = {
 };
 
 export default class BibleListEventListener extends EventHandler {
-    add(data: { biblePresent: BiblePresentType, index?: number }) {
+    addBibleItem(data: { biblePresent: BiblePresentType, index?: number }) {
         this._addPropEvent(BibleListEnum.ADD, data);
     }
     present(biblePresent: BiblePresentType) {

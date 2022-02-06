@@ -22,7 +22,7 @@ export default function Presenting() {
                             setTabType('s');
                             fullTextPresentHelper.hide();
                         }}>
-                        Slides
+                        Slide
                     </button>
                 </li>
                 <li className="nav-item">

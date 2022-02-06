@@ -60,7 +60,7 @@ export default function App() {
                     <SettingHeader />
                 </div>
             </div>
-            <div className="app-body flex-fill flex h">
+            <div className="app-body flex-fill flex h border-white-round">
                 {tabType === 'e' && <AppEditing />}
                 {tabType === 'p' && <AppPresenting />}
             </div>
