@@ -3,11 +3,11 @@ import './EditorControllerBoxWrapper.scss';
 
 import { Component, CSSProperties } from 'react';
 import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
-import { ToolingType } from './slideType';
+import { ToolingType } from '../helper/slideHelper';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
-import { slideListEventListener } from '../slide-list/SlideList';
+import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 
 function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,
@@ -112,7 +112,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
     startControllingMode() {
         return new Promise<void>((resolve) => {
             this.setState({ isControllable: true }, () => {
-                slideListEventListener.boxEditing(this.state.data);
+                slideListEventListenerGlobal.boxEditing(this.state.data);
                 resolve();
             });
         });
@@ -120,7 +120,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
     startEditingMode() {
         return new Promise<void>((resolve) => {
             this.setState({ isEditable: true }, () => {
-                slideListEventListener.boxEditing(this.state.data);
+                slideListEventListenerGlobal.boxEditing(this.state.data);
                 resolve();
             });
         });
@@ -153,7 +153,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
             const isEditing = await this.stopEditingMode();
             const isControlling = await this.stopControllingMode();
             if (isEditing || isControlling) {
-                slideListEventListener.boxEditing(null);
+                slideListEventListenerGlobal.boxEditing(null);
             }
             resolve(isEditing || isControlling);
         });

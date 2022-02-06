@@ -2,7 +2,7 @@ import './SlideItemThumbEditor.scss';
 
 import { useState } from 'react';
 import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
-import { SlideItemThumbType } from './slideType';
+import { SlideItemThumbType } from '../helper/slideHelper';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
@@ -10,12 +10,11 @@ import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
 import { parseHTML } from './slideParser';
 import { editorMapper } from './EditorBoxMapper';
 import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
-import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function SlideItemThumbEditor() {
     const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(
         getValidSlideItemThumbSelected());
-    useSlideItemThumbSelecting(slideListEventListener, (item) => {
+    useSlideItemThumbSelecting((item) => {
         if (item?.id === slideItemThumb?.id) {
             return;
         }

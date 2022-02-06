@@ -1,80 +1,22 @@
 import './SlideList.scss';
 
-import { useEffect, useState } from 'react';
+import { Component, useRef, useState } from 'react';
 import PathSelector from '../others/PathSelector';
-import {
-    createFile,
-    deleteFile,
-    FileSourceType,
-    getAppMimetype,
-    listFiles,
-} from '../helper/fileHelper';
-import {
-    getSlideItemSelectedSetting,
-    setSlideItemSelectedSetting,
-    useStateSettingString,
-} from '../helper/settingHelper';
-import { defaultSlide } from '../editor/slideType';
-import { toastEventListener } from '../event/ToastEventListener';
-import {
-    copyToClipboard,
-    getPresentScreenInfo,
-    isMac,
-    openExplorer,
-} from '../helper/appHelper';
-import { showAppContextMenu } from '../others/AppContextMenu';
-import SlideListEventListener from '../event/SlideListEventListener';
-
-type SlideItemProps = {
-    data: FileSourceType,
-    selected: boolean,
-    itemClick: () => void,
-    onContextMenu: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
-}
-function ListItem({ data, itemClick, selected, onContextMenu }: SlideItemProps) {
-    const slideName = data.fileName.substring(0, data.fileName.lastIndexOf('.'));
-    return (
-        <li className={`list-group-item ${selected ? 'active' : ''} pointer`}
-            title={data.filePath}
-            onClick={itemClick}
-            onContextMenu={onContextMenu}>
-            <i className="bi bi-file-earmark-slides" /> {slideName}
-        </li>
-    );
-}
-
-export const slideListEventListener = new SlideListEventListener();
+import { useStateSettingString } from '../helper/settingHelper';
+import SlideListEventListener, { useRefreshing } from '../event/SlideListEventListener';
+import SlideListController from './SlideListController';
+import SlideController from './SlideController';
+import { getAppMimetype } from '../helper/fileHelper';
 
 export default function SlideList() {
-    const defaultSelected = getSlideItemSelectedSetting();
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [creatingNewFileName, setCreatingNewFileName] = useState('');
-    const [dir, setDir] = useStateSettingString('slide-selected-dir', '');
-    const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(defaultSelected);
-    const [slides, setSlides] = useState<FileSourceType[] | null>(null);
-    useEffect(() => {
-        if (slides === null) {
-            const newSlideList = listFiles(dir, 'slide');
-            setSlides(newSlideList === null ? [] : newSlideList);
-        }
-    }, [slides, dir]);
-    const creatNewSlide = () => {
-        // TODO: verify file name before create
-        const mimeTypes = getAppMimetype('slide');
-        const slideName = `${creatingNewFileName}${mimeTypes[0].extension[0]}`;
-        const dim = getPresentScreenInfo();
-        if (createFile(JSON.stringify(defaultSlide(dim.width, dim.height)), dir, slideName)) {
-            setSlides(null);
-        } else {
-            toastEventListener.showSimpleToast({
-                title: 'Creating Slide',
-                message: 'Unable to create slide due to internal error',
-            });
-        }
-        setCreatingNewFileName('');
-        setIsCreatingNew(false);
+    const [basePath, setNewBasePath] = useStateSettingString('slide-selected-dir', '');
+    const slideListView = useRef<SlideListView>(null);
+    const refresh = () => {
+        slideListView.current?.refresh();
     };
-    const mapSlides = slides || [];
+    const eventListener = new SlideListEventListener();
+    useRefreshing(eventListener, refresh);
     return (
         <div id="slide-list" className="card w-100 h-100">
             <div className="card-header">
@@ -86,82 +28,122 @@ export default function SlideList() {
             </div>
             <div className="card-body">
                 <PathSelector
-                    dirPath={dir}
-                    onRefresh={() => setSlides(null)}
-                    onChangeDirPath={(dp) => {
-                        setDir(dp);
-                        setSlides(null);
+                    dirPath={basePath}
+                    onRefresh={refresh}
+                    onChangeDirPath={(newBasePath) => {
+                        setNewBasePath(newBasePath);
+                        refresh();
                     }}
-                    onSelectDirPath={(dp) => {
-                        setDir(dp);
-                        setSlides(null);
+                    onSelectDirPath={(newBasePath) => {
+                        setNewBasePath(newBasePath);
+                        refresh();
                     }} />
-                <ul className="list-group">
-                    {isCreatingNew && <li className='list-group-item'>
-                        <div className="input-group">
-                            <input type="text" className="form-control" placeholder="file name"
-                                value={creatingNewFileName}
-                                aria-label="file name" aria-describedby="button-addon2" autoFocus
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        creatNewSlide();
-                                    } else if (e.key === 'Escape') {
-                                        setIsCreatingNew(false);
-                                    }
-                                }}
-                                onChange={(e) => {
-                                    // TODO: validate file name
-                                    setCreatingNewFileName(e.target.value);
-                                }} />
-                            <button className="btn btn-outline-success" type="button" id="button-addon2"
-                                onClick={creatNewSlide}>
-                                <i className="bi bi-plus" />
-                            </button>
-                        </div>
-                    </li>}
-                    {mapSlides.map((data, i) => {
-                        return <ListItem key={`${i}`}
-                            itemClick={() => {
-                                setSlideItemSelectedSetting(data.filePath);
-                                setSlideFilePathSelected(data.filePath);
-                                slideListEventListener.selectSlideItem(data.filePath);
-                            }}
-                            data={data}
-                            selected={data.filePath === slideFilePathSelected}
-                            onContextMenu={(e) => {
-                                showAppContextMenu(e, [
-                                    {
-                                        title: 'Copy Path to Clipboard ', onClick: () => {
-                                            copyToClipboard(data.filePath);
-                                        },
-                                    },
-                                    {
-                                        title: 'Delete', onClick: () => {
-                                            if (deleteFile(data.filePath as string)) {
-                                                if (slideFilePathSelected === data.filePath) {
-                                                    slideListEventListener.selectSlideItem(null);
-                                                    setSlideFilePathSelected('');
-                                                }
-                                                setSlides(null);
-                                            } else {
-                                                toastEventListener.showSimpleToast({
-                                                    title: 'Deleting Slide',
-                                                    message: 'Unable to delete slide due to internal error',
-                                                });
-                                            }
-                                        },
-                                    },
-                                    {
-                                        title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
-                                        onClick: () => {
-                                            openExplorer(data.filePath);
-                                        },
-                                    },
-                                ]);
-                            }} />;
-                    })}
-                </ul>
+                <SlideListView
+                    ref={slideListView}
+                    baseDir={basePath}
+                    isCreatingNew={isCreatingNew}
+                    eventListener={eventListener}
+                    setIsCreatingNew={setIsCreatingNew} />
             </div>
         </div>
+    );
+}
+type SlideListViewPropsType = {
+    baseDir: string,
+    isCreatingNew: boolean,
+    setIsCreatingNew: (b: boolean) => void,
+    eventListener: SlideListEventListener,
+};
+type SlideListViewStateType = {
+    creatingNewFileName: string,
+    slideListController: SlideListController;
+};
+class SlideListView extends Component<SlideListViewPropsType, SlideListViewStateType> {
+    state: Readonly<SlideListViewStateType>;
+    constructor(props: SlideListViewPropsType) {
+        super(props);
+        this.state = {
+            creatingNewFileName: '',
+            slideListController: new SlideListController(props.baseDir, props.eventListener),
+        };
+    }
+    refresh() {
+        this.renewSlideListController(this.props);
+    }
+    componentDidUpdate(preProps: SlideListViewPropsType) {
+        if (preProps.baseDir !== this.props.baseDir) {
+            this.renewSlideListController(preProps);
+        }
+    }
+    renewSlideListController(props: SlideListViewPropsType) {
+        this.setState({
+            slideListController: new SlideListController(props.baseDir, props.eventListener),
+        });
+    }
+    creatNewSlide() {
+        const mimeTypes = getAppMimetype('slide');
+        const slideName = `${this.state.creatingNewFileName}${mimeTypes[0].extension[0]}`;
+        if (this.state.slideListController.createNewSlide(slideName)) {
+            this.props.setIsCreatingNew(false);
+        }
+    }
+    render() {
+        const { isCreatingNew, setIsCreatingNew } = this.props;
+        const { slideListController } = this.state;
+        return (
+            <ul className="list-group">
+                {isCreatingNew && <li className='list-group-item'>
+                    <div className="input-group">
+                        <input type="text" className="form-control" placeholder="file name"
+                            value={this.state.creatingNewFileName}
+                            aria-label="file name" aria-describedby="button-addon2" autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    this.creatNewSlide();
+                                } else if (e.key === 'Escape') {
+                                    setIsCreatingNew(false);
+                                }
+                            }}
+                            onChange={(e) => {
+                                // TODO: validate file name
+                                this.setState({ creatingNewFileName: e.target.value });
+                            }} />
+                        <button className="btn btn-outline-success" type="button" id="button-addon2"
+                            onClick={() => this.creatNewSlide()}>
+                            <i className="bi bi-plus" />
+                        </button>
+                    </div>
+                </li>}
+                {slideListController.slideControllers.map((slideController, i) => {
+                    return <ListItem key={`${i}`}
+                        itemClick={() => slideListController
+                            .select(slideController)}
+                        controller={slideController}
+                        onContextMenu={(e) => slideListController
+                            .showContextMenu(slideController, e)} />;
+                })}
+            </ul>
+        );
+    }
+}
+
+type SlideItemProps = {
+    controller: SlideController,
+    itemClick: () => void,
+    onContextMenu: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+}
+function ListItem({ controller, itemClick, onContextMenu }: SlideItemProps) {
+    const slideName = controller.fileName.substring(0, controller.fileName.lastIndexOf('.'));
+    return (
+        <li className={`list-group-item ${controller.isSelected ? 'active' : ''} pointer`}
+            title={controller.filePath}
+            onClick={() => {
+                if (!controller.isSelected) {
+                    itemClick();
+                }
+            }}
+            onContextMenu={onContextMenu}>
+            <i className="bi bi-file-earmark-slides" /> {slideName}
+        </li>
     );
 }

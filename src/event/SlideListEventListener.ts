@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { HTML2ReactChildType } from '../editor/slideParser';
-import { SlideItemThumbType, ToolingType } from '../editor/slideType';
+import { SlideItemThumbType, ToolingType } from '../helper/slideHelper';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;
@@ -18,8 +18,8 @@ export type RegisteredEventType<T> = {
     listener: ListenerType<T>,
 };
 export default class SlideListEventListener extends EventHandler {
-    selectSlideItem(filePath: string | null) {
-        this._addPropEvent(SlideListEnum.SELECT, filePath);
+    selecting() {
+        this._addPropEvent(SlideListEnum.SELECT);
     }
     boxEditing(data: HTML2ReactChildType | null) {
         this._addPropEvent(SlideListEnum.BOX_EDITING, data);
@@ -48,64 +48,69 @@ export default class SlideListEventListener extends EventHandler {
         this._removeOnEventListener(type, listener);
     }
 }
+export const slideListEventListenerGlobal = new SlideListEventListener();
 
-export function useSlideSelecting(slideListEventListener: SlideListEventListener,
-    listener: ListenerType<string | null>) {
+export function useSlideSelecting(listener: ListenerType<void>) {
     useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.SELECT, listener);
         return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
 }
-export function useSlideItemThumbSelecting(slideListEventListener: SlideListEventListener,
-    listener: ListenerType<SlideItemThumbType | null>) {
+export function useSlideItemThumbSelecting(listener: ListenerType<SlideItemThumbType | null>) {
     useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.ITEM_THUMB_SELECT, listener);
         return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
 }
-export function useSlideItemThumbUpdating(slideListEventListener: SlideListEventListener,
-    listener: ListenerType<SlideItemThumbType>) {
+export function useSlideItemThumbUpdating(listener: ListenerType<SlideItemThumbType>) {
     useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.UPDATE_ITEM_THUMB, listener);
         return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
 }
-export function useSlideItemThumbOrdering(slideListEventListener: SlideListEventListener,
+export function useSlideItemThumbOrdering(listener: ListenerType<void>) {
+    useEffect(() => {
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
+            SlideListEnum.ITEM_THUMB_ORDERING, listener);
+        return () => {
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
+        };
+    });
+}
+export function useSlideBoxEditing(listener: ListenerType<HTML2ReactChildType | null>) {
+    useEffect(() => {
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
+            SlideListEnum.BOX_EDITING, listener);
+        return () => {
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
+        };
+    });
+}
+export function useSlideItemThumbTooling(listener: ListenerType<ToolingType>) {
+    useEffect(() => {
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
+            SlideListEnum.TOOLING, listener);
+        return () => {
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
+        };
+    });
+}
+export function useRefreshing(slideListEventListener: SlideListEventListener,
     listener: ListenerType<void>) {
     useEffect(() => {
         const event = slideListEventListener.registerSlideListEventListener(
-            SlideListEnum.ITEM_THUMB_ORDERING, listener);
+            SlideListEnum.REFRESH, listener);
         return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
-        };
-    });
-}
-export function useSlideBoxEditing(slideListEventListener: SlideListEventListener,
-    listener: ListenerType<HTML2ReactChildType | null>) {
-    useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
-            SlideListEnum.BOX_EDITING, listener);
-        return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
-        };
-    });
-}
-export function useSlideItemThumbTooling(slideListEventListener: SlideListEventListener,
-    listener: ListenerType<ToolingType>) {
-    useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
-            SlideListEnum.TOOLING, listener);
-        return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
 }

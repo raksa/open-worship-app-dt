@@ -8,19 +8,10 @@ const FILE_TYPE: MimetypeNameType = 'slide';
 export default class SlideListController {
     _basePath: string;
     _slideControllers: SlideController[] = [];
-    eventListener: SlideListEventListener;
-    constructor(basePath: string) {
+    _eventListener: SlideListEventListener;
+    constructor(basePath: string, eventListener: SlideListEventListener) {
         this._basePath = basePath;
-        this.eventListener = new SlideListEventListener();
-    }
-    get slideControllers() {
-        return this._slideControllers;
-    }
-    get selectedSlideController() {
-        return this._slideControllers.find((slideController) => slideController.isSelected) || null;
-    }
-    loadSlide() {
-        this._slideControllers = [];
+        this._eventListener = eventListener;
         if (this._basePath !== null) {
             const slideList = listFiles(this._basePath, FILE_TYPE);
             if (slideList !== null) {
@@ -29,32 +20,37 @@ export default class SlideListController {
                 });
             }
         }
-        this.eventListener.refresh();
+    }
+    get slideControllers() {
+        return this._slideControllers;
+    }
+    get selectedSlideController() {
+        return this._slideControllers.find((slideController) => slideController.isSelected) || null;
     }
     getSlideController(index: number): SlideController | null {
         return this._slideControllers[index] || null;
     }
-    addSlideController(fileName: string): SlideController | null {
+    createNewSlide(fileName: string): SlideController | null {
         const slideController = SlideController.createSlideController(this._basePath, fileName);
         if (slideController !== null) {
             this._slideControllers.push(slideController);
-            this.eventListener.refresh();
+            this._eventListener.refresh();
         }
         return slideController;
     }
     renameSlide(slideController: SlideController, newFileName: string): boolean {
         if (slideController.rename(newFileName)) {
-            this.eventListener.refresh();
+            this._eventListener.refresh();
             return true;
         }
         return false;
     }
-    deleteSlideController(slideController: SlideController) {
+    deleteSlide(slideController: SlideController) {
         const isDeleted = slideController.deleteFile();
         this._slideControllers = this._slideControllers.filter((newSlideController) => {
             return newSlideController !== slideController;
         });
-        this.eventListener.refresh();
+        this._eventListener.refresh();
         return isDeleted;
     }
     select(slideController: SlideController) {
@@ -62,7 +58,7 @@ export default class SlideListController {
             this.selectedSlideController.isSelected = false;
         }
         slideController.isSelected = true;
-        this.eventListener.refresh();
+        this._eventListener.refresh();
     }
     showContextMenu(slideController: SlideController,
         mouseEvent: React.MouseEvent<HTMLLIElement>) {
@@ -73,7 +69,7 @@ export default class SlideListController {
             },
             {
                 title: 'Delete',
-                onClick: () => this.deleteSlideController(slideController),
+                onClick: () => this.deleteSlide(slideController),
             },
             {
                 title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,

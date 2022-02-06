@@ -37,8 +37,16 @@ export function isSupportedMimetype(fileMimetype: string, mt: MimetypeNameType) 
     return mimeTypes.map((mimeType) => mimeType.mimeType).some((type) => type === fileMimetype);
 }
 
-export function genFileSource(basePath: string, fileName: string) {
-    const filePath = appProvider.path.join(basePath, fileName);
+export function genFileSource(filePath: string, fileName?: string): FileSourceType {
+    let basePath;
+    if (fileName) {
+        basePath = filePath;
+        filePath = appProvider.path.join(filePath, fileName);
+    } else {
+        const index = filePath.lastIndexOf(appProvider.path.sep);
+        basePath = filePath.substring(0, index);
+        fileName = appProvider.path.basename(filePath);
+    }
     return {
         basePath,
         fileName: fileName,
@@ -60,7 +68,8 @@ export function listFiles(dir: string, type: MimetypeNameType) {
 
 export function checkFileExist(filePath: string, fileName?: string) {
     if (fileName) {
-        return !!appProvider.fs.existsSync(filePath);
+        const newFilePath = appProvider.path.join(filePath, fileName);
+        return !!appProvider.fs.existsSync(newFilePath);
     }
     return !!appProvider.fs.existsSync(filePath);
 }

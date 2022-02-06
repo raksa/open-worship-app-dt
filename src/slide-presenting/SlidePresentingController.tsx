@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
 import { presentEventListener } from '../event/PresentEventListener';
 import { useStateSettingNumber } from '../helper/settingHelper';
-import { slideListEventListener } from '../slide-list/SlideList';
 
 const defaultThumbSize = 250;
 export default function SlidePresentingController() {
@@ -17,7 +16,7 @@ export default function SlidePresentingController() {
     useEffect(() => {
         return () => clearFG();
     });
-    useSlideItemThumbSelecting(slideListEventListener, (item) => {
+    useSlideItemThumbSelecting((item) => {
         if (item !== null) {
             renderFG(item.html);
             presentEventListener.renderFG();

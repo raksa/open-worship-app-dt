@@ -1,5 +1,5 @@
-import { useSlideItemThumbTooling } from '../event/SlideListEventListener';
-import { getDefaultBoxHTML, SlideItemThumbType } from './slideType';
+import { slideListEventListenerGlobal, useSlideItemThumbTooling } from '../event/SlideListEventListener';
+import { getDefaultBoxHTML, SlideItemThumbType } from '../helper/slideHelper';
 import { HTML2ReactChildType, HTML2ReactType, parseChildHTML, parseHTML } from './slideParser';
 import { BoxEditor } from './BoxEditor';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
@@ -7,7 +7,6 @@ import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function Editor({ slideItemThumb, data, width, height, scale }: {
     slideItemThumb: SlideItemThumbType,
@@ -57,7 +56,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
             `${boxListHTML.join('')}</div>`;
         if (newHtml !== slideItemThumb.html) {
             slideItemThumb.html = newHtml;
-            slideListEventListener.updateSlideItemThumb(slideItemThumb);
+            slideListEventListenerGlobal.updateSlideItemThumb(slideItemThumb);
             if (editingIndex !== undefined) {
                 const be = editorMapper.getByIndex(editingIndex);
                 if (be !== null) {
@@ -68,7 +67,7 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
             }
         }
     };
-    useSlideItemThumbTooling(slideListEventListener, (newData) => {
+    useSlideItemThumbTooling((newData) => {
         if (~editorMapper.selectedIndex &&
             (newData.box?.layerBack || newData.box?.layerFront)) {
             const index = editorMapper.selectedIndex;

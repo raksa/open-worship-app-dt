@@ -1,7 +1,7 @@
 import './Tools.scss';
 
 import { ReactChild, useState } from 'react';
-import { useSlideBoxEditing } from '../event/SlideListEventListener';
+import { slideListEventListenerGlobal, useSlideBoxEditing } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
 import {
     HAlignmentEnum,
@@ -9,7 +9,6 @@ import {
     VAlignmentEnum,
 } from './slideParser';
 import { useStateSettingString } from '../helper/settingHelper';
-import { slideListEventListener } from '../slide-list/SlideList';
 
 export default function Tools({ scale, applyScale, setScale, minScale, maxScale, scaleStep }: {
     scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
@@ -18,7 +17,7 @@ export default function Tools({ scale, applyScale, setScale, minScale, maxScale,
     const [data, setData] = useState<HTML2ReactChildType | null>(null);
     // t: text, b: box
     const [tabType, setTabType] = useStateSettingString('editor-tools-tab', 't');
-    useSlideBoxEditing(slideListEventListener, (newData) => {
+    useSlideBoxEditing((newData) => {
         setData(newData);
     });
     return (
@@ -64,11 +63,11 @@ function ToolsText({ data }: { data: HTML2ReactChildType }) {
     const [fontSize, setFontSize] = useState<number>(data.fontSize);
     const onColorChange = (newColor: string) => {
         setColor(newColor);
-        slideListEventListener.tooling({ text: { color: newColor } });
+        slideListEventListenerGlobal.tooling({ text: { color: newColor } });
     };
     const onFontSizeChange = (n: number) => {
         setFontSize(n);
-        slideListEventListener.tooling({ text: { fontSize: n } });
+        slideListEventListenerGlobal.tooling({ text: { fontSize: n } });
     };
     return (
         <div className='d-flex'>
@@ -76,7 +75,7 @@ function ToolsText({ data }: { data: HTML2ReactChildType }) {
                 <ColorPicker color={color} onColorChange={onColorChange} />
             </Tool>
             <Tool title='Text Alignment'>
-                <Align isText onData={(newData) => slideListEventListener.tooling({ text: newData })} />
+                <Align isText onData={(newData) => slideListEventListenerGlobal.tooling({ text: newData })} />
             </Tool>
             <Tool title='Font Size'>
                 <input className='form-control' type="number" style={{ maxWidth: '100px' }}
@@ -94,7 +93,7 @@ function ToolsText({ data }: { data: HTML2ReactChildType }) {
             </Tool>
             <Tool title='Rotate'>
                 <button className='btn btn-info' onClick={() => {
-                    slideListEventListener.tooling({ box: { rotate: 0 } });
+                    slideListEventListenerGlobal.tooling({ box: { rotate: 0 } });
                 }}
                 >UnRotate</button>
             </Tool>
@@ -105,7 +104,7 @@ function ToolsBackground({ data }: { data: HTML2ReactChildType }) {
     const [color, setColor] = useState<string>(data.backgroundColor);
     const onColorChange = (newColor: string) => {
         setColor(newColor);
-        slideListEventListener.tooling({ box: { backgroundColor: newColor } });
+        slideListEventListenerGlobal.tooling({ box: { backgroundColor: newColor } });
     };
     return (
         <>
@@ -114,15 +113,15 @@ function ToolsBackground({ data }: { data: HTML2ReactChildType }) {
             </Tool>
             <Tool title='Box Alignment'>
                 <Align onData={(newData) => {
-                    slideListEventListener.tooling({ box: newData });
+                    slideListEventListenerGlobal.tooling({ box: newData });
                 }} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info' onClick={() => {
-                    slideListEventListener.tooling({ box: { layerBack: true } });
+                    slideListEventListenerGlobal.tooling({ box: { layerBack: true } });
                 }}><i className="bi bi-layer-backward" /></button>
                 <button className='btn btn-info' onClick={() => {
-                    slideListEventListener.tooling({ box: { layerFront: true } });
+                    slideListEventListenerGlobal.tooling({ box: { layerFront: true } });
                 }}><i className="bi bi-layer-forward" /></button>
             </Tool>
         </>

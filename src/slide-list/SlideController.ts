@@ -1,4 +1,5 @@
-import { defaultSlide } from '../editor/slideType';
+import { defaultSlide } from '../helper/slideHelper';
+import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import { getPresentScreenInfo } from '../helper/appHelper';
 import {
@@ -10,33 +11,26 @@ import {
     renameFile,
 } from '../helper/fileHelper';
 import { getSlideItemSelectedSetting, setSlideItemSelectedSetting } from '../helper/settingHelper';
+import FileController from '../others/FileController';
 
-// TODO: implement class
-export default class SlideController {
-    _fileSource: FileSourceType;
+export default class SlideController extends FileController {
     _isSelected = false;
     constructor(fileSource: FileSourceType) {
-        this._fileSource = fileSource;
+        super(fileSource);
         const filePathSelected = getSlideItemSelectedSetting();
         this._isSelected = this.filePath === filePathSelected;
-    }
-    get basePath() {
-        return this._fileSource.basePath;
-    }
-    get fileName() {
-        return this._fileSource.fileName;
-    }
-    get filePath() {
-        return this._fileSource.filePath;
-    }
-    get fileSrc() {
-        return this._fileSource.src;
     }
     get isSelected() {
         return this._isSelected;
     }
     set isSelected(isSelected: boolean) {
-        setSlideItemSelectedSetting(isSelected ? this.filePath : '');
+        if (isSelected) {
+            setSlideItemSelectedSetting(this.filePath);
+            slideListEventListenerGlobal.selecting();
+        } else {
+            setSlideItemSelectedSetting('');
+
+        }
         this._isSelected = isSelected;
     }
     deleteFile() {

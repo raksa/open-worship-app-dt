@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
+import { Component, useEffect, useState } from 'react';
 import {
-    getSlideDataByFilePath,
     toSlideItemThumbSelected,
     parseSlideItemThumbSelected,
 } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { clearFG } from './slidePresentHelpers';
-import { SlideItemThumbType } from '../editor/slideType';
 import {
+    getSlideDataByFilePath,
+} from '../helper/slideHelper';
+import {
+    slideListEventListenerGlobal,
     useSlideItemThumbOrdering,
     useSlideItemThumbTooling,
     useSlideItemThumbUpdating,
     useSlideSelecting,
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
-import SlideItemThumbListMenu, { ChangeHistory } from './SlideItemThumbListMenu';
+import SlideItemThumbListMenu from './SlideItemThumbListMenu';
 import SlideItemThumbListItems from './SlideItemThumbListItems';
 import SlideItemThumbListContextMenu, { contextObject } from './SlideItemThumbListContextMenu';
 import {
@@ -22,13 +24,14 @@ import {
     getSlideItemSelectedSetting,
     useStateSettingString,
 } from '../helper/settingHelper';
-import { toastEventListener } from '../event/ToastEventListener';
-import { slideListEventListener } from '../slide-list/SlideList';
+import SlideThumbsController, {
+    THUMB_SELECTED_SETTING_NAME,
+} from './SlideThumbsController';
+import { genFileSource } from '../helper/fileHelper';
 
-const SETTING_NAME = 'slide-item-thumb-selected';
 export function getValidSlideItemThumbSelected() {
     const filePath = getSlideItemSelectedSetting();
-    const slideItemThumbSelected = getSetting(SETTING_NAME) || '';
+    const slideItemThumbSelected = getSetting(THUMB_SELECTED_SETTING_NAME) || '';
     const result = parseSlideItemThumbSelected(slideItemThumbSelected, filePath);
     if (result !== null) {
         const data = getSlideDataByFilePath(filePath as string);
@@ -39,97 +42,86 @@ export function getValidSlideItemThumbSelected() {
     return null;
 }
 
-function Empty() {
-    return <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
-        Nothing to show 😐
-    </div>;
-}
 export default function SlideItemThumbList({ thumbWidth }: { thumbWidth?: number }) {
-    const getItemsFromFilePath = (filePath: string | null) => {
-        let items: SlideItemThumbType[] | null = null;
-        if (filePath !== null) {
-            const present = getSlideDataByFilePath(filePath);
-            if (present !== null) {
-                items = present.items;
-            }
-        }
-        return items;
-    };
-    const defaultSlideFilePathSelected = getSlideItemSelectedSetting();
-    const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(defaultSlideFilePathSelected);
-    const [slideItemThumbs, setSlideItemThumbs] = useState<SlideItemThumbType[] | null>(
-        getItemsFromFilePath(defaultSlideFilePathSelected));
-    useSlideSelecting(slideListEventListener, (filePath) => {
-        setSlideFilePathSelected(filePath);
-        setSlideItemThumbs(getItemsFromFilePath(filePath));
+    const selectedPath = getSlideItemSelectedSetting();
+    const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(selectedPath);
+    useSlideSelecting(() => {
+        const newSelectedPath = getSlideItemSelectedSetting();
+        setSlideFilePathSelected(newSelectedPath);
     });
     if (slideFilePathSelected === null) {
-        slideListEventListener.selectSlideItemThumb(null);
-        return <Empty />;
+        slideListEventListenerGlobal.selectSlideItemThumb(null);
+        return (
+            <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
+                No Slide Selected 😐
+            </div>
+        );
     }
     return (
-        <Controller slideItemThumbs={slideItemThumbs} setSlideItemThumbs={setSlideItemThumbs}
-            slideFilePathSelected={slideFilePathSelected}
-            thumbWidth={thumbWidth || 250} />
+        <SlideItemThumbListView filePath={slideFilePathSelected} />
     );
 }
-function Controller({
-    slideFilePathSelected,
-    thumbWidth,
-    slideItemThumbs,
-    setSlideItemThumbs,
-}: {
-    slideFilePathSelected: string,
-    thumbWidth: number,
-    slideItemThumbs: SlideItemThumbType[] | null,
-    setSlideItemThumbs: (items: SlideItemThumbType[] | null) => void,
+type PropsType = {
+    filePath: string,
+};
+type StateType = {
+    slideThumbsController: SlideThumbsController | null,
+};
+class SlideItemThumbListView extends Component<PropsType, StateType> {
+    constructor(props: PropsType) {
+        super(props);
+        this.state = {
+            slideThumbsController: this.createController(props),
+        };
+    }
+    componentDidUpdate(preProps: PropsType) {
+        if (preProps.filePath !== this.props.filePath) {
+            this.renewSlideThumbsController(preProps);
+        }
+    }
+    renewSlideThumbsController(props: PropsType) {
+        this.setState({
+            slideThumbsController: this.createController(props),
+        });
+    }
+    createController(props: PropsType) {
+        try {
+            const fileSource = genFileSource(props.filePath);
+            return new SlideThumbsController(fileSource);
+        } catch (error) { }
+        return null;
+    }
+    render() {
+        const { slideThumbsController } = this.state;
+        if (slideThumbsController === null) {
+            return (
+                <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
+                    Unable to load slide data 😐
+                    <button className='btn btn-info' onClick={() => {
+                        this.renewSlideThumbsController(this.props);
+                    }}>Retry</button>
+                </div>
+            );
+        }
+        return (
+            <View controller={slideThumbsController} />
+        );
+    }
+}
+function View({ controller }: {
+    controller: SlideThumbsController,
 }) {
-    const [isWrongDimension, setIsWrongDimension] = useState(true);
-    const [slideItemThumbSelected, setSlideItemThumbSelected] = useStateSettingString(SETTING_NAME, '');
-
-    const [slideItemThumbCopied, setSetSlideItemThumbCopied] = useState<number | null>(null);
-    const [isModifying, setIsModifying] = useState(false);
-
-    const [undo, setUndo] = useState<ChangeHistory[]>([]);
-    const [redo, setRedo] = useState<ChangeHistory[]>([]);
-
-    const setSelectedWithPath = (i: number | null) => {
-        if (slideItemThumbs === null || i === null || !slideItemThumbs[i]) {
-            return setSlideItemThumbSelected('');
-        }
-        const selected = toSlideItemThumbSelected(slideFilePathSelected, slideItemThumbs[i].id);
-        setSlideItemThumbSelected(selected || '');
-    };
-    const unSelectSlidItemThumb = () => {
-        if (isWindowEditingMode()) {
-            slideListEventListener.selectSlideItemThumb(null);
-        }
-    };
-    useEffect(() => {
-        if (slideItemThumbs !== null) {
-            const parsed = parseSlideItemThumbSelected(slideItemThumbSelected, slideFilePathSelected);
-            if (parsed !== null) {
-                const found = slideItemThumbs.find((item) => item.id === parsed.id);
-                if (found) {
-                    slideListEventListener.selectSlideItemThumb(found);
-                    return;
-                }
-            }
-        }
-        unSelectSlidItemThumb();
-    }, [slideFilePathSelected, slideItemThumbs, slideItemThumbSelected]);
     usePresentFGClearing(() => {
-        setSelectedWithPath(null);
+        controller.select(null);
         clearFG();
     });
-    useSlideItemThumbUpdating(slideListEventListener, () => setIsModifying(true));
-    useSlideItemThumbOrdering(slideListEventListener, () => setIsModifying(true));
-    useSlideItemThumbTooling(slideListEventListener, () => setIsModifying(true));
-    if (slideItemThumbs === null) {
-        return <Empty />;
-    }
-    const result = parseSlideItemThumbSelected(slideItemThumbSelected, slideFilePathSelected);
-    const selectedIndex = result === null ? null : slideItemThumbs.findIndex((item) => item.id === result.id);
+    const setIsModifying = (isModifying: boolean) => {
+        controller.isModifying = isModifying;
+    };
+    useSlideItemThumbUpdating(() => setIsModifying(true));
+    useSlideItemThumbOrdering(() => setIsModifying(true));
+    useSlideItemThumbTooling(() => setIsModifying(true));
+
     return (
         <div className='w-100 h-100' style={{ overflow: 'auto' }}
             onContextMenu={(e) => {
@@ -137,44 +129,9 @@ function Controller({
                     contextObject.showSlideItemContextMenu(e);
                 }
             }} onPaste={() => contextObject.paste && contextObject.paste()}>
-            <SlideItemThumbListMenu
-                isModifying={isModifying}
-                undo={undo}
-                redo={redo}
-                slideItemThumbs={slideItemThumbs}
-                setIsModifying={setIsModifying}
-                setSlideItemThumbs={setSlideItemThumbs}
-                setRedo={setRedo}
-                setUndo={setUndo}
-                isWrongDimension={isWrongDimension}
-                fixSlideDimension={() => {
-                    toastEventListener.showSimpleToast({
-                        title: 'Fix Slide Dimension',
-                        message: 'Slide dimension has been fixed',
-                    });
-                    setIsWrongDimension(false);
-                }}
-            />
-            <SlideItemThumbListItems
-                thumbWidth={thumbWidth}
-                slideItemThumbs={slideItemThumbs}
-                selectedIndex={selectedIndex}
-                setSelectedWithPath={setSelectedWithPath}
-                setSetSlideItemThumbCopied={setSetSlideItemThumbCopied}
-                setSlideItemThumbs={setSlideItemThumbs}
-            />
-            <SlideItemThumbListContextMenu
-                selectedIndex={selectedIndex}
-                slideItemThumbCopied={slideItemThumbCopied}
-                undo={undo}
-                slideItemThumbs={slideItemThumbs}
-                setSelectedWithPath={setSelectedWithPath}
-                setIsModifying={setIsModifying}
-                setSlideItemThumbs={setSlideItemThumbs}
-                setSetSlideItemThumbCopied={setSetSlideItemThumbCopied}
-                setUndo={setUndo}
-                setRedo={setRedo}
-            />
+            <SlideItemThumbListMenu controller={controller} />
+            <SlideItemThumbListItems controller={controller} />
+            <SlideItemThumbListContextMenu controller={controller} />
         </div>
     );
 }

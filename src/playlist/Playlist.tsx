@@ -5,7 +5,6 @@ import PathSelector from '../others/PathSelector';
 import {
     extractSlideItemThumbSelected,
     getPlaylistDataByFilePath,
-    getSlideDataByFilePath,
     savePlaylist,
 } from '../helper/helpers';
 import { toastEventListener } from '../event/ToastEventListener';
@@ -30,7 +29,8 @@ import {
     useStateSettingString,
     useStateSettingBoolean,
 } from '../helper/settingHelper';
-import { slideListEventListener } from '../slide-list/SlideList';
+import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import { getSlideDataByFilePath } from '../helper/slideHelper';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -235,7 +235,7 @@ function SlideItemThumbPlaylist({
     return (
         <div className='card overflow-hidden'
             onClick={() => {
-                slideListEventListener.selectSlideItemThumb(item);
+                slideListEventListenerGlobal.selectSlideItemThumb(item);
             }}>
             <SlideItemThumbIFrame id={id} width={width} html={item.html} />
         </div>

@@ -4,46 +4,34 @@ import SlideItemThumb, {
 } from './SlideItemThumb';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { WindowEnum } from '../event/WindowEventListener';
-import { SlideItemThumbType } from '../editor/slideType';
-import { useSlideItemThumbUpdating } from '../event/SlideListEventListener';
+import { slideListEventListenerGlobal, useSlideItemThumbUpdating } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { contextObject } from './SlideItemThumbListContextMenu';
 import { Fragment, useState } from 'react';
-import { slideListEventListener } from '../slide-list/SlideList';
+import SlideThumbsController from './SlideThumbsController';
 
-export default function SlideItemThumbListItems({
-    thumbWidth,
-    slideItemThumbs,
-    selectedIndex,
-    setSelectedWithPath,
-    setSetSlideItemThumbCopied,
-    setSlideItemThumbs,
-}: {
-    thumbWidth: number,
-    slideItemThumbs: SlideItemThumbType[],
-    selectedIndex: number | null,
-    setSelectedWithPath: (i: number) => void
-    setSetSlideItemThumbCopied: (i: number) => void
-    setSlideItemThumbs: (slideItemThumbs: SlideItemThumbType[]) => void,
+export default function SlideItemThumbListItems({ controller }: {
+    controller: SlideThumbsController,
 }) {
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useSlideItemThumbUpdating(slideListEventListener, (itemThumb) => {
+    useSlideItemThumbUpdating((itemThumb) => {
         itemThumb.isEditing = true;
-        const slideThumbList = slideItemThumbs.map((item) => {
+        const slideThumbList = controller.items.map((item) => {
             if (item.id === itemThumb.id) {
                 return itemThumb;
             }
             return item;
         });
-        setSlideItemThumbs(slideThumbList);
+        controller.items = slideThumbList;
     });
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
         const arrowListener = (e: KeyboardEvent) => {
+            const selectedIndex = controller.selectedIndex;
             if (selectedIndex === null) {
                 return;
             }
-            const length = slideItemThumbs.length;
+            const length = controller.items.length;
             if (length) {
                 let ind = e.key === KeyEnum.ArrowLeft ? selectedIndex - 1 : selectedIndex + 1;
                 if (ind >= length) {
@@ -51,7 +39,7 @@ export default function SlideItemThumbListItems({
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                setSelectedWithPath(+ind);
+                controller.select(+ind);
             }
         };
         const useCallback = (key: KeyEnum) => {
@@ -62,37 +50,31 @@ export default function SlideItemThumbListItems({
         };
         arrows.forEach(useCallback);
     }
-    const move = (id: string, toIndex: number) => {
-        const fromIndex: number = slideItemThumbs.findIndex((item) => item.id === id);
-        const newList = [...slideItemThumbs];
-        const target = newList.splice(fromIndex, 1)[0];
-        newList.splice(toIndex, 0, target);
-        setSlideItemThumbs(newList);
-        slideListEventListener.ordering();
-    };
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {slideItemThumbs.map((data, i) => {
+            {controller.items.map((data, i) => {
                 const shouldReceiveAtLeft = draggingIndex !== null && draggingIndex !== 0 && i === 0;
                 const shouldReceiveAtRight = draggingIndex !== null && draggingIndex !== i && draggingIndex !== i + 1;
                 return (
                     <Fragment key={`${i}`}>
                         {shouldReceiveAtLeft && <DragReceiver onDrop={(id) => {
-                            move(id, i);
+                            controller.move(id, i);
                         }} />}
                         <SlideItemThumb
-                            isActive={i === selectedIndex}
+                            isActive={i === controller.selectedIndex}
                             index={i}
                             data={data}
                             onItemClick={() => {
-                                slideListEventListener.selectSlideItemThumb(data);
-                                setSelectedWithPath(i);
+                                slideListEventListenerGlobal.selectSlideItemThumb(data);
+                                controller.select(i);
                             }}
                             onContextMenu={(e) => {
                                 contextObject.showItemThumbnailContextMenu(e, { index: i });
                             }}
-                            onCopy={() => setSetSlideItemThumbCopied(i)}
-                            width={thumbWidth}
+                            onCopy={() => {
+                                controller.copiedIndex = i;
+                            }}
+                            width={controller.thumbWidth}
                             onDragStart={() => {
                                 setDraggingIndex(i);
                             }}
@@ -101,12 +83,13 @@ export default function SlideItemThumbListItems({
                             }}
                         />
                         {shouldReceiveAtRight && <DragReceiver onDrop={(id) => {
-                            move(id, i);
+                            controller.move(id, i);
                         }} />}
                     </Fragment>
                 );
             })}
-            {Array.from({ length: 2 }, (_, i) => <ItemThumbGhost key={`${i}`} width={thumbWidth} />)}
+            {Array.from({ length: 2 }, (_, i) => <ItemThumbGhost key={`${i}`}
+                width={controller.thumbWidth} />)}
         </div>
     );
 }
