@@ -1,28 +1,20 @@
-import { Component, useEffect, useState } from 'react';
-import {
-    toSlideItemThumbSelected,
-    parseSlideItemThumbSelected,
-} from '../helper/helpers';
+import { Component, useRef } from 'react';
+import { parseSlideItemThumbSelected } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { clearFG } from './slidePresentHelpers';
-import {
-    getSlideDataByFilePath,
-} from '../helper/slideHelper';
-import {
-    slideListEventListenerGlobal,
+import { getSlideDataByFilePath } from '../helper/slideHelper';
+import SlideListEventListener, {
+    useRefreshing,
     useSlideItemThumbOrdering,
     useSlideItemThumbTooling,
     useSlideItemThumbUpdating,
     useSlideSelecting,
 } from '../event/SlideListEventListener';
-import { isWindowEditingMode } from '../App';
 import SlideItemThumbListMenu from './SlideItemThumbListMenu';
 import SlideItemThumbListItems from './SlideItemThumbListItems';
-import SlideItemThumbListContextMenu, { contextObject } from './SlideItemThumbListContextMenu';
 import {
     getSetting,
     getSlideItemSelectedSetting,
-    useStateSettingString,
 } from '../helper/settingHelper';
 import SlideThumbsController, {
     THUMB_SELECTED_SETTING_NAME,
@@ -42,52 +34,45 @@ export function getValidSlideItemThumbSelected() {
     return null;
 }
 
-export default function SlideItemThumbList({ thumbWidth }: { thumbWidth?: number }) {
-    const selectedPath = getSlideItemSelectedSetting();
-    const [slideFilePathSelected, setSlideFilePathSelected] = useState<string | null>(selectedPath);
-    useSlideSelecting(() => {
-        const newSelectedPath = getSlideItemSelectedSetting();
-        setSlideFilePathSelected(newSelectedPath);
-    });
-    if (slideFilePathSelected === null) {
-        slideListEventListenerGlobal.selectSlideItemThumb(null);
-        return (
-            <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
-                No Slide Selected 😐
-            </div>
-        );
-    }
+export default function SlideItemThumbList() {
+    const controller = useRef<Controller>(null);
+    useSlideSelecting(() => controller.current?.hardRefresh());
+    const eventListener = new SlideListEventListener();
+    useRefreshing(eventListener, () => controller.current?.softRefresh());
     return (
-        <SlideItemThumbListView filePath={slideFilePathSelected} />
+        <Controller ref={controller} eventListener={eventListener} />
     );
 }
 type PropsType = {
-    filePath: string,
+    eventListener: SlideListEventListener,
 };
 type StateType = {
     slideThumbsController: SlideThumbsController | null,
+    renderI: number,
 };
-class SlideItemThumbListView extends Component<PropsType, StateType> {
+class Controller extends Component<PropsType, StateType> {
     constructor(props: PropsType) {
         super(props);
         this.state = {
-            slideThumbsController: this.createController(props),
+            slideThumbsController: this.createController(),
+            renderI: 0,
         };
     }
-    componentDidUpdate(preProps: PropsType) {
-        if (preProps.filePath !== this.props.filePath) {
-            this.renewSlideThumbsController(preProps);
-        }
+    softRefresh() {
+        this.setState(preState => ({ renderI: preState.renderI + 1 }));
     }
-    renewSlideThumbsController(props: PropsType) {
+    hardRefresh() {
         this.setState({
-            slideThumbsController: this.createController(props),
+            slideThumbsController: this.createController(),
         });
     }
-    createController(props: PropsType) {
+    createController() {
         try {
-            const fileSource = genFileSource(props.filePath);
-            return new SlideThumbsController(fileSource);
+            const newSelectedPath = getSlideItemSelectedSetting();
+            if (newSelectedPath) {
+                const fileSource = genFileSource(newSelectedPath);
+                return new SlideThumbsController(fileSource, this.props.eventListener);
+            }
         } catch (error) { }
         return null;
     }
@@ -97,9 +82,8 @@ class SlideItemThumbListView extends Component<PropsType, StateType> {
             return (
                 <div className="card-body d-flex justify-content-center align-items-center w-100 h-100">
                     Unable to load slide data 😐
-                    <button className='btn btn-info' onClick={() => {
-                        this.renewSlideThumbsController(this.props);
-                    }}>Retry</button>
+                    <button className='btn btn-info' onClick={() => this.hardRefresh()}>
+                        Retry</button>
                 </div>
             );
         }
@@ -124,14 +108,10 @@ function View({ controller }: {
 
     return (
         <div className='w-100 h-100' style={{ overflow: 'auto' }}
-            onContextMenu={(e) => {
-                if (contextObject.showSlideItemContextMenu) {
-                    contextObject.showSlideItemContextMenu(e);
-                }
-            }} onPaste={() => contextObject.paste && contextObject.paste()}>
+            onContextMenu={(e) => controller.showSlideItemContextMenu(e)}
+            onPaste={() => controller.paste()}>
             <SlideItemThumbListMenu controller={controller} />
             <SlideItemThumbListItems controller={controller} />
-            <SlideItemThumbListContextMenu controller={controller} />
         </div>
     );
 }

@@ -87,6 +87,10 @@ export function createFile(txt: string, basePath: string, fileName?: string) {
     return false;
 }
 
+export function overWriteFile(filePath: string, txt: string) {
+    return deleteFile(filePath) && createFile(txt, filePath);
+}
+
 export function renameFile(basePath: string, oldFileName: string, newFileName: string) {
     try {
         const oldFilePath = appProvider.path.join(basePath, oldFileName);

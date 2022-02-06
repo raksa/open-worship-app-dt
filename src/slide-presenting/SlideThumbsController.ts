@@ -3,31 +3,35 @@ import {
     SlideItemThumbType,
     validateSlide,
 } from '../helper/slideHelper';
-import { createFile, deleteFile, FileSourceType, readFile } from '../helper/fileHelper';
+import { createFile, deleteFile, FileSourceType, overWriteFile, readFile } from '../helper/fileHelper';
 import FileController from '../others/FileController';
 import { toastEventListener } from '../event/ToastEventListener';
 import { getSetting, getSlideItemSelectedSetting, setSetting } from '../helper/settingHelper';
 import { cloneObject, parseSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
-import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import SlideListEventListener, { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
 
+export const DEFAULT_THUMB_SIZE = 250;
 export const THUMB_SELECTED_SETTING_NAME = 'slide-item-thumb-selected';
+export const THUMB_WIDTH_SETTING_NAME = 'presenting-item-thumb-size';
 export type ChangeHistory = { items: SlideItemThumbType[] };
 
 export default class SlideThumbsController extends FileController {
     _items: SlideItemThumbType[];
-    _thumbControllers: ThumbController[] = [];
     _copiedIndex: number | null = null;
-    _thumbWidth = 250;
     _isWrongDimension = true;
     _selectedIndex: number | null = null;
     _isModifying = false;
+    _eventListener: SlideListEventListener;
     _history: {
         undo: ChangeHistory[];
         redo: ChangeHistory[];
     } = { undo: [], redo: [] };
-    constructor(fileSource: FileSourceType) {
+    constructor(fileSource: FileSourceType, eventListener: SlideListEventListener) {
         super(fileSource);
+        this._eventListener = eventListener;
         const slidePresentData = getSlideDataByFilePath(this.filePath);
         if (slidePresentData === null) {
             const message = 'Unable to read slide data';
@@ -38,40 +42,28 @@ export default class SlideThumbsController extends FileController {
             throw new Error(message);
         }
         this._items = slidePresentData.items;
-        this.reloadThumbControllers();
-    }
-    reloadThumbControllers() {
         this._copiedIndex = null;
-        this._selectedIndex = null;
-        this._thumbControllers = [];
-        this._items.forEach((thumbItem) => {
-            this._thumbControllers.push(new ThumbController(thumbItem));
-        });
+        this.selectedIndex = null;
         const slideItemThumbSelected = getSetting(THUMB_SELECTED_SETTING_NAME, '');
         const parsed = parseSlideItemThumbSelected(slideItemThumbSelected, this.filePath);
-        if (parsed !== null) {
-            const thumbController = this.getThumbControllerByID(parsed.id);
-            if (thumbController !== null) {
-                this.select(this._thumbControllers.indexOf(thumbController));
-            }
+        if (parsed !== null && this.getItemByID(parsed.id)) {
+            this.select(this._items.indexOf(this.getItemByID(parsed.id) as SlideItemThumbType));
         }
     }
-    getThumbControllerByIndex(index: number): ThumbController | null {
-        return this._thumbControllers[index] || null;
+    getItemByIndex(index: number): SlideItemThumbType | null {
+        return this._items[index] || null;
     }
-    getThumbControllerByID(id: string): ThumbController | null {
-        return this._thumbControllers.find((thumbController) => {
-            return thumbController.id === id;
-        }) || null;
+    getItemByID(id: string): SlideItemThumbType | null {
+        return this._items.find((item) => item.id === id) || null;
     }
     get copiedIndex() {
         return this._copiedIndex;
     }
-    get copiedThumbController() {
+    get copiedItem() {
         if (this._copiedIndex === null) {
             return null;
         }
-        return this.getThumbControllerByIndex(this._copiedIndex);
+        return this.getItemByIndex(this._copiedIndex);
     }
     set copiedIndex(index: number | null) {
         this._copiedIndex = index;
@@ -84,43 +76,48 @@ export default class SlideThumbsController extends FileController {
     }
     set items(newItems: SlideItemThumbType[]) {
         this._items = newItems;
-        this.reloadThumbControllers();
+        this._eventListener.refresh();
     }
     get selectedIndex() {
         return this._selectedIndex;
     }
-    get selectedThumbController() {
+    set selectedIndex(selectedIndex: number | null) {
+        this._selectedIndex = selectedIndex;
+        this._eventListener.refresh();
+    }
+    get selectedItem() {
         if (this._selectedIndex === null) {
             return null;
         }
-        return this._thumbControllers[this._selectedIndex] || null;
-    }
-    get thumbWidth() {
-        return this._thumbWidth;
-    }
-    set thumbWidth(newThumbWidth: number) {
-        this._thumbWidth = newThumbWidth;
+        return this.getItemByIndex(this._selectedIndex);
     }
     get isModifying() {
         return this._isModifying;
     }
-    set isModifying(newIsModifying: boolean) {
-        this._isModifying = newIsModifying;
+    set isModifying(isModifying: boolean) {
+        this._isModifying = isModifying;
+        this._eventListener.refresh();
     }
     get isWrongDimension() {
         return this._isWrongDimension;
     }
+    set isWrongDimension(isWrongDimension: boolean) {
+        this._isWrongDimension = isWrongDimension;
+        this._eventListener.refresh();
+    }
     get undo() {
         return this._history.undo;
+    }
+    set undo(newUndo: ChangeHistory[]) {
+        this._history.undo = newUndo;
+        this._eventListener.refresh();
     }
     get redo() {
         return this._history.redo;
     }
-    set undo(newUndo: ChangeHistory[]) {
-        this._history.undo = newUndo;
-    }
     set redo(newRedo: ChangeHistory[]) {
         this._history.undo = newRedo;
+        this._eventListener.refresh();
     }
     get maxId() {
         const list = this.items.map((item) => +item.id).sort();
@@ -157,37 +154,36 @@ export default class SlideThumbsController extends FileController {
             title: 'Fix Slide Dimension',
             message: 'Slide dimension has been fixed',
         });
-        this._isWrongDimension = false;
+        this.isWrongDimension = false;
     }
     save() {
         try {
             const filePath = getSlideItemSelectedSetting();
             if (filePath !== null) {
-                const str = readFile(filePath);
-                if (str !== null) {
-                    const json = JSON.parse(str);
-                    if (validateSlide(json)) {
-                        json.items = this._thumbControllers.map((thumbController) => {
-                            return thumbController.toJson();
+                const slideData = getSlideDataByFilePath(filePath);
+                if (slideData !== null) {
+                    slideData.items = this.currentItems;
+                    if (overWriteFile(filePath, JSON.stringify(slideData))) {
+                        toastEventListener.showSimpleToast({
+                            title: 'Saving Slide',
+                            message: 'Slide has been saved',
                         });
-                        if (deleteFile(filePath) && createFile(JSON.stringify(json), filePath)) {
-                            toastEventListener.showSimpleToast({
-                                title: 'Saving Slide',
-                                message: 'Unable to save slide due to internal error',
-                            });
-                            this.isModifying = true;
-                            return true;
-                        }
+                        this.isModifying = false;
+                        return true;
                     }
                 }
             }
         } catch (error) {
             console.log(error);
         }
+        toastEventListener.showSimpleToast({
+            title: 'Saving Slide',
+            message: 'Unable to save slide!',
+        });
         return false;
     }
     select(index: number | null) {
-        this._selectedIndex = index;
+        this.selectedIndex = index;
         if (index === null) {
             setSetting(THUMB_SELECTED_SETTING_NAME, '');
             if (isWindowEditingMode()) {
@@ -195,10 +191,10 @@ export default class SlideThumbsController extends FileController {
             }
             return;
         }
-        const id = this.selectedThumbController?.id as string;
+        const id = this.selectedItem?.id as string;
         const selected = toSlideItemThumbSelected(this.filePath, id);
         setSetting(THUMB_SELECTED_SETTING_NAME, selected || '');
-        slideListEventListenerGlobal.selectSlideItemThumb((this.selectedThumbController as any).item);
+        slideListEventListenerGlobal.selectSlideItemThumb((this.selectedItem as SlideItemThumbType));
     }
     duplicate(index: number) {
         const newItems = this.currentItems;
@@ -208,8 +204,8 @@ export default class SlideThumbsController extends FileController {
         this.setItemsWithHistory(newItems);
     }
     paste() {
-        if (this.copiedThumbController !== null) {
-            const newItem: SlideItemThumbType = cloneObject(this.copiedThumbController.item);
+        if (this.copiedItem !== null) {
+            const newItem: SlideItemThumbType = cloneObject(this.copiedItem);
             newItem.id = `${this.maxId + 1}`;
             const newItems: SlideItemThumbType[] = [...this.items, newItem];
             this.setItemsWithHistory(newItems);
@@ -239,27 +235,43 @@ export default class SlideThumbsController extends FileController {
         this.items = currentItems;
         slideListEventListenerGlobal.ordering();
     }
-}
-
-class ThumbController {
-    _thumbItem: SlideItemThumbType;
-    constructor(thumbItem: SlideItemThumbType) {
-        this._thumbItem = thumbItem;
+    showSlideItemContextMenu(e: any) {
+        showAppContextMenu(e, [{
+            title: 'Paste', disabled: this.copiedIndex === null,
+            onClick: () => this.paste(),
+        }]);
+    };
+    showItemThumbnailContextMenu(e: any, index: number) {
+        showAppContextMenu(e, [
+            {
+                title: 'Copy', onClick: () => {
+                    this.copiedIndex = index;
+                },
+            },
+            {
+                title: 'Duplicate', onClick: () => {
+                    this.duplicate(index);
+                },
+            },
+            {
+                title: 'Edit', onClick: () => {
+                    const isEditing = isWindowEditingMode();
+                    const item = this.getItemByIndex(index);
+                    if (item !== null) {
+                        if (isEditing) {
+                            this.select(index);
+                            slideListEventListenerGlobal.selectSlideItemThumb(item);
+                        } else {
+                            openItemSlideEdit(item);
+                        }
+                    }
+                },
+            },
+            {
+                title: 'Delete', onClick: () => {
+                    this.deleteItem(index);
+                },
+            },
+        ]);
     }
-    get item() {
-        return this._thumbItem;
-    }
-    get id() {
-        return this._thumbItem.id;
-    }
-    get html() {
-        return this._thumbItem.html;
-    }
-    toJson() {
-        return {
-            id: this.id,
-            html: this.html,
-        };
-    }
-
 }

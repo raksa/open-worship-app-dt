@@ -1,7 +1,5 @@
 import appProvider from './appProvider';
 import { PlaylistType, validatePlaylist } from './playlistHelper';
-import { getSlideItemSelectedSetting } from './settingHelper';
-import { SlideItemThumbType, validateSlide } from './slideHelper';
 import { readFile, deleteFile, createFile } from './fileHelper';
 
 export function getAppInfo() {

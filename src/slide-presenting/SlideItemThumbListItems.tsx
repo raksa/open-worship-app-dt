@@ -2,17 +2,24 @@ import SlideItemThumb, {
     DragReceiver,
     ItemThumbGhost,
 } from './SlideItemThumb';
-import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    KeyEnum,
+    useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { WindowEnum } from '../event/WindowEventListener';
-import { slideListEventListenerGlobal, useSlideItemThumbUpdating } from '../event/SlideListEventListener';
+import {
+    slideListEventListenerGlobal,
+    useSlideItemThumbUpdating,
+    useThumbSizing,
+} from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
-import { contextObject } from './SlideItemThumbListContextMenu';
 import { Fragment, useState } from 'react';
-import SlideThumbsController from './SlideThumbsController';
+import SlideThumbsController, { DEFAULT_THUMB_SIZE, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
 
 export default function SlideItemThumbListItems({ controller }: {
     controller: SlideThumbsController,
 }) {
+    const [thumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useSlideItemThumbUpdating((itemThumb) => {
         itemThumb.isEditing = true;
@@ -68,13 +75,11 @@ export default function SlideItemThumbListItems({ controller }: {
                                 slideListEventListenerGlobal.selectSlideItemThumb(data);
                                 controller.select(i);
                             }}
-                            onContextMenu={(e) => {
-                                contextObject.showItemThumbnailContextMenu(e, { index: i });
-                            }}
+                            onContextMenu={(e) => controller.showItemThumbnailContextMenu(e, i)}
                             onCopy={() => {
                                 controller.copiedIndex = i;
                             }}
-                            width={controller.thumbWidth}
+                            width={thumbSize}
                             onDragStart={() => {
                                 setDraggingIndex(i);
                             }}
@@ -89,7 +94,7 @@ export default function SlideItemThumbListItems({ controller }: {
                 );
             })}
             {Array.from({ length: 2 }, (_, i) => <ItemThumbGhost key={`${i}`}
-                width={controller.thumbWidth} />)}
+                width={thumbSize} />)}
         </div>
     );
 }

@@ -1,8 +1,22 @@
-import { slideListEventListenerGlobal, useSlideItemThumbTooling } from '../event/SlideListEventListener';
-import { getDefaultBoxHTML, SlideItemThumbType } from '../helper/slideHelper';
-import { HTML2ReactChildType, HTML2ReactType, parseChildHTML, parseHTML } from './slideParser';
+import {
+    slideListEventListenerGlobal,
+    useSlideItemThumbTooling,
+} from '../event/SlideListEventListener';
+import {
+    getDefaultBoxHTML,
+    SlideItemThumbType,
+} from '../helper/slideHelper';
+import {
+    HTML2ReactChildType,
+    HTML2ReactType,
+    parseChildHTML,
+    parseHTML,
+} from './slideParser';
 import { BoxEditor } from './BoxEditor';
-import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    KeyEnum,
+    useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';

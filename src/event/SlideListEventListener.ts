@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { HTML2ReactChildType } from '../editor/slideParser';
+import { getSetting, useStateSettingNumber } from '../helper/settingHelper';
 import { SlideItemThumbType, ToolingType } from '../helper/slideHelper';
 import EventHandler from './EventHandler';
 
@@ -10,6 +11,7 @@ export enum SlideListEnum {
     BOX_EDITING = 'box-editing',
     UPDATE_ITEM_THUMB = 'update-item-thumb',
     ITEM_THUMB_ORDERING = 'item-thumb-ordering',
+    ITEM_THUMB_SIZING = 'item-thumb-sizing',
     TOOLING = 'tooling',
     REFRESH = 'refresh',
 }
@@ -38,6 +40,9 @@ export default class SlideListEventListener extends EventHandler {
     }
     refresh() {
         this._addPropEvent(SlideListEnum.REFRESH);
+    }
+    thumbSizing() {
+        this._addPropEvent(SlideListEnum.ITEM_THUMB_SIZING);
     }
     registerSlideListEventListener(type: SlideListEnum, listener: ListenerType<any>):
         RegisteredEventType<any> {
@@ -110,7 +115,23 @@ export function useRefreshing(slideListEventListener: SlideListEventListener,
         const event = slideListEventListener.registerSlideListEventListener(
             SlideListEnum.REFRESH, listener);
         return () => {
+            slideListEventListener.unregisterSlideListEventListener(event);
+        };
+    });
+}
+export function useThumbSizing(settingName: string, defaultSize: number): [number, (s: number) => void] {
+    const getDefaultSize = () => +getSetting(settingName, defaultSize + '');
+    const [thumbSize, setThumbSize] = useStateSettingNumber(settingName, getDefaultSize());
+    useEffect(() => {
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
+            SlideListEnum.ITEM_THUMB_SIZING, () => setThumbSize(getDefaultSize()));
+        return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
+    const applyThumbSize = (size: number) => {
+        setThumbSize(size);
+        slideListEventListenerGlobal.thumbSizing();
+    };
+    return [thumbSize, applyThumbSize];
 }
