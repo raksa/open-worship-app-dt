@@ -40,7 +40,13 @@ export default class SlideController {
         this._isSelected = isSelected;
     }
     deleteFile() {
-        return deleteFile(this._fileSource.filePath);
+        const isDeleted = deleteFile(this._fileSource.filePath);
+        toastEventListener.showSimpleToast({
+            title: 'Deleting Slide',
+            message: isDeleted ? 'Slide name: ' + this.fileName + ' have been deleted' :
+                'Unable to create slide due to internal error',
+        });
+        return isDeleted;
     }
     static createSlideController(basePath: string, slideName: string): SlideController | null {
         if (checkFileExist(basePath, slideName)) {

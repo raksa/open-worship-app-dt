@@ -1,5 +1,7 @@
 import SlideListEventListener from '../event/SlideListEventListener';
+import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
 import { listFiles, MimetypeNameType } from '../helper/fileHelper';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import SlideController from './SlideController';
 
 const FILE_TYPE: MimetypeNameType = 'slide';
@@ -47,16 +49,13 @@ export default class SlideListController {
         }
         return false;
     }
-    deleteSlideController(index: number): SlideController | null {
-        const slideController = this.getSlideController(index);
-        if (slideController !== null) {
-            slideController.deleteFile();
-            this._slideControllers = this._slideControllers.filter((_, i) => {
-                return i !== index;
-            });
-            this.eventListener.refresh();
-        }
-        return slideController;
+    deleteSlideController(slideController: SlideController) {
+        const isDeleted = slideController.deleteFile();
+        this._slideControllers = this._slideControllers.filter((newSlideController) => {
+            return newSlideController !== slideController;
+        });
+        this.eventListener.refresh();
+        return isDeleted;
     }
     select(slideController: SlideController) {
         if (this.selectedSlideController !== null) {
@@ -64,5 +63,22 @@ export default class SlideListController {
         }
         slideController.isSelected = true;
         this.eventListener.refresh();
+    }
+    showContextMenu(slideController: SlideController,
+        mouseEvent: React.MouseEvent<HTMLLIElement>) {
+        showAppContextMenu(mouseEvent, [
+            {
+                title: 'Copy Path to Clipboard ',
+                onClick: () => copyToClipboard(slideController.filePath),
+            },
+            {
+                title: 'Delete',
+                onClick: () => this.deleteSlideController(slideController),
+            },
+            {
+                title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
+                onClick: () => openExplorer(slideController.filePath),
+            },
+        ]);
     }
 }
