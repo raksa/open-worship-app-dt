@@ -10,6 +10,7 @@ import {
 import { getPresentRendered } from '../helper/appHelper';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 
+// TODO: clear bible
 export default function BGFGControl() {
     const [isPresentingBG, setIsShowingBG] = useStateSettingBoolean('bgfg-control-bg');
     const [isPresentingFG, setIsShowingFG] = useStateSettingBoolean('bgfg-control-fg');
