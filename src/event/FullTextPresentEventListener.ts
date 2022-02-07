@@ -83,3 +83,17 @@ export function useLyricUpdating(listener: ListenerType<LyricPresentType[]>) {
         };
     });
 }
+
+export function useFullTextPresenting(listener: ListenerType<void>) {
+    useEffect(() => {
+        const eventLyric = fullTextPresentEventListener.registerEventListener(
+            FullTextPresentEnum.PRESENT_LYRIC, listener);
+        const eventBible = fullTextPresentEventListener.registerEventListener(
+            FullTextPresentEnum.PRESENT_BIBLE, listener);
+        return () => {
+            fullTextPresentEventListener.unregisterEventListener(eventLyric);
+            fullTextPresentEventListener.unregisterEventListener(eventBible);
+        };
+    });
+}
+

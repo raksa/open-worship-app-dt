@@ -6,9 +6,9 @@ import { renderBGColor } from '../helper/presentingHelpers';
 
 export default function Colors() {
     const [color, setColor] = useState('#55efc4');
-    const onColorChange = (color: string) => {
-        renderBGColor(color);
-        setColor(color);
+    const onColorChange = (newColor: string) => {
+        renderBGColor(newColor);
+        setColor(newColor);
         presentEventListener.renderBG();
     };
     return (

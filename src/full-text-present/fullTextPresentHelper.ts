@@ -16,8 +16,6 @@ export type BiblePresentType = {
     },
 };
 
-
-// TODO: control by a class
 type StylingType = {
     color?: string;
     fontSize?: number;
