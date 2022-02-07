@@ -127,6 +127,9 @@
   .btn:hover .text-muted {
     color: rgb(211, 211, 211) !important;
   }
+  .btn {
+    white-space: nowrap;
+  }
 
   @import "bootstrap";
 }
