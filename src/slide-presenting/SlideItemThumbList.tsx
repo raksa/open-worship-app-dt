@@ -4,10 +4,8 @@ import { usePresentFGClearing } from '../event/PresentEventListener';
 import { getSlideDataByFilePath } from '../helper/slideHelper';
 import SlideListEventListener, {
     useRefreshing,
-    useSlideItemThumbOrdering,
-    useSlideItemThumbTooling,
-    useSlideItemThumbUpdating,
     useSlideSelecting,
+    useThumbSizing,
 } from '../event/SlideListEventListener';
 import SlideItemThumbListMenu from './SlideItemThumbListMenu';
 import SlideItemThumbListItems from './SlideItemThumbListItems';
@@ -16,7 +14,9 @@ import {
     getSlideItemSelectedSetting,
 } from '../helper/settingHelper';
 import SlideThumbsController, {
+    DEFAULT_THUMB_SIZE,
     THUMB_SELECTED_SETTING_NAME,
+    THUMB_WIDTH_SETTING_NAME,
 } from './SlideThumbsController';
 import { genFileSource } from '../helper/fileHelper';
 
@@ -94,16 +94,17 @@ class Controller extends Component<PropsType, StateType> {
 function View({ controller }: {
     controller: SlideThumbsController,
 }) {
+    const [thumbSize, setThumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
     usePresentFGClearing(() => controller.select(null));
-    const setIsModifying = (isModifying: boolean) => {
-        controller.isModifying = isModifying;
-    };
-    useSlideItemThumbUpdating(() => setIsModifying(true));
-    useSlideItemThumbOrdering(() => setIsModifying(true));
-    useSlideItemThumbTooling(() => setIsModifying(true));
-
     return (
         <div className='w-100 h-100' style={{ overflow: 'auto' }}
+            onWheel={(e) => {
+                if (e.ctrlKey) {
+                    const currentScale = (thumbSize / DEFAULT_THUMB_SIZE);
+                    const newScale = SlideThumbsController.toScaleThumbSize(e.deltaY > 0, currentScale);
+                    setThumbSize(newScale * DEFAULT_THUMB_SIZE);
+                }
+            }}
             onContextMenu={(e) => controller.showSlideItemContextMenu(e)}
             onPaste={() => controller.paste()}>
             <SlideItemThumbListMenu controller={controller} />

@@ -15,6 +15,7 @@ import {
 import { isWindowEditingMode } from '../App';
 import { Fragment, useState } from 'react';
 import SlideThumbsController, { DEFAULT_THUMB_SIZE, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
+import { SlideItemThumbType } from '../helper/slideHelper';
 
 export default function SlideItemThumbListItems({ controller }: {
     controller: SlideThumbsController,
@@ -46,7 +47,7 @@ export default function SlideItemThumbListItems({ controller }: {
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                controller.select(+ind);
+                controller.select((controller.getItemByIndex(+ind) as SlideItemThumbType).id);
             }
         };
         const useCallback = (key: KeyEnum) => {
@@ -59,7 +60,7 @@ export default function SlideItemThumbListItems({ controller }: {
     }
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {controller.items.map((data, i) => {
+            {controller.items.map((item, i) => {
                 const shouldReceiveAtLeft = draggingIndex !== null && draggingIndex !== 0 && i === 0;
                 const shouldReceiveAtRight = draggingIndex !== null && draggingIndex !== i && draggingIndex !== i + 1;
                 return (
@@ -70,10 +71,10 @@ export default function SlideItemThumbListItems({ controller }: {
                         <SlideItemThumb
                             isActive={i === controller.selectedIndex}
                             index={i}
-                            data={data}
+                            data={item}
                             onItemClick={() => {
-                                slideListEventListenerGlobal.selectSlideItemThumb(data);
-                                controller.select(i);
+                                slideListEventListenerGlobal.selectSlideItemThumb(item);
+                                controller.select(item.id);
                             }}
                             onContextMenu={(e) => controller.showItemThumbnailContextMenu(e, i)}
                             onCopy={() => {
