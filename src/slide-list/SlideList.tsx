@@ -138,11 +138,7 @@ function ListItem({ controller, itemClick, onContextMenu }: SlideItemProps) {
     return (
         <li className={`list-group-item ${controller.isSelected ? 'active' : ''} pointer`}
             title={controller.filePath}
-            onClick={() => {
-                if (!controller.isSelected) {
-                    itemClick();
-                }
-            }}
+            onClick={() => itemClick()}
             onContextMenu={onContextMenu}>
             <i className="bi bi-file-earmark-slides" style={{
                 color: controller.isThumbSelected ? 'green' : undefined,
