@@ -16,7 +16,7 @@
     overflow-y: auto;
   }
 
-  .list-group-item:hover {
+  .list-group-item:not(.active):hover {
     border: 1px solid var(--bs-gray-800);
     background-color: rgba(100, 0, 131, 0.342);
   }
@@ -126,6 +126,9 @@
   .active .text-muted,
   .btn:hover .text-muted {
     color: rgb(211, 211, 211) !important;
+  }
+  .btn {
+    white-space: nowrap;
   }
 
   @import "bootstrap";

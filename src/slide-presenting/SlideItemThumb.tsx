@@ -1,6 +1,6 @@
 import './SlideItemThumb.scss';
 
-import { SlideItemThumbType } from '../editor/slideType';
+import { SlideItemThumbType } from '../helper/slideHelper';
 import { parseHTML } from '../editor/slideParser';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { extractSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';

@@ -1,7 +1,10 @@
 import './BibleList.scss';
 
 import { useState } from 'react';
-import { bibleListEventListener, useBibleAdding } from '../event/BibleListEventListener';
+import {
+    fullTextPresentEventListener,
+    useBibleAdding,
+} from '../event/FullTextPresentEventListener';
 import {
     getBiblePresentingSetting,
     getSetting,
@@ -20,7 +23,7 @@ import { biblePresentToTitle } from '../bible-helper/helpers';
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
-    bibleListEventListener.add({ biblePresent, index });
+    fullTextPresentEventListener.addBibleItem({ biblePresent, index });
     const title = biblePresentToTitle(biblePresent);
     toastEventListener.showSimpleToast({
         title: 'Bible List',
@@ -33,7 +36,7 @@ export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boole
 
 export function presentBible(item: BiblePresentType) {
     setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
-    bibleListEventListener.present(item);
+    fullTextPresentEventListener.presentBible(item);
 }
 
 export function BibleItem({ item, onContextMenu }: {
@@ -93,7 +96,7 @@ export default function BibleList() {
     return (
         <div id="bible-list" className="card w-100 h-100">
             <div className="card-header">
-                <span>Bible List</span>
+                <span>Bibles</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
                     onClick={() => {
                         windowEventListener.fireEvent(openBibleSearchEvent);

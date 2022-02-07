@@ -1,11 +1,9 @@
-import electronProvider from './appProvider';
+import appProvider from './appProvider';
 import { PlaylistType, validatePlaylist } from './playlistHelper';
-import { getSlideFilePathSetting } from './settingHelper';
-import { SlidePresentType, SlideItemThumbType, validateSlide } from '../editor/slideType';
 import { readFile, deleteFile, createFile } from './fileHelper';
 
 export function getAppInfo() {
-    return electronProvider.ipcRenderer.sendSync('main:app:info') as {
+    return appProvider.ipcRenderer.sendSync('main:app:info') as {
         name: string,
         version: string,
         description: string,
@@ -95,45 +93,6 @@ export function parseSlideItemThumbSelected(selected: string, filePath: string |
     return null;
 }
 
-export function saveSlideItemThumbs(itemThumbs: SlideItemThumbType[]) {
-    // TODO: merge with present
-    try {
-        const filePath = getSlideFilePathSetting();
-        if (filePath !== null) {
-            const str = readFile(filePath);
-            if (str !== null) {
-                const json = JSON.parse(str);
-                if (validateSlide(json)) {
-                    json.items = itemThumbs;
-                    if (deleteFile(filePath) && createFile(JSON.stringify(json), filePath)) {
-                        return true;
-                    }
-                }
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return false;
-}
-export function getSlideDataByFilePath(filePath: string) {
-    try {
-        const str = readFile(filePath);
-        if (str !== null) {
-            const json = JSON.parse(str);
-            if (validateSlide(json)) {
-                const data = json as SlidePresentType;
-                data.items.forEach((item) => {
-                    item.slideFilePath = filePath;
-                });
-                return data;
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return null;
-}
 export function savePlaylist(playlistFilePath: string, playlist: PlaylistType) {
     try {
         if (deleteFile(playlistFilePath) &&

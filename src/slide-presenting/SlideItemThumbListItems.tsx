@@ -1,48 +1,45 @@
-import SlideItemThumb, { DragReceiver, ItemThumbGhost } from './SlideItemThumb';
-import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { WindowEnum } from '../event/WindowEventListener';
-import { SlideItemThumbType } from '../editor/slideType';
+import SlideItemThumb, {
+    DragReceiver,
+    ItemThumbGhost,
+} from './SlideItemThumb';
 import {
-    slideListEventListener,
+    KeyEnum,
+    useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
+import { WindowEnum } from '../event/WindowEventListener';
+import {
+    slideListEventListenerGlobal,
     useSlideItemThumbUpdating,
+    useThumbSizing,
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
-import { contextObject } from './SlideItemThumbListContextMenu';
 import { Fragment, useState } from 'react';
+import SlideThumbsController, { DEFAULT_THUMB_SIZE, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
+import { SlideItemThumbType } from '../helper/slideHelper';
 
-export default function SlideItemThumbListItems({
-    thumbWidth,
-    slideItemThumbs,
-    selectedIndex,
-    setSelectedWithPath,
-    setSetSlideItemThumbCopied,
-    setSlideItemThumbs,
-}: {
-    thumbWidth: number,
-    slideItemThumbs: SlideItemThumbType[],
-    selectedIndex: number | null,
-    setSelectedWithPath: (i: number) => void
-    setSetSlideItemThumbCopied: (i: number) => void
-    setSlideItemThumbs: (slideItemThumbs: SlideItemThumbType[]) => void,
+export default function SlideItemThumbListItems({ controller }: {
+    controller: SlideThumbsController,
 }) {
+    const [thumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useSlideItemThumbUpdating((itemThumb) => {
         itemThumb.isEditing = true;
-        const slideThumbList = slideItemThumbs.map((item) => {
+        const slideThumbList = controller.items.map((item) => {
             if (item.id === itemThumb.id) {
                 return itemThumb;
             }
             return item;
         });
-        setSlideItemThumbs(slideThumbList);
+        controller.items = slideThumbList;
     });
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
         const arrowListener = (e: KeyboardEvent) => {
+            const selectedIndex = controller.selectedIndex;
             if (selectedIndex === null) {
                 return;
             }
-            const length = slideItemThumbs.length;
+            const length = controller.items.length;
             if (length) {
                 let ind = e.key === KeyEnum.ArrowLeft ? selectedIndex - 1 : selectedIndex + 1;
                 if (ind >= length) {
@@ -50,7 +47,7 @@ export default function SlideItemThumbListItems({
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                setSelectedWithPath(+ind);
+                controller.select((controller.getItemByIndex(+ind) as SlideItemThumbType).id);
             }
         };
         const useCallback = (key: KeyEnum) => {
@@ -61,37 +58,29 @@ export default function SlideItemThumbListItems({
         };
         arrows.forEach(useCallback);
     }
-    const move = (id: string, toIndex: number) => {
-        const fromIndex: number = slideItemThumbs.findIndex((item) => item.id === id);
-        const newList = [...slideItemThumbs];
-        const target = newList.splice(fromIndex, 1)[0];
-        newList.splice(toIndex, 0, target);
-        setSlideItemThumbs(newList);
-        slideListEventListener.ordering();
-    };
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {slideItemThumbs.map((data, i) => {
+            {controller.items.map((item, i) => {
                 const shouldReceiveAtLeft = draggingIndex !== null && draggingIndex !== 0 && i === 0;
                 const shouldReceiveAtRight = draggingIndex !== null && draggingIndex !== i && draggingIndex !== i + 1;
                 return (
                     <Fragment key={`${i}`}>
                         {shouldReceiveAtLeft && <DragReceiver onDrop={(id) => {
-                            move(id, i);
+                            controller.move(id, i);
                         }} />}
                         <SlideItemThumb
-                            isActive={i === selectedIndex}
+                            isActive={i === controller.selectedIndex}
                             index={i}
-                            data={data}
+                            data={item}
                             onItemClick={() => {
-                                slideListEventListener.selectSlideItemThumb(data);
-                                setSelectedWithPath(i);
+                                slideListEventListenerGlobal.selectSlideItemThumb(item);
+                                controller.select(item.id);
                             }}
-                            onContextMenu={(e) => {
-                                contextObject.showItemThumbnailContextMenu(e, { index: i });
+                            onContextMenu={(e) => controller.showItemThumbnailContextMenu(e, i)}
+                            onCopy={() => {
+                                controller.copiedIndex = i;
                             }}
-                            onCopy={() => setSetSlideItemThumbCopied(i)}
-                            width={thumbWidth}
+                            width={thumbSize}
                             onDragStart={() => {
                                 setDraggingIndex(i);
                             }}
@@ -100,12 +89,13 @@ export default function SlideItemThumbListItems({
                             }}
                         />
                         {shouldReceiveAtRight && <DragReceiver onDrop={(id) => {
-                            move(id, i);
+                            controller.move(id, i);
                         }} />}
                     </Fragment>
                 );
             })}
-            {Array.from({ length: 2 }, (_, i) => <ItemThumbGhost key={`${i}`} width={thumbWidth} />)}
+            {Array.from({ length: 2 }, (_, i) => <ItemThumbGhost key={`${i}`}
+                width={thumbSize} />)}
         </div>
     );
 }

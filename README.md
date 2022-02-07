@@ -34,12 +34,16 @@ And Thanks others framework and tool
 * env-cmd
 * i18next
 * react
+* react-colorful
 * react-dom
 * react-i18next
 * react-scripts
 * sass
 * typescript
 * wait-on
+* @typescript-eslint/eslint-plugin": "^4.15.1
+* @typescript-eslint/parser": "^4.15.1
+* eslint": "^7.20.0
 
 ## Install
 

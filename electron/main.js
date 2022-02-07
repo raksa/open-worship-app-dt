@@ -38,6 +38,7 @@ const appManager = {
         const isWin32 = process.platform === 'win32';
         const isPresentCanFullScreen = isWin32;
         this.presentWin = new electron.BrowserWindow({
+            transparent: true,
             show: false,
             x: this.externalDisplay.bounds.x,
             y: this.externalDisplay.bounds.y,

@@ -1,9 +1,9 @@
 @import '../others/variables.scss';
 
 .text-shadow{
-  height: 300px;
+  max-height: 300px;
   overflow-y: auto;
-  .style-demo {
+  .ow-outline-demo {
     cursor: pointer;
     display: inline-block;
     padding: 3 px 9 px 6 px;

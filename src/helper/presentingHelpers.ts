@@ -1,4 +1,4 @@
-import { renderPresent } from '../helper/appHelper';
+import { renderPresent } from './appHelper';
 
 export function renderFG(html: string) {
     renderPresent({
@@ -7,7 +7,7 @@ const shadow = getShadow('foreground');
 shadow.innerHTML = \`${html}\`;
 `});
 }
-export function clearFG() {
+export function clearForeground() {
     renderPresent({
         script: `
 const shadow = getShadow('foreground');
@@ -65,7 +65,7 @@ clearOldBackground();
 ` });
 }
 
-export function clearBG() {
+export function clearBackground() {
     renderPresent({
         script: `
 const shadow = getShadow('background');

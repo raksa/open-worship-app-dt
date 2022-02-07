@@ -1,5 +1,5 @@
 import { toInputText } from '../bible-search/bibleSearchHelpers';
-import electronProvider from '../helper/appProvider';
+import appProvider from '../helper/appProvider';
 import { usePresentRenderText } from '../bible-helper/helpers';
 
 export function SettingAbout() {
@@ -29,7 +29,7 @@ export function SettingAbout() {
                 This is an open-source presentation app for worship service.
                 Official Github repo here: <button className='btn btn-success'
                     onClick={(e) => {
-                        electronProvider.electron.shell.openExternal('https://github.com/OpenWorshipApp/open-worship-app-dt');
+                        appProvider.electron.shell.openExternal('https://github.com/OpenWorshipApp/open-worship-app-dt');
                     }}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>
             </div>

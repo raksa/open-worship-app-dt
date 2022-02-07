@@ -2,7 +2,7 @@ import './Presenting.scss';
 
 import SlidePreview from './SlidePresentingController';
 import FullTextPresentController from '../full-text-present/FullTextPresentController';
-import { useBiblePresenting } from '../event/BibleListEventListener';
+import { useFullTextPresenting } from '../event/FullTextPresentEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { useStateSettingString } from '../helper/settingHelper';
@@ -10,7 +10,7 @@ import { useStateSettingString } from '../helper/settingHelper';
 export default function Presenting() {
     // s: slides, f: full text
     const [tabType, setTabType] = useStateSettingString('slide-presenting-tab', 's');
-    useBiblePresenting(() => setTabType('f'));
+    useFullTextPresenting(() => setTabType('f'));
     useSlideSelecting(() => setTabType('s'));
     useSlideItemThumbSelecting(() => setTabType('s'));
     return (
@@ -22,7 +22,7 @@ export default function Presenting() {
                             setTabType('s');
                             fullTextPresentHelper.hide();
                         }}>
-                        Slides
+                        Slide
                     </button>
                 </li>
                 <li className="nav-item">

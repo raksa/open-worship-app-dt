@@ -91,6 +91,12 @@ function addHighlightEvent() {
         });
     });
 }
+function muteVideos() {
+    const bgShadow = getShadow('background');
+    Array.from(bgShadow.querySelectorAll('video')).forEach((video) => {
+        video.muted = true;
+    });
+}
 function restore() {
     try {
         const data = JSON.parse(localStorage.getItem('backup'));
@@ -99,6 +105,7 @@ function restore() {
         getBible().innerHTML = data.bible || '';
         getShadow('alert').innerHTML = data.alert || '';
         addHighlightEvent();
+        muteVideos();
     } catch (error) { }
 }
 function clearOldBackground() {
@@ -131,4 +138,5 @@ function onLoad() {
             ipcRenderer.send('present:app:change-bible', isNext);
         }
     });
+    document.body.style.backgroundColor = 'transparent';
 }

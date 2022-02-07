@@ -5,8 +5,11 @@ import fullTextPresentHelper from './fullTextPresentHelper';
 import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import { getDefaultLyricItem, LyricPresentType } from '../lyric-list/LyricList';
-import { lyricListEventListener, useLyricPresenting } from '../event/LyricListEventListener';
 import { getSetting } from '../helper/settingHelper';
+import {
+    fullTextPresentEventListener,
+    useLyricPresenting,
+} from '../event/FullTextPresentEventListener';
 
 let isMounted = false;
 export default function LyricPreviewer() {
@@ -15,7 +18,7 @@ export default function LyricPreviewer() {
         defaultLyricItem !== null ? defaultLyricItem.items : []);
     const applyPresents = (newLyricPresents: LyricPresentType[]) => {
         setLyricPresents(newLyricPresents);
-        lyricListEventListener.update(newLyricPresents);
+        fullTextPresentEventListener.updateLyric(newLyricPresents);
     };
     useLyricPresenting(setLyricPresents);
     useEffect(() => {

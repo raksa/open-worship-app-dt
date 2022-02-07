@@ -1,5 +1,5 @@
-import electronProvider from './appProvider';
-import { setSlideFilePathSetting } from './settingHelper';
+import appProvider from './appProvider';
+import { setSlideItemSelectedSetting } from './settingHelper';
 
 type MimeType = {
     type: string,
@@ -20,6 +20,7 @@ function getFileMetaData(fileName: string, mimeTypes: MimeType[]): FileMetadataT
 }
 
 export type FileSourceType = {
+    basePath: string,
     fileName: string,
     filePath: string,
     src: string,
@@ -36,29 +37,48 @@ export function isSupportedMimetype(fileMimetype: string, mt: MimetypeNameType) 
     return mimeTypes.map((mimeType) => mimeType.mimeType).some((type) => type === fileMimetype);
 }
 
+export function genFileSource(filePath: string, fileName?: string): FileSourceType {
+    let basePath;
+    if (fileName) {
+        basePath = filePath;
+        filePath = appProvider.path.join(filePath, fileName);
+    } else {
+        const index = filePath.lastIndexOf(appProvider.path.sep);
+        basePath = filePath.substring(0, index);
+        fileName = appProvider.path.basename(filePath);
+    }
+    return {
+        basePath,
+        fileName: fileName,
+        filePath,
+        src: appProvider.url.pathToFileURL(filePath).toString(),
+    };
+}
+
 export function listFiles(dir: string, type: MimetypeNameType) {
     try {
         const mimeTypes = require(`./mime/${type}-types.json`) as MimeType[];
-        const files = electronProvider.fs.readdirSync(dir);
+        const files = appProvider.fs.readdirSync(dir);
         const matchedFiles = files.map((fileName) => getFileMetaData(fileName, mimeTypes))
             .filter((d) => !!d) as FileMetadataType[];
-        return matchedFiles.map((fileMetadata) => {
-            const filePath = electronProvider.path.join(dir, fileMetadata.fileName);
-            return {
-                fileName: fileMetadata.fileName,
-                filePath,
-                src: electronProvider.url.pathToFileURL(filePath).toString(),
-            };
-        });
+        return matchedFiles.map((fileMetadata) => genFileSource(dir, fileMetadata.fileName));
     } catch (error) { }
     return null;
 }
 
+export function checkFileExist(filePath: string, fileName?: string) {
+    if (fileName) {
+        const newFilePath = appProvider.path.join(filePath, fileName);
+        return !!appProvider.fs.existsSync(newFilePath);
+    }
+    return !!appProvider.fs.existsSync(filePath);
+}
+
 export function createFile(txt: string, basePath: string, fileName?: string) {
     try {
-        const filePath = fileName ? electronProvider.path.join(basePath, fileName) : basePath;
-        if (!electronProvider.fs.existsSync(filePath)) {
-            electronProvider.fs.writeFileSync(filePath, txt);
+        const filePath = fileName ? appProvider.path.join(basePath, fileName) : basePath;
+        if (!checkFileExist(filePath)) {
+            appProvider.fs.writeFileSync(filePath, txt);
             return true;
         }
     } catch (error) {
@@ -67,9 +87,25 @@ export function createFile(txt: string, basePath: string, fileName?: string) {
     return false;
 }
 
+export function overWriteFile(filePath: string, txt: string) {
+    return deleteFile(filePath) && createFile(txt, filePath);
+}
+
+export function renameFile(basePath: string, oldFileName: string, newFileName: string) {
+    try {
+        const oldFilePath = appProvider.path.join(basePath, oldFileName);
+        const newFilePath = appProvider.path.join(basePath, newFileName);
+        appProvider.fs.renameSync(oldFilePath, newFilePath);
+        return true;
+    } catch (error) {
+        console.log(error);
+    }
+    return false;
+}
+
 export function deleteFile(filePath: string) {
     try {
-        electronProvider.fs.unlinkSync(filePath);
+        appProvider.fs.unlinkSync(filePath);
         return true;
     } catch (error) {
         console.log(error);
@@ -79,17 +115,17 @@ export function deleteFile(filePath: string) {
 
 export function readFile(filePath: string) {
     try {
-        return electronProvider.fs.readFileSync(filePath, 'utf8');
+        return appProvider.fs.readFileSync(filePath, 'utf8');
     } catch (error) {
         console.log(error);
-        setSlideFilePathSetting('');
+        setSlideItemSelectedSetting('');
     }
     return null;
 }
 
 export function copyFileToPath(filePath: string, fileName: string, destinationPath: string) {
     try {
-        electronProvider.fs.copyFileSync(filePath, electronProvider.path.join(destinationPath, fileName));
+        appProvider.fs.copyFileSync(filePath, appProvider.path.join(destinationPath, fileName));
         return true;
     } catch (error) {
         console.log(error);

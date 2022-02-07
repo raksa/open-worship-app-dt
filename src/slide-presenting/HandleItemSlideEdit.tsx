@@ -3,7 +3,7 @@ import { useWindowEvent } from '../event/WindowEventListener';
 import SlideItemEditorPopup, {
     closeItemSlideEditEvent, openItemSlideEditEvent,
 } from '../editor/SlideItemEditorPopup';
-import { SlideItemThumbType } from '../editor/slideType';
+import { SlideItemThumbType } from '../helper/slideHelper';
 
 export default function HandleItemSlideEdit() {
     const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(null);

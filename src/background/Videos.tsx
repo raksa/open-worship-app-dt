@@ -11,7 +11,7 @@ import {
     listFiles,
 } from '../helper/fileHelper';
 import PathSelector from '../others/PathSelector';
-import { renderBGVideo } from '../slide-presenting/slidePresentHelpers';
+import { renderBGVideo } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { toastEventListener } from '../event/ToastEventListener';
 

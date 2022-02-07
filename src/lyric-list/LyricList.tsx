@@ -3,8 +3,11 @@ import './LyricList.scss';
 import { useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { lyricListEventListener, useLyricUpdating } from '../event/LyricListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
+import {
+    fullTextPresentEventListener,
+    useLyricUpdating,
+} from '../event/FullTextPresentEventListener';
 
 export type LyricPresentType = {
     title: string,
@@ -17,7 +20,7 @@ type LyricItemType = {
 const presentLyric = (lyricItem: LyricItemType, index: number) => {
     // TODO: change to fileName
     setSetting('lyric-list-editing-index', `${index}`);
-    lyricListEventListener.present(lyricItem.items);
+    fullTextPresentEventListener.presentLyric(lyricItem.items);
 };
 
 function LyricItem({ index, lyricItem, onContextMenu }: {
@@ -116,7 +119,7 @@ Block3
     return (
         <div id="lyric-list" className="card w-100 h-100">
             <div className="card-header">
-                <span>Lyric List</span>
+                <span>Lyrics</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
                     onClick={() => setIsCreatingNew(true)}>
                     <i className="bi bi-file-earmark-plus" />
@@ -171,7 +174,7 @@ Block3
                                             applyList(newList);
                                             if (getLyricListEditingIndex() === i) {
                                                 clearLyricListEditingIndex();
-                                                lyricListEventListener.present([]);
+                                                fullTextPresentEventListener.presentLyric([]);
                                             }
                                         }
                                     },

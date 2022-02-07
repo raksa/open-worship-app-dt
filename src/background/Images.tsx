@@ -11,7 +11,7 @@ import {
 } from '../helper/fileHelper';
 import { useStateSettingString } from '../helper/settingHelper';
 import PathSelector from '../others/PathSelector';
-import { renderBGImage } from '../slide-presenting/slidePresentHelpers';
+import { renderBGImage } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { toastEventListener } from '../event/ToastEventListener';
 

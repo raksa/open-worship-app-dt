@@ -1,5 +1,6 @@
-import { HAlignmentEnum, VAlignmentEnum } from './slideParser';
-import { getAppInfo } from '../helper/helpers';
+import { HAlignmentEnum, VAlignmentEnum } from '../editor/slideParser';
+import { readFile } from './fileHelper';
+import { getAppInfo } from './helpers';
 
 export type ToolingType = {
     text?: {
@@ -87,4 +88,23 @@ export function defaultSlide(width: number, height: number) {
             },
         ],
     };
+}
+
+export function getSlideDataByFilePath(filePath: string) {
+    try {
+        const str = readFile(filePath);
+        if (str !== null) {
+            const json = JSON.parse(str);
+            if (validateSlide(json)) {
+                const data = json as SlidePresentType;
+                data.items.forEach((item) => {
+                    item.slideFilePath = filePath;
+                });
+                return data;
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+    return null;
 }

@@ -5,7 +5,6 @@ import PathSelector from '../others/PathSelector';
 import {
     extractSlideItemThumbSelected,
     getPlaylistDataByFilePath,
-    getSlideDataByFilePath,
     savePlaylist,
 } from '../helper/helpers';
 import { toastEventListener } from '../event/ToastEventListener';
@@ -19,7 +18,6 @@ import { PlaylistType } from '../helper/playlistHelper';
 import { BibleItem } from '../bible-list/BibleList';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumb';
-import { slideListEventListener } from '../event/SlideListEventListener';
 import {
     FileSourceType,
     listFiles,
@@ -31,6 +29,8 @@ import {
     useStateSettingString,
     useStateSettingBoolean,
 } from '../helper/settingHelper';
+import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import { getSlideDataByFilePath } from '../helper/slideHelper';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -72,7 +72,7 @@ export default function Playlist() {
     return (
         <div id="playlist" className="card w-100 h-100">
             <div className="card-header">
-                <span>Playlist</span>
+                <span>Playlists</span>
                 <button className="btn btn-sm btn-outline-info float-end" title="new playlist list"
                     onClick={() => setIsCreatingNew(true)}>
                     <i className="bi bi-file-earmark-plus" />
@@ -235,7 +235,7 @@ function SlideItemThumbPlaylist({
     return (
         <div className='card overflow-hidden'
             onClick={() => {
-                slideListEventListener.selectSlideItemThumb(item);
+                slideListEventListenerGlobal.selectSlideItemThumb(item);
             }}>
             <SlideItemThumbIFrame id={id} width={width} html={item.html} />
         </div>
