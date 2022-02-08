@@ -79,6 +79,9 @@ const appManager = {
     },
 };
 
-electron.app.whenReady().then(() => appManager.init());
+electron.app.whenReady().then(() => {
+    eventListener.initDisplayObserver(appManager);
+    appManager.init();
+});
 
 eventListener.initMainScreen(appManager);

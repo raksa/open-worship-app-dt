@@ -2,19 +2,31 @@ import { useState } from 'react';
 import languages from '../lang';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { useTranslation } from 'react-i18next';
+import { useDisplay } from '../event/PresentEventListener';
+import { saveDisplaySetting } from '../helper/appHelper';
 
 export function getSelectedLangLocale() {
     const lc = getSetting('language', languages.en.locale);
     return Object.values(languages).find((l) => l.locale === lc) || languages.en;
 }
 export function SettingGeneral() {
+    return (
+        <div>
+            <Language />
+            <Display />
+        </div>
+    );
+}
+
+function Language() {
     const [isSelecting, setIsSelecting] = useState(false);
     const [selected, setSelected] = useState(getSelectedLangLocale());
     const { i18n } = useTranslation();
 
     return (
-        <div className='d-flex'>
-            <div className='lang'>
+        <div className='card lang'>
+            <div className='card-header'>Language</div>
+            <div className='card-body'>
                 <button className={
                     'btn btn-info flag-item'}
                     onClick={() => { setIsSelecting(!isSelecting); }}>
@@ -39,6 +51,52 @@ export function SettingGeneral() {
                         })}
                     </div>
                 }
+            </div>
+        </div>
+    );
+}
+
+function Display() {
+    const { displays, mainDisplay, presentDisplay } = useDisplay();
+
+    return (
+        <div className='card'>
+            <div className='card-header'>Display</div>
+            <div className='card-body'>
+                <div className="input-group">
+                    <span >Main Display:</span>
+                    <select className="form-select" aria-label="Default select example"
+                        value={mainDisplay.id} onChange={(e) => {
+                            saveDisplaySetting({
+                                mainDisplayId: e.target.value,
+                                presentDisplayId: presentDisplay.id,
+                            });
+                        }}>
+                        {displays.map(({ id, bounds }, i) => {
+                            return (
+                                <option key={i} value={id}>
+                                    screen{i} {bounds.width}x{bounds.height}</option>
+                            );
+                        })}
+                    </select>
+                </div>
+                <div className="input-group">
+                    <span >Present Display:</span>
+                    <select className="form-select" aria-label="Default select example"
+                        value={presentDisplay.id} onChange={(e) => {
+                            saveDisplaySetting({
+                                mainDisplayId: mainDisplay.id,
+                                presentDisplayId: e.target.value,
+                            });
+                        }}>
+                        {displays.map(({ id, bounds }, i) => {
+                            return (
+                                <option key={i} value={id}>
+                                    screen{i} {bounds.width}x{bounds.height}</option>
+                            );
+                        })}
+                    </select>
+                </div>
             </div>
         </div>
     );

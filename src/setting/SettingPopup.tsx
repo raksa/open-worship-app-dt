@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { SettingGeneral } from './SettingGeneral';
 import { SettingBible } from './SettingBible';
 import { SettingAbout } from './SettingAbout';
+import { useStateSettingString } from '../helper/settingHelper';
 
 export const openSettingEvent = {
     window: WindowEnum.Setting,
@@ -26,10 +27,9 @@ export default function SettingPopup() {
         </Modal>
     );
 }
-// g: general, b: bible, a: about
-type TabType = 'g' | 'b' | 'a';
 function Setting() {
-    const [tabType, setTabType] = useState<TabType>('b');
+    // g: general, b: bible, a: about
+    const [tabType, setTabType] = useStateSettingString('popup-setting-tab', 'b');
     const { t } = useTranslation();
 
     return (
