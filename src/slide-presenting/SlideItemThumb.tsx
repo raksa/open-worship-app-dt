@@ -1,17 +1,16 @@
 import './SlideItemThumb.scss';
 
-import { SlideItemThumbType } from '../helper/slideHelper';
-import { parseHTML } from '../editor/slideParser';
+import { HTML2React, SlideItemThumbType } from '../helper/slideHelper';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { extractSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
 
 export function SlideItemThumbIFrame({
     id, width, html,
 }: { id: string, width: number, html: string }) {
-    const parsedHTMLData = parseHTML(html);
-    const height = width * parsedHTMLData.height / parsedHTMLData.width;
-    const scaleX = width / parsedHTMLData.width;
-    const scaleY = height / parsedHTMLData.height;
+    const html2React = HTML2React.parseHTML(html);
+    const height = width * html2React.height / html2React.width;
+    const scaleX = width / html2React.width;
+    const scaleY = height / html2React.height;
     return (
         <div style={{
             width, height,
@@ -22,8 +21,8 @@ export function SlideItemThumbIFrame({
                 style={{
                     pointerEvents: 'none',
                     borderStyle: 'none',
-                    width: `${parsedHTMLData.width}px`,
-                    height: `${parsedHTMLData.height}px`,
+                    width: `${html2React.width}px`,
+                    height: `${html2React.height}px`,
                     transform: 'translate(-50%, -50%)',
                 }}
                 srcDoc={`<style>html,body {overflow: hidden;}</style>${html}`}
@@ -36,7 +35,8 @@ type SlideItemThumbnailProps = {
     width: number,
     index: number;
     isActive: boolean;
-    data: SlideItemThumbType;
+    slideItemThumbData: SlideItemThumbType;
+    slideFilePath: string;
     onItemClick: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
     onCopy: () => void,
@@ -44,8 +44,8 @@ type SlideItemThumbnailProps = {
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 };
 export default function SlideItemThumb({
-    width,
-    isActive, index, data,
+    width, isActive, index,
+    slideItemThumbData, slideFilePath,
     onItemClick,
     onContextMenu,
     onCopy,
@@ -56,7 +56,7 @@ export default function SlideItemThumb({
         <div className={`slide-item-thumb card ${isActive ? 'active' : ''} pointer`}
             draggable
             onDragStart={(e) => {
-                const path = toSlideItemThumbSelected(data.slideFilePath, data.id) || '';
+                const path = toSlideItemThumbSelected(slideFilePath, slideItemThumbData.id) || '';
                 e.dataTransfer.setData('text/plain', path);
                 onDragStart(e);
             }}
@@ -73,13 +73,13 @@ export default function SlideItemThumb({
             onCopy={onCopy}>
             <div className="card-header">
                 {index + 1} {isActive && <span><i className="bi bi-collection" /></span>}
-                {data.isEditing && <span className='float-end' style={{
+                {slideItemThumbData.isEditing && <span className='float-end' style={{
                     color: 'red',
                 }}>*</span>}
             </div>
             <div className="card-body overflow-hidden"
                 style={{ width }} >
-                <SlideItemThumbIFrame id={data.id} width={width} html={data.html} />
+                <SlideItemThumbIFrame id={slideItemThumbData.id} width={width} html={slideItemThumbData.html} />
             </div>
         </div>
     );

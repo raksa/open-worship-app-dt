@@ -22,10 +22,8 @@ export default class EditorBoxMapper {
     get boxEditors() {
         return Object.values(this._editors).filter((boxEditor) => !!boxEditor) as BoxEditor[];
     }
-    htmlHTMLList() {
-        return this.boxEditors.map((boxEditor) => {
-            return boxEditor.toString();
-        });
+    get html2ReactChildren() {
+        return this.boxEditors.map((boxEditor) => boxEditor.data);
     }
     stopAllModes() {
         return new Promise<boolean>((resolve) => {

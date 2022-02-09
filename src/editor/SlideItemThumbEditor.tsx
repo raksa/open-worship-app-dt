@@ -2,12 +2,11 @@ import './SlideItemThumbEditor.scss';
 
 import { useState } from 'react';
 import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
-import { SlideItemThumbType } from '../helper/slideHelper';
+import { HTML2React, SlideItemThumbType } from '../helper/slideHelper';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
 import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
-import { parseHTML } from './slideParser';
 import { editorMapper } from './EditorBoxMapper';
 import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
 
@@ -42,7 +41,7 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
         'editor-v2': '1',
     });
     const [scale, setScale] = useStateSettingNumber('editor-scale', 1);
-    const data = parseHTML(slideItemThumb.html);
+    const html2React = HTML2React.parseHTML(slideItemThumb.html);
     const maxScale = 3;
     const minScale = 0.2;
     const scaleStep = 0.1;
@@ -65,14 +64,13 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
             <div data-fs='editor-v1' className='flex-item' style={{ flex: flexSize['editor-v1'] || 1 }}>
                 <div className='editor-container w-100 h-100'>
                     <div className='overflow-hidden' style={{
-                        width: `${data.width * scale + 20}px`,
-                        height: `${data.height * scale + 20}px`,
+                        width: `${html2React.width * scale + 20}px`,
+                        height: `${html2React.height * scale + 20}px`,
                     }}>
                         <div className='w-100 h-100' style={{
                             transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
                         }}>
-                            <Editor scale={scale} slideItemThumb={slideItemThumb} data={data}
-                                {...data} />
+                            <Editor scale={scale} slideItemThumb={slideItemThumb} html2React={html2React} />
                         </div>
                     </div>
                 </div>

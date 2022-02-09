@@ -4,14 +4,10 @@ import {
 } from '../event/SlideListEventListener';
 import {
     getDefaultBoxHTML,
+    HTML2ReactChild,
+    HTML2React,
     SlideItemThumbType,
 } from '../helper/slideHelper';
-import {
-    HTML2ReactChildType,
-    HTML2ReactType,
-    parseChildHTML,
-    parseHTML,
-} from './slideParser';
 import { BoxEditor } from './BoxEditor';
 import {
     KeyEnum,
@@ -22,61 +18,57 @@ import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 
-export default function Editor({ slideItemThumb, data, width, height, scale }: {
+export default function Editor({ slideItemThumb, html2React, scale }: {
     slideItemThumb: SlideItemThumbType,
-    data: HTML2ReactType,
-    width: number,
-    height: number,
+    html2React: HTML2React,
     scale: number,
 }) {
-    const [boxEditors, setBoxEditors] = useState(data.children);
-    const [boxEditorCopiedIndex, setBoxEditorCopiedIndex] = useState<number | null>(null);
+    const [html2ReactChildren, setHtml2ReactChildren] = useState(html2React.children);
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-    const cloneBoxEditor = (be: HTML2ReactChildType) => {
-        const newBoxEditor = cloneObject(be) as HTML2ReactChildType;
-        newBoxEditor.top += 10;
-        newBoxEditor.left += 10;
-        return newBoxEditor;
+    const cloneHtml2ReactChild = (be: HTML2ReactChild) => {
+        const newHtml2ReactChild: HTML2ReactChild = cloneObject(be);
+        newHtml2ReactChild.top += 10;
+        newHtml2ReactChild.left += 10;
+        return newHtml2ReactChild;
     };
     const duplicate = (index: number) => {
-        const newBoxEditors = [...boxEditors];
-        const newBoxEditor = cloneBoxEditor(newBoxEditors[index]);
-        newBoxEditors.splice(index + 1, 0, newBoxEditor);
-        setBoxEditors(newBoxEditors);
+        const newHtml2ReactChildren = [...html2ReactChildren];
+        const newHtml2ReactChild = cloneHtml2ReactChild(newHtml2ReactChildren[index]);
+        newHtml2ReactChildren.splice(index + 1, 0, newHtml2ReactChild);
+        setHtml2ReactChildren(newHtml2ReactChildren);
     };
     const deleteItem = (index: number) => {
-        const newBoxEditors = boxEditors.filter((_, i) => i !== index);
-        setBoxEditors(newBoxEditors);
+        const newHtml2ReactChildren = html2ReactChildren.filter((_, i) => i !== index);
+        setHtml2ReactChildren(newHtml2ReactChildren);
     };
     const paste = () => {
-        const newBoxEditors = [...boxEditors];
-        if (boxEditorCopiedIndex !== null && newBoxEditors[boxEditorCopiedIndex]) {
-            const newBoxEditor = cloneBoxEditor(newBoxEditors[boxEditorCopiedIndex]);
-            newBoxEditors.push(newBoxEditor);
-            setBoxEditors(newBoxEditors);
+        const newHtml2ReactChildren = [...html2ReactChildren];
+        if (copiedIndex !== null && newHtml2ReactChildren[copiedIndex]) {
+            const newHtml2ReactChild = cloneHtml2ReactChild(newHtml2ReactChildren[copiedIndex]);
+            newHtml2ReactChildren.push(newHtml2ReactChild);
+            setHtml2ReactChildren(newHtml2ReactChildren);
         }
     };
     const newBox = () => {
-        const newBoxEditors = [...boxEditors];
-        const newBoxEditor = getDefaultBoxHTML();
-        newBoxEditors.push(parseChildHTML(newBoxEditor));
-        setBoxEditors(newBoxEditors);
+        const newHtml2ReactChildren = [...html2ReactChildren];
+        const newBoxHTML = getDefaultBoxHTML();
+        newHtml2ReactChildren.push(HTML2ReactChild.parseHTML(newBoxHTML));
+        setHtml2ReactChildren(newHtml2ReactChildren);
     };
 
     const applyUpdate = (editingIndex?: number) => {
-        const boxListHTML = editorMapper.htmlHTMLList();
-        const parsedHTMLData = parseHTML(slideItemThumb.html);
-        const newHtml = `<div style="width: ${parsedHTMLData.width}px; height: ${parsedHTMLData.height}px;">` +
-            `${boxListHTML.join('')}</div>`;
-        if (newHtml !== slideItemThumb.html) {
-            slideItemThumb.html = newHtml;
+        const parsedHTMLData = HTML2React.parseHTML(slideItemThumb.html);
+        parsedHTMLData.children = editorMapper.html2ReactChildren;
+        if (parsedHTMLData.htmlString !== slideItemThumb.html) {
+            slideItemThumb.html = parsedHTMLData.htmlString;
             slideListEventListenerGlobal.updateSlideItemThumb(slideItemThumb);
             if (editingIndex !== undefined) {
                 const be = editorMapper.getByIndex(editingIndex);
                 if (be !== null) {
-                    const newBoxEditors = [...boxEditors];
-                    newBoxEditors[editingIndex] = cloneObject(be.state.data);
-                    setBoxEditors(newBoxEditors);
+                    const newHtml2ReactChildren = [...html2ReactChildren];
+                    newHtml2ReactChildren[editingIndex] = cloneObject(be.state.data);
+                    setHtml2ReactChildren(newHtml2ReactChildren);
                 }
             }
         }
@@ -85,8 +77,8 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
         if (~editorMapper.selectedIndex &&
             (newData.box?.layerBack || newData.box?.layerFront)) {
             const index = editorMapper.selectedIndex;
-            let newBoxEditors = [...boxEditors];
-            newBoxEditors = newBoxEditors.map((be, i) => {
+            let newHtml2ReactChildren = [...html2ReactChildren];
+            newHtml2ReactChildren = newHtml2ReactChildren.map((be, i) => {
                 if (i === index) {
                     be.zIndex = newData.box?.layerBack ? 1 : 2;
                 } else {
@@ -94,23 +86,23 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                 }
                 return be;
             });
-            setBoxEditors(newBoxEditors);
+            setHtml2ReactChildren(newHtml2ReactChildren);
         }
         editorMapper.selectedBoxEditor?.tooling(newData);
     });
 
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => editorMapper.stopAllModes());
     useEffect(() => {
-        setBoxEditors(data.children);
-    }, [data]);
+        setHtml2ReactChildren(html2React.children);
+    }, [html2React]);
     useEffect(() => {
         applyUpdate();
-    }, [boxEditors.length]);
+    }, [html2ReactChildren.length]);
     return (
         <>
             <div className='editor blank-bg border-white-round' style={{
-                width: `${width}px`,
-                height: `${height}px`,
+                width: `${html2React.width}px`,
+                height: `${html2React.height}px`,
                 transform: 'translate(-50%, -50%)',
             }} onContextMenu={(e) => {
                 showAppContextMenu(e, [
@@ -119,18 +111,18 @@ export default function Editor({ slideItemThumb, data, width, height, scale }: {
                         onClick: newBox,
                     },
                     {
-                        title: 'Paste', disabled: boxEditorCopiedIndex === null,
+                        title: 'Paste', disabled: copiedIndex === null,
                         onClick: paste,
                     },
                 ]);
             }} onDoubleClick={() => editorMapper.stopAllModes()} >
-                {boxEditors.map((d, i) => {
-                    return <BoxEditor parentWidth={width} parentHeight={height}
+                {html2ReactChildren.map((d, i) => {
+                    return <BoxEditor parentWidth={html2React.width} parentHeight={html2React.height}
                         scale={scale} key={`${i}`} onContextMenu={(e) => {
                             showAppContextMenu(e, [
                                 {
                                     title: 'Copy', onClick: () => {
-                                        setBoxEditorCopiedIndex(i);
+                                        setCopiedIndex(i);
                                     },
                                 },
                                 {

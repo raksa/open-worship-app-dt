@@ -1,16 +1,26 @@
 import {
     getSlideDataByFilePath,
+    HTML2React,
     SlideItemThumbType,
 } from '../helper/slideHelper';
 import { FileSourceType, overWriteFile } from '../helper/fileHelper';
 import FileController from '../others/FileController';
 import { toastEventListener } from '../event/ToastEventListener';
-import { getSetting, getSlideItemSelectedSetting, setSetting } from '../helper/settingHelper';
-import { cloneObject, parseSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
+import {
+    getSetting,
+    getSlideItemSelectedSetting,
+    setSetting,
+} from '../helper/settingHelper';
+import {
+    cloneObject,
+    parseSlideItemThumbSelected,
+    toSlideItemThumbSelected,
+} from '../helper/helpers';
 import SlideListEventListener, { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
+import { DisplayType } from '../helper/displayHelper';
 
 export const MIN_THUMB_SCALE = 1;
 export const THUMB_SCALE_STEP = 0.2;
@@ -23,7 +33,6 @@ export type ChangeHistory = { items: SlideItemThumbType[] };
 export default class SlideThumbsController extends FileController {
     _items: SlideItemThumbType[];
     _copiedIndex: number | null = null;
-    _isWrongDimension = true;
     _selectedId: string | null = null;
     _eventListener: SlideListEventListener;
     _history: {
@@ -52,6 +61,9 @@ export default class SlideThumbsController extends FileController {
             this.select(parsed.id);
         }
     }
+    refresh() {
+        this._eventListener.refresh();
+    }
     getItemByIndex(index: number): SlideItemThumbType | null {
         return this._items[index] || null;
     }
@@ -69,6 +81,7 @@ export default class SlideThumbsController extends FileController {
     }
     set copiedIndex(index: number | null) {
         this._copiedIndex = index;
+        this.refresh();
     }
     get items() {
         return this._items;
@@ -78,7 +91,7 @@ export default class SlideThumbsController extends FileController {
     }
     set items(newItems: SlideItemThumbType[]) {
         this._items = newItems.map((item) => cloneObject(item));
-        this._eventListener.refresh();
+        this.refresh();
     }
     get selectedIndex() {
         if (this.selectedItem === null) {
@@ -91,7 +104,7 @@ export default class SlideThumbsController extends FileController {
     }
     set selectedId(id: string | null) {
         this._selectedId = id;
-        this._eventListener.refresh();
+        this.refresh();
     }
     get selectedItem() {
         if (this._selectedId === null) {
@@ -106,35 +119,28 @@ export default class SlideThumbsController extends FileController {
         this._items.forEach((item) => {
             item.isEditing = isModifying;
         });
-        this._eventListener.refresh();
+        this.refresh();
     }
     setItemIsModifying(item: SlideItemThumbType, isModifying: boolean) {
         const targetItem = this.getItemById(item.id);
         if (targetItem !== null) {
             targetItem.isEditing = isModifying;
-            this._eventListener.refresh();
+            this.refresh();
         }
-    }
-    get isWrongDimension() {
-        return this._isWrongDimension;
-    }
-    set isWrongDimension(isWrongDimension: boolean) {
-        this._isWrongDimension = isWrongDimension;
-        this._eventListener.refresh();
     }
     get undo() {
         return this._history.undo;
     }
     set undo(undo: ChangeHistory[]) {
         this._history.undo = undo;
-        this._eventListener.refresh();
+        this.refresh();
     }
     get redo() {
         return this._history.redo;
     }
     set redo(redo: ChangeHistory[]) {
         this._history.redo = redo;
-        this._eventListener.refresh();
+        this.refresh();
     }
     get maxId() {
         const list = this.items.map((item) => +item.id).sort();
@@ -164,12 +170,34 @@ export default class SlideThumbsController extends FileController {
             }];
         }
     }
-    fixSlideDimension() {
+    checkIsWrongDimension({ bounds }: DisplayType) {
+        const found = this.items.map((item) => {
+            const html2React = HTML2React.parseHTML(item.html);
+            return { width: html2React.width, height: html2React.height };
+        }).find(({ width, height }: { width: number, height: number }) => {
+            return bounds.width !== width || bounds.height !== height;
+        });
+        if (found) {
+            return {
+                slide: found,
+                display: { width: bounds.width, height: bounds.height },
+            };
+        }
+        return null;
+    }
+    fixSlideDimension({ bounds }: DisplayType) {
+        this.items = this.currentItems.map(({ id, html, isEditing }) => {
+            const html2React = HTML2React.parseHTML(html);
+            html2React.width = bounds.width;
+            html2React.height = bounds.height;
+            return { id, html: html2React.htmlString, isEditing };
+        });
+        this.save();
         toastEventListener.showSimpleToast({
             title: 'Fix Slide Dimension',
             message: 'Slide dimension has been fixed',
         });
-        this.isWrongDimension = false;
+        this.refresh();
     }
     save() {
         try {

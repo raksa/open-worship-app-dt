@@ -5,11 +5,13 @@ import {
     useKeyboardRegistering,
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
+import { useDisplay } from '../event/PresentEventListener';
 import SlideThumbsController from './SlideThumbsController';
 
 export default function SlideItemThumbListMenu({ controller }: {
     controller: SlideThumbsController,
 }) {
+    const { presentDisplay } = useDisplay();
     const eventMapper = {
         wControlKey: [WindowsControlEnum.Ctrl],
         mControlKey: [MacControlEnum.Ctrl],
@@ -17,6 +19,7 @@ export default function SlideItemThumbListMenu({ controller }: {
         key: 's',
     };
     useKeyboardRegistering(eventMapper, () => controller.save());
+    const foundWrongDimension = controller.checkIsWrongDimension(presentDisplay);
     return (
         <div style={{
             borderBottom: '1px solid #00000024',
@@ -45,13 +48,18 @@ export default function SlideItemThumbListMenu({ controller }: {
                         title="save slide thumbs"
                         onClick={() => controller.save()}>save</button>
                 }
-                {controller.isWrongDimension &&
+                {foundWrongDimension !== null &&
                     <button type="button" className="btn btn-sm btn-warning"
-                        title="⚠️ slide dimension is not match with present screen"
-                        onClick={() => controller.fixSlideDimension()}>
+                        title={toWrongDimensionString(foundWrongDimension)}
+                        onClick={() => controller.fixSlideDimension(presentDisplay)}>
                         Fix Slide Dimension</button>
                 }
             </div>
         </div>
     );
+}
+function toWrongDimensionString({ slide, display }: {
+    slide: { width: number, height: number }, display: { width: number, height: number },
+}) {
+    return `⚠️ slide:${slide.width}x${slide.height} display:${display.width}x${display.height}`;
 }

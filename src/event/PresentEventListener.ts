@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
-import { getAllDisplays } from '../helper/appHelper';
+import { getAllDisplays } from '../helper/displayHelper';
 import EventHandler from './EventHandler';
 
 export enum PresentTypeEnum {
@@ -141,7 +141,7 @@ export function useDisplay() {
     const [displays, setDisplays] = useState(getAllDisplays());
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CHANGE_BIBLE, () => setDisplays(getAllDisplays()));
+            PresentTypeEnum.DISPLAY_CHANGED, () => setDisplays(getAllDisplays()));
         return () => {
             presentEventListener.unregisterPresentEventListener(event);
         };

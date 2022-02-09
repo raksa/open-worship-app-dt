@@ -3,7 +3,7 @@ import languages from '../lang';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { useTranslation } from 'react-i18next';
 import { useDisplay } from '../event/PresentEventListener';
-import { saveDisplaySetting } from '../helper/appHelper';
+import { saveDisplaySetting } from '../helper/displayHelper';
 
 export function getSelectedLangLocale() {
     const lc = getSetting('language', languages.en.locale);
@@ -58,7 +58,8 @@ function Language() {
 
 function Display() {
     const { displays, mainDisplay, presentDisplay } = useDisplay();
-
+    console.log(displays);
+    
     return (
         <div className='card'>
             <div className='card-header'>Display</div>

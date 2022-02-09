@@ -5,16 +5,16 @@ import { slideListEventListenerGlobal, useSlideBoxEditing } from '../event/Slide
 import ColorPicker from '../others/ColorPicker';
 import {
     HAlignmentEnum,
-    HTML2ReactChildType,
+    HTML2ReactChild,
     VAlignmentEnum,
-} from './slideParser';
+} from '../helper/slideHelper';
 import { useStateSettingString } from '../helper/settingHelper';
 
 export default function Tools({ scale, applyScale, setScale, minScale, maxScale, scaleStep }: {
     scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
     minScale: number, maxScale: number, scaleStep: number
 }) {
-    const [data, setData] = useState<HTML2ReactChildType | null>(null);
+    const [data, setData] = useState<HTML2ReactChild | null>(null);
     // t: text, b: box
     const [tabType, setTabType] = useStateSettingString('editor-tools-tab', 't');
     useSlideBoxEditing((newData) => {
@@ -58,7 +58,7 @@ export default function Tools({ scale, applyScale, setScale, minScale, maxScale,
         </div>
     );
 }
-function ToolsText({ data }: { data: HTML2ReactChildType }) {
+function ToolsText({ data }: { data: HTML2ReactChild }) {
     const [color, setColor] = useState<string>(data.color);
     const [fontSize, setFontSize] = useState<number>(data.fontSize);
     const onColorChange = (newColor: string) => {
@@ -100,7 +100,7 @@ function ToolsText({ data }: { data: HTML2ReactChildType }) {
         </div>
     );
 }
-function ToolsBackground({ data }: { data: HTML2ReactChildType }) {
+function ToolsBackground({ data }: { data: HTML2ReactChild }) {
     const [color, setColor] = useState<string>(data.backgroundColor);
     const onColorChange = (newColor: string) => {
         setColor(newColor);

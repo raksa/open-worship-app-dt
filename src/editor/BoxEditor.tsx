@@ -1,9 +1,13 @@
 import './BoxEditor.scss';
 import './EditorControllerBoxWrapper.scss';
 
-import { Component, CSSProperties } from 'react';
-import { HAlignmentEnum, HTML2ReactChildType, VAlignmentEnum } from './slideParser';
-import { ToolingType } from '../helper/slideHelper';
+import { Component } from 'react';
+import {
+    HAlignmentEnum,
+    HTML2ReactChild,
+    ToolingType,
+    VAlignmentEnum,
+} from '../helper/slideHelper';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
@@ -34,7 +38,7 @@ function tooling2BoxProps(toolingData: ToolingType, state: {
 }
 
 type PropsType = {
-    data: HTML2ReactChildType,
+    data: HTML2ReactChild,
     parentWidth: number,
     parentHeight: number,
     onUpdate: () => void,
@@ -42,7 +46,7 @@ type PropsType = {
     scale: number,
 };
 type StateType = {
-    data: HTML2ReactChildType,
+    data: HTML2ReactChild,
     isEditable: boolean,
     isControllable: boolean,
 };
@@ -75,6 +79,9 @@ export class BoxEditor extends Component<PropsType, StateType>{
     get isEditable() {
         return this.state.isEditable;
     }
+    get data() {
+        return this.state.data;
+    }
     init(boxWrapper: HTMLDivElement | null) {
         if (boxWrapper !== null) {
             this.editingController.initEvent(boxWrapper);
@@ -87,7 +94,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
             parentWidth: this.props.parentWidth, parentHeight: this.props.parentHeight,
         });
         this.setState((preState) => {
-            const newData: HTML2ReactChildType = { ...preState.data, ...text, ...boxProps };
+            const newData = new HTML2ReactChild({ ...preState.data, ...text, ...boxProps });
             newData.rotate = box && box.rotate !== undefined ? box.rotate : newData.rotate;
             newData.backgroundColor = box && box.backgroundColor !== undefined ?
                 box.backgroundColor : newData.backgroundColor;
@@ -95,19 +102,6 @@ export class BoxEditor extends Component<PropsType, StateType>{
         }, () => {
             this.props.onUpdate();
         });
-    }
-    toJson() {
-        return this.state.data;
-    }
-    toString() {
-        const div = document.createElement('div');
-        div.innerText = this.state.data.text;
-        const targetStyle = div.style as any;
-        const style = { ...this.genStyle(), ...this.genNormalStyle() } as any;
-        Object.keys(style).forEach((k) => {
-            targetStyle[k] = style[k];
-        });
-        return div.outerHTML;
     }
     startControllingMode() {
         return new Promise<void>((resolve) => {
@@ -165,7 +159,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 return resolve();
             }
             this.setState((preState) => {
-                const newData = { ...preState.data, ...info };
+                const newData = new HTML2ReactChild({ ...preState.data, ...info });
                 return { data: newData };
             }, () => {
                 resolve();
@@ -184,37 +178,13 @@ export class BoxEditor extends Component<PropsType, StateType>{
             this.divRef.innerHTML = this.state.data.text.split('\n').join('<br/>');
         }
     }
-    genStyle() {
-        const { data } = this.state;
-        const style: CSSProperties = {
-            display: 'flex',
-            fontSize: `${data.fontSize}px`,
-            color: data.color,
-            alignItems: data.verticalAlignment,
-            justifyContent: data.horizontalAlignment,
-            backgroundColor: data.backgroundColor,
-        };
-        return style;
-    }
-    genNormalStyle() {
-        const { data } = this.state;
-        const style: CSSProperties = {
-            top: `${data.top}px`, left: `${data.left}px`,
-            transform: `rotate(${data.rotate}deg)`,
-            width: `${data.width}px`,
-            height: `${data.height}px`,
-            position: 'absolute',
-            zIndex: data.zIndex,
-        };
-        return style;
-    }
     render() {
         const { isControllable } = this.state;
         return isControllable ? this.controllingGen() : this.normalGen();
     }
     controllingGen() {
         const { data, isControllable } = this.state;
-        const style = this.genStyle();
+        const style = data.style;
         return (
             <div ref={(div) => {
                 this.init(div);
@@ -253,7 +223,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
     }
     normalGen() {
         const { data, isEditable } = this.state;
-        const style = { ...this.genStyle(), ...this.genNormalStyle() };
+        const style = { ...data.style, ...data.normalStyle };
 
         return (
             <div onContextMenu={this.props.onContextMenu}
