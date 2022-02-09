@@ -13,8 +13,10 @@ const appManager = {
     mainWin: null,
     presentWin: null,
     createMainWindow() {
+        const bounds = settingManager.mainWinBounds;
         this.mainWin = new electron.BrowserWindow({
             backgroundColor: '#000000',
+            ...bounds,
             webPreferences: {
                 webSecurity: !isDev,
                 nodeIntegration: true,

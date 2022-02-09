@@ -35,6 +35,14 @@ class SettingManager {
     get mainWinHeight() {
         return this._setting.mainWinHeight || 2500;
     }
+    get mainWinBounds() {
+        return {
+            x: this.mainWinX,
+            y: this.mainWinY,
+            width: this.mainWinWidth,
+            height: this.mainWinHeight,
+        };
+    }
     get allDisplays() {
         return electron.screen.getAllDisplays();
     }
@@ -81,12 +89,6 @@ class SettingManager {
     }
     syncMainWindow(appManager) {
         if (appManager.mainWin !== null) {
-            appManager.mainWin.setBounds({
-                x: this.mainWinX,
-                y: this.mainWinY,
-                width: this.mainWinWidth,
-                height: this.mainWinHeight,
-            });
             appManager.mainWin.on('resize', () => {
                 const [width, height] = appManager.mainWin.getSize();
                 this._setting.mainWinWidth = width;
