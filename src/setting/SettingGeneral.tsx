@@ -58,8 +58,7 @@ function Language() {
 
 function Display() {
     const { displays, mainDisplay, presentDisplay } = useDisplay();
-    console.log(displays);
-    
+
     return (
         <div className='card'>
             <div className='card-header'>Display</div>
