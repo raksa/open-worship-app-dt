@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { HTML2ReactChildType } from '../editor/slideParser';
 import { getSetting, useStateSettingNumber } from '../helper/settingHelper';
-import { SlideItemThumbType, ToolingType } from '../helper/slideHelper';
+import { HTML2ReactChild, SlideItemThumbType, ToolingType } from '../helper/slideHelper';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;
@@ -23,7 +22,7 @@ export default class SlideListEventListener extends EventHandler {
     selecting() {
         this._addPropEvent(SlideListEnum.SELECT);
     }
-    boxEditing(data: HTML2ReactChildType | null) {
+    boxEditing(data: HTML2ReactChild | null) {
         this._addPropEvent(SlideListEnum.BOX_EDITING, data);
     }
     ordering() {
@@ -91,7 +90,7 @@ export function useSlideItemThumbOrdering(listener: ListenerType<void>) {
         };
     });
 }
-export function useSlideBoxEditing(listener: ListenerType<HTML2ReactChildType | null>) {
+export function useSlideBoxEditing(listener: ListenerType<HTML2ReactChild | null>) {
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.BOX_EDITING, listener);

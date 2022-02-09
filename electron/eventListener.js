@@ -2,9 +2,10 @@
 
 const crypto = require('crypto');
 const electron = require('electron');
-const { dialog, ipcMain, app } = electron;
+const { dialog, ipcMain, app, screen } = electron;
 const appPackage = require('../package.json');
 const { readValue } = require('./sqlite3');
+const settingManager = require('./settingManager');
 
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -45,7 +46,7 @@ function initMainScreen(appManager) {
         presentShown = false;
     };
     ipcMain.on('main:app:hide-present', hidePresent);
-    ipcMain.on('main:app:present-eval-script', (event, args) => {
+    ipcMain.on('main:app:present-eval-script', (_, args) => {
         appManager.presentWin.webContents.executeJavaScript(`
         (() => {
             ${args.script};
@@ -72,32 +73,26 @@ function initMainScreen(appManager) {
     ipcMain.on('main:app:is-presenting', (event) => {
         event.returnValue = presentShown;
     });
-    ipcMain.on('main:app:present-sreen-info', (event) => {
-        event.returnValue = {
-            width: appManager.externalDisplay.bounds.width,
-            height: appManager.externalDisplay.bounds.height,
-        };
-    });
 
-    ipcMain.on('main:app:is-rendered', (event, replyEventName) => {
-        ipcMain.once(replyEventName, (event1, data) => {
+    ipcMain.on('main:app:is-rendered', (_, replyEventName) => {
+        ipcMain.once(replyEventName, (_, data) => {
             data.show = presentShown;
             appManager.mainWin.webContents.send(replyEventName, data);
         });
         appManager.presentWin.webContents.send('app:present:get-rendering-info', replyEventName);
     });
 
-    ipcMain.on('present:app:change-bible', (event, isNext) => {
+    ipcMain.on('present:app:change-bible', (_, isNext) => {
         appManager.mainWin.webContents.send('app:main:present-change-bible', isNext);
     });
-    ipcMain.on('present:app:ctrl-scrolling', (event, isUp) => {
+    ipcMain.on('present:app:ctrl-scrolling', (_, isUp) => {
         appManager.mainWin.webContents.send('app:main:present-ctrl-scrolling', isUp);
     });
     ipcMain.on('present:app:hide-present', () => {
         hidePresent();
         appManager.mainWin.webContents.send('app:main:hiding-present');
     });
-    ipcMain.on('present:app:capture-preview', (event) => {
+    ipcMain.on('present:app:capture-preview', () => {
         try {
             appManager.presentWin.webContents.capturePage({
                 x: 0,
@@ -131,7 +126,38 @@ function initMainScreen(appManager) {
         };
     });
 }
+function initDisplayObserver(appManager) {
+    const sendDisplayChanged = () => {
+        appManager.mainWin.webContents.send('app:main:display-changed');
+    };
+    const genDisplayInfo = () => {
+        return {
+            mainDisplay: settingManager.mainDisplay,
+            presentDisplay: settingManager.presentDisplay,
+            displays: settingManager.allDisplays,
+        };
+    };
+    screen.on('display-added', sendDisplayChanged);
+    screen.on('display-removed', sendDisplayChanged);
+    ipcMain.on('main:app:get-displays', (event) => {
+        event.returnValue = genDisplayInfo();
+    });
+    ipcMain.on('main:app:set-displays', (event, { mainDisplayId, presentDisplayId }) => {
+        try {
+            settingManager.mainDisplayId = mainDisplayId;
+            settingManager.presentDisplayId = presentDisplayId;
+            event.returnValue = genDisplayInfo();
+            settingManager.syncPresentWindow(appManager);
+            sendDisplayChanged();
+            return;
+        } catch (error) {
+            console.log(error);
+        }
+        event.returnValue = null;
+    });
+}
 
 module.exports = {
     initMainScreen,
+    initDisplayObserver,
 };

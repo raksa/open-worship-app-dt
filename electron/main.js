@@ -4,19 +4,19 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const electron = require('electron');
 const eventListener = require('./eventListener');
+const settingManager = require('./settingManager');
 
 const appManager = {
-    externalDisplay: null,
     showWinWidth: null,
     showWinHeight: null,
     previewResizeDim: null,
     mainWin: null,
     presentWin: null,
     createMainWindow() {
+        const bounds = settingManager.mainWinBounds;
         this.mainWin = new electron.BrowserWindow({
-            width: 2500,
-            height: 1200,
             backgroundColor: '#000000',
+            ...bounds,
             webPreferences: {
                 webSecurity: !isDev,
                 nodeIntegration: true,
@@ -24,6 +24,7 @@ const appManager = {
                 preload: `${__dirname}/preload.js`,
             },
         });
+        settingManager.syncMainWindow(this);
         if (isDev) {
             this.mainWin.loadURL('http://localhost:3000');
         } else {
@@ -40,10 +41,8 @@ const appManager = {
         this.presentWin = new electron.BrowserWindow({
             transparent: true,
             show: false,
-            x: this.externalDisplay.bounds.x,
-            y: this.externalDisplay.bounds.y,
-            width: this.externalDisplay.bounds.width,
-            height: this.externalDisplay.bounds.height,
+            x: 0,
+            y: 0,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,
@@ -51,6 +50,7 @@ const appManager = {
             },
             parent: this.mainWin,
         });
+        settingManager.syncPresentWindow(this);
         if (isPresentCanFullScreen) {
             this.presentWin.setFullScreen(true);
         }
@@ -58,16 +58,6 @@ const appManager = {
         this.presentWin.loadFile(presentUrl);
     },
     init() {
-        const displays = electron.screen.getAllDisplays();
-        this.externalDisplay = displays.find((display) => {
-            return display.bounds.x !== 0 || display.bounds.y !== 0;
-        }) || displays[0];
-        this.showWinWidth = this.externalDisplay.bounds.width;
-        this.showWinHeight = this.externalDisplay.bounds.height;
-        this.previewResizeDim = {
-            width: this.showWinWidth / 3,
-            height: this.showWinHeight / 3,
-        };
         this.createMainWindow();
         this.createPresentWindow();
         electron.app.on('activate', () => {
@@ -79,6 +69,9 @@ const appManager = {
     },
 };
 
-electron.app.whenReady().then(() => appManager.init());
+electron.app.whenReady().then(() => {
+    eventListener.initDisplayObserver(appManager);
+    appManager.init();
+});
 
 eventListener.initMainScreen(appManager);

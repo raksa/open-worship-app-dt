@@ -31,6 +31,9 @@ appProvider.ipcRenderer.on('app:main:captured-preview', (event: any, data: strin
 appProvider.ipcRenderer.on('app:main:hiding-present', (event: any, data: string) => {
     presentEventListener.fireHideEvent();
 });
+appProvider.ipcRenderer.on('app:main:display-changed', (event: any, data: string) => {
+    presentEventListener.displayChanged();
+});
 
 export function copyToClipboard(str: string) {
     appProvider.electron.clipboard.writeText(str);
