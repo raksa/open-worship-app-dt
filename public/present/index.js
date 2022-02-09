@@ -132,8 +132,9 @@ function onLoad() {
         }
     });
     document.addEventListener('keyup', function (e) {
-        if (e.ctrlKey && getRendered().bible) {
-            console.log(e.key);
+        if ((e.ctrlKey || e.altKey)
+            && ~['ArrowLeft', 'ArrowRight'].indexOf(e.key)
+            && getRendered().bible) {
             const isNext = e.key === 'ArrowRight';
             ipcRenderer.send('present:app:change-bible', isNext);
         }

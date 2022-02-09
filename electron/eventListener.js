@@ -134,7 +134,7 @@ function initDisplayObserver(appManager) {
         return {
             mainDisplay: settingManager.mainDisplay,
             presentDisplay: settingManager.presentDisplay,
-            displays: settingManager.allDisplay,
+            displays: settingManager.allDisplays,
         };
     };
     screen.on('display-added', sendDisplayChanged);
@@ -147,6 +147,7 @@ function initDisplayObserver(appManager) {
             settingManager.mainDisplayId = mainDisplayId;
             settingManager.presentDisplayId = presentDisplayId;
             event.returnValue = genDisplayInfo();
+            settingManager.syncPresentWindow(appManager);
             sendDisplayChanged();
             return;
         } catch (error) {
