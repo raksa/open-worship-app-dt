@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
+import { getPresentRendered } from '../helper/appHelper';
 import { getAllDisplays } from '../helper/displayHelper';
+import { clearBackground, clearForeground } from '../helper/presentingHelpers';
+import { useStateSettingBoolean } from '../helper/settingHelper';
 import EventHandler from './EventHandler';
 
 export enum PresentTypeEnum {
@@ -10,6 +13,8 @@ export enum PresentTypeEnum {
     CLEAR_BG = 'clear-bg',
     RENDER_FG = 'render-fg',
     CLEAR_FG = 'clear-fg',
+    RENDER_FT = 'render-ft',
+    CLEAR_FT = 'clear-ft',
     CTRL_SCROLLING = 'ctrl-scrolling',
     CHANGE_BIBLE = 'change-bible',
     DISPLAY_CHANGED = 'displayed-changed',
@@ -31,13 +36,24 @@ export default class PresentEventListener extends EventHandler {
         this._addPropEvent(PresentTypeEnum.RENDER_BG);
     }
     clearBG() {
+        clearBackground();
         this._addPropEvent(PresentTypeEnum.CLEAR_BG);
     }
     renderFG() {
         this._addPropEvent(PresentTypeEnum.RENDER_FG);
     }
     clearFG() {
+        clearForeground();
         this._addPropEvent(PresentTypeEnum.CLEAR_FG);
+    }
+    renderFT() {
+        this._addPropEvent(PresentTypeEnum.RENDER_FT);
+    }
+    clearFT(isEvent?: boolean) {
+        if (!isEvent) {
+            fullTextPresentHelper.hide();
+        }
+        this._addPropEvent(PresentTypeEnum.CLEAR_FT);
     }
     presentCtrlScrolling(isUp: boolean) {
         const fontSize = fullTextPresentHelper.textFontSize + (isUp ? 1 : -1);
@@ -83,39 +99,81 @@ export function usePresentHiding(listener: ListenerType<void>) {
         };
     });
 }
-export function usePresentBGRendering(listener: ListenerType<void>) {
+export function usePresentBGRendering() {
+    const [isPresenting, setIsShowing] = useStateSettingBoolean('bgfg-control-bg');
+    getPresentRendered().then((rendered) => {
+        setIsShowing(!!rendered.background);
+    });
     useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.RENDER_BG, listener);
+        const eventRender = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.RENDER_BG, () => setIsShowing(true));
+        const eventClear = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.CLEAR_BG, () => setIsShowing(false));
         return () => {
-            presentEventListener.unregisterPresentEventListener(event);
+            presentEventListener.unregisterPresentEventListener(eventRender);
+            presentEventListener.unregisterPresentEventListener(eventClear);
         };
     });
+    return isPresenting;
 }
-export function usePresentBGClearing(listener: ListenerType<void>) {
+export function usePresentBGClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
+        const eventClear = presentEventListener.registerPresentEventListener(
             PresentTypeEnum.CLEAR_BG, listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(event);
+            presentEventListener.unregisterPresentEventListener(eventClear);
         };
     });
 }
-export function usePresentFGRendering(listener: ListenerType<void>) {
+export function usePresentFGRendering() {
+    const [isPresenting, setIsShowing] = useStateSettingBoolean('bgfg-control-fg');
+    getPresentRendered().then((rendered) => {
+        setIsShowing(!!rendered.foreground);
+    });
     useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.RENDER_FG, listener);
+        const eventRender = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.RENDER_FG, () => setIsShowing(true));
+        const eventClear = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.CLEAR_FG, () => setIsShowing(false));
         return () => {
-            presentEventListener.unregisterPresentEventListener(event);
+            presentEventListener.unregisterPresentEventListener(eventRender);
+            presentEventListener.unregisterPresentEventListener(eventClear);
         };
     });
+    return isPresenting;
 }
-export function usePresentFGClearing(listener: ListenerType<void>) {
+export function usePresentFGClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
+        const eventClear = presentEventListener.registerPresentEventListener(
             PresentTypeEnum.CLEAR_FG, listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(event);
+            presentEventListener.unregisterPresentEventListener(eventClear);
+        };
+    });
+}
+export function usePresentFTRendering() {
+    const [isPresenting, setIsShowing] = useStateSettingBoolean('bgfg-control-ft');
+    getPresentRendered().then((rendered) => {
+        setIsShowing(!!rendered.fullText);
+    });
+    useEffect(() => {
+        const eventRender = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.RENDER_FT, () => setIsShowing(true));
+        const eventClear = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.CLEAR_FT, () => setIsShowing(false));
+        return () => {
+            presentEventListener.unregisterPresentEventListener(eventRender);
+            presentEventListener.unregisterPresentEventListener(eventClear);
+        };
+    });
+    return isPresenting;
+}
+export function usePresentFTClearing(listener: ListenerType<boolean>) {
+    useEffect(() => {
+        const eventClear = presentEventListener.registerPresentEventListener(
+            PresentTypeEnum.CLEAR_FT, listener);
+        return () => {
+            presentEventListener.unregisterPresentEventListener(eventClear);
         };
     });
 }

@@ -17,7 +17,7 @@ function getRendered() {
     return {
         background: !!getShadow('background').innerHTML,
         foreground: !!getShadow('foreground').innerHTML,
-        bible: !!getBible().innerHTML,
+        fullText: !!getFullText().innerHTML,
         alert: !!getShadow('alert').innerHTML,
     };
 }
@@ -32,8 +32,8 @@ function closeWin() {
 function sendPreview() {
     ipcRenderer.send('present:app:capture-preview');
 }
-function getBible() {
-    return document.getElementById('bible');
+function getFullText() {
+    return document.getElementById('full-text');
 }
 function getShadow(id) {
     const element = document.getElementById(id);
@@ -54,7 +54,7 @@ function backup() {
     localStorage.setItem('backup', JSON.stringify({
         background: getShadow('background').innerHTML || '',
         foreground: getShadow('foreground').innerHTML || '',
-        bible: getBible().innerHTML || '',
+        fullText: getFullText().innerHTML || '',
         alert: getShadow('alert').innerHTML || '',
     }));
 }
@@ -102,7 +102,7 @@ function restore() {
         const data = JSON.parse(localStorage.getItem('backup'));
         getShadow('background').innerHTML = data.background || '';
         getShadow('foreground').innerHTML = data.foreground || '';
-        getBible().innerHTML = data.bible || '';
+        getFullText().innerHTML = data.fullText || '';
         getShadow('alert').innerHTML = data.alert || '';
         addHighlightEvent();
         muteVideos();
@@ -122,11 +122,11 @@ function onLoad() {
     restore();
     observe(getShadow('background'));
     observe(getShadow('foreground'));
-    observe(getBible());
+    observe(getFullText());
     observe(getShadow('alert'));
     setInterval(sendPreview, 1e3);
     document.addEventListener('wheel', function (e) {
-        if (e.ctrlKey && getRendered().bible) {
+        if (e.ctrlKey && getRendered().fullText) {
             const isUp = e.deltaY < 0;
             ipcRenderer.send('present:app:ctrl-scrolling', isUp);
         }
@@ -134,7 +134,7 @@ function onLoad() {
     document.addEventListener('keyup', function (e) {
         if ((e.ctrlKey || e.altKey)
             && ~['ArrowLeft', 'ArrowRight'].indexOf(e.key)
-            && getRendered().bible) {
+            && getRendered().fullText) {
             const isNext = e.key === 'ArrowRight';
             ipcRenderer.send('present:app:change-bible', isNext);
         }

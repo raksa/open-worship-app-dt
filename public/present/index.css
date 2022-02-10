@@ -24,7 +24,7 @@
 
 #background,
 #foreground,
-#bible,
+#full-text,
 #alert {
     position: fixed;
     width: 100vw;
@@ -37,26 +37,26 @@
     margin: 0;
 }
 
-#bible {
+#full-text {
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-#bible::-webkit-scrollbar {
+#full-text::-webkit-scrollbar {
     width: 0.2em;
 }
 
-#bible::-webkit-scrollbar-track {
+#full-text::-webkit-scrollbar-track {
     background-color: #2752ff2a;
     border-radius: 5px;
 }
 
-#bible::-webkit-scrollbar-thumb {
+#full-text::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background-color: white;
 }
 
-#bible table {
+#full-text table {
     width: 100%;
     background-color: #2752ff2a;
     border-radius: 0.1em;
@@ -66,19 +66,19 @@
     border-collapse: separate;
 }
 
-#bible thead {
+#full-text thead {
     background-color: #2752ff2a;
     padding-left: 0.5em;
     padding-right: 0.5em;
     -webkit-text-stroke-width: 0.01em;
 }
 
-#bible th {
+#full-text th {
     border-radius: 0.1em;
 }
 
-#bible th,
-#bible td {
+#full-text th,
+#full-text td {
     font-family: Battambang, system-ui, sans-serif !important;
     -webkit-font-smoothing: antialiased;
     border-left: 1px solid #000;
@@ -92,26 +92,26 @@
     box-sizing: border-box;
 }
 
-#bible td>span {
+#full-text td>span {
     padding-left: 0.2em;
     padding-right: 0.2em;
 }
 
-#bible td .verse-number {
+#full-text td .verse-number {
     -webkit-text-stroke: 0.01em greenyellow;
 }
 
-#bible td .highlight {
+#full-text td .highlight {
     border-radius: 0.5em;
     transition: background-color 0.5s ease;
     border: 0.05em solid transparent;
     cursor: pointer;
 }
 
-#bible td .highlight.hover {
+#full-text td .highlight.hover {
     border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
-#bible td .highlight.selected {
+#full-text td .highlight.selected {
     background: linear-gradient(transparent, transparent, rgba(255, 0, 157, 0.6), transparent);
 }

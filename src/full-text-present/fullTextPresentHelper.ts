@@ -1,5 +1,6 @@
 import { biblePresentToTitle, getVerses } from '../bible-helper/helpers';
 import { toLocaleNumber } from '../bible-search/bibleSearchHelpers';
+import { presentEventListener } from '../event/PresentEventListener';
 import { renderPresent } from '../helper/appHelper';
 import { removePX } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -112,18 +113,20 @@ class FullTextPresentHelper {
     }
     hide() {
         this.isShowing = false;
+        presentEventListener.clearFT(true);
         renderPresent({
             script: `
-            const bible = getBible();
+            const bible = getFullText();
             bible.innerHTML = '';
         `});
     }
     render() {
         if (this.isShowing) {
+            presentEventListener.renderFT();
             this.resetHighlight();
             renderPresent({
                 script: `
-                const bible = getBible();
+                const bible = getFullText();
                 bible.innerHTML = \`${this.tableShowing.outerHTML}\`;
             `});
         }
@@ -132,7 +135,7 @@ class FullTextPresentHelper {
         if (this.isShowing) {
             renderPresent({
                 script: `
-                const bible = getBible();
+                const bible = getFullText();
                 bible.scrollTop += ${(isScrollUp ? 1 : -1) * amount};
             `});
         }
@@ -141,7 +144,7 @@ class FullTextPresentHelper {
         if (this.isShowing) {
             renderPresent({
                 script: `
-                const bible = getBible();
+                const bible = getFullText();
                 bible.scrollTop = 0;
             `});
         }
@@ -150,7 +153,7 @@ class FullTextPresentHelper {
         if (this.isShowing) {
             renderPresent({
                 script: `
-                const bible = getBible();
+                const bible = getFullText();
                 const table = bible.querySelector('table');
                 const bibleBC = bible.getBoundingClientRect();
                 const tableBC = table.getBoundingClientRect();
