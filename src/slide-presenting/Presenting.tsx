@@ -4,8 +4,8 @@ import SlidePreview from './SlidePresentingController';
 import FullTextPresentController from '../full-text-present/FullTextPresentController';
 import { useFullTextPresenting } from '../event/FullTextPresentEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
-import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { useStateSettingString } from '../helper/settingHelper';
+import { presentEventListener } from '../event/PresentEventListener';
 
 export default function Presenting() {
     // s: slides, f: full text
@@ -20,14 +20,17 @@ export default function Presenting() {
                     <button className={`btn btn-link nav-link ${tabType === 's' ? 'active' : ''}`}
                         onClick={() => {
                             setTabType('s');
-                            fullTextPresentHelper.hide();
+                            presentEventListener.clearFT();
                         }}>
                         Slide
                     </button>
                 </li>
                 <li className="nav-item">
                     <button className={`btn btn-link nav-link ${tabType === 'f' ? 'active' : ''}`}
-                        onClick={() => setTabType('f')}>
+                        onClick={() => {
+                            setTabType('f');
+                            presentEventListener.clearFG();
+                        }}>
                         Full Text
                     </button>
                 </li>

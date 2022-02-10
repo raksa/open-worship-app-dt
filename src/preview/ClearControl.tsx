@@ -6,51 +6,44 @@ import {
     presentEventListener,
     usePresentBGRendering,
     usePresentFGRendering,
+    usePresentFTRendering,
 } from '../event/PresentEventListener';
-import { getPresentRendered } from '../helper/appHelper';
-import { useStateSettingBoolean } from '../helper/settingHelper';
 
-// TODO: clear bible
-export default function BGFGControl() {
-    const [isPresentingBG, setIsShowingBG] = useStateSettingBoolean('bgfg-control-bg');
-    const [isPresentingFG, setIsShowingFG] = useStateSettingBoolean('bgfg-control-fg');
-
-    const clearBG = () => {
-        setIsShowingBG(false);
-        presentEventListener.clearBG();
-    };
-    const clearFG = () => {
-        setIsShowingFG(false);
-        presentEventListener.clearFG();
-    };
+export default function ClearControl() {
+    const isPresentingBG = usePresentBGRendering();
+    const isPresentingFG = usePresentFGRendering();
+    const isPresentingFT = usePresentFTRendering();
+    const clearBG = () => presentEventListener.clearBG();
+    const clearFG = () => presentEventListener.clearFG();
+    const clearFT = () => presentEventListener.clearFT();
     const clearAll = () => {
         clearBG();
         clearFG();
+        clearFT();
     };
-    getPresentRendered().then((rendered) => {
-        setIsShowingBG(!!rendered.background);
-        setIsShowingFG(!!rendered.foreground);
-    });
     useKeyboardRegistering({ key: 'F6' }, clearAll);
     useKeyboardRegistering({ key: 'F7' }, clearBG);
     useKeyboardRegistering({ key: 'F8' }, clearFG);
-    usePresentBGRendering(() => setIsShowingBG(true));
-    usePresentFGRendering(() => setIsShowingFG(true));
-    const isPresenting = isPresentingBG || isPresentingFG;
+    useKeyboardRegistering({ key: 'F9' }, clearFT);
+    const isPresenting = isPresentingBG || isPresentingFG || isPresentingFT;
     return (
         <div className="btn-group control">
-            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresenting ? '' : 'outline-'}warning`}
+            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresenting ? '' : 'outline-'}danger`}
                 disabled={!isPresenting}
                 data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F6' })}
-                title="clear all" onClick={clearAll}>Clear All</button>
+                title="clear all" onClick={clearAll}>All</button>
             <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingBG ? '' : 'outline-'}secondary`}
                 disabled={!isPresentingBG} title="clear background"
                 data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F7' })}
-                onClick={clearBG}>Clear BG</button>
+                onClick={clearBG}>BG</button>
             <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFG ? '' : 'outline-'}info`}
                 disabled={!isPresentingFG} title="clear foreground"
                 data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F8' })}
-                onClick={clearFG}>Clear FG</button>
+                onClick={clearFG}>FG</button>
+            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFT ? '' : 'outline-'}primary`}
+                disabled={!isPresentingFT} title="clear full text"
+                data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F9' })}
+                onClick={clearFT}>FT</button>
         </div>
     );
 }

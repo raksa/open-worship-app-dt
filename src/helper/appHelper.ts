@@ -51,7 +51,7 @@ export function selectDirs() {
 export type RenderedType = {
     background?: boolean,
     foreground?: boolean,
-    bible?: boolean,
+    fullText?: boolean,
     alert?: boolean,
     show?: boolean,
 };
@@ -65,7 +65,7 @@ export function getPresentRendered() {
     });
 }
 getPresentRendered().then((rendered) => {
-    fullTextPresentHelper.isShowing = !!rendered.bible;
+    fullTextPresentHelper.isShowing = !!rendered.fullText;
 });
 export function getIsShowing() {
     return !!appProvider.ipcRenderer.sendSync('main:app:is-presenting');

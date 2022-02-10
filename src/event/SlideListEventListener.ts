@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { getSetting, useStateSettingNumber } from '../helper/settingHelper';
+import { getSetting, setSetting, useStateSettingNumber } from '../helper/settingHelper';
 import { HTML2ReactChild, SlideItemThumbType, ToolingType } from '../helper/slideHelper';
+import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;
@@ -50,6 +51,9 @@ export default class SlideListEventListener extends EventHandler {
     }
     unregisterSlideListEventListener({ type, listener }: RegisteredEventType<any>) {
         this._removeOnEventListener(type, listener);
+    }
+    clearSelectSlideItemThumb() {
+        setSetting(THUMB_SELECTED_SETTING_NAME, '');
     }
 }
 export const slideListEventListenerGlobal = new SlideListEventListener();

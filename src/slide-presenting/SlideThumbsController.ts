@@ -231,7 +231,7 @@ export default class SlideThumbsController extends FileController {
     select(id: string | null) {
         this.selectedId = id;
         if (id === null) {
-            setSetting(THUMB_SELECTED_SETTING_NAME, '');
+            slideListEventListenerGlobal.clearSelectSlideItemThumb();
             if (isWindowEditingMode()) {
                 slideListEventListenerGlobal.selectSlideItemThumb(null);
             }
