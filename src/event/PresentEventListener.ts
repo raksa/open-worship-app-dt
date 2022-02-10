@@ -5,6 +5,7 @@ import { getAllDisplays } from '../helper/displayHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import EventHandler from './EventHandler';
+import { slideListEventListenerGlobal } from './SlideListEventListener';
 
 export enum PresentTypeEnum {
     DATA = 'data',
@@ -43,6 +44,7 @@ export default class PresentEventListener extends EventHandler {
         this._addPropEvent(PresentTypeEnum.RENDER_FG);
     }
     clearFG() {
+        slideListEventListenerGlobal.clearSelectSlideItemThumb();
         clearForeground();
         this._addPropEvent(PresentTypeEnum.CLEAR_FG);
     }

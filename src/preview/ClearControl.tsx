@@ -28,7 +28,7 @@ export default function ClearControl() {
     const isPresenting = isPresentingBG || isPresentingFG || isPresentingFT;
     return (
         <div className="btn-group control">
-            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresenting ? '' : 'outline-'}warning`}
+            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresenting ? '' : 'outline-'}danger`}
                 disabled={!isPresenting}
                 data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F6' })}
                 title="clear all" onClick={clearAll}>All</button>
@@ -40,7 +40,7 @@ export default function ClearControl() {
                 disabled={!isPresentingFG} title="clear foreground"
                 data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F8' })}
                 onClick={clearFG}>FG</button>
-            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFT ? '' : 'outline-'}info`}
+            <button type="button" className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFT ? '' : 'outline-'}primary`}
                 disabled={!isPresentingFT} title="clear full text"
                 data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F9' })}
                 onClick={clearFT}>FT</button>
