@@ -80,6 +80,7 @@ export default function Playlist() {
             </div>
             <div className="card-body">
                 <PathSelector
+                    prefix='bg-playlist'
                     dirPath={dir}
                     onRefresh={() => setPlaylists(null)}
                     onChangeDirPath={applyDir}

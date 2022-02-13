@@ -36,7 +36,7 @@ function LyricItem({ index, lyricItem, onContextMenu }: {
             }}
             onContextMenu={onContextMenu ? onContextMenu : () => { }}
             onClick={() => presentLyric(lyricItem, index)}>
-            <i className="bi bi-bookmark" />
+            <i className="bi bi-music-note" />
             {lyricItem.fileName}
         </li>
     );

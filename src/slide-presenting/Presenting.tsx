@@ -18,19 +18,13 @@ export default function Presenting() {
             <ul className="header nav nav-tabs">
                 <li className="nav-item">
                     <button className={`btn btn-link nav-link ${tabType === 's' ? 'active' : ''}`}
-                        onClick={() => {
-                            setTabType('s');
-                            presentEventListener.clearFT();
-                        }}>
+                        onClick={() => setTabType('s')}>
                         Slide
                     </button>
                 </li>
                 <li className="nav-item">
                     <button className={`btn btn-link nav-link ${tabType === 'f' ? 'active' : ''}`}
-                        onClick={() => {
-                            setTabType('f');
-                            presentEventListener.clearFG();
-                        }}>
+                        onClick={() => setTabType('f')}>
                         Full Text
                     </button>
                 </li>

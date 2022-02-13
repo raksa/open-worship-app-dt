@@ -62,6 +62,7 @@ export default function Images() {
                 });
             }}>
             <PathSelector
+                prefix='bg-image'
                 dirPath={dir}
                 onRefresh={() => setList(null)}
                 onChangeDirPath={applyDir}
@@ -93,8 +94,7 @@ export default function Images() {
                                 <img src={d.src} className="card-img-top" alt="..." />
                             </div>
                             <div className="card-footer">
-                                <p className="card-text">{'...' +
-                                    d.fileName.substring(d.fileName.length - 15)}</p>
+                                <p className="ellipsis-left card-text">{d.fileName}</p>
                             </div>
                         </div>
                     );

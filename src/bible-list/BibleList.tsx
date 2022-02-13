@@ -51,11 +51,11 @@ export function BibleItem({ item, onContextMenu }: {
             onDragStart={(e) => {
                 e.dataTransfer.setData('text/plain', JSON.stringify(item));
             }}
-            onContextMenu={onContextMenu ? onContextMenu : () => { }}
+            onContextMenu={onContextMenu || (() => { })}
             onClick={() => presentBible(item)}>
             <i className="bi bi-bookmark" />
             {bibleStatus[2]} | {title == null ? 'not found' : title}
-        </li>
+        </li >
     );
 }
 
