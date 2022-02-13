@@ -16,20 +16,20 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import { toastEventListener } from '../event/ToastEventListener';
 
 export default function Images() {
-    const [dir, setDir] = useStateSettingString('image-selected-dir', '');
+    const [dirPath, setDirPath] = useStateSettingString('image-selected-dir', '');
     const [list, setList] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (list === null) {
-            const images = listFiles(dir, 'image');
+            const images = listFiles(dirPath, 'image');
             setList(images === null ? [] : images);
         }
-    }, [list, dir]);
-    const applyDir = (dir: string) => {
-        setDir(dir);
+    }, [list, dirPath]);
+    const applyDir = (newDirPath: string) => {
+        setDirPath(newDirPath);
         setList(null);
     };
     return (
-        <div className="background-image" draggable={dir !== null}
+        <div className="background-image" draggable={dirPath !== null}
             onDragOver={(event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '0.5';
@@ -46,7 +46,7 @@ export default function Images() {
                             message: 'Unsupported image file!',
                         });
                     } else {
-                        if (copyFileToPath(file.path, file.name, dir)) {
+                        if (copyFileToPath(file.path, file.name, dirPath)) {
                             setList(null);
                             toastEventListener.showSimpleToast({
                                 title: 'copy image file',
@@ -63,7 +63,7 @@ export default function Images() {
             }}>
             <PathSelector
                 prefix='bg-image'
-                dirPath={dir}
+                dirPath={dirPath}
                 onRefresh={() => setList(null)}
                 onChangeDirPath={applyDir}
                 onSelectDirPath={applyDir} />
