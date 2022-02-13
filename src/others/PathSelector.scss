@@ -2,4 +2,11 @@
 
 .path-selector {
   cursor: pointer;
+
+  .path-previewer {
+    display: flex;
+    
+  }
+
+  margin-bottom: 5px;
 }

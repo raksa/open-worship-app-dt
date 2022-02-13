@@ -5,7 +5,6 @@ import FullTextPresentController from '../full-text-present/FullTextPresentContr
 import { useFullTextPresenting } from '../event/FullTextPresentEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
-import { presentEventListener } from '../event/PresentEventListener';
 
 export default function Presenting() {
     // s: slides, f: full text
@@ -18,19 +17,13 @@ export default function Presenting() {
             <ul className="header nav nav-tabs">
                 <li className="nav-item">
                     <button className={`btn btn-link nav-link ${tabType === 's' ? 'active' : ''}`}
-                        onClick={() => {
-                            setTabType('s');
-                            presentEventListener.clearFT();
-                        }}>
+                        onClick={() => setTabType('s')}>
                         Slide
                     </button>
                 </li>
                 <li className="nav-item">
                     <button className={`btn btn-link nav-link ${tabType === 'f' ? 'active' : ''}`}
-                        onClick={() => {
-                            setTabType('f');
-                            presentEventListener.clearFG();
-                        }}>
+                        onClick={() => setTabType('f')}>
                         Full Text
                     </button>
                 </li>

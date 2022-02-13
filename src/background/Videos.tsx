@@ -63,6 +63,7 @@ export default function Videos() {
                 });
             }}>
             <PathSelector
+                prefix='bg-video'
                 dirPath={dir}
                 onRefresh={() => setList(null)}
                 onChangeDirPath={applyDir}
@@ -105,8 +106,7 @@ export default function Videos() {
                                     muted src={d.src}></video>
                             </div>
                             <div className="card-footer">
-                                <p className="card-text">{'...' +
-                                    d.fileName.substring(d.fileName.length - 15)}</p>
+                                <p className="ellipsis-left card-text">{d.fileName}</p>
                             </div>
                         </div>
                     );

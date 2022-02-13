@@ -125,4 +125,12 @@
     #{math.div($bg-width,2)} -#{math.div($bg-width,2)},
     -#{math.div($bg-width,2)} 0px;
   }
+
+  .ellipsis-left {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    direction: rtl;
+    text-align: left;
+  }
 }

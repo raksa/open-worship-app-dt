@@ -15,8 +15,8 @@ export function getSetting(key: string, defaultValue?: string): string {
     return value;
 }
 
-export function useStateSettingBoolean(settingName: string): [boolean, (b: boolean) => void] {
-    const defaultData = (getSetting(settingName) || 'false') !== 'false';
+export function useStateSettingBoolean(settingName: string, defaultValue?: boolean): [boolean, (b: boolean) => void] {
+    const defaultData = (getSetting(settingName) || 'false') !== 'false' || !!defaultValue;
     const [data, setData] = useState(defaultData);
     const setDataSetting = (b: boolean) => {
         setData(b);

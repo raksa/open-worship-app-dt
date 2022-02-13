@@ -29,6 +29,7 @@ export default function SlideList() {
             </div>
             <div className="card-body">
                 <PathSelector
+                    prefix='bg-slide-list'
                     dirPath={basePath}
                     onRefresh={refresh}
                     onChangeDirPath={(newBasePath) => {

@@ -4,6 +4,8 @@ import { BiblePresentType } from './fullTextPresentHelper';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { biblePresentToTitle, usePresentRenderText } from '../bible-helper/helpers';
 import { BibleSelectOption } from '../bible-search/InputHandler';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import appProvider from '../helper/appProvider';
 
 export default function BibleView({ biblePresent, onBibleChange, onClose }: {
     i: number,
@@ -15,7 +17,16 @@ export default function BibleView({ biblePresent, onBibleChange, onClose }: {
     const text = usePresentRenderText(biblePresent);
     const bibleList = bibleHelper.getBibleList();
     return (
-        <div className="bible-view card flex-fill">
+        <div className="bible-view card flex-fill" onContextMenu={(e) => {
+            showAppContextMenu(e, [
+                {
+                    title: 'Copy', onClick: () => {
+                        const toCopyText = `${title}\n${text}`;
+                        appProvider.electron.clipboard.writeText(toCopyText);
+                    },
+                },
+            ]);
+        }}>
             <div className="card-header">
                 <span className="input-group-text select float-start">
                     <select className="form-select bible" value={biblePresent.bible}
