@@ -87,7 +87,7 @@ export default class SlideThumbsController extends FileController {
         return this._items;
     }
     get currentItems() {
-        return this._items.map((item) => cloneObject(item) as SlideItemThumbType);
+        return this._items.map((item) => cloneObject(item));
     }
     set items(newItems: SlideItemThumbType[]) {
         this._items = newItems.map((item) => cloneObject(item));
@@ -243,7 +243,7 @@ export default class SlideThumbsController extends FileController {
     }
     duplicate(index: number) {
         const newItems = this.currentItems;
-        const newItem: SlideItemThumbType = cloneObject(newItems[index]);
+        const newItem = cloneObject(newItems[index]);
         newItem.id = `${this.maxId + 1}`;
         newItem.isEditing = true;
         newItems.splice(index + 1, 0, newItem);
@@ -251,7 +251,7 @@ export default class SlideThumbsController extends FileController {
     }
     paste() {
         if (this.copiedItem !== null) {
-            const newItem: SlideItemThumbType = cloneObject(this.copiedItem);
+            const newItem = cloneObject(this.copiedItem);
             newItem.id = `${this.maxId + 1}`;
             newItem.isEditing = true;
             const newItems: SlideItemThumbType[] = [...this.items, newItem];

@@ -18,7 +18,7 @@ export function getRandomColor() {
     }
     return color;
 }
-export const cloneObject = <T>(obj: object): T =>  JSON.parse(JSON.stringify(obj));
+export const cloneObject = <T>(obj: T): T =>  JSON.parse(JSON.stringify(obj));
 
 // https://stackoverflow.com/a/41698614/17066360
 export function isVisible(elem: any) {

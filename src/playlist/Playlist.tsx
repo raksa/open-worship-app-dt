@@ -15,7 +15,6 @@ import {
 } from '../helper/appHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { PlaylistType } from '../helper/playlistHelper';
-import { BibleItem } from '../bible-list/BibleList';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumb';
 import {
@@ -31,6 +30,7 @@ import {
 } from '../helper/settingHelper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { getSlideDataByFilePath } from '../helper/slideHelper';
+import BibleItem from '../bible-list/BibleItem';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -111,7 +111,7 @@ export default function Playlist() {
                     }
                 </ul>
                 {mapPlaylists.map((data, i) => {
-                    return <ListItem key={`${i}`}
+                    return <ListItem key={`${i}`} index={i}
                         fileData={data}
                         onContextMenu={(e) => {
                             showAppContextMenu(e, [
@@ -122,7 +122,7 @@ export default function Playlist() {
                                 },
                                 {
                                     title: 'Delete', onClick: () => {
-                                        if (deleteFile(data.filePath as string)) {
+                                        if (deleteFile(data.filePath)) {
                                             setPlaylists(null);
                                         } else {
                                             toastEventListener.showSimpleToast({
@@ -147,10 +147,11 @@ export default function Playlist() {
 }
 
 type PlaylistItemProps = {
+    index: number,
     fileData: FileSourceType,
     onContextMenu: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
 }
-function ListItem({ fileData, onContextMenu,
+function ListItem({ index, fileData, onContextMenu,
 }: PlaylistItemProps) {
     const playlistName = fileData.fileName.substring(0, fileData.fileName.lastIndexOf('.'));
     const [isOpened, setIsOpened] = useStateSettingBoolean(`playlist-item-${playlistName}`);
@@ -168,7 +169,8 @@ function ListItem({ fileData, onContextMenu,
         </div>;
     }
     return (
-        <div className={`playlist-item card pointer mt-1 ${isReceivingChild ? 'receiving-child' : ''}`}
+        <div className={`playlist-item card pointer mt-1 ps-2 ${isReceivingChild ? 'receiving-child' : ''}`}
+            data-index={index + 1}
             title={fileData.filePath}
             onContextMenu={onContextMenu}
             onDragOver={(event) => {
@@ -203,7 +205,7 @@ function ListItem({ fileData, onContextMenu,
                 {<i className={`bi ${isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />}
                 {playlistName}
             </div>
-            {isOpened && <div className='d-flex flex-column align-items-end'>
+            {isOpened && <div className='card-body d-flex flex-column'>
                 {data.items.map((item, i) => {
                     if (item.type === 'slide') {
                         return <Fragment key={`${i}`}>
@@ -213,7 +215,8 @@ function ListItem({ fileData, onContextMenu,
                         </Fragment>;
                     }
                     return <Fragment key={`${i}`}>
-                        <BibleItem key={`${i}`} item={item.bible as BiblePresentType} />
+                        <BibleItem key={`${i}`} index={i}
+                            biblePresent={item.bible as BiblePresentType} />
                     </Fragment>;
                 })}
             </div>}

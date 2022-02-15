@@ -11,10 +11,11 @@ import {
 } from '../event/KeyboardEventListener';
 import { closeBibleSearch } from './BibleSearchPopup';
 import { fromLocaleNumber, toLocaleNumber } from './bibleSearchHelpers';
-import { addBibleItem, presentBible } from '../bible-list/BibleList';
+import { addBibleItem } from '../bible-list/BibleList';
 import { isWindowEditingMode } from '../App';
 import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers';
 import { toastEventListener } from '../event/ToastEventListener';
+import { presentBible } from '../bible-list/BibleItem';
 
 let mouseDownInd: number | null = null;
 function mouseUp() {

@@ -16,9 +16,23 @@
     overflow-y: auto;
   }
 
-  .list-group-item:not(.active):hover {
-    border: 1px solid var(--bs-gray-800);
-    background-color: rgba(100, 0, 131, 0.342);
+  .list-group-item {
+    &:before {
+      display: block;
+      position: absolute;
+      content: attr(data-index);
+      white-space: nowrap;
+      opacity: 0.5;
+      transform: translate(-13px, 2px);
+      text-align: right;
+      width: 12px;
+      font-size: 12px;
+    }
+
+    &:not(.active):hover {
+      border: 1px solid var(--bs-gray-800);
+      background-color: rgba(100, 0, 131, 0.342);
+    }
   }
 
   .form-select.bible {
@@ -127,6 +141,7 @@
   .btn:hover .text-muted {
     color: rgb(211, 211, 211) !important;
   }
+
   .btn {
     white-space: nowrap;
   }

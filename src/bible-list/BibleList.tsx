@@ -6,19 +6,16 @@ import {
     useBibleAdding,
 } from '../event/FullTextPresentEventListener';
 import {
-    getBiblePresentingSetting,
     getSetting,
-    setBiblePresentingSetting,
     setSetting,
 } from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { openBibleSearch, openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
-import { convertPresent } from '../full-text-present/FullTextPresentController';
 import { windowEventListener } from '../event/WindowEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import bibleHelper from '../bible-helper/bibleHelper';
 import { biblePresentToTitle } from '../bible-helper/helpers';
+import BibleItem, { genDuplicatedMessage, presentBible } from './BibleItem';
 
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
@@ -32,31 +29,6 @@ export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boole
     if (openPresent) {
         presentBible(biblePresent);
     }
-}
-
-export function presentBible(item: BiblePresentType) {
-    setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
-    fullTextPresentEventListener.presentBible(item);
-}
-
-export function BibleItem({ item, onContextMenu }: {
-    item: BiblePresentType,
-    onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
-}) {
-    const title = biblePresentToTitle(item);
-    const bibleStatus = bibleHelper.getBibleWithStatus(item.bible);
-    return (
-        <li className="list-group-item item"
-            draggable
-            onDragStart={(e) => {
-                e.dataTransfer.setData('text/plain', JSON.stringify(item));
-            }}
-            onContextMenu={onContextMenu || (() => { })}
-            onClick={() => presentBible(item)}>
-            <i className="bi bi-bookmark" />
-            {bibleStatus[2]} | {title == null ? 'not found' : title}
-        </li >
-    );
 }
 
 export function clearBibleListEditingIndex() {
@@ -115,31 +87,46 @@ export default function BibleList() {
             }}>
                 <ul className="list-group">
                     {list.map((item, i) => {
-                        return <BibleItem key={`${i}`} item={item} onContextMenu={(e) => {
-                            showAppContextMenu(e, [
-                                {
-                                    title: 'Open', onClick: () => {
-                                        if (list[i]) {
-                                            presentBible(list[i]);
-                                        }
+                        return <BibleItem key={`${i}`}
+                            index={i}
+                            warningMessage={genDuplicatedMessage(list, item, i)}
+                            biblePresent={item}
+                            onChangeBible={(newBible) => {
+                                const newList = [...list];
+                                newList[i].bible = newBible;
+                                applyList(newList);
+                            }}
+                            onDragOnIndex={(dropIndex: number) => {
+                                const newList = [...list];
+                                const target = newList.splice(dropIndex, 1)[0];
+                                newList.splice(i, 0, target);
+                                applyList(newList);
+                            }}
+                            onContextMenu={(e) => {
+                                showAppContextMenu(e, [
+                                    {
+                                        title: 'Open', onClick: () => {
+                                            if (list[i]) {
+                                                presentBible(list[i]);
+                                            }
+                                        },
                                     },
-                                },
-                                {
-                                    title: 'Edit', onClick: () => {
-                                        setSetting('bible-list-editing', `${i}`);
-                                        openBibleSearch();
+                                    {
+                                        title: 'Edit', onClick: () => {
+                                            setSetting('bible-list-editing', `${i}`);
+                                            openBibleSearch();
+                                        },
                                     },
-                                },
-                                {
-                                    title: 'Delete', onClick: () => {
-                                        if (list[i]) {
-                                            const newList = list.filter((_, i1) => i1 !== i);
-                                            applyList(newList);
-                                        }
+                                    {
+                                        title: 'Delete', onClick: () => {
+                                            if (list[i]) {
+                                                const newList = list.filter((_, i1) => i1 !== i);
+                                                applyList(newList);
+                                            }
+                                        },
                                     },
-                                },
-                            ]);
-                        }} />;
+                                ]);
+                            }} />;
                     })}
                 </ul>
             </div>

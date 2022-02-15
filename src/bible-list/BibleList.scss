@@ -7,8 +7,21 @@
 
   .card-body {
     height: calc(100% - $card-header-height);
+
     .item {
       cursor: pointer;
+    }
+  }
+
+  .item {
+
+    .bible {
+      border: 1px solid transparent;
+      border-radius: 5px;
+
+      &:hover {
+        border-color: var(--bs-gray-500);
+      }
     }
   }
 
