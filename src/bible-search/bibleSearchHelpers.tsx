@@ -73,7 +73,7 @@ export const defaultExtractedBible: ExtractedBibleResult = {
 export async function extractBible(bible: string, str: string) {
     str = str.trim();
     const arr = str.split(/\s+/);
-    const result: ExtractedBibleResult = cloneObject(defaultExtractedBible);
+    const result = cloneObject(defaultExtractedBible);
     const bookVKList = getBookVKList(bible);
     if (bookVKList === null) {
         return result;

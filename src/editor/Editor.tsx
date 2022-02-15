@@ -27,7 +27,7 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const cloneHtml2ReactChild = (be: HTML2ReactChild) => {
-        const newHtml2ReactChild: HTML2ReactChild = cloneObject(be);
+        const newHtml2ReactChild = cloneObject(be);
         newHtml2ReactChild.top += 10;
         newHtml2ReactChild.left += 10;
         return newHtml2ReactChild;

@@ -9,7 +9,9 @@ import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
 
 export type BiblePresentType = {
-    bible: string, target: {
+    index?: number,
+    bible: string,
+    target: {
         book: string,
         chapter: number,
         startVerse: number,

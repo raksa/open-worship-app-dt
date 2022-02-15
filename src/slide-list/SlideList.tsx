@@ -117,7 +117,7 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
                     </div>
                 </li>}
                 {slideListController.slideControllers.map((slideController, i) => {
-                    return <ListItem key={`${i}`}
+                    return <ListItem key={`${i}`} index={i}
                         itemClick={() => slideListController
                             .select(slideController)}
                         controller={slideController}
@@ -130,14 +130,16 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
 }
 
 type SlideItemProps = {
+    index: number,
     controller: SlideController,
     itemClick: () => void,
     onContextMenu: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
 }
-function ListItem({ controller, itemClick, onContextMenu }: SlideItemProps) {
+function ListItem({ index, controller, itemClick, onContextMenu }: SlideItemProps) {
     const slideName = controller.fileName.substring(0, controller.fileName.lastIndexOf('.'));
     return (
         <li className={`list-group-item ${controller.isSelected ? 'active' : ''} pointer`}
+            data-index={index + 1}
             title={controller.filePath}
             onClick={() => itemClick()}
             onContextMenu={onContextMenu}>

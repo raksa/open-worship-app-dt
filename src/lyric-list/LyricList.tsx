@@ -8,6 +8,7 @@ import {
     fullTextPresentEventListener,
     useLyricUpdating,
 } from '../event/FullTextPresentEventListener';
+import LyricItem, { presentLyric } from './LyricItem';
 
 export type LyricPresentType = {
     title: string,
@@ -17,30 +18,6 @@ type LyricItemType = {
     fileName: string,
     items: LyricPresentType[],
 };
-const presentLyric = (lyricItem: LyricItemType, index: number) => {
-    // TODO: change to fileName
-    setSetting('lyric-list-editing-index', `${index}`);
-    fullTextPresentEventListener.presentLyric(lyricItem.items);
-};
-
-function LyricItem({ index, lyricItem, onContextMenu }: {
-    index: number,
-    lyricItem: LyricItemType,
-    onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
-}) {
-    return (
-        <li className="list-group-item item"
-            draggable
-            onDragStart={(e) => {
-                e.dataTransfer.setData('text/plain', JSON.stringify(lyricItem));
-            }}
-            onContextMenu={onContextMenu ? onContextMenu : () => { }}
-            onClick={() => presentLyric(lyricItem, index)}>
-            <i className="bi bi-music-note" />
-            {lyricItem.fileName}
-        </li>
-    );
-}
 
 export function clearLyricListEditingIndex() {
     setSetting('lyric-list-editing-index', '-1');
@@ -158,29 +135,48 @@ Block3
                         </div>
                     </li>}
                     {list.map((item, i) => {
-                        return <LyricItem key={`${i}`} index={i} lyricItem={item} onContextMenu={(e) => {
-                            showAppContextMenu(e, [
-                                {
-                                    title: 'Open', onClick: () => {
-                                        if (list[i]) {
-                                            presentLyric(list[i], i);
-                                        }
-                                    },
-                                },
-                                {
-                                    title: 'Delete', onClick: () => {
-                                        if (list[i]) {
-                                            const newList = list.filter((_, i1) => i1 !== i);
-                                            applyList(newList);
-                                            if (getLyricListEditingIndex() === i) {
-                                                clearLyricListEditingIndex();
-                                                fullTextPresentEventListener.presentLyric([]);
+                        return <LyricItem key={`${i}`}
+                            index={i}
+                            lyricItem={item}
+                            rename={(newName) => {
+                                const newList = [...list];
+                                newList[i].fileName = newName;
+                                applyList(newList);
+                            }}
+                            onDragOnIndex={(dropIndex: number) => {
+                                const newList = [...list];
+                                const target = newList.splice(dropIndex, 1)[0];
+                                newList.splice(i, 0, target);
+                                applyList(newList);
+                            }}
+                            onContextMenu={(e, callback) => {
+                                showAppContextMenu(e, [
+                                    {
+                                        title: 'Open', onClick: () => {
+                                            if (list[i]) {
+                                                presentLyric(list[i], i);
                                             }
-                                        }
+                                        },
                                     },
-                                },
-                            ]);
-                        }} />;
+                                    {
+                                        title: 'Rename', onClick: () => {
+                                            callback('rename');
+                                        },
+                                    },
+                                    {
+                                        title: 'Delete', onClick: () => {
+                                            if (list[i]) {
+                                                const newList = list.filter((_, i1) => i1 !== i);
+                                                applyList(newList);
+                                                if (getLyricListEditingIndex() === i) {
+                                                    clearLyricListEditingIndex();
+                                                    fullTextPresentEventListener.presentLyric([]);
+                                                }
+                                            }
+                                        },
+                                    },
+                                ]);
+                            }} />;
                     })}
                 </ul>
             </div>
