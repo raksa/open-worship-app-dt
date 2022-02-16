@@ -65,28 +65,28 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
         return newHtml2ReactChild;
     };
     const duplicate = (index: number) => {
-        const newHtml2ReactChildren = [...html2ReactChildren];
-        const newHtml2ReactChild = cloneHtml2ReactChild(newHtml2ReactChildren[index]);
-        newHtml2ReactChildren.splice(index + 1, 0, newHtml2ReactChild);
-        setHtml2ReactChildren(newHtml2ReactChildren);
+        const newList = [...html2ReactChildren];
+        const newHtml2ReactChild = cloneHtml2ReactChild(newList[index]);
+        newList.splice(index + 1, 0, newHtml2ReactChild);
+        setHtml2ReactChildren(newList);
     };
     const deleteItem = (index: number) => {
-        const newHtml2ReactChildren = html2ReactChildren.filter((_, i) => i !== index);
-        setHtml2ReactChildren(newHtml2ReactChildren);
+        const newList = html2ReactChildren.filter((_, i) => i !== index);
+        setHtml2ReactChildren(newList);
     };
     const paste = () => {
-        const newHtml2ReactChildren = [...html2ReactChildren];
-        if (copiedIndex !== null && newHtml2ReactChildren[copiedIndex]) {
-            const newHtml2ReactChild = cloneHtml2ReactChild(newHtml2ReactChildren[copiedIndex]);
-            newHtml2ReactChildren.push(newHtml2ReactChild);
-            setHtml2ReactChildren(newHtml2ReactChildren);
+        const newList = [...html2ReactChildren];
+        if (copiedIndex !== null && newList[copiedIndex]) {
+            const newHtml2ReactChild = cloneHtml2ReactChild(newList[copiedIndex]);
+            newList.push(newHtml2ReactChild);
+            setHtml2ReactChildren(newList);
         }
     };
     const newBox = () => {
-        const newHtml2ReactChildren = [...html2ReactChildren];
+        const newList = [...html2ReactChildren];
         const newBoxHTML = getDefaultBoxHTML();
-        newHtml2ReactChildren.push(HTML2ReactChild.parseHTML(newBoxHTML));
-        setHtml2ReactChildren(newHtml2ReactChildren);
+        newList.push(HTML2ReactChild.parseHTML(newBoxHTML));
+        setHtml2ReactChildren(newList);
     };
 
     const applyUpdate = () => {
@@ -130,7 +130,8 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
                 ]);
             }} onDoubleClick={() => editorMapper.stopAllModes()} >
                 {html2ReactChildren.map((d, i) => {
-                    return <BoxEditor parentWidth={html2React.width} parentHeight={html2React.height}
+                    return <BoxEditor parentWidth={html2React.width}
+                        parentHeight={html2React.height}
                         scale={scale} key={`${i}`} onContextMenu={(e) => {
                             showAppContextMenu(e, [
                                 {
