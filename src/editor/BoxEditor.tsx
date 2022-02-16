@@ -164,7 +164,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
     normalGen() {
         const { h2rChild } = this.props;
         const style = { ...h2rChild.style, ...h2rChild.normalStyle };
-        // TODO: fix wrong reposition;
+        // FIXME: fix wrong reposition;
         return (
             <div onContextMenu={this.props.onContextMenu}
                 className={`box-editor pointer ${this.state.isEditable ? 'editable' : ''}`}
