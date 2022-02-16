@@ -3,22 +3,6 @@ import { BLACK_COLOR } from '../others/ColorPicker';
 import { readFile } from './fileHelper';
 import { getAppInfo, getRotationDeg, removePX } from './helpers';
 
-export type ToolingType = {
-    text?: {
-        color?: string,
-        fontSize?: number,
-        horizontalAlignment?: HAlignmentEnum,
-        verticalAlignment?: VAlignmentEnum,
-    }
-    box?: {
-        backgroundColor?: string,
-        rotate?: number,
-        horizontalAlignment?: HAlignmentEnum,
-        verticalAlignment?: VAlignmentEnum,
-        layerBack?: boolean,
-        layerFront?: boolean,
-    }
-};
 export type SlidePresentType = {
     items: SlideItemThumbType[]
 };
