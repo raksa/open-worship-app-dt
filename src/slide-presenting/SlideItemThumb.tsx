@@ -11,6 +11,7 @@ export function SlideItemThumbIFrame({
     const height = width * html2React.height / html2React.width;
     const scaleX = width / html2React.width;
     const scaleY = height / html2React.height;
+    // FIXME: wrong dimension
     return (
         <div style={{
             width, height,
