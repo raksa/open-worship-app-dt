@@ -129,7 +129,7 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
                     },
                 ]);
             }} onDoubleClick={() => editorMapper.stopAllModes()} >
-                {html2ReactChildren.map((d, i) => {
+                {html2ReactChildren.map((h2rChild, i) => {
                     return <BoxEditor parentWidth={html2React.width}
                         parentHeight={html2React.height}
                         scale={scale} key={`${i}`} onContextMenu={(e) => {
@@ -158,7 +158,7 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
                             ]);
                         }} ref={(be) => {
                             editorMapper.setEditor(`${i}`, be);
-                        }} h2rChild={d} onUpdate={(newData) => {
+                        }} h2rChild={h2rChild} onUpdate={(newData) => {
                             const newList = [...html2ReactChildren];
                             newList[i] = new HTML2ReactChild({ ...newList[i], ...newData });
                             setHtml2ReactChildren(newList);

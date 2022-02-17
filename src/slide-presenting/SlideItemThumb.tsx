@@ -5,13 +5,11 @@ import { ContextMenuEventType } from '../others/AppContextMenu';
 import { extractSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
 
 export function SlideItemThumbIFrame({
-    id, width, html,
-}: { id: string, width: number, html: string }) {
-    const html2React = HTML2React.parseHTML(html);
+    id, width, html2React,
+}: { id: string, width: number, html2React: HTML2React }) {
     const height = width * html2React.height / html2React.width;
     const scaleX = width / html2React.width;
     const scaleY = height / html2React.height;
-    // FIXME: wrong dimension
     return (
         <div style={{
             width, height,
@@ -26,7 +24,7 @@ export function SlideItemThumbIFrame({
                     height: `${html2React.height}px`,
                     transform: 'translate(-50%, -50%)',
                 }}
-                srcDoc={`<style>html,body {overflow: hidden;}</style>${html}`}
+                srcDoc={`<style>html,body {overflow: hidden;}</style>${html2React.htmlString}`}
             />
         </div>
     );
@@ -53,6 +51,7 @@ export default function SlideItemThumb({
     onDragStart,
     onDragEnd,
 }: SlideItemThumbnailProps) {
+    const html2React = HTML2React.parseHTML(slideItemThumbData.html);
     return (
         <div className={`slide-item-thumb card ${isActive ? 'active' : ''} pointer`}
             draggable
@@ -72,15 +71,21 @@ export default function SlideItemThumb({
             }}
             onContextMenu={(e) => onContextMenu(e)}
             onCopy={onCopy}>
-            <div className="card-header">
-                {index + 1} {isActive && <span><i className="bi bi-collection" /></span>}
-                {slideItemThumbData.isEditing && <span className='float-end' style={{
-                    color: 'red',
-                }}>*</span>}
+            <div className="card-header d-flex">
+                <div>
+                    {index + 1} {isActive && <span><i className="bi bi-collection" /></span>}
+                </div>
+                <div className='flex-fill d-flex justify-content-end'>
+                    <small className='pe-2'>{html2React.width}x{html2React.height}</small>
+                    {slideItemThumbData.isEditing && <span style={{ color: 'red' }}>*</span>}
+                </div>
             </div>
             <div className="card-body overflow-hidden"
                 style={{ width }} >
-                <SlideItemThumbIFrame id={slideItemThumbData.id} width={width} html={slideItemThumbData.html} />
+                <SlideItemThumbIFrame
+                    id={slideItemThumbData.id}
+                    width={width}
+                    html2React={html2React} />
             </div>
         </div>
     );

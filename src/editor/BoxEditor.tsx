@@ -42,7 +42,6 @@ export class BoxEditor extends Component<PropsType, StateType>{
     }
     componentDidUpdate(preProps: PropsType) {
         this.editingController.setScaleFactor(preProps.scale);
-        this.applyControl();
     }
     get isControllable() {
         return this.state.isControllable;
@@ -112,14 +111,14 @@ export class BoxEditor extends Component<PropsType, StateType>{
             this.props.onUpdate(info);
         });
     }
-    componentDidMount() {
-        if (this.divRef !== null) {
-            this.divRef.innerHTML = this.props.h2rChild.text.split('\n').join('<br/>');
-        }
-    }
     render() {
         const { isControllable } = this.state;
         return isControllable ? this.controllingGen() : this.normalGen();
+    }
+    async onDoubleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+        e.stopPropagation();
+        await editorMapper.stopAllModes();
+        this.startEditingMode();
     }
     controllingGen() {
         const { isControllable } = this.state;
@@ -138,18 +137,16 @@ export class BoxEditor extends Component<PropsType, StateType>{
             }}>
                 <div className={`box-editor ${isControllable ? 'controllable' : ''}`}
                     onContextMenu={this.props.onContextMenu}
-                    onDoubleClick={async (e) => {
-                        e.stopPropagation();
-                        await editorMapper.stopAllModes();
-                        this.startEditingMode();
-                    }}
+                    onDoubleClick={(e) => this.onDoubleClick(e)}
                     style={{
                         transform: 'translate(-50%, -50%)',
                         width: `${h2rChild.width}px`, height: `${h2rChild.height}px`,
                     }}>
                     <div ref={(r) => {
                         this.divRef = r;
-                    }} className='w-100 h-100' style={style}>{h2rChild.text}</div>
+                    }} className='w-100 h-100' style={style}>
+                        <RenderText text={h2rChild.text} />
+                    </div>
                     <div className='tools'>
                         <div className={`object ${this.editingController.rotatorCN}`} />
                         <div className="rotate-link" />
@@ -164,7 +161,6 @@ export class BoxEditor extends Component<PropsType, StateType>{
     normalGen() {
         const { h2rChild } = this.props;
         const style = { ...h2rChild.style, ...h2rChild.normalStyle };
-        // FIXME: fix wrong reposition;
         return (
             <div onContextMenu={this.props.onContextMenu}
                 className={`box-editor pointer ${this.state.isEditable ? 'editable' : ''}`}
@@ -185,18 +181,20 @@ export class BoxEditor extends Component<PropsType, StateType>{
                     await editorMapper.stopAllModes();
                     this.startControllingMode();
                 }}
-                onDoubleClick={async (e) => {
-                    e.stopPropagation();
-                    await editorMapper.stopAllModes();
-                    this.startEditingMode();
-                }}>
+                onDoubleClick={(e) => this.onDoubleClick(e)}>
                 {this.state.isEditable ?
                     <textarea style={{ color: style.color }}
                         className='w-100 h-100' value={h2rChild.text} onChange={(e) => {
                             this.props.onUpdate({ text: e.target.value });
                         }} />
-                    : h2rChild.text}
+                    : <RenderText text={h2rChild.text} />}
             </div>
         );
     }
+}
+
+function RenderText({ text }: { text: string }) {
+    return (
+        <span dangerouslySetInnerHTML={{ __html: text.split('\n').join('<br>') }} />
+    );
 }
