@@ -3,22 +3,6 @@ import { BLACK_COLOR } from '../others/ColorPicker';
 import { readFile } from './fileHelper';
 import { getAppInfo, getRotationDeg, removePX } from './helpers';
 
-export type ToolingType = {
-    text?: {
-        color?: string,
-        fontSize?: number,
-        horizontalAlignment?: HAlignmentEnum,
-        verticalAlignment?: VAlignmentEnum,
-    }
-    box?: {
-        backgroundColor?: string,
-        rotate?: number,
-        horizontalAlignment?: HAlignmentEnum,
-        verticalAlignment?: VAlignmentEnum,
-        layerBack?: boolean,
-        layerFront?: boolean,
-    }
-};
 export type SlidePresentType = {
     items: SlideItemThumbType[]
 };
@@ -130,7 +114,7 @@ export class HTML2ReactChild {
     backgroundColor: string;
     zIndex: number;
     constructor({ text, fontSize, color, top, left, rotate, width, height,
-        horizontalAlignment, verticalAlignment, backgroundColor, zIndex}: {
+        horizontalAlignment, verticalAlignment, backgroundColor, zIndex }: {
             text: string, fontSize: number, color: string, top: number, left: number,
             rotate: number, width: number, height: number, horizontalAlignment: HAlignmentEnum,
             verticalAlignment: VAlignmentEnum, backgroundColor: string, zIndex: number,
@@ -172,7 +156,7 @@ export class HTML2ReactChild {
     }
     get html() {
         const div = document.createElement('div');
-        div.innerText = this.text;
+        div.innerHTML = this.text;
         const targetStyle = div.style as any;
         const style = { ...this.style, ...this.normalStyle } as any;
         Object.keys(style).forEach((k) => {
@@ -189,7 +173,7 @@ export class HTML2ReactChild {
         const element = div.firstChild as HTMLDivElement;
         const style = element.style;
         return new HTML2ReactChild({
-            text: element.innerHTML,
+            text: element.innerHTML.split('<br>').join('\n'),
             fontSize: removePX(style.fontSize) || 30,
             color: style.color || BLACK_COLOR,
             top: removePX(style.top) || 3,

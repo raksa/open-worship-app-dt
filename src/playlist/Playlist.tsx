@@ -29,7 +29,7 @@ import {
     useStateSettingBoolean,
 } from '../helper/settingHelper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import { getSlideDataByFilePath } from '../helper/slideHelper';
+import { getSlideDataByFilePath, HTML2React } from '../helper/slideHelper';
 import BibleItem from '../bible-list/BibleItem';
 
 export default function Playlist() {
@@ -241,7 +241,8 @@ function SlideItemThumbPlaylist({
             onClick={() => {
                 slideListEventListenerGlobal.selectSlideItemThumb(item);
             }}>
-            <SlideItemThumbIFrame id={id} width={width} html={item.html} />
+            <SlideItemThumbIFrame id={id} width={width}
+                html2React={HTML2React.parseHTML(item.html)} />
         </div>
     );
 }

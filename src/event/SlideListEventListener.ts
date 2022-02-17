@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
+import { ToolingType } from '../editor/Tools';
 import { getSetting, setSetting, useStateSettingNumber } from '../helper/settingHelper';
-import { HTML2ReactChild, SlideItemThumbType, ToolingType } from '../helper/slideHelper';
+import { HTML2ReactChild, SlideItemThumbType } from '../helper/slideHelper';
 import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
 import EventHandler from './EventHandler';
 

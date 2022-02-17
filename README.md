@@ -108,3 +108,7 @@ $ npm run pack:mac
 * This is not ready to use yet, but I need many help.
 * If you have any question or idea please share in [Issues](https://github.com/OpenWorshipApp/open-worship-app-dt/issues), or contact me if you need more information, Raksa Eng <eng.raksa@gmail.com>
 * 🙏🏻May God bless you🙏🏻
+
+## Licence
+
+GNU GENERAL PUBLIC LICENSE Version 2
