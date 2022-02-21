@@ -70,9 +70,6 @@ getPresentRendered().then((rendered) => {
 export function getIsShowing() {
     return !!appProvider.ipcRenderer.sendSync('main:app:is-presenting');
 }
-export function getPresentScreenInfo() {
-    return appProvider.ipcRenderer.sendSync('main:app:present-sreen-info') as { width: number, height: number };
-}
 export function getUserWritablePath() {
     return appProvider.ipcRenderer.sendSync('main:app:get-data-path');
 }

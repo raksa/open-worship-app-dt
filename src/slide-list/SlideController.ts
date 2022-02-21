@@ -1,7 +1,6 @@
 import { defaultSlide } from '../helper/slideHelper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
-import { getPresentScreenInfo } from '../helper/appHelper';
 import {
     checkFileExist,
     createFile,
@@ -10,10 +9,15 @@ import {
     genFileSource,
     renameFile,
 } from '../helper/fileHelper';
-import { getSetting, getSlideItemSelectedSetting, setSlideItemSelectedSetting } from '../helper/settingHelper';
+import {
+    getSetting,
+    getSlideItemSelectedSetting,
+    setSlideItemSelectedSetting,
+} from '../helper/settingHelper';
 import FileController from '../others/FileController';
 import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
 import { parseSlideItemThumbSelected } from '../helper/helpers';
+import { getAllDisplays } from '../helper/displayHelper';
 
 export default class SlideController extends FileController {
     _isSelected = false;
@@ -57,8 +61,8 @@ export default class SlideController extends FileController {
             });
             return null;
         }
-        const dim = getPresentScreenInfo();
-        const defaultSlideText = defaultSlide(dim.width, dim.height);
+        const { presentDisplay } = getAllDisplays();
+        const defaultSlideText = defaultSlide(presentDisplay.bounds.width, presentDisplay.bounds.height);
         if (createFile(JSON.stringify(defaultSlideText), basePath, slideName)) {
             const fileSource = genFileSource(basePath, slideName);
             return new SlideController(fileSource);
