@@ -19,18 +19,20 @@ export function tooling2BoxProps(toolingData: ToolingType, state: {
         if (box.verticalAlignment === VAlignmentEnum.Top) {
             boxProps.top = 0;
         } else if (box.verticalAlignment === VAlignmentEnum.Center) {
-            boxProps.top = state.parentHeight / 2 - state.height / 2;
+            boxProps.top = (state.parentHeight - state.height) / 2;
         } else if (box.verticalAlignment === VAlignmentEnum.Bottom) {
             boxProps.top = state.parentHeight - state.height;
         }
         if (box.horizontalAlignment === HAlignmentEnum.Left) {
             boxProps.left = 0;
         } else if (box.horizontalAlignment === HAlignmentEnum.Center) {
-            boxProps.left = state.parentWidth / 2 - state.width / 2;
+            boxProps.left = (state.parentWidth - state.width) / 2;
         } else if (box.horizontalAlignment === HAlignmentEnum.Right) {
             boxProps.left = state.parentWidth - state.width;
         }
     }
+    console.log(boxProps);
+
     return boxProps;
 }
 

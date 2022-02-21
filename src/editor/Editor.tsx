@@ -26,7 +26,7 @@ function genNewH2rChildren(data: ToolingType, html2React: HTML2React,
         const index = editorMapper.selectedIndex;
         const { text, box } = data;
         const boxProps = tooling2BoxProps(data, {
-            width: html2React.width, height: html2React.height,
+            width: newList[index].width, height: newList[index].height,
             parentWidth: html2React.width, parentHeight: html2React.height,
         });
         const newH2rChild = new HTML2ReactChild({ ...newList[index], ...text, ...box, ...boxProps });
