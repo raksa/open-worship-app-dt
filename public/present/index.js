@@ -60,11 +60,11 @@ function backup() {
 }
 function removeClassName(className) {
     const targets = document.getElementsByClassName(className);
-    const length = targets.length;
-    Array.from(targets).forEach((target) => {
+    const arrChildren = Array.from(targets);
+    arrChildren.forEach((target) => {
         target.classList.remove(className);
     });
-    return !!length;
+    return arrChildren;
 }
 function resetClassName(blockId, className, isAdd) {
     const currentBlocks = document.querySelectorAll(`[data-highlight="${blockId}"]`);
@@ -85,9 +85,11 @@ function addHighlightEvent() {
         span.addEventListener('mouseout', function () {
             resetClassName(this.dataset.highlight, 'hover', false);
         });
-        span.addEventListener('click', function () {
-            removeClassName('selected');
-            resetClassName(this.dataset.highlight, 'selected', true);
+        span.addEventListener('click', function (e) {
+            const arrChildren = removeClassName('selected');
+            if (!~arrChildren.indexOf(this)) {
+                resetClassName(this.dataset.highlight, 'selected', true);
+            }
         });
     });
 }
