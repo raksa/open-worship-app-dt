@@ -2,7 +2,6 @@ import './App.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 import './others/tool-tip.scss';
-import './others/variables.scss';
 
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
 import HandleBibleSearch from './bible-search/HandleBibleSearch';

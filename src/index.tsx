@@ -2,12 +2,13 @@ import './index.scss';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import i18next from 'i18next';
 import App from './App';
+import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import languages from './lang';
 import { initApp } from './bible-helper/helpers';
 import { getSelectedLangLocale } from './setting/SettingGeneral';
+
 const resources = Object.fromEntries(Object.keys(languages).map((k) => {
   return [k, { translation: (languages as any)[k].tran }];
 }));
