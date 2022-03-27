@@ -15,18 +15,15 @@ export default function Presenting() {
     return (
         <div id="presenting" className="w-100 h-100">
             <ul className="header nav nav-tabs">
-                <li className="nav-item">
-                    <button className={`btn btn-link nav-link ${tabType === 's' ? 'active' : ''}`}
-                        onClick={() => setTabType('s')}>
-                        Slide
-                    </button>
-                </li>
-                <li className="nav-item">
-                    <button className={`btn btn-link nav-link ${tabType === 'f' ? 'active' : ''}`}
-                        onClick={() => setTabType('f')}>
-                        Full Text
-                    </button>
-                </li>
+                {/* TODO: use this pattern everywhere */}
+                {[['s', 'Slide'], ['f', 'Full Text']].map(([key, title], i) => {
+                    return (<li key={i} className="nav-item">
+                        <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
+                            onClick={() => setTabType(key)}>
+                            {title}
+                        </button>
+                    </li>);
+                })}
             </ul>
             <div className="body w-100 p-10">
                 {tabType === 's' && <SlidePreview />}
