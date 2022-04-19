@@ -13,6 +13,7 @@ import AppEditing from './AppEditing';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
+import { t } from 'i18next';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
@@ -31,22 +32,14 @@ export default function App() {
         <div id="app" className="dark d-flex flex-column">
             <div className="app-header d-flex">
                 <ul className="nav nav-tabs ">
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'e' ?
-                            'active' : 'highlight-border-bottom'}`}
-                            onClick={() => setTabType('e')}>
-                            <i className="bi bi-pencil-square" />
-                            Editing
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'p' ?
-                            'active' : 'highlight-border-bottom'}`}
-                            onClick={() => setTabType('p')}>
-                            <i className="bi bi-collection-play" />
-                            Presenting
-                        </button>
-                    </li>
+                    {[['e', 'Editing'], ['p', 'Presenting']].map(([key, title], i) => {
+                        return (<li key={i} className="nav-item">
+                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
+                                onClick={() => setTabType(key)}>
+                                {t(title)}
+                            </button>
+                        </li>);
+                    })}
                 </ul>
                 <div className="highlight-border-bottom d-flex justify-content-center flex-fill">
                     <BibleSearchHeader />

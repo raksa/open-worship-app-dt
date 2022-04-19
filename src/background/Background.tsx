@@ -4,6 +4,7 @@ import Colors from './Colors';
 import Images from './Images';
 import Videos from './Videos';
 import { useStateSettingString } from '../helper/settingHelper';
+import { t } from 'i18next';
 
 export default function Background() {
     // c: color, i: image, v: video
@@ -12,24 +13,14 @@ export default function Background() {
         <div className="background w-100 d-flex flex-column">
             <div className='background-header'>
                 <ul className="nav nav-tabs">
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'c' ? 'active' : ''}`}
-                            onClick={() => setTabType('c')}>
-                            Colors
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'i' ? 'active' : ''}`}
-                            onClick={() => setTabType('i')}>
-                            Images
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'v' ? 'active' : ''}`}
-                            onClick={() => setTabType('v')}>
-                            Videos
-                        </button>
-                    </li>
+                    {[['c', 'Colors'], ['i', 'Images'], ['v', 'Videos']].map(([key, title], i) => {
+                        return (<li key={i} className="nav-item">
+                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
+                                onClick={() => setTabType(key)}>
+                                {t(title)}
+                            </button>
+                        </li>);
+                    })}
                 </ul>
             </div>
             <div className="background-body w-100 flex-fill">

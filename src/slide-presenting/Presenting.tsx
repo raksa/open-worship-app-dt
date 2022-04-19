@@ -5,6 +5,7 @@ import FullTextPresentController from '../full-text-present/FullTextPresentContr
 import { useFullTextPresenting } from '../event/FullTextPresentEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
+import { t } from 'i18next';
 
 export default function Presenting() {
     // s: slides, f: full text
@@ -15,12 +16,11 @@ export default function Presenting() {
     return (
         <div id="presenting" className="w-100 h-100">
             <ul className="header nav nav-tabs">
-                {/* TODO: use this pattern everywhere */}
                 {[['s', 'Slide'], ['f', 'Full Text']].map(([key, title], i) => {
                     return (<li key={i} className="nav-item">
                         <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
                             onClick={() => setTabType(key)}>
-                            {title}
+                            {t(title)}
                         </button>
                     </li>);
                 })}

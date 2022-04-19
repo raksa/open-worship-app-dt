@@ -6,6 +6,7 @@ import {
     useStateSettingString,
 } from '../helper/settingHelper';
 import Appearance from './Appearance';
+import { t } from 'i18next';
 
 export default function CustomStyle() {
     const [open, setOpen] = useStateSettingBoolean('open-full-text-present-custom-style');
@@ -27,20 +28,14 @@ function Body() {
         <div className='card-body'>
             <div className="d-flex">
                 <ul className="nav nav-tabs flex-fill">
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'a' ?
-                            'active' : 'highlight-border-bottom'}`}
-                            onClick={() => setTabType('a')}>
-                            Appearance
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 's' ?
-                            'active' : 'highlight-border-bottom'}`}
-                            onClick={() => setTabType('s')}>
-                            Shadow
-                        </button>
-                    </li>
+                    {[['a', 'Appearance'], ['s', 'Shadow']].map(([key, title], i) => {
+                        return (<li key={i} className="nav-item">
+                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
+                                onClick={() => setTabType(key)}>
+                                {t(title)}
+                            </button>
+                        </li>);
+                    })}
                 </ul>
             </div>
             <div className='custom-style-body p-2'>
