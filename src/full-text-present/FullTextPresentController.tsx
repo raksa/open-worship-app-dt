@@ -24,7 +24,8 @@ export default function FullTextPresentController() {
         'tools': '1',
     });
     return (
-        <div id="full-text-present-controller" className="card w-100 h-100">
+        <div id="full-text-present-controller"
+            className="card w-100 h-100 border-white-round">
             <div className="card-body flex v">
                 <div data-fs='previewer' className='overflow-hidden'
                     style={{ flex: flexSize['previewer'] || 1 }}>
@@ -32,7 +33,11 @@ export default function FullTextPresentController() {
                 </div>
                 <FlexResizer settingName={resizeSettingName} type={'v'} />
                 <div className='h-100 d-flex flex-column' data-fs='tools'
-                    style={{ flex: flexSize['tools'] || 1, overflowY: 'auto' }}>
+                    style={{
+                        flex: flexSize['tools'] || 1,
+                        overflowX: 'hidden',
+                        overflowY: 'auto',
+                    }}>
                     <Utils onShow={() => previewer.show()} />
                     <CustomStyle />
                 </div>

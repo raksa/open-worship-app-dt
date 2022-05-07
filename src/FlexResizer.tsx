@@ -99,11 +99,35 @@ export default class FlexResizer extends React.Component<Props, {}> {
         checkSize(this.props.settingName);
     }
     componentDidMount() {
-        this.myRef.current?.addEventListener('mousedown', (md) => this.onMouseDown(md));
+        const target = this.myRef.current;
+        if (target) {
+            target.addEventListener('mousedown', (md) => this.onMouseDown(md));
+            target.addEventListener('mouseover', (e) => {
+                if (e.currentTarget === e.target) {
+                    target.classList.add('active');
+                }
+            });
+            target.addEventListener('mouseout', () => target.classList.remove('active'));
+        }
     }
     render() {
         return (
-            <div className={`flex-resizer ${this.props.type}`} ref={this.myRef} />
+            <div className={`flex-resizer ${this.props.type}`} ref={this.myRef}>
+                <div className='mover'>
+                    {[['left', 'chevron-left'], ['right', 'chevron-right'],
+                    ['up', 'chevron-up'], ['down', 'chevron-down']].map(([type, icon], i) => {
+                        return (
+                            <div key={i} className={type}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log(type);
+                                }}>
+                                <i className={`bi bi-${icon}`} />
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
         );
     }
 }
@@ -111,7 +135,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
 export type Size = { [key: string]: string };
 function checkSize(settingName: string) {
     const size: Size = {};
-    const rowItems = Array.from(document.querySelectorAll('[data-fs]')) as HTMLDivElement[];
+    const rowItems: HTMLDivElement[] = Array.from(document.querySelectorAll('[data-fs]'));
     rowItems.forEach((item) => {
         size[item.getAttribute('data-fs') as string] = item.style.flex;
     });

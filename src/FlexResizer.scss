@@ -7,7 +7,50 @@
   background-position: center;
   transition: padding 0.2s ease-out;
 
+  .mover {
+    position: absolute;
+    cursor: pointer;
+    z-index: $z-index-resizer-float;
+
+    div {
+      position: absolute;
+      opacity: 0.2;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .left {
+      display: inline;
+      transform: translateX(-13px);
+    }
+
+    .right {
+      display: inline;
+      transform: translateX(-1px);
+    }
+
+    .up {
+      display: inline;
+      transform: translateY(-16px);
+    }
+
+    .down {
+      display: inline;
+      transform: translateY(-4px);
+    }
+  }
+
   &.v {
+    .mover {
+
+      .left,
+      .right {
+        display: none;
+      }
+    }
+
     cursor: ns-resize;
     background-size: 10px;
     border-top: 1px solid var(--bs-dark);
@@ -19,11 +62,20 @@
     }
 
     &.active {
-      padding: 3px;
+      padding-top: 3px;
+      padding-bottom: 3px;
     }
   }
 
   &.h {
+    .mover {
+
+      .up,
+      .down {
+        display: none;
+      }
+    }
+
     cursor: ew-resize;
     background-size: 4px;
     border-left: 1px solid var(--bs-dark);
@@ -35,12 +87,12 @@
     }
 
     &.active {
-      padding: 3px;
+      padding-left: 3px;
+      padding-right: 3px;
     }
   }
 
-  &:hover {
-    padding: 3px;
+  &.active {
     transition: padding 0.1s ease-in 0.5s;
   }
 
