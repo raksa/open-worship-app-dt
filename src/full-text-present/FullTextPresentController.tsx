@@ -19,20 +19,23 @@ export function convertPresent(present: BiblePresentType,
 
 export default function FullTextPresentController() {
     const resizeSettingName = 'full-text-present-window-size';
-    const flexSize = getPresentingFlexSize(resizeSettingName, {
+    const flexSizeDefault = {
         'previewer': '2',
         'tools': '1',
-    });
+    };
+    const flexSize = getPresentingFlexSize(resizeSettingName, flexSizeDefault);
     return (
         <div id="full-text-present-controller"
             className="card w-100 h-100 border-white-round">
             <div className="card-body flex v">
-                <div data-fs='previewer' className='overflow-hidden'
+                <div data-fs='previewer' data-fs-default={flexSizeDefault['previewer']}
+                    className='overflow-hidden'
                     style={{ flex: flexSize['previewer'] || 1 }}>
                     <Previewer />
                 </div>
                 <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div className='h-100 d-flex flex-column' data-fs='tools'
+                <div data-fs='tools' data-fs-default={flexSizeDefault['tools']}
+                    className='h-100 d-flex flex-column'
                     style={{
                         flex: flexSize['tools'] || 1,
                         overflowX: 'hidden',

@@ -39,8 +39,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
     getOffsetSize(div: HTMLDivElement) {
         return this.isVertical ? div.offsetHeight : div.offsetWidth;
     }
-    onMouseDown(md: MouseEvent) {
-        md.preventDefault();
+    init() {
         const current = this.myRef.current;
         if (!current) {
             return;
@@ -54,12 +53,15 @@ export default class FlexResizer extends React.Component<Props, {}> {
 
         this.prevSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
-        this.lastPos = this.getMousePagePos(md);
         this.sumSize = this.prevSize + this.nextSize;
         this.prevGrow = Number(prev.style.flexGrow);
         this.nextGrow = Number(next.style.flexGrow);
         this.sumGrow = this.prevGrow + this.nextGrow;
-
+    }
+    onMouseDown(md: MouseEvent) {
+        md.preventDefault();
+        this.init();
+        this.lastPos = this.getMousePagePos(md);
         window.addEventListener('mousemove', this.mouseMoveListener);
         window.addEventListener('mouseup', this.mouseUpListener);
     }
@@ -98,6 +100,32 @@ export default class FlexResizer extends React.Component<Props, {}> {
 
         checkSize(this.props.settingName);
     }
+    resetSize() {
+        this.prev.style.flex = this.prev.dataset['fsDefault'] as string;
+        this.next.style.flex = this.next.dataset['fsDefault'] as string;
+    }
+    quicMove(type: string) {
+        this.init();
+        const smallest = 0.001;
+        const min = this.sumGrow * smallest;
+        const max = this.sumGrow - min;
+        if (['left', 'up'].includes(type)) {
+            if (this.nextGrow / this.sumGrow <= smallest) {
+                this.resetSize();
+            } else {
+                this.prev.style.flexGrow = `${min}`;
+                this.next.style.flexGrow = `${max}`;
+            }
+        } else {
+            if (this.prevGrow / this.sumGrow <= smallest) {
+                this.resetSize();
+            } else {
+                this.prev.style.flexGrow = `${max}`;
+                this.next.style.flexGrow = `${min}`;
+            }
+        }
+        checkSize(this.props.settingName);
+    }
     componentDidMount() {
         const target = this.myRef.current;
         if (target) {
@@ -120,7 +148,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
                             <div key={i} className={type}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log(type);
+                                    this.quicMove(type);
                                 }}>
                                 <i className={`bi bi-${icon}`} />
                             </div>
