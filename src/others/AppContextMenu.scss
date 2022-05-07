@@ -9,6 +9,7 @@
   z-index: $z-index-context-menu;
   box-shadow: 0 0 20px rgba(0, 0, 0, .2);
   color: white;
+  overflow: auto;
 
 
   .app-context-menu-item {

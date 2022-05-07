@@ -91,9 +91,9 @@ export default function BibleList() {
                             index={i}
                             warningMessage={genDuplicatedMessage(list, item, i)}
                             biblePresent={item}
-                            onChangeBible={(newBible) => {
+                            onUpdateBiblePresent={(newBiblePresent) => {
                                 const newList = [...list];
-                                newList[i].bible = newBible;
+                                newList[i] = newBiblePresent;
                                 applyList(newList);
                             }}
                             onDragOnIndex={(dropIndex: number) => {
