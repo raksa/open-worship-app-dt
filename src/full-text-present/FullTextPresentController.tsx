@@ -31,8 +31,8 @@ export default function FullTextPresentController() {
                     <Previewer />
                 </div>
                 <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div className='h-100 d-flex flex-column overflow-hidden'
-                    data-fs='tools' style={{ flex: flexSize['tools'] || 1 }}>
+                <div className='h-100 d-flex flex-column' data-fs='tools'
+                    style={{ flex: flexSize['tools'] || 1, overflowY: 'auto' }}>
                     <Utils onShow={() => previewer.show()} />
                     <CustomStyle />
                 </div>

@@ -1,22 +1,17 @@
 import './CustomStyle.scss';
 
 import TextShadow from './TextShadow';
-import {
-    useStateSettingBoolean,
-    useStateSettingString,
-} from '../helper/settingHelper';
+import { useStateSettingString } from '../helper/settingHelper';
 import Appearance from './Appearance';
 import { useTranslation } from 'react-i18next';
 
 export default function CustomStyle() {
-    const [open, setOpen] = useStateSettingBoolean('open-full-text-present-custom-style');
     return (
-        <div className="custom-style card pointer overflow-hidden border-white-round mt-1">
-            <div className="card-header" onClick={() => setOpen(!open)}>
-                <i className={`bi bi-chevron-${open ? 'down' : 'right'}`} />
+        <div className="custom-style card pointer border-white-round mt-1">
+            <div className="card-header">
                 Custom Style
             </div>
-            {open && <Body />}
+            <Body />
         </div>
     );
 }
