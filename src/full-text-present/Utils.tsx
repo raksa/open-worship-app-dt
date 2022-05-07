@@ -21,7 +21,7 @@ export default function Utils({ onShow }: { onShow: () => void }) {
                 <div className={'form-check form-switch pointer'}
                     onClick={() => setIsAutoShow(!isAutoShow)}>
                     <input className="form-check-input" type="checkbox" checked={isAutoShow}
-                        onChange={() => { }} />
+                        onChange={() => false} />
                     <label className="form-check-label"><small>Auto Show</small></label>
                 </div>
                 <div className={'form-check form-switch pointer'}
@@ -30,7 +30,7 @@ export default function Utils({ onShow }: { onShow: () => void }) {
                         fullTextPresentHelper.render();
                     }}>
                     <input className="form-check-input" type="checkbox" checked={isHighlightPresent}
-                        onChange={() => { }} />
+                        onChange={() => false} />
                     <label className="form-check-label"><small>Highlight Hover</small></label>
                 </div>
             </div>

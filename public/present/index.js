@@ -9,7 +9,7 @@ document.onkeydown = function (evt) {
     } else {
         isEscape = (evt.keyCode === 27);
     }
-    if (isEscape && !removeClassName('selected')) {
+    if (isEscape && !removeClassName('selected').length) {
         closeWin();
     }
 };

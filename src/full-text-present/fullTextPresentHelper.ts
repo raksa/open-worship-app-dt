@@ -17,6 +17,7 @@ export type BiblePresentType = {
         startVerse: number,
         endVerse: number,
     },
+    metadata?: { [key: string]: any },
 };
 
 type StylingType = {

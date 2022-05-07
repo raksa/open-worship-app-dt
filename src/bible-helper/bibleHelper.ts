@@ -31,7 +31,7 @@ const bibleHelper = {
         if (downloadPath === null) {
             return options.onDone(new Error('Cannot creat writable path'));
         }
-        fetch(`/pointers/${encodeURI(`${bible}.json`)}`).then((data: {
+        fetch(`/pointers/${encodeURI(bible + '.json')}`).then((data: {
             cipherKey: string,
             key: string,
             name: string,
@@ -41,7 +41,7 @@ const bibleHelper = {
             if (this.getBibleCipherKey(bible) !== data.cipherKey) {
                 return options.onDone(new Error('Fail to save!'));
             }
-            startDownloading(`/${encodeURI(`${data.key}`)}`, downloadPath, data.name, options);
+            startDownloading(`/${encodeURI(data.key)}`, downloadPath, data.name, options);
         }).catch((error) => {
             options.onDone(error);
         });

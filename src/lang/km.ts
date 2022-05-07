@@ -1,14 +1,26 @@
 const tran = {
-    'bible-search': 'ស្វែងរកខគម្ពីរ',
-    'bible-present': 'បទបញ្ហាញ​ព្រះ​គម្ពីរ',
-    'general':'ទូទៅ',
-    'bible':'ព្រះគម្ពីរ',
-    'about': 'អារម្មណ៏កថា',
+  'bible-search': 'ស្វែងរកខគម្ពីរ',
+  'bible-present': 'បទបង្ហាញ​ព្រះ​គម្ពីរ',
+  'General': 'ទូទៅ',
+  'Bible': 'ព្រះគម្ពីរ',
+  'About': 'អារម្មណ៏កថា',
+  'Editing': 'ការកែលំអ',
+  'Presenting': 'ធ្វើបទបង្ហាញ',
+  'Colors': 'ពណ៌',
+  'Images': 'រូបភាព',
+  'Videos': 'វីដេអូ',
+  'Text': 'អក្សរ',
+  'Box': 'ប្រអប់',
+  'Appearance': 'រូបរាង',
+  'Shadow': 'ស្រមោល',
+  'Lyric': 'ចំរៀង',
+  'Slide': 'ស្លាយ',
+  'Full Text': 'បង្ហាញពេញ',
 };
 const data = {
-    name: 'Khmer',
-    locale: 'km',
-    flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
+  name: 'Khmer',
+  locale: 'km',
+  flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
     <path fill="#032ea1" d="M0 0h640v480H0z"/>
     <path fill="#e00025" d="M0 120h640v240H0z"/>
     <g fill="#fff" stroke="#000" transform="matrix(1.2 0 0 1.2 85.6 -522)">
@@ -69,7 +81,7 @@ const data = {
       <path fill="none" d="M99 664.2h193M115.8 713h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m65.8 37.5h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m66.2 37.5h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2"/>
     </g>
   </svg>`,
-    tran,
+  tran,
 };
 
 export default data;

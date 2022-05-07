@@ -9,6 +9,7 @@ import {
     VAlignmentEnum,
 } from '../helper/slideHelper';
 import { useStateSettingString } from '../helper/settingHelper';
+import { useTranslation } from 'react-i18next';
 
 export function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,
@@ -57,6 +58,7 @@ export default function Tools({ scale, applyScale, setScale, minScale, maxScale,
     scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
     minScale: number, maxScale: number, scaleStep: number
 }) {
+    const { t } = useTranslation();
     const [data, setData] = useState<HTML2ReactChild | null>(null);
     // t: text, b: box
     const [tabType, setTabType] = useStateSettingString('editor-tools-tab', 't');
@@ -67,20 +69,14 @@ export default function Tools({ scale, applyScale, setScale, minScale, maxScale,
         <div className="tools d-flex flex-column w-100 h-100">
             <div className="tools-header d-flex">
                 <ul className="nav nav-tabs ">
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 't' ? 'active' : ''}`}
-                            onClick={() => setTabType('t')}>
-                            <i className="bi bi-blockquote-left" />
-                            Text
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'b' ? 'active' : ''}`}
-                            onClick={() => setTabType('b')}>
-                            <i className="bi bi-bounding-box-circles" />
-                            Box
-                        </button>
-                    </li>
+                    {[['t', 'Text'], ['b', 'Box']].map(([key, title], i) => {
+                        return (<li key={i} className="nav-item">
+                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
+                                onClick={() => setTabType(key)}>
+                                {t(title)}
+                            </button>
+                        </li>);
+                    })}
                 </ul>
                 <div className='align-self-end flex-fill d-flex justify-content-end'>
                     <span>{scale.toFixed(1)}x</span>

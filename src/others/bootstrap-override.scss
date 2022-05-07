@@ -33,6 +33,19 @@
       border: 1px solid var(--bs-gray-800);
       background-color: rgba(100, 0, 131, 0.342);
     }
+
+    .color-note {
+      float: right;
+      opacity: 0.1;
+
+      &.active {
+        opacity: 0.4;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 
   .form-select.bible {
@@ -69,14 +82,14 @@
   $dark: #000;
 
   $theme-colors: ("primary": $primary,
-      "secondary": $secondary,
-      "success": $success,
-      "warning": $warning,
-      "danger": $danger,
-      "info": $info,
-      "dark": $dark,
-      "light": #aaa,
-    );
+    "secondary": $secondary,
+    "success": $success,
+    "warning": $warning,
+    "danger": $danger,
+    "info": $info,
+    "dark": $dark,
+    "light": #aaa,
+  );
 
   /* redefine theme color variables */
   @each $color,

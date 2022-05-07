@@ -32,6 +32,30 @@ export default function TextShadow() {
             <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
                 Outline1
             </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
+            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
+                Outline1
+            </div>
             <div class="ow-outline-demo" style="color: ${color2}; text-shadow: 2px 2px 0 ${color1}, 2px -2px 0 ${color1}, -2px 2px 0 ${color1}, -2px -2px 0 ${color1}, 2px 0px 0 ${color1}, 0px 2px 0 ${color1}, -2px 0px 0 ${color1}, 0px -2px 0 ${color1};">
                 Outline2
             </div>

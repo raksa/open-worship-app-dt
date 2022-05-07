@@ -78,6 +78,9 @@ export default class KeyboardEventListener extends EventHandler {
     }
     toShortcutKey(eventMapper: EventMapper) {
         let k = eventMapper.key;
+        if (!k) {
+            return '';
+        }
         if (k.length === 1) {
             k = k.toUpperCase();
         }

@@ -1,6 +1,7 @@
 @import '../others/variables.scss';
 
 #setting-popup {
+  // TODO: test small width
   width: calc(100vw - 10px);
   height: calc(100vh - $header-height);
 

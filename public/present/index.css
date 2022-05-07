@@ -2,11 +2,11 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 1em;
-    height: 1em;
+    width: 2em;
+    height: 2em;
     color: red;
     text-align: center;
-    font-size: 2rem;
+    font-size: 4rem;
     background-color: rgba(128, 128, 128, 0.219);
     opacity: 0;
     cursor: pointer;

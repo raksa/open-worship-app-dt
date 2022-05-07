@@ -2,7 +2,6 @@ import './App.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 import './others/tool-tip.scss';
-import './others/variables.scss';
 
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
 import HandleBibleSearch from './bible-search/HandleBibleSearch';
@@ -14,40 +13,34 @@ import AppEditing from './AppEditing';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
+import { useTranslation } from 'react-i18next';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
-    const t = getSetting(WINDOW_TYPE);
-    return ~['e', 'p'].indexOf(t) ? t as any : 'p';
+    const windowType = getSetting(WINDOW_TYPE);
+    return ~['e', 'p'].indexOf(windowType) ? windowType as any : 'p';
 }
 export function isWindowEditingMode() {
-    const t = getWindowMode();
-    return t === 'e';
+    const windowType = getWindowMode();
+    return windowType === 'e';
 }
 
 export default function App() {
+    const { t } = useTranslation();
     // e: editing, p: presenting
     const [tabType, setTabType] = useStateSettingString(WINDOW_TYPE, 'p');
     return (
         <div id="app" className="dark d-flex flex-column">
             <div className="app-header d-flex">
                 <ul className="nav nav-tabs ">
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'e' ?
-                            'active' : 'highlight-border-bottom'}`}
-                            onClick={() => setTabType('e')}>
-                            <i className="bi bi-pencil-square" />
-                            Editing
-                        </button>
-                    </li>
-                    <li className="nav-item">
-                        <button className={`btn btn-link nav-link ${tabType === 'p' ?
-                            'active' : 'highlight-border-bottom'}`}
-                            onClick={() => setTabType('p')}>
-                            <i className="bi bi-collection-play" />
-                            Presenting
-                        </button>
-                    </li>
+                    {[['e', 'Editing'], ['p', 'Presenting']].map(([key, title], i) => {
+                        return (<li key={i} className="nav-item">
+                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
+                                onClick={() => setTabType(key)}>
+                                {t(title)}
+                            </button>
+                        </li>);
+                    })}
                 </ul>
                 <div className="highlight-border-bottom d-flex justify-content-center flex-fill">
                     <BibleSearchHeader />

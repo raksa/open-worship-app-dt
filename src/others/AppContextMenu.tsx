@@ -2,13 +2,14 @@ import './AppContextMenu.scss';
 
 import { keyboardEventListener, KeyEnum } from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 
 export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
 type ContextMenuItemType = {
     title: string,
     onClick?: (e: ContextMenuEventType, data?: any) => void,
     disabled?: boolean,
+    otherChild?: ReactElement,
 };
 const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (menu !== null) {
@@ -23,22 +24,30 @@ const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement,
         const y = event.clientY;
         const bc = menu.getBoundingClientRect();
         const wd = getWindowDim();
+        let maxWidth;
+        let maxHeight;
         if ((x + bc.width) > wd.width) {
             menu.style.right = `${wd.width - x}px`;
+            maxWidth = x;
         } else {
             menu.style.left = `${x}px`;
+            maxWidth = wd.width - x;
         }
         if ((y + bc.height) > wd.height) {
             menu.style.bottom = `${wd.height - y}px`;
+            maxHeight = y;
         } else {
             menu.style.top = `${y}px`;
+            maxHeight = wd.height - y;
         }
+        menu.style.maxWidth = `${maxWidth}px`;
+        menu.style.maxHeight = `${maxHeight}px`;
     }
 };
 
 type PropsType = {
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    items: ContextMenuItemType[]
+    items: ContextMenuItemType[],
 };
 let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
@@ -93,6 +102,7 @@ export default function AppContextMenu() {
                             item.onClick && item.onClick(e);
                         }}>
                         {item.title}
+                        {item.otherChild || null}
                     </div>
                 );
             })}

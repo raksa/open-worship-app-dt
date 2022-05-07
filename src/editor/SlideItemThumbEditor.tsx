@@ -36,10 +36,11 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
     slideItemThumb: SlideItemThumbType
 }) {
     const resizeSettingName = 'editor-window-size';
-    const flexSize = getPresentingFlexSize(resizeSettingName, {
+    const flexSizeDefault = {
         'editor-v1': '3',
         'editor-v2': '1',
-    });
+    };
+    const flexSize = getPresentingFlexSize(resizeSettingName, flexSizeDefault);
     const [scale, setScale] = useStateSettingNumber('editor-scale', 1);
     const html2React = HTML2React.parseHTML(slideItemThumb.html);
     const maxScale = 3;
@@ -61,7 +62,8 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
                 applyScale(e.deltaY > 0);
             }
         }}>
-            <div data-fs='editor-v1' className='flex-item' style={{ flex: flexSize['editor-v1'] || 1 }}>
+            <div data-fs='editor-v1' data-fs-default={flexSizeDefault['editor-v1']}
+                className='flex-item' style={{ flex: flexSize['editor-v1'] || 1 }}>
                 <div className='editor-container w-100 h-100'>
                     <div className='overflow-hidden' style={{
                         width: `${html2React.width * scale + 20}px`,
@@ -76,7 +78,8 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
                 </div>
             </div>
             <FlexResizer settingName={resizeSettingName} type='v' />
-            <div data-fs='editor-v2' className='flex-item' style={{ flex: flexSize['editor-v2'] || 1 }}>
+            <div data-fs='editor-v2' data-fs-default={flexSizeDefault['editor-v2']}
+                className='flex-item' style={{ flex: flexSize['editor-v2'] || 1 }}>
                 <Tools scale={scale} applyScale={applyScale} setScale={setScale}
                     minScale={minScale} maxScale={maxScale} scaleStep={scaleStep} />
             </div>

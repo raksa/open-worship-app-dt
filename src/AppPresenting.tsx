@@ -10,7 +10,7 @@ import LyricList from './lyric-list/LyricList';
 
 export default function AppPresenting() {
     const resizeSettingName = `${getWindowMode()}-window-size`;
-    const flexSize = getPresentingFlexSize(resizeSettingName, {
+    const flexSizeDefault = {
         'h1': '1',
         'h1-v1': '2',
         'h1-v2': '1',
@@ -20,36 +20,46 @@ export default function AppPresenting() {
         'h3': '2',
         'h3-v1': '1',
         'h3-v2': '1',
-    });
+    };
+    const flexSize = getPresentingFlexSize(resizeSettingName, flexSizeDefault);
     return (
         <>
-            <div data-fs='h1' className="flex v" style={{ flex: flexSize['h1'] || 1 }}>
-                <div data-fs='h1-v1' className="flex-item" style={{ flex: flexSize['h1-v1'] || 1 }}>
+            <div data-fs='h1' data-fs-default={flexSizeDefault['h1']}
+                className="flex v" style={{ flex: flexSize['h1'] || 1 }}>
+                <div data-fs='h1-v1' data-fs-default={flexSizeDefault['h1-v1']}
+                    className="flex-item" style={{ flex: flexSize['h1-v1'] || 1 }}>
                     <SlideList />
                 </div>
                 <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div data-fs='h1-v2' className="flex-item" style={{ flex: flexSize['h1-v2'] || 1 }}>
+                <div data-fs='h1-v2' data-fs-default={flexSizeDefault['h1-v2']}
+                    className="flex-item" style={{ flex: flexSize['h1-v2'] || 1 }}>
                     <Playlist />
                 </div>
             </div>
             <FlexResizer settingName={resizeSettingName} type={'h'} />
-            <div data-fs='h2' className="flex v" style={{ flex: flexSize['h2'] || 1 }}>
-                <div data-fs='h2-v1' className="flex-item" style={{ flex: flexSize['h2-v1'] || 1 }}>
+            <div data-fs='h2' data-fs-default={flexSizeDefault['h2']}
+                className="flex v" style={{ flex: flexSize['h2'] || 1 }}>
+                <div data-fs='h2-v1' data-fs-default={flexSizeDefault['h2-v1']}
+                    className="flex-item" style={{ flex: flexSize['h2-v1'] || 1 }}>
                     <Middle />
                 </div>
                 <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div data-fs='h2-v2' className="flex-item" style={{ flex: flexSize['h2-v2'] || 1 }}>
+                <div data-fs='h2-v2' data-fs-default={flexSizeDefault['h2-v2']}
+                    className="flex-item" style={{ flex: flexSize['h2-v2'] || 1 }}>
                     <Background />
                 </div>
             </div>
             <FlexResizer settingName={resizeSettingName} type={'h'} />
-            <div data-fs='h3' className="right d-flex flex-column" style={{ flex: flexSize['h3'] || 1 }}>
+            <div data-fs='h3' data-fs-default={flexSizeDefault['h3']}
+                className="right d-flex flex-column" style={{ flex: flexSize['h3'] || 1 }}>
                 <div className='flex-fill flex v h-100'>
-                    <div data-fs='h3-v1' className="flex-item" style={{ flex: flexSize['h3-v1'] || 1 }}>
+                    <div data-fs='h3-v1' data-fs-default={flexSizeDefault['h3-v1']}
+                        className="flex-item" style={{ flex: flexSize['h3-v1'] || 1 }}>
                         <BibleList />
                     </div>
                     <FlexResizer settingName={resizeSettingName} type={'v'} />
-                    <div data-fs='h3-v2' className="flex-item" style={{ flex: flexSize['h3-v2'] || 1 }}>
+                    <div data-fs='h3-v2' data-fs-default={flexSizeDefault['h3-v2']}
+                        className="flex-item" style={{ flex: flexSize['h3-v2'] || 1 }}>
                         <LyricList />
                     </div>
                 </div>

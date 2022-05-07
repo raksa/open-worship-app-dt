@@ -1,13 +1,14 @@
 import './index.scss';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import i18next from 'i18next';
+import { createRoot } from 'react-dom/client';
 import App from './App';
+import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import languages from './lang';
 import { initApp } from './bible-helper/helpers';
 import { getSelectedLangLocale } from './setting/SettingGeneral';
+
 const resources = Object.fromEntries(Object.keys(languages).map((k) => {
   return [k, { translation: (languages as any)[k].tran }];
 }));
@@ -25,12 +26,16 @@ i18next.use(initReactI18next) // passes i18n down to react-i18next
     },
   });
 initApp().then(() => {
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    document.getElementById('root'),
-  );
+
+  const container = document.getElementById('root');
+  if (container !== null) {
+    const root = createRoot(container); // createRoot(container!) if you use TypeScript
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  }
 });
 
 const confirmEraseLocalStorage = () => {
@@ -42,7 +47,7 @@ const confirmEraseLocalStorage = () => {
 };
 
 if (window.process.env.NODE_ENV !== 'development') {
-  window.onunhandledrejection = event => {
+  window.onunhandledrejection = () => {
     confirmEraseLocalStorage();
   };
 
@@ -50,4 +55,3 @@ if (window.process.env.NODE_ENV !== 'development') {
     confirmEraseLocalStorage();
   };
 }
-

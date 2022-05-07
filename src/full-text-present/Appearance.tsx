@@ -14,7 +14,7 @@ export default function Appearance() {
         setFontSize(newFontSize);
         fullTextPresentHelper.setStyle({ fontSize: newFontSize });
     };
-    usePresentCtrlScrolling((isUp) => {
+    usePresentCtrlScrolling(() => {
         setFontSize(fullTextPresentHelper.textFontSize);
     });
     return (

@@ -10,7 +10,10 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { biblePresentToTitle } from '../bible-helper/helpers';
 import { cloneObject } from '../helper/helpers';
+import { useTranslation } from 'react-i18next';
 
+// https://www.w3.org/wiki/CSS/Properties/color/keywords
+import colorList from '../others/color-list.json';
 
 export function presentBible(item: BiblePresentType) {
     setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
@@ -18,17 +21,21 @@ export function presentBible(item: BiblePresentType) {
 }
 
 export default function BibleItem({ index, biblePresent, warningMessage,
-    onContextMenu, onChangeBible, onDragOnIndex }: {
+    onContextMenu, onUpdateBiblePresent, onDragOnIndex }: {
         index: number,
         biblePresent: BiblePresentType,
         warningMessage?: string,
         onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
-        onChangeBible?: (newBible: string) => void,
+        onUpdateBiblePresent?: (newBiblePresent: BiblePresentType) => void,
         onDragOnIndex?: (index: number) => void,
     }) {
     const [isDraggingOver, setIsDraggingOver] = useState(false);
     const title = biblePresentToTitle(biblePresent);
     const bibleStatus = bibleHelper.getBibleWithStatus(biblePresent.bible);
+    const changeBible = onUpdateBiblePresent ? (newBible: string) => {
+        biblePresent.bible = newBible;
+        onUpdateBiblePresent(biblePresent);
+    } : null;
     return (
         <li className={`list-group-item item ${isDraggingOver ? 'drag-receiving' : ''}`}
             data-index={index + 1}
@@ -60,8 +67,8 @@ export default function BibleItem({ index, biblePresent, warningMessage,
             }}
             onContextMenu={onContextMenu || (() => false)}
             onClick={() => presentBible(biblePresent)}>
-            <span className={onChangeBible ? 'bible' : ''} onClick={(e) => {
-                if (!onChangeBible) {
+            <span className={changeBible ? 'bible' : ''} onClick={(e) => {
+                if (!changeBible) {
                     return;
                 }
                 e.stopPropagation();
@@ -71,7 +78,7 @@ export default function BibleItem({ index, biblePresent, warningMessage,
                 showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {
                     return {
                         title: bible, disabled: !isAvailable, onClick: () => {
-                            onChangeBible(bible);
+                            changeBible(bible);
                         },
                     };
                 }));
@@ -80,7 +87,51 @@ export default function BibleItem({ index, biblePresent, warningMessage,
                 {bibleStatus[2]}
             </span> | {title == null ? 'not found' : title}
             {warningMessage && <span className='float-end' title={warningMessage}>⚠️</span>}
+            <BibleItemColorNote
+                biblePresent={biblePresent}
+                onUpdateBiblePresent={onUpdateBiblePresent} />
         </li >
+    );
+}
+
+function BibleItemColorNote({ biblePresent, onUpdateBiblePresent }: {
+    biblePresent: BiblePresentType,
+    onUpdateBiblePresent?: (newBiblePresent: BiblePresentType) => void,
+}) {
+    const { t } = useTranslation();
+    let colorNote;
+    if (biblePresent.metadata && biblePresent.metadata['colorNote']) {
+        colorNote = biblePresent.metadata['colorNote'] as string;
+    }
+    return (
+        <span className={`color-note ${colorNote ? 'active' : ''}`} onClick={(e) => {
+            if (!onUpdateBiblePresent) {
+                return;
+            }
+            e.stopPropagation();
+            const colors = [...Object.entries(colorList.main), ...Object.entries(colorList.extension)];
+            showAppContextMenu(e, [{
+                title: t('no color'),
+                onClick: () => {
+                    biblePresent.metadata = biblePresent.metadata || {};
+                    delete biblePresent.metadata['colorNote'];
+                },
+            }, ...colors.map(([name, colorCode]) => {
+                return {
+                    title: name,
+                    onClick: () => {
+                        biblePresent.metadata = biblePresent.metadata || {};
+                        biblePresent.metadata['colorNote'] = colorCode;
+                        onUpdateBiblePresent(biblePresent);
+                    },
+                    otherChild: (<span style={{ float: 'right' }}>
+                        <i className='bi bi-record-circle' style={{ color: colorCode }} />
+                    </span>),
+                };
+            })]);
+        }} >
+            <i className='bi bi-record-circle' style={colorNote ? { color: colorNote } : {}} />
+        </span>
     );
 }
 
