@@ -6,7 +6,7 @@ import {
     useStateSettingString,
 } from '../helper/settingHelper';
 import Appearance from './Appearance';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export default function CustomStyle() {
     const [open, setOpen] = useStateSettingBoolean('open-full-text-present-custom-style');
@@ -22,6 +22,7 @@ export default function CustomStyle() {
 }
 
 function Body() {
+    const { t } = useTranslation();
     // a: appearance, s: shadow
     const [tabType, setTabType] = useStateSettingString('tull-text-present-custom-style-tab', 'a');
     return (

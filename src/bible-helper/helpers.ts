@@ -12,9 +12,9 @@ export function sqlite3Read(bible: string, key: string, cipherKey: string) {
     if (dbFilePath === null) {
         return Promise.resolve(null);
     }
-    return new Promise<object | null>(async (resolve, reject) => {
+    return new Promise<object | null>(async (resolve) => {
         let callback = (data: any) => {
-            callback = () => { };
+            callback = () => false;
             resolve(data);
         };
         const encryptKey = appProvider.cipher.encrypt(key, cipherKey);

@@ -1,7 +1,7 @@
 import './index.scss';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -26,12 +26,16 @@ i18next.use(initReactI18next) // passes i18n down to react-i18next
     },
   });
 initApp().then(() => {
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    document.getElementById('root'),
-  );
+
+  const container = document.getElementById('root');
+  if (container !== null) {
+    const root = createRoot(container); // createRoot(container!) if you use TypeScript
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  }
 });
 
 const confirmEraseLocalStorage = () => {
@@ -43,7 +47,7 @@ const confirmEraseLocalStorage = () => {
 };
 
 if (window.process.env.NODE_ENV !== 'development') {
-  window.onunhandledrejection = event => {
+  window.onunhandledrejection = () => {
     confirmEraseLocalStorage();
   };
 
@@ -51,4 +55,3 @@ if (window.process.env.NODE_ENV !== 'development') {
     confirmEraseLocalStorage();
   };
 }
-

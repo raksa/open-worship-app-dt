@@ -5,9 +5,10 @@ import FullTextPresentController from '../full-text-present/FullTextPresentContr
 import { useFullTextPresenting } from '../event/FullTextPresentEventListener';
 import { useSlideItemThumbSelecting, useSlideSelecting } from '../event/SlideListEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export default function Presenting() {
+    const { t } = useTranslation();
     // s: slides, f: full text
     const [tabType, setTabType] = useStateSettingString('slide-presenting-tab', 's');
     useFullTextPresenting(() => setTabType('f'));

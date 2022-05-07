@@ -4,9 +4,10 @@ import Colors from './Colors';
 import Images from './Images';
 import Videos from './Videos';
 import { useStateSettingString } from '../helper/settingHelper';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export default function Background() {
+    const { t } = useTranslation();
     // c: color, i: image, v: video
     const [tabType, setTabType] = useStateSettingString('background-tab', 'i');
     return (

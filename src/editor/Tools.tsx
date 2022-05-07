@@ -9,7 +9,7 @@ import {
     VAlignmentEnum,
 } from '../helper/slideHelper';
 import { useStateSettingString } from '../helper/settingHelper';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,
@@ -58,6 +58,7 @@ export default function Tools({ scale, applyScale, setScale, minScale, maxScale,
     scale: number, applyScale: (isUp: boolean) => void, setScale: (newScale: number) => void,
     minScale: number, maxScale: number, scaleStep: number
 }) {
+    const { t } = useTranslation();
     const [data, setData] = useState<HTML2ReactChild | null>(null);
     // t: text, b: box
     const [tabType, setTabType] = useStateSettingString('editor-tools-tab', 't');

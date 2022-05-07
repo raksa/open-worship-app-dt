@@ -1,6 +1,5 @@
 import './SettingPopup.scss';
 
-import { useState } from 'react';
 import HeaderEditorPopup from './HeaderSettingPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
@@ -8,7 +7,7 @@ import { SettingGeneral } from './SettingGeneral';
 import { SettingBible } from './SettingBible';
 import { SettingAbout } from './SettingAbout';
 import { useStateSettingString } from '../helper/settingHelper';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export const openSettingEvent = {
     window: WindowEnum.Setting,
@@ -28,6 +27,7 @@ export default function SettingPopup() {
     );
 }
 function Setting() {
+    const { t } = useTranslation();
     // g: general, b: bible, a: about
     const [tabType, setTabType] = useStateSettingString('popup-setting-tab', 'b');
 

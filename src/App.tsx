@@ -13,19 +13,20 @@ import AppEditing from './AppEditing';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
-    const t = getSetting(WINDOW_TYPE);
-    return ~['e', 'p'].indexOf(t) ? t as any : 'p';
+    const windowType = getSetting(WINDOW_TYPE);
+    return ~['e', 'p'].indexOf(windowType) ? windowType as any : 'p';
 }
 export function isWindowEditingMode() {
-    const t = getWindowMode();
-    return t === 'e';
+    const windowType = getWindowMode();
+    return windowType === 'e';
 }
 
 export default function App() {
+    const { t } = useTranslation();
     // e: editing, p: presenting
     const [tabType, setTabType] = useStateSettingString(WINDOW_TYPE, 'p');
     return (

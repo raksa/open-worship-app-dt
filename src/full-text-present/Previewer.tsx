@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import {
     useBiblePresenting,
     useLyricPresenting,
@@ -7,10 +7,11 @@ import { useStateSettingString } from '../helper/settingHelper';
 import BiblePreviewer from './BiblePreviewer';
 import LyricPreviewer from './LyricPreviewer';
 
-export const previewer = {
-    show: () => { },
+export const previewer: { show: Function } = {
+    show: () => false,
 };
 export default function Previewer() {
+    const { t } = useTranslation();
     // b: bible, l: lyric
     const [tabType, setTabType] = useStateSettingString('full-text-present-tab', 'b');
     useBiblePresenting(() => setTabType('b'));
