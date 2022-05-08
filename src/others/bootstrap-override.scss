@@ -34,6 +34,13 @@
       background-color: rgba(100, 0, 131, 0.342);
     }
 
+    &:hover {
+      .color-note.active {
+        opacity: 1;
+      }
+
+    }
+
     .color-note {
       float: right;
       opacity: 0.1;
