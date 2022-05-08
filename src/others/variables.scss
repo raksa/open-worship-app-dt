@@ -8,8 +8,8 @@ $header-height: 42px;
 
 $card-header-height: 41px;
 
-$z-index-bible-search: 1;
-$z-index-context-menu: $z-index-bible-search + 1;
-$z-index-tool-tip: $z-index-context-menu + 1;
-$z-index-toast: $z-index-tool-tip + 1;
-$z-index-resizer-float: $z-index-tool-tip + 1;
+$z-index-bible-search: 10;
+$z-index-context-menu: $z-index-bible-search + 10;
+$z-index-tool-tip: $z-index-context-menu + 10;
+$z-index-toast: $z-index-tool-tip + 10;
+$z-index-resizer-float: 1;

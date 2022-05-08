@@ -1,9 +1,11 @@
 @import '../others/variables.scss';
 
 #setting-popup {
-  // TODO: test small width
-  width: calc(100vw - 10px);
-  height: calc(100vh - $header-height);
+  width: 600px;
+  height: 600px;
+  max-width: calc(100vw - 10px);
+  max-height: calc(100vh - $header-height);
+  overflow: auto;
 
   .setting-header {
     height: $header-height;

@@ -28,7 +28,7 @@ export default function InputHandler({
 }) {
     const books = getBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = toInputText(bibleSelected, bookKey, 1, 1);
+    const placeholder = toInputText(bibleSelected, bookKey, 1, 1, 2);
 
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => onInputChange(''));
 
