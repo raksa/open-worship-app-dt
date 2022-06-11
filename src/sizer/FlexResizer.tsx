@@ -1,7 +1,7 @@
 import './FlexResizer.scss';
 
 import React from 'react';
-import { getSetting, setSetting } from './helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelper';
 
 export interface Props {
     type: 'v' | 'h',
