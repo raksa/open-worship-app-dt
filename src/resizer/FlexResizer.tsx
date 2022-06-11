@@ -1,12 +1,11 @@
 import './FlexResizer.scss';
 
 import React from 'react';
-import { getSetting, setSetting } from '../helper/settingHelper';
 
 export type ResizerKindType = 'v' | 'h';
 export interface Props {
     type: ResizerKindType,
-    settingName: string,
+    checkSize: () => void,
 }
 export default class FlexResizer extends React.Component<Props, {}> {
     myRef: React.RefObject<HTMLDivElement>;
@@ -99,7 +98,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
-        checkSize(this.props.settingName);
+        this.props.checkSize();
     }
     resetSize() {
         this.prev.style.flex = this.prev.dataset['fsDefault'] as string;
@@ -125,7 +124,6 @@ export default class FlexResizer extends React.Component<Props, {}> {
                 this.next.style.flexGrow = `${min}`;
             }
         }
-        checkSize(this.props.settingName);
     }
     componentDidMount() {
         const target = this.myRef.current;
@@ -159,27 +157,4 @@ export default class FlexResizer extends React.Component<Props, {}> {
             </div>
         );
     }
-}
-
-export type Size = { [key: string]: string };
-function checkSize(settingName: string) {
-    const size: Size = {};
-    const rowItems: HTMLDivElement[] = Array.from(document.querySelectorAll('[data-fs]'));
-    rowItems.forEach((item) => {
-        size[item.getAttribute('data-fs') as string] = item.style.flex;
-    });
-    setSetting(settingName, JSON.stringify(size));
-}
-
-export function getFlexSizeSetting(settingName: string, defaultSize: Size): Size {
-    const sizeStr = getSetting(settingName);
-    try {
-        const size = JSON.parse(sizeStr);
-        if (Object.keys(defaultSize).every((k) => size[k] !== undefined)) {
-            return size;
-        }
-    } catch (error) {
-        setSetting(settingName, JSON.stringify(defaultSize));
-    }
-    return defaultSize;
 }
