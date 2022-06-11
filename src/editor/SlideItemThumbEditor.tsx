@@ -6,7 +6,7 @@ import { HTML2React, SlideItemThumbType } from '../helper/slideHelper';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
-import FlexResizer, { getPresentingFlexSize } from '../sizer/FlexResizer';
+import FlexResizer, { getPresentingFlexSize } from '../resizer/FlexResizer';
 import { editorMapper } from './EditorBoxMapper';
 import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
 

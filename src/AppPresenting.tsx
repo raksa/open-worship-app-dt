@@ -1,5 +1,5 @@
 import BibleList from './bible-list/BibleList';
-import FlexResizer, { getPresentingFlexSize } from './sizer/FlexResizer';
+import FlexResizer, { getPresentingFlexSize } from './resizer/FlexResizer';
 import SlideList from './slide-list/SlideList';
 import Preview from './preview/MiniPresentScreen';
 import Background from './background/Background';

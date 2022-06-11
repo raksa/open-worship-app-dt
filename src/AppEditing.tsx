@@ -1,4 +1,4 @@
-import FlexResizer, { getPresentingFlexSize } from './sizer/FlexResizer';
+import FlexResizer, { getPresentingFlexSize } from './resizer/FlexResizer';
 import SlideList from './slide-list/SlideList';
 import SlideItemThumbEditor from './editor/SlideItemThumbEditor';
 import SlideItemThumbList from './slide-presenting/SlideItemThumbList';

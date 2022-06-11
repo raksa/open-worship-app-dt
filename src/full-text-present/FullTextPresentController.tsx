@@ -2,7 +2,7 @@ import './FullTextPresentController.scss';
 
 import { BiblePresentType } from './fullTextPresentHelper';
 import CustomStyle from './CustomStyle';
-import FlexResizer, { getPresentingFlexSize } from '../sizer/FlexResizer';
+import FlexResizer, { getPresentingFlexSize } from '../resizer/FlexResizer';
 import Utils from './Utils';
 import Previewer, { previewer } from './Previewer';
 
