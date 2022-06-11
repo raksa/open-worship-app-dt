@@ -3,8 +3,9 @@ import './FlexResizer.scss';
 import React from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
 
+export type ResizerKindType = 'v' | 'h';
 export interface Props {
-    type: 'v' | 'h',
+    type: ResizerKindType,
     settingName: string,
 }
 export default class FlexResizer extends React.Component<Props, {}> {
@@ -170,7 +171,7 @@ function checkSize(settingName: string) {
     setSetting(settingName, JSON.stringify(size));
 }
 
-export function getPresentingFlexSize(settingName: string, defaultSize: Size): Size {
+export function getFlexSizeSetting(settingName: string, defaultSize: Size): Size {
     const sizeStr = getSetting(settingName);
     try {
         const size = JSON.parse(sizeStr);
