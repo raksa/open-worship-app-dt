@@ -10,12 +10,14 @@ import { getAppMimetype } from '../helper/fileHelper';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { AskingNewName } from '../others/AskingNewName';
 
+const eventListener = new SlideListEventListener();
 export default function SlideList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [basePath, setNewBasePath] = useStateSettingString('slide-selected-dir', '');
     const slideListView = useRef<SlideListView>(null);
-    const refresh = () => slideListView.current?.refresh();
-    const eventListener = new SlideListEventListener();
+    const refresh = () => {
+        slideListView.current?.refresh();
+    };
     useRefreshing(eventListener, refresh);
     useSlideItemThumbSelecting(refresh);
     usePresentFGClearing(refresh);
