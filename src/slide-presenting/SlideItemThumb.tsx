@@ -81,7 +81,7 @@ export default function SlideItemThumb({
                 </div>
             </div>
             <div className="card-body overflow-hidden"
-                style={{ width }} >
+                style={{ width, padding: '0px' }} >
                 <SlideItemThumbIFrame
                     id={slideItemThumbData.id}
                     width={width}
