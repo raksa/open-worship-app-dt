@@ -118,22 +118,19 @@ export default class FlexResizer extends React.Component<Props, {}> {
     }
     quicMove(type: string) {
         this.init();
-        const smallest = 0.001;
-        const min = this.sumGrow * smallest;
-        const max = this.sumGrow - min;
         if (['left', 'up'].includes(type)) {
-            if (this.nextGrow / this.sumGrow <= smallest) {
+            if (this.nextGrow === 0) {
                 this.resetSize();
             } else {
-                this.prev.style.flexGrow = `${min}`;
-                this.next.style.flexGrow = `${max}`;
+                this.prev.style.flexGrow = '0';
+                this.next.style.flexGrow = `${this.sumGrow}`;
             }
         } else {
-            if (this.prevGrow / this.sumGrow <= smallest) {
+            if (this.prevGrow === 0) {
                 this.resetSize();
             } else {
-                this.prev.style.flexGrow = `${max}`;
-                this.next.style.flexGrow = `${min}`;
+                this.prev.style.flexGrow = `${this.sumGrow}`;
+                this.next.style.flexGrow = '0';
             }
         }
     }
