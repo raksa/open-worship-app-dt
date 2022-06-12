@@ -1,4 +1,4 @@
-import SlideListEventListener from '../event/SlideListEventListener';
+import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
 import { listFiles, MimetypeNameType } from '../helper/fileHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -8,10 +8,8 @@ const FILE_TYPE: MimetypeNameType = 'slide';
 export default class SlideListController {
     _basePath: string;
     _slideControllers: SlideController[] = [];
-    _eventListener: SlideListEventListener;
-    constructor(basePath: string, eventListener: SlideListEventListener) {
+    constructor(basePath: string) {
         this._basePath = basePath;
-        this._eventListener = eventListener;
         if (this._basePath !== null) {
             const slideList = listFiles(this._basePath, FILE_TYPE);
             if (slideList !== null) {
@@ -34,13 +32,13 @@ export default class SlideListController {
         const slideController = SlideController.createSlideController(this._basePath, fileName);
         if (slideController !== null) {
             this._slideControllers.push(slideController);
-            this._eventListener.refresh();
+            slideListEventListenerGlobal.refresh();
         }
         return slideController;
     }
     renameSlide(slideController: SlideController, newFileName: string): boolean {
         if (slideController.rename(newFileName)) {
-            this._eventListener.refresh();
+            slideListEventListenerGlobal.refresh();
             return true;
         }
         return false;
@@ -50,7 +48,7 @@ export default class SlideListController {
         this._slideControllers = this._slideControllers.filter((newSlideController) => {
             return newSlideController !== slideController;
         });
-        this._eventListener.refresh();
+        slideListEventListenerGlobal.refresh();
         return isDeleted;
     }
     select(slideController: SlideController) {
@@ -58,7 +56,7 @@ export default class SlideListController {
             this.selectedSlideController.isSelected = false;
         }
         slideController.isSelected = true;
-        this._eventListener.refresh();
+        slideListEventListenerGlobal.refresh();
     }
     showContextMenu(slideController: SlideController,
         mouseEvent: React.MouseEvent<HTMLLIElement>) {

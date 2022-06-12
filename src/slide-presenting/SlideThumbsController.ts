@@ -1,5 +1,6 @@
 import {
     getSlideDataByFilePath,
+    getSlideDataByFilePathNoCache,
     HTML2React,
 } from '../helper/slideHelper';
 import { FileSourceType, overWriteFile } from '../helper/fileHelper';
@@ -14,7 +15,7 @@ import {
     parseSlideItemThumbSelected,
     toSlideItemThumbSelected,
 } from '../helper/helpers';
-import SlideListEventListener, { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
@@ -33,14 +34,12 @@ export default class SlideThumbsController extends FileController {
     _items: SlideItemThumb[];
     _copiedIndex: number | null = null;
     _selectedId: string | null = null;
-    _eventListener: SlideListEventListener;
     _history: {
         undo: ChangeHistory[];
         redo: ChangeHistory[];
     } = { undo: [], redo: [] };
-    constructor(fileSource: FileSourceType, eventListener: SlideListEventListener) {
+    constructor(fileSource: FileSourceType) {
         super(fileSource);
-        this._eventListener = eventListener;
         const slidePresentData = getSlideDataByFilePath(this.filePath);
         if (slidePresentData === null) {
             const message = 'Unable to read slide data';
@@ -61,7 +60,7 @@ export default class SlideThumbsController extends FileController {
         }
     }
     refresh() {
-        this._eventListener.refresh();
+        slideListEventListenerGlobal.refresh();
     }
     getItemByIndex(index: number): SlideItemThumb | null {
         return this._items[index] || null;
@@ -86,10 +85,10 @@ export default class SlideThumbsController extends FileController {
         return this._items;
     }
     get currentItems() {
-        return this._items.map((item) => item.clone());
+        return this._items;
     }
     set items(newItems: SlideItemThumb[]) {
-        this._items = newItems.map((item) => item.clone());
+        this._items = newItems;
         this.refresh();
     }
     get selectedIndex() {
@@ -171,33 +170,33 @@ export default class SlideThumbsController extends FileController {
         return null;
     }
     fixSlideDimension({ bounds }: DisplayType) {
-        this.items = this.currentItems.map((item) => {
+        this.currentItems.forEach((item) => {
             const html2React = HTML2React.parseHTML(item.html);
             html2React.width = bounds.width;
             html2React.height = bounds.height;
-            return new SlideItemThumb(item.id, html2React.htmlString, item.filePath);
+            item.html = html2React.htmlString;
         });
         this.save();
         toastEventListener.showSimpleToast({
             title: 'Fix Slide Dimension',
             message: 'Slide dimension has been fixed',
         });
-        this.refresh();
     }
     save() {
         try {
             const filePath = getSlideItemSelectedSetting();
             if (filePath !== null) {
-                const slideData = getSlideDataByFilePath(filePath);
+                const slideData = getSlideDataByFilePathNoCache(filePath) as any;
                 if (slideData !== null) {
                     slideData.items = this.currentItems.map((item) => {
-                        return item;
+                        return item.toJson();
                     });
                     if (overWriteFile(filePath, JSON.stringify(slideData))) {
                         toastEventListener.showSimpleToast({
                             title: 'Saving Slide',
                             message: 'Slide has been saved',
                         });
+                        this.refresh();
                         return true;
                     }
                 }

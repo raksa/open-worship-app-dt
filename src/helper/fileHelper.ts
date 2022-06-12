@@ -79,12 +79,12 @@ export function createFile(txt: string, basePath: string, fileName?: string) {
         const filePath = fileName ? appProvider.path.join(basePath, fileName) : basePath;
         if (!checkFileExist(filePath)) {
             appProvider.fs.writeFileSync(filePath, txt);
-            return true;
+            return filePath;
         }
+        return null;
     } catch (error) {
         console.log(error);
     }
-    return false;
 }
 
 export function overWriteFile(filePath: string, txt: string) {

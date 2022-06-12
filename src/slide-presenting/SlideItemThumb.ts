@@ -1,5 +1,5 @@
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import { getSlideDataByFilePath } from '../helper/slideHelper';
+import { getSlideDataByFilePathNoCache } from '../helper/slideHelper';
 
 export default class SlideItemThumb {
     id: string;
@@ -11,11 +11,11 @@ export default class SlideItemThumb {
         this.filePath = filePath;
     }
     get isEditing() {
-        const slidePresentData = getSlideDataByFilePath(this.filePath);
+        const slidePresentData = getSlideDataByFilePathNoCache(this.filePath);
         if (slidePresentData !== null) {
             const item = slidePresentData.items.find((item1) => item1.id === this.id);
             if (item) {
-                return item.id === this.id && item._html !== this._html;
+                return item.html !== this._html;
             }
         }
         return false;
@@ -31,5 +31,11 @@ export default class SlideItemThumb {
     }
     clone() {
         return new SlideItemThumb(this.id, this._html, this.filePath);
+    }
+    toJson() {
+        return {
+            id: this.id,
+            html: this._html,
+        };
     }
 }

@@ -57,7 +57,7 @@ export default function SlideItemThumbListItems({ controller }: {
                         <SlideItemThumbRender
                             isActive={i === controller.selectedIndex}
                             index={i}
-                            slideItemThumbData={item}
+                            slideItemThumb={item}
                             slideFilePath={controller.filePath}
                             onItemClick={() => {
                                 slideListEventListenerGlobal.selectSlideItemThumb(item);

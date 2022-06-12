@@ -3,14 +3,15 @@ import './SlideList.scss';
 import { Component, useRef, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import { useStateSettingString } from '../helper/settingHelper';
-import SlideListEventListener, { useRefreshing, useSlideItemThumbSelecting } from '../event/SlideListEventListener';
+import {
+    useRefreshing, useSlideItemThumbSelecting,
+} from '../event/SlideListEventListener';
 import SlideListController from './SlideListController';
 import SlideController from './SlideController';
 import { getAppMimetype } from '../helper/fileHelper';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { AskingNewName } from '../others/AskingNewName';
 
-const eventListener = new SlideListEventListener();
 export default function SlideList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [basePath, setNewBasePath] = useStateSettingString('slide-selected-dir', '');
@@ -18,7 +19,7 @@ export default function SlideList() {
     const refresh = () => {
         slideListView.current?.refresh();
     };
-    useRefreshing(eventListener, refresh);
+    useRefreshing(refresh);
     useSlideItemThumbSelecting(refresh);
     usePresentFGClearing(refresh);
     return (
@@ -47,7 +48,6 @@ export default function SlideList() {
                     ref={slideListView}
                     baseDir={basePath}
                     isCreatingNew={isCreatingNew}
-                    eventListener={eventListener}
                     setIsCreatingNew={setIsCreatingNew} />
             </div>
         </div>
@@ -57,7 +57,6 @@ type SlideListViewPropsType = {
     baseDir: string,
     isCreatingNew: boolean,
     setIsCreatingNew: (b: boolean) => void,
-    eventListener: SlideListEventListener,
 };
 type SlideListViewStateType = {
     slideListController: SlideListController;
@@ -67,7 +66,7 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
     constructor(props: SlideListViewPropsType) {
         super(props);
         this.state = {
-            slideListController: new SlideListController(props.baseDir, props.eventListener),
+            slideListController: new SlideListController(props.baseDir),
         };
     }
     refresh() {
@@ -80,7 +79,7 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
     }
     renewSlideListController(props: SlideListViewPropsType) {
         this.setState({
-            slideListController: new SlideListController(props.baseDir, props.eventListener),
+            slideListController: new SlideListController(props.baseDir),
         });
     }
     createNewSlide(name: string) {

@@ -70,7 +70,8 @@ export function defaultSlide(width: number, height: number) {
     };
 }
 
-export function getSlideDataByFilePath(filePath: string) {
+const slideDataCache = new Map<string, SlidePresentType>();
+export function getSlideDataByFilePathNoCache(filePath: string) {
     try {
         const str = readFile(filePath);
         if (str !== null) {
@@ -87,6 +88,17 @@ export function getSlideDataByFilePath(filePath: string) {
         console.log(error);
     }
     return null;
+}
+export function getSlideDataByFilePath(filePath: string) {
+    if (slideDataCache.has(filePath)) {
+        return slideDataCache.get(filePath) as SlidePresentType;
+    } else {
+        const data = getSlideDataByFilePathNoCache(filePath);
+        if (data !== null) {
+            slideDataCache.set(filePath, data);
+        }
+        return data;
+    }
 }
 
 export enum HAlignmentEnum {

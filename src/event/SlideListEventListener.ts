@@ -101,13 +101,12 @@ export function useSlideItemThumbTooling(listener: ListenerType<ToolingType>) {
         };
     });
 }
-export function useRefreshing(slideListEventListener: SlideListEventListener,
-    listener: ListenerType<void>) {
+export function useRefreshing(listener: ListenerType<void>) {
     useEffect(() => {
-        const event = slideListEventListener.registerSlideListEventListener(
+        const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.REFRESH, listener);
         return () => {
-            slideListEventListener.unregisterSlideListEventListener(event);
+            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
 }

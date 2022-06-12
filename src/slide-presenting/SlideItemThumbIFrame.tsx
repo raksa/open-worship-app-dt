@@ -35,7 +35,7 @@ type SlideItemThumbnailProps = {
     width: number,
     index: number;
     isActive: boolean;
-    slideItemThumbData: SlideItemThumb;
+    slideItemThumb: SlideItemThumb;
     slideFilePath: string;
     onItemClick: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
@@ -45,19 +45,19 @@ type SlideItemThumbnailProps = {
 };
 export default function SlideItemThumbRender({
     width, isActive, index,
-    slideItemThumbData, slideFilePath,
+    slideItemThumb, slideFilePath,
     onItemClick,
     onContextMenu,
     onCopy,
     onDragStart,
     onDragEnd,
 }: SlideItemThumbnailProps) {
-    const html2React = HTML2React.parseHTML(slideItemThumbData.html);
+    const html2React = HTML2React.parseHTML(slideItemThumb.html);
     return (
         <div className={`slide-item-thumb card ${isActive ? 'active' : ''} pointer`}
             draggable
             onDragStart={(e) => {
-                const path = toSlideItemThumbSelected(slideFilePath, slideItemThumbData.id) || '';
+                const path = toSlideItemThumbSelected(slideFilePath, slideItemThumb.id) || '';
                 e.dataTransfer.setData('text/plain', path);
                 onDragStart(e);
             }}
@@ -78,13 +78,13 @@ export default function SlideItemThumbRender({
                 </div>
                 <div className='flex-fill d-flex justify-content-end'>
                     <small className='pe-2'>{html2React.width}x{html2React.height}</small>
-                    {slideItemThumbData.isEditing && <span style={{ color: 'red' }}>*</span>}
+                    {slideItemThumb.isEditing && <span style={{ color: 'red' }}>*</span>}
                 </div>
             </div>
             <div className="card-body overflow-hidden"
                 style={{ width, padding: '0px' }} >
                 <SlideItemThumbIFrame
-                    id={slideItemThumbData.id}
+                    id={slideItemThumb.id}
                     width={width}
                     html2React={html2React} />
             </div>

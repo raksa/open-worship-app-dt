@@ -2,7 +2,7 @@ import { Component, useRef } from 'react';
 import { parseSlideItemThumbSelected } from '../helper/helpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import { getSlideDataByFilePath } from '../helper/slideHelper';
-import SlideListEventListener, {
+import {
     useRefreshing,
     useSlideSelecting,
     useThumbSizing,
@@ -36,14 +36,12 @@ export function getValidSlideItemThumbSelected() {
 export default function SlideItemThumbList() {
     const controller = useRef<Controller>(null);
     useSlideSelecting(() => controller.current?.hardRefresh());
-    const eventListener = new SlideListEventListener();
-    useRefreshing(eventListener, () => controller.current?.softRefresh());
+    useRefreshing(() => controller.current?.softRefresh());
     return (
-        <Controller ref={controller} eventListener={eventListener} />
+        <Controller ref={controller} />
     );
 }
 type PropsType = {
-    eventListener: SlideListEventListener,
 };
 type StateType = {
     slideThumbsController: SlideThumbsController | null,
@@ -70,7 +68,7 @@ class Controller extends Component<PropsType, StateType> {
             const newSelectedPath = getSlideItemSelectedSetting();
             if (newSelectedPath) {
                 const fileSource = genFileSource(newSelectedPath);
-                return new SlideThumbsController(fileSource, this.props.eventListener);
+                return new SlideThumbsController(fileSource);
             }
         } catch (error) { }
         return null;
