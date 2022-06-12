@@ -16,7 +16,7 @@ import { windowEventListener } from '../event/WindowEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { biblePresentToTitle } from '../bible-helper/helpers';
 import { presentBible } from './BibleItem';
-import RenderList, { BibleGroupType } from './BibleList copy';
+import RenderList, { BibleGroupType } from './RenderList';
 
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
