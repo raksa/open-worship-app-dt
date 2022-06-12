@@ -128,7 +128,7 @@ export default class SlideThumbsController extends FileController {
         this.refresh();
     }
     get maxId() {
-        return Math.max.apply(Math, this.items.map((item) => +item.id)) + 1;
+        return Math.max.apply(Math, this.items.map((item) => +item.id));
     }
     undoChanges() {
         const undo = [...this.undo];

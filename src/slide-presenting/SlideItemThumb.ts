@@ -16,6 +16,8 @@ export default class SlideItemThumb {
             const item = slidePresentData.items.find((item1) => item1.id === this.id);
             if (item) {
                 return item.html !== this._html;
+            } else {
+                return true;
             }
         }
         return false;
