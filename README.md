@@ -11,13 +11,7 @@ Open source and always free for worship presenter.
 * [Bootstrap](https://getbootstrap.com/)
 * [SASS](https://sass-lang.com/)
 
-Special Thanks
-* [Bootstrap Icons](https://icons.getbootstrap.com/)
-* [Sqlite3](https://www.sqlite.org/index.html)
-* [React I18Next](https://react.i18next.com/)
-* and other frameworks
-
-And Thanks others framework and tool in [npm package](./package.json)
+Special thanks for others frameworks and tools in [npm package](./package.json)
 
 ## Install
 
