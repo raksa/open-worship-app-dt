@@ -46,6 +46,7 @@ function genDefaultGroup(): BibleGroupType {
         isOpen: true,
         title: 'Default',
         list: [],
+        isDefault: true,
     };
 }
 export function getBibleGroupsSetting() {
@@ -62,7 +63,7 @@ export function getBibleGroupsSetting() {
     }
 }
 export function getDefaultGroup(groups: BibleGroupType[]) {
-    const group = groups.find((g) => g.title === 'Default');
+    const group = groups.find((g) => g.isDefault);
     if (group) {
         return { group, index: groups.indexOf(group) };
     }
@@ -73,12 +74,14 @@ function cloneGroup(group: BibleGroupType): BibleGroupType {
         isOpen: group.isOpen,
         title: group.title,
         list: [...group.list],
+        isDefault: group.isDefault,
     };
 }
 type BibleGroupType = {
     isOpen: boolean,
     title: string,
     list: BiblePresentType[],
+    isDefault?: boolean,
 };
 export default function BibleList() {
     const [groups, setGroups] = useState<BibleGroupType[]>(getBibleGroupsSetting());
@@ -126,11 +129,9 @@ export default function BibleList() {
                 ]);
             }}>
                 <div className='accordion accordion-flush'>
-
                     {groups.map((group, i) => {
-                        const { list } = group;
                         return (
-                            <div key={i} className='accordion-item learn-list-item'>
+                            <div key={i} className='accordion-item border-white-round'>
                                 <div className='accordion-header' onClick={() => {
                                     group.isOpen = !group.isOpen;
                                     applyGroup(group, i);
@@ -139,54 +140,63 @@ export default function BibleList() {
                                 </div>
                                 <div className={`accordion-collapse collapse ${group.isOpen ? 'show' : ''}`}>
                                     <div className='accordion-body'>
-                                        <ul className='list-group'>
-                                            {list.map((item, i1) => {
-                                                return <BibleItem key={`${i1}`}
-                                                    index={i1}
-                                                    warningMessage={genDuplicatedMessage(list, item, i1)}
-                                                    biblePresent={item}
-                                                    onUpdateBiblePresent={(newBiblePresent) => {
-                                                        list[i1] = newBiblePresent;
-                                                        applyGroup(group, i);
-                                                    }}
-                                                    onDragOnIndex={(dropIndex: number) => {
-                                                        const newList = [...list];
-                                                        const target = newList.splice(dropIndex, 1)[0];
-                                                        newList.splice(i1, 0, target);
-                                                        group.list = newList;
-                                                        applyGroup(group, i);
-                                                    }}
-                                                    onContextMenu={(e) => {
-                                                        showAppContextMenu(e, [
-                                                            {
-                                                                title: 'Open', onClick: () => {
-                                                                    presentBible(list[i1]);
-                                                                },
-                                                            },
-                                                            {
-                                                                title: 'Edit', onClick: () => {
-                                                                    setSetting('bible-list-editing', `${i1}`);
-                                                                    openBibleSearch();
-                                                                },
-                                                            },
-                                                            {
-                                                                title: 'Delete', onClick: () => {
-                                                                    group.list = list.filter((_, i2) => i2 !== i1);
-                                                                    applyGroup(group, i);
-                                                                },
-                                                            },
-                                                        ]);
-                                                    }} />;
-                                            })}
-                                        </ul>
+                                        <RenderList group={group} index={i} applyGroup={applyGroup} />
                                     </div>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
-
             </div>
         </div>
+    );
+}
+
+function RenderList({ group, index, applyGroup }: {
+    group: BibleGroupType, index: number,
+    applyGroup: (g: BibleGroupType, i: number) => void,
+}) {
+    const { list } = group;
+    return (
+        <ul className='list-group'>
+            {list.map((item, i1) => {
+                return <BibleItem key={`${i1}`}
+                    index={i1}
+                    warningMessage={genDuplicatedMessage(list, item, i1)}
+                    biblePresent={item}
+                    onUpdateBiblePresent={(newBiblePresent) => {
+                        list[i1] = newBiblePresent;
+                        applyGroup(group, index);
+                    }}
+                    onDragOnIndex={(dropIndex: number) => {
+                        const newList = [...list];
+                        const target = newList.splice(dropIndex, 1)[0];
+                        newList.splice(i1, 0, target);
+                        group.list = newList;
+                        applyGroup(group, index);
+                    }}
+                    onContextMenu={(e) => {
+                        showAppContextMenu(e, [
+                            {
+                                title: 'Open', onClick: () => {
+                                    presentBible(list[i1]);
+                                },
+                            },
+                            {
+                                title: 'Edit', onClick: () => {
+                                    setSetting('bible-list-editing', `${i1}`);
+                                    openBibleSearch();
+                                },
+                            },
+                            {
+                                title: 'Delete', onClick: () => {
+                                    group.list = list.filter((_, i2) => i2 !== i1);
+                                    applyGroup(group, index);
+                                },
+                            },
+                        ]);
+                    }} />;
+            })}
+        </ul>
     );
 }
