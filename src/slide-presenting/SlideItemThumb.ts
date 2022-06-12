@@ -2,10 +2,12 @@ import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { getSlideDataByFilePathNoCache } from '../helper/slideHelper';
 
 export default class SlideItemThumb {
+    index: number;
     id: string;
     _html: string;
     filePath: string;
-    constructor(id: string, html: string, filePath: string) {
+    constructor(index: number, id: string, html: string, filePath: string) {
+        this.index = index;
         this.id = id;
         this._html = html;
         this.filePath = filePath;
@@ -15,6 +17,9 @@ export default class SlideItemThumb {
         if (slidePresentData !== null) {
             const item = slidePresentData.items.find((item1) => item1.id === this.id);
             if (item) {
+                if (item.index !== this.index) {
+                    return true;
+                }
                 return item.html !== this._html;
             } else {
                 return true;
@@ -32,7 +37,7 @@ export default class SlideItemThumb {
         }
     }
     clone() {
-        return new SlideItemThumb(this.id, this._html, this.filePath);
+        return new SlideItemThumb(-1, this.id, this._html, this.filePath);
     }
     toJson() {
         return {

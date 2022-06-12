@@ -85,9 +85,12 @@ export default class SlideThumbsController extends FileController {
         return this._items;
     }
     get currentItems() {
-        return this._items;
+        return [...this._items];
     }
     set items(newItems: SlideItemThumb[]) {
+        newItems.forEach((item, i) => {
+            item.index = i;
+        });
         this._items = newItems;
         this.refresh();
     }
@@ -258,9 +261,8 @@ export default class SlideThumbsController extends FileController {
         const currentItems = this.currentItems;
         const target = currentItems.splice(fromIndex, 1)[0];
         currentItems.splice(toIndex, 0, target);
-        this.items = currentItems;
+        this.setItemsWithHistory(currentItems);
         slideListEventListenerGlobal.ordering();
-        this.save();
     }
     showSlideItemContextMenu(e: any) {
         showAppContextMenu(e, [{

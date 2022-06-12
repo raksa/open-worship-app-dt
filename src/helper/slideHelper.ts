@@ -78,8 +78,8 @@ export function getSlideDataByFilePathNoCache(filePath: string) {
             const json = JSON.parse(str);
             if (validateSlide(json)) {
                 const data = json as SlidePresentType;
-                data.items = data.items.map((item) => {
-                    return new SlideItemThumb(item.id, item.html, filePath);
+                data.items = data.items.map((item, i) => {
+                    return new SlideItemThumb(i, item.id, item.html, filePath);
                 });
                 return data;
             }
