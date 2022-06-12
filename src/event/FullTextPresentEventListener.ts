@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import { BiblePresentType as FullTextPresentType } from '../full-text-present/fullTextPresentHelper';
+import {
+    BiblePresentType as FullTextPresentType,
+} from '../full-text-present/fullTextPresentHelper';
 import { LyricPresentType } from '../lyric-list/LyricList';
 import EventHandler from './EventHandler';
 

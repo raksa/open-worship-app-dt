@@ -119,18 +119,19 @@ class FullTextPresentHelper {
         presentEventListener.clearFT(true);
         renderPresent({
             script: `
-            const bible = getFullText();
-            bible.innerHTML = '';
+            const ftViewer = getFullText();
+            ftViewer.innerHTML = '';
         `});
     }
     render() {
         if (this.isShowing) {
             presentEventListener.renderFT();
             this.resetHighlight();
+            this.setScrollTop();
             renderPresent({
                 script: `
-                const bible = getFullText();
-                bible.innerHTML = \`${this.tableShowing.outerHTML}\`;
+                const ftViewer = getFullText();
+                ftViewer.innerHTML = \`${this.tableShowing.outerHTML}\`;
             `});
         }
     }
@@ -138,8 +139,8 @@ class FullTextPresentHelper {
         if (this.isShowing) {
             renderPresent({
                 script: `
-                const bible = getFullText();
-                bible.scrollTop += ${(isScrollUp ? 1 : -1) * amount};
+                const ftViewer = getFullText();
+                ftViewer.scrollTop += ${(isScrollUp ? 1 : -1) * amount};
             `});
         }
     }
@@ -147,8 +148,8 @@ class FullTextPresentHelper {
         if (this.isShowing) {
             renderPresent({
                 script: `
-                const bible = getFullText();
-                bible.scrollTop = 0;
+                const ftViewer = getFullText();
+                ftViewer.scrollTop = 0;
             `});
         }
     }
@@ -156,11 +157,11 @@ class FullTextPresentHelper {
         if (this.isShowing) {
             renderPresent({
                 script: `
-                const bible = getFullText();
-                const table = bible.querySelector('table');
-                const bibleBC = bible.getBoundingClientRect();
+                const ftViewer = getFullText();
+                const table = ftViewer.querySelector('table');
+                const bibleBC = ftViewer.getBoundingClientRect();
                 const tableBC = table.getBoundingClientRect();
-                bible.scrollTop = tableBC.height - bibleBC.height;
+                ftViewer.scrollTop = tableBC.height - bibleBC.height;
             `});
         }
     }
