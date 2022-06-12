@@ -17,6 +17,7 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import { biblePresentToTitle } from '../bible-helper/helpers';
 import { presentBible } from './BibleItem';
 import RenderList, { BibleGroupType } from './RenderList';
+import { AskingNewName } from '../others/AskingNewName';
 
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
@@ -80,6 +81,7 @@ function cloneGroup(group: BibleGroupType): BibleGroupType {
 }
 
 export default function BibleList() {
+    const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [groups, setGroups] = useState<BibleGroupType[]>(getBibleGroupsSetting());
     const applyGroup = (newGroup: BibleGroupType, index: number) => {
         const newGroups = [...groups];
@@ -122,12 +124,38 @@ export default function BibleList() {
                             applyGroups([genDefaultGroup()]);
                         },
                     },
+                    {
+                        title: 'New Group', onClick: () => {
+                            setIsCreatingNew(true);
+                        },
+                    },
                 ]);
             }}>
+                {isCreatingNew && <AskingNewName applyName={(name: string | null) => {
+                    setIsCreatingNew(false);
+                    if (name === null) {
+                        return;
+                    }
+                    const newGroups = [...groups, {
+                        isOpen: false,
+                        title: name,
+                        list: [],
+                    }];
+                    applyGroups(newGroups);
+                }} />}
                 <div className='accordion accordion-flush'>
                     {groups.map((group, i) => {
                         return (
-                            <div key={i} className='accordion-item border-white-round'>
+                            <div key={i} className='accordion-item border-white-round' onContextMenu={(e) => {
+                                showAppContextMenu(e, [
+                                    {
+                                        title: 'Delete Group', onClick: () => {
+                                            const newGroups = groups.filter((g, i1) => i1 !== i);
+                                            applyGroups(newGroups);
+                                        },
+                                    },
+                                ]);
+                            }}>
                                 <div className='accordion-header' onClick={() => {
                                     group.isOpen = !group.isOpen;
                                     applyGroup(group, i);

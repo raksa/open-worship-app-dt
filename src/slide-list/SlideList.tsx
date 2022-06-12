@@ -8,6 +8,7 @@ import SlideListController from './SlideListController';
 import SlideController from './SlideController';
 import { getAppMimetype } from '../helper/fileHelper';
 import { usePresentFGClearing } from '../event/PresentEventListener';
+import { AskingNewName } from '../others/AskingNewName';
 
 export default function SlideList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -57,7 +58,6 @@ type SlideListViewPropsType = {
     eventListener: SlideListEventListener,
 };
 type SlideListViewStateType = {
-    creatingNewFileName: string,
     slideListController: SlideListController;
 };
 class SlideListView extends Component<SlideListViewPropsType, SlideListViewStateType> {
@@ -65,7 +65,6 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
     constructor(props: SlideListViewPropsType) {
         super(props);
         this.state = {
-            creatingNewFileName: '',
             slideListController: new SlideListController(props.baseDir, props.eventListener),
         };
     }
@@ -82,9 +81,9 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
             slideListController: new SlideListController(props.baseDir, props.eventListener),
         });
     }
-    creatNewSlide() {
+    createNewSlide(name: string) {
         const mimeTypes = getAppMimetype('slide');
-        const slideName = `${this.state.creatingNewFileName}${mimeTypes[0].extension[0]}`;
+        const slideName = `${name}${mimeTypes[0].extension[0]}`;
         if (this.state.slideListController.createNewSlide(slideName)) {
             this.props.setIsCreatingNew(false);
         }
@@ -94,28 +93,12 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
         const { slideListController } = this.state;
         return (
             <ul className="list-group">
-                {isCreatingNew && <li className='list-group-item'>
-                    <div className="input-group">
-                        <input type="text" className="form-control" placeholder="file name"
-                            value={this.state.creatingNewFileName}
-                            aria-label="file name" aria-describedby="button-addon2" autoFocus
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    this.creatNewSlide();
-                                } else if (e.key === 'Escape') {
-                                    setIsCreatingNew(false);
-                                }
-                            }}
-                            onChange={(e) => {
-                                // TODO: validate file name
-                                this.setState({ creatingNewFileName: e.target.value });
-                            }} />
-                        <button className="btn btn-outline-success" type="button" id="button-addon2"
-                            onClick={() => this.creatNewSlide()}>
-                            <i className="bi bi-plus" />
-                        </button>
-                    </div>
-                </li>}
+                {isCreatingNew && <AskingNewName applyName={(name) => {
+                    setIsCreatingNew(false);
+                    if (name !== null) {
+                        this.createNewSlide(name);
+                    }
+                }} />}
                 {slideListController.slideControllers.map((slideController, i) => {
                     return <ListItem key={`${i}`} index={i}
                         itemClick={() => slideListController
