@@ -32,7 +32,6 @@ export function tooling2BoxProps(toolingData: ToolingType, state: {
             boxProps.left = state.parentWidth - state.width;
         }
     }
-    console.log(boxProps);
 
     return boxProps;
 }
