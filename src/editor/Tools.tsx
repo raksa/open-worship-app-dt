@@ -1,6 +1,6 @@
 import './Tools.scss';
 
-import { ReactChild, useState } from 'react';
+import { useState } from 'react';
 import { slideListEventListenerGlobal, useSlideBoxEditing } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
 import {
@@ -165,7 +165,7 @@ function ToolsBackground({ data }: { data: HTML2ReactChild }) {
         </>
     );
 }
-function Tool({ title, children }: { title?: string, children: ReactChild | ReactChild[] }) {
+function Tool({ title, children }: { title?: string, children: any | any[] }) {
     return (
         <div className='tool'>
             {title && <div>{title}</div>}
