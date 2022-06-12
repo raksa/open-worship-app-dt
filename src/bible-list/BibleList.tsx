@@ -189,7 +189,7 @@ export default function BibleList() {
                                         },
                                     ]);
                                 }}>
-                                <div className='accordion-header' onClick={() => {
+                                <div className='accordion-header pointer' onClick={() => {
                                     group.isOpen = !group.isOpen;
                                     applyGroup(group, i);
                                 }}>
