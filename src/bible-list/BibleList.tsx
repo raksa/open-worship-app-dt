@@ -11,11 +11,12 @@ import {
 } from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
-import { openBibleSearch, openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
+import { openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
 import { windowEventListener } from '../event/WindowEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { biblePresentToTitle } from '../bible-helper/helpers';
-import BibleItem, { genDuplicatedMessage, presentBible } from './BibleItem';
+import { presentBible } from './BibleItem';
+import RenderList, { BibleGroupType } from './BibleList copy';
 
 export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
@@ -77,12 +78,7 @@ function cloneGroup(group: BibleGroupType): BibleGroupType {
         isDefault: group.isDefault,
     };
 }
-type BibleGroupType = {
-    isOpen: boolean,
-    title: string,
-    list: BiblePresentType[],
-    isDefault?: boolean,
-};
+
 export default function BibleList() {
     const [groups, setGroups] = useState<BibleGroupType[]>(getBibleGroupsSetting());
     const applyGroup = (newGroup: BibleGroupType, index: number) => {
@@ -149,54 +145,5 @@ export default function BibleList() {
                 </div>
             </div>
         </div>
-    );
-}
-
-function RenderList({ group, index, applyGroup }: {
-    group: BibleGroupType, index: number,
-    applyGroup: (g: BibleGroupType, i: number) => void,
-}) {
-    const { list } = group;
-    return (
-        <ul className='list-group'>
-            {list.map((item, i1) => {
-                return <BibleItem key={`${i1}`}
-                    index={i1}
-                    warningMessage={genDuplicatedMessage(list, item, i1)}
-                    biblePresent={item}
-                    onUpdateBiblePresent={(newBiblePresent) => {
-                        list[i1] = newBiblePresent;
-                        applyGroup(group, index);
-                    }}
-                    onDragOnIndex={(dropIndex: number) => {
-                        const newList = [...list];
-                        const target = newList.splice(dropIndex, 1)[0];
-                        newList.splice(i1, 0, target);
-                        group.list = newList;
-                        applyGroup(group, index);
-                    }}
-                    onContextMenu={(e) => {
-                        showAppContextMenu(e, [
-                            {
-                                title: 'Open', onClick: () => {
-                                    presentBible(list[i1]);
-                                },
-                            },
-                            {
-                                title: 'Edit', onClick: () => {
-                                    setSetting('bible-list-editing', `${i1}`);
-                                    openBibleSearch();
-                                },
-                            },
-                            {
-                                title: 'Delete', onClick: () => {
-                                    group.list = list.filter((_, i2) => i2 !== i1);
-                                    applyGroup(group, index);
-                                },
-                            },
-                        ]);
-                    }} />;
-            })}
-        </ul>
     );
 }
