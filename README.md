@@ -1,6 +1,6 @@
 # OpenWorship app (PSA.150.6, Praise the Lord)
 
-![OpenWorship app 06/12/22](./docs/images/Screenshot 2022-06-12 154447.png)
+![OpenWorship app 06/12/22](./docs/images/openworship-2022-06-12.png.png)
 
 Open source and always free for worship presenter.
 
