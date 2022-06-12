@@ -6,9 +6,9 @@ import { HTML2React, SlideItemThumbType } from '../helper/slideHelper';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
-import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
 import { editorMapper } from './EditorBoxMapper';
 import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
+import ReSizer from '../resizer/ReSizer';
 
 export default function SlideItemThumbEditor() {
     const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(
@@ -40,7 +40,6 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
         'editor-v1': '3',
         'editor-v2': '1',
     };
-    const flexSize = getPresentingFlexSize(resizeSettingName, flexSizeDefault);
     const [scale, setScale] = useStateSettingNumber('editor-scale', 1);
     const html2React = HTML2React.parseHTML(slideItemThumb.html);
     const maxScale = 3;
@@ -62,8 +61,11 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
                 applyScale(e.deltaY > 0);
             }
         }}>
-            <div data-fs='editor-v1' data-fs-default={flexSizeDefault['editor-v1']}
-                className='flex-item' style={{ flex: flexSize['editor-v1'] || 1 }}>
+            <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                resizerKinds={['v']}
+                sizeKeys={[
+                    ['editor-v1', 'flex-item'],
+                    ['editor-v2', 'flex-item']]}>
                 <div className='editor-container w-100 h-100'>
                     <div className='overflow-hidden' style={{
                         width: `${html2React.width * scale + 20}px`,
@@ -72,17 +74,14 @@ export function SlideItemThumbEditorController({ slideItemThumb }: {
                         <div className='w-100 h-100' style={{
                             transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
                         }}>
-                            <Editor scale={scale} slideItemThumb={slideItemThumb} html2React={html2React} />
+                            <Editor scale={scale} slideItemThumb={slideItemThumb}
+                                html2React={html2React} />
                         </div>
                     </div>
                 </div>
-            </div>
-            <FlexResizer settingName={resizeSettingName} type='v' />
-            <div data-fs='editor-v2' data-fs-default={flexSizeDefault['editor-v2']}
-                className='flex-item' style={{ flex: flexSize['editor-v2'] || 1 }}>
                 <Tools scale={scale} applyScale={applyScale} setScale={setScale}
                     minScale={minScale} maxScale={maxScale} scaleStep={scaleStep} />
-            </div>
+            </ReSizer>
         </div>
     );
 }

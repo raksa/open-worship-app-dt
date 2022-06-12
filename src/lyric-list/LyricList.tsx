@@ -9,6 +9,7 @@ import {
     useLyricUpdating,
 } from '../event/FullTextPresentEventListener';
 import LyricItem, { presentLyric } from './LyricItem';
+import { AskingNewName } from '../others/AskingNewName';
 
 export type LyricPresentType = {
     title: string,
@@ -49,14 +50,13 @@ export function getDefaultLyricItem(): LyricItemType | null {
 
 export default function LyricList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [creatingNewFileName, setCreatingNewFileName] = useState('');
     const [list, setList] = useState<LyricItemType[]>(getDefaultLyricList());
     const applyList = (newList: LyricItemType[]) => {
         setList(newList);
         setSetting('lyric-list', JSON.stringify(newList));
     };
-    const creatNewLyric = () => {
-        const isExist = list.some((l) => l.fileName === creatingNewFileName);
+    const createNewLyric = (name: string) => {
+        const isExist = list.some((l) => l.fileName === name);
         if (isExist) {
             toastEventListener.showSimpleToast({
                 title: 'Creating Lyric',
@@ -65,9 +65,9 @@ export default function LyricList() {
             return;
         }
         const newList = [...list, {
-            fileName: creatingNewFileName,
+            fileName: name,
             items: [{
-                title: creatingNewFileName, text: `
+                title: name, text: `
 Block1
 ===
 Block2
@@ -76,7 +76,6 @@ Block3
 ` }],
         }];
         applyList(newList);
-        setCreatingNewFileName('');
         setIsCreatingNew(false);
     };
     useLyricUpdating((lyricPresents) => {
@@ -112,28 +111,12 @@ Block3
                 ]);
             }}>
                 <ul className="list-group">
-                    {isCreatingNew && <li className='list-group-item'>
-                        <div className="input-group">
-                            <input type="text" className="form-control" placeholder="title"
-                                value={creatingNewFileName}
-                                aria-label="file name" aria-describedby="button-addon2" autoFocus
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        creatNewLyric();
-                                    } else if (e.key === 'Escape') {
-                                        setIsCreatingNew(false);
-                                    }
-                                }}
-                                onChange={(e) => {
-                                    // TODO: validate file name
-                                    setCreatingNewFileName(e.target.value);
-                                }} />
-                            <button className="btn btn-outline-success" type="button" id="button-addon2"
-                                onClick={creatNewLyric}>
-                                <i className="bi bi-plus" />
-                            </button>
-                        </div>
-                    </li>}
+                    {isCreatingNew && <AskingNewName applyName={(name) => {
+                        setIsCreatingNew(false);
+                        if (name !== null) {
+                            createNewLyric(name);
+                        }
+                    }} />}
                     {list.map((item, i) => {
                         return <LyricItem key={`${i}`}
                             index={i}

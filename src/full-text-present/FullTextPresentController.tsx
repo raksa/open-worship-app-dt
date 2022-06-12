@@ -2,9 +2,9 @@ import './FullTextPresentController.scss';
 
 import { BiblePresentType } from './fullTextPresentHelper';
 import CustomStyle from './CustomStyle';
-import FlexResizer, { getPresentingFlexSize } from '../FlexResizer';
 import Utils from './Utils';
 import Previewer, { previewer } from './Previewer';
+import ReSizer from '../resizer/ReSizer';
 
 export function convertPresent(present: BiblePresentType,
     oldPresents: BiblePresentType[]) {
@@ -23,27 +23,24 @@ export default function FullTextPresentController() {
         'previewer': '2',
         'tools': '1',
     };
-    const flexSize = getPresentingFlexSize(resizeSettingName, flexSizeDefault);
     return (
         <div id="full-text-present-controller"
             className="card w-100 h-100 border-white-round">
             <div className="card-body flex v">
-                <div data-fs='previewer' data-fs-default={flexSizeDefault['previewer']}
-                    className='overflow-hidden'
-                    style={{ flex: flexSize['previewer'] || 1 }}>
+                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                    resizerKinds={['v']}
+                    sizeKeys={[
+                        ['previewer', 'overflow-hidden'],
+                        ['tools', 'h-100 d-flex flex-column', {
+                            overflowX: 'hidden',
+                            overflowY: 'auto',
+                        }]]}>
                     <Previewer />
-                </div>
-                <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div data-fs='tools' data-fs-default={flexSizeDefault['tools']}
-                    className='h-100 d-flex flex-column'
-                    style={{
-                        flex: flexSize['tools'] || 1,
-                        overflowX: 'hidden',
-                        overflowY: 'auto',
-                    }}>
-                    <Utils onShow={() => previewer.show()} />
-                    <CustomStyle />
-                </div>
+                    <>
+                        <Utils onShow={() => previewer.show()} />
+                        <CustomStyle />
+                    </>
+                </ReSizer>
             </div>
         </div>
     );

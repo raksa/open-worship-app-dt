@@ -23,7 +23,7 @@ import Modal from '../others/Modal';
 import Preview from './Preview';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { getChapterCount, getBookKVList, biblePresentToTitle } from '../bible-helper/helpers';
-import { getDefaultBibleList, getBibleListEditingIndex, clearBibleListEditingIndex } from '../bible-list/BibleList';
+import { getBibleGroupsSetting, getBibleListEditingIndex, clearBibleListEditingIndex } from '../bible-list/BibleList';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 
 export const openBibleSearchEvent = {
@@ -45,7 +45,7 @@ export function closeBibleSearch() {
 export function getSelectedBible(): string {
     const editingIndex = getBibleListEditingIndex();
     if (editingIndex !== null) {
-        const bibleList = getDefaultBibleList();
+        const bibleList = getBibleGroupsSetting();
         if (bibleList[editingIndex]) {
             const biblePresent = bibleList[editingIndex] as BiblePresentType;
             return biblePresent.bible;
@@ -66,7 +66,7 @@ export function getSelectedBible(): string {
 function getDefaultInputText() {
     const editingIndex = getBibleListEditingIndex();
     if (editingIndex !== null) {
-        const bibleList = getDefaultBibleList();
+        const bibleList = getBibleGroupsSetting();
         if (bibleList[editingIndex]) {
             const biblePresent = bibleList[editingIndex] as BiblePresentType;
             return biblePresentToTitle(biblePresent);

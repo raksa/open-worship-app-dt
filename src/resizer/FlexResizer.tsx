@@ -1,11 +1,11 @@
 import './FlexResizer.scss';
 
 import React from 'react';
-import { getSetting, setSetting } from './helper/settingHelper';
 
+export type ResizerKindType = 'v' | 'h';
 export interface Props {
-    type: 'v' | 'h',
-    settingName: string,
+    type: ResizerKindType,
+    checkSize: () => void,
 }
 export default class FlexResizer extends React.Component<Props, {}> {
     myRef: React.RefObject<HTMLDivElement>;
@@ -22,7 +22,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
         super(props);
         this.myRef = React.createRef();
         this.mouseMoveListener = (mm: MouseEvent) => this.onMouseMove(mm);
-        this.mouseUpListener = () => this.onMouseUp();
+        this.mouseUpListener = (e) => this.onMouseUp(e);
     }
     get prev() {
         return this.myRef.current?.previousElementSibling as HTMLDivElement;
@@ -58,15 +58,24 @@ export default class FlexResizer extends React.Component<Props, {}> {
         this.nextGrow = Number(next.style.flexGrow);
         this.sumGrow = this.prevGrow + this.nextGrow;
     }
-    onMouseDown(md: MouseEvent) {
-        md.preventDefault();
+    isShouldIgnore(md: MouseEvent) {
+        return (md.target as any).tagName === 'I';
+    }
+    onMouseDown(e: MouseEvent) {
+        if (this.isShouldIgnore(e)) {
+            return;
+        }
+        e.preventDefault();
         this.init();
-        this.lastPos = this.getMousePagePos(md);
+        this.lastPos = this.getMousePagePos(e);
         window.addEventListener('mousemove', this.mouseMoveListener);
         window.addEventListener('mouseup', this.mouseUpListener);
     }
-    onMouseMove(mm: MouseEvent) {
-        let pos = this.getMousePagePos(mm);
+    onMouseMove(e: MouseEvent) {
+        if (this.isShouldIgnore(e)) {
+            return;
+        }
+        let pos = this.getMousePagePos(e);
         const d = pos - this.lastPos;
         this.prevSize += d;
         this.nextSize -= d;
@@ -89,7 +98,10 @@ export default class FlexResizer extends React.Component<Props, {}> {
 
         this.lastPos = pos;
     }
-    onMouseUp() {
+    onMouseUp(e: MouseEvent) {
+        if (this.isShouldIgnore(e)) {
+            return;
+        }
         const current = this.myRef.current;
         if (!current) {
             return;
@@ -98,7 +110,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
-        checkSize(this.props.settingName);
+        this.props.checkSize();
     }
     resetSize() {
         this.prev.style.flex = this.prev.dataset['fsDefault'] as string;
@@ -124,7 +136,6 @@ export default class FlexResizer extends React.Component<Props, {}> {
                 this.next.style.flexGrow = `${min}`;
             }
         }
-        checkSize(this.props.settingName);
     }
     componentDidMount() {
         const target = this.myRef.current;
@@ -145,40 +156,14 @@ export default class FlexResizer extends React.Component<Props, {}> {
                     {[['left', 'chevron-left'], ['right', 'chevron-right'],
                     ['up', 'chevron-up'], ['down', 'chevron-down']].map(([type, icon], i) => {
                         return (
-                            <div key={i} className={type}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    this.quicMove(type);
-                                }}>
-                                <i className={`bi bi-${icon}`} />
-                            </div>
+                            <i key={i} className={`${type} bi bi-${icon}`} onClick={(e) => {
+                                e.stopPropagation();
+                                this.quicMove(type);
+                            }} />
                         );
                     })}
                 </div>
             </div>
         );
     }
-}
-
-export type Size = { [key: string]: string };
-function checkSize(settingName: string) {
-    const size: Size = {};
-    const rowItems: HTMLDivElement[] = Array.from(document.querySelectorAll('[data-fs]'));
-    rowItems.forEach((item) => {
-        size[item.getAttribute('data-fs') as string] = item.style.flex;
-    });
-    setSetting(settingName, JSON.stringify(size));
-}
-
-export function getPresentingFlexSize(settingName: string, defaultSize: Size): Size {
-    const sizeStr = getSetting(settingName);
-    try {
-        const size = JSON.parse(sizeStr);
-        if (Object.keys(defaultSize).every((k) => size[k] !== undefined)) {
-            return size;
-        }
-    } catch (error) {
-        setSetting(settingName, JSON.stringify(defaultSize));
-    }
-    return defaultSize;
 }

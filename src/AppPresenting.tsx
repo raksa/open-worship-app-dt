@@ -1,5 +1,4 @@
 import BibleList from './bible-list/BibleList';
-import FlexResizer, { getPresentingFlexSize } from './FlexResizer';
 import SlideList from './slide-list/SlideList';
 import Preview from './preview/MiniPresentScreen';
 import Background from './background/Background';
@@ -7,6 +6,7 @@ import Middle from './slide-presenting/Presenting';
 import { getWindowMode } from './App';
 import Playlist from './playlist/Playlist';
 import LyricList from './lyric-list/LyricList';
+import ReSizer from './resizer/ReSizer';
 
 export default function AppPresenting() {
     const resizeSettingName = `${getWindowMode()}-window-size`;
@@ -21,52 +21,37 @@ export default function AppPresenting() {
         'h3-v1': '1',
         'h3-v2': '1',
     };
-    const flexSize = getPresentingFlexSize(resizeSettingName, flexSizeDefault);
     return (
         <>
-            <div data-fs='h1' data-fs-default={flexSizeDefault['h1']}
-                className="flex v" style={{ flex: flexSize['h1'] || 1 }}>
-                <div data-fs='h1-v1' data-fs-default={flexSizeDefault['h1-v1']}
-                    className="flex-item" style={{ flex: flexSize['h1-v1'] || 1 }}>
+            <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                resizerKinds={['h', 'h']}
+                sizeKeys={[['h1', 'flex v'], ['h2', 'flex v'], ['h3', 'right d-flex flex-column']]}>
+                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                    resizerKinds={['v']}
+                    sizeKeys={[['h1-v1', 'flex-item'], ['h1-v2', 'flex-item']]}>
                     <SlideList />
-                </div>
-                <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div data-fs='h1-v2' data-fs-default={flexSizeDefault['h1-v2']}
-                    className="flex-item" style={{ flex: flexSize['h1-v2'] || 1 }}>
                     <Playlist />
-                </div>
-            </div>
-            <FlexResizer settingName={resizeSettingName} type={'h'} />
-            <div data-fs='h2' data-fs-default={flexSizeDefault['h2']}
-                className="flex v" style={{ flex: flexSize['h2'] || 1 }}>
-                <div data-fs='h2-v1' data-fs-default={flexSizeDefault['h2-v1']}
-                    className="flex-item" style={{ flex: flexSize['h2-v1'] || 1 }}>
+                </ReSizer>
+                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                    resizerKinds={['v']}
+                    sizeKeys={[['h2-v1', 'flex-item'], ['h2-v2', 'flex-item']]}>
                     <Middle />
-                </div>
-                <FlexResizer settingName={resizeSettingName} type={'v'} />
-                <div data-fs='h2-v2' data-fs-default={flexSizeDefault['h2-v2']}
-                    className="flex-item" style={{ flex: flexSize['h2-v2'] || 1 }}>
                     <Background />
-                </div>
-            </div>
-            <FlexResizer settingName={resizeSettingName} type={'h'} />
-            <div data-fs='h3' data-fs-default={flexSizeDefault['h3']}
-                className="right d-flex flex-column" style={{ flex: flexSize['h3'] || 1 }}>
-                <div className='flex-fill flex v h-100'>
-                    <div data-fs='h3-v1' data-fs-default={flexSizeDefault['h3-v1']}
-                        className="flex-item" style={{ flex: flexSize['h3-v1'] || 1 }}>
-                        <BibleList />
+                </ReSizer>
+                <>
+                    <div className='flex-fill flex v h-100'>
+                        <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                            resizerKinds={['v']}
+                            sizeKeys={[['h3-v1', 'flex-item'], ['h3-v2', 'flex-item']]}>
+                            <BibleList />
+                            <LyricList />
+                        </ReSizer>
                     </div>
-                    <FlexResizer settingName={resizeSettingName} type={'v'} />
-                    <div data-fs='h3-v2' data-fs-default={flexSizeDefault['h3-v2']}
-                        className="flex-item" style={{ flex: flexSize['h3-v2'] || 1 }}>
-                        <LyricList />
+                    <div>
+                        <Preview />
                     </div>
-                </div>
-                <div>
-                    <Preview />
-                </div>
-            </div>
+                </>
+            </ReSizer>
         </>
     );
 }

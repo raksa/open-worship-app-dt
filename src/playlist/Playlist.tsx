@@ -31,10 +31,10 @@ import {
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { getSlideDataByFilePath, HTML2React } from '../helper/slideHelper';
 import BibleItem from '../bible-list/BibleItem';
+import { AskingNewName } from '../others/AskingNewName';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [creatingNewFileName, setCreatingNewFileName] = useState('');
     const [dir, setDir] = useStateSettingString('playlist-selected-dir', '');
     const [playlists, setPlaylists] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
@@ -43,10 +43,10 @@ export default function Playlist() {
             setPlaylists(newPlaylists === null ? [] : newPlaylists);
         }
     }, [playlists, dir]);
-    const creatNewPlaylist = () => {
+    const createNewPlaylist = (name: string) => {
         // TODO: verify file name before create
         const mimeTypes = getAppMimetype('playlist');
-        const playlistName = `${creatingNewFileName}${mimeTypes[0].extension[0]}`;
+        const playlistName = `${name}${mimeTypes[0].extension[0]}`;
         if (createFile(JSON.stringify({
             metadata: {
                 fileVersion: 1,
@@ -61,7 +61,6 @@ export default function Playlist() {
                 message: 'Unable to create playlist due to internal error',
             });
         }
-        setCreatingNewFileName('');
         setIsCreatingNew(false);
     };
     const applyDir = (newDir: string) => {
@@ -86,29 +85,12 @@ export default function Playlist() {
                     onChangeDirPath={applyDir}
                     onSelectDirPath={applyDir} />
                 <ul className="list-group">
-                    {isCreatingNew && <li className='list-group-item'>
-                        <div className="input-group">
-                            <input type="text" className="form-control" placeholder="file name"
-                                value={creatingNewFileName}
-                                aria-label="file name" aria-describedby="button-addon2" autoFocus
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        creatNewPlaylist();
-                                    } else if (e.key === 'Escape') {
-                                        setIsCreatingNew(false);
-                                    }
-                                }}
-                                onChange={(e) => {
-                                    // TODO: validate file name
-                                    setCreatingNewFileName(e.target.value);
-                                }} />
-                            <button className="btn btn-outline-success" type="button" id="button-addon2"
-                                onClick={creatNewPlaylist}>
-                                <i className="bi bi-plus" />
-                            </button>
-                        </div>
-                    </li>
-                    }
+                    {isCreatingNew && <AskingNewName applyName={(name) => {
+                        setIsCreatingNew(false);
+                        if (name !== null) {
+                            createNewPlaylist(name);
+                        }
+                    }} />}
                 </ul>
                 {mapPlaylists.map((data, i) => {
                     return <ListItem key={`${i}`} index={i}
@@ -182,12 +164,15 @@ function ListItem({ index, fileData, onContextMenu,
                 setIsReceivingChild(false);
             }}
             onDrop={(event) => {
+                setIsReceivingChild(false);
                 const receivedData = event.dataTransfer.getData('text');
                 try {
                     JSON.parse(receivedData);
+                    const bible = JSON.parse(receivedData);
+                    delete bible.groupIndex;
                     data.items.push({
                         type: 'bible',
-                        bible: JSON.parse(receivedData) as BiblePresentType,
+                        bible: bible as BiblePresentType,
                     });
                 } catch (error) {
                     data.items.push({
@@ -215,7 +200,7 @@ function ListItem({ index, fileData, onContextMenu,
                         </Fragment>;
                     }
                     return <Fragment key={`${i}`}>
-                        <BibleItem key={`${i}`} index={i}
+                        <BibleItem key={`${i}`} index={i} groupIndex={0}
                             biblePresent={item.bible as BiblePresentType} />
                     </Fragment>;
                 })}
