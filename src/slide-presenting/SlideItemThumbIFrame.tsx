@@ -1,8 +1,9 @@
 import './SlideItemThumb.scss';
 
-import { HTML2React, SlideItemThumbType } from '../helper/slideHelper';
+import { HTML2React } from '../helper/slideHelper';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { extractSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
+import SlideItemThumb from './SlideItemThumb';
 
 export function SlideItemThumbIFrame({
     id, width, html2React,
@@ -34,7 +35,7 @@ type SlideItemThumbnailProps = {
     width: number,
     index: number;
     isActive: boolean;
-    slideItemThumbData: SlideItemThumbType;
+    slideItemThumbData: SlideItemThumb;
     slideFilePath: string;
     onItemClick: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
@@ -42,7 +43,7 @@ type SlideItemThumbnailProps = {
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 };
-export default function SlideItemThumb({
+export default function SlideItemThumbRender({
     width, isActive, index,
     slideItemThumbData, slideFilePath,
     onItemClick,

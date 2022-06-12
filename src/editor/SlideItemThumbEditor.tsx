@@ -2,16 +2,17 @@ import './SlideItemThumbEditor.scss';
 
 import { useState } from 'react';
 import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
-import { HTML2React, SlideItemThumbType } from '../helper/slideHelper';
+import { HTML2React } from '../helper/slideHelper';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
 import { editorMapper } from './EditorBoxMapper';
 import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
 import ReSizer from '../resizer/ReSizer';
+import SlideItemThumb from '../slide-presenting/SlideItemThumb';
 
 export default function SlideItemThumbEditor() {
-    const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumbType | null>(
+    const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumb | null>(
         getValidSlideItemThumbSelected());
     useSlideItemThumbSelecting((item) => {
         if (item?.id === slideItemThumb?.id) {
@@ -33,7 +34,7 @@ export default function SlideItemThumbEditor() {
     );
 }
 export function SlideItemThumbEditorController({ slideItemThumb }: {
-    slideItemThumb: SlideItemThumbType
+    slideItemThumb: SlideItemThumb
 }) {
     const resizeSettingName = 'editor-window-size';
     const flexSizeDefault = {

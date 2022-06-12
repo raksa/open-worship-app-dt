@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { ToolingType } from '../editor/Tools';
 import { getSetting, setSetting, useStateSettingNumber } from '../helper/settingHelper';
-import { HTML2ReactChild, SlideItemThumbType } from '../helper/slideHelper';
+import { HTML2ReactChild } from '../helper/slideHelper';
+import SlideItemThumb from '../slide-presenting/SlideItemThumb';
 import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
 import EventHandler from './EventHandler';
 
@@ -10,7 +11,6 @@ export enum SlideListEnum {
     SELECT = 'select',
     ITEM_THUMB_SELECT = 'item-thumb-select',
     BOX_EDITING = 'box-editing',
-    UPDATE_ITEM_THUMB = 'update-item-thumb',
     ITEM_THUMB_ORDERING = 'item-thumb-ordering',
     ITEM_THUMB_SIZING = 'item-thumb-sizing',
     TOOLING = 'tooling',
@@ -33,11 +33,8 @@ export default class SlideListEventListener extends EventHandler {
     tooling(data: ToolingType) {
         this._addPropEvent(SlideListEnum.TOOLING, data);
     }
-    selectSlideItemThumb(slideItemThumb: SlideItemThumbType | null) {
+    selectSlideItemThumb(slideItemThumb: SlideItemThumb | null) {
         this._addPropEvent(SlideListEnum.ITEM_THUMB_SELECT, slideItemThumb);
-    }
-    updateSlideItemThumb(slideItemThumb: SlideItemThumbType) {
-        this._addPropEvent(SlideListEnum.UPDATE_ITEM_THUMB, slideItemThumb);
     }
     refresh() {
         this._addPropEvent(SlideListEnum.REFRESH);
@@ -68,19 +65,10 @@ export function useSlideSelecting(listener: ListenerType<void>) {
         };
     });
 }
-export function useSlideItemThumbSelecting(listener: ListenerType<SlideItemThumbType | null>) {
+export function useSlideItemThumbSelecting(listener: ListenerType<SlideItemThumb | null>) {
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.ITEM_THUMB_SELECT, listener);
-        return () => {
-            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
-        };
-    });
-}
-export function useSlideItemThumbUpdating(listener: ListenerType<SlideItemThumbType>) {
-    useEffect(() => {
-        const event = slideListEventListenerGlobal.registerSlideListEventListener(
-            SlideListEnum.UPDATE_ITEM_THUMB, listener);
         return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };

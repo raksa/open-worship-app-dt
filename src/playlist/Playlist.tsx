@@ -16,7 +16,6 @@ import {
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { PlaylistType } from '../helper/playlistHelper';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
-import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumb';
 import {
     FileSourceType,
     listFiles,
@@ -32,6 +31,7 @@ import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { getSlideDataByFilePath, HTML2React } from '../helper/slideHelper';
 import BibleItem from '../bible-list/BibleItem';
 import { AskingNewName } from '../others/AskingNewName';
+import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumbIFrame';
 
 export default function Playlist() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);

@@ -5,8 +5,8 @@ import HeaderEditorPopup from './HeaderEditorPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import { SlideItemThumbEditorController } from './SlideItemThumbEditor';
-import { SlideItemThumbType } from '../helper/slideHelper';
 import { editorMapper } from './EditorBoxMapper';
+import SlideItemThumb from '../slide-presenting/SlideItemThumb';
 
 export const openItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,
@@ -16,7 +16,7 @@ export const closeItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,
     state: StateEnum.Close,
 };
-export function openItemSlideEdit(slideItemThumb: SlideItemThumbType) {
+export function openItemSlideEdit(slideItemThumb: SlideItemThumb) {
     windowEventListener.fireEvent(openItemSlideEditEvent, slideItemThumb);
 }
 export function closeItemSlideEdit() {
@@ -27,7 +27,7 @@ export function closeItemSlideEdit() {
 }
 
 export default function SlideItemEditorPopup({ slideItemThumb }: {
-    slideItemThumb: SlideItemThumbType
+    slideItemThumb: SlideItemThumb
 }) {
     useKeyboardRegistering({
         key: KeyEnum.Escape,

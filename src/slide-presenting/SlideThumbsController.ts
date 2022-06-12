@@ -1,7 +1,6 @@
 import {
     getSlideDataByFilePath,
     HTML2React,
-    SlideItemThumbType,
 } from '../helper/slideHelper';
 import { FileSourceType, overWriteFile } from '../helper/fileHelper';
 import FileController from '../others/FileController';
@@ -12,7 +11,6 @@ import {
     setSetting,
 } from '../helper/settingHelper';
 import {
-    cloneObject,
     parseSlideItemThumbSelected,
     toSlideItemThumbSelected,
 } from '../helper/helpers';
@@ -21,6 +19,7 @@ import { isWindowEditingMode } from '../App';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
 import { DisplayType } from '../helper/displayHelper';
+import SlideItemThumb from './SlideItemThumb';
 
 export const MIN_THUMB_SCALE = 1;
 export const THUMB_SCALE_STEP = 0.2;
@@ -28,10 +27,10 @@ export const MAX_THUMB_SCALE = 3;
 export const DEFAULT_THUMB_SIZE = 250;
 export const THUMB_SELECTED_SETTING_NAME = 'slide-item-thumb-selected';
 export const THUMB_WIDTH_SETTING_NAME = 'presenting-item-thumb-size';
-export type ChangeHistory = { items: SlideItemThumbType[] };
+export type ChangeHistory = { items: SlideItemThumb[] };
 
 export default class SlideThumbsController extends FileController {
-    _items: SlideItemThumbType[];
+    _items: SlideItemThumb[];
     _copiedIndex: number | null = null;
     _selectedId: string | null = null;
     _eventListener: SlideListEventListener;
@@ -64,10 +63,10 @@ export default class SlideThumbsController extends FileController {
     refresh() {
         this._eventListener.refresh();
     }
-    getItemByIndex(index: number): SlideItemThumbType | null {
+    getItemByIndex(index: number): SlideItemThumb | null {
         return this._items[index] || null;
     }
-    getItemById(id: string): SlideItemThumbType | null {
+    getItemById(id: string): SlideItemThumb | null {
         return this._items.find((item) => item.id === id) || null;
     }
     get copiedIndex() {
@@ -87,10 +86,10 @@ export default class SlideThumbsController extends FileController {
         return this._items;
     }
     get currentItems() {
-        return this._items.map((item) => cloneObject(item));
+        return this._items.map((item) => item.clone());
     }
-    set items(newItems: SlideItemThumbType[]) {
-        this._items = newItems.map((item) => cloneObject(item));
+    set items(newItems: SlideItemThumb[]) {
+        this._items = newItems.map((item) => item.clone());
         this.refresh();
     }
     get selectedIndex() {
@@ -115,19 +114,6 @@ export default class SlideThumbsController extends FileController {
     get isModifying() {
         return this._items.some((item) => item.isEditing);
     }
-    set isModifying(isModifying: boolean) {
-        this._items.forEach((item) => {
-            item.isEditing = isModifying;
-        });
-        this.refresh();
-    }
-    setItemIsModifying(item: SlideItemThumbType, isModifying: boolean) {
-        const targetItem = this.getItemById(item.id);
-        if (targetItem !== null) {
-            targetItem.isEditing = isModifying;
-            this.refresh();
-        }
-    }
     get undo() {
         return this._history.undo;
     }
@@ -143,8 +129,7 @@ export default class SlideThumbsController extends FileController {
         this.refresh();
     }
     get maxId() {
-        const list = this.items.map((item) => +item.id).sort();
-        return (list[list.length - 1] || 0) + 1;
+        return Math.max.apply(Math, this.items.map((item) => +item.id)) + 1;
     }
     undoChanges() {
         const undo = [...this.undo];
@@ -186,11 +171,11 @@ export default class SlideThumbsController extends FileController {
         return null;
     }
     fixSlideDimension({ bounds }: DisplayType) {
-        this.items = this.currentItems.map(({ id, html, isEditing }) => {
-            const html2React = HTML2React.parseHTML(html);
+        this.items = this.currentItems.map((item) => {
+            const html2React = HTML2React.parseHTML(item.html);
             html2React.width = bounds.width;
             html2React.height = bounds.height;
-            return { id, html: html2React.htmlString, isEditing };
+            return new SlideItemThumb(item.id, html2React.htmlString, item.filePath);
         });
         this.save();
         toastEventListener.showSimpleToast({
@@ -206,7 +191,6 @@ export default class SlideThumbsController extends FileController {
                 const slideData = getSlideDataByFilePath(filePath);
                 if (slideData !== null) {
                     slideData.items = this.currentItems.map((item) => {
-                        item.isEditing = false;
                         return item;
                     });
                     if (overWriteFile(filePath, JSON.stringify(slideData))) {
@@ -214,7 +198,6 @@ export default class SlideThumbsController extends FileController {
                             title: 'Saving Slide',
                             message: 'Slide has been saved',
                         });
-                        this.isModifying = false;
                         return true;
                     }
                 }
@@ -239,22 +222,20 @@ export default class SlideThumbsController extends FileController {
         }
         const selected = toSlideItemThumbSelected(this.filePath, id);
         setSetting(THUMB_SELECTED_SETTING_NAME, selected || '');
-        slideListEventListenerGlobal.selectSlideItemThumb((this.selectedItem as SlideItemThumbType));
+        slideListEventListenerGlobal.selectSlideItemThumb((this.selectedItem as SlideItemThumb));
     }
     duplicate(index: number) {
         const newItems = this.currentItems;
-        const newItem = cloneObject(newItems[index]);
+        const newItem = newItems[index].clone();
         newItem.id = `${this.maxId + 1}`;
-        newItem.isEditing = true;
         newItems.splice(index + 1, 0, newItem);
         this.setItemsWithHistory(newItems);
     }
     paste() {
         if (this.copiedItem !== null) {
-            const newItem = cloneObject(this.copiedItem);
+            const newItem = this.copiedItem.clone();
             newItem.id = `${this.maxId + 1}`;
-            newItem.isEditing = true;
-            const newItems: SlideItemThumbType[] = [...this.items, newItem];
+            const newItems: SlideItemThumb[] = [...this.items, newItem];
             this.setItemsWithHistory(newItems);
         }
     }
@@ -265,7 +246,7 @@ export default class SlideThumbsController extends FileController {
         const newItems = this.items.filter((_, i) => i !== index);
         this.setItemsWithHistory(newItems);
     }
-    setItemsWithHistory(newItems: SlideItemThumbType[]) {
+    setItemsWithHistory(newItems: SlideItemThumb[]) {
         const currentItems = this.currentItems;
         this.items = newItems;
         this.undo = [...this.undo, {
@@ -280,7 +261,7 @@ export default class SlideThumbsController extends FileController {
         currentItems.splice(toIndex, 0, target);
         this.items = currentItems;
         slideListEventListenerGlobal.ordering();
-        this.setItemIsModifying(this.getItemByIndex(toIndex) as any, true);
+        this.save();
     }
     showSlideItemContextMenu(e: any) {
         showAppContextMenu(e, [{

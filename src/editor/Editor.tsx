@@ -6,7 +6,6 @@ import {
     getDefaultBoxHTML,
     HTML2ReactChild,
     HTML2React,
-    SlideItemThumbType,
 } from '../helper/slideHelper';
 import { BoxEditor } from './BoxEditor';
 import {
@@ -18,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { tooling2BoxProps, ToolingType } from './Tools';
+import SlideItemThumb from '../slide-presenting/SlideItemThumb';
 
 function genNewH2rChildren(data: ToolingType, html2React: HTML2React,
     html2ReactChildren: HTML2ReactChild[]) {
@@ -51,7 +51,7 @@ function genNewH2rChildren(data: ToolingType, html2React: HTML2React,
 }
 
 export default function Editor({ slideItemThumb, html2React, scale }: {
-    slideItemThumb: SlideItemThumbType,
+    slideItemThumb: SlideItemThumb,
     html2React: HTML2React,
     scale: number,
 }) {
@@ -92,10 +92,7 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
     const applyUpdate = () => {
         const parsedHTMLData = HTML2React.parseHTML(slideItemThumb.html);
         parsedHTMLData.children = html2ReactChildren;
-        if (parsedHTMLData.htmlString !== slideItemThumb.html) {
-            slideItemThumb.html = parsedHTMLData.htmlString;
-            slideListEventListenerGlobal.updateSlideItemThumb(slideItemThumb);
-        }
+        slideItemThumb.html = parsedHTMLData.htmlString;
     };
     useSlideItemThumbTooling((newToolingData) => {
         if (~editorMapper.selectedIndex) {

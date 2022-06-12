@@ -1,15 +1,11 @@
 import { CSSProperties } from 'react';
 import { BLACK_COLOR } from '../others/ColorPicker';
+import SlideItemThumb from '../slide-presenting/SlideItemThumb';
 import { readFile } from './fileHelper';
 import { getAppInfo, getRotationDeg, removePX } from './helpers';
 
 export type SlidePresentType = {
-    items: SlideItemThumbType[]
-};
-export type SlideItemThumbType = {
-    id: string,
-    html: string,
-    isEditing?: boolean,
+    items: SlideItemThumb[]
 };
 
 export function validateMeta(meta: any) {
@@ -81,6 +77,9 @@ export function getSlideDataByFilePath(filePath: string) {
             const json = JSON.parse(str);
             if (validateSlide(json)) {
                 const data = json as SlidePresentType;
+                data.items = data.items.map((item) => {
+                    return new SlideItemThumb(item.id, item.html, filePath);
+                });
                 return data;
             }
         }

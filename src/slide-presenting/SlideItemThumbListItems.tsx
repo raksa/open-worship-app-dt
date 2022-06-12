@@ -1,7 +1,3 @@
-import SlideItemThumb, {
-    DragReceiver,
-    ItemThumbGhost,
-} from './SlideItemThumb';
 import {
     KeyEnum,
     useKeyboardRegistering,
@@ -9,29 +5,19 @@ import {
 import { WindowEnum } from '../event/WindowEventListener';
 import {
     slideListEventListenerGlobal,
-    useSlideItemThumbUpdating,
     useThumbSizing,
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { Fragment, useState } from 'react';
 import SlideThumbsController, { DEFAULT_THUMB_SIZE, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
-import { SlideItemThumbType } from '../helper/slideHelper';
+import SlideItemThumb from './SlideItemThumb';
+import SlideItemThumbRender, { DragReceiver, ItemThumbGhost } from './SlideItemThumbIFrame';
 
 export default function SlideItemThumbListItems({ controller }: {
     controller: SlideThumbsController,
 }) {
     const [thumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useSlideItemThumbUpdating((itemThumb) => {
-        itemThumb.isEditing = true;
-        const slideThumbList = controller.items.map((item) => {
-            if (item.id === itemThumb.id) {
-                return itemThumb;
-            }
-            return item;
-        });
-        controller.items = slideThumbList;
-    });
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
         const arrowListener = (e: KeyboardEvent) => {
@@ -47,7 +33,7 @@ export default function SlideItemThumbListItems({ controller }: {
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                controller.select((controller.getItemByIndex(+ind) as SlideItemThumbType).id);
+                controller.select((controller.getItemByIndex(+ind) as SlideItemThumb).id);
             }
         };
         const useCallback = (key: KeyEnum) => {
@@ -68,7 +54,7 @@ export default function SlideItemThumbListItems({ controller }: {
                         {shouldReceiveAtLeft && <DragReceiver onDrop={(id) => {
                             controller.move(id, i);
                         }} />}
-                        <SlideItemThumb
+                        <SlideItemThumbRender
                             isActive={i === controller.selectedIndex}
                             index={i}
                             slideItemThumbData={item}
