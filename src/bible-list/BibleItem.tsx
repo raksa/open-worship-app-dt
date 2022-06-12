@@ -20,9 +20,10 @@ export function presentBible(item: BiblePresentType) {
     fullTextPresentEventListener.presentBible(item);
 }
 
-export default function BibleItem({ index, biblePresent, warningMessage,
+export default function BibleItem({ index, groupIndex, biblePresent, warningMessage,
     onContextMenu, onUpdateBiblePresent, onDragOnIndex }: {
         index: number,
+        groupIndex: number,
         biblePresent: BiblePresentType,
         warningMessage?: string,
         onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
@@ -41,8 +42,9 @@ export default function BibleItem({ index, biblePresent, warningMessage,
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
-                const newBiblePresent = cloneObject(biblePresent);
+                const newBiblePresent = cloneObject(biblePresent) as any;
                 newBiblePresent.index = index;
+                newBiblePresent.groupIndex = groupIndex;
                 event.dataTransfer.setData('text/plain', JSON.stringify(newBiblePresent));
             }}
             onDragOver={(event) => {

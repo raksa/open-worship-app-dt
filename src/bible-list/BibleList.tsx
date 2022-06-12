@@ -82,6 +82,7 @@ function cloneGroup(group: BibleGroupType): BibleGroupType {
 
 export default function BibleList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
+    const [isReceivingChild, setIsReceivingChild] = useState(false);
     const [groups, setGroups] = useState<BibleGroupType[]>(getBibleGroupsSetting());
     const applyGroup = (newGroup: BibleGroupType, index: number) => {
         const newGroups = [...groups];
@@ -93,10 +94,9 @@ export default function BibleList() {
         setSetting('bible-list', JSON.stringify(newGroups));
     };
     useBibleAdding(({ biblePresent, index: i }) => {
-        const defaultG = getDefaultGroup(groups);
+        let defaultG = getDefaultGroup(groups);
         if (defaultG === null) {
-            console.log('Default group not found');
-            return;
+            defaultG = { group: groups[0], index: 0 };
         }
         const { group: defaultGroup, index } = defaultG;
         if (i !== undefined && groups[i]) {
@@ -145,17 +145,50 @@ export default function BibleList() {
                 }} />}
                 <div className='accordion accordion-flush'>
                     {groups.map((group, i) => {
+                        const rClass = isReceivingChild ? 'receiving-child' : '';
                         return (
-                            <div key={i} className='accordion-item border-white-round' onContextMenu={(e) => {
-                                showAppContextMenu(e, [
-                                    {
-                                        title: 'Delete Group', onClick: () => {
-                                            const newGroups = groups.filter((g, i1) => i1 !== i);
-                                            applyGroups(newGroups);
+                            <div key={i}
+                                className={`bible-group-item accordion-item border-white-round ${rClass}`}
+                                onDragOver={(event) => {
+                                    event.preventDefault();
+                                    setIsReceivingChild(true);
+                                }}
+                                onDragLeave={(event) => {
+                                    event.preventDefault();
+                                    setIsReceivingChild(false);
+                                }}
+                                onDrop={(event) => {
+                                    setIsReceivingChild(false);
+                                    const receivedData = event.dataTransfer.getData('text');
+                                    try {
+                                        const item = JSON.parse(receivedData);
+                                        if (item.groupIndex === undefined) {
+                                            throw new Error('Not a bible present item');
+                                        }
+                                        const targetGroup = groups[item.groupIndex];
+                                        if (targetGroup === group) {
+                                            return;
+                                        }
+                                        const biblePresent = targetGroup.list[item.index];
+                                        targetGroup.list = targetGroup.list.filter((_, i1) => {
+                                            return `${i1}` !== `${item.index}`;
+                                        });
+                                        group.list.push(biblePresent);
+                                        applyGroups([...groups]);
+                                    } catch (error) {
+                                        console.log(error);
+                                    }
+                                }}
+                                onContextMenu={(e) => {
+                                    showAppContextMenu(e, [
+                                        {
+                                            title: 'Delete Group', onClick: () => {
+                                                const newGroups = groups.filter((g, i1) => i1 !== i);
+                                                applyGroups(newGroups);
+                                            },
                                         },
-                                    },
-                                ]);
-                            }}>
+                                    ]);
+                                }}>
                                 <div className='accordion-header' onClick={() => {
                                     group.isOpen = !group.isOpen;
                                     applyGroup(group, i);

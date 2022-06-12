@@ -20,7 +20,7 @@ export default function RenderList({ group, index, applyGroup }: {
         <ul className='list-group'>
             {list.map((item, i1) => {
                 return <BibleItem key={`${i1}`}
-                    index={i1}
+                    index={i1} groupIndex={index}
                     warningMessage={genDuplicatedMessage(list, item, i1)}
                     biblePresent={item}
                     onUpdateBiblePresent={(newBiblePresent) => {

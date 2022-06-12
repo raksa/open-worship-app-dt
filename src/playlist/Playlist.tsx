@@ -164,12 +164,15 @@ function ListItem({ index, fileData, onContextMenu,
                 setIsReceivingChild(false);
             }}
             onDrop={(event) => {
+                setIsReceivingChild(false);
                 const receivedData = event.dataTransfer.getData('text');
                 try {
                     JSON.parse(receivedData);
+                    const bible = JSON.parse(receivedData);
+                    delete bible.groupIndex;
                     data.items.push({
                         type: 'bible',
-                        bible: JSON.parse(receivedData) as BiblePresentType,
+                        bible: bible as BiblePresentType,
                     });
                 } catch (error) {
                     data.items.push({
@@ -197,7 +200,7 @@ function ListItem({ index, fileData, onContextMenu,
                         </Fragment>;
                     }
                     return <Fragment key={`${i}`}>
-                        <BibleItem key={`${i}`} index={i}
+                        <BibleItem key={`${i}`} index={i} groupIndex={0}
                             biblePresent={item.bible as BiblePresentType} />
                     </Fragment>;
                 })}
