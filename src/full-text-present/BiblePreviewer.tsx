@@ -11,9 +11,9 @@ import {
     getSetting,
     setBiblePresentingSetting,
 } from '../helper/settingHelper';
-import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelper';
 import { useChangingBible } from '../event/PresentEventListener';
+import ButtonAddMoreBible from './ButtonAddMoreBible';
 
 const convertPresent = (present: BiblePresentType,
     oldPresents: BiblePresentType[]) => {
@@ -71,7 +71,7 @@ export default function BiblePreviewer() {
 
     if (biblePresents === null) {
         return (
-            <div className="alert alert-warning">No Bible Selected</div>
+            <div className='alert alert-warning'>No Bible Selected</div>
         );
     }
     return (
@@ -92,27 +92,8 @@ export default function BiblePreviewer() {
                         }} />
                 );
             }) : 'No Bible Available'}
-            {biblePresents.length && <button className="btn btn-info" onClick={(e) => {
-                const addBibleView = (bible: string) => {
-                    const newPresent = JSON.parse(JSON.stringify(biblePresents[0])) as BiblePresentType;
-                    newPresent.bible = bible;
-                    const newPresents = [...biblePresents, newPresent];
-                    applyPresents(newPresents);
-                };
-                const bibleList = bibleHelper.getBibleListWithStatus();
-                const biblePresentingList = biblePresents.map(({ bible: bibleViewing }) => bibleViewing);
-                const bibleListFiltered = bibleList.filter(([bible]) => !~biblePresentingList.indexOf(bible));
-
-                showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {
-                    return {
-                        title: bible, disabled: !isAvailable, onClick: () => {
-                            addBibleView(bible);
-                        },
-                    };
-                }));
-            }}>
-                <i className="bi bi-plus" />
-            </button>
+            {biblePresents.length && <ButtonAddMoreBible biblePresents={biblePresents}
+                applyPresents={applyPresents} />
             }
         </div>
     );
