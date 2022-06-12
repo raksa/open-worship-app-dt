@@ -1,4 +1,5 @@
 @import '../others/variables.scss';
+$color : rgb(73, 103, 123);
 
 .flex-resizer {
   flex: 0 0 4px;
@@ -15,9 +16,10 @@
       opacity: 0;
       position: absolute;
       font-size: 25px;
+      color: $color;
 
       &:hover {
-        color: aqua;
+        color: white;
       }
     }
 
@@ -94,7 +96,7 @@
 
   &.active {
     transition: padding 0.1s ease-in 0.5s;
-    background-color: rgba(0, 255, 0, 0.048);
+    background-color: $color;
   }
 
   &:hover {
