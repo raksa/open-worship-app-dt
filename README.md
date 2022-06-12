@@ -17,33 +17,7 @@ Special Thanks
 * [React I18Next](https://react.i18next.com/)
 * and other frameworks
 
-And Thanks others framework and tool
-* sqlite3
-* @testing-library/jest-dom
-* @testing-library/react
-* @testing-library/user-event
-* @types/jest
-* @types/react
-* @types/react-color
-* @types/react-dom
-* bootstrap
-* bootstrap-icons
-* concurrently
-* electron
-* electron-builder
-* env-cmd
-* i18next
-* react
-* react-colorful
-* react-dom
-* react-i18next
-* react-scripts
-* sass
-* typescript
-* wait-on
-* @typescript-eslint/eslint-plugin": "^4.15.1
-* @typescript-eslint/parser": "^4.15.1
-* eslint": "^7.20.0
+And Thanks others framework and tool in [npm package](./package.json)
 
 ## Install
 
