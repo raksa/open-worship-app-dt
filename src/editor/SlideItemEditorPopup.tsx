@@ -4,9 +4,9 @@ import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener'
 import HeaderEditorPopup from './HeaderEditorPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
-import { SlideItemThumbEditorController } from './SlideItemThumbEditor';
 import { editorMapper } from './EditorBoxMapper';
 import SlideItemThumb from '../slide-presenting/SlideItemThumb';
+import SlideItemThumbEditorController from './SlideItemThumbEditorController';
 
 export const openItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,

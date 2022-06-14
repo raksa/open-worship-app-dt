@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ToolingType } from '../editor/Tools';
+import { ToolingType } from '../editor/helps';
 import { getSetting, setSetting, useStateSettingNumber } from '../helper/settingHelper';
 import { HTML2ReactChild } from '../helper/slideHelper';
 import SlideItemThumb from '../slide-presenting/SlideItemThumb';

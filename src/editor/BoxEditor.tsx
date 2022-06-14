@@ -2,11 +2,7 @@ import './BoxEditor.scss';
 import './EditorControllerBoxWrapper.scss';
 
 import { Component } from 'react';
-import {
-    HAlignmentEnum,
-    HTML2ReactChild,
-    VAlignmentEnum,
-} from '../helper/slideHelper';
+import { HTML2ReactChild } from '../helper/slideHelper';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';

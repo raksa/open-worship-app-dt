@@ -1,5 +1,4 @@
 import {
-    slideListEventListenerGlobal,
     useSlideItemThumbTooling,
 } from '../event/SlideListEventListener';
 import {
@@ -16,38 +15,43 @@ import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { tooling2BoxProps, ToolingType } from './Tools';
 import SlideItemThumb from '../slide-presenting/SlideItemThumb';
+import { ToolingType, tooling2BoxProps } from './helps';
 
+function newChild(data: ToolingType, newList: HTML2ReactChild[],
+    html2React: HTML2React, index: number) {
+    const { text, box } = data;
+    const boxProps = tooling2BoxProps(data, {
+        width: newList[index].width, height: newList[index].height,
+        parentWidth: html2React.width, parentHeight: html2React.height,
+    });
+    const newH2rChild = new HTML2ReactChild({
+        ...newList[index], ...text, ...box, ...boxProps,
+    });
+    newH2rChild.rotate = box && box.rotate !== undefined ? box.rotate : newH2rChild.rotate;
+    newH2rChild.backgroundColor = box && box.backgroundColor !== undefined ?
+        box.backgroundColor : newH2rChild.backgroundColor;
+    return newH2rChild;
+}
 function genNewH2rChildren(data: ToolingType, html2React: HTML2React,
     html2ReactChildren: HTML2ReactChild[]) {
-    if (~editorMapper.selectedIndex) {
-        let newList = [...html2ReactChildren];
-        const index = editorMapper.selectedIndex;
-        const { text, box } = data;
-        const boxProps = tooling2BoxProps(data, {
-            width: newList[index].width, height: newList[index].height,
-            parentWidth: html2React.width, parentHeight: html2React.height,
-        });
-        const newH2rChild = new HTML2ReactChild({ ...newList[index], ...text, ...box, ...boxProps });
-        newH2rChild.rotate = box && box.rotate !== undefined ? box.rotate : newH2rChild.rotate;
-        newH2rChild.backgroundColor = box && box.backgroundColor !== undefined ?
-            box.backgroundColor : newH2rChild.backgroundColor;
-        newList[index] = newH2rChild;
-
-        if (data.box?.layerBack || data.box?.layerFront) {
-            newList = newList.map((be, i) => {
-                if (i === index) {
-                    be.zIndex = data.box?.layerBack ? 1 : 2;
-                } else {
-                    be.zIndex = data.box?.layerBack ? 2 : 1;
-                }
-                return be;
-            });
-        }
-        return newList;
+    if (!~editorMapper.selectedIndex) {
+        return null;
     }
-    return null;
+    let newList = [...html2ReactChildren];
+    const index = editorMapper.selectedIndex;
+    newList[index] = newChild(data, newList, html2React, index);
+    if (data.box?.layerBack || data.box?.layerFront) {
+        newList = newList.map((be, i) => {
+            if (i === index) {
+                be.zIndex = data.box?.layerBack ? 1 : 2;
+            } else {
+                be.zIndex = data.box?.layerBack ? 2 : 1;
+            }
+            return be;
+        });
+    }
+    return newList;
 }
 
 export default function Editor({ slideItemThumb, html2React, scale }: {

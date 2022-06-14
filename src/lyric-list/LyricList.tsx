@@ -48,6 +48,17 @@ export function getDefaultLyricItem(): LyricItemType | null {
     return null;
 }
 
+function toNewLyric(name: string) {
+    return {
+        title: name,
+        text: `
+Block1
+===
+Block2
+===
+Block3
+` };
+}
 export default function LyricList() {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [list, setList] = useState<LyricItemType[]>(getDefaultLyricList());
@@ -66,14 +77,7 @@ export default function LyricList() {
         }
         const newList = [...list, {
             fileName: name,
-            items: [{
-                title: name, text: `
-Block1
-===
-Block2
-===
-Block3
-` }],
+            items: [toNewLyric(name)],
         }];
         applyList(newList);
         setIsCreatingNew(false);
@@ -96,7 +100,8 @@ Block3
         <div id="lyric-list" className="card w-100 h-100">
             <div className="card-header">
                 <span>Lyrics</span>
-                <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
+                <button className="btn btn-sm btn-outline-info float-end"
+                    title="new slide list"
                     onClick={() => setIsCreatingNew(true)}>
                     <i className="bi bi-file-earmark-plus" />
                 </button>
