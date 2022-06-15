@@ -4,7 +4,7 @@ import electronNS from 'electron';
 import https from 'https';
 import crypto from 'crypto';
 import url from 'url';
-import { BookType } from '../bible-helper/bibleHelper';
+import { BookType } from '../bible-helper/bibleHelpers';
 
 export default (window as any).provider as {
     fs: typeof nodeFs;

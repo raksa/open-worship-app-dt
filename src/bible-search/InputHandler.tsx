@@ -1,17 +1,22 @@
-import bibleHelper from '../bible-helper/bibleHelper';
-import { getBookKVList } from '../bible-helper/helpers';
+import { useEffect, useState } from 'react';
+import bibleHelper, { useGetBibleWithStatus, useGetBookKVList } from '../bible-helper/bibleHelpers';
 import {
     KeyEnum,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { setSetting } from '../helper/settingHelper';
-import { toInputText } from './bibleSearchHelpers';
+import { toInputText } from '../bible-helper/helpers2';
+import { usePresentToInputText } from '../bible-helper/helpers1';
 
-export function BibleSelectOption({ b }: { b: string }) {
-    const [bible, isAvailable, bibleName] = bibleHelper.getBibleWithStatus(b);
+export function BibleSelectOption({ bible }: { bible: string }) {
+    const bibleStatus = useGetBibleWithStatus(bible);
+    if(bibleStatus === null) {
+        return null;
+    }
+    const [bible1, isAvailable, bibleName] = bibleStatus;
     return (
         <option disabled={!isAvailable}
-            value={bible}>{bibleName}</option>
+            value={bible1}>{bibleName}</option>
     );
 }
 
@@ -26,9 +31,9 @@ export default function InputHandler({
     onBibleChange: (preBible: string) => void,
     bibleSelected: string;
 }) {
-    const books = getBookKVList(bibleSelected);
+    const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = toInputText(bibleSelected, bookKey, 1, 1, 2);
+    const placeholder = usePresentToInputText(bibleSelected, bookKey, 1, 1, 2);
 
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => onInputChange(''));
 
@@ -48,7 +53,7 @@ export default function InputHandler({
                         setSetting('selected-bible', value);
                         onBibleChange(bibleSelected);
                     }}>
-                    {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} b={b} />)}
+                    {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bible={b} />)}
                 </select>
             </span>
         </>

@@ -1,8 +1,8 @@
 import { copyToClipboard } from '../helper/appHelper';
-import { toInputText } from './bibleSearchHelpers';
+import { toInputText } from '../bible-helper/helpers2';
 import { consumeStartVerseEndVerse } from './RenderFound';
 import { useEffect, useState } from 'react';
-import { biblePresentToText, bookToKey } from '../bible-helper/helpers';
+import { biblePresentToText, bookToKey } from '../bible-helper/helpers1';
 
 export default function Preview({
     book,
@@ -20,17 +20,23 @@ export default function Preview({
     const [rendered, setRendered] = useState<{ title: string, text: string } | null>(null);
     useEffect(() => {
         (async () => {
-            const found = await consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected);
+            const found = await consumeStartVerseEndVerse(book, chapter,
+                startVerse, endVerse, bibleSelected);
             if (found === null) {
                 setRendered(null);
                 return;
             }
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
-            const newTitle = toInputText(bibleSelected, book, chapter, sVerse, eVerse);
+            const newTitle = await toInputText(bibleSelected, book, chapter, sVerse, eVerse);
             const newText = await biblePresentToText({
                 bible: bibleSelected,
-                target: { book: bookToKey(bibleSelected, book) || '', chapter, startVerse: sVerse, endVerse: eVerse },
+                target: {
+                    book: await bookToKey(bibleSelected, book) || '',
+                    chapter,
+                    startVerse: sVerse,
+                    endVerse: eVerse,
+                },
             });
             if (newTitle !== null && newText !== null) {
                 setRendered({ title: newTitle, text: newText });

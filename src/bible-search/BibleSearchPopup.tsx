@@ -1,6 +1,6 @@
 import './BibleSearchPopup.scss';
 
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import InputHandler from './InputHandler';
@@ -13,7 +13,7 @@ import {
     defaultExtractedBible,
     extractBible,
     toInputText,
-} from './bibleSearchHelpers';
+} from '../bible-helper/helpers2';
 import {
     StateEnum,
     WindowEnum,
@@ -21,10 +21,19 @@ import {
 } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import Preview from './Preview';
-import bibleHelper from '../bible-helper/bibleHelper';
-import { getChapterCount, getBookKVList, biblePresentToTitle } from '../bible-helper/helpers';
-import { getBibleGroupsSetting, getBibleListEditingIndex, clearBibleListEditingIndex } from '../bible-list/BibleList';
+import bibleHelper from '../bible-helper/bibleHelpers';
+import {
+    getChapterCount,
+    getBookKVList,
+    biblePresentToTitle,
+} from '../bible-helper/helpers1';
+import {
+    getBibleGroupsSetting,
+    getBibleListEditingIndex,
+    clearBibleListEditingIndex,
+} from '../bible-list/BibleList';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { toastEventListener } from '../event/ToastEventListener';
 
 export const openBibleSearchEvent = {
     window: WindowEnum.BibleSearch,
@@ -42,7 +51,7 @@ export function closeBibleSearch() {
     windowEventListener.fireEvent(closeBibleSearchEvent);
 }
 
-export function getSelectedBible(): string {
+export async function getSelectedBible(): Promise<string | null> {
     const editingIndex = getBibleListEditingIndex();
     if (editingIndex !== null) {
         const bibleList = getBibleGroupsSetting();
@@ -51,74 +60,108 @@ export function getSelectedBible(): string {
             return biblePresent.bible;
         }
     }
-    const bible = getSetting('selected-bible');
-    if (!bible) {
-        const bibles = bibleHelper.getDownloadedBibleList();
+    const bible = getSetting('selected-bible') || null;
+    if (bible === null) {
+        const bibles = await bibleHelper.getDownloadedBibleList();
         if (!bibles || !bibles.length) {
-            throw new Error('No available bible');
+            toastEventListener.showSimpleToast({
+                title: 'Getting Selected Bible',
+                message: 'Unable to get selected bible',
+            });
+            return null;
         }
         setSetting('selected-bible', bibles[0]);
         return getSelectedBible();
     }
     return bible;
 }
-
-function getDefaultInputText() {
-    const editingIndex = getBibleListEditingIndex();
-    if (editingIndex !== null) {
-        const bibleList = getBibleGroupsSetting();
-        if (bibleList[editingIndex]) {
-            const biblePresent = bibleList[editingIndex] as BiblePresentType;
-            return biblePresentToTitle(biblePresent);
-        }
-    }
-    return '';
+export function useGetSelectedBible(): [string | null, Dispatch<SetStateAction<string | null>>] {
+    const [bibleSelected, setBibleSelected] = useState<string | null>(null);
+    useEffect(() => {
+        getSelectedBible().then((bible) => {
+            setBibleSelected(bible);
+        });
+    });
+    return [bibleSelected, setBibleSelected];
 }
-
+function useGetDefaultInputText(): [string, Dispatch<SetStateAction<string>>] {
+    const [inputText, setInputText] = useState<string>('');
+    useEffect(() => {
+        const editingIndex = getBibleListEditingIndex();
+        if (editingIndex !== null) {
+            const bibleList = getBibleGroupsSetting();
+            if (bibleList[editingIndex]) {
+                const biblePresent = bibleList[editingIndex] as BiblePresentType;
+                biblePresentToTitle(biblePresent).then((text) => {
+                    setInputText(text);
+                });
+            }
+        }
+    });
+    return [inputText, setInputText];
+}
 export default function BibleSearchPopup() {
-    const [inputText, setInputText] = useState(getDefaultInputText());
-    const [bibleSelected, setBibleSelected] = useState(getSelectedBible());
+    const [inputText, setInputText] = useGetDefaultInputText();
+    const [bibleSelected, setBibleSelected] = useGetSelectedBible();
 
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => !inputText && closeBibleSearch());
 
     const [bibleResult, setBibleResult] = useState<ExtractedBibleResult>(defaultExtractedBible);
 
     useEffect(() => {
-        extractBible(bibleSelected, inputText).then((result) => {
-            setBibleResult(result);
-        });
+        if (bibleSelected !== null) {
+            extractBible(bibleSelected, inputText).then((result) => {
+                setBibleResult(result);
+            });
+        }
     }, [bibleSelected, inputText]);
+
+    if (bibleSelected === null) {
+        return (
+            <Modal>
+                <div id="bible-search-popup" className="app-modal shadow card">
+                    <Header />
+                    <div className="body card-body w-100">
+                        Bible not available!
+                    </div>
+                </div>
+            </Modal>
+        );
+    }
 
     const { book, chapter, startVerse, endVerse } = bibleResult;
 
-
-    const applyBookSelection = (newBook: string) => {
-        const count = getChapterCount(bibleSelected, newBook);
+    const applyBookSelection = async (newBook: string) => {
+        const count = await getChapterCount(bibleSelected, newBook);
         if (count !== null) {
-            setInputText(toInputText(bibleSelected, newBook));
+            setInputText(await toInputText(bibleSelected, newBook));
             return;
         }
         alert('Fail to generate input text');
     };
-    const applyChapterSelection = (newChapter: number) => {
-        setInputText(`${toInputText(bibleSelected, book, newChapter)}:`);
+    const applyChapterSelection = async (newChapter: number) => {
+        setInputText(`${await toInputText(bibleSelected, book, newChapter)}:`);
     };
-    const applyVerseSelection = (newStartVerse?: number, newEndVerse?: number) => {
-        const txt = toInputText(bibleSelected, book, chapter, newStartVerse, newEndVerse);
+    const applyVerseSelection = async (newStartVerse?: number, newEndVerse?: number) => {
+        const txt = await toInputText(bibleSelected, book, chapter, newStartVerse, newEndVerse);
         setInputText(txt);
     };
     const handleBibleChange = async (preBible: string) => {
-        const bible = getSelectedBible();
+        const bible = await getSelectedBible();
+        if (bible == null) {
+            return;
+        }
         setBibleSelected(bible);
         const result = await extractBible(preBible, inputText);
         const { book: newBook, chapter: newChapter, startVerse: newStartVerse, endVerse: newEndVerse } = result;
         if (newBook !== null) {
-            const bookObj = getBookKVList(preBible);
+            const bookObj = await getBookKVList(preBible);
             const key = bookObj === null ? null : Object.keys(bookObj).find((k) => bookObj[k] === newBook);
             if (key) {
-                const newBookObj = getBookKVList(bible);
+                const newBookObj = await getBookKVList(bible);
                 if (newBookObj !== null) {
-                    setInputText(toInputText(bible, newBookObj[key], newChapter, newStartVerse, newEndVerse));
+                    setInputText(await toInputText(bible, newBookObj[key],
+                        newChapter, newStartVerse, newEndVerse));
                     return;
                 }
             }

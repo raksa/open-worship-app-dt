@@ -1,5 +1,5 @@
-import { biblePresentToTitle, getVerses } from '../bible-helper/helpers';
-import { toLocaleNumber } from '../bible-search/bibleSearchHelpers';
+import { biblePresentToTitle, getVerses } from '../bible-helper/helpers1';
+import { toLocaleNumber } from '../bible-helper/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
 import { renderPresent } from '../helper/appHelper';
 import { removePX } from '../helper/helpers';
@@ -194,13 +194,13 @@ class FullTextPresentHelper {
             return new Promise<{
                 title: string, texts: string[]
             }>(async (resolve, _) => {
-                const bibleTitle = biblePresentToTitle(biblePresent);
+                const bibleTitle = await biblePresentToTitle(biblePresent);
                 const title = `<span class="bible">${biblePresent.bible}</span>|<span class="title">${bibleTitle}</span >`;
                 const verses = await getVerses(biblePresent.bible, biblePresent.target.book, biblePresent.target.chapter);
                 let text = '';
                 if (verses !== null) {
                     for (let i = biblePresent.target.startVerse; i <= biblePresent.target.endVerse; i++) {
-                        const verseNumb = toLocaleNumber(biblePresent.bible, i);
+                        const verseNumb = await toLocaleNumber(biblePresent.bible, i);
                         text += `<span data-highlight="${i}"><span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}</span>`;
                     }
                 }

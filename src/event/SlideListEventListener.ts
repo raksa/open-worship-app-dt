@@ -1,9 +1,13 @@
 import { useEffect } from 'react';
 import { ToolingType } from '../editor/helps';
-import { getSetting, setSetting, useStateSettingNumber } from '../helper/settingHelper';
+import {
+    getSetting, setSetting, useStateSettingNumber,
+} from '../helper/settingHelper';
 import { HTML2ReactChild } from '../helper/slideHelper';
 import SlideItemThumb from '../slide-presenting/SlideItemThumb';
-import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
+import {
+    THUMB_SELECTED_SETTING_NAME,
+} from '../slide-presenting/SlideThumbsController';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;

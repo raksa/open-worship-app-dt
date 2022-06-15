@@ -10,10 +10,10 @@ import {
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { closeBibleSearch } from './BibleSearchPopup';
-import { fromLocaleNumber, toLocaleNumber } from './bibleSearchHelpers';
+import { fromLocaleNumber, useToLocaleNumber } from '../bible-helper/helpers2';
 import { addBibleItem } from '../bible-list/BibleList';
 import { isWindowEditingMode } from '../App';
-import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers';
+import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers1';
 import { toastEventListener } from '../event/ToastEventListener';
 import { presentBible } from '../bible-list/BibleItem';
 
@@ -34,11 +34,12 @@ export async function consumeStartVerseEndVerse(
     endVerse: number | null,
     bibleSelected: string,
 ) {
-    const bookKey = bookToKey(bibleSelected, book);
+    const bookKey = await bookToKey(bibleSelected, book);
     if (bookKey === null) {
         return null;
     }
-    const verses = await getVerses(bibleSelected, bookKey, fromLocaleNumber(bibleSelected, chapter));
+    const verses = await getVerses(bibleSelected, bookKey,
+        await fromLocaleNumber(bibleSelected, chapter));
     if (verses === null) {
         return null;
     }
@@ -76,8 +77,8 @@ export default function RenderFound({
         lControlKey: [LinuxControlEnum.Ctrl],
         key: KeyEnum.Enter,
     };
-    const genBiblePresent = () => {
-        const key = bookToKey(bibleSelected, book);
+    const genBiblePresent = async () => {
+        const key = await bookToKey(bibleSelected, book);
         if (key === null) {
             return null;
         }
@@ -85,16 +86,16 @@ export default function RenderFound({
             bible: bibleSelected,
             target: {
                 book: key,
-                chapter: +fromLocaleNumber(bibleSelected, chapter),
-                startVerse: +fromLocaleNumber(bibleSelected, sVerse),
-                endVerse: +fromLocaleNumber(bibleSelected, eVerse),
+                chapter: await fromLocaleNumber(bibleSelected, chapter),
+                startVerse: await fromLocaleNumber(bibleSelected, sVerse),
+                endVerse: await fromLocaleNumber(bibleSelected, eVerse),
             },
         };
     };
-    const addListListener = () => {
-        const biblePresent = genBiblePresent();
+    const addListListener = async () => {
+        const biblePresent = await genBiblePresent();
         if (biblePresent !== null) {
-            addBibleItem(biblePresent);
+            await addBibleItem(biblePresent);
             closeBibleSearch();
         } else {
             toastEventListener.showSimpleToast({
@@ -109,10 +110,10 @@ export default function RenderFound({
         lControlKey: [LinuxControlEnum.Ctrl, LinuxControlEnum.Shift],
         key: KeyEnum.Enter,
     };
-    const presentListener = () => {
-        const biblePresent = genBiblePresent();
+    const presentListener = async () => {
+        const biblePresent = await genBiblePresent();
         if (biblePresent !== null) {
-            addBibleItem(biblePresent);
+            await addBibleItem(biblePresent);
             closeBibleSearch();
             presentBible(biblePresent);
         } else {
@@ -144,9 +145,10 @@ export default function RenderFound({
     });
     const [found, setFound] = useState<ConsumeVerseType | null>(null);
     useEffect(() => {
-        consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected).then((newFound) => {
-            setFound(newFound);
-        });
+        consumeStartVerseEndVerse(book, chapter, startVerse,
+            endVerse, bibleSelected).then((newFound) => {
+                setFound(newFound);
+            });
     }, [book, chapter, startVerse, endVerse, bibleSelected]);
     if (found === null) {
         return (<div>Not Found</div>);
@@ -185,7 +187,7 @@ export default function RenderFound({
                                     }
                                 }}
                                 className={`item alert alert-secondary text-center ${select}`}>
-                                <span>{toLocaleNumber(bibleSelected, ind)}</span>
+                                <RendLocalNumberAsync bibleSelected={bibleSelected} ind={ind} />
                             </div>
                         );
                     })}
@@ -204,5 +206,13 @@ export default function RenderFound({
                 </div>
             }
         </div>
+    );
+}
+function RendLocalNumberAsync({ bibleSelected, ind }: {
+    bibleSelected: string, ind: number,
+}) {
+    const str = useToLocaleNumber(bibleSelected, ind);
+    return (
+        <span>{str || ''}</span>
     );
 }

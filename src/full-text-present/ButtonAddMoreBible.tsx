@@ -1,6 +1,6 @@
 import { BiblePresentType } from './fullTextPresentHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import bibleHelper from '../bible-helper/bibleHelper';
+import bibleHelper from '../bible-helper/bibleHelpers';
 
 export default function ButtonAddMoreBible({ biblePresents, applyPresents }: {
     biblePresents: BiblePresentType[],
@@ -12,14 +12,14 @@ export default function ButtonAddMoreBible({ biblePresents, applyPresents }: {
                 width: '20px',
                 padding: '0px',
             }}
-            onClick={(e) => {
+            onClick={async (e) => {
                 const addBibleView = (bible: string) => {
                     const newPresent = JSON.parse(JSON.stringify(biblePresents[0])) as BiblePresentType;
                     newPresent.bible = bible;
                     const newPresents = [...biblePresents, newPresent];
                     applyPresents(newPresents);
                 };
-                const bibleList = bibleHelper.getBibleListWithStatus();
+                const bibleList = await bibleHelper.getBibleListWithStatus();
                 const biblePresentingList = biblePresents.map(({ bible: bibleViewing }) => bibleViewing);
                 const bibleListFiltered = bibleList.filter(([bible]) => !~biblePresentingList.indexOf(bible));
 

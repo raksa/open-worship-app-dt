@@ -1,14 +1,12 @@
 import { Fragment, useEffect, useState } from 'react';
-import {
-    getPlaylistDataByFilePath,
-    savePlaylist,
-} from '../helper/helpers';
 import { PlaylistType } from '../helper/playlistHelper';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { FileSourceType } from '../helper/fileHelper';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import SlideItemThumbPlaylist from './SlideItemThumbPlaylist';
+import { getPlaylistDataByFilePath, savePlaylist } from './playlistHelpers';
+import { toastEventListener } from '../event/ToastEventListener';
 
 type PlaylistItemProps = {
     index: number,
@@ -24,8 +22,14 @@ export default function PlaylistItem({
     const [data, setData] = useState<PlaylistType | null>(null);
     useEffect(() => {
         if (data === null) {
-            const newData = getPlaylistDataByFilePath(fileData.filePath);
-            setData(newData);
+            getPlaylistDataByFilePath(fileData.filePath).then((newData) => {
+                setData(newData);
+            }).catch((error) => {
+                toastEventListener.showSimpleToast({
+                    title: 'Getting Playlist Data',
+                    message: error.message,
+                });
+            });
         }
     }, [data, fileData.filePath]);
     if (data === null) {
@@ -46,7 +50,7 @@ export default function PlaylistItem({
                 event.preventDefault();
                 setIsReceivingChild(false);
             }}
-            onDrop={(event) => {
+            onDrop={async (event) => {
                 setIsReceivingChild(false);
                 const receivedData = event.dataTransfer.getData('text');
                 try {
@@ -63,8 +67,14 @@ export default function PlaylistItem({
                         slideItemThumbPath: receivedData,
                     });
                 }
-                if (savePlaylist(fileData.filePath, data)) {
+                try {
+                    await savePlaylist(fileData.filePath, data);
                     setData(null);
+                } catch (error: any) {
+                    toastEventListener.showSimpleToast({
+                        title: 'Saving Playlist',
+                        message: error.message,
+                    });
                 }
             }}>
             <div className='card-header' onClick={() => {

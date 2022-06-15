@@ -1,7 +1,8 @@
 import { extractSlideItemThumbSelected } from '../helper/helpers';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import { getSlideDataByFilePath, HTML2React } from '../helper/slideHelper';
+import { getSlideDataByFilePath, HTML2React, SlidePresentType } from '../helper/slideHelper';
 import { SlideItemThumbIFrame } from '../slide-presenting/SlideItemThumbIFrame';
+import { useEffect, useState } from 'react';
 
 export default function SlideItemThumbPlaylist({
     slideItemThumbPath, width,
@@ -9,7 +10,12 @@ export default function SlideItemThumbPlaylist({
     slideItemThumbPath: string, width: number,
 }) {
     const { id, slideFilePath } = extractSlideItemThumbSelected(slideItemThumbPath);
-    const slideData = getSlideDataByFilePath(slideFilePath);
+    const [slideData, setSlideData] = useState<SlidePresentType | null>(null);
+    useEffect(() => {
+        getSlideDataByFilePath(slideFilePath).then((data1) => {
+            setSlideData(data1);
+        });
+    }, [slideFilePath]);
     const item = slideData === null ? null : (slideData.items.find((newItem) => newItem.id === id) || null);
     if (item === null) {
         return (

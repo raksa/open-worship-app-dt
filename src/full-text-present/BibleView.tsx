@@ -1,8 +1,10 @@
 import './BibleView.scss';
 
 import { BiblePresentType } from './fullTextPresentHelper';
-import bibleHelper from '../bible-helper/bibleHelper';
-import { biblePresentToTitle, usePresentRenderText } from '../bible-helper/helpers';
+import bibleHelper from '../bible-helper/bibleHelpers';
+import {
+    usePresentRenderText, usePresentRenderTitle,
+} from '../bible-helper/helpers1';
 import { BibleSelectOption } from '../bible-search/InputHandler';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import appProvider from '../helper/appProvider';
@@ -13,7 +15,7 @@ export default function BibleView({ biblePresent, onBibleChange, onClose }: {
     onBibleChange: (bible: string) => void,
     onClose: () => void,
 }) {
-    const title = biblePresentToTitle(biblePresent);
+    const title = usePresentRenderTitle(biblePresent);
     const text = usePresentRenderText(biblePresent);
     const bibleList = bibleHelper.getBibleList();
     return (
@@ -33,7 +35,7 @@ export default function BibleView({ biblePresent, onBibleChange, onClose }: {
                         onChange={(event) => {
                             onBibleChange(event.target.value);
                         }}>
-                        {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} b={b} />)}
+                        {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bible={b} />)}
                     </select>
                 </span>
                 {title}

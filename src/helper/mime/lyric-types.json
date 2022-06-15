@@ -1,0 +1,10 @@
+[
+    {
+        "type": "OpenWorship Lyric",
+        "title": "Json file for OpenWorship lyric",
+        "mimeType": "application/json",
+        "extension": [
+            ".owl"
+        ]
+    }
+]

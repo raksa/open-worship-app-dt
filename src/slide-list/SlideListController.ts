@@ -1,6 +1,7 @@
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import { toastEventListener } from '../event/ToastEventListener';
 import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
-import { listFiles, MimetypeNameType } from '../helper/fileHelper';
+import fileHelpers, { MimetypeNameType } from '../helper/fileHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import SlideController from './SlideController';
 
@@ -11,12 +12,18 @@ export default class SlideListController {
     constructor(basePath: string) {
         this._basePath = basePath;
         if (this._basePath !== null) {
-            const slideList = listFiles(this._basePath, FILE_TYPE);
-            if (slideList !== null) {
-                slideList.forEach((slideSource) => {
-                    this._slideControllers.push(new SlideController(slideSource));
+            fileHelpers.listFiles(this._basePath, FILE_TYPE).then((slideList) => {
+                if (slideList !== null) {
+                    slideList.forEach((slideSource) => {
+                        this._slideControllers.push(new SlideController(slideSource));
+                    });
+                }
+            }).catch((error: any) => {
+                toastEventListener.showSimpleToast({
+                    title: 'Listing SlideList',
+                    message: error.message,
                 });
-            }
+            });
         }
     }
     get slideControllers() {
@@ -28,23 +35,16 @@ export default class SlideListController {
     getSlideController(index: number): SlideController | null {
         return this._slideControllers[index] || null;
     }
-    createNewSlide(fileName: string): SlideController | null {
-        const slideController = SlideController.createSlideController(this._basePath, fileName);
+    async createNewSlide(fileName: string) {
+        const slideController = await SlideController.createSlideController(this._basePath, fileName);
         if (slideController !== null) {
             this._slideControllers.push(slideController);
             slideListEventListenerGlobal.refresh();
         }
         return slideController;
     }
-    renameSlide(slideController: SlideController, newFileName: string): boolean {
-        if (slideController.rename(newFileName)) {
-            slideListEventListenerGlobal.refresh();
-            return true;
-        }
-        return false;
-    }
-    deleteSlide(slideController: SlideController) {
-        const isDeleted = slideController.deleteFile();
+    async deleteSlide(slideController: SlideController) {
+        const isDeleted = await slideController.deleteFile();
         this._slideControllers = this._slideControllers.filter((newSlideController) => {
             return newSlideController !== slideController;
         });

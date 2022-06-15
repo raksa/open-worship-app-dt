@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
     keyboardEventListener,
     LinuxControlEnum,
@@ -42,12 +43,7 @@ export default function SlideItemThumbListMenu({ controller }: {
                         redo
                         <i className="bi bi-arrow-90deg-right"></i></button>
                 }
-                {controller.isModifying &&
-                    <button type="button" className="btn btn-sm btn-success tool-tip tool-tip-fade"
-                        data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
-                        title="save slide thumbs"
-                        onClick={() => controller.save()}>save</button>
-                }
+                <RenderIsModifying controller={controller} eventMapper={eventMapper} />
                 {foundWrongDimension !== null &&
                     <button type="button" className="btn btn-sm btn-warning"
                         title={toWrongDimensionString(foundWrongDimension)}
@@ -56,6 +52,23 @@ export default function SlideItemThumbListMenu({ controller }: {
                 }
             </div>
         </div>
+    );
+}
+function RenderIsModifying({ controller, eventMapper }: {
+    controller: SlideThumbsController, eventMapper: any,
+}) {
+    const [isModifying, setIsModifying] = useState(false);
+    useEffect(() => {
+        controller.isModifying().then(setIsModifying);
+    }, [controller]);
+    if (!isModifying) {
+        return null;
+    }
+    return (
+        <button type="button" className="btn btn-sm btn-success tool-tip tool-tip-fade"
+            data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+            title="save slide thumbs"
+            onClick={() => controller.save()}>save</button>
     );
 }
 function toWrongDimensionString({ slide, display }: {

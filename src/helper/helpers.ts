@@ -1,6 +1,4 @@
 import appProvider from './appProvider';
-import { PlaylistType, validatePlaylist } from './playlistHelper';
-import { readFile, deleteFile, createFile } from './fileHelper';
 
 export function getAppInfo() {
     return appProvider.ipcRenderer.sendSync('main:app:info') as {
@@ -85,32 +83,6 @@ export function parseSlideItemThumbSelected(selected: string, filePath: string |
             const id = selected.split(',')[1];
             if (id) {
                 return { id };
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return null;
-}
-
-export function savePlaylist(playlistFilePath: string, playlist: PlaylistType) {
-    try {
-        if (deleteFile(playlistFilePath) &&
-            createFile(JSON.stringify(playlist), playlistFilePath)) {
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return false;
-}
-export function getPlaylistDataByFilePath(filePath: string) {
-    try {
-        const str = readFile(filePath);
-        if (str !== null) {
-            const json = JSON.parse(str);
-            if (validatePlaylist(json)) {
-                return json as PlaylistType;
             }
         }
     } catch (error) {

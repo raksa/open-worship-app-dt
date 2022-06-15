@@ -1,8 +1,13 @@
 import { useState } from 'react';
-import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    KeyEnum, useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { genInd } from './genInd';
-import { fromLocaleNumber, toLocaleNumber } from './bibleSearchHelpers';
-import { getChapterCount } from '../bible-helper/helpers';
+import {
+    useFromLocaleNumber, useToLocaleNumber,
+} from '../bible-helper/helpers2';
+import { getChapterCount } from '../bible-helper/helpers1';
+import { useGetChapterCount } from '../bible-helper/bibleHelpers';
 
 export default function RenderChapterOption({
     bookSelected,
@@ -15,11 +20,12 @@ export default function RenderChapterOption({
     inputText: string,
     onSelect: (chapter: number) => void,
 }) {
-    const chapterCount = getChapterCount(bibleSelected, bookSelected);
+    const chapterCount = useGetChapterCount(bibleSelected, bookSelected);
+    const currentIndexing = useFromLocaleNumber(bibleSelected,
+        inputText.split(bookSelected)[1]);
     let matches: number[] | null = null;
-    if (chapterCount !== null) {
+    if (currentIndexing !== null && chapterCount !== null) {
         const chapterList = Array.from({ length: chapterCount }, (_, i) => i + 1);
-        const currentIndexing = +fromLocaleNumber(bibleSelected, inputText.split(bookSelected)[1]);
         matches = currentIndexing ? chapterList.filter((c) => {
             if (~`${c}`.indexOf(`${currentIndexing}`)) {
                 return true;
@@ -32,8 +38,8 @@ export default function RenderChapterOption({
     }
 
     const [attemptChapterIndex, setAttemptChapterIndex] = useState(0);
-    const arrowListener = (e: KeyboardEvent) => {
-        const newChapterCount = getChapterCount(bibleSelected, bookSelected);
+    const arrowListener = async (e: KeyboardEvent) => {
+        const newChapterCount = await getChapterCount(bibleSelected, bookSelected);
         if (newChapterCount !== null) {
             const ind = genInd(attemptChapterIndex, newChapterCount, e.key as KeyEnum, 6);
             setAttemptChapterIndex(ind);
@@ -69,21 +75,29 @@ export default function RenderChapterOption({
             {matches === null ? <div>not matched chapters</div> :
                 matches.map((chapter, i) => {
                     const highlight = i === applyAttemptIndex;
-                    const trueChapter = toLocaleNumber(bibleSelected, chapter);
                     const className = `chapter-select btn btn-outline-success ${highlight ? 'active' : ''}`;
                     return (
                         <div className="col-2" key={`${i}`}>
                             <button type="button" onClick={() => {
                                 onSelect(chapter);
                             }} className={className}>
-                                {`${trueChapter}` !== `${chapter}` ? <>
-                                    <span>{trueChapter}</span>
-                                    (<small className="text-muted">{chapter}</small>)
-                                </> : <span>{chapter}</span>}
+                                <RendChapterAsync bibleSelected={bibleSelected} chapter={chapter} />
                             </button>
                         </div>
                     );
                 })}
         </div>
     </>;
+}
+function RendChapterAsync({ bibleSelected, chapter }: {
+    bibleSelected: string, chapter: number,
+}) {
+    const n = useToLocaleNumber(bibleSelected, chapter);
+    if (n === null) {
+        return null;
+    }
+    return `${n}` !== `${chapter}` ? (<>
+        <span>{n}</span>
+        (<small className="text-muted">{chapter}</small>)
+    </>) : (<span>{chapter}</span>);
 }

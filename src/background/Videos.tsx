@@ -4,11 +4,9 @@ import { createRef, useEffect, useState } from 'react';
 import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
 import { presentEventListener } from '../event/PresentEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
-import {
-    copyFileToPath,
+import fileHelpers, {
     FileSourceType,
     isSupportedMimetype,
-    listFiles,
 } from '../helper/fileHelper';
 import PathSelector from '../others/PathSelector';
 import { renderBGVideo } from '../helper/presentingHelpers';
@@ -20,8 +18,14 @@ export default function Videos() {
     const [list, setList] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (list === null) {
-            const videos = listFiles(dir, 'video');
-            setList(videos === null ? [] : videos);
+            fileHelpers.listFiles(dir, 'video').then((videos) => {
+                setList(videos === null ? [] : videos);
+            }).catch((error: any) => {
+                toastEventListener.showSimpleToast({
+                    title: 'Listing Videos',
+                    message: error.message,
+                });
+            });
         }
     }, [list, dir]);
     const applyDir = (newDir: string) => {
@@ -36,31 +40,31 @@ export default function Videos() {
             }} onDragLeave={(event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
-            }} onDrop={(event) => {
+            }} onDrop={async (event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
-                Array.from(event.dataTransfer.files).forEach((file) => {
-
+                for (const file of Array.from(event.dataTransfer.files)) {
                     if (!isSupportedMimetype(file.type, 'video')) {
                         toastEventListener.showSimpleToast({
-                            title: 'copy video file',
+                            title: 'Copying Video File',
                             message: 'Unsupported video file!',
                         });
                     } else {
-                        if (copyFileToPath(file.path, file.name, dir)) {
+                        try {
+                            await fileHelpers.copyFileToPath(file.path, file.name, dir);
                             setList(null);
                             toastEventListener.showSimpleToast({
-                                title: 'copy video file',
+                                title: 'Copying Video File',
                                 message: 'File has been copied',
                             });
-                        } else {
+                        } catch (error: any) {
                             toastEventListener.showSimpleToast({
-                                title: 'copy video file',
-                                message: 'Fail to copy file!',
+                                title: 'Copying Video File',
+                                message: error.message,
                             });
                         }
                     }
-                });
+                }
             }}>
             <PathSelector
                 prefix='bg-video'
@@ -69,21 +73,22 @@ export default function Videos() {
                 onChangeDirPath={applyDir}
                 onSelectDirPath={applyDir} />
             <div className="d-flex justify-content-start flex-wrap">
-                {(list || []).map((d, i) => {
+                {(list || []).map((file, i) => {
                     const vRef = createRef<HTMLVideoElement>();
                     return (
-                        <div key={`${i}`} className="video-thumbnail card" title={d.filePath}
+                        <div key={`${i}`} className="video-thumbnail card"
+                            title={file.filePath}
                             onContextMenu={(e) => {
                                 showAppContextMenu(e, [
                                     {
                                         title: 'Copy Path to Clipboard ', onClick: () => {
-                                            copyToClipboard(d.filePath);
+                                            copyToClipboard(file.filePath);
                                         },
                                     },
                                     {
                                         title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                                         onClick: () => {
-                                            openExplorer(d.filePath);
+                                            openExplorer(file.filePath);
                                         },
                                     },
                                 ]);
@@ -98,15 +103,17 @@ export default function Videos() {
                                 }
                             }}
                             onClick={() => {
-                                renderBGVideo(d.src);
+                                renderBGVideo(file.src);
                                 presentEventListener.renderBG();
                             }}>
                             <div className="card-body">
                                 <video ref={vRef} loop
-                                    muted src={d.src}></video>
+                                    muted src={file.src}></video>
                             </div>
                             <div className="card-footer">
-                                <p className="ellipsis-left card-text">{d.fileName}</p>
+                                <p className="ellipsis-left card-text">
+                                    {file.fileName}
+                                </p>
                             </div>
                         </div>
                     );

@@ -12,8 +12,8 @@ export default class SlideItemThumb {
         this._html = html;
         this.filePath = filePath;
     }
-    get isEditing() {
-        const slidePresentData = getSlideDataByFilePathNoCache(this.filePath);
+    async isEditing() {
+        const slidePresentData = await getSlideDataByFilePathNoCache(this.filePath);
         if (slidePresentData !== null) {
             const item = slidePresentData.items.find((item1) => item1.id === this.id);
             if (item) {

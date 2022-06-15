@@ -14,16 +14,16 @@ import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
 import { windowEventListener } from '../event/WindowEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { biblePresentToTitle } from '../bible-helper/helpers';
+import { biblePresentToTitle } from '../bible-helper/helpers1';
 import { presentBible } from './BibleItem';
 import RenderList, { BibleGroupType } from './RenderList';
 import { AskingNewName } from '../others/AskingNewName';
 
-export function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
+export async function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
     fullTextPresentEventListener.addBibleItem({ biblePresent, index });
-    const title = biblePresentToTitle(biblePresent);
+    const title = await biblePresentToTitle(biblePresent);
     toastEventListener.showSimpleToast({
         title: 'Bible List',
         message: `${title} is added to list`,

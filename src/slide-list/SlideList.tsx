@@ -82,10 +82,10 @@ class SlideListView extends Component<SlideListViewPropsType, SlideListViewState
             slideListController: new SlideListController(props.baseDir),
         });
     }
-    createNewSlide(name: string) {
+    async createNewSlide(name: string) {
         const mimeTypes = getAppMimetype('slide');
         const slideName = `${name}${mimeTypes[0].extension[0]}`;
-        if (this.state.slideListController.createNewSlide(slideName)) {
+        if (await this.state.slideListController.createNewSlide(slideName)) {
             this.props.setIsCreatingNew(false);
         }
     }

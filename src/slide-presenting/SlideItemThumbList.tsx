@@ -20,12 +20,12 @@ import SlideThumbsController, {
 } from './SlideThumbsController';
 import { genFileSource } from '../helper/fileHelper';
 
-export function getValidSlideItemThumbSelected() {
+export async function getValidSlideItemThumbSelected() {
     const filePath = getSlideItemSelectedSetting();
     const slideItemThumbSelected = getSetting(THUMB_SELECTED_SETTING_NAME) || '';
     const result = parseSlideItemThumbSelected(slideItemThumbSelected, filePath);
     if (result !== null) {
-        const data = getSlideDataByFilePath(filePath as string);
+        const data = await getSlideDataByFilePath(filePath as string);
         if (data !== null) {
             return data.items.find((item) => item.id === result.id) || null;
         }
@@ -70,7 +70,9 @@ class Controller extends Component<PropsType, StateType> {
                 const fileSource = genFileSource(newSelectedPath);
                 return new SlideThumbsController(fileSource);
             }
-        } catch (error) { }
+        } catch (error) {
+            console.log(error);
+        }
         return null;
     }
     render() {

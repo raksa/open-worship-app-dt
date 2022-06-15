@@ -1,34 +1,12 @@
 import { useState } from 'react';
-import bibleHelper from '../bible-helper/bibleHelper';
-import { getBookKVList } from '../bible-helper/helpers';
-import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import bibleHelper, {
+    useGetBookKVList, useMatch,
+} from '../bible-helper/bibleHelpers';
+import {
+    KeyEnum, useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { isVisible } from '../helper/helpers';
 import { genInd } from './genInd';
-
-const genMatches = (bible: string, inputText: string) => {
-    const kjvKeyValue = bibleHelper.getKJVKeyValue();
-    const bookKVList = getBookKVList(bible);
-    if (bookKVList === null) {
-        return null;
-    }
-    const check = (v1: string, v2: string) => {
-        if (~v1.toLowerCase().indexOf(v2.toLowerCase())) {
-            return true;
-        }
-    };
-    const keys = Object.keys(bookKVList);
-    const matches = keys.filter((k) => {
-        const kjvV = kjvKeyValue[k];
-        const v = bookKVList[k];
-        if (check(kjvV, inputText) || check(inputText, kjvV) ||
-            check(k, inputText) || check(inputText, k) ||
-            check(v, inputText) || check(inputText, v)) {
-            return true;
-        }
-        return false;
-    });
-    return matches;
-};
 
 export default function RenderBookOption({
     inputText,
@@ -40,9 +18,9 @@ export default function RenderBookOption({
     bibleSelected: string,
 }) {
     const kjvKeyValue = bibleHelper.getKJVKeyValue();
-    const bookKVList = getBookKVList(bibleSelected);
+    const bookKVList = useGetBookKVList(bibleSelected);
     const [attemptMatchIndex, setAttemptMatchIndex] = useState(0);
-    const matches = genMatches(bibleSelected, inputText);
+    const matches = useMatch(bibleSelected, inputText);
 
     const useCallback = (key: KeyEnum) => {
         useKeyboardRegistering({ key }, (e: KeyboardEvent) => {

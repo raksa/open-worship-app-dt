@@ -2,7 +2,8 @@ import { setSetting } from '../helper/settingHelper';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import BibleItem, { genDuplicatedMessage, presentBible } from './BibleItem';
+import BibleItem, { presentBible } from './BibleItem';
+import { genDuplicatedMessage } from '../bible-helper/bibleHelpers';
 
 export type BibleGroupType = {
     isOpen: boolean,

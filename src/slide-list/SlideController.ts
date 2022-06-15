@@ -1,13 +1,9 @@
 import { defaultSlide } from '../helper/slideHelper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
-import {
-    checkFileExist,
-    createFile,
-    deleteFile,
+import fileHelpers, {
     FileSourceType,
     genFileSource,
-    renameFile,
 } from '../helper/fileHelper';
 import {
     getSetting,
@@ -44,17 +40,24 @@ export default class SlideController extends FileController {
         const parsed = parseSlideItemThumbSelected(slideItemThumbSelected, this.filePath);
         return !!parsed;
     }
-    deleteFile() {
-        const isDeleted = deleteFile(this._fileSource.filePath);
-        toastEventListener.showSimpleToast({
-            title: 'Deleting Slide',
-            message: isDeleted ? 'Slide name: ' + this.fileName + ' have been deleted' :
-                'Unable to create slide due to internal error',
-        });
-        return isDeleted;
+    async deleteFile() {
+        try {
+            await fileHelpers.deleteFile(this._fileSource.filePath);
+            toastEventListener.showSimpleToast({
+                title: 'Deleting Slide',
+                message: 'File has been deleted',
+            });
+            return true;
+        } catch (error: any) {
+            toastEventListener.showSimpleToast({
+                title: 'Listing SlideList',
+                message: error.message,
+            });
+        }
+        return false;
     }
-    static createSlideController(basePath: string, slideName: string): SlideController | null {
-        if (checkFileExist(basePath, slideName)) {
+    static async createSlideController(basePath: string, slideName: string) {
+        if (await fileHelpers.checkFileExist(basePath, slideName)) {
             toastEventListener.showSimpleToast({
                 title: 'Creating Slide',
                 message: `Slide file with name: ${slideName} already exist!`,
@@ -63,30 +66,16 @@ export default class SlideController extends FileController {
         }
         const { presentDisplay } = getAllDisplays();
         const defaultSlideText = defaultSlide(presentDisplay.bounds.width, presentDisplay.bounds.height);
-        if (createFile(JSON.stringify(defaultSlideText), basePath, slideName)) {
+        try {
+            await fileHelpers.createFile(JSON.stringify(defaultSlideText), basePath, slideName);
             const fileSource = genFileSource(basePath, slideName);
             return new SlideController(fileSource);
-        } else {
+        } catch (error: any) {
             toastEventListener.showSimpleToast({
                 title: 'Creating Slide',
-                message: 'Unable to create slide due to internal error',
+                message: error.message,
             });
         }
         return null;
-    }
-    rename(newFileName: string): boolean {
-        if (renameFile(this.basePath, this.fileName, newFileName)) {
-            toastEventListener.showSimpleToast({
-                title: 'Rename Slide',
-                message: `Slide has been renamed to ${newFileName}`,
-            });
-            return true;
-        } else {
-            toastEventListener.showSimpleToast({
-                title: 'Rename Slide',
-                message: 'Unable to rename slide',
-            });
-        }
-        return false;
     }
 }

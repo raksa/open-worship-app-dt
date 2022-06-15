@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import bibleHelper from '../bible-helper/bibleHelper';
+import { useEffect, useState } from 'react';
+import bibleHelper from '../bible-helper/bibleHelpers';
 import { toastEventListener } from '../event/ToastEventListener';
 
 export function SettingBible() {
@@ -38,7 +38,12 @@ export function SettingBible() {
     );
 }
 function BibleItem({ bible }: { bible: string }) {
-    const [isDownloaded, setIsDownloaded] = useState(bibleHelper.checkExist(bible));
+    const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
+    useEffect(() => {
+        bibleHelper.checkExist(bible).then((b) => {
+            setIsDownloaded(b);
+        });
+    }, [bible]);
     const [dProgress, setDProgress] = useState<number | null>(null);
     return (
         <li className="list-group-item">
@@ -69,9 +74,17 @@ function BibleItem({ bible }: { bible: string }) {
                                         setDProgress(null);
                                     },
                                 });
-                            }} onDelete={() => {
-                                bibleHelper.delete(bible);
-                                setIsDownloaded(false);
+                            }}
+                            onDelete={async () => {
+                                try {
+                                    await bibleHelper.delete(bible);
+                                    setIsDownloaded(false);
+                                } catch (error: any) {
+                                    toastEventListener.showSimpleToast({
+                                        title: 'Deleting',
+                                        message: error.message,
+                                    });
+                                }
                             }} />
                     </div> : <div>
                         <div className="progress">

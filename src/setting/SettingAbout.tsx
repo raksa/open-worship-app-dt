@@ -1,6 +1,7 @@
-import { toInputText } from '../bible-search/bibleSearchHelpers';
 import appProvider from '../helper/appProvider';
-import { usePresentRenderText } from '../bible-helper/helpers';
+import {
+    usePresentRenderText, usePresentToInputText,
+} from '../bible-helper/helpers1';
 
 export function SettingAbout() {
     const bookKey = 'PSA';
@@ -10,7 +11,7 @@ export function SettingAbout() {
             book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
         },
     });
-    const title = toInputText('KJV', bookKey, 150, 6, 6);
+    const title = usePresentToInputText('KJV', bookKey, 150, 6, 6);
     return (
         <div>
             <div className="card border-success mb-3 mx-auto mt-5"
@@ -28,8 +29,9 @@ export function SettingAbout() {
             <div className="alert alert-info">
                 This is an open-source presentation app for worship service.
                 Official Github repo here: <button className='btn btn-success'
-                    onClick={(e) => {
-                        appProvider.electron.shell.openExternal('https://github.com/OpenWorshipApp/open-worship-app-dt');
+                    onClick={() => {
+                        const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
+                        appProvider.electron.shell.openExternal(url);
                     }}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>
             </div>

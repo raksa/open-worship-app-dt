@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import SlideItemThumb from '../slide-presenting/SlideItemThumb';
-import { readFile } from './fileHelper';
+import fileHelpers from './fileHelper';
 import { getAppInfo, getRotationDeg, removePX } from './helpers';
 
 export type SlidePresentType = {
@@ -71,9 +71,9 @@ export function defaultSlide(width: number, height: number) {
 }
 
 const slideDataCache = new Map<string, SlidePresentType>();
-export function getSlideDataByFilePathNoCache(filePath: string) {
+export async function getSlideDataByFilePathNoCache(filePath: string) {
     try {
-        const str = readFile(filePath);
+        const str = await fileHelpers.readFile(filePath);
         if (str !== null) {
             const json = JSON.parse(str);
             if (validateSlide(json)) {
@@ -89,11 +89,11 @@ export function getSlideDataByFilePathNoCache(filePath: string) {
     }
     return null;
 }
-export function getSlideDataByFilePath(filePath: string) {
+export async function getSlideDataByFilePath(filePath: string) {
     if (slideDataCache.has(filePath)) {
         return slideDataCache.get(filePath) as SlidePresentType;
     } else {
-        const data = getSlideDataByFilePathNoCache(filePath);
+        const data = await getSlideDataByFilePathNoCache(filePath);
         if (data !== null) {
             slideDataCache.set(filePath, data);
         }

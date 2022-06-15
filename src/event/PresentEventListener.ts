@@ -20,7 +20,8 @@ export enum PresentTypeEnum {
     CHANGE_BIBLE = 'change-bible',
     DISPLAY_CHANGED = 'displayed-changed',
 }
-type ListenerType<T> = (data: T) => void | (() => void);
+type AsyncListenerType<T> = ((data: T) => Promise<void>) | (() => Promise<void>);
+type ListenerType<T> = ((data: T) => void) | (() => void);
 export type RegisteredEventType<T> = {
     type: PresentTypeEnum,
     listener: ListenerType<T>,
@@ -188,7 +189,7 @@ export function usePresentCtrlScrolling(listener: ListenerType<boolean>) {
         };
     });
 }
-export function useChangingBible(listener: ListenerType<boolean>) {
+export function useChangingBible(listener: AsyncListenerType<boolean>) {
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
             PresentTypeEnum.CHANGE_BIBLE, listener);

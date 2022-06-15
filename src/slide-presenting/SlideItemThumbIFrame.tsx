@@ -2,8 +2,11 @@ import './SlideItemThumb.scss';
 
 import { HTML2React } from '../helper/slideHelper';
 import { ContextMenuEventType } from '../others/AppContextMenu';
-import { extractSlideItemThumbSelected, toSlideItemThumbSelected } from '../helper/helpers';
+import {
+    extractSlideItemThumbSelected, toSlideItemThumbSelected,
+} from '../helper/helpers';
 import SlideItemThumb from './SlideItemThumb';
+import { useEffect, useState } from 'react';
 
 export function SlideItemThumbIFrame({
     id, width, html2React,
@@ -78,7 +81,7 @@ export default function SlideItemThumbRender({
                 </div>
                 <div className='flex-fill d-flex justify-content-end'>
                     <small className='pe-2'>{html2React.width}x{html2React.height}</small>
-                    {slideItemThumb.isEditing && <span style={{ color: 'red' }}>*</span>}
+                    <RenderIsEditing slideItemThumb={slideItemThumb} />
                 </div>
             </div>
             <div className="card-body overflow-hidden"
@@ -89,6 +92,18 @@ export default function SlideItemThumbRender({
                     html2React={html2React} />
             </div>
         </div>
+    );
+}
+function RenderIsEditing({ slideItemThumb }: { slideItemThumb: SlideItemThumb }) {
+    const [isEditing, setIsEditing] = useState(false);
+    useEffect(() => {
+        slideItemThumb.isEditing().then(setIsEditing);
+    }, [slideItemThumb]);
+    if (!isEditing) {
+        return null;
+    }
+    return (
+        <span style={{ color: 'red' }}>*</span>
     );
 }
 export function DragReceiver({ onDrop }: {

@@ -2,9 +2,17 @@ import './SlidePresentingController.scss';
 
 import SlideItemThumbList from './SlideItemThumbList';
 import { renderFG } from '../helper/presentingHelpers';
-import { useSlideItemThumbSelecting, useThumbSizing } from '../event/SlideListEventListener';
+import {
+    useSlideItemThumbSelecting, useThumbSizing,
+} from '../event/SlideListEventListener';
 import { presentEventListener } from '../event/PresentEventListener';
-import SlideThumbsController, { DEFAULT_THUMB_SIZE, MAX_THUMB_SCALE, MIN_THUMB_SCALE, THUMB_SCALE_STEP, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
+import SlideThumbsController, {
+    DEFAULT_THUMB_SIZE,
+    MAX_THUMB_SCALE,
+    MIN_THUMB_SCALE,
+    THUMB_SCALE_STEP,
+    THUMB_WIDTH_SETTING_NAME,
+} from './SlideThumbsController';
 
 export default function SlidePresentingController() {
     const [thumbSize, setThumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);

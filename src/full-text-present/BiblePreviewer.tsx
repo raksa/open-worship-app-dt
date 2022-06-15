@@ -11,7 +11,7 @@ import {
     getSetting,
     setBiblePresentingSetting,
 } from '../helper/settingHelper';
-import bibleHelper from '../bible-helper/bibleHelper';
+import bibleHelper from '../bible-helper/bibleHelpers';
 import { useChangingBible } from '../event/PresentEventListener';
 import ButtonAddMoreBible from './ButtonAddMoreBible';
 
@@ -52,10 +52,10 @@ export default function BiblePreviewer() {
     useBiblePresenting((present) => {
         applyPresents(convertPresent(present, biblePresents));
     });
-    useChangingBible((isNext) => {
-        const bibleList = bibleHelper.getBibleListWithStatus()
-            .filter(([_, isAvailable]) => isAvailable)
-            .map(([bible]) => bible);
+    useChangingBible(async (isNext) => {
+        let bibleListDefault = await bibleHelper.getBibleListWithStatus();
+        bibleListDefault = bibleListDefault.filter(([_, isAvailable]) => isAvailable);
+        const bibleList = bibleListDefault.map(([bible]) => bible);
         if (biblePresents.length === 1 && bibleList.length > 1) {
             const currentBible = biblePresents[0].bible;
             let currentIndex = bibleList.indexOf(currentBible);

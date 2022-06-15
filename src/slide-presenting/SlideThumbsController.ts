@@ -3,7 +3,7 @@ import {
     getSlideDataByFilePathNoCache,
     HTML2React,
 } from '../helper/slideHelper';
-import { FileSourceType, overWriteFile } from '../helper/fileHelper';
+import fileHelpers, { FileSourceType } from '../helper/fileHelper';
 import FileController from '../others/FileController';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
@@ -31,7 +31,7 @@ export const THUMB_WIDTH_SETTING_NAME = 'presenting-item-thumb-size';
 export type ChangeHistory = { items: SlideItemThumb[] };
 
 export default class SlideThumbsController extends FileController {
-    _items: SlideItemThumb[];
+    _items: SlideItemThumb[] = [];
     _copiedIndex: number | null = null;
     _selectedId: string | null = null;
     _history: {
@@ -40,16 +40,6 @@ export default class SlideThumbsController extends FileController {
     } = { undo: [], redo: [] };
     constructor(fileSource: FileSourceType) {
         super(fileSource);
-        const slidePresentData = getSlideDataByFilePath(this.filePath);
-        if (slidePresentData === null) {
-            const message = 'Unable to read slide data';
-            toastEventListener.showSimpleToast({
-                title: 'Initializing Slide Data',
-                message,
-            });
-            throw new Error(message);
-        }
-        this._items = slidePresentData.items;
         this._copiedIndex = null;
         this.selectedId = null;
         this._history = { undo: [], redo: [] };
@@ -58,6 +48,17 @@ export default class SlideThumbsController extends FileController {
         if (parsed !== null && this.getItemById(parsed.id)) {
             this.select(parsed.id);
         }
+        getSlideDataByFilePath(this.filePath).then((slidePresentData) => {
+            if (slidePresentData === null) {
+                const message = 'Unable to read slide data';
+                toastEventListener.showSimpleToast({
+                    title: 'Initializing Slide Data',
+                    message,
+                });
+                throw new Error(message);
+            }
+            this._items = slidePresentData.items;
+        });
     }
     refresh() {
         slideListEventListenerGlobal.refresh();
@@ -113,8 +114,13 @@ export default class SlideThumbsController extends FileController {
         }
         return this.getItemById(this._selectedId);
     }
-    get isModifying() {
-        return this._items.some((item) => item.isEditing);
+    async isModifying() {
+        for (const item of this._items) {
+            if (await item.isEditing()) {
+                return true;
+            }
+        }
+        return false;
     }
     get undo() {
         return this._history.undo;
@@ -172,45 +178,49 @@ export default class SlideThumbsController extends FileController {
         }
         return null;
     }
-    fixSlideDimension({ bounds }: DisplayType) {
+    async fixSlideDimension({ bounds }: DisplayType) {
         this.currentItems.forEach((item) => {
             const html2React = HTML2React.parseHTML(item.html);
             html2React.width = bounds.width;
             html2React.height = bounds.height;
             item.html = html2React.htmlString;
         });
-        this.save();
-        toastEventListener.showSimpleToast({
-            title: 'Fix Slide Dimension',
-            message: 'Slide dimension has been fixed',
-        });
+        if (await this.save()) {
+            toastEventListener.showSimpleToast({
+                title: 'Fix Slide Dimension',
+                message: 'Slide dimension has been fixed',
+            });
+        } else {
+            toastEventListener.showSimpleToast({
+                title: 'Fix Slide Dimension',
+                message: 'Unable to fix slide dimension',
+            });
+        }
     }
-    save() {
+    async save() {
         try {
             const filePath = getSlideItemSelectedSetting();
             if (filePath !== null) {
-                const slideData = getSlideDataByFilePathNoCache(filePath) as any;
+                const slideData = await getSlideDataByFilePathNoCache(filePath) as any;
                 if (slideData !== null) {
                     slideData.items = this.currentItems.map((item) => {
                         return item.toJson();
                     });
-                    if (overWriteFile(filePath, JSON.stringify(slideData))) {
-                        toastEventListener.showSimpleToast({
-                            title: 'Saving Slide',
-                            message: 'Slide has been saved',
-                        });
-                        this.refresh();
-                        return true;
-                    }
+                    await fileHelpers.overWriteFile(filePath, JSON.stringify(slideData));
+                    toastEventListener.showSimpleToast({
+                        title: 'Saving Slide',
+                        message: 'Slide has been saved',
+                    });
+                    this.refresh();
+                    return true;
                 }
             }
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            toastEventListener.showSimpleToast({
+                title: 'Saving Slide',
+                message: error.message,
+            });
         }
-        toastEventListener.showSimpleToast({
-            title: 'Saving Slide',
-            message: 'Unable to save slide!',
-        });
         return false;
     }
     select(id: string | null) {

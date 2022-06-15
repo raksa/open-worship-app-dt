@@ -3,11 +3,9 @@ import './Images.scss';
 import { useEffect, useState } from 'react';
 import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
 import { presentEventListener } from '../event/PresentEventListener';
-import {
-    copyFileToPath,
+import fileHelpers, {
     FileSourceType,
     isSupportedMimetype,
-    listFiles,
 } from '../helper/fileHelper';
 import { useStateSettingString } from '../helper/settingHelper';
 import PathSelector from '../others/PathSelector';
@@ -20,8 +18,14 @@ export default function Images() {
     const [list, setList] = useState<FileSourceType[] | null>(null);
     useEffect(() => {
         if (list === null) {
-            const images = listFiles(dirPath, 'image');
-            setList(images === null ? [] : images);
+            fileHelpers.listFiles(dirPath, 'image').then((images) => {
+                setList(images === null ? [] : images);
+            }).catch((error: any) => {
+                toastEventListener.showSimpleToast({
+                    title: 'Listing images',
+                    message: error.message,
+                });
+            });
         }
     }, [list, dirPath]);
     const applyDir = (newDirPath: string) => {
@@ -36,30 +40,31 @@ export default function Images() {
             }} onDragLeave={(event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
-            }} onDrop={(event) => {
+            }} onDrop={async (event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
-                Array.from(event.dataTransfer.files).forEach((file) => {
+                for (const file of Array.from(event.dataTransfer.files)) {
                     if (!isSupportedMimetype(file.type, 'image')) {
                         toastEventListener.showSimpleToast({
-                            title: 'copy image file',
+                            title: 'Copying Image File',
                             message: 'Unsupported image file!',
                         });
                     } else {
-                        if (copyFileToPath(file.path, file.name, dirPath)) {
+                        try {
+                            await fileHelpers.copyFileToPath(file.path, file.name, dirPath);
                             setList(null);
                             toastEventListener.showSimpleToast({
-                                title: 'copy image file',
+                                title: 'Copying Image File',
                                 message: 'File has been copied',
                             });
-                        } else {
+                        } catch (error: any) {
                             toastEventListener.showSimpleToast({
-                                title: 'copy image file',
-                                message: 'Fail to copy file!',
+                                title: 'Copying Image File',
+                                message: error.message,
                             });
                         }
                     }
-                });
+                }
             }}>
             <PathSelector
                 prefix='bg-image'
@@ -68,33 +73,33 @@ export default function Images() {
                 onChangeDirPath={applyDir}
                 onSelectDirPath={applyDir} />
             <div className="d-flex justify-content-start flex-wrap">
-                {(list || []).map((d, i) => {
+                {(list || []).map((file, i) => {
                     return (
-                        <div key={`${i}`} className="image-thumbnail card" title={d.filePath}
+                        <div key={`${i}`} className="image-thumbnail card" title={file.filePath}
                             onContextMenu={(e) => {
                                 showAppContextMenu(e, [
                                     {
                                         title: 'Copy Path to Clipboard ', onClick: () => {
-                                            copyToClipboard(d.filePath);
+                                            copyToClipboard(file.filePath);
                                         },
                                     },
                                     {
                                         title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                                         onClick: () => {
-                                            openExplorer(d.filePath);
+                                            openExplorer(file.filePath);
                                         },
                                     },
                                 ]);
                             }}
                             onClick={() => {
-                                renderBGImage(d.src);
+                                renderBGImage(file.src);
                                 presentEventListener.renderBG();
                             }}>
                             <div className="card-body">
-                                <img src={d.src} className="card-img-top" alt="..." />
+                                <img src={file.src} className="card-img-top" alt="..." />
                             </div>
                             <div className="card-footer">
-                                <p className="ellipsis-left card-text">{d.fileName}</p>
+                                <p className="ellipsis-left card-text">{file.fileName}</p>
                             </div>
                         </div>
                     );

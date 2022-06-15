@@ -1,4 +1,4 @@
-import bibleHelper from '../bible-helper/bibleHelper';
+import bibleHelper from '../bible-helper/bibleHelpers';
 import { useWindowEvent } from '../event/WindowEventListener';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import { openSetting } from '../setting/SettingPopup';
@@ -8,9 +8,9 @@ import BibleSearchPopup, {
 
 export default function HandleBibleSearch() {
     const [isShowing, setIsShowing] = useStateSettingBoolean('showing-bible-search-popup');
-    const openBibleSearchPopup = ()=>{
-        const list = bibleHelper.getDownloadedBibleList();
-        if(list.length) {
+    const openBibleSearchPopup = async () => {
+        const list = await bibleHelper.getDownloadedBibleList();
+        if (list.length) {
             setIsShowing(true);
         } else {
             openSetting();

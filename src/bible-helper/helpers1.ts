@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react';
 import fullTextPresentHelper, {
     BiblePresentType,
 } from '../full-text-present/fullTextPresentHelper';
-import { toLocaleNumber } from '../bible-search/bibleSearchHelpers';
+import { toInputText, toLocaleNumber } from './helpers2';
 import { sqlite3ReadValue } from '../helper/appHelper';
 import appProvider from '../helper/appProvider';
-import bibleHelper from './bibleHelper';
+import bibleHelper from './bibleHelpers';
+import fileHelpers from '../helper/fileHelper';
 
-export function sqlite3Read(bible: string, key: string, cipherKey: string) {
-    const dbFilePath = bibleHelper.toDbPath(bible);
+export async function sqlite3Read(bible: string, key: string, cipherKey: string) {
+    const dbFilePath = await bibleHelper.toDbPath(bible);
     if (dbFilePath === null) {
         return Promise.resolve(null);
     }
-    return new Promise<object | null>(async (resolve) => {
+    return new Promise<any | null>(async (resolve) => {
         let callback = (data: any) => {
             callback = () => false;
             resolve(data);
@@ -81,23 +82,18 @@ export type DownloadOptionsType = {
     onDone: (error?: Error) => void
 }
 
-export function startDownloading(url: string, downloadPath: string, fileName: string,
+export async function startDownloading(url: string, downloadPath: string, fileName: string,
     { onStart, onProgress, onDone }: DownloadOptionsType) {
     const filePath = appProvider.path.join(downloadPath, fileName);
-    const removeFile = () => {
-        try {
-            appProvider.fs.unlinkSync(filePath);
-        } catch (error) { }
-    };
-    removeFile();
-    httpsRequest(url, (error, response: any) => {
-        const writeStream = appProvider.fs.createWriteStream(filePath);
+    await fileHelpers.deleteFile(filePath);
+    httpsRequest(url, async (error, response: any) => {
+        const writeStream = fileHelpers.createWriteStream(filePath);
         try {
             if (error || response.statusCode !== 200) {
                 console.log(error);
                 console.log(response);
                 writeStream.close();
-                removeFile();
+                await fileHelpers.deleteFile(filePath);
                 bibleHelper.setBibleCipherKey(fileName, '');
                 onDone(new Error('Error during download'));
                 return;
@@ -118,14 +114,14 @@ export function startDownloading(url: string, downloadPath: string, fileName: st
                 cur += chunk.length;
                 onProgress(cur / len);
             });
-            response.on('end', () => {
+            response.on('end', async () => {
                 writeStream.close();
-                initInfo(fileName);
+                await initInfo(fileName);
                 onDone();
             });
         } catch (error2) {
             writeStream.close();
-            removeFile();
+            await fileHelpers.deleteFile(filePath);
             onDone(error2 as Error);
         }
     });
@@ -158,22 +154,22 @@ export const bibleStorage: {
     chapterMapper: {},
 };
 
-export function getBookKVList(bible: string) {
-    const info = getInfo(bible);
+export async function getBookKVList(bible: string) {
+    const info = await getInfo(bible);
     if (info === null) {
         return null;
     }
     return info.books;
 }
-export function keyToBook(bible: string, bookKey: string) {
-    const bookKVList = getBookKVList(bible);
+export async function keyToBook(bible: string, bookKey: string) {
+    const bookKVList = await getBookKVList(bible);
     if (bookKVList === null) {
         return null;
     }
     return bookKVList[bookKey] || null;
 }
-export function getBookVKList(bible: string) {
-    const bibleVKList = getBookKVList(bible);
+export async function getBookVKList(bible: string) {
+    const bibleVKList = await getBookKVList(bible);
     if (bibleVKList === null) {
         return null;
     }
@@ -181,16 +177,16 @@ export function getBookVKList(bible: string) {
         return [v, k];
     }));
 }
-export function bookToKey(bible: string, book: string) {
-    const bookVKList = getBookVKList(bible);
+export async function bookToKey(bible: string, book: string) {
+    const bookVKList = await getBookVKList(bible);
     if (bookVKList === null) {
         return null;
     }
     return bookVKList[book] || null;
 }
-export function getChapterCount(bible: string, book: string) {
+export async function getChapterCount(bible: string, book: string) {
     if (!bibleStorage.chapterCountMapper[book]) {
-        const bookKey = bibleHelper.toBookKey(bible, book);
+        const bookKey = await bibleHelper.toBookKey(bible, book);
         if (bookKey === null) {
             return null;
         }
@@ -222,24 +218,13 @@ export async function getVerses(bible: string, bookKey: string, chapter: number)
     }
     return chapterObj.verses;
 }
-export function getBibleLocale(bible: string) {
-    if (!bibleStorage.localeMapper[bible]) {
-        const info = getInfo(bible);
-        if (info === null) {
-            return null;
-        }
-        const locale = info.locale;
-        bibleStorage.localeMapper[bible] = locale;
-    }
-    return bibleStorage.localeMapper[bible];
-}
-export function biblePresentToTitle({ bible, target }: BiblePresentType) {
+export async function biblePresentToTitle({ bible, target }: BiblePresentType) {
     const { book, chapter, startVerse, endVerse } = target;
-    const chapterLocale = toLocaleNumber(bible, chapter);
-    const startVerseLocale = toLocaleNumber(bible, startVerse);
-    const endVerseLocale = toLocaleNumber(bible, endVerse);
+    const chapterLocale = await toLocaleNumber(bible, chapter);
+    const startVerseLocale = await toLocaleNumber(bible, startVerse);
+    const endVerseLocale = await toLocaleNumber(bible, endVerse);
     const txtV = `${startVerseLocale}${startVerse !== endVerse ? ('-' + endVerseLocale) : ''}`;
-    let bookKey = keyToBook(bible, book);
+    let bookKey = await keyToBook(bible, book);
     if (bookKey === null) {
         bookKey = bibleHelper.getKJVKeyValue()[book];
     }
@@ -256,16 +241,42 @@ export async function biblePresentToText({ bible, target }: BiblePresentType) {
     }
     txt = '';
     for (let i = target.startVerse; i <= target.endVerse; i++) {
-        txt += ` (${toLocaleNumber(bible, i)}): ${verses[i + '']}`;
+        txt += ` (${await toLocaleNumber(bible, i)}): ${verses[i + '']}`;
     }
     return txt;
 }
 
+export function usePresentRenderTitle({ bible, target }: BiblePresentType) {
+    const [title, setTitle] = useState<string>('');
+    const { book, chapter, startVerse, endVerse } = target;
+    useEffect(() => {
+        biblePresentToTitle({
+            bible, target: {
+                book, chapter, startVerse, endVerse,
+            },
+        }).then(setTitle);
+    }, [bible, book, chapter, startVerse, endVerse]);
+    return title;
+}
 export function usePresentRenderText({ bible, target }: BiblePresentType) {
     const [text, setText] = useState<string>('');
     const { book, chapter, startVerse, endVerse } = target;
     useEffect(() => {
-        biblePresentToText({ bible, target: { book, chapter, startVerse, endVerse } }).then(setText);
+        biblePresentToText({
+            bible, target: {
+                book, chapter, startVerse, endVerse,
+            },
+        }).then(setText);
+    }, [bible, book, chapter, startVerse, endVerse]);
+    return text;
+}
+export function usePresentToInputText(bible: string, book?: string | null,
+    chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
+    const [text, setText] = useState<string>('');
+    useEffect(() => {
+        toInputText(bible, book, chapter, startVerse, endVerse).then((text1) => {
+            setText(text1);
+        });
     }, [bible, book, chapter, startVerse, endVerse]);
     return text;
 }
@@ -277,38 +288,32 @@ export async function initInfo(bible: string) {
         bibleStorage.infoMapper[bible] = info as BibleInfoType | null;
     }
 }
-export function getInfo(bible: string) {
+export async function getInfo(bible: string) {
     if (!bibleStorage.infoMapper[bible]) {
         const cipherKey = bibleHelper.getBibleCipherKey(bible);
         if (cipherKey !== null) {
-            sqlite3Read(bible, '_info.js', cipherKey).then((info) => {
-                bibleStorage.infoMapper[bible] = info as BibleInfoType | null;
-            });
+            const info: BibleInfoType | null = await sqlite3Read(bible, '_info.js', cipherKey);
+            bibleStorage.infoMapper[bible] = info;
         }
     }
     return bibleStorage.infoMapper[bible] || null;
 }
-export function getBibleNumList(bible: string) {
-    const info = getInfo(bible);
+export async function getBibleNumList(bible: string) {
+    const info = await getInfo(bible);
     if (info === null) {
         return null;
     }
     return info.numList || null;
 }
-export function initApp() {
-    return new Promise<void>(async (resolve) => {
-
-        // Showing
-        fullTextPresentHelper.loadSetting();
-
-        // Bibles
-        if (!bibleHelper.getBibleList().length) {
-            await bibleHelper.getBibleListOnline();
-        }
-        const list = bibleHelper.getDownloadedBibleList();
-        for (const dbName of list) {
-            await initInfo(dbName);
-        }
-        resolve();
-    });
+export async function initApp() {
+    // Showing
+    fullTextPresentHelper.loadSetting();
+    // Bibles
+    if (!bibleHelper.getBibleList().length) {
+        await bibleHelper.getBibleListOnline();
+    }
+    const list = await bibleHelper.getDownloadedBibleList();
+    for (const dbName of list) {
+        await initInfo(dbName);
+    }
 }
