@@ -1,46 +1,30 @@
-import { Fragment, useEffect, useState } from 'react';
-import { PlaylistType } from '../helper/playlistHelper';
+import { Fragment, useState } from 'react';
+import { PlaylistType, validatePlaylist } from '../helper/playlistHelper';
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
-import { FileSourceType } from '../helper/fileHelper';
+import { FileSource } from '../helper/fileHelper';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import SlideItemThumbPlaylist from './SlideItemThumbPlaylist';
-import { getPlaylistDataByFilePath, savePlaylist } from './playlistHelpers';
-import { toastEventListener } from '../event/ToastEventListener';
+import { useReadFileToData } from '../helper/helpers';
+import FileNotFound from '../others/FileNotFound';
 
-type PlaylistItemProps = {
-    index: number,
-    fileData: FileSourceType,
-    onContextMenu: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
-}
 export default function PlaylistItem({
-    index, fileData, onContextMenu,
-}: PlaylistItemProps) {
-    const playlistName = fileData.fileName.substring(0, fileData.fileName.lastIndexOf('.'));
-    const [isOpened, setIsOpened] = useStateSettingBoolean(`playlist-item-${playlistName}`);
+    index, fileSource, onContextMenu,
+}: {
+    index: number,
+    fileSource: FileSource,
+    onContextMenu: (e: any) => void,
+}) {
+    const [isOpened, setIsOpened] = useStateSettingBoolean(`playlist-item-${fileSource.name}`);
     const [isReceivingChild, setIsReceivingChild] = useState(false);
-    const [data, setData] = useState<PlaylistType | null>(null);
-    useEffect(() => {
-        if (data === null) {
-            getPlaylistDataByFilePath(fileData.filePath).then((newData) => {
-                setData(newData);
-            }).catch((error) => {
-                toastEventListener.showSimpleToast({
-                    title: 'Getting Playlist Data',
-                    message: error.message,
-                });
-            });
-        }
-    }, [data, fileData.filePath]);
+    const data = useReadFileToData<PlaylistType>(fileSource, validatePlaylist);
     if (data === null) {
-        return <div className='card pointer' onContextMenu={onContextMenu}>
-            <div className='card-header'>not found</div>
-        </div>;
+        return <FileNotFound onContextMenu={onContextMenu} />;
     }
     return (
         <div className={`playlist-item card pointer mt-1 ps-2 ${isReceivingChild ? 'receiving-child' : ''}`}
             data-index={index + 1}
-            title={fileData.filePath}
+            title={fileSource.filePath}
             onContextMenu={onContextMenu}
             onDragOver={(event) => {
                 event.preventDefault();
@@ -67,21 +51,13 @@ export default function PlaylistItem({
                         slideItemThumbPath: receivedData,
                     });
                 }
-                try {
-                    await savePlaylist(fileData.filePath, data);
-                    setData(null);
-                } catch (error: any) {
-                    toastEventListener.showSimpleToast({
-                        title: 'Saving Playlist',
-                        message: error.message,
-                    });
-                }
+                fileSource.saveData(data);
             }}>
             <div className='card-header' onClick={() => {
                 setIsOpened(!isOpened);
             }}>
                 {<i className={`bi ${isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />}
-                {playlistName}
+                {fileSource.name}
             </div>
             {isOpened && <div className='card-body d-flex flex-column'>
                 {data.items.map((item, i) => {

@@ -5,7 +5,7 @@ import { getWindowDim } from '../helper/helpers';
 import { ReactElement, useEffect, useState } from 'react';
 
 export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
-type ContextMenuItemType = {
+export type ContextMenuItemType = {
     title: string,
     onClick?: (e: ContextMenuEventType, data?: any) => void,
     disabled?: boolean,

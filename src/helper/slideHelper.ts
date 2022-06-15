@@ -2,22 +2,11 @@ import { CSSProperties } from 'react';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import SlideItemThumb from '../slide-presenting/SlideItemThumb';
 import fileHelpers from './fileHelper';
-import { getAppInfo, getRotationDeg, removePX } from './helpers';
+import { getAppInfo, getRotationDeg, removePX, validateMeta } from './helpers';
 
 export type SlidePresentType = {
     items: SlideItemThumb[]
 };
-
-export function validateMeta(meta: any) {
-    try {
-        if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return false;
-}
 
 export function validateSlideItemThumb(item: any) {
     try {

@@ -1,7 +1,9 @@
 import './LyricList.scss';
 
 import { useState } from 'react';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import {
+    getSetting, setSetting, useStateSettingString,
+} from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
@@ -9,16 +11,9 @@ import {
     useLyricUpdating,
 } from '../event/FullTextPresentEventListener';
 import LyricItem, { presentLyric } from './LyricItem';
-import { AskingNewName } from '../others/AskingNewName';
-
-export type LyricPresentType = {
-    title: string,
-    text: string,
-};
-type LyricItemType = {
-    fileName: string,
-    items: LyricPresentType[],
-};
+import FileListHandler, { createNewItem } from '../others/FileListHandler';
+import { FileSource } from '../helper/fileHelper';
+import { LyricType, validateLyric } from '../helper/lyricHelpers';
 
 export function clearLyricListEditingIndex() {
     setSetting('lyric-list-editing-index', '-1');
@@ -39,7 +34,7 @@ export function getDefaultLyricList() {
     return defaultLyricList;
 }
 
-export function getDefaultLyricItem(): LyricItemType | null {
+export function getDefaultLyricItem(): LyricType | null {
     const index = getLyricListEditingIndex();
     const list = getDefaultLyricList();
     if (index !== null && list[index]) {
@@ -59,115 +54,94 @@ Block2
 Block3
 ` };
 }
+const id = 'lyric-list';
 export default function LyricList() {
-    const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [list, setList] = useState<LyricItemType[]>(getDefaultLyricList());
-    const applyList = (newList: LyricItemType[]) => {
-        setList(newList);
-        setSetting('lyric-list', JSON.stringify(newList));
-    };
-    const createNewLyric = (name: string) => {
-        const isExist = list.some((l) => l.fileName === name);
-        if (isExist) {
-            toastEventListener.showSimpleToast({
-                title: 'Creating Lyric',
-                message: 'Lyric with file name already exist!',
-            });
-            return;
-        }
-        const newList = [...list, {
-            fileName: name,
-            items: [toNewLyric(name)],
-        }];
-        applyList(newList);
-        setIsCreatingNew(false);
-    };
+    const [list, setList] = useState<FileSource[] | null>(null);
+    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
     useLyricUpdating((lyricPresents) => {
         const lyric = getDefaultLyricItem();
-        if (lyric !== null) {
+        if (list !== null && lyric !== null) {
             lyric.items = lyricPresents;
-            const newList = list.map((l) => {
-                if (l.fileName === lyric.fileName) {
-                    return lyric;
-                } else {
-                    return l;
-                }
+            const fileSource = list.find((fs) => {
+                return fs.fileName === lyric.fileName;
             });
-            applyList(newList);
+            fileSource?.saveData(lyric).then(() => {
+                setList(null);
+            });
         }
     });
-    return (
-        <div id="lyric-list" className="card w-100 h-100">
-            <div className="card-header">
-                <span>Lyrics</span>
-                <button className="btn btn-sm btn-outline-info float-end"
-                    title="new slide list"
-                    onClick={() => setIsCreatingNew(true)}>
-                    <i className="bi bi-file-earmark-plus" />
-                </button>
-            </div>
-            <div className="card-body pb-5" onContextMenu={(e) => {
-                showAppContextMenu(e, [
-                    {
-                        title: 'Delete All', onClick: () => {
-                            applyList([]);
-                        },
-                    },
-                ]);
-            }}>
-                <ul className="list-group">
-                    {isCreatingNew && <AskingNewName applyName={(name) => {
-                        setIsCreatingNew(false);
-                        if (name !== null) {
-                            createNewLyric(name);
+    const openItemContextMenu = (fileSource: FileSource, index: number) => {
+        return (e: any) => {
+            showAppContextMenu(e, [
+                {
+                    title: 'Open', onClick: async () => {
+                        const lyric = await fileSource.readFileToData<LyricType>(validateLyric);
+                        if (lyric !== null) {
+                            presentLyric(lyric, index);
+                        } else {
+                            toastEventListener.showSimpleToast({
+                                title: 'Opening Lyric',
+                                message: 'Unable to open lyric',
+                            });
                         }
-                    }} />}
-                    {list.map((item, i) => {
-                        return <LyricItem key={`${i}`}
-                            index={i}
-                            lyricItem={item}
-                            rename={(newName) => {
-                                const newList = [...list];
-                                newList[i].fileName = newName;
-                                applyList(newList);
-                            }}
-                            onDragOnIndex={(dropIndex: number) => {
-                                const newList = [...list];
-                                const target = newList.splice(dropIndex, 1)[0];
-                                newList.splice(i, 0, target);
-                                applyList(newList);
-                            }}
-                            onContextMenu={(e, callback) => {
-                                showAppContextMenu(e, [
-                                    {
-                                        title: 'Open', onClick: () => {
-                                            if (list[i]) {
-                                                presentLyric(list[i], i);
-                                            }
-                                        },
-                                    },
-                                    {
-                                        title: 'Rename', onClick: () => {
-                                            callback('rename');
-                                        },
-                                    },
-                                    {
-                                        title: 'Delete', onClick: () => {
-                                            if (list[i]) {
-                                                const newList = list.filter((_, i1) => i1 !== i);
-                                                applyList(newList);
-                                                if (getLyricListEditingIndex() === i) {
-                                                    clearLyricListEditingIndex();
-                                                    fullTextPresentEventListener.presentLyric([]);
-                                                }
-                                            }
-                                        },
-                                    },
-                                ]);
-                            }} />;
-                    })}
-                </ul>
-            </div>
-        </div>
+                    },
+                },
+                {
+                    title: 'Delete', onClick: () => {
+                        const newList = (list || []).filter((_, i1) => i1 !== index);
+                        // TODO: fix deleting
+                        setList(newList);
+                        if (getLyricListEditingIndex() === index) {
+                            clearLyricListEditingIndex();
+                            fullTextPresentEventListener.presentLyric([]);
+                        }
+                    },
+                },
+            ]);
+        };
+    };
+    return (
+        <FileListHandler id={id} mimetype={'lyric'}
+            list={list} setList={setList}
+            dir={dir} setDir={setDir}
+            onNewFile={async (name) => {
+                if (name !== null) {
+                    const content = JSON.stringify({
+                        metadata: {
+                            fileVersion: 1,
+                            app: 'OpenWorship',
+                            initDate: (new Date()).toJSON(),
+                        },
+                        items: [toNewLyric(name)],
+                    });
+                    const isSuccess = await createNewItem(dir, name, content);
+                    if (isSuccess) {
+                        setList(null);
+                        return false;
+                    }
+                }
+                return true;
+            }}
+            contextMenu={[{
+                title: 'Test', onClick: () => {
+                    console.log('test');
+                },
+            }]}
+            header={<span>Lyrics</span>}
+            body={<>
+                {(list || []).map((fileSource, i) => {
+                    return <LyricItem key={`${i}`}
+                        index={i}
+                        fileSource={fileSource}
+                        onDragOnIndex={async (dropIndex: number) => {
+                            const newList = [...(list || [])];
+                            const target = newList.splice(dropIndex, 1)[0];
+                            newList.splice(i, 0, target);
+                            // TODO: fixed order then save to files
+                            setList(newList);
+                        }}
+                        onContextMenu={openItemContextMenu(fileSource, i)} />;
+                })}
+            </>} />
     );
 }

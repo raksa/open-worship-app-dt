@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import appProvider from './appProvider';
+import fileHelpers, { FileSource } from './fileHelper';
 
 export function getAppInfo() {
     return appProvider.ipcRenderer.sendSync('main:app:info') as {
@@ -16,7 +18,7 @@ export function getRandomColor() {
     }
     return color;
 }
-export const cloneObject = <T>(obj: T): T =>  JSON.parse(JSON.stringify(obj));
+export const cloneObject = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
 // https://stackoverflow.com/a/41698614/17066360
 export function isVisible(elem: any) {
@@ -133,4 +135,22 @@ export function getWindowDim() {
     const height = window.innerHeight || document.documentElement.clientHeight ||
         document.body.clientHeight;
     return { width, height };
+}
+export function validateMeta(meta: any) {
+    try {
+        if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
+            return true;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+    return false;
+}
+export function useReadFileToData<T>(fileSource: FileSource,
+    validator: (json: any) => boolean) {
+    const [data, setData] = useState<T | null>(null);
+    useEffect(() => {
+        fileSource.readFileToData<T>(validator).then(setData);
+    }, [fileSource.filePath]);
+    return data;
 }

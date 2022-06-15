@@ -4,19 +4,20 @@ import LyricView from './LyricView';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
-import { getDefaultLyricItem, LyricPresentType } from '../lyric-list/LyricList';
+import { getDefaultLyricItem } from '../lyric-list/LyricList';
 import { getSetting } from '../helper/settingHelper';
 import {
     fullTextPresentEventListener,
     useLyricPresenting,
 } from '../event/FullTextPresentEventListener';
+import { LyricItemType } from '../helper/lyricHelpers';
 
 let isMounted = false;
 export default function LyricPreviewer() {
     const defaultLyricItem = getDefaultLyricItem();
-    const [lyricPresents, setLyricPresents] = useState<LyricPresentType[]>(
+    const [lyricPresents, setLyricPresents] = useState<LyricItemType[]>(
         defaultLyricItem !== null ? defaultLyricItem.items : []);
-    const applyPresents = (newLyricPresents: LyricPresentType[]) => {
+    const applyPresents = (newLyricPresents: LyricItemType[]) => {
         setLyricPresents(newLyricPresents);
         fullTextPresentEventListener.updateLyric(newLyricPresents);
     };
@@ -45,7 +46,7 @@ export default function LyricPreviewer() {
         <div className='d-flex d-flex-row overflow-hidden w-100 h-100'>
             {lyricPresents.length ? lyricPresents.map((lyricPresent, i) => {
                 return (
-                    <LyricView key={`${i}`} lyricPresent={lyricPresent}
+                    <LyricView key={`${i}`} lyricItem={lyricPresent}
                         i={i} onLyricChange={(newLyricPresent) => {
                             const newLyricPresents = [...lyricPresents];
                             newLyricPresents[i] = newLyricPresent;

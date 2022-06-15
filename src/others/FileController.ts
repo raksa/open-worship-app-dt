@@ -1,8 +1,8 @@
-import { FileSourceType } from '../helper/fileHelper';
+import { FileSource } from '../helper/fileHelper';
 
 export default class FileController {
-    _fileSource: FileSourceType;
-    constructor(fileSource: FileSourceType) {
+    _fileSource: FileSource;
+    constructor(fileSource: FileSource) {
         this._fileSource = fileSource;
     }
     get basePath() {

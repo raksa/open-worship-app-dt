@@ -1,4 +1,5 @@
 import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { validateMeta } from './helpers';
 
 export type PlaylistType = {
     items: PlaylistItemType[]
@@ -8,17 +9,6 @@ export type PlaylistItemType = {
     type: 'slide' | 'bible',
     slideItemThumbPath?: string,
     bible?: BiblePresentType,
-}
-
-export function validateMeta(meta: any) {
-    try {
-        if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return false;
 }
 
 export function validatePlaylistItem(item: any) {

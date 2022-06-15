@@ -1,41 +1,37 @@
 import { setSetting } from '../helper/settingHelper';
 import { fullTextPresentEventListener } from '../event/FullTextPresentEventListener';
 import { useState } from 'react';
-import { cloneObject } from '../helper/helpers';
+import { cloneObject, useReadFileToData } from '../helper/helpers';
+import { LyricType, validateLyric } from '../helper/lyricHelpers';
+import { FileSource } from '../helper/fileHelper';
+import FileNotFound from '../others/FileNotFound';
 
-export type LyricPresentType = {
-    title: string,
-    text: string,
-};
-type LyricItemType = {
-    index?: number,
-    fileName: string,
-    items: LyricPresentType[],
-};
-export const presentLyric = (lyricItem: LyricItemType, index: number) => {
+
+export const presentLyric = (lyricItem: LyricType, index: number) => {
     // TODO: change to fileName
     setSetting('lyric-list-editing-index', `${index}`);
     fullTextPresentEventListener.presentLyric(lyricItem.items);
 };
 
-export default function LyricItem({ index, lyricItem: lyric, onContextMenu,
-    onDragOnIndex, rename }: {
-        index: number,
-        lyricItem: LyricItemType,
-        onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-            callback: (command: string) => void) => void,
-        onDragOnIndex?: (index: number) => void,
-        rename?: (newName: string) => void,
-    }) {
+export default function LyricItem({
+    index, fileSource, onContextMenu, onDragOnIndex,
+}: {
+    index: number,
+    fileSource: FileSource,
+    onContextMenu?: (e: any) => void,
+    onDragOnIndex?: (index: number) => void,
+}) {
+    const data = useReadFileToData<LyricType>(fileSource, validateLyric);
     const [isDraggingOver, setIsDraggingOver] = useState(false);
-    const [isRenaming, setIsRenaming] = useState(false);
-    const [renamingValue, setRenamingValue] = useState(lyric.fileName);
+    if (data === null) {
+        return <FileNotFound onContextMenu={onContextMenu} />;
+    }
     return (
         <li className={`list-group-item item ${isDraggingOver ? 'drag-receiving' : ''}`}
             data-index={index + 1}
             draggable
             onDragStart={(e) => {
-                const newLyric = cloneObject(lyric);
+                const newLyric = cloneObject(data);
                 newLyric.index = index;
                 e.dataTransfer.setData('text/plain', JSON.stringify(newLyric));
             }}
@@ -50,7 +46,7 @@ export default function LyricItem({ index, lyricItem: lyric, onContextMenu,
             onDrop={(event) => {
                 const receivedData = event.dataTransfer.getData('text');
                 try {
-                    const dropLyric = JSON.parse(receivedData) as LyricItemType;
+                    const dropLyric = JSON.parse(receivedData) as LyricType;
                     if (onDragOnIndex && dropLyric.index !== undefined) {
                         onDragOnIndex(+dropLyric.index);
                     }
@@ -59,32 +55,10 @@ export default function LyricItem({ index, lyricItem: lyric, onContextMenu,
                 }
                 setIsDraggingOver(false);
             }}
-            onContextMenu={(e) => {
-                if (!onContextMenu) {
-                    return;
-                }
-                onContextMenu(e, (command: string) => {
-                    if (command === 'rename') {
-                        setIsRenaming(true);
-                    }
-                });
-            }}
-            onClick={() => presentLyric(lyric, index)}>
+            onContextMenu={onContextMenu}
+            onClick={() => presentLyric(data, index)}>
             <i className="bi bi-music-note" />
-            {isRenaming ?
-                <input className='form-control' type="text"
-                    value={renamingValue}
-                    onChange={(e) => {
-                        setRenamingValue(e.target.value);
-                    }} onKeyUp={(e) => {
-                        if (e.key === 'Enter') {
-                            setIsRenaming(false);
-                            if (rename) {
-                                rename(renamingValue);
-                            }
-                        }
-                    }} />
-                : lyric.fileName}
+            {fileSource.fileName}
         </li>
     );
 }

@@ -3,7 +3,7 @@ import {
     getSlideDataByFilePathNoCache,
     HTML2React,
 } from '../helper/slideHelper';
-import fileHelpers, { FileSourceType } from '../helper/fileHelper';
+import fileHelpers, { FileSource } from '../helper/fileHelper';
 import FileController from '../others/FileController';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
@@ -38,7 +38,7 @@ export default class SlideThumbsController extends FileController {
         undo: ChangeHistory[];
         redo: ChangeHistory[];
     } = { undo: [], redo: [] };
-    constructor(fileSource: FileSourceType) {
+    constructor(fileSource: FileSource) {
         super(fileSource);
         this._copiedIndex = null;
         this.selectedId = null;

@@ -1,78 +1,27 @@
 import './Images.scss';
 
-import { useEffect, useState } from 'react';
-import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
+import { useState } from 'react';
+import {
+    copyToClipboard, isMac, openExplorer,
+} from '../helper/appHelper';
 import { presentEventListener } from '../event/PresentEventListener';
-import fileHelpers, {
-    FileSourceType,
-    isSupportedMimetype,
+import {
+    FileSource,
 } from '../helper/fileHelper';
 import { useStateSettingString } from '../helper/settingHelper';
-import PathSelector from '../others/PathSelector';
 import { renderBGImage } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { toastEventListener } from '../event/ToastEventListener';
+import FileListHandler from '../others/FileListHandler';
 
+const id = 'background-image';
 export default function Images() {
-    const [dirPath, setDirPath] = useStateSettingString('image-selected-dir', '');
-    const [list, setList] = useState<FileSourceType[] | null>(null);
-    useEffect(() => {
-        if (list === null) {
-            fileHelpers.listFiles(dirPath, 'image').then((images) => {
-                setList(images === null ? [] : images);
-            }).catch((error: any) => {
-                toastEventListener.showSimpleToast({
-                    title: 'Listing images',
-                    message: error.message,
-                });
-            });
-        }
-    }, [list, dirPath]);
-    const applyDir = (newDirPath: string) => {
-        setDirPath(newDirPath);
-        setList(null);
-    };
+    const [list, setList] = useState<FileSource[] | null>(null);
+    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
     return (
-        <div className="background-image" draggable={dirPath !== null}
-            onDragOver={(event) => {
-                event.preventDefault();
-                event.currentTarget.style.opacity = '0.5';
-            }} onDragLeave={(event) => {
-                event.preventDefault();
-                event.currentTarget.style.opacity = '1';
-            }} onDrop={async (event) => {
-                event.preventDefault();
-                event.currentTarget.style.opacity = '1';
-                for (const file of Array.from(event.dataTransfer.files)) {
-                    if (!isSupportedMimetype(file.type, 'image')) {
-                        toastEventListener.showSimpleToast({
-                            title: 'Copying Image File',
-                            message: 'Unsupported image file!',
-                        });
-                    } else {
-                        try {
-                            await fileHelpers.copyFileToPath(file.path, file.name, dirPath);
-                            setList(null);
-                            toastEventListener.showSimpleToast({
-                                title: 'Copying Image File',
-                                message: 'File has been copied',
-                            });
-                        } catch (error: any) {
-                            toastEventListener.showSimpleToast({
-                                title: 'Copying Image File',
-                                message: error.message,
-                            });
-                        }
-                    }
-                }
-            }}>
-            <PathSelector
-                prefix='bg-image'
-                dirPath={dirPath}
-                onRefresh={() => setList(null)}
-                onChangeDirPath={applyDir}
-                onSelectDirPath={applyDir} />
-            <div className="d-flex justify-content-start flex-wrap">
+        <FileListHandler id={id} mimetype={'image'}
+            list={list} setList={setList}
+            dir={dir} setDir={setDir}
+            body={<div className="d-flex justify-content-start flex-wrap">
                 {(list || []).map((file, i) => {
                     return (
                         <div key={`${i}`} className="image-thumbnail card" title={file.filePath}
@@ -104,7 +53,6 @@ export default function Images() {
                         </div>
                     );
                 })}
-            </div>
-        </div>
+            </div>} />
     );
 }

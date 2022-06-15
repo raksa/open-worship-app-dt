@@ -8,20 +8,16 @@ import {
     openExplorer,
 } from '../helper/appHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import fileHelpers, {
-    FileSourceType,
-} from '../helper/fileHelper';
 import { useStateSettingString } from '../helper/settingHelper';
-import { AskingNewName } from '../others/AskingNewName';
 import PlaylistItem from './PlaylistItem';
 import FileListHandler, { createNewItem } from '../others/FileListHandler';
+import fileHelpers, { FileSource } from '../helper/fileHelper';
 
 const id = 'playlist';
 export default function Playlist() {
-    const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [playlists, setPlaylists] = useState<FileSourceType[] | null>(null);
+    const [list, setList] = useState<FileSource[] | null>(null);
     const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
-    const openContextMenu = (data: FileSourceType) => {
+    const openItemContextMenu = (data: FileSource) => {
         return (e: any) => {
             showAppContextMenu(e, [
                 {
@@ -33,7 +29,7 @@ export default function Playlist() {
                     title: 'Delete', onClick: async () => {
                         try {
                             await fileHelpers.deleteFile(data.filePath);
-                            setPlaylists(null);
+                            setList(null);
                         } catch (error: any) {
                             toastEventListener.showSimpleToast({
                                 title: 'Deleting Playlist',
@@ -51,47 +47,33 @@ export default function Playlist() {
             ]);
         };
     };
-    const mapPlaylists = playlists || [];
     return (
         <FileListHandler id={id} mimetype={'playlist'}
-            list={playlists}
-            setList={() => setPlaylists}
-            dir={dir}
-            setDir={setDir}
-            header={<>
-                <span>Playlists</span>
-                <button className="btn btn-sm btn-outline-info float-end" title="new playlist list"
-                    onClick={() => setIsCreatingNew(true)}>
-                    <i className="bi bi-file-earmark-plus" />
-                </button>
-            </>}
+            list={list} setList={setList}
+            dir={dir} setDir={setDir}
+            onNewFile={async (name) => {
+                if (name !== null) {
+                    const content = JSON.stringify({
+                        metadata: {
+                            fileVersion: 1,
+                            app: 'OpenWorship',
+                            initDate: (new Date()).toJSON(),
+                        },
+                    });
+                    const isSuccess = await createNewItem(dir, name, content);
+                    if (isSuccess) {
+                        setList(null);
+                        return false;
+                    }
+                }
+                return true;
+            }}
+            header={<span>Playlists</span>}
             body={<>
-                <ul className="list-group">
-                    {isCreatingNew && <AskingNewName
-                        applyName={async (name) => {
-                            setIsCreatingNew(false);
-                            if (name !== null) {
-                                const content = JSON.stringify({
-                                    metadata: {
-                                        fileVersion: 1,
-                                        app: 'OpenWorship',
-                                        initDate: (new Date()).toJSON(),
-                                    },
-                                });
-                                const isSuccess = await createNewItem(dir, name, content);
-                                if (isSuccess) {
-                                    setIsCreatingNew(false);
-                                    setPlaylists(null);
-                                }
-                            } else {
-                                setIsCreatingNew(false);
-                            }
-                        }} />}
-                </ul>
-                {mapPlaylists.map((data, i) => {
+                {(list || []).map((data, i) => {
                     return <PlaylistItem key={`${i}`} index={i}
-                        fileData={data}
-                        onContextMenu={openContextMenu(data)} />;
+                        fileSource={data}
+                        onContextMenu={openItemContextMenu(data)} />;
                 })}
             </>} />
     );

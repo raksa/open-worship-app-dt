@@ -2,7 +2,7 @@ import { defaultSlide } from '../helper/slideHelper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import fileHelpers, {
-    FileSourceType,
+    FileSource,
     genFileSource,
 } from '../helper/fileHelper';
 import {
@@ -17,7 +17,7 @@ import { getAllDisplays } from '../helper/displayHelper';
 
 export default class SlideController extends FileController {
     _isSelected = false;
-    constructor(fileSource: FileSourceType) {
+    constructor(fileSource: FileSource) {
         super(fileSource);
         const filePathSelected = getSlideItemSelectedSetting();
         this._isSelected = this.filePath === filePathSelected;

@@ -1,78 +1,26 @@
 import './Videos.scss';
 
-import { createRef, useEffect, useState } from 'react';
-import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
+import { createRef, useState } from 'react';
+import {
+    copyToClipboard, isMac, openExplorer,
+} from '../helper/appHelper';
 import { presentEventListener } from '../event/PresentEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
-import fileHelpers, {
-    FileSourceType,
-    isSupportedMimetype,
-} from '../helper/fileHelper';
-import PathSelector from '../others/PathSelector';
+import { FileSource } from '../helper/fileHelper';
 import { renderBGVideo } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { toastEventListener } from '../event/ToastEventListener';
+import FileListHandler from '../others/FileListHandler';
 
+const id = 'background-video';
 export default function Videos() {
-    const [dir, setDir] = useStateSettingString('video-selected-dir', '');
-    const [list, setList] = useState<FileSourceType[] | null>(null);
-    useEffect(() => {
-        if (list === null) {
-            fileHelpers.listFiles(dir, 'video').then((videos) => {
-                setList(videos === null ? [] : videos);
-            }).catch((error: any) => {
-                toastEventListener.showSimpleToast({
-                    title: 'Listing Videos',
-                    message: error.message,
-                });
-            });
-        }
-    }, [list, dir]);
-    const applyDir = (newDir: string) => {
-        setDir(newDir);
-        setList(null);
-    };
+    const [list, setList] = useState<FileSource[] | null>(null);
+    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
     return (
-        <div className="background-video" draggable={dir !== null}
-            onDragOver={(event) => {
-                event.preventDefault();
-                event.currentTarget.style.opacity = '0.5';
-            }} onDragLeave={(event) => {
-                event.preventDefault();
-                event.currentTarget.style.opacity = '1';
-            }} onDrop={async (event) => {
-                event.preventDefault();
-                event.currentTarget.style.opacity = '1';
-                for (const file of Array.from(event.dataTransfer.files)) {
-                    if (!isSupportedMimetype(file.type, 'video')) {
-                        toastEventListener.showSimpleToast({
-                            title: 'Copying Video File',
-                            message: 'Unsupported video file!',
-                        });
-                    } else {
-                        try {
-                            await fileHelpers.copyFileToPath(file.path, file.name, dir);
-                            setList(null);
-                            toastEventListener.showSimpleToast({
-                                title: 'Copying Video File',
-                                message: 'File has been copied',
-                            });
-                        } catch (error: any) {
-                            toastEventListener.showSimpleToast({
-                                title: 'Copying Video File',
-                                message: error.message,
-                            });
-                        }
-                    }
-                }
-            }}>
-            <PathSelector
-                prefix='bg-video'
-                dirPath={dir}
-                onRefresh={() => setList(null)}
-                onChangeDirPath={applyDir}
-                onSelectDirPath={applyDir} />
-            <div className="d-flex justify-content-start flex-wrap">
+        <FileListHandler id={id} mimetype={'video'}
+            list={list} setList={setList}
+            dir={dir} setDir={setDir}
+            header={undefined}
+            body={<div className="d-flex justify-content-start flex-wrap">
                 {(list || []).map((file, i) => {
                     const vRef = createRef<HTMLVideoElement>();
                     return (
@@ -118,7 +66,6 @@ export default function Videos() {
                         </div>
                     );
                 })}
-            </div>
-        </div >
+            </div>} />
     );
 }

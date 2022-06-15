@@ -3,8 +3,8 @@ import { toLocaleNumber } from '../bible-helper/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
 import { renderPresent } from '../helper/appHelper';
 import { removePX } from '../helper/helpers';
+import { LyricItemType } from '../helper/lyricHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import { LyricPresentType } from '../lyric-list/LyricList';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
 
@@ -210,7 +210,7 @@ class FullTextPresentHelper {
             this.renderFromData(renderedList);
         });
     }
-    renderLyricsList = (lyricsList: LyricPresentType[]) => {
+    renderLyricsList = (lyricsList: LyricItemType[]) => {
         const newList = lyricsList.map((lyric) => {
             const texts = lyric.text.split('===').map((text, i) => {
                 return `<span data-highlight="${i}">${text.trim().replace(/\n/g, '<br/>')}</span>`;

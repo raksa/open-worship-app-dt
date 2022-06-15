@@ -1,3 +1,4 @@
+import { toastEventListener } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 
 type MimeType = {
@@ -10,11 +11,44 @@ type MimeType = {
 type FileMetadataType = { fileName: string, mimeType: MimeType };
 
 
-export type FileSourceType = {
-    basePath: string,
-    fileName: string,
-    filePath: string,
-    src: string,
+export class FileSource {
+    basePath: string;
+    fileName: string;
+    filePath: string;
+    src: string;
+    constructor(basePath: string, fileName: string,
+        filePath: string, src: string,) {
+        this.basePath = basePath;
+        this.fileName = fileName;
+        this.filePath = filePath;
+        this.src = src;
+    }
+    get name() {
+        return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
+    }
+    async readFileToData<T>(validator: (json: any) => boolean) {
+        const str = await fileHelpers.readFile(this.filePath);
+        if (str !== null) {
+            const json = JSON.parse(str);
+            if (validator(json)) {
+                return json as T;
+            }
+        }
+        return null;
+    }
+    async saveData(data: Object) {
+        try {
+            const content = JSON.stringify(data);
+            await fileHelpers.overWriteFile(this.filePath, content);
+            return true;
+        } catch (error: any) {
+            toastEventListener.showSimpleToast({
+                title: 'Saving File',
+                message: error.message,
+            });
+        }
+        return false;
+    }
 }
 
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric';
@@ -37,7 +71,7 @@ export function isSupportedMimetype(fileMimetype: string, mt: MimetypeNameType) 
     return mimeTypes.map((mimeType) => mimeType.mimeType).some((type) => type === fileMimetype);
 }
 
-export function genFileSource(filePath: string, fileName?: string): FileSourceType {
+export function genFileSource(filePath: string, fileName?: string): FileSource {
     let basePath;
     if (fileName) {
         basePath = filePath;
@@ -47,12 +81,8 @@ export function genFileSource(filePath: string, fileName?: string): FileSourceTy
         basePath = filePath.substring(0, index);
         fileName = appProvider.path.basename(filePath);
     }
-    return {
-        basePath,
-        fileName: fileName,
-        filePath,
-        src: appProvider.url.pathToFileURL(filePath).toString(),
-    };
+    return new FileSource(basePath, fileName, filePath,
+        appProvider.url.pathToFileURL(filePath).toString());
 }
 
 const fileHelpers = {
@@ -60,6 +90,9 @@ const fileHelpers = {
         return appProvider.fs.createWriteStream(filePath);
     },
     listFiles: async function (dir: string, type: MimetypeNameType) {
+        if (!dir) {
+            return [];
+        }
         try {
             const mimeTypes = require(`./mime/${type}-types.json`) as MimeType[];
             const files = appProvider.fs.readdirSync(dir);
@@ -117,7 +150,9 @@ const fileHelpers = {
     },
     deleteFile: async function (filePath: string) {
         try {
-            appProvider.fs.unlinkSync(filePath);
+            if (await this.checkFileExist(filePath)) {
+                appProvider.fs.unlinkSync(filePath);
+            }
         } catch (error) {
             console.log(error);
             throw new Error('Error occurred during deleting file');
