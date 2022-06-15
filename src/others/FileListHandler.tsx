@@ -10,9 +10,10 @@ import fileHelpers, {
 import { AskingNewName } from './AskingNewName';
 import { ContextMenuItemType, showAppContextMenu } from './AppContextMenu';
 
-export const createNewItem = async (dir: string, name: string, content: string) => {
+export const createNewItem = async (dir: string, name: string,
+    content: string, mimetype: MimetypeNameType) => {
     // TODO: verify file name before create
-    const mimeTypes = getAppMimetype('playlist');
+    const mimeTypes = getAppMimetype(mimetype);
     const playlistName = `${name}${mimeTypes[0].extension[0]}`;
     try {
         await fileHelpers.createFile(content, dir, playlistName);

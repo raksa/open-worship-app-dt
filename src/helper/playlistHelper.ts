@@ -2,6 +2,7 @@ import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
 import { validateMeta } from './helpers';
 
 export type PlaylistType = {
+    fileName: string,
     items: PlaylistItemType[]
 };
 

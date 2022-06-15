@@ -27,9 +27,6 @@ export function validateLyric(json: any) {
         if (!(json.items as any[]).every((item) => validateLyricItem(item))) {
             return false;
         }
-        if (json.fileName === undefined) {
-            return false;
-        }
         if (json.index !== undefined && typeof json.index !== 'number') {
             return false;
         }

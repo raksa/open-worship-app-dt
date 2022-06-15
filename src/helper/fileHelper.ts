@@ -27,10 +27,12 @@ export class FileSource {
         return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
     }
     async readFileToData<T>(validator: (json: any) => boolean) {
+        if (this.fileName.includes('l1')) { debugger; }
         const str = await fileHelpers.readFile(this.filePath);
         if (str !== null) {
             const json = JSON.parse(str);
             if (validator(json)) {
+                json.fileName = this.fileName;
                 return json as T;
             }
         }

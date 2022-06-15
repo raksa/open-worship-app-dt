@@ -60,7 +60,7 @@ export default function Playlist() {
                             initDate: (new Date()).toJSON(),
                         },
                     });
-                    const isSuccess = await createNewItem(dir, name, content);
+                    const isSuccess = await createNewItem(dir, name, content, 'playlist');
                     if (isSuccess) {
                         setList(null);
                         return false;

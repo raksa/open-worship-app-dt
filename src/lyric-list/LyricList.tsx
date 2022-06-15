@@ -100,6 +100,8 @@ export default function LyricList() {
             ]);
         };
     };
+    console.log(list);
+    
     return (
         <FileListHandler id={id} mimetype={'lyric'}
             list={list} setList={setList}
@@ -114,7 +116,7 @@ export default function LyricList() {
                         },
                         items: [toNewLyric(name)],
                     });
-                    const isSuccess = await createNewItem(dir, name, content);
+                    const isSuccess = await createNewItem(dir, name, content, 'lyric');
                     if (isSuccess) {
                         setList(null);
                         return false;
