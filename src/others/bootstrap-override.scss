@@ -17,6 +17,7 @@
   }
 
   .list-group-item {
+    cursor: pointer;
     &:before {
       display: block;
       position: absolute;

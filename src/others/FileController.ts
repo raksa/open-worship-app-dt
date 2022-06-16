@@ -1,4 +1,4 @@
-import { FileSource } from '../helper/fileHelper';
+import FileSource from '../helper/FileSource';
 
 export default class FileController {
     _fileSource: FileSource;

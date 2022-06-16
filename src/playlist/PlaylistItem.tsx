@@ -1,79 +1,80 @@
 import { Fragment, useState } from 'react';
-import { PlaylistType, validatePlaylist } from '../helper/playlistHelper';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
-import { FileSource } from '../helper/fileHelper';
+import {
+    BiblePresentType,
+} from '../full-text-present/fullTextPresentHelper';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import SlideItemThumbPlaylist from './SlideItemThumbPlaylist';
-import { useReadFileToData } from '../helper/helpers';
-import FileNotFound from '../others/FileNotFound';
+import FileItemHandler from '../others/FileItemHandler';
+import { Playlist, validatePlaylist } from '../helper/playlistHelper';
+import FileSource from '../helper/FileSource';
 
 export default function PlaylistItem({
-    index, fileSource, onContextMenu,
+    index, list, setList, fileSource,
 }: {
     index: number,
+    list: FileSource[] | null,
+    setList: (newList: FileSource[] | null) => void,
     fileSource: FileSource,
-    onContextMenu: (e: any) => void,
 }) {
-    const [isOpened, setIsOpened] = useStateSettingBoolean(`playlist-item-${fileSource.name}`);
-    const [isReceivingChild, setIsReceivingChild] = useState(false);
-    const data = useReadFileToData<PlaylistType>(fileSource, validatePlaylist);
-    if (data === null) {
-        return <FileNotFound onContextMenu={onContextMenu} />;
-    }
+    const [data, setData] = useState<Playlist | null | undefined>(null);
+    const [isOpened, setIsOpened] = useStateSettingBoolean(`opened-${fileSource.filePath}`);
     return (
-        <div className={`playlist-item card pointer mt-1 ps-2 ${isReceivingChild ? 'receiving-child' : ''}`}
-            data-index={index + 1}
-            title={fileSource.filePath}
-            onContextMenu={onContextMenu}
-            onDragOver={(event) => {
-                event.preventDefault();
-                setIsReceivingChild(true);
-            }}
-            onDragLeave={(event) => {
-                event.preventDefault();
-                setIsReceivingChild(false);
-            }}
+        <FileItemHandler
+            index={index}
+            list={list}
+            setList={setList}
+            data={data}
+            setData={setData}
+            fileSource={fileSource}
+            className={'playlist-item'}
+            validator={validatePlaylist}
+            onClick={() => setIsOpened(!isOpened)}
             onDrop={async (event) => {
-                setIsReceivingChild(false);
-                const receivedData = event.dataTransfer.getData('text');
-                try {
-                    JSON.parse(receivedData);
-                    const bible = JSON.parse(receivedData);
-                    delete bible.groupIndex;
-                    data.items.push({
-                        type: 'bible',
-                        bible: bible as BiblePresentType,
-                    });
-                } catch (error) {
-                    data.items.push({
-                        type: 'slide',
-                        slideItemThumbPath: receivedData,
+                if (data) {
+                    const receivedData = event.dataTransfer.getData('text');
+                    try {
+                        JSON.parse(receivedData);
+                        const bible = JSON.parse(receivedData);
+                        delete bible.groupIndex;
+                        data.content.items.push({
+                            type: 'bible',
+                            bible: bible as BiblePresentType,
+                        });
+                    } catch (error) {
+                        data.content.items.push({
+                            type: 'slide',
+                            slideItemThumbPath: receivedData,
+                        });
+                    }
+                    data.save().then(() => {
+                        setList(null);
                     });
                 }
-                fileSource.saveData(data);
-            }}>
-            <div className='card-header' onClick={() => {
-                setIsOpened(!isOpened);
-            }}>
-                {<i className={`bi ${isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />}
-                {fileSource.name}
-            </div>
-            {isOpened && <div className='card-body d-flex flex-column'>
-                {data.items.map((item, i) => {
-                    if (item.type === 'slide') {
+            }}
+            child={<div className='card pointer mt-1 ps-2'>
+                <div className='card-header'
+                    onClick={() => setIsOpened(!isOpened)}>
+                    <i className={`bi ${isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
+                    {fileSource.name}
+                </div>
+                {isOpened && data && <div className='card-body d-flex flex-column'>
+                    {data.content.items.map((item, i) => {
+                        if (item.type === 'slide') {
+                            const slidePath = item.slideItemThumbPath as string;
+                            return <Fragment key={`${i}`}>
+                                <SlideItemThumbPlaylist
+                                    slideItemThumbPath={slidePath}
+                                    width={200} />
+                            </Fragment>;
+                        }
                         return <Fragment key={`${i}`}>
-                            <SlideItemThumbPlaylist
-                                slideItemThumbPath={item.slideItemThumbPath as string}
-                                width={200} />
+                            <BibleItem key={`${i}`} index={i} groupIndex={0}
+                                biblePresent={item.bible as BiblePresentType} />
                         </Fragment>;
-                    }
-                    return <Fragment key={`${i}`}>
-                        <BibleItem key={`${i}`} index={i} groupIndex={0}
-                            biblePresent={item.bible as BiblePresentType} />
-                    </Fragment>;
-                })}
+                    })}
+                </div>}
             </div>}
-        </div>
+        />
     );
 }

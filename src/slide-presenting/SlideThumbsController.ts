@@ -3,7 +3,7 @@ import {
     getSlideDataByFilePathNoCache,
     HTML2React,
 } from '../helper/slideHelper';
-import fileHelpers, { FileSource } from '../helper/fileHelper';
+import fileHelpers from '../helper/fileHelper';
 import FileController from '../others/FileController';
 import { toastEventListener } from '../event/ToastEventListener';
 import {
@@ -21,6 +21,7 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
 import { DisplayType } from '../helper/displayHelper';
 import SlideItemThumb from './SlideItemThumb';
+import FileSource from '../helper/FileSource';
 
 export const MIN_THUMB_SCALE = 1;
 export const THUMB_SCALE_STEP = 0.2;

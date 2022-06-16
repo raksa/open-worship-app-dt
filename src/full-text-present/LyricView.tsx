@@ -1,6 +1,7 @@
 import './LyricView.scss';
 
 import { LyricItemType } from '../helper/lyricHelpers';
+import { cloneObject } from '../helper/helpers';
 
 export default function LyricView({ i, lyricItem, onLyricChange, onClose }: {
     i: number,
@@ -13,8 +14,9 @@ export default function LyricView({ i, lyricItem, onLyricChange, onClose }: {
             <div className="input-group">
                 <input className="form-control" type="text" placeholder='title'
                     value={lyricItem.title} onChange={(e) => {
-                        lyricItem.title = e.target.value;
-                        onLyricChange(lyricItem);
+                        const newItem = cloneObject(lyricItem);
+                        newItem.title = e.target.value;
+                        onLyricChange(newItem);
                     }} />
                 {i !== 0 &&
                     <button className="btn btn-outline-danger" onClick={onClose} >
@@ -25,8 +27,9 @@ export default function LyricView({ i, lyricItem, onLyricChange, onClose }: {
             <textarea className='w-100 h-100 form-control'
                 placeholder='Lyric, use "===" to break text block'
                 value={lyricItem.text} onChange={(e) => {
-                    lyricItem.text = e.target.value;
-                    onLyricChange(lyricItem);
+                    const newItem = cloneObject(lyricItem);
+                    newItem.text = e.target.value;
+                    onLyricChange(newItem);
                 }} />
         </div >
     );

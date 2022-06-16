@@ -4,7 +4,7 @@ import Preview from './preview/MiniPresentScreen';
 import Background from './background/Background';
 import Middle from './slide-presenting/Presenting';
 import { getWindowMode } from './App';
-import Playlist from './playlist/Playlist';
+import PlaylistList from './playlist/PlaylistList';
 import LyricList from './lyric-list/LyricList';
 import ReSizer from './resizer/ReSizer';
 
@@ -30,7 +30,7 @@ export default function AppPresenting() {
                     resizerKinds={['v']}
                     sizeKeys={[['h1-v1', 'flex-item'], ['h1-v2', 'flex-item']]}>
                     <SlideList />
-                    <Playlist />
+                    <PlaylistList />
                 </ReSizer>
                 <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
                     resizerKinds={['v']}

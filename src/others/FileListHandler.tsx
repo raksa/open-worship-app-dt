@@ -2,30 +2,13 @@ import { useEffect, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import { toastEventListener } from '../event/ToastEventListener';
 import fileHelpers, {
-    FileSource,
-    getAppMimetype,
     isSupportedMimetype,
     MimetypeNameType,
 } from '../helper/fileHelper';
 import { AskingNewName } from './AskingNewName';
 import { ContextMenuItemType, showAppContextMenu } from './AppContextMenu';
+import FileSource from '../helper/FileSource';
 
-export const createNewItem = async (dir: string, name: string,
-    content: string, mimetype: MimetypeNameType) => {
-    // TODO: verify file name before create
-    const mimeTypes = getAppMimetype(mimetype);
-    const playlistName = `${name}${mimeTypes[0].extension[0]}`;
-    try {
-        await fileHelpers.createFile(content, dir, playlistName);
-        return true;
-    } catch (error: any) {
-        toastEventListener.showSimpleToast({
-            title: 'Creating Playlist',
-            message: error.message,
-        });
-    }
-    return false;
-};
 export default function FileListHandler({
     id, mimetype, list, setList, dir, setDir,
     header, body, contextMenu,

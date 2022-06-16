@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import appProvider from './appProvider';
-import fileHelpers, { FileSource } from './fileHelper';
+import FileSource from './FileSource';
+import ItemSource from './ItemSource';
 
 export function getAppInfo() {
     return appProvider.ipcRenderer.sendSync('main:app:info') as {
@@ -146,11 +147,15 @@ export function validateMeta(meta: any) {
     }
     return false;
 }
-export function useReadFileToData<T>(fileSource: FileSource,
+export function useReadFileToData<T extends ItemSource<any>>(fileSource: FileSource | null,
     validator: (json: any) => boolean) {
-    const [data, setData] = useState<T | null>(null);
+    const [data, setData] = useState<T | null | undefined>(null);
     useEffect(() => {
-        fileSource.readFileToData<T>(validator).then(setData);
-    }, [fileSource.filePath]);
+        if (fileSource !== null) {
+            fileSource.readFileToData(validator).then((itemSource: any) => {
+                setData(itemSource);
+            });
+        }
+    }, [fileSource]);
     return data;
 }

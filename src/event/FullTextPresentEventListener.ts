@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import {
     BiblePresentType as FullTextPresentType,
 } from '../full-text-present/fullTextPresentHelper';
-import { LyricItemType, LyricType } from '../helper/lyricHelpers';
+import { Lyric } from '../helper/lyricHelpers';
 import EventHandler from './EventHandler';
 
 export enum FullTextPresentEnum {
@@ -24,11 +24,11 @@ export default class FullTextPresentEventListener extends EventHandler {
     presentBible(biblePresent: FullTextPresentType) {
         this._addPropEvent(FullTextPresentEnum.PRESENT_BIBLE, biblePresent);
     }
-    presentLyric(lyricPresents: LyricItemType[]) {
-        this._addPropEvent(FullTextPresentEnum.PRESENT_LYRIC, lyricPresents);
+    presentLyric(lyric: Lyric | null) {
+        this._addPropEvent(FullTextPresentEnum.PRESENT_LYRIC, lyric);
     }
-    updateLyric(lyricPresents: LyricItemType[]) {
-        this._addPropEvent(FullTextPresentEnum.UPDATE_LYRIC, lyricPresents);
+    updateLyric(lyric: Lyric) {
+        this._addPropEvent(FullTextPresentEnum.UPDATE_LYRIC, lyric);
     }
     registerEventListener(type: FullTextPresentEnum, listener: ListenerType<any>):
         RegisteredEventType<any> {
@@ -66,7 +66,7 @@ export function useBiblePresenting(listener: ListenerType<FullTextPresentType>) 
     });
 }
 
-export function useLyricPresenting(listener: ListenerType<LyricItemType[]>) {
+export function useLyricPresenting(listener: ListenerType<Lyric | null>) {
     useEffect(() => {
         const event = fullTextPresentEventListener.registerEventListener(
             FullTextPresentEnum.PRESENT_LYRIC, listener);
@@ -76,7 +76,7 @@ export function useLyricPresenting(listener: ListenerType<LyricItemType[]>) {
     });
 }
 
-export function useLyricUpdating(listener: ListenerType<LyricItemType[]>) {
+export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useEffect(() => {
         const event = fullTextPresentEventListener.registerEventListener(
             FullTextPresentEnum.UPDATE_LYRIC, listener);

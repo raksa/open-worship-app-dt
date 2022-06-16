@@ -1,16 +1,23 @@
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import {
+    BiblePresentType,
+} from '../full-text-present/fullTextPresentHelper';
+import { MimetypeNameType } from './fileHelper';
 import { validateMeta } from './helpers';
-
-export type PlaylistType = {
-    fileName: string,
-    items: PlaylistItemType[]
-};
+import ItemSource from './ItemSource';
 
 export type PlaylistItemType = {
     type: 'slide' | 'bible',
     slideItemThumbPath?: string,
     bible?: BiblePresentType,
 }
+export type PlaylistType = {
+    items: PlaylistItemType[],
+}
+export class Playlist extends ItemSource<PlaylistType>{
+    static mimetype: MimetypeNameType = 'playlist';
+    static validator: (json: Object) => boolean = validatePlaylist;
+}
+
 
 export function validatePlaylistItem(item: any) {
     try {
@@ -27,8 +34,12 @@ export function validatePlaylistItem(item: any) {
 
 export function validatePlaylist(json: any) {
     try {
-        json.items = json.items || [];
-        if (!(json.items as any[]).every((item) => validatePlaylistItem(item))) {
+        if (!json.content || typeof json.content !== 'object'
+            || !json.content.items || !(json.content.items instanceof Array)) {
+            return false;
+        }
+        const content = json.content;
+        if (!(content.items as any[]).every((item) => validatePlaylistItem(item))) {
             return false;
         }
         if (!validateMeta(json.metadata)) {

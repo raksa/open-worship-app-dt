@@ -2,7 +2,6 @@ import { defaultSlide } from '../helper/slideHelper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import fileHelpers, {
-    FileSource,
     genFileSource,
 } from '../helper/fileHelper';
 import {
@@ -14,6 +13,7 @@ import FileController from '../others/FileController';
 import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideThumbsController';
 import { parseSlideItemThumbSelected } from '../helper/helpers';
 import { getAllDisplays } from '../helper/displayHelper';
+import FileSource from '../helper/FileSource';
 
 export default class SlideController extends FileController {
     _isSelected = false;

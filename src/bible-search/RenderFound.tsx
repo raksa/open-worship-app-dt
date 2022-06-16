@@ -173,7 +173,6 @@ export default function RenderFound({
                                 onMouseDown={(e) => {
                                     if (e.shiftKey) {
                                         const arr = [ind, sVerse, eVerse].sort((a, b) => a - b);
-                                        console.log(arr);
                                         onVerseChange(arr.shift(), arr.pop());
                                     } else {
                                         onVerseChange(ind);

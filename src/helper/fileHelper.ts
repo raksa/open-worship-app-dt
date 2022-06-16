@@ -1,5 +1,8 @@
-import { toastEventListener } from '../event/ToastEventListener';
+import {
+    toastEventListener,
+} from '../event/ToastEventListener';
 import appProvider from './appProvider';
+import FileSource from './FileSource';
 
 type MimeType = {
     type: string,
@@ -10,48 +13,29 @@ type MimeType = {
 
 type FileMetadataType = { fileName: string, mimeType: MimeType };
 
-
-export class FileSource {
-    basePath: string;
-    fileName: string;
-    filePath: string;
-    src: string;
-    constructor(basePath: string, fileName: string,
-        filePath: string, src: string,) {
-        this.basePath = basePath;
-        this.fileName = fileName;
-        this.filePath = filePath;
-        this.src = src;
-    }
-    get name() {
-        return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
-    }
-    async readFileToData<T>(validator: (json: any) => boolean) {
-        if (this.fileName.includes('l1')) { debugger; }
-        const str = await fileHelpers.readFile(this.filePath);
-        if (str !== null) {
-            const json = JSON.parse(str);
-            if (validator(json)) {
-                json.fileName = this.fileName;
-                return json as T;
-            }
-        }
-        return null;
-    }
-    async saveData(data: Object) {
-        try {
-            const content = JSON.stringify(data);
-            await fileHelpers.overWriteFile(this.filePath, content);
-            return true;
-        } catch (error: any) {
-            toastEventListener.showSimpleToast({
-                title: 'Saving File',
-                message: error.message,
-            });
-        }
-        return false;
-    }
+export type MetaDataType = { [key: string]: any; };
+export interface ItemSourceInf<T> {
+    fileSource: FileSource;
+    metadata: MetaDataType,
+    content: T;
+    toJson: () => Object;
 }
+export const createNewItem = async (dir: string, name: string,
+    content: string, mimetype: MimetypeNameType) => {
+    // TODO: verify file name before create
+    const mimeTypes = getAppMimetype(mimetype);
+    const playlistName = `${name}${mimeTypes[0].extension[0]}`;
+    try {
+        await fileHelpers.createFile(content, dir, playlistName);
+        return true;
+    } catch (error: any) {
+        toastEventListener.showSimpleToast({
+            title: 'Creating Playlist',
+            message: error.message,
+        });
+    }
+    return false;
+};
 
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric';
 

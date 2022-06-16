@@ -1,64 +1,36 @@
-import { setSetting } from '../helper/settingHelper';
-import { fullTextPresentEventListener } from '../event/FullTextPresentEventListener';
 import { useState } from 'react';
-import { cloneObject, useReadFileToData } from '../helper/helpers';
-import { LyricType, validateLyric } from '../helper/lyricHelpers';
-import { FileSource } from '../helper/fileHelper';
-import FileNotFound from '../others/FileNotFound';
-
-
-export const presentLyric = (lyricItem: LyricType, index: number) => {
-    // TODO: change to fileName
-    setSetting('lyric-list-editing-index', `${index}`);
-    fullTextPresentEventListener.presentLyric(lyricItem.items);
-};
+import { Lyric, validateLyric } from '../helper/lyricHelpers';
+import FileItemHandler from '../others/FileItemHandler';
+import FileSource from '../helper/FileSource';
 
 export default function LyricItem({
-    index, fileSource, onContextMenu, onDragOnIndex,
+    index, list, setList, fileSource, onClick,
 }: {
     index: number,
+    list: FileSource[] | null,
+    setList: (newList: FileSource[] | null) => void,
     fileSource: FileSource,
-    onContextMenu?: (e: any) => void,
-    onDragOnIndex?: (index: number) => void,
+    onClick: () => void,
 }) {
-    const data = useReadFileToData<LyricType>(fileSource, validateLyric);
-    const [isDraggingOver, setIsDraggingOver] = useState(false);
-    if (data === null) {
-        return <FileNotFound onContextMenu={onContextMenu} />;
-    }
+    const [data, setData] = useState<Lyric | null | undefined>(null);
+    const selectedLyricFS = Lyric.getSelectedLyricFileSource();
+    const isSelected = !selectedLyricFS || !data ? false :
+        data.fileSource.filePath === selectedLyricFS?.filePath;
     return (
-        <li className={`list-group-item item ${isDraggingOver ? 'drag-receiving' : ''}`}
-            data-index={index + 1}
-            draggable
-            onDragStart={(e) => {
-                const newLyric = cloneObject(data);
-                newLyric.index = index;
-                e.dataTransfer.setData('text/plain', JSON.stringify(newLyric));
-            }}
-            onDragOver={(event) => {
-                event.preventDefault();
-                setIsDraggingOver(true);
-            }}
-            onDragLeave={(event) => {
-                event.preventDefault();
-                setIsDraggingOver(false);
-            }}
-            onDrop={(event) => {
-                const receivedData = event.dataTransfer.getData('text');
-                try {
-                    const dropLyric = JSON.parse(receivedData) as LyricType;
-                    if (onDragOnIndex && dropLyric.index !== undefined) {
-                        onDragOnIndex(+dropLyric.index);
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-                setIsDraggingOver(false);
-            }}
-            onContextMenu={onContextMenu}
-            onClick={() => presentLyric(data, index)}>
-            <i className="bi bi-music-note" />
-            {fileSource.fileName}
-        </li>
+        <FileItemHandler
+            index={index}
+            list={list}
+            setList={setList}
+            data={data}
+            setData={setData}
+            fileSource={fileSource}
+            className={`playlist-item ${isSelected ? 'active' : ''}`}
+            validator={validateLyric}
+            onClick={onClick}
+            child={<>
+                <i className="bi bi-music-note" />
+                {fileSource.name}
+            </>}
+        />
     );
 }
