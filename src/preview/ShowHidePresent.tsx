@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { keyboardEventListener, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    keyboardEventListener, useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { usePresentHiding } from '../event/PresentEventListener';
 import {
     getIsShowing,

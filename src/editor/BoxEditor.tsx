@@ -2,11 +2,11 @@ import './BoxEditor.scss';
 import './EditorControllerBoxWrapper.scss';
 
 import { Component } from 'react';
-import { HTML2ReactChild } from '../helper/slideHelper';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
 
 export type NewDataType = { [key: string]: any };
 type PropsType = {

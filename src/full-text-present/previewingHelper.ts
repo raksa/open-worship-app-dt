@@ -3,7 +3,7 @@ import { toLocaleNumber } from '../bible-helper/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
 import { renderPresent } from '../helper/appHelper';
 import { removePX } from '../helper/helpers';
-import { Lyric, LyricItemType } from '../helper/lyricHelpers';
+import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';

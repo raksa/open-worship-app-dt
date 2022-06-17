@@ -7,11 +7,12 @@ import {
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { useDisplay } from '../event/PresentEventListener';
-import SlideThumbsController from './SlideThumbsController';
+import SlideItemsController, { useRefresh } from './SlideItemsController';
 
 export default function SlideItemThumbListMenu({ controller }: {
-    controller: SlideThumbsController,
+    controller: SlideItemsController,
 }) {
+    useRefresh(controller);
     const { presentDisplay } = useDisplay();
     const eventMapper = {
         wControlKey: [WindowsControlEnum.Ctrl],
@@ -19,7 +20,7 @@ export default function SlideItemThumbListMenu({ controller }: {
         lControlKey: [LinuxControlEnum.Ctrl],
         key: 's',
     };
-    useKeyboardRegistering(eventMapper, () => controller.save());
+    useKeyboardRegistering(eventMapper, () => controller.slide.save());
     const foundWrongDimension = controller.checkIsWrongDimension(presentDisplay);
     return (
         <div style={{
@@ -55,7 +56,7 @@ export default function SlideItemThumbListMenu({ controller }: {
     );
 }
 function RenderIsModifying({ controller, eventMapper }: {
-    controller: SlideThumbsController, eventMapper: any,
+    controller: SlideItemsController, eventMapper: any,
 }) {
     const [isModifying, setIsModifying] = useState(false);
     useEffect(() => {
@@ -68,7 +69,7 @@ function RenderIsModifying({ controller, eventMapper }: {
         <button type="button" className="btn btn-sm btn-success tool-tip tool-tip-fade"
             data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
             title="save slide thumbs"
-            onClick={() => controller.save()}>save</button>
+            onClick={() => controller.slide.save()}>save</button>
     );
 }
 function toWrongDimensionString({ slide, display }: {

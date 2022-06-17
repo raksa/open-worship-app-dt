@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useBiblePresenting } from '../event/FullTextPresentEventListener';
+import { useBiblePresenting } from '../event/PreviewingEventListener';
 import fullTextPresentHelper, {
     BiblePresentType,
-} from './fullTextPresentHelper';
+} from './previewingHelper';
 import BibleView from './BibleView';
-import { previewer } from './Previewer';
+import { previewer } from './FullTextPreviewer';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import {
     getBiblePresentingSetting,

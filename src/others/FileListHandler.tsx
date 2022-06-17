@@ -8,6 +8,8 @@ import fileHelpers, {
 import { AskingNewName } from './AskingNewName';
 import { ContextMenuItemType, showAppContextMenu } from './AppContextMenu';
 import FileSource from '../helper/FileSource';
+import { previewingEventListener, useOnSelectDir } from '../event/PreviewingEventListener';
+import { getSetting } from '../helper/settingHelper';
 
 export default function FileListHandler({
     id, mimetype, list, setList, dir, setDir,
@@ -35,9 +37,13 @@ export default function FileListHandler({
             });
         }
     }, [list, dir]);
-
+    useOnSelectDir(() => {
+        setDir(getSetting(`${id}-selected-dir`) || '');
+        setList(null);
+    });
     const applyDir = (newDir: string) => {
         setDir(newDir);
+        previewingEventListener.selectingDir();
         setList(null);
     };
     return (
@@ -90,7 +96,16 @@ export default function FileListHandler({
                 showAppContextMenu(e, [
                     {
                         title: 'Delete All', onClick: () => {
-                            console.log('Delete All');
+                            // TODO: create prompt
+                            const input = window.prompt('Type: delete');
+                            if (input === 'delete') {
+                                console.log('Delete All');
+                            } else {
+                                toastEventListener.showSimpleToast({
+                                    title: 'Deleting All',
+                                    message: 'You can\'t delete all',
+                                });
+                            }
                         },
                     },
                     ...(contextMenu || []),

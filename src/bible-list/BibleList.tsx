@@ -2,15 +2,15 @@ import './BibleList.scss';
 
 import { useState } from 'react';
 import {
-    fullTextPresentEventListener,
+    previewingEventListener,
     useBibleAdding,
-} from '../event/FullTextPresentEventListener';
+} from '../event/PreviewingEventListener';
 import {
     getSetting,
     setSetting,
 } from '../helper/settingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 import { openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
 import { windowEventListener } from '../event/WindowEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -22,7 +22,7 @@ import { AskingNewName } from '../others/AskingNewName';
 export async function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
-    fullTextPresentEventListener.addBibleItem({ biblePresent, index });
+    previewingEventListener.addBibleItem({ biblePresent, index });
     const title = await biblePresentToTitle(biblePresent);
     toastEventListener.showSimpleToast({
         title: 'Bible List',

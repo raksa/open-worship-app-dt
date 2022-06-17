@@ -1,8 +1,8 @@
 import BibleList from './bible-list/BibleList';
 import SlideList from './slide-list/SlideList';
-import Preview from './preview/MiniPresentScreen';
+import MiniPresentScreen from './preview/MiniPresentScreen';
 import Background from './background/Background';
-import Middle from './slide-presenting/Presenting';
+import Presenting from './slide-presenting/Presenting';
 import { getWindowMode } from './App';
 import PlaylistList from './playlist/PlaylistList';
 import LyricList from './lyric-list/LyricList';
@@ -35,7 +35,7 @@ export default function AppPresenting() {
                 <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
                     resizerKinds={['v']}
                     sizeKeys={[['h2-v1', 'flex-item'], ['h2-v2', 'flex-item']]}>
-                    <Middle />
+                    <Presenting />
                     <Background />
                 </ReSizer>
                 <>
@@ -48,7 +48,7 @@ export default function AppPresenting() {
                         </ReSizer>
                     </div>
                     <div>
-                        <Preview />
+                        <MiniPresentScreen />
                     </div>
                 </>
             </ReSizer>

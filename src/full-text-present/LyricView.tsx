@@ -1,6 +1,6 @@
 import './LyricView.scss';
 
-import { LyricItemType } from '../helper/lyricHelpers';
+import { LyricItemType } from '../lyric-list/Lyric';
 import { cloneObject } from '../helper/helpers';
 
 export default function LyricView({ i, lyricItem, onLyricChange, onClose }: {

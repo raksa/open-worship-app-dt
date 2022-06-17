@@ -4,25 +4,34 @@ import {
 } from '../event/KeyboardEventListener';
 import { WindowEnum } from '../event/WindowEventListener';
 import {
-    slideListEventListenerGlobal,
     useThumbSizing,
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
-import { Fragment, useState } from 'react';
-import SlideThumbsController, { DEFAULT_THUMB_SIZE, THUMB_WIDTH_SETTING_NAME } from './SlideThumbsController';
-import SlideItemThumb from './SlideItemThumb';
-import SlideItemThumbRender, { DragReceiver, ItemThumbGhost } from './SlideItemThumbIFrame';
+import { Fragment, useEffect, useState } from 'react';
+import SlideItemsController, { useRefresh } from './SlideItemsController';
+import SlideItemThumbRender, {
+    DragReceiver, ItemThumbGhost,
+} from './SlideItemThumbIFrame';
+import {
+    THUMB_WIDTH_SETTING_NAME,
+    DEFAULT_THUMB_SIZE,
+} from './SlideItemsControllerBase';
+import { usePresentFGClearing } from '../event/PresentEventListener';
 
 export default function SlideItemThumbListItems({ controller }: {
-    controller: SlideThumbsController,
+    controller: SlideItemsController,
 }) {
     const [thumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+    useRefresh(controller);
+    usePresentFGClearing(() => {
+        controller.selectedItem = null;
+    });
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
         const arrowListener = (e: KeyboardEvent) => {
             const selectedIndex = controller.selectedIndex;
-            if (selectedIndex === null) {
+            if (~selectedIndex) {
                 return;
             }
             const length = controller.items.length;
@@ -33,7 +42,7 @@ export default function SlideItemThumbListItems({ controller }: {
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                controller.select((controller.getItemByIndex(+ind) as SlideItemThumb).id);
+                controller.selectedIndex = ind;
             }
         };
         const useCallback = (key: KeyEnum) => {
@@ -47,25 +56,33 @@ export default function SlideItemThumbListItems({ controller }: {
     return (
         <div className='d-flex flex-wrap justify-content-center'>
             {controller.items.map((item, i) => {
-                const shouldReceiveAtLeft = draggingIndex !== null && draggingIndex !== 0 && i === 0;
-                const shouldReceiveAtRight = draggingIndex !== null && draggingIndex !== i && draggingIndex !== i + 1;
+                const shouldReceiveAtLeft = draggingIndex !== null &&
+                    draggingIndex !== 0 && i === 0;
+                const shouldReceiveAtRight = draggingIndex !== null &&
+                    draggingIndex !== i && draggingIndex !== i + 1;
                 return (
                     <Fragment key={`${i}`}>
-                        {shouldReceiveAtLeft && <DragReceiver onDrop={(id) => {
-                            controller.move(id, i);
-                        }} />}
+                        {shouldReceiveAtLeft && <DragReceiver
+                            onDrop={(id) => {
+                                controller.move(id, i);
+                            }} />}
                         <SlideItemThumbRender
-                            isActive={i === controller.selectedIndex}
+                            isActive={item.isSelected}
                             index={i}
                             slideItemThumb={item}
-                            slideFilePath={controller.filePath}
+                            fileSource={controller.slide.fileSource}
                             onItemClick={() => {
-                                slideListEventListenerGlobal.selectSlideItemThumb(item);
-                                controller.select(item.id);
+                                if (controller.selectedItem === item) {
+                                    controller.selectedItem = null;
+                                } else {
+                                    controller.selectedItem = item;
+                                }
                             }}
-                            onContextMenu={(e) => controller.showItemThumbnailContextMenu(e, i)}
+                            onContextMenu={(e) => {
+                                controller.openContextMenu(e, i);
+                            }}
                             onCopy={() => {
-                                controller.copiedIndex = i;
+                                controller.copiedItem = item;
                             }}
                             width={thumbSize}
                             onDragStart={() => {
@@ -81,8 +98,11 @@ export default function SlideItemThumbListItems({ controller }: {
                     </Fragment>
                 );
             })}
-            {Array.from({ length: 2 }, (_, i) => <ItemThumbGhost key={`${i}`}
-                width={thumbSize} />)}
+            {Array.from({ length: 2 }, (_, i) => {
+                return (
+                    <ItemThumbGhost key={`${i}`} width={thumbSize} />
+                );
+            })}
         </div>
     );
 }

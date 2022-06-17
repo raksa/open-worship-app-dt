@@ -1,7 +1,9 @@
 import './SettingPopup.scss';
 
 import HeaderEditorPopup from './HeaderSettingPopup';
-import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
+import {
+    StateEnum, WindowEnum, windowEventListener,
+} from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import { SettingGeneral } from './SettingGeneral';
 import { SettingBible } from './SettingBible';
@@ -38,7 +40,11 @@ function Setting() {
                     {[['g', 'General'], ['b', 'Bible'], ['a', 'About']].map(([key, title], i) => {
                         return (<li key={i} className="nav-item">
                             <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => setTabType(key)}>
+                                onClick={() => {
+                                    if (key !== tabType) {
+                                        setTabType(key);
+                                    }
+                                }}>
                                 {t(title)}
                             </button>
                         </li>);

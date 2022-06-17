@@ -2,7 +2,7 @@ import { presentEventListener } from '../event/PresentEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import { genRandomString } from './helpers';
 import appProvider from './appProvider';
-import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
+import fullTextPresentHelper from '../full-text-present/previewingHelper';
 
 export const isWindows = () => window.process.platform === 'win32';
 export const isMac = () => window.process.platform === 'darwin';

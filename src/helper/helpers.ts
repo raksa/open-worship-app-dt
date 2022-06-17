@@ -67,32 +67,6 @@ export function getFontData(fontName: string) {
     }[fontName];
     return `${window.location.origin}${font}`;
 }
-export function toSlideItemThumbSelected(filePath: string | null, id: string | null) {
-    if (filePath === null || id === null) {
-        return null;
-    }
-    return `${filePath},${id}`;
-}
-export function extractSlideItemThumbSelected(slideFilePathId: string) {
-    const [slideFilePath, id] = slideFilePathId.split(',');
-    return { slideFilePath, id };
-}
-export function parseSlideItemThumbSelected(selected: string, filePath: string | null) {
-    if (!selected || filePath === null) {
-        return null;
-    }
-    try {
-        if (~selected.indexOf(filePath)) {
-            const id = selected.split(',')[1];
-            if (id) {
-                return { id };
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return null;
-}
 export function getInnerHTML(div: HTMLDivElement) {
     const html = div.outerHTML;
     const parentDiv = document.createElement('div');

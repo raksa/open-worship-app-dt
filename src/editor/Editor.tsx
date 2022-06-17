@@ -1,11 +1,6 @@
 import {
     useSlideItemThumbTooling,
 } from '../event/SlideListEventListener';
-import {
-    getDefaultBoxHTML,
-    HTML2ReactChild,
-    HTML2React,
-} from '../helper/slideHelper';
 import { BoxEditor } from './BoxEditor';
 import {
     KeyEnum,
@@ -15,8 +10,11 @@ import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import SlideItemThumb from '../slide-presenting/SlideItemThumb';
+import SlideItem from '../slide-presenting/SlideItem';
 import { ToolingType, tooling2BoxProps } from './helps';
+import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
+import HTML2React from '../slide-editing/HTML2React';
+import Slide from '../slide-list/Slide';
 
 function newChild(data: ToolingType, newList: HTML2ReactChild[],
     html2React: HTML2React, index: number) {
@@ -55,7 +53,7 @@ function genNewH2rChildren(data: ToolingType, html2React: HTML2React,
 }
 
 export default function Editor({ slideItemThumb, html2React, scale }: {
-    slideItemThumb: SlideItemThumb,
+    slideItemThumb: SlideItem,
     html2React: HTML2React,
     scale: number,
 }) {
@@ -88,7 +86,7 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
     };
     const newBox = () => {
         const newList = [...html2ReactChildren];
-        const newBoxHTML = getDefaultBoxHTML();
+        const newBoxHTML = SlideItem.genDefaultBoxHTML();
         newList.push(HTML2ReactChild.parseHTML(newBoxHTML));
         setHtml2ReactChildren(newList);
     };

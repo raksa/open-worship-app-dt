@@ -5,12 +5,12 @@ import {
 import FileSource from './FileSource';
 import { cloneObject } from './helpers';
 
-export default class ItemSource<T> implements ItemSourceInf<T> {
+export default abstract class ItemSource<T> implements ItemSourceInf<T> {
     static mimetype: MimetypeNameType;
-    static validator: (json: Object) => boolean;
     fileSource: FileSource;
     content: T;
     metadata: MetaDataType;
+    static _itemSourceCache: Map<string, ItemSource<any>> = new Map();
     constructor(fileSource: FileSource, metadata: MetaDataType,
         content: T) {
         this.fileSource = fileSource;
@@ -20,7 +20,7 @@ export default class ItemSource<T> implements ItemSourceInf<T> {
     toJson() {
         return {
             metadata: this.metadata,
-            content: this.content,
+            content: this.content as Object,
         };
     }
     clone<F extends ItemSource<any>>() {
@@ -30,10 +30,18 @@ export default class ItemSource<T> implements ItemSourceInf<T> {
         return item;
     }
     async save(): Promise<boolean> {
-        return this.fileSource.saveData(this);
+        const isSuccess = await this.fileSource.saveData(this);
+        if (isSuccess) {
+            ItemSource._itemSourceCache.set(this.fileSource.filePath, this);
+        }
+        return isSuccess;
     }
     async delete(): Promise<boolean> {
-        return this.fileSource.delete();
+        const isSuccess = await this.fileSource.delete();
+        if (isSuccess) {
+            ItemSource._itemSourceCache.delete(this.fileSource.filePath);
+        }
+        return isSuccess;
     }
     static async createNew(dir: string, name: string, content: Object) {
         const data = JSON.stringify({
@@ -46,16 +54,37 @@ export default class ItemSource<T> implements ItemSourceInf<T> {
         });
         return createNewItem(dir, name, data, this.mimetype);
     }
-    static async readFileToDataNoCache(fileSource: FileSource | null) {
+    static async _readFileToDataNoCache<T extends ItemSource<any>>(fileSource: FileSource | null
+        , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {
+            metadata: MetaDataType,
+            content: any,
+        }) => ItemSource<any>) {
         if (fileSource === null) {
             return null;
         }
-        return fileSource.readFileToDataNoCache(this.validator);
+        const json = await fileSource.readFileToData(validator);
+        if (json) {
+            return constr(fileSource, json) as T;
+        }
+        return json;
     }
-    static async readFileToData(fileSource: FileSource | null) {
+    static async _readFileToData<T extends ItemSource<any>>(fileSource: FileSource | null
+        , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {
+            metadata: MetaDataType,
+            content: any,
+        }) => ItemSource<any>) {
         if (fileSource === null) {
             return null;
         }
-        return fileSource.readFileToData(this.validator);
+        if (ItemSource._itemSourceCache.has(fileSource.filePath)) {
+            return ItemSource._itemSourceCache.get(fileSource.filePath) as T;
+        }
+        const data = await this._readFileToDataNoCache<T>(fileSource, validator, constr);
+        if (data) {
+            ItemSource._itemSourceCache.set(fileSource.filePath, data);
+        } else {
+            ItemSource._itemSourceCache.delete(fileSource.filePath);
+        }
+        return data;
     }
 }

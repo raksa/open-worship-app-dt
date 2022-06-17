@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
-import {
-    HTML2ReactChild,
-} from '../helper/slideHelper';
 import Tool from './Tool';
 import Align from './Align';
+import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
 
 export default function ToolsBackground({ data }: { data: HTML2ReactChild }) {
     const [color, setColor] = useState<string>(data.backgroundColor);

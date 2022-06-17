@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from './previewingHelper';
 
 export default function ScrollController() {
     const [moveUp, setMoveUp] = useState(0);

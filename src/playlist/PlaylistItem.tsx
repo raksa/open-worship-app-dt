@@ -1,12 +1,12 @@
 import { Fragment, useState } from 'react';
 import {
     BiblePresentType,
-} from '../full-text-present/fullTextPresentHelper';
+} from '../full-text-present/previewingHelper';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import SlideItemThumbPlaylist from './SlideItemThumbPlaylist';
 import FileItemHandler from '../others/FileItemHandler';
-import { Playlist, validatePlaylist } from '../helper/playlistHelper';
+import Playlist, { validatePlaylist } from './Playlist';
 import FileSource from '../helper/FileSource';
 
 export default function PlaylistItem({
@@ -22,13 +22,13 @@ export default function PlaylistItem({
     return (
         <FileItemHandler
             index={index}
+            mimetype={'playlist'}
             list={list}
             setList={setList}
             data={data}
             setData={setData}
             fileSource={fileSource}
             className={'playlist-item'}
-            validator={validatePlaylist}
             onClick={() => setIsOpened(!isOpened)}
             onDrop={async (event) => {
                 if (data) {

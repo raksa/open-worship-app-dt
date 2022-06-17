@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import bibleHelper, { useGetBibleWithStatus, useGetBookKVList } from '../bible-helper/bibleHelpers';
 import {
     KeyEnum,

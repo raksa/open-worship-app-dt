@@ -12,7 +12,7 @@ import appProvider from '../helper/appProvider';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import fileHelpers from '../helper/fileHelper';
 import { useState, useEffect } from 'react';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 
 const bibleObj = appProvider.bibleObj;
 

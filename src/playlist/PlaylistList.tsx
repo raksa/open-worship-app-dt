@@ -7,7 +7,7 @@ import {
 import PlaylistItem from './PlaylistItem';
 import FileListHandler from '../others/FileListHandler';
 import FileSource from '../helper/FileSource';
-import { Playlist } from '../helper/playlistHelper';
+import Playlist from './Playlist';
 
 const id = 'playlist-list';
 export default function PlaylistList() {

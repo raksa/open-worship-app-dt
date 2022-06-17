@@ -1,21 +1,23 @@
 import './SlideItemThumbEditor.scss';
 
 import { useEffect, useState } from 'react';
-import { useSlideItemThumbSelecting } from '../event/SlideListEventListener';
+import {
+    useSlideItemThumbSelecting,
+} from '../event/SlideListEventListener';
 import { editorMapper } from './EditorBoxMapper';
-import { getValidSlideItemThumbSelected } from '../slide-presenting/SlideItemThumbList';
-import SlideItemThumb from '../slide-presenting/SlideItemThumb';
+import SlideItem from '../slide-presenting/SlideItem';
 import SlideItemThumbEditorController from './SlideItemThumbEditorController';
 
 export default function SlideItemThumbEditor() {
-    const [slideItemThumb, setSlideItemThumb] = useState<SlideItemThumb | null>(null);
+    const [slideItemThumb, setSlideItemThumb] = useState<SlideItem | null>(null);
     useEffect(() => {
         if (slideItemThumb === null) {
-            getValidSlideItemThumbSelected().then((item) => {
-                setSlideItemThumb(item);
-            }).catch((error) => {
-                console.log(error);
-            });
+            SlideItem.getValidSlideItemThumbSelected()
+                .then((item) => {
+                    setSlideItemThumb(item);
+                }).catch((error) => {
+                    console.log(error);
+                });
         }
     }, [slideItemThumb]);
     useSlideItemThumbSelecting((item) => {

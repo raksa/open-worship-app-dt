@@ -1,5 +1,5 @@
 import { useStateSettingBoolean } from '../helper/settingHelper';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from './previewingHelper';
 import ScrollController from './ScrollController';
 
 export const FULL_TEXT_AUTO_SAVE_SETTING = 'full-text-present-auto-show';

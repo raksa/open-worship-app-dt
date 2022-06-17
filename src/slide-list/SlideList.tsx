@@ -1,52 +1,40 @@
 import './SlideList.scss';
 
-import { useRef, useState } from 'react';
-import PathSelector from '../others/PathSelector';
+import { useState } from 'react';
 import { useStateSettingString } from '../helper/settingHelper';
-import {
-    useRefreshing, useSlideItemThumbSelecting,
-} from '../event/SlideListEventListener';
-import { usePresentFGClearing } from '../event/PresentEventListener';
-import SlideListView from './SlideListView';
+import FileSource from '../helper/FileSource';
+import FileListHandler from '../others/FileListHandler';
+import { getAllDisplays } from '../helper/displayHelper';
+import SlideItem from './SlideItem';
+import Slide from './Slide';
 
+const id = 'slide-list';
 export default function SlideList() {
-    const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [basePath, setNewBasePath] = useStateSettingString('slide-selected-dir', '');
-    const slideListView = useRef<SlideListView>(null);
-    const refresh = () => {
-        slideListView.current?.refresh();
-    };
-    useRefreshing(refresh);
-    useSlideItemThumbSelecting(refresh);
-    usePresentFGClearing(refresh);
+    const [list, setList] = useState<FileSource[] | null>(null);
+    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
     return (
-        <div id="slide-list" className="card w-100 h-100">
-            <div className="card-header">
-                <span>Slides</span>
-                <button className="btn btn-sm btn-outline-info float-end" title="new slide list"
-                    onClick={() => setIsCreatingNew(true)}>
-                    <i className="bi bi-file-earmark-plus" />
-                </button>
-            </div>
-            <div className="card-body">
-                <PathSelector
-                    prefix='bg-slide-list'
-                    dirPath={basePath}
-                    onRefresh={refresh}
-                    onChangeDirPath={(newBasePath) => {
-                        setNewBasePath(newBasePath);
-                        refresh();
-                    }}
-                    onSelectDirPath={(newBasePath) => {
-                        setNewBasePath(newBasePath);
-                        refresh();
-                    }} />
-                <SlideListView
-                    ref={slideListView}
-                    baseDir={basePath}
-                    isCreatingNew={isCreatingNew}
-                    setIsCreatingNew={setIsCreatingNew} />
-            </div>
-        </div>
+        <FileListHandler id={id} mimetype={'slide'}
+            list={list} setList={setList}
+            dir={dir} setDir={setDir}
+            onNewFile={async (name) => {
+                if (name !== null) {
+                    const data = Slide.defaultSlide();
+                    const isSuccess = await Slide.createNew(dir, name, data);
+                    if (isSuccess) {
+                        setList(null);
+                        return false;
+                    }
+                }
+                return true;
+            }}
+            header={<span>Slides</span>}
+            body={<>
+                {(list || []).map((fileSource, i) => {
+                    return <SlideItem key={`${i}`}
+                        index={i}
+                        fileSource={fileSource}
+                        list={list} setList={setList} />;
+                })}
+            </>} />
     );
 }

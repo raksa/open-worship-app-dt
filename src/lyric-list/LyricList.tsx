@@ -6,12 +6,11 @@ import {
 } from '../helper/settingHelper';
 import {
     useLyricUpdating,
-} from '../event/FullTextPresentEventListener';
+} from '../event/PreviewingEventListener';
 import LyricItem from './LyricItem';
 import FileListHandler from '../others/FileListHandler';
-import { Lyric } from '../helper/lyricHelpers';
 import FileSource from '../helper/FileSource';
-import { copyToClipboard } from '../helper/appHelper';
+import Lyric from './Lyric';
 
 const id = 'lyric-list';
 export default function LyricList() {
@@ -25,7 +24,7 @@ export default function LyricList() {
     return (
         <FileListHandler id={id} mimetype={'lyric'}
             list={list} setList={setList}
-            dir={dir} setDir={setDir}
+        dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
                     const isSuccess = await Lyric.createNew(dir, name, {
@@ -43,14 +42,6 @@ export default function LyricList() {
                 {(list || []).map((fileSource, i) => {
                     return <LyricItem key={`${i}`}
                         index={i}
-                        onClick={() => {
-                            Lyric.readFileToData(fileSource).then((lyric) => {
-                                if (lyric) {
-                                    Lyric.presentLyric(lyric);
-                                    setList(null);
-                                }
-                            });
-                        }}
                         fileSource={fileSource}
                         list={list} setList={setList} />;
                 })}

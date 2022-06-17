@@ -1,4 +1,4 @@
-import { BiblePresentType } from './fullTextPresentHelper';
+import { BiblePresentType } from './previewingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelpers';
 

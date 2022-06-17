@@ -1,7 +1,7 @@
 import './TextShadow.scss';
 
 import { useEffect } from 'react';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from './previewingHelper';
 
 
 export default function TextShadow() {

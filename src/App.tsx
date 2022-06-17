@@ -36,7 +36,11 @@ export default function App() {
                     {[['e', 'Editing'], ['p', 'Presenting']].map(([key, title], i) => {
                         return (<li key={i} className="nav-item">
                             <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => setTabType(key)}>
+                                onClick={() => {
+                                    if (key !== tabType) {
+                                        setTabType(key);
+                                    }
+                                }}>
                                 {t(title)}
                             </button>
                         </li>);

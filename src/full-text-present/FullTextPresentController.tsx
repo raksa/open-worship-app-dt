@@ -1,9 +1,9 @@
 import './FullTextPresentController.scss';
 
-import { BiblePresentType } from './fullTextPresentHelper';
+import { BiblePresentType } from './previewingHelper';
 import CustomStyle from './CustomStyle';
 import Utils from './Utils';
-import Previewer, { previewer } from './Previewer';
+import FullTextPreviewer, { previewer } from './FullTextPreviewer';
 import ReSizer from '../resizer/ReSizer';
 
 export function convertPresent(present: BiblePresentType,
@@ -35,7 +35,7 @@ export default function FullTextPresentController() {
                             overflowX: 'hidden',
                             overflowY: 'auto',
                         }]]}>
-                    <Previewer />
+                    <FullTextPreviewer />
                     <>
                         <Utils onShow={() => previewer.show()} />
                         <CustomStyle />

@@ -1,12 +1,10 @@
 import './SlideItemThumb.scss';
 
-import { HTML2React } from '../helper/slideHelper';
 import { ContextMenuEventType } from '../others/AppContextMenu';
-import {
-    extractSlideItemThumbSelected, toSlideItemThumbSelected,
-} from '../helper/helpers';
-import SlideItemThumb from './SlideItemThumb';
+import SlideItem from './SlideItem';
 import { useEffect, useState } from 'react';
+import HTML2React from '../slide-editing/HTML2React';
+import FileSource from '../helper/FileSource';
 
 export function SlideItemThumbIFrame({
     id, width, html2React,
@@ -38,8 +36,8 @@ type SlideItemThumbnailProps = {
     width: number,
     index: number;
     isActive: boolean;
-    slideItemThumb: SlideItemThumb;
-    slideFilePath: string;
+    slideItemThumb: SlideItem;
+    fileSource: FileSource,
     onItemClick: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
     onCopy: () => void,
@@ -48,7 +46,7 @@ type SlideItemThumbnailProps = {
 };
 export default function SlideItemThumbRender({
     width, isActive, index,
-    slideItemThumb, slideFilePath,
+    slideItemThumb, fileSource,
     onItemClick,
     onContextMenu,
     onCopy,
@@ -60,7 +58,7 @@ export default function SlideItemThumbRender({
         <div className={`slide-item-thumb card ${isActive ? 'active' : ''} pointer`}
             draggable
             onDragStart={(e) => {
-                const path = toSlideItemThumbSelected(slideFilePath, slideItemThumb.id) || '';
+                const path = SlideItem.toSlideItemThumbSelected(fileSource, slideItemThumb.id) || '';
                 e.dataTransfer.setData('text/plain', path);
                 onDragStart(e);
             }}
@@ -77,10 +75,14 @@ export default function SlideItemThumbRender({
             onCopy={onCopy}>
             <div className="card-header d-flex">
                 <div>
-                    {index + 1} {isActive && <span><i className="bi bi-collection" /></span>}
+                    {index + 1} {isActive && <span>
+                        <i className="bi bi-collection" />
+                    </span>}
                 </div>
                 <div className='flex-fill d-flex justify-content-end'>
-                    <small className='pe-2'>{html2React.width}x{html2React.height}</small>
+                    <small className='pe-2'>
+                        {html2React.width}x{html2React.height}
+                    </small>
                     <RenderIsEditing slideItemThumb={slideItemThumb} />
                 </div>
             </div>
@@ -94,7 +96,7 @@ export default function SlideItemThumbRender({
         </div>
     );
 }
-function RenderIsEditing({ slideItemThumb }: { slideItemThumb: SlideItemThumb }) {
+function RenderIsEditing({ slideItemThumb }: { slideItemThumb: SlideItem }) {
     const [isEditing, setIsEditing] = useState(false);
     useEffect(() => {
         slideItemThumb.isEditing().then(setIsEditing);
@@ -121,7 +123,7 @@ export function DragReceiver({ onDrop }: {
             }}
             onDrop={(event) => {
                 const path = event.dataTransfer.getData('text');
-                const result = extractSlideItemThumbSelected(path);
+                const result = SlideItem.extractSlideItemThumbSelected(path);
                 onDrop(result.id);
             }}></div>
     );

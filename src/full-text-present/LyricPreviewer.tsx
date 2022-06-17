@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { previewer } from './Previewer';
+import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from './previewingHelper';
 import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import { getSetting } from '../helper/settingHelper';
 import {
     useLyricPresenting,
-} from '../event/FullTextPresentEventListener';
-import { Lyric } from '../helper/lyricHelpers';
+} from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
+import Lyric from '../lyric-list/Lyric';
+import LyricList from '../lyric-list/LyricList';
 
 export default function LyricPreviewer() {
     const [lyricFS, setLyricFS] = useState<FileSource | null>(Lyric.getSelectedLyricFileSource());
@@ -20,27 +21,27 @@ export default function LyricPreviewer() {
         if (lyricFS === null) {
             return;
         }
-        const event = lyricFS.registerEventListener('delete', () => {
+        const deleteEvent = lyricFS.registerEventListener('delete', () => {
             setLyricFS(null);
         });
         return () => {
-            lyricFS.unregisterEventListener(event);
+            lyricFS.unregisterEventListener(deleteEvent);
         };
     }, [lyricFS]);
 
     return (
         <div className='d-flex d-flex-row overflow-hidden w-100 h-100'>
-            <Previewer fileSource={lyricFS} />
+            <PreviewerRender fileSource={lyricFS} />
         </div>
     );
 }
 let isMounted = false;
-function Previewer({ fileSource }: { fileSource: FileSource | null }) {
+function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
     useEffect(() => {
         Lyric.readFileToData(fileSource).then((lr) => {
             if (!lr) {
-                Lyric.clearLyricListEditingIndex();
+                Lyric.clearSelectedLyric();
             }
             setLyric(lr);
         });
@@ -60,6 +61,11 @@ function Previewer({ fileSource }: { fileSource: FileSource | null }) {
             isMounted = false;
         };
     });
+    if (fileSource === null) {
+        return (
+            <LyricList />
+        );
+    }
     if (lyric === null) {
         return null;
     }

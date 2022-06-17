@@ -1,22 +1,22 @@
 import { useState } from 'react';
 import {
-    fullTextPresentEventListener,
-} from '../event/FullTextPresentEventListener';
+    previewingEventListener,
+} from '../event/PreviewingEventListener';
 import {
     getBiblePresentingSetting,
     setBiblePresentingSetting,
 } from '../helper/settingHelper';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 import { convertPresent } from '../full-text-present/FullTextPresentController';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper, { useGetBibleWithStatus } from '../bible-helper/bibleHelpers';
-import { biblePresentToTitle, usePresentRenderTitle } from '../bible-helper/helpers1';
+import { usePresentRenderTitle } from '../bible-helper/helpers1';
 import { cloneObject } from '../helper/helpers';
 import BibleItemColorNote from './BibleItemColorNote';
 
 export function presentBible(item: BiblePresentType) {
     setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
-    fullTextPresentEventListener.presentBible(item);
+    previewingEventListener.presentBible(item);
 }
 
 export default function BibleItem({ index, groupIndex, biblePresent, warningMessage,

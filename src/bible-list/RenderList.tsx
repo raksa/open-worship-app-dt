@@ -1,5 +1,5 @@
 import { setSetting } from '../helper/settingHelper';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import BibleItem, { presentBible } from './BibleItem';

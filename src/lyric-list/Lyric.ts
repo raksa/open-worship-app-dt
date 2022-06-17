@@ -1,8 +1,9 @@
-import { fullTextPresentEventListener } from '../event/FullTextPresentEventListener';
-import { genFileSource, MimetypeNameType } from './fileHelper';
-import { validateMeta } from './helpers';
-import ItemSource from './ItemSource';
-import { setSetting, getSetting } from './settingHelper';
+import { previewingEventListener } from '../event/PreviewingEventListener';
+import { MetaDataType, MimetypeNameType } from '../helper/fileHelper';
+import FileSource from '../helper/FileSource';
+import { validateMeta } from '../helper/helpers';
+import ItemSource from '../helper/ItemSource';
+import { setSetting, getSetting } from '../helper/settingHelper';
 
 export type LyricItemType = {
     title: string,
@@ -12,20 +13,37 @@ export type LyricType = {
     index?: number,
     items: LyricItemType[],
 }
-export class Lyric extends ItemSource<LyricType>{
+export default class Lyric extends ItemSource<LyricType>{
     static mimetype: MimetypeNameType = 'lyric';
     static validator: (json: Object) => boolean = validateLyric;
-    static presentLyric(lyricItem: Lyric) {
-        setSetting('selected-lyric', lyricItem.fileSource.filePath);
-        fullTextPresentEventListener.presentLyric(lyricItem);
+    static _instantiate(fileSource: FileSource, json: {
+        metadata: MetaDataType, content: any,
+    }) {
+        return new Lyric(fileSource, json.metadata, json.content);
     }
-    static clearLyricListEditingIndex() {
+    static async readFileToDataNoCache(fileSource: FileSource | null) {
+        return ItemSource._readFileToDataNoCache<Lyric>(fileSource,
+            validateLyric, this._instantiate);
+    }
+    static async readFileToData(fileSource: FileSource | null) {
+        return ItemSource._readFileToData<Lyric>(fileSource,
+            validateLyric, this._instantiate);
+    }
+    static presentLyric(lyric: Lyric | null) {
+        if (lyric === null) {
+            this.clearSelectedLyric();
+        } else {
+            setSetting('selected-lyric', lyric.fileSource.filePath);
+        }
+        previewingEventListener.presentLyric(lyric);
+    }
+    static clearSelectedLyric() {
         setSetting('selected-lyric', '');
     }
     static getSelectedLyricFileSource() {
         const filePath = getSetting('selected-lyric', '');
         if (filePath) {
-            return genFileSource(filePath);
+            return FileSource.genFileSource(filePath);
         }
         return null;
     }
@@ -54,7 +72,6 @@ Block2
 Block3`,
         };
     }
-
 }
 
 function validateLyricItem(item: any) {

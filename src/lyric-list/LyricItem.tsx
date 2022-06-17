@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { Lyric, validateLyric } from '../helper/lyricHelpers';
+import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 
 export default function LyricItem({
-    index, list, setList, fileSource, onClick,
+    index, list, setList, fileSource,
 }: {
     index: number,
     list: FileSource[] | null,
     setList: (newList: FileSource[] | null) => void,
     fileSource: FileSource,
-    onClick: () => void,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
     const selectedLyricFS = Lyric.getSelectedLyricFileSource();
@@ -19,14 +18,18 @@ export default function LyricItem({
     return (
         <FileItemHandler
             index={index}
+            mimetype={'lyric'}
             list={list}
             setList={setList}
             data={data}
             setData={setData}
             fileSource={fileSource}
-            className={`playlist-item ${isSelected ? 'active' : ''}`}
-            validator={validateLyric}
-            onClick={onClick}
+            className={`lyric-item ${isSelected ? 'active' : ''}`}
+            onClick={() => {
+                if (data) {
+                    Lyric.presentLyric(isSelected ? null : data);
+                }
+            }}
             child={<>
                 <i className="bi bi-music-note" />
                 {fileSource.name}

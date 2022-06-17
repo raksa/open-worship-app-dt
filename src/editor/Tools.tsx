@@ -2,11 +2,11 @@ import './Tools.scss';
 
 import { useState } from 'react';
 import { useSlideBoxEditing } from '../event/SlideListEventListener';
-import { HTML2ReactChild } from '../helper/slideHelper';
 import { useStateSettingString } from '../helper/settingHelper';
 import { useTranslation } from 'react-i18next';
 import ToolsBackground from './ToolsBackground';
 import ToolsText from './ToolsText';
+import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
 
 export default function Tools({
     scale, applyScale, setScale, minScale, maxScale, scaleStep,
@@ -29,7 +29,11 @@ export default function Tools({
                     {[['t', 'Text'], ['b', 'Box']].map(([key, title], i) => {
                         return (<li key={i} className="nav-item">
                             <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => setTabType(key)}>
+                                onClick={() => {
+                                    if (key !== tabType) {
+                                        setTabType(key);
+                                    }
+                                }}>
                                 {t(title)}
                             </button>
                         </li>);

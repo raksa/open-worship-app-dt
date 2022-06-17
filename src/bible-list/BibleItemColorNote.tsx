@@ -1,9 +1,9 @@
-import { fullTextPresentEventListener } from '../event/FullTextPresentEventListener';
+import { previewingEventListener } from '../event/PreviewingEventListener';
 import {
     getBiblePresentingSetting,
     setBiblePresentingSetting,
 } from '../helper/settingHelper';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 import { convertPresent } from '../full-text-present/FullTextPresentController';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import colorList from '../others/color-list.json';
 
 export function presentBible(item: BiblePresentType) {
     setBiblePresentingSetting(convertPresent(item, getBiblePresentingSetting()));
-    fullTextPresentEventListener.presentBible(item);
+    previewingEventListener.presentBible(item);
 }
 
 export default function BibleItemColorNote({ biblePresent, onUpdateBiblePresent }: {

@@ -1,9 +1,10 @@
 import {
     BiblePresentType,
-} from '../full-text-present/fullTextPresentHelper';
-import { MimetypeNameType } from './fileHelper';
-import { validateMeta } from './helpers';
-import ItemSource from './ItemSource';
+} from '../full-text-present/previewingHelper';
+import { MetaDataType, MimetypeNameType } from '../helper/fileHelper';
+import FileSource from '../helper/FileSource';
+import { validateMeta } from '../helper/helpers';
+import ItemSource from '../helper/ItemSource';
 
 export type PlaylistItemType = {
     type: 'slide' | 'bible',
@@ -13,9 +14,22 @@ export type PlaylistItemType = {
 export type PlaylistType = {
     items: PlaylistItemType[],
 }
-export class Playlist extends ItemSource<PlaylistType>{
+export default class Playlist extends ItemSource<PlaylistType>{
     static mimetype: MimetypeNameType = 'playlist';
     static validator: (json: Object) => boolean = validatePlaylist;
+    static _instantiate(fileSource: FileSource, json: {
+        metadata: MetaDataType, content: any,
+    }) {
+        return new Playlist(fileSource, json.metadata, json.content);
+    }
+    static async readFileToDataNoCache(fileSource: FileSource | null) {
+        return ItemSource._readFileToDataNoCache<Playlist>(fileSource,
+            validatePlaylist, this._instantiate);
+    }
+    static async readFileToData(fileSource: FileSource | null) {
+        return ItemSource._readFileToData<Playlist>(fileSource,
+            validatePlaylist, this._instantiate);
+    }
 }
 
 

@@ -1,6 +1,6 @@
 import './BibleView.scss';
 
-import { BiblePresentType } from './fullTextPresentHelper';
+import { BiblePresentType } from './previewingHelper';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import {
     usePresentRenderText, usePresentRenderTitle,

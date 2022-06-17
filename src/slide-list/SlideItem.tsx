@@ -1,21 +1,39 @@
-import SlideController from './SlideController';
+import { useState } from 'react';
+import FileItemHandler from '../others/FileItemHandler';
+import FileSource from '../helper/FileSource';
+import Slide from './Slide';
 
-export default function SlideItem({ index, controller, itemClick, onContextMenu }: {
+export default function SlideItem({
+    index, list, setList, fileSource,
+}: {
     index: number,
-    controller: SlideController,
-    itemClick: () => void,
-    onContextMenu: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+    list: FileSource[] | null,
+    setList: (newList: FileSource[] | null) => void,
+    fileSource: FileSource,
 }) {
-    const slideName = controller.fileName.substring(0, controller.fileName.lastIndexOf('.'));
+    const [data, setData] = useState<Slide | null | undefined>(null);
+    const selectedSlideFS = Slide.getSelectedSlideFileSource();
+    const isSelected = !selectedSlideFS || !data ? false :
+        data.fileSource.filePath === selectedSlideFS?.filePath;
     return (
-        <li className={`list-group-item ${controller.isSelected ? 'active' : ''} pointer`}
-            data-index={index + 1}
-            title={controller.filePath}
-            onClick={() => itemClick()}
-            onContextMenu={onContextMenu}>
-            <i className="bi bi-file-earmark-slides" style={{
-                color: controller.isThumbSelected ? 'green' : undefined,
-            }} /> {slideName}
-        </li>
+        <FileItemHandler
+            index={index}
+            mimetype={'slide'}
+            list={list}
+            setList={setList}
+            data={data}
+            setData={setData}
+            fileSource={fileSource}
+            className={`slide-item ${isSelected ? 'active' : ''}`}
+            onClick={() => {
+                if (data) {
+                    Slide.presentSlide(isSelected ? null : data);
+                }
+            }}
+            child={<>
+                <i className='bi bi-file-earmark-slides' />
+                {fileSource.name}
+            </>}
+        />
     );
 }

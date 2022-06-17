@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 
 export function setSetting(key: string, value: string) {
     window.localStorage.setItem(key, value);
@@ -41,13 +41,6 @@ export function useStateSettingNumber(settingName: string, defaultNumber: number
         setSetting(settingName, `${b}`);
     };
     return [data, setDataSetting];
-}
-
-export function setSlideItemSelectedSetting(filePath: string) {
-    setSetting('slide-item-selected', filePath);
-}
-export function getSlideItemSelectedSetting() {
-    return getSetting('slide-item-selected') || null;
 }
 
 export function setBiblePresentingSetting(biblePresent: BiblePresentType[]) {

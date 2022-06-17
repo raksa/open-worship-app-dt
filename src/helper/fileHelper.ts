@@ -57,20 +57,6 @@ export function isSupportedMimetype(fileMimetype: string, mt: MimetypeNameType) 
     return mimeTypes.map((mimeType) => mimeType.mimeType).some((type) => type === fileMimetype);
 }
 
-export function genFileSource(filePath: string, fileName?: string): FileSource {
-    let basePath;
-    if (fileName) {
-        basePath = filePath;
-        filePath = appProvider.path.join(filePath, fileName);
-    } else {
-        const index = filePath.lastIndexOf(appProvider.path.sep);
-        basePath = filePath.substring(0, index);
-        fileName = appProvider.path.basename(filePath);
-    }
-    return new FileSource(basePath, fileName, filePath,
-        appProvider.url.pathToFileURL(filePath).toString());
-}
-
 const fileHelpers = {
     createWriteStream: function (filePath: string) {
         return appProvider.fs.createWriteStream(filePath);
@@ -84,7 +70,7 @@ const fileHelpers = {
             const files = appProvider.fs.readdirSync(dir);
             const matchedFiles = files.map((fileName) => getFileMetaData(fileName, mimeTypes))
                 .filter((d) => !!d) as FileMetadataType[];
-            return matchedFiles.map((fileMetadata) => genFileSource(dir, fileMetadata.fileName));
+            return matchedFiles.map((fileMetadata) => FileSource.genFileSource(dir, fileMetadata.fileName));
         } catch (error) {
             console.log(error);
             throw new Error('Error occurred during listing file');

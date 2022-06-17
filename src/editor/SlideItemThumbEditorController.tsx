@@ -1,12 +1,12 @@
-import { HTML2React } from '../helper/slideHelper';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import Editor from './Editor';
 import ReSizer from '../resizer/ReSizer';
-import SlideItemThumb from '../slide-presenting/SlideItemThumb';
+import SlideItem from '../slide-presenting/SlideItem';
+import HTML2React from '../slide-editing/HTML2React';
 
 export default function SlideItemThumbEditorController({ slideItemThumb }: {
-    slideItemThumb: SlideItemThumb
+    slideItemThumb: SlideItem
 }) {
     const resizeSettingName = 'editor-window-size';
     const flexSizeDefault = {

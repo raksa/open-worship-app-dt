@@ -32,7 +32,7 @@ import {
     getBibleListEditingIndex,
     clearBibleListEditingIndex,
 } from '../bible-list/BibleList';
-import { BiblePresentType } from '../full-text-present/fullTextPresentHelper';
+import { BiblePresentType } from '../full-text-present/previewingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
 
 export const openBibleSearchEvent = {

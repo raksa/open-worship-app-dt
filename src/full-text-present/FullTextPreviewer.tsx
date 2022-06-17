@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import {
     useBiblePresenting,
     useLyricPresenting,
-} from '../event/FullTextPresentEventListener';
+} from '../event/PreviewingEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
 import BiblePreviewer from './BiblePreviewer';
 import LyricPreviewer from './LyricPreviewer';
@@ -10,10 +10,11 @@ import LyricPreviewer from './LyricPreviewer';
 export const previewer: { show: Function } = {
     show: () => false,
 };
-export default function Previewer() {
+export const FULL_TEXT_TAB_KEY = 'full-text-present-tab';
+export default function FullTextPreviewer() {
     const { t } = useTranslation();
     // b: bible, l: lyric
-    const [tabType, setTabType] = useStateSettingString('full-text-present-tab', 'b');
+    const [tabType, setTabType] = useStateSettingString(FULL_TEXT_TAB_KEY, 'b');
     useBiblePresenting(() => setTabType('b'));
     useLyricPresenting(() => setTabType('l'));
     return (

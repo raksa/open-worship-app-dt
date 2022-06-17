@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import fullTextPresentHelper, {
     BiblePresentType,
-} from '../full-text-present/fullTextPresentHelper';
+} from '../full-text-present/previewingHelper';
 import { toInputText, toLocaleNumber } from './helpers2';
 import { sqlite3ReadValue } from '../helper/appHelper';
 import appProvider from '../helper/appProvider';
