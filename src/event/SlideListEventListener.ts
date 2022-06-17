@@ -12,7 +12,6 @@ type ListenerType<T> = (data: T) => void;
 export enum SlideListEnum {
     ITEM_THUMB_SELECT = 'item-thumb-select',
     BOX_EDITING = 'box-editing',
-    ITEM_THUMB_ORDERING = 'item-thumb-ordering',
     ITEM_THUMB_SIZING = 'item-thumb-sizing',
     TOOLING = 'tooling',
 }
@@ -23,9 +22,6 @@ export type RegisteredEventType<T> = {
 export default class SlideListEventListener extends EventHandler {
     boxEditing(data: HTML2ReactChild | null) {
         this._addPropEvent(SlideListEnum.BOX_EDITING, data);
-    }
-    ordering() {
-        this._addPropEvent(SlideListEnum.ITEM_THUMB_ORDERING);
     }
     tooling(data: ToolingType) {
         this._addPropEvent(SlideListEnum.TOOLING, data);
@@ -54,15 +50,6 @@ export function useSlideItemThumbSelecting(listener: ListenerType<SlideItem | nu
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.ITEM_THUMB_SELECT, listener);
-        return () => {
-            slideListEventListenerGlobal.unregisterSlideListEventListener(event);
-        };
-    });
-}
-export function useSlideItemThumbOrdering(listener: ListenerType<void>) {
-    useEffect(() => {
-        const event = slideListEventListenerGlobal.registerSlideListEventListener(
-            SlideListEnum.ITEM_THUMB_ORDERING, listener);
         return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };

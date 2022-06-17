@@ -61,7 +61,7 @@ function RenderIsModifying({ controller, eventMapper }: {
     const [isModifying, setIsModifying] = useState(false);
     useEffect(() => {
         controller.isModifying().then(setIsModifying);
-    }, [controller]);
+    });
     if (!isModifying) {
         return null;
     }
@@ -69,7 +69,9 @@ function RenderIsModifying({ controller, eventMapper }: {
         <button type="button" className="btn btn-sm btn-success tool-tip tool-tip-fade"
             data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
             title="save slide thumbs"
-            onClick={() => controller.slide.save()}>save</button>
+            onClick={() => {
+                controller.save();
+            }}>save</button>
     );
 }
 function toWrongDimensionString({ slide, display }: {

@@ -51,8 +51,8 @@ export default class SlideItem {
             this.fileSource.refresh();
         }
     }
-    async isEditing() {
-        const slide = await Slide.readFileToDataNoCache(this.fileSource);
+    async isEditing(slide?: Slide | null) {
+        slide = slide || await Slide.readFileToDataNoCache(this.fileSource);
         if (slide) {
             const item = slide.content.items.find((item1) => item1.id === this.id);
             if (item) {

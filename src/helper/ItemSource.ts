@@ -72,9 +72,12 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T> {
         , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {
             metadata: MetaDataType,
             content: any,
-        }) => ItemSource<any>) {
+        }) => ItemSource<any>, isForceCache?: boolean) {
         if (fileSource === null) {
             return null;
+        }
+        if (isForceCache) {
+            ItemSource._itemSourceCache.delete(fileSource.filePath);
         }
         if (ItemSource._itemSourceCache.has(fileSource.filePath)) {
             return ItemSource._itemSourceCache.get(fileSource.filePath) as T;

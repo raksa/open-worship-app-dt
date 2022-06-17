@@ -1,6 +1,3 @@
-import {
-    slideListEventListenerGlobal,
-} from '../event/SlideListEventListener';
 import SlideItem from './SlideItem';
 import Slide from '../slide-list/Slide';
 
@@ -79,8 +76,15 @@ export default class SlideItemsControllerBase {
         this.slide.fileSource.refresh();
     }
     async isModifying() {
-        for (const item of this.items) {
-            if (await item.isEditing()) {
+        const slide = await Slide.readFileToDataNoCache(this.slide.fileSource);
+        if (slide) {
+            for (const item of this.items) {
+                if (await item.isEditing(slide)) {
+                    return true;
+                }
+            }
+
+            if (slide.content.items.length !== this.items.length) {
                 return true;
             }
         }
@@ -157,7 +161,6 @@ export default class SlideItemsControllerBase {
         const target = currentItems.splice(fromIndex, 1)[0];
         currentItems.splice(toIndex, 0, target);
         this.setItemsWithHistory(currentItems);
-        slideListEventListenerGlobal.ordering();
     }
     delete(index: number) {
         const newItems = this.items.filter((_, i) => i !== index);
@@ -169,5 +172,15 @@ export default class SlideItemsControllerBase {
         newItem.id = `${this.maxId + 1}`;
         newItems.push(newItem);
         this.setItemsWithHistory(newItems);
+    }
+    async save() {
+        if (await this.slide.save()) {
+            const fileSource = this.slide.fileSource;
+            const slide = await Slide.readFileToData(fileSource, true);
+            if (slide) {
+                this.slide = slide;
+                fileSource.refresh();
+            }
+        }
     }
 }

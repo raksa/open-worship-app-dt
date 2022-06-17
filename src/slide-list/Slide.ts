@@ -47,9 +47,9 @@ export default class Slide extends ItemSource<SlidePresentType>{
         }
         return slide;
     }
-    static async readFileToData(fileSource: FileSource | null) {
+    static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
         const slide = await ItemSource._readFileToData<Slide>(fileSource,
-            validateSlide, this._instantiate);
+            validateSlide, this._instantiate, isForceCache);
         if (slide) {
             this._initItems(slide);
         }
