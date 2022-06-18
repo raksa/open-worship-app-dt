@@ -3,9 +3,12 @@ import './LyricView.scss';
 import { LyricItemType } from '../lyric-list/Lyric';
 import { cloneObject } from '../helper/helpers';
 
-export default function LyricView({ i, lyricItem, onLyricChange, onClose }: {
+export default function LyricView({
+    i, lyricItem, lyricItems, onLyricChange, onClose,
+}: {
     i: number,
     lyricItem: LyricItemType,
+    lyricItems: LyricItemType[],
     onLyricChange: (lyricPresent: LyricItemType) => void,
     onClose: () => void,
 }) {
@@ -18,7 +21,7 @@ export default function LyricView({ i, lyricItem, onLyricChange, onClose }: {
                         newItem.title = e.target.value;
                         onLyricChange(newItem);
                     }} />
-                {i !== 0 &&
+                {lyricItems.length > 1 &&
                     <button className="btn btn-outline-danger" onClick={onClose} >
                         <i className="bi bi-x-lg" />
                     </button>

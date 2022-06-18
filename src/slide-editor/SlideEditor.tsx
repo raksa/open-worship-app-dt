@@ -1,5 +1,5 @@
 import {
-    useSlideItemThumbTooling,
+    useSlideItemTooling,
 } from '../event/SlideListEventListener';
 import { BoxEditor } from './BoxEditor';
 import {
@@ -11,49 +11,13 @@ import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import SlideItem from '../slide-presenting/SlideItem';
-import { ToolingType, tooling2BoxProps } from './helps';
-import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
-import HTML2React from '../slide-editing/HTML2React';
-import Slide from '../slide-list/Slide';
+import HTML2React from './HTML2React';
+import HTML2ReactChild from './HTML2ReactChild';
 
-function newChild(data: ToolingType, newList: HTML2ReactChild[],
-    html2React: HTML2React, index: number) {
-    const { text, box } = data;
-    const boxProps = tooling2BoxProps(data, {
-        width: newList[index].width, height: newList[index].height,
-        parentWidth: html2React.width, parentHeight: html2React.height,
-    });
-    const newH2rChild = new HTML2ReactChild({
-        ...newList[index], ...text, ...box, ...boxProps,
-    });
-    newH2rChild.rotate = box && box.rotate !== undefined ? box.rotate : newH2rChild.rotate;
-    newH2rChild.backgroundColor = box && box.backgroundColor !== undefined ?
-        box.backgroundColor : newH2rChild.backgroundColor;
-    return newH2rChild;
-}
-function genNewH2rChildren(data: ToolingType, html2React: HTML2React,
-    html2ReactChildren: HTML2ReactChild[]) {
-    if (!~editorMapper.selectedIndex) {
-        return null;
-    }
-    let newList = [...html2ReactChildren];
-    const index = editorMapper.selectedIndex;
-    newList[index] = newChild(data, newList, html2React, index);
-    if (data.box?.layerBack || data.box?.layerFront) {
-        newList = newList.map((be, i) => {
-            if (i === index) {
-                be.zIndex = data.box?.layerBack ? 1 : 2;
-            } else {
-                be.zIndex = data.box?.layerBack ? 2 : 1;
-            }
-            return be;
-        });
-    }
-    return newList;
-}
-
-export default function Editor({ slideItemThumb, html2React, scale }: {
-    slideItemThumb: SlideItem,
+export default function SlideEditor({
+    slideItem, html2React, scale,
+}: {
+    slideItem: SlideItem,
     html2React: HTML2React,
     scale: number,
 }) {
@@ -92,13 +56,14 @@ export default function Editor({ slideItemThumb, html2React, scale }: {
     };
 
     const applyUpdate = () => {
-        const parsedHTMLData = HTML2React.parseHTML(slideItemThumb.html);
+        const parsedHTMLData = HTML2React.parseHTML(slideItem.html);
         parsedHTMLData.children = html2ReactChildren;
-        slideItemThumb.html = parsedHTMLData.htmlString;
+        slideItem.html = parsedHTMLData.htmlString;
     };
-    useSlideItemThumbTooling((newToolingData) => {
+    useSlideItemTooling((newToolingData) => {
         if (~editorMapper.selectedIndex) {
-            const newList = genNewH2rChildren(newToolingData, html2React, html2ReactChildren);
+            const newList = HTML2ReactChild.genNewH2rChildren(newToolingData,
+                html2React, html2ReactChildren);
             if (newList !== null) {
                 setHtml2ReactChildren(newList);
             }

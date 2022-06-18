@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
-import Slide from './Slide';
 
-export default function SlideItem({
+export default function LyricFile({
     index, list, setList, fileSource,
 }: {
     index: number,
@@ -11,27 +11,27 @@ export default function SlideItem({
     setList: (newList: FileSource[] | null) => void,
     fileSource: FileSource,
 }) {
-    const [data, setData] = useState<Slide | null | undefined>(null);
-    const selectedSlideFS = Slide.getSelectedSlideFileSource();
-    const isSelected = !selectedSlideFS || !data ? false :
-        data.fileSource.filePath === selectedSlideFS?.filePath;
+    const [data, setData] = useState<Lyric | null | undefined>(null);
+    const selectedLyricFS = Lyric.getSelectedLyricFileSource();
+    const isSelected = !selectedLyricFS || !data ? false :
+        data.fileSource.filePath === selectedLyricFS?.filePath;
     return (
         <FileItemHandler
             index={index}
-            mimetype={'slide'}
+            mimetype={'lyric'}
             list={list}
             setList={setList}
             data={data}
             setData={setData}
             fileSource={fileSource}
-            className={`slide-item ${isSelected ? 'active' : ''}`}
+            className={`${isSelected ? 'active' : ''}`}
             onClick={() => {
                 if (data) {
-                    Slide.presentSlide(isSelected ? null : data);
+                    Lyric.presentLyric(isSelected ? null : data);
                 }
             }}
             child={<>
-                <i className='bi bi-file-earmark-slides' />
+                <i className="bi bi-music-note" />
                 {fileSource.name}
             </>}
         />

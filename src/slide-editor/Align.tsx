@@ -1,6 +1,6 @@
 import {
     VAlignmentEnum, HAlignmentEnum,
-} from '../slide-editing/HTML2React';
+} from './HTML2React';
 
 export default function Align({ onData, isText }: {
     onData: (data: {

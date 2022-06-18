@@ -1,4 +1,4 @@
-import { VAlignmentEnum, HAlignmentEnum } from '../slide-editing/HTML2React';
+import { VAlignmentEnum, HAlignmentEnum } from './HTML2React';
 
 export function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,

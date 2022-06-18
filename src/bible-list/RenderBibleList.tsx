@@ -12,7 +12,7 @@ export type BibleGroupType = {
     isDefault?: boolean,
 };
 
-export default function RenderList({ group, index, applyGroup }: {
+export default function RenderBibleList({ group, index, applyGroup }: {
     group: BibleGroupType, index: number,
     applyGroup: (g: BibleGroupType, i: number) => void,
 }) {

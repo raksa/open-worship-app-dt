@@ -45,7 +45,7 @@ export default class PresentEventListener extends EventHandler {
         this._addPropEvent(PresentTypeEnum.RENDER_FG);
     }
     clearFG() {
-        slideListEventListenerGlobal.clearSelectSlideItemThumb();
+        slideListEventListenerGlobal.clearSelectedSlideItem();
         clearForeground();
         this._addPropEvent(PresentTypeEnum.CLEAR_FG);
     }

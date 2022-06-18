@@ -1,6 +1,6 @@
 import SlideList from './slide-list/SlideList';
-import SlideItemThumbEditor from './editor/SlideItemThumbEditor';
-import SlideItemThumbList from './slide-presenting/SlideItemThumbList';
+import SlideItemEditorPreviewer from './slide-editor/SlideItemEditorPreviewer';
+import SlideItemList from './slide-presenting/SlideItemList';
 import { getWindowMode } from './App';
 import ReSizer from './resizer/ReSizer';
 
@@ -24,9 +24,9 @@ export default function AppEditing() {
                     ['h1-v1', 'flex-item'],
                     ['h1-v2', 'flex-item']]}>
                 <SlideList />
-                <SlideItemThumbList />
+                <SlideItemList />
             </ReSizer>
-            <SlideItemThumbEditor />
+            <SlideItemEditorPreviewer />
         </ReSizer>
     );
 }

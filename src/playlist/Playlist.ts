@@ -1,15 +1,15 @@
+import { BibleItemType } from '../bible-list/Bible';
 import {
-    BiblePresentType,
-} from '../full-text-present/previewingHelper';
-import { MetaDataType, MimetypeNameType } from '../helper/fileHelper';
+    MetaDataType, MimetypeNameType,
+} from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { validateMeta } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 
 export type PlaylistItemType = {
     type: 'slide' | 'bible',
-    slideItemThumbPath?: string,
-    bible?: BiblePresentType,
+    slideItemPath?: string,
+    bible?: BibleItemType,
 }
 export type PlaylistType = {
     items: PlaylistItemType[],
@@ -35,7 +35,7 @@ export default class Playlist extends ItemSource<PlaylistType>{
 
 export function validatePlaylistItem(item: any) {
     try {
-        if ((item.type === 'slide' && (item.slideItemThumbPath)) ||
+        if ((item.type === 'slide' && (item.slideItemPath)) ||
             (item.type === 'bible' && (item.bible))
         ) {
             return true;

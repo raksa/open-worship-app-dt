@@ -4,24 +4,26 @@ import {
 } from '../event/KeyboardEventListener';
 import { WindowEnum } from '../event/WindowEventListener';
 import {
-    useThumbSizing,
+    useSlideItemSizing,
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
-import { Fragment, useEffect, useState } from 'react';
-import SlideItemsController, { useRefresh } from './SlideItemsController';
-import SlideItemThumbRender, {
-    DragReceiver, ItemThumbGhost,
-} from './SlideItemThumbIFrame';
+import { Fragment, useState } from 'react';
+import SlideItemsController, {
+    useRefresh,
+} from './SlideItemsController';
+import SlideItemRender from './SlideItemRender';
 import {
-    THUMB_WIDTH_SETTING_NAME,
-    DEFAULT_THUMB_SIZE,
+    THUMBNAIL_WIDTH_SETTING_NAME,
+    DEFAULT_THUMBNAIL_SIZE,
 } from './SlideItemsControllerBase';
 import { usePresentFGClearing } from '../event/PresentEventListener';
+import SlideItemGhost from './SlideItemGhost';
+import SlideItemDragReceiver from './SlideItemDragReceiver';
 
-export default function SlideItemThumbListItems({ controller }: {
+export default function SlideItemsPreviewer({ controller }: {
     controller: SlideItemsController,
 }) {
-    const [thumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
+    const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useRefresh(controller);
     usePresentFGClearing(() => {
@@ -62,14 +64,14 @@ export default function SlideItemThumbListItems({ controller }: {
                     draggingIndex !== i && draggingIndex !== i + 1;
                 return (
                     <Fragment key={`${i}`}>
-                        {shouldReceiveAtLeft && <DragReceiver
+                        {shouldReceiveAtLeft && <SlideItemDragReceiver
                             onDrop={(id) => {
                                 controller.move(id, i);
                             }} />}
-                        <SlideItemThumbRender
+                        <SlideItemRender
                             isActive={item.isSelected}
                             index={i}
-                            slideItemThumb={item}
+                            slideItem={item}
                             fileSource={controller.slide.fileSource}
                             onItemClick={() => {
                                 if (controller.selectedItem === item) {
@@ -92,15 +94,16 @@ export default function SlideItemThumbListItems({ controller }: {
                                 setDraggingIndex(null);
                             }}
                         />
-                        {shouldReceiveAtRight && <DragReceiver onDrop={(id) => {
-                            controller.move(id, i);
-                        }} />}
+                        {shouldReceiveAtRight && <SlideItemDragReceiver
+                            onDrop={(id) => {
+                                controller.move(id, i);
+                            }} />}
                     </Fragment>
                 );
             })}
             {Array.from({ length: 2 }, (_, i) => {
                 return (
-                    <ItemThumbGhost key={`${i}`} width={thumbSize} />
+                    <SlideItemGhost key={`${i}`} width={thumbSize} />
                 );
             })}
         </div>

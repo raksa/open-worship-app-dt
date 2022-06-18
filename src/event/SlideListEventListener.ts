@@ -1,18 +1,20 @@
 import { useEffect } from 'react';
-import { ToolingType } from '../editor/helps';
+import { ToolingType } from '../slide-editor/helps';
 import {
     getSetting, setSetting, useStateSettingNumber,
 } from '../helper/settingHelper';
-import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
 import SlideItem from '../slide-presenting/SlideItem';
-import { THUMB_SELECTED_SETTING_NAME } from '../slide-presenting/SlideItemsControllerBase';
+import {
+    SLIDE_ITEM_SELECTED_SETTING_NAME,
+} from '../slide-presenting/SlideItemsControllerBase';
 import EventHandler from './EventHandler';
+import HTML2ReactChild from '../slide-editor/HTML2ReactChild';
 
 type ListenerType<T> = (data: T) => void;
 export enum SlideListEnum {
-    ITEM_THUMB_SELECT = 'item-thumb-select',
+    SLIDE_ITEM_SELECT = 'slide-item-select',
     BOX_EDITING = 'box-editing',
-    ITEM_THUMB_SIZING = 'item-thumb-sizing',
+    SLIDE_ITEM_SIZING = 'slide-item-sizing',
     TOOLING = 'tooling',
 }
 export type RegisteredEventType<T> = {
@@ -26,11 +28,11 @@ export default class SlideListEventListener extends EventHandler {
     tooling(data: ToolingType) {
         this._addPropEvent(SlideListEnum.TOOLING, data);
     }
-    selectSlideItemThumb(slideItemThumb: SlideItem | null) {
-        this._addPropEvent(SlideListEnum.ITEM_THUMB_SELECT, slideItemThumb);
+    selectSlideItem(slideItem: SlideItem | null) {
+        this._addPropEvent(SlideListEnum.SLIDE_ITEM_SELECT, slideItem);
     }
-    thumbSizing() {
-        this._addPropEvent(SlideListEnum.ITEM_THUMB_SIZING);
+    slideItemSizing() {
+        this._addPropEvent(SlideListEnum.SLIDE_ITEM_SIZING);
     }
     registerSlideListEventListener(type: SlideListEnum, listener: ListenerType<any>):
         RegisteredEventType<any> {
@@ -40,16 +42,16 @@ export default class SlideListEventListener extends EventHandler {
     unregisterSlideListEventListener({ type, listener }: RegisteredEventType<any>) {
         this._removeOnEventListener(type, listener);
     }
-    clearSelectSlideItemThumb() {
-        setSetting(THUMB_SELECTED_SETTING_NAME, '');
+    clearSelectedSlideItem() {
+        setSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, '');
     }
 }
 export const slideListEventListenerGlobal = new SlideListEventListener();
 
-export function useSlideItemThumbSelecting(listener: ListenerType<SlideItem | null>) {
+export function useSlideItemSelecting(listener: ListenerType<SlideItem | null>) {
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
-            SlideListEnum.ITEM_THUMB_SELECT, listener);
+            SlideListEnum.SLIDE_ITEM_SELECT, listener);
         return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
@@ -64,7 +66,7 @@ export function useSlideBoxEditing(listener: ListenerType<HTML2ReactChild | null
         };
     });
 }
-export function useSlideItemThumbTooling(listener: ListenerType<ToolingType>) {
+export function useSlideItemTooling(listener: ListenerType<ToolingType>) {
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
             SlideListEnum.TOOLING, listener);
@@ -73,19 +75,19 @@ export function useSlideItemThumbTooling(listener: ListenerType<ToolingType>) {
         };
     });
 }
-export function useThumbSizing(settingName: string, defaultSize: number): [number, (s: number) => void] {
+export function useSlideItemSizing(settingName: string, defaultSize: number): [number, (s: number) => void] {
     const getDefaultSize = () => +getSetting(settingName, defaultSize + '');
-    const [thumbSize, setThumbSize] = useStateSettingNumber(settingName, getDefaultSize());
+    const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(settingName, getDefaultSize());
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
-            SlideListEnum.ITEM_THUMB_SIZING, () => setThumbSize(getDefaultSize()));
+            SlideListEnum.SLIDE_ITEM_SIZING, () => setThumbnailSize(getDefaultSize()));
         return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
-    const applyThumbSize = (size: number) => {
-        setThumbSize(size);
-        slideListEventListenerGlobal.thumbSizing();
+    const applyThumbnailSize = (size: number) => {
+        setThumbnailSize(size);
+        slideListEventListenerGlobal.slideItemSizing();
     };
-    return [thumbSize, applyThumbSize];
+    return [thumbnailSize, applyThumbnailSize];
 }

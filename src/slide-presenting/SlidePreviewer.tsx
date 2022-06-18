@@ -1,24 +1,22 @@
 import './SlidePreviewer.scss';
 
-import SlideItemThumbList from './SlideItemThumbList';
+import SlideItemList from './SlideItemList';
 import { renderFG } from '../helper/presentingHelpers';
 import {
-    useSlideItemThumbSelecting,
-    useThumbSizing,
+    useSlideItemSelecting,
+    useSlideItemSizing,
 } from '../event/SlideListEventListener';
 import { presentEventListener } from '../event/PresentEventListener';
 import {
-    THUMB_WIDTH_SETTING_NAME,
-    DEFAULT_THUMB_SIZE,
-    MIN_THUMB_SCALE,
-    MAX_THUMB_SCALE,
-    THUMB_SCALE_STEP,
+    THUMBNAIL_WIDTH_SETTING_NAME,
+    DEFAULT_THUMBNAIL_SIZE,
 } from './SlideItemsControllerBase';
-import SlideItemsController from './SlideItemsController';
+import SlidePreviewerFooter from './SlidePreviewerFooter';
 
 export default function SlidePreviewer() {
-    const [thumbSize, setThumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
-    useSlideItemThumbSelecting((item) => {
+    const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
+        DEFAULT_THUMBNAIL_SIZE);
+    useSlideItemSelecting((item) => {
         if (item !== null) {
             renderFG(item.html);
             presentEventListener.renderFG();
@@ -29,31 +27,10 @@ export default function SlidePreviewer() {
     return (
         <div id='slide-previewer' className='card w-100 h-100'>
             <div className='card-body w-100 h-100'>
-                <SlideItemThumbList />
+                <SlideItemList />
             </div>
-            <Footer thumbSize={thumbSize} setThumbSize={(s) => setThumbSize(s)} />
-        </div>
-    );
-}
-
-function Footer({ thumbSize, setThumbSize }: {
-    thumbSize: number, setThumbSize: (size: number) => void,
-}) {
-    const currentScale = (thumbSize / DEFAULT_THUMB_SIZE);
-    return (
-        <div className='card-footer'>
-            <div className='d-flex justify-content-end h-100'>
-                <div className='size d-flex'>
-                    <label className='form-label'>Size:{currentScale.toFixed(1)}</label>
-                    <input type='range' className='form-range' min={MIN_THUMB_SCALE} max={MAX_THUMB_SCALE}
-                        step={THUMB_SCALE_STEP} value={currentScale.toFixed(1)} onChange={(e) => {
-                            setThumbSize((+e.target.value) * DEFAULT_THUMB_SIZE);
-                        }} onWheel={(e) => {
-                            const newScale = SlideItemsController.toScaleThumbSize(e.deltaY > 0, currentScale);
-                            setThumbSize(newScale * DEFAULT_THUMB_SIZE);
-                        }} />
-                </div>
-            </div>
+            <SlidePreviewerFooter thumbnailSize={thumbSize}
+                setThumbnailSize={(s) => setThumbSize(s)} />
         </div>
     );
 }

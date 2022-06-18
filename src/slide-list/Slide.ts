@@ -35,8 +35,7 @@ export default class Slide extends ItemSource<SlidePresentType>{
     }
     static _initItems(slide: ItemSource<any>) {
         slide.content.items = slide.content.items.map((item: any) => {
-            return new SlideItem(item.index, item.id,
-                item.html, slide.fileSource);
+            return new SlideItem(item.id, item.html, slide.fileSource);
         });
     }
     static async readFileToDataNoCache(fileSource: FileSource | null) {
@@ -91,11 +90,16 @@ export default class Slide extends ItemSource<SlidePresentType>{
         } catch (error) { }
         return defaultSlideList;
     }
-
     static defaultSlide() {
         return {
             items: [SlideItem.defaultSlideItem()],
         };
+    }
+    static toWrongDimensionString({ slide, display }: {
+        slide: { width: number, height: number },
+        display: { width: number, height: number },
+    }) {
+        return `⚠️ slide:${slide.width}x${slide.height} display:${display.width}x${display.height}`;
     }
 }
 

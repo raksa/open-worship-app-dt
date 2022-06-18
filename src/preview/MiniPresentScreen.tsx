@@ -1,7 +1,7 @@
 import './MiniPresentScreen.scss';
 
 import ShowHidePresent from './ShowHidePresent';
-import PreviewThumbnail from './MiniPreviewThumbnail';
+import PresentScreenPreviewer from './PresentScreenPreviewer';
 import ClearControl from './ClearControl';
 
 export default function MiniPresentScreen() {
@@ -12,7 +12,7 @@ export default function MiniPresentScreen() {
                 <ClearControl />
             </div>
             <div className="card-body">
-                <PreviewThumbnail />
+                <PresentScreenPreviewer />
             </div>
         </div>
     );

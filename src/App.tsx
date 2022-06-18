@@ -13,7 +13,7 @@ import AppEditing from './AppEditing';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
-import { useTranslation } from 'react-i18next';
+import TabRender from './others/TabRender';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
@@ -25,27 +25,19 @@ export function isWindowEditingMode() {
     return windowType === 'e';
 }
 
+// e: editing, p: presenting
+type TabType = 'e' | 'p';
 export default function App() {
-    const { t } = useTranslation();
-    // e: editing, p: presenting
-    const [tabType, setTabType] = useStateSettingString(WINDOW_TYPE, 'p');
+    const [tabType, setTabType] = useStateSettingString<TabType>(WINDOW_TYPE, 'p');
     return (
         <div id="app" className="dark d-flex flex-column">
             <div className="app-header d-flex">
-                <ul className="nav nav-tabs ">
-                    {[['e', 'Editing'], ['p', 'Presenting']].map(([key, title], i) => {
-                        return (<li key={i} className="nav-item">
-                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => {
-                                    if (key !== tabType) {
-                                        setTabType(key);
-                                    }
-                                }}>
-                                {t(title)}
-                            </button>
-                        </li>);
-                    })}
-                </ul>
+                <TabRender<TabType> tabs={[
+                    ['e', 'Editing'],
+                    ['p', 'Presenting'],
+                ]}
+                    activeTab={tabType}
+                    setActiveTab={setTabType} />
                 <div className="highlight-border-bottom d-flex justify-content-center flex-fill">
                     <BibleSearchHeader />
                 </div>

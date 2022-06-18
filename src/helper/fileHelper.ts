@@ -37,7 +37,7 @@ export const createNewItem = async (dir: string, name: string,
     return false;
 };
 
-export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric';
+export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric' | 'bible';
 
 function getFileMetaData(fileName: string, mimeTypes: MimeType[]): FileMetadataType | null {
     const ext = fileName.substring(fileName.lastIndexOf('.'));

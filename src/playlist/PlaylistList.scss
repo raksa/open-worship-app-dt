@@ -4,7 +4,7 @@
   .card-body {
     height: calc(100% - $card-header-height);
 
-    .playlist-item {
+    .playlist-file {
       &:before {
         display: block;
         position: absolute;

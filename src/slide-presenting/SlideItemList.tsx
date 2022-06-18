@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import {
-    useThumbSizing,
+    useSlideItemSizing,
 } from '../event/SlideListEventListener';
-import SlideItemThumbListMenu from './SlideItemThumbListMenu';
-import SlideItemThumbListItems from './SlideItemThumbListItems';
+import SlideItemsMenu from './SlideItemsMenu';
+import SlideItemsPreviewer from './SlideItemsPreviewer';
 import {
-    DEFAULT_THUMB_SIZE,
-    THUMB_WIDTH_SETTING_NAME,
+    DEFAULT_THUMBNAIL_SIZE,
+    THUMBNAIL_WIDTH_SETTING_NAME,
 } from './SlideItemsControllerBase';
 import { useSlidePresenting } from '../event/PreviewingEventListener';
 import Slide from '../slide-list/Slide';
@@ -14,7 +14,7 @@ import FileSource from '../helper/FileSource';
 import SlideList from '../slide-list/SlideList';
 import SlideItemsController from './SlideItemsController';
 
-export default function SlideItemThumbList() {
+export default function SlideItemList() {
     const [slideFS, setSlideFS] = useState<FileSource | null>(Slide.getSelectedSlideFileSource());
 
     useSlidePresenting((slide) => {
@@ -43,7 +43,8 @@ export default function SlideItemThumbList() {
     );
 }
 function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
-    const [thumbSize, setThumbSize] = useThumbSizing(THUMB_WIDTH_SETTING_NAME, DEFAULT_THUMB_SIZE);
+    const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
+        DEFAULT_THUMBNAIL_SIZE);
     const [slide, setSlide] = useState<Slide | null | undefined>(null);
     useEffect(() => {
         Slide.readFileToDataNoCache(fileSource).then((sl) => {
@@ -75,14 +76,14 @@ function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
                 if (!e.ctrlKey) {
                     return;
                 }
-                const currentScale = (thumbSize / DEFAULT_THUMB_SIZE);
+                const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE);
                 const newScale = SlideItemsController.toScaleThumbSize(e.deltaY > 0, currentScale);
-                setThumbSize(newScale * DEFAULT_THUMB_SIZE);
+                setThumbSize(newScale * DEFAULT_THUMBNAIL_SIZE);
             }}
             onContextMenu={(e) => controller.showSlideItemContextMenu(e)}
             onPaste={() => controller.paste()}>
-            <SlideItemThumbListMenu controller={controller} />
-            <SlideItemThumbListItems controller={controller} />
+            <SlideItemsMenu controller={controller} />
+            <SlideItemsPreviewer controller={controller} />
         </div>
     );
 }

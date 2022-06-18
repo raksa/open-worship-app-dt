@@ -3,9 +3,11 @@ import { BLACK_COLOR } from '../others/ColorPicker';
 import {
     getRotationDeg, removePX,
 } from '../helper/helpers';
-import {
+import HTML2React, {
     HAlignmentEnum, VAlignmentEnum,
 } from './HTML2React';
+import { editorMapper } from './EditorBoxMapper';
+import { ToolingType, tooling2BoxProps } from './helps';
 
 export default class HTML2ReactChild {
     text: string;
@@ -93,5 +95,40 @@ export default class HTML2ReactChild {
             backgroundColor: style.backgroundColor || 'transparent',
             zIndex: +style.zIndex || 0,
         });
+    }
+    static genNewChild(data: ToolingType, newList: HTML2ReactChild[],
+        html2React: HTML2React, index: number) {
+        const { text, box } = data;
+        const boxProps = tooling2BoxProps(data, {
+            width: newList[index].width, height: newList[index].height,
+            parentWidth: html2React.width, parentHeight: html2React.height,
+        });
+        const newH2rChild = new HTML2ReactChild({
+            ...newList[index], ...text, ...box, ...boxProps,
+        });
+        newH2rChild.rotate = box && box.rotate !== undefined ? box.rotate : newH2rChild.rotate;
+        newH2rChild.backgroundColor = box && box.backgroundColor !== undefined ?
+            box.backgroundColor : newH2rChild.backgroundColor;
+        return newH2rChild;
+    }
+    static genNewH2rChildren(data: ToolingType, html2React: HTML2React,
+        html2ReactChildren: HTML2ReactChild[]) {
+        if (!~editorMapper.selectedIndex) {
+            return null;
+        }
+        let newList = [...html2ReactChildren];
+        const index = editorMapper.selectedIndex;
+        newList[index] = this.genNewChild(data, newList, html2React, index);
+        if (data.box?.layerBack || data.box?.layerFront) {
+            newList = newList.map((be, i) => {
+                if (i === index) {
+                    be.zIndex = data.box?.layerBack ? 1 : 2;
+                } else {
+                    be.zIndex = data.box?.layerBack ? 2 : 1;
+                }
+                return be;
+            });
+        }
+        return newList;
     }
 }

@@ -36,10 +36,12 @@ export default function LyricPreviewer() {
     );
 }
 let isMounted = false;
-function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
+function PreviewerRender({ fileSource }: {
+    fileSource: FileSource | null,
+}) {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
     useEffect(() => {
-        Lyric.readFileToData(fileSource).then((lr) => {
+        Lyric.readFileToDataNoCache(fileSource).then((lr) => {
             if (!lr) {
                 Lyric.clearSelectedLyric();
             }
@@ -84,11 +86,12 @@ function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
     }
     return (
         <>
-            <Save lyric={lyric} />
+            <SavingRenderer lyric={lyric} />
             {lyricItems.map((lyricItem, i) => {
                 return (
                     <LyricView key={i} i={i}
                         lyricItem={lyricItem}
+                        lyricItems={lyricItems}
                         onLyricChange={(newLyricItem) => {
                             const newLyric = lyric.clone<Lyric>();
                             newLyric.content.items[i] = newLyricItem;
@@ -116,7 +119,7 @@ function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
         </>
     );
 }
-function Save({ lyric }: { lyric: Lyric }) {
+function SavingRenderer({ lyric }: { lyric: Lyric }) {
     const [isEditing, setIEditing] = useState(false);
     useEffect(() => {
         Lyric.readFileToDataNoCache(lyric.fileSource).then((lr) => {

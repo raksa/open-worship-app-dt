@@ -4,12 +4,12 @@ import {
 } from '../full-text-present/previewingHelper';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
-import SlideItemThumbPlaylist from './SlideItemThumbPlaylist';
+import PlaylistSlideItem from './PlaylistSlideItem';
 import FileItemHandler from '../others/FileItemHandler';
-import Playlist, { validatePlaylist } from './Playlist';
+import Playlist from './Playlist';
 import FileSource from '../helper/FileSource';
 
-export default function PlaylistItem({
+export default function PlaylistFile({
     index, list, setList, fileSource,
 }: {
     index: number,
@@ -28,7 +28,7 @@ export default function PlaylistItem({
             data={data}
             setData={setData}
             fileSource={fileSource}
-            className={'playlist-item'}
+            className={'playlist-file'}
             onClick={() => setIsOpened(!isOpened)}
             onDrop={async (event) => {
                 if (data) {
@@ -44,7 +44,7 @@ export default function PlaylistItem({
                     } catch (error) {
                         data.content.items.push({
                             type: 'slide',
-                            slideItemThumbPath: receivedData,
+                            slideItemPath: receivedData,
                         });
                     }
                     data.save().then(() => {
@@ -61,10 +61,10 @@ export default function PlaylistItem({
                 {isOpened && data && <div className='card-body d-flex flex-column'>
                     {data.content.items.map((item, i) => {
                         if (item.type === 'slide') {
-                            const slidePath = item.slideItemThumbPath as string;
+                            const slidePath = item.slideItemPath as string;
                             return <Fragment key={`${i}`}>
-                                <SlideItemThumbPlaylist
-                                    slideItemThumbPath={slidePath}
+                                <PlaylistSlideItem
+                                    slideItemPath={slidePath}
                                     width={200} />
                             </Fragment>;
                         }

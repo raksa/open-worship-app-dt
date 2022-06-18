@@ -16,10 +16,11 @@ import { windowEventListener } from '../event/WindowEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { biblePresentToTitle } from '../bible-helper/helpers1';
 import { presentBible } from './BibleItem';
-import RenderList, { BibleGroupType } from './RenderList';
+import RenderBibleList, { BibleGroupType } from './RenderBibleList';
 import { AskingNewName } from '../others/AskingNewName';
 
-export async function addBibleItem(biblePresent: BiblePresentType, openPresent?: boolean) {
+export async function addBibleItem(biblePresent: BiblePresentType,
+    openPresent?: boolean) {
     const index = getBibleListEditingIndex() || undefined;
     clearBibleListEditingIndex();
     previewingEventListener.addBibleItem({ biblePresent, index });
@@ -197,7 +198,8 @@ export default function BibleList() {
                                 </div>
                                 <div className={`accordion-collapse collapse ${group.isOpen ? 'show' : ''}`}>
                                     <div className='accordion-body'>
-                                        <RenderList group={group} index={i} applyGroup={applyGroup} />
+                                        <RenderBibleList group={group} index={i}
+                                            applyGroup={applyGroup} />
                                     </div>
                                 </div>
                             </div>

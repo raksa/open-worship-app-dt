@@ -7,18 +7,7 @@ import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
-
-export type BiblePresentType = {
-    index?: number,
-    bible: string,
-    target: {
-        book: string,
-        chapter: number,
-        startVerse: number,
-        endVerse: number,
-    },
-    metadata?: { [key: string]: any },
-};
+import { BibleItemType } from '../bible-list/Bible';
 
 type StylingType = {
     color?: string;
@@ -189,7 +178,7 @@ class FullTextPresentHelper {
             fullTextPresentHelper.show();
         }
     }
-    renderBibleFromBiblePresentList = (biblePresents: BiblePresentType[]) => {
+    renderBibleFromBiblePresentList = (biblePresents: BibleItemType[]) => {
         Promise.all(biblePresents.map((biblePresent) => {
             return new Promise<{
                 title: string, texts: string[]

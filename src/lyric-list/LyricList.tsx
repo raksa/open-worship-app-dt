@@ -7,7 +7,7 @@ import {
 import {
     useLyricUpdating,
 } from '../event/PreviewingEventListener';
-import LyricItem from './LyricItem';
+import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import FileSource from '../helper/FileSource';
 import Lyric from './Lyric';
@@ -15,7 +15,7 @@ import Lyric from './Lyric';
 const id = 'lyric-list';
 export default function LyricList() {
     const [list, setList] = useState<FileSource[] | null>(null);
-    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
+    const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
     useLyricUpdating((newLyric) => {
         newLyric.save().then(() => {
             setList(null);
@@ -40,7 +40,7 @@ export default function LyricList() {
             header={<span>Lyrics</span>}
             body={<>
                 {(list || []).map((fileSource, i) => {
-                    return <LyricItem key={`${i}`}
+                    return <LyricFile key={`${i}`}
                         index={i}
                         fileSource={fileSource}
                         list={list} setList={setList} />;

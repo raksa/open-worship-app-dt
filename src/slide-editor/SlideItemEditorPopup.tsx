@@ -6,7 +6,7 @@ import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEvent
 import Modal from '../others/Modal';
 import { editorMapper } from './EditorBoxMapper';
 import SlideItem from '../slide-presenting/SlideItem';
-import SlideItemThumbEditorController from './SlideItemThumbEditorController';
+import SlideItemEditor from './SlideItemEditor';
 
 export const openItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,
@@ -16,8 +16,8 @@ export const closeItemSlideEditEvent = {
     window: WindowEnum.ItemSlideEdit,
     state: StateEnum.Close,
 };
-export function openItemSlideEdit(slideItemThumb: SlideItem) {
-    windowEventListener.fireEvent(openItemSlideEditEvent, slideItemThumb);
+export function openItemSlideEdit(slideItem: SlideItem) {
+    windowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
 }
 export function closeItemSlideEdit() {
     const close = () => {
@@ -26,8 +26,10 @@ export function closeItemSlideEdit() {
     editorMapper.stopAllModes().then(close);
 }
 
-export default function SlideItemEditorPopup({ slideItemThumb }: {
-    slideItemThumb: SlideItem
+export default function SlideItemEditorPopup({
+    slideItem,
+}: {
+    slideItem: SlideItem
 }) {
     useKeyboardRegistering({
         key: KeyEnum.Escape,
@@ -38,8 +40,7 @@ export default function SlideItemEditorPopup({ slideItemThumb }: {
                 className="app-modal shadow card">
                 <HeaderEditorPopup />
                 <div className="body card-body w-100">
-                    <SlideItemThumbEditorController
-                        slideItemThumb={slideItemThumb} />
+                    <SlideItemEditor slideItem={slideItem} />
                 </div>
             </div>
         </Modal>

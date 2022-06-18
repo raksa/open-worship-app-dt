@@ -3,7 +3,7 @@ import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
 import Tool from './Tool';
 import Align from './Align';
-import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
+import HTML2ReactChild from './HTML2ReactChild';
 
 export default function ToolsText({ data }: { data: HTML2ReactChild }) {
     const [color, setColor] = useState<string>(data.color);

@@ -3,7 +3,7 @@ import './CustomStyle.scss';
 import TextShadow from './TextShadow';
 import { useStateSettingString } from '../helper/settingHelper';
 import Appearance from './Appearance';
-import { useTranslation } from 'react-i18next';
+import TabRender from '../others/TabRender';
 
 export default function CustomStyle() {
     return (
@@ -16,27 +16,21 @@ export default function CustomStyle() {
     );
 }
 
+// a: appearance, s: shadow
+type TabType = 'a' | 's';
 function Body() {
-    const { t } = useTranslation();
-    // a: appearance, s: shadow
-    const [tabType, setTabType] = useStateSettingString('tull-text-present-custom-style-tab', 'a');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'tull-text-present-custom-style-tab', 'a');
     return (
         <div className='card-body'>
             <div className="d-flex">
-                <ul className="nav nav-tabs flex-fill">
-                    {[['a', 'Appearance'], ['s', 'Shadow']].map(([key, title], i) => {
-                        return (<li key={i} className="nav-item">
-                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => {
-                                    if (key !== tabType) {
-                                        setTabType(key);
-                                    }
-                                }}>
-                                {t(title)}
-                            </button>
-                        </li>);
-                    })}
-                </ul>
+                <TabRender<TabType> tabs={[
+                    ['a', 'Appearance'],
+                    ['s', 'Shadow'],
+                ]}
+                    activeTab={tabType}
+                    setActiveTab={setTabType}
+                    className='flex-fill' />
             </div>
             <div className='custom-style-body p-2'>
                 {tabType === 'a' && <Appearance />}

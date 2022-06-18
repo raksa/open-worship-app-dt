@@ -2,12 +2,12 @@ import { toastEventListener } from '../event/ToastEventListener';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { openItemSlideEdit } from '../editor/SlideItemEditorPopup';
+import { openItemSlideEdit } from '../slide-editor/SlideItemEditorPopup';
 import { DisplayType } from '../helper/displayHelper';
-import HTML2React from '../slide-editing/HTML2React';
+import HTML2React from '../slide-editor/HTML2React';
 import Slide from '../slide-list/Slide';
 import SlideItemsControllerBase, {
-    MAX_THUMB_SCALE, MIN_THUMB_SCALE, THUMB_SCALE_STEP,
+    MAX_THUMBNAIL_SCALE, MIN_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
 } from './SlideItemsControllerBase';
 import { useState, useEffect } from 'react';
 import SlideItem from './SlideItem';
@@ -39,12 +39,12 @@ const openContextMenu = (e: any,
             },
         },
         {
-            title: 'Edit', onClick: () => {
+            title: 'Quick Edit', onClick: () => {
                 const isEditing = isWindowEditingMode();
                 const item = controller.getItemByIndex(index);
                 if (item !== null) {
                     if (isEditing) {
-                        slideListEventListenerGlobal.selectSlideItemThumb(item);
+                        slideListEventListenerGlobal.selectSlideItem(item);
                     } else {
                         openItemSlideEdit(item);
                     }
@@ -101,7 +101,7 @@ export default class SlideItemsController extends SlideItemsControllerBase {
         showAppContextMenu(e, [{
             title: 'New Slide Thumb', onClick: () => {
                 const item = SlideItem.defaultSlideItem();
-                this.add(new SlideItem(-1, item.id, item.html,
+                this.add(new SlideItem(item.id, item.html,
                     this.slide.fileSource));
             },
         }, {
@@ -113,12 +113,12 @@ export default class SlideItemsController extends SlideItemsControllerBase {
         openContextMenu(e, this, index);
     }
     static toScaleThumbSize(isUp: boolean, currentScale: number) {
-        let newScale = currentScale + (isUp ? -1 : 1) * THUMB_SCALE_STEP;
-        if (newScale < MIN_THUMB_SCALE) {
-            newScale = MIN_THUMB_SCALE;
+        let newScale = currentScale + (isUp ? -1 : 1) * THUMBNAIL_SCALE_STEP;
+        if (newScale < MIN_THUMBNAIL_SCALE) {
+            newScale = MIN_THUMBNAIL_SCALE;
         }
-        if (newScale > MAX_THUMB_SCALE) {
-            newScale = MAX_THUMB_SCALE;
+        if (newScale > MAX_THUMBNAIL_SCALE) {
+            newScale = MAX_THUMBNAIL_SCALE;
         }
         return newScale;
     }

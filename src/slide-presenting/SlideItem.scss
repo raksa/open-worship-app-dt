@@ -1,14 +1,6 @@
 @import '../others/variables.scss';
 
-
-.slide-item-thumb-drag-receiver {
-  width: 20px;
-  background-color: aqua;
-  border-radius: 5px;
-  opacity: 0.1;
-}
-
-.slide-item-thumb {
+.slide-item {
   display: inline-block;
   background-color: var(--bs-gray-800);
   box-shadow: 0 3px 10px rgb(0, 0, 0, 0.2);

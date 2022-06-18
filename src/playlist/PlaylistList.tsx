@@ -4,7 +4,7 @@ import { useState } from 'react';
 import {
     useStateSettingString,
 } from '../helper/settingHelper';
-import PlaylistItem from './PlaylistItem';
+import PlaylistFile from './PlaylistFile';
 import FileListHandler from '../others/FileListHandler';
 import FileSource from '../helper/FileSource';
 import Playlist from './Playlist';
@@ -12,7 +12,7 @@ import Playlist from './Playlist';
 const id = 'playlist-list';
 export default function PlaylistList() {
     const [list, setList] = useState<FileSource[] | null>(null);
-    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
+    const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
     return (
         <FileListHandler id={id} mimetype={'playlist'}
             list={list} setList={setList}
@@ -30,7 +30,7 @@ export default function PlaylistList() {
             header={<span>Playlists</span>}
             body={<>
                 {(list || []).map((data, i) => {
-                    return <PlaylistItem key={`${i}`}
+                    return <PlaylistFile key={`${i}`}
                         index={i}
                         fileSource={data}
                         list={list}

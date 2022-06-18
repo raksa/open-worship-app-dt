@@ -4,25 +4,23 @@ import FileSource from '../helper/FileSource';
 import { getAppInfo } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import Slide from '../slide-list/Slide';
-import { THUMB_SELECTED_SETTING_NAME } from './SlideItemsControllerBase';
+import { SLIDE_ITEM_SELECTED_SETTING_NAME } from './SlideItemsControllerBase';
 
 export default class SlideItem {
-    index: number;
     id: string;
     _html: string;
     fileSource: FileSource;
     isCopied: boolean;
     _isSelected: boolean = false;
-    constructor(index: number, id: string, html: string,
+    constructor(id: string, html: string,
         fileSource: FileSource) {
-        this.index = index;
         this.id = id;
         this._html = html;
         this.fileSource = fileSource;
         this.isCopied = false;
 
-        const slideItemThumbSelected = getSetting(THUMB_SELECTED_SETTING_NAME, '');
-        const parsed = SlideItem.parseSlideItemThumbSelected(slideItemThumbSelected,
+        const slideItem = getSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, '');
+        const parsed = SlideItem.parseSelectedSlideItem(slideItem,
             this.fileSource);
         this.isSelected = parsed?.id === this.id;
     }
@@ -35,10 +33,10 @@ export default class SlideItem {
         }
         this._isSelected = b;
         if (this.isSelected) {
-            setSetting(THUMB_SELECTED_SETTING_NAME, this.id);
-            slideListEventListenerGlobal.selectSlideItemThumb(this);
+            setSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, this.id);
+            slideListEventListenerGlobal.selectSlideItem(this);
         } else {
-            slideListEventListenerGlobal.selectSlideItemThumb(null);
+            slideListEventListenerGlobal.selectSlideItem(null);
         }
         this.fileSource.refresh();
     }
@@ -51,15 +49,15 @@ export default class SlideItem {
             this.fileSource.refresh();
         }
     }
-    async isEditing(slide?: Slide | null) {
+    async isEditing(index: number, slide?: Slide | null) {
         slide = slide || await Slide.readFileToDataNoCache(this.fileSource);
         if (slide) {
-            const item = slide.content.items.find((item1) => item1.id === this.id);
-            if (item) {
-                if (item.index !== this.index) {
+            const slideItem = slide.content.items.find((item) => item.id === this.id);
+            if (slideItem) {
+                if (index !== slide.content.items.indexOf(slideItem)) {
                     return true;
                 }
-                return item.html !== this._html;
+                return slideItem.html !== this._html;
             } else {
                 return true;
             }
@@ -67,7 +65,7 @@ export default class SlideItem {
         return false;
     }
     clone() {
-        return new SlideItem(-1, this.id, this._html, this.fileSource);
+        return new SlideItem(this.id, this._html, this.fileSource);
     }
     toJson() {
         return {
@@ -75,20 +73,20 @@ export default class SlideItem {
             html: this._html,
         };
     }
-    static toSlideItemThumbSelected(fileSource: FileSource | null, id: string | null) {
+    static toSlideItemSelected(fileSource: FileSource | null, id: string | null) {
         if (fileSource === null || id === null) {
             return null;
         }
         return `${fileSource.filePath},${id}`;
     }
-    static extractSlideItemThumbSelected(slideFilePathId: string) {
+    static extractSlideItemSelected(slideFilePathId: string) {
         const [slideFilePath, id] = slideFilePathId.split(',');
         return {
             fileSource: FileSource.genFileSource(slideFilePath),
             id,
         };
     }
-    static parseSlideItemThumbSelected(selected: string, fileSource: FileSource | null) {
+    static parseSelectedSlideItem(selected: string, fileSource: FileSource | null) {
         if (!selected || fileSource === null) {
             return null;
         }
@@ -104,10 +102,10 @@ export default class SlideItem {
         }
         return null;
     }
-    static async getValidSlideItemThumbSelected() {
+    static async getSelectedSlideItem() {
         const fileSource = Slide.getSelectedSlideFileSource();
-        const slideItemThumbSelected = getSetting(THUMB_SELECTED_SETTING_NAME, '');
-        const result = this.parseSlideItemThumbSelected(slideItemThumbSelected, fileSource);
+        const slideItem = getSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, '');
+        const result = this.parseSelectedSlideItem(slideItem, fileSource);
         if (result !== null) {
             const slide = await Slide.readFileToData(fileSource);
             if (slide) {

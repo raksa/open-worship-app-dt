@@ -12,7 +12,7 @@ import { genCommonMenu } from '../others/FileItemHandler';
 const id = 'background-image';
 export default function Images() {
     const [list, setList] = useState<FileSource[] | null>(null);
-    const [dir, setDir] = useStateSettingString(`${id}-selected-dir`, '');
+    const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
     return (
         <FileListHandler id={id} mimetype={'image'}
             list={list} setList={setList}

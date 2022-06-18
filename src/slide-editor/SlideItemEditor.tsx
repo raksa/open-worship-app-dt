@@ -1,12 +1,12 @@
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
-import Editor from './Editor';
+import SlideEditor from './SlideEditor';
 import ReSizer from '../resizer/ReSizer';
 import SlideItem from '../slide-presenting/SlideItem';
-import HTML2React from '../slide-editing/HTML2React';
+import HTML2React from './HTML2React';
 
-export default function SlideItemThumbEditorController({ slideItemThumb }: {
-    slideItemThumb: SlideItem
+export default function SlideItemEditor({ slideItem }: {
+    slideItem: SlideItem
 }) {
     const resizeSettingName = 'editor-window-size';
     const flexSizeDefault = {
@@ -14,7 +14,7 @@ export default function SlideItemThumbEditorController({ slideItemThumb }: {
         'editor-v2': '1',
     };
     const [scale, setScale] = useStateSettingNumber('editor-scale', 1);
-    const html2React = HTML2React.parseHTML(slideItemThumb.html);
+    const html2React = HTML2React.parseHTML(slideItem.html);
     const maxScale = 3;
     const minScale = 0.2;
     const scaleStep = 0.1;
@@ -29,7 +29,7 @@ export default function SlideItemThumbEditorController({ slideItemThumb }: {
         setScale(newScale);
     };
     return (
-        <div className='slide-item-thumb-editor flex v w-100 h-100'
+        <div className='slide-item-editor flex v w-100 h-100'
             onWheel={(e) => {
                 if (e.ctrlKey) {
                     applyScale(e.deltaY > 0);
@@ -49,7 +49,7 @@ export default function SlideItemThumbEditorController({ slideItemThumb }: {
                         <div className='w-100 h-100' style={{
                             transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
                         }}>
-                            <Editor scale={scale} slideItemThumb={slideItemThumb}
+                            <SlideEditor scale={scale} slideItem={slideItem}
                                 html2React={html2React} />
                         </div>
                     </div>

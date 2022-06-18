@@ -9,7 +9,7 @@ import { SettingGeneral } from './SettingGeneral';
 import { SettingBible } from './SettingBible';
 import { SettingAbout } from './SettingAbout';
 import { useStateSettingString } from '../helper/settingHelper';
-import { useTranslation } from 'react-i18next';
+import TabRender from '../others/TabRender';
 
 export const openSettingEvent = {
     window: WindowEnum.Setting,
@@ -28,28 +28,20 @@ export default function SettingPopup() {
         </Modal>
     );
 }
+// g: general, b: bible, a: about
+type TabType = 'g' | 'b' | 'a';
 function Setting() {
-    const { t } = useTranslation();
-    // g: general, b: bible, a: about
-    const [tabType, setTabType] = useStateSettingString('popup-setting-tab', 'b');
-
+    const [tabType, setTabType] = useStateSettingString<TabType>('popup-setting-tab', 'b');
     return (
         <div className="card-body d-flex flex-column">
             <div className="setting-header d-flex">
-                <ul className="nav nav-tabs ">
-                    {[['g', 'General'], ['b', 'Bible'], ['a', 'About']].map(([key, title], i) => {
-                        return (<li key={i} className="nav-item">
-                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => {
-                                    if (key !== tabType) {
-                                        setTabType(key);
-                                    }
-                                }}>
-                                {t(title)}
-                            </button>
-                        </li>);
-                    })}
-                </ul>
+                <TabRender<TabType> tabs={[
+                    ['g', 'General'],
+                    ['b', 'Bible'],
+                    ['a', 'About'],
+                ]}
+                    activeTab={tabType}
+                    setActiveTab={setTabType} />
             </div>
             <div className="setting-body flex-fill flex h">
                 {tabType === 'g' && <SettingGeneral />}

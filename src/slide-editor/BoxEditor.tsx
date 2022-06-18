@@ -5,8 +5,10 @@ import { Component } from 'react';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
-import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import HTML2ReactChild from '../slide-editing/HTML2ReactChild';
+import {
+    slideListEventListenerGlobal,
+} from '../event/SlideListEventListener';
+import HTML2ReactChild from './HTML2ReactChild';
 
 export type NewDataType = { [key: string]: any };
 type PropsType = {
@@ -191,6 +193,8 @@ export class BoxEditor extends Component<PropsType, StateType>{
 
 function RenderText({ text }: { text: string }) {
     return (
-        <span dangerouslySetInnerHTML={{ __html: text.split('\n').join('<br>') }} />
+        <span dangerouslySetInnerHTML={{
+            __html: text.split('\n').join('<br>'),
+        }} />
     );
 }

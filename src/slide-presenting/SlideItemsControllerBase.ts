@@ -1,12 +1,12 @@
 import SlideItem from './SlideItem';
 import Slide from '../slide-list/Slide';
 
-export const MIN_THUMB_SCALE = 1;
-export const THUMB_SCALE_STEP = 0.2;
-export const MAX_THUMB_SCALE = 3;
-export const DEFAULT_THUMB_SIZE = 250;
-export const THUMB_SELECTED_SETTING_NAME = 'slide-item-thumb-selected';
-export const THUMB_WIDTH_SETTING_NAME = 'presenting-item-thumb-size';
+export const MIN_THUMBNAIL_SCALE = 1;
+export const THUMBNAIL_SCALE_STEP = 0.2;
+export const MAX_THUMBNAIL_SCALE = 3;
+export const DEFAULT_THUMBNAIL_SIZE = 250;
+export const SLIDE_ITEM_SELECTED_SETTING_NAME = 'slide-item-selected';
+export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenting-item-thumbnail-size';
 export type ChangeHistory = { items: SlideItem[] };
 
 export default class SlideItemsControllerBase {
@@ -69,17 +69,14 @@ export default class SlideItemsControllerBase {
         return [...this.items];
     }
     set items(newItems: SlideItem[]) {
-        newItems.forEach((item, i) => {
-            item.index = i;
-        });
         this.slide.content.items = newItems;
         this.slide.fileSource.refresh();
     }
     async isModifying() {
         const slide = await Slide.readFileToDataNoCache(this.slide.fileSource);
         if (slide) {
-            for (const item of this.items) {
-                if (await item.isEditing(slide)) {
+            for (let i = 0; i < this.items.length; i++) {
+                if (await this.items[i].isEditing(i, slide)) {
                     return true;
                 }
             }

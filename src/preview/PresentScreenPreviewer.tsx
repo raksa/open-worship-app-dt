@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { usePresentDataThrowing } from '../event/PresentEventListener';
 
-export default function PreviewThumbnail() {
+export default function PresentScreenPreviewer() {
     const [src, setSrc] = useState('');
     usePresentDataThrowing((data) => {
         setSrc(data);
