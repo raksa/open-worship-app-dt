@@ -2,211 +2,58 @@ import './BibleList.scss';
 
 import { useState } from 'react';
 import {
-    previewingEventListener,
-    useBibleAdding,
-} from '../event/PreviewingEventListener';
-import {
-    getSetting,
-    setSetting,
+    useStateSettingString,
 } from '../helper/settingHelper';
-import { toastEventListener } from '../event/ToastEventListener';
-import { BiblePresentType } from '../full-text-present/previewingHelper';
-import { openBibleSearchEvent } from '../bible-search/BibleSearchPopup';
-import { windowEventListener } from '../event/WindowEventListener';
-import { showAppContextMenu } from '../others/AppContextMenu';
-import { biblePresentToTitle } from '../bible-helper/helpers1';
-import { presentBible } from './BibleItem';
-import RenderBibleList, { BibleGroupType } from './RenderBibleList';
-import { AskingNewName } from '../others/AskingNewName';
+import FileListHandler from '../others/FileListHandler';
+import FileSource from '../helper/FileSource';
+import Bible from './Bible';
+import BibleFile from './BibleFile';
+import { useBibleAdding } from '../event/PreviewingEventListener';
 
-export async function addBibleItem(biblePresent: BiblePresentType,
-    openPresent?: boolean) {
-    const index = getBibleListEditingIndex() || undefined;
-    clearBibleListEditingIndex();
-    previewingEventListener.addBibleItem({ biblePresent, index });
-    const title = await biblePresentToTitle(biblePresent);
-    toastEventListener.showSimpleToast({
-        title: 'Bible List',
-        message: `${title} is added to list`,
-    });
-    if (openPresent) {
-        presentBible(biblePresent);
-    }
-}
-
-export function clearBibleListEditingIndex() {
-    setSetting('bible-list-editing', '-1');
-}
-export function getBibleListEditingIndex() {
-    const index = +getSetting('bible-list-editing', '-1');
-    if (!isNaN(index) && ~index) {
-        return index;
-    }
-    return null;
-}
-function genDefaultGroup(): BibleGroupType {
-    return {
-        isOpen: true,
-        title: 'Default',
-        list: [],
-        isDefault: true,
-    };
-}
-export function getBibleGroupsSetting() {
-    try {
-        const str = getSetting('bible-list');
-        const bibleList = JSON.parse(str);
-        if (bibleList[0].title !== 'Default') {
-            throw new Error('Invalid bible groups');
-        }
-        return bibleList;
-    } catch (error) {
-        console.log(error);
-        return [genDefaultGroup()];
-    }
-}
-export function getDefaultGroup(groups: BibleGroupType[]) {
-    const group = groups.find((g) => g.isDefault);
-    if (group) {
-        return { group, index: groups.indexOf(group) };
-    }
-    return null;
-}
-function cloneGroup(group: BibleGroupType): BibleGroupType {
-    return {
-        isOpen: group.isOpen,
-        title: group.title,
-        list: [...group.list],
-        isDefault: group.isDefault,
-    };
-}
-
+const id = 'bible-list';
 export default function BibleList() {
-    const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [isReceivingChild, setIsReceivingChild] = useState(false);
-    const [groups, setGroups] = useState<BibleGroupType[]>(getBibleGroupsSetting());
-    const applyGroup = (newGroup: BibleGroupType, index: number) => {
-        const newGroups = [...groups];
-        newGroups[index] = cloneGroup(newGroup);
-        applyGroups(newGroups);
-    };
-    const applyGroups = (newGroups: BibleGroupType[]) => {
-        setGroups(newGroups);
-        setSetting('bible-list', JSON.stringify(newGroups));
-    };
-    useBibleAdding(({ biblePresent, index: i }) => {
-        let defaultG = getDefaultGroup(groups);
-        if (defaultG === null) {
-            defaultG = { group: groups[0], index: 0 };
-        }
-        const { group: defaultGroup, index } = defaultG;
-        if (i !== undefined && groups[i]) {
-            defaultGroup.list[i] = biblePresent;
+    const [list, setList] = useState<FileSource[] | null>(null);
+    const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
+    useBibleAdding((bibleItem) => {
+        if (bibleItem.fileSource) {
+            Bible.updateBibleItem(bibleItem);
         } else {
-            defaultGroup.list.push(biblePresent);
+            Bible.getDefaultBible(dir, list).then(async (bible) => {
+                if (bible !== null) {
+                    bible.content.items.push(bibleItem);
+                    await bible.save();
+                    bible.isSelected = true;
+                    setList(null);
+                }
+            });
         }
-        applyGroup(defaultGroup, index);
     });
     return (
-        <div id='bible-list' className='card w-100 h-100'>
-            <div className='card-header'>
-                <span>Bibles</span>
-                <button className='btn btn-sm btn-outline-info float-end' title='new slide list'
-                    onClick={() => {
-                        windowEventListener.fireEvent(openBibleSearchEvent);
-                    }}>
-                    <i className='bi bi-file-earmark-plus' />
-                </button>
-            </div>
-            <div className='card-body pb-5' onContextMenu={(e) => {
-                showAppContextMenu(e, [
-                    {
-                        title: 'Delete All', onClick: () => {
-                            applyGroups([genDefaultGroup()]);
-                        },
-                    },
-                    {
-                        title: 'New Group', onClick: () => {
-                            setIsCreatingNew(true);
-                        },
-                    },
-                ]);
-            }}>
-                {isCreatingNew && <AskingNewName applyName={(name: string | null) => {
-                    setIsCreatingNew(false);
-                    if (name === null) {
-                        return;
+        <FileListHandler id={id} mimetype={'bible'}
+            list={list} setList={setList}
+            dir={dir} setDir={setDir}
+            onNewFile={async (name) => {
+                if (name !== null) {
+                    const isSuccess = await Bible.createNew(dir, name, {
+                        items: [],
+                        metadata: {},
+                    });
+                    if (isSuccess) {
+                        setList(null);
+                        return false;
                     }
-                    const newGroups = [...groups, {
-                        isOpen: false,
-                        title: name,
-                        list: [],
-                    }];
-                    applyGroups(newGroups);
-                }} />}
-                <div className='accordion accordion-flush'>
-                    {groups.map((group, i) => {
-                        const rClass = isReceivingChild ? 'receiving-child' : '';
-                        return (
-                            <div key={i}
-                                className={`bible-group-item accordion-item border-white-round ${rClass}`}
-                                onDragOver={(event) => {
-                                    event.preventDefault();
-                                    setIsReceivingChild(true);
-                                }}
-                                onDragLeave={(event) => {
-                                    event.preventDefault();
-                                    setIsReceivingChild(false);
-                                }}
-                                onDrop={(event) => {
-                                    setIsReceivingChild(false);
-                                    const receivedData = event.dataTransfer.getData('text');
-                                    try {
-                                        const item = JSON.parse(receivedData);
-                                        if (item.groupIndex === undefined) {
-                                            throw new Error('Not a bible present item');
-                                        }
-                                        const targetGroup = groups[item.groupIndex];
-                                        if (targetGroup === group) {
-                                            return;
-                                        }
-                                        const biblePresent = targetGroup.list[item.index];
-                                        targetGroup.list = targetGroup.list.filter((_, i1) => {
-                                            return `${i1}` !== `${item.index}`;
-                                        });
-                                        group.list.push(biblePresent);
-                                        applyGroups([...groups]);
-                                    } catch (error) {
-                                        console.log(error);
-                                    }
-                                }}
-                                onContextMenu={(e) => {
-                                    showAppContextMenu(e, [
-                                        {
-                                            title: 'Delete Group', onClick: () => {
-                                                const newGroups = groups.filter((g, i1) => i1 !== i);
-                                                applyGroups(newGroups);
-                                            },
-                                        },
-                                    ]);
-                                }}>
-                                <div className='accordion-header pointer' onClick={() => {
-                                    group.isOpen = !group.isOpen;
-                                    applyGroup(group, i);
-                                }}>
-                                    <span className='w-100 text-center'>{group.title}</span>
-                                </div>
-                                <div className={`accordion-collapse collapse ${group.isOpen ? 'show' : ''}`}>
-                                    <div className='accordion-body'>
-                                        <RenderBibleList group={group} index={i}
-                                            applyGroup={applyGroup} />
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
+                }
+                return true;
+            }}
+            header={<span>Bibles</span>}
+            body={<>
+                {(list || []).map((data, i) => {
+                    return <BibleFile key={`${i}`}
+                        index={i}
+                        fileSource={data}
+                        list={list}
+                        setList={setList} />;
+                })}
+            </>} />
     );
 }

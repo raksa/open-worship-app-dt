@@ -1,4 +1,4 @@
-import { BibleItemType } from '../bible-list/Bible';
+import BibleItem from '../bible-list/BibleItem';
 import {
     MetaDataType, MimetypeNameType,
 } from '../helper/fileHelper';
@@ -9,7 +9,7 @@ import ItemSource from '../helper/ItemSource';
 export type PlaylistItemType = {
     type: 'slide' | 'bible',
     slideItemPath?: string,
-    bible?: BibleItemType,
+    bible?: BibleItem,
 }
 export type PlaylistType = {
     items: PlaylistItemType[],

@@ -11,11 +11,12 @@ import {
 } from '../event/KeyboardEventListener';
 import { closeBibleSearch } from './BibleSearchPopup';
 import { fromLocaleNumber, useToLocaleNumber } from '../bible-helper/helpers2';
-import { addBibleItem } from '../bible-list/BibleList';
 import { isWindowEditingMode } from '../App';
 import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers1';
 import { toastEventListener } from '../event/ToastEventListener';
-import { presentBible } from '../bible-list/BibleItem';
+import Bible from '../bible-list/Bible';
+import BibleItem from '../bible-list/BibleItem';
+import { previewingEventListener } from '../event/PreviewingEventListener';
 
 let mouseDownInd: number | null = null;
 function mouseUp() {
@@ -77,26 +78,23 @@ export default function RenderFound({
         lControlKey: [LinuxControlEnum.Ctrl],
         key: KeyEnum.Enter,
     };
-    const genBiblePresent = async () => {
+    const genBibleItem = async () => {
         const key = await bookToKey(bibleSelected, book);
         if (key === null) {
             return null;
         }
-        return {
-            bible: bibleSelected,
-            target: {
-                book: key,
-                chapter: await fromLocaleNumber(bibleSelected, chapter),
-                startVerse: await fromLocaleNumber(bibleSelected, sVerse),
-                endVerse: await fromLocaleNumber(bibleSelected, eVerse),
-            },
-        };
+        return BibleItem.genBibleItem(bibleSelected, {
+            book: key,
+            chapter: await fromLocaleNumber(bibleSelected, chapter),
+            startVerse: await fromLocaleNumber(bibleSelected, sVerse),
+            endVerse: await fromLocaleNumber(bibleSelected, eVerse),
+        });
     };
     const addListListener = async () => {
-        const biblePresent = await genBiblePresent();
-        if (biblePresent !== null) {
-            await addBibleItem(biblePresent);
+        const bibleItem = await genBibleItem();
+        if (bibleItem !== null) {
             closeBibleSearch();
+            previewingEventListener.addBibleItem(bibleItem);
         } else {
             toastEventListener.showSimpleToast({
                 title: 'Adding bible',
@@ -111,11 +109,10 @@ export default function RenderFound({
         key: KeyEnum.Enter,
     };
     const presentListener = async () => {
-        const biblePresent = await genBiblePresent();
-        if (biblePresent !== null) {
-            await addBibleItem(biblePresent);
+        const bibleItem = await genBibleItem();
+        if (bibleItem !== null) {
             closeBibleSearch();
-            presentBible(biblePresent);
+            previewingEventListener.addBibleItem(bibleItem);
         } else {
             toastEventListener.showSimpleToast({
                 title: 'Adding bible',

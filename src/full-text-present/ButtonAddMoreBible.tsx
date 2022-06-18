@@ -1,10 +1,10 @@
-import { BiblePresentType } from './previewingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelpers';
+import BibleItem from '../bible-list/BibleItem';
 
-export default function ButtonAddMoreBible({ biblePresents, applyPresents }: {
-    biblePresents: BiblePresentType[],
-    applyPresents: (bs: BiblePresentType[]) => void,
+export default function ButtonAddMoreBible({ bibleItems, applyPresents }: {
+    bibleItems: BibleItem[],
+    applyPresents: (bs: BibleItem[]) => void,
 }) {
     return (
         <button className='btn btn-info'
@@ -14,14 +14,14 @@ export default function ButtonAddMoreBible({ biblePresents, applyPresents }: {
             }}
             onClick={async (e) => {
                 const addBibleView = (bible: string) => {
-                    const newPresent = JSON.parse(JSON.stringify(biblePresents[0])) as BiblePresentType;
+                    const newPresent = JSON.parse(JSON.stringify(bibleItems[0])) as BibleItem;
                     newPresent.bible = bible;
-                    const newPresents = [...biblePresents, newPresent];
+                    const newPresents = [...bibleItems, newPresent];
                     applyPresents(newPresents);
                 };
                 const bibleList = await bibleHelper.getBibleListWithStatus();
-                const biblePresentingList = biblePresents.map(({ bible: bibleViewing }) => bibleViewing);
-                const bibleListFiltered = bibleList.filter(([bible]) => !~biblePresentingList.indexOf(bible));
+                const bibleItemingList = bibleItems.map(({ bible: bibleViewing }) => bibleViewing);
+                const bibleListFiltered = bibleList.filter(([bible]) => !~bibleItemingList.indexOf(bible));
 
                 showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {
                     return {

@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
 import fullTextPresentHelper, {
-    BiblePresentType,
 } from '../full-text-present/previewingHelper';
-import { toInputText, toLocaleNumber } from './helpers2';
 import { sqlite3ReadValue } from '../helper/appHelper';
 import appProvider from '../helper/appProvider';
 import bibleHelper from './bibleHelpers';
@@ -217,68 +214,6 @@ export async function getVerses(bible: string, bookKey: string, chapter: number)
         return null;
     }
     return chapterObj.verses;
-}
-export async function biblePresentToTitle({ bible, target }: BiblePresentType) {
-    const { book, chapter, startVerse, endVerse } = target;
-    const chapterLocale = await toLocaleNumber(bible, chapter);
-    const startVerseLocale = await toLocaleNumber(bible, startVerse);
-    const endVerseLocale = await toLocaleNumber(bible, endVerse);
-    const txtV = `${startVerseLocale}${startVerse !== endVerse ? ('-' + endVerseLocale) : ''}`;
-    let bookKey = await keyToBook(bible, book);
-    if (bookKey === null) {
-        bookKey = bibleHelper.getKJVKeyValue()[book];
-    }
-    return `${bookKey} ${chapterLocale}:${txtV}`;
-}
-export async function biblePresentToText({ bible, target }: BiblePresentType) {
-    let txt = '😟Unable to get bible text, check downloaded bible list in setting or refresh application!👌';
-    if (target.chapter === null) {
-        return txt;
-    }
-    const verses = await getVerses(bible, target.book, target.chapter);
-    if (verses === null) {
-        return txt;
-    }
-    txt = '';
-    for (let i = target.startVerse; i <= target.endVerse; i++) {
-        txt += ` (${await toLocaleNumber(bible, i)}): ${verses[i + '']}`;
-    }
-    return txt;
-}
-
-export function usePresentRenderTitle({ bible, target }: BiblePresentType) {
-    const [title, setTitle] = useState<string>('');
-    const { book, chapter, startVerse, endVerse } = target;
-    useEffect(() => {
-        biblePresentToTitle({
-            bible, target: {
-                book, chapter, startVerse, endVerse,
-            },
-        }).then(setTitle);
-    }, [bible, book, chapter, startVerse, endVerse]);
-    return title;
-}
-export function usePresentRenderText({ bible, target }: BiblePresentType) {
-    const [text, setText] = useState<string>('');
-    const { book, chapter, startVerse, endVerse } = target;
-    useEffect(() => {
-        biblePresentToText({
-            bible, target: {
-                book, chapter, startVerse, endVerse,
-            },
-        }).then(setText);
-    }, [bible, book, chapter, startVerse, endVerse]);
-    return text;
-}
-export function usePresentToInputText(bible: string, book?: string | null,
-    chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
-    const [text, setText] = useState<string>('');
-    useEffect(() => {
-        toInputText(bible, book, chapter, startVerse, endVerse).then((text1) => {
-            setText(text1);
-        });
-    }, [bible, book, chapter, startVerse, endVerse]);
-    return text;
 }
 
 export async function initInfo(bible: string) {

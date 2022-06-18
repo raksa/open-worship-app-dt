@@ -1,13 +1,11 @@
-import { Fragment, useState } from 'react';
-import {
-    BiblePresentType,
-} from '../full-text-present/previewingHelper';
+import { useState } from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
 import FileItemHandler from '../others/FileItemHandler';
 import Playlist from './Playlist';
 import FileSource from '../helper/FileSource';
+import BibleItemRender from '../bible-list/BibleItemRender';
 
 export default function PlaylistFile({
     index, list, setList, fileSource,
@@ -39,7 +37,7 @@ export default function PlaylistFile({
                         delete bible.groupIndex;
                         data.content.items.push({
                             type: 'bible',
-                            bible: bible as BiblePresentType,
+                            bible: bible as BibleItem,
                         });
                     } catch (error) {
                         data.content.items.push({
@@ -62,16 +60,16 @@ export default function PlaylistFile({
                     {data.content.items.map((item, i) => {
                         if (item.type === 'slide') {
                             const slidePath = item.slideItemPath as string;
-                            return <Fragment key={`${i}`}>
+                            return (
                                 <PlaylistSlideItem
-                                    slideItemPath={slidePath}
-                                    width={200} />
-                            </Fragment>;
+                                slideItemPath={slidePath}
+                                width={200} />
+                            );
                         }
-                        return <Fragment key={`${i}`}>
-                            <BibleItem key={`${i}`} index={i} groupIndex={0}
-                                biblePresent={item.bible as BiblePresentType} />
-                        </Fragment>;
+                        return (
+                            <BibleItemRender key={`${i}`} index={i}
+                                bibleItem={item.bible as BibleItem} />
+                        );
                     })}
                 </div>}
             </div>}

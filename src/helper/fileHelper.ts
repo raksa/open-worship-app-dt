@@ -24,17 +24,16 @@ export const createNewItem = async (dir: string, name: string,
     content: string, mimetype: MimetypeNameType) => {
     // TODO: verify file name before create
     const mimeTypes = getAppMimetype(mimetype);
-    const playlistName = `${name}${mimeTypes[0].extension[0]}`;
+    const fileName = `${name}${mimeTypes[0].extension[0]}`;
     try {
-        await fileHelpers.createFile(content, dir, playlistName);
-        return true;
+        return await fileHelpers.createFile(content, dir, fileName);
     } catch (error: any) {
         toastEventListener.showSimpleToast({
             title: 'Creating Playlist',
             message: error.message,
         });
     }
-    return false;
+    return null;
 };
 
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric' | 'bible';

@@ -1,15 +1,17 @@
-import bibleHelper, { useGetBibleWithStatus, useGetBookKVList } from '../bible-helper/bibleHelpers';
+import bibleHelper, {
+    useGetBibleWithStatus,
+    useGetBookKVList,
+} from '../bible-helper/bibleHelpers';
+import { usePresentToInputText } from '../bible-list/BibleItem';
 import {
     KeyEnum,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { setSetting } from '../helper/settingHelper';
-import { toInputText } from '../bible-helper/helpers2';
-import { usePresentToInputText } from '../bible-helper/helpers1';
 
 export function BibleSelectOption({ bible }: { bible: string }) {
     const bibleStatus = useGetBibleWithStatus(bible);
-    if(bibleStatus === null) {
+    if (bibleStatus === null) {
         return null;
     }
     const [bible1, isAvailable, bibleName] = bibleStatus;

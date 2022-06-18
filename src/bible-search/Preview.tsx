@@ -2,7 +2,8 @@ import { copyToClipboard } from '../helper/appHelper';
 import { toInputText } from '../bible-helper/helpers2';
 import { consumeStartVerseEndVerse } from './RenderFound';
 import { useEffect, useState } from 'react';
-import { biblePresentToText, bookToKey } from '../bible-helper/helpers1';
+import { bookToKey } from '../bible-helper/helpers1';
+import BibleItem from '../bible-list/BibleItem';
 
 export default function Preview({
     book,
@@ -29,15 +30,13 @@ export default function Preview({
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
             const newTitle = await toInputText(bibleSelected, book, chapter, sVerse, eVerse);
-            const newText = await biblePresentToText({
-                bible: bibleSelected,
-                target: {
-                    book: await bookToKey(bibleSelected, book) || '',
-                    chapter,
-                    startVerse: sVerse,
-                    endVerse: eVerse,
-                },
-            });
+            const newText = await BibleItem.bibleItemToText(BibleItem.genBibleItem(bibleSelected, {
+                book: await bookToKey(bibleSelected, book) || '',
+                chapter,
+                startVerse: sVerse,
+                endVerse: eVerse,
+            }
+            ));
             if (newTitle !== null && newText !== null) {
                 setRendered({ title: newTitle, text: newText });
             } else {

@@ -4,7 +4,6 @@ import FileSource from '../helper/FileSource';
 import { getAppInfo } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import Slide from '../slide-list/Slide';
-import { SLIDE_ITEM_SELECTED_SETTING_NAME } from './SlideItemsControllerBase';
 
 export default class SlideItem {
     id: string;
@@ -18,11 +17,9 @@ export default class SlideItem {
         this._html = html;
         this.fileSource = fileSource;
         this.isCopied = false;
-
-        const slideItem = getSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, '');
-        const parsed = SlideItem.parseSelectedSlideItem(slideItem,
-            this.fileSource);
-        this.isSelected = parsed?.id === this.id;
+        SlideItem.getSelectedSlideItem().then((slideItem) => {
+            this.isSelected = slideItem?.id === this.id;
+        });
     }
     get isSelected() {
         return this._isSelected;
@@ -33,7 +30,7 @@ export default class SlideItem {
         }
         this._isSelected = b;
         if (this.isSelected) {
-            setSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, this.id);
+            SlideItem.setSelectedSlideItem(this);
             slideListEventListenerGlobal.selectSlideItem(this);
         } else {
             slideListEventListenerGlobal.selectSlideItem(null);
@@ -102,9 +99,18 @@ export default class SlideItem {
         }
         return null;
     }
+    static clearSelectedSlideItem() {
+        setSetting('slide-item-selected', '');
+    }
+    static setSelectedSlideItem(slideItem: SlideItem) {
+        const selected = this.toSlideItemSelected(slideItem.fileSource, slideItem.id);
+        if (selected !== null) {
+            setSetting('slide-item-selected', selected);
+        }
+    }
     static async getSelectedSlideItem() {
         const fileSource = Slide.getSelectedSlideFileSource();
-        const slideItem = getSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, '');
+        const slideItem = getSetting('slide-item-selected', '');
         const result = this.parseSelectedSlideItem(slideItem, fileSource);
         if (result !== null) {
             const slide = await Slide.readFileToData(fileSource);

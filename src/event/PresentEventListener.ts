@@ -4,6 +4,7 @@ import { getPresentRendered } from '../helper/appHelper';
 import { getAllDisplays } from '../helper/displayHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
+import SlideItem from '../slide-presenting/SlideItem';
 import EventHandler from './EventHandler';
 import { slideListEventListenerGlobal } from './SlideListEventListener';
 
@@ -45,7 +46,7 @@ export default class PresentEventListener extends EventHandler {
         this._addPropEvent(PresentTypeEnum.RENDER_FG);
     }
     clearFG() {
-        slideListEventListenerGlobal.clearSelectedSlideItem();
+        SlideItem.clearSelectedSlideItem();
         clearForeground();
         this._addPropEvent(PresentTypeEnum.CLEAR_FG);
     }

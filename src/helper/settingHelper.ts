@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { BiblePresentType } from '../full-text-present/previewingHelper';
 
 export function setSetting(key: string, value: string) {
     window.localStorage.setItem(key, value);

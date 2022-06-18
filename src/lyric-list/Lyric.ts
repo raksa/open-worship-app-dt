@@ -14,6 +14,10 @@ export type LyricType = {
     items: LyricItemType[],
 }
 export default class Lyric extends ItemSource<LyricType>{
+    get isSelected() {
+        const selectedFS = Lyric.getSelectedLyricFileSource();
+        return this.fileSource.filePath === selectedFS?.filePath;
+    }
     static mimetype: MimetypeNameType = 'lyric';
     static validator: (json: Object) => boolean = validateLyric;
     static _instantiate(fileSource: FileSource, json: {

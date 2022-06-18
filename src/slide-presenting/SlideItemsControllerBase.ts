@@ -5,7 +5,6 @@ export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 0.2;
 export const MAX_THUMBNAIL_SCALE = 3;
 export const DEFAULT_THUMBNAIL_SIZE = 250;
-export const SLIDE_ITEM_SELECTED_SETTING_NAME = 'slide-item-selected';
 export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenting-item-thumbnail-size';
 export type ChangeHistory = { items: SlideItem[] };
 

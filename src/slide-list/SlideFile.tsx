@@ -12,9 +12,6 @@ export default function SlideFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Slide | null | undefined>(null);
-    const selectedSlideFS = Slide.getSelectedSlideFileSource();
-    const isSelected = !selectedSlideFS || !data ? false :
-        data.fileSource.filePath === selectedSlideFS?.filePath;
     return (
         <FileItemHandler
             index={index}
@@ -24,10 +21,10 @@ export default function SlideFile({
             data={data}
             setData={setData}
             fileSource={fileSource}
-            className={`${isSelected ? 'active' : ''}`}
+            className={`${data?.isSelected ? 'active' : ''}`}
             onClick={() => {
                 if (data) {
-                    Slide.presentSlide(isSelected ? null : data);
+                    Slide.presentSlide(data.isSelected ? null : data);
                 }
             }}
             child={<>

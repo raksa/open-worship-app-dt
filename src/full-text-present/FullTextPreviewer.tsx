@@ -1,5 +1,5 @@
 import {
-    useBiblePresenting,
+    useBibleItemSelecting,
     useLyricPresenting,
 } from '../event/PreviewingEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
@@ -15,7 +15,7 @@ export const FULL_TEXT_TAB_KEY = 'full-text-present-tab';
 export type TabType = 'b' | 'l';
 export default function FullTextPreviewer() {
     const [tabType, setTabType] = useStateSettingString<TabType>(FULL_TEXT_TAB_KEY, 'b');
-    useBiblePresenting(() => setTabType('b'));
+    useBibleItemSelecting(() => setTabType('b'));
     useLyricPresenting(() => setTabType('l'));
     return (
         <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'>

@@ -17,6 +17,10 @@ export type SlidePresentType = {
 };
 
 export default class Slide extends ItemSource<SlidePresentType>{
+    get isSelected() {
+        const selectedFS = Slide.getSelectedSlideFileSource();
+        return this.fileSource.filePath === selectedFS?.filePath;
+    }
     toJson() {
         const content = {
             ...this.content,

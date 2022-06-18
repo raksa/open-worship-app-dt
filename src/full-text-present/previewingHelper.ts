@@ -1,4 +1,4 @@
-import { biblePresentToTitle, getVerses } from '../bible-helper/helpers1';
+import { getVerses } from '../bible-helper/helpers1';
 import { toLocaleNumber } from '../bible-helper/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
 import { renderPresent } from '../helper/appHelper';
@@ -7,7 +7,7 @@ import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
-import { BibleItemType } from '../bible-list/Bible';
+import BibleItem from '../bible-list/BibleItem';
 
 type StylingType = {
     color?: string;
@@ -178,18 +178,18 @@ class FullTextPresentHelper {
             fullTextPresentHelper.show();
         }
     }
-    renderBibleFromBiblePresentList = (biblePresents: BibleItemType[]) => {
-        Promise.all(biblePresents.map((biblePresent) => {
+    renderBibleFromBiblePresentList = (bibleItems: BibleItem[]) => {
+        Promise.all(bibleItems.map((bibleItem) => {
             return new Promise<{
                 title: string, texts: string[]
             }>(async (resolve, _) => {
-                const bibleTitle = await biblePresentToTitle(biblePresent);
-                const title = `<span class="bible">${biblePresent.bible}</span>|<span class="title">${bibleTitle}</span >`;
-                const verses = await getVerses(biblePresent.bible, biblePresent.target.book, biblePresent.target.chapter);
+                const bibleTitle = await BibleItem.bibleItemToTitle(bibleItem);
+                const title = `<span class="bible">${bibleItem.bible}</span>|<span class="title">${bibleTitle}</span >`;
+                const verses = await getVerses(bibleItem.bible, bibleItem.target.book, bibleItem.target.chapter);
                 let text = '';
                 if (verses !== null) {
-                    for (let i = biblePresent.target.startVerse; i <= biblePresent.target.endVerse; i++) {
-                        const verseNumb = await toLocaleNumber(biblePresent.bible, i);
+                    for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
+                        const verseNumb = await toLocaleNumber(bibleItem.bible, i);
                         text += `<span data-highlight="${i}"><span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}</span>`;
                     }
                 }

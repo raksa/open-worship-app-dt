@@ -10,6 +10,7 @@ import { MimetypeNameType } from '../helper/fileHelper';
 import Lyric from '../lyric-list/Lyric';
 import Playlist from '../playlist/Playlist';
 import Slide from '../slide-list/Slide';
+import Bible from '../bible-list/Bible';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -56,6 +57,11 @@ export default function FileItemHandler({
             case 'slide':
                 Slide.readFileToData(fileSource).then(setData);
                 break;
+            case 'bible':
+                Bible.readFileToData(fileSource).then(setData);
+                break;
+            default:
+                throw new Error('Unsupported mimetype');
         }
         const deleteEvent = fileSource.registerEventListener('select', () => {
             setList(null);

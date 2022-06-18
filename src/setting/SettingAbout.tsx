@@ -1,16 +1,11 @@
+import BibleItem, { usePresentRenderText, usePresentToInputText } from '../bible-list/BibleItem';
 import appProvider from '../helper/appProvider';
-import {
-    usePresentRenderText, usePresentToInputText,
-} from '../bible-helper/helpers1';
 
 export function SettingAbout() {
     const bookKey = 'PSA';
-    const text = usePresentRenderText({
-        bible: 'KJV',
-        target: {
-            book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
-        },
-    });
+    const text = usePresentRenderText(BibleItem.genBibleItem('KJV', {
+        book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
+    }));
     const title = usePresentToInputText('KJV', bookKey, 150, 6, 6);
     return (
         <div>

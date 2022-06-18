@@ -1,22 +1,24 @@
 import './BibleView.scss';
 
-import { BiblePresentType } from './previewingHelper';
 import bibleHelper from '../bible-helper/bibleHelpers';
-import {
-    usePresentRenderText, usePresentRenderTitle,
-} from '../bible-helper/helpers1';
 import { BibleSelectOption } from '../bible-search/InputHandler';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import appProvider from '../helper/appProvider';
+import BibleItem, {
+    usePresentRenderText,
+    usePresentRenderTitle,
+} from '../bible-list/BibleItem';
 
-export default function BibleView({ biblePresent, onBibleChange, onClose }: {
+export default function BibleView({
+    bibleItem, onBibleChange, onClose,
+}: {
     i: number,
-    biblePresent: BiblePresentType,
+    bibleItem: BibleItem,
     onBibleChange: (bible: string) => void,
     onClose: () => void,
 }) {
-    const title = usePresentRenderTitle(biblePresent);
-    const text = usePresentRenderText(biblePresent);
+    const title = usePresentRenderTitle(bibleItem);
+    const text = usePresentRenderText(bibleItem);
     const bibleList = bibleHelper.getBibleList();
     return (
         <div className="bible-view card flex-fill" onContextMenu={(e) => {
@@ -31,7 +33,7 @@ export default function BibleView({ biblePresent, onBibleChange, onClose }: {
         }}>
             <div className="card-header">
                 <span className="input-group-text select float-start">
-                    <select className="form-select bible" value={biblePresent.bible}
+                    <select className="form-select bible" value={bibleItem.bible}
                         onChange={(event) => {
                             onBibleChange(event.target.value);
                         }}>

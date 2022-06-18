@@ -1,12 +1,9 @@
 import { useEffect } from 'react';
 import { ToolingType } from '../slide-editor/helps';
 import {
-    getSetting, setSetting, useStateSettingNumber,
+    getSetting, useStateSettingNumber,
 } from '../helper/settingHelper';
 import SlideItem from '../slide-presenting/SlideItem';
-import {
-    SLIDE_ITEM_SELECTED_SETTING_NAME,
-} from '../slide-presenting/SlideItemsControllerBase';
 import EventHandler from './EventHandler';
 import HTML2ReactChild from '../slide-editor/HTML2ReactChild';
 
@@ -41,9 +38,6 @@ export default class SlideListEventListener extends EventHandler {
     }
     unregisterSlideListEventListener({ type, listener }: RegisteredEventType<any>) {
         this._removeOnEventListener(type, listener);
-    }
-    clearSelectedSlideItem() {
-        setSetting(SLIDE_ITEM_SELECTED_SETTING_NAME, '');
     }
 }
 export const slideListEventListenerGlobal = new SlideListEventListener();

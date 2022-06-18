@@ -1,7 +1,11 @@
 import './BibleSearchPopup.scss';
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    Dispatch, SetStateAction, useEffect, useState,
+} from 'react';
+import {
+    KeyEnum, useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import InputHandler from './InputHandler';
 import RenderBookOption from './RenderBookOption';
@@ -25,15 +29,9 @@ import bibleHelper from '../bible-helper/bibleHelpers';
 import {
     getChapterCount,
     getBookKVList,
-    biblePresentToTitle,
 } from '../bible-helper/helpers1';
-import {
-    getBibleGroupsSetting,
-    getBibleListEditingIndex,
-    clearBibleListEditingIndex,
-} from '../bible-list/BibleList';
-import { BiblePresentType } from '../full-text-present/previewingHelper';
 import { toastEventListener } from '../event/ToastEventListener';
+import BibleItem from '../bible-list/BibleItem';
 
 export const openBibleSearchEvent = {
     window: WindowEnum.BibleSearch,
@@ -47,18 +45,14 @@ export function openBibleSearch() {
     windowEventListener.fireEvent(openBibleSearchEvent);
 }
 export function closeBibleSearch() {
-    clearBibleListEditingIndex();
+    BibleItem.clearBibleListEditingIndex();
     windowEventListener.fireEvent(closeBibleSearchEvent);
 }
 
 export async function getSelectedBible(): Promise<string | null> {
-    const editingIndex = getBibleListEditingIndex();
-    if (editingIndex !== null) {
-        const bibleList = getBibleGroupsSetting();
-        if (bibleList[editingIndex]) {
-            const biblePresent = bibleList[editingIndex] as BiblePresentType;
-            return biblePresent.bible;
-        }
+    const bibleItem = await BibleItem.getSelectedBibleItem();
+    if (bibleItem !== null) {
+        return bibleItem.bible;
     }
     const bible = getSetting('selected-bible') || null;
     if (bible === null) {
@@ -75,28 +69,24 @@ export async function getSelectedBible(): Promise<string | null> {
     }
     return bible;
 }
-export function useGetSelectedBible(): [string | null, Dispatch<SetStateAction<string | null>>] {
+export function useGetSelectedBible() {
     const [bibleSelected, setBibleSelected] = useState<string | null>(null);
     useEffect(() => {
         getSelectedBible().then((bible) => {
             setBibleSelected(bible);
         });
     });
-    return [bibleSelected, setBibleSelected];
+    return [bibleSelected, setBibleSelected] as [string | null, (b: string | null) => void];
 }
 function useGetDefaultInputText(): [string, Dispatch<SetStateAction<string>>] {
     const [inputText, setInputText] = useState<string>('');
     useEffect(() => {
-        const editingIndex = getBibleListEditingIndex();
-        if (editingIndex !== null) {
-            const bibleList = getBibleGroupsSetting();
-            if (bibleList[editingIndex]) {
-                const biblePresent = bibleList[editingIndex] as BiblePresentType;
-                biblePresentToTitle(biblePresent).then((text) => {
-                    setInputText(text);
-                });
+        BibleItem.getSelectedBibleItem().then(async (bibleItem) => {
+            if (bibleItem !== null) {
+                const text = await BibleItem.bibleItemToTitle(bibleItem);
+                setInputText(text);
             }
-        }
+        });
     });
     return [inputText, setInputText];
 }

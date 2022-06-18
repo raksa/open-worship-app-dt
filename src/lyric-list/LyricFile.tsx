@@ -12,9 +12,6 @@ export default function LyricFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
-    const selectedLyricFS = Lyric.getSelectedLyricFileSource();
-    const isSelected = !selectedLyricFS || !data ? false :
-        data.fileSource.filePath === selectedLyricFS?.filePath;
     return (
         <FileItemHandler
             index={index}
@@ -24,10 +21,10 @@ export default function LyricFile({
             data={data}
             setData={setData}
             fileSource={fileSource}
-            className={`${isSelected ? 'active' : ''}`}
+            className={`${data?.isSelected ? 'active' : ''}`}
             onClick={() => {
                 if (data) {
-                    Lyric.presentLyric(isSelected ? null : data);
+                    Lyric.presentLyric(data.isSelected ? null : data);
                 }
             }}
             child={<>

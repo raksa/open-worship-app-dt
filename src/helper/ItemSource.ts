@@ -52,7 +52,11 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T> {
             },
             content,
         });
-        return createNewItem(dir, name, data, this.mimetype);
+        const filePath = await createNewItem(dir, name, data, this.mimetype);
+        if (filePath !== null) {
+            return FileSource.genFileSource(filePath);
+        }
+        return null;
     }
     static async _readFileToDataNoCache<T extends ItemSource<any>>(fileSource: FileSource | null
         , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {

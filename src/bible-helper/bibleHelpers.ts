@@ -12,7 +12,7 @@ import appProvider from '../helper/appProvider';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import fileHelpers from '../helper/fileHelper';
 import { useState, useEffect } from 'react';
-import { BiblePresentType } from '../full-text-present/previewingHelper';
+import BibleItem from '../bible-list/BibleItem';
 
 const bibleObj = appProvider.bibleObj;
 
@@ -87,8 +87,8 @@ export function useGetChapterCount(bibleSelected: string, bookSelected: string) 
     });
     return chapterCount;
 }
-export function genDuplicatedMessage(list: BiblePresentType[],
-    { target }: BiblePresentType, i: number) {
+export function genDuplicatedMessage(list: BibleItem[],
+    { target }: BibleItem, i: number) {
     let warningMessage;
     const duplicated = list.find(({ target: target1 }, i1) => {
         return target.book === target1.book &&
