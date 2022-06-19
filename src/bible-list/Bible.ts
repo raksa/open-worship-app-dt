@@ -86,9 +86,10 @@ export default class Bible extends ItemSource<BibleType>{
                 item.fileSource = bible.fileSource;
                 item.id = bible.maxId;
                 item.isSelected = true;
-                await bible.save();
+                return await bible.save();
             }
         }
+        return false;
     }
     static mimetype: MimetypeNameType = 'bible';
     static _instantiate(fileSource: FileSource, json: {

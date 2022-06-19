@@ -5,7 +5,6 @@ import Slide from '../slide-list/Slide';
 import EventHandler from './EventHandler';
 
 export enum PreviewingEnum {
-    ADD_BIBLE_ITEM = 'add-bible-item',
     SELECT_BIBLE_ITEM = 'present-bible',
     PRESENT_LYRIC = 'present-lyric',
     UPDATE_LYRIC = 'update-lyric',
@@ -20,9 +19,6 @@ export type RegisteredEventType<T> = {
 };
 
 export default class PreviewingEventListener extends EventHandler {
-    addBibleItem(bibleItem: BibleItem) {
-        this._addPropEvent(PreviewingEnum.ADD_BIBLE_ITEM, bibleItem);
-    }
     selectItem(bibleItem: BibleItem | null) {
         this._addPropEvent(PreviewingEnum.SELECT_BIBLE_ITEM, bibleItem);
     }
@@ -56,15 +52,6 @@ export default class PreviewingEventListener extends EventHandler {
 
 export const previewingEventListener = new PreviewingEventListener();
 
-export function useBibleAdding(listener: ListenerType<BibleItem>) {
-    useEffect(() => {
-        const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.ADD_BIBLE_ITEM, listener);
-        return () => {
-            previewingEventListener.unregisterEventListener(event);
-        };
-    });
-}
 export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(

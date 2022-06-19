@@ -64,11 +64,16 @@ export default function FileItemHandler({
             default:
                 throw new Error('Unsupported mimetype');
         }
-        const deleteEvent = fileSource.registerEventListener('select', () => {
+        // FIXME: check why delete not effect
+        const deleteEvent = fileSource.registerEventListener('delete', () => {
+            setData(null);
+        });
+        const refreshEvent = fileSource.registerEventListener('refresh', () => {
             setData(null);
         });
         return () => {
             fileSource.unregisterEventListener(deleteEvent);
+            fileSource.unregisterEventListener(refreshEvent);
         };
     });
     const applyClick = () => {

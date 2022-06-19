@@ -8,21 +8,20 @@ import BibleItem, { usePresentRenderTitle } from './BibleItem';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
-    onContextMenu, onUpdateBiblePresent,
+    onContextMenu,
 }: {
     index: number,
     bibleItem: BibleItem,
     bible?: Bible;
     warningMessage?: string,
     onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
-    onUpdateBiblePresent?: (newBiblePresent: BibleItem) => void,
 }) {
     const title = usePresentRenderTitle(bibleItem);
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleName);
-    const changeBible = onUpdateBiblePresent ? (newBible: string) => {
-        bibleItem.bibleName = newBible;
-        onUpdateBiblePresent(bibleItem);
-    } : null;
+    const changeBible = (newBibleName: string) => {
+        bibleItem.bibleName = newBibleName;
+        bibleItem.save();
+    };
     return (
         <li className={`list-group-item item ${bibleItem.isSelected ? 'active' : ''}`}
             data-index={index + 1}
@@ -31,24 +30,25 @@ export default function BibleItemRender({
                 e.stopPropagation();
                 bibleItem.isSelected = !bibleItem.isSelected;
             }}>
-            <span className={changeBible ? 'bible' : ''} onClick={async (e) => {
-                if (!changeBible) {
-                    return;
-                }
-                e.stopPropagation();
-                const bibleList = await bibleHelper.getBibleListWithStatus();
-                const currentBible = bibleItem.bibleName;
-                const bibleListFiltered = bibleList.filter(([bibleName]) => {
-                    return currentBible !== bibleName;
-                });
-                showAppContextMenu(e, bibleListFiltered.map(([bibleName, isAvailable]) => {
-                    return {
-                        title: bibleName, disabled: !isAvailable, onClick: () => {
-                            changeBible(bibleName);
-                        },
-                    };
-                }));
-            }}>
+            <span className={'bible'}
+                onClick={async (e) => {
+                    if (!changeBible) {
+                        return;
+                    }
+                    e.stopPropagation();
+                    const bibleList = await bibleHelper.getBibleListWithStatus();
+                    const currentBible = bibleItem.bibleName;
+                    const bibleListFiltered = bibleList.filter(([bibleName]) => {
+                        return currentBible !== bibleName;
+                    });
+                    showAppContextMenu(e, bibleListFiltered.map(([bibleName, isAvailable]) => {
+                        return {
+                            title: bibleName, disabled: !isAvailable, onClick: () => {
+                                changeBible(bibleName);
+                            },
+                        };
+                    }));
+                }}>
                 <i className="bi bi-bookmark" />
                 {bibleStatus === null ? null : bibleStatus[2]}
             </span> | {title == null ? 'not found' : title}

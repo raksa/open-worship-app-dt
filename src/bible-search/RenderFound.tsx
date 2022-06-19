@@ -78,28 +78,32 @@ export default function RenderFound({
         lControlKey: [LinuxControlEnum.Ctrl],
         key: KeyEnum.Enter,
     };
-    const genBibleItem = async () => {
+    const addBibleItem = async () => {
         const key = await bookToKey(bibleSelected, book);
         if (key === null) {
             return null;
         }
-        return BibleItem.genItem(bibleSelected, {
+        const bibleItem = BibleItem.genItem(bibleSelected, {
             book: key,
             chapter: await fromLocaleNumber(bibleSelected, chapter),
             startVerse: await fromLocaleNumber(bibleSelected, sVerse),
             endVerse: await fromLocaleNumber(bibleSelected, eVerse),
         });
-    };
-    const addListListener = async () => {
-        const bibleItem = await genBibleItem();
-        if (bibleItem !== null) {
+        if (await Bible.addItem(bibleItem)) {
             closeBibleSearch();
-            previewingEventListener.addBibleItem(bibleItem);
+            return bibleItem;
         } else {
             toastEventListener.showSimpleToast({
                 title: 'Adding bible',
                 message: 'Fail to add bible to list',
             });
+        }
+        return null;
+    };
+    const addBibleItemAndPresent = async () => {
+        const bibleItem = await addBibleItem();
+        if (bibleItem !== null) {
+            bibleItem.isSelected = true;
         }
     };
     const presentEventMapper = {
@@ -108,20 +112,8 @@ export default function RenderFound({
         lControlKey: [LinuxControlEnum.Ctrl, LinuxControlEnum.Shift],
         key: KeyEnum.Enter,
     };
-    const presentListener = async () => {
-        const bibleItem = await genBibleItem();
-        if (bibleItem !== null) {
-            closeBibleSearch();
-            previewingEventListener.addBibleItem(bibleItem);
-        } else {
-            toastEventListener.showSimpleToast({
-                title: 'Adding bible',
-                message: 'Fail to add bible to list',
-            });
-        }
-    };
-    useKeyboardRegistering(addListEventMapper, addListListener);
-    useKeyboardRegistering(presentEventMapper, presentListener);
+    useKeyboardRegistering(addListEventMapper, addBibleItem);
+    useKeyboardRegistering(presentEventMapper, addBibleItemAndPresent);
     useKeyboardRegistering({ key: KeyEnum.Enter }, () => {
         onVerseChange(sVerse, eVerse);
     });
@@ -192,11 +184,11 @@ export default function RenderFound({
             {!isWindowEditingMode() &&
                 <div className="card-footer bg-transparent border-success d-flex justify-content-evenly">
                     <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
-                        onClick={addListListener}
+                        onClick={addBibleItem}
                         data-tool-tip={keyboardEventListener.toShortcutKey(addListEventMapper)}
                     >Add Bible List</button>
                     <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
-                        onClick={presentListener}
+                        onClick={addBibleItemAndPresent}
                         data-tool-tip={keyboardEventListener.toShortcutKey(presentEventMapper)}
                     >Present</button>
                 </div>

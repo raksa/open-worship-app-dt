@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
@@ -63,8 +63,7 @@ export default function BibleFile({
                 </div>
                 {<div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}>
                     <div className='accordion-body'>
-                        <RenderBibleItems bible={data} index={index}
-                            setBible={setData} />
+                        <RenderBibleItems bible={data} />
                     </div>
                 </div>}
             </div>}

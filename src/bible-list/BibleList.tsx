@@ -7,14 +7,10 @@ import {
 import FileListHandler, { FileListType } from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
-import { useBibleAdding } from '../event/PreviewingEventListener';
 
 export default function BibleList() {
     const [list, setList] = useState<FileListType>(null);
     const [dir, setDir] = useStateSettingString<string>(Bible.SELECT_DIR_SETTING, '');
-    useBibleAdding((bibleItem) => {
-        Bible.addItem(bibleItem).then(() => setList(null));
-    });
     return (
         <FileListHandler id={'bible-list'} mimetype={'bible'}
             list={list} setList={setList}

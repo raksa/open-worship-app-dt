@@ -6,10 +6,9 @@ import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
 
 export default function RenderBibleItems({
-    bible, index, setBible,
+    bible,
 }: {
-    bible: Bible, index: number,
-    setBible: (b: Bible, i: number) => void,
+    bible: Bible,
 }) {
     const items = bible.content.items;
     return (
@@ -19,10 +18,6 @@ export default function RenderBibleItems({
                     warningMessage={genDuplicatedMessage(items, bibleItem, i1)}
                     bibleItem={bibleItem}
                     bible={bible}
-                    onUpdateBiblePresent={(newBiblePresent) => {
-                        items[i1] = newBiblePresent;
-                        setBible(bible, index);
-                    }}
                     onContextMenu={(e) => {
                         showAppContextMenu(e, [
                             {
@@ -32,11 +27,11 @@ export default function RenderBibleItems({
                                 },
                             },
                             {
-                                title: 'Delete', onClick: () => {
+                                title: 'Delete', onClick: async () => {
                                     bible.content.items = items.filter((_, i2) => {
                                         return i2 !== i1;
                                     });
-                                    setBible(bible, index);
+                                    await bible.save();
                                 },
                             },
                         ]);
