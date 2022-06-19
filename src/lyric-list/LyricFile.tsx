@@ -21,7 +21,6 @@ export default function LyricFile({
             fileSource={fileSource}
             onClick={() => {
                 if (data) {
-                    Lyric.present(data.isSelected ? null : data);
                     data.isSelected = !data.isSelected;
                 }
             }}

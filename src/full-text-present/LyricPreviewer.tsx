@@ -6,48 +6,25 @@ import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import { getSetting } from '../helper/settingHelper';
 import {
-    useLyricPresenting,
+    useLyricSelecting,
 } from '../event/PreviewingEventListener';
-import FileSource from '../helper/FileSource';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
+import FileReadError from '../others/FileReadError';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import SavingRenderer from '../lyric-list/SavingRenderer';
 
-export default function LyricPreviewer() {
-    const [lyricFS, setLyricFS] = useState<FileSource | null>(Lyric.getSelectedFileSource());
-    useLyricPresenting((lyric) => {
-        setLyricFS(lyric === null ? null : lyric.fileSource);
-    });
-    useEffect(() => {
-        if (lyricFS === null) {
-            return;
-        }
-        const events = lyricFS.registerEventListener(['delete'], () => {
-            setLyricFS(null);
-        });
-        return () => {
-            lyricFS.unregisterEventListener(events);
-        };
-    }, [lyricFS]);
-
-    return (
-        <div className='d-flex d-flex-row overflow-hidden w-100 h-100'>
-            <PreviewerRender fileSource={lyricFS} />
-        </div>
-    );
-}
 let isMounted = false;
-function PreviewerRender({ fileSource }: {
-    fileSource: FileSource | null,
-}) {
+export default function LyricPreviewer() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
+    useLyricSelecting(setLyric);
     useEffect(() => {
-        Lyric.readFileToDataNoCache(fileSource).then((lr) => {
-            if (!lr) {
-                Lyric.setSelectedFileSource(null);
-            }
-            setLyric(lr);
-        });
-    }, [fileSource]);
+        if (lyric === null) {
+            Lyric.getSelected().then((lr) => {
+                setLyric(lr);
+            });
+        }
+    }, [lyric]);
     useEffect(() => {
         isMounted = true;
         previewer.show = async () => {
@@ -63,19 +40,18 @@ function PreviewerRender({ fileSource }: {
             isMounted = false;
         };
     });
-    if (fileSource === null) {
+    if (lyric === null) {
         return (
             <LyricList />
         );
     }
-    if (lyric === null) {
-        return null;
-    }
     if (lyric === undefined) {
         return (
-            <div className="alert alert-warning">
-                No Lyric Available
-            </div>
+            <FileReadError onContextMenu={(e) => {
+                showAppContextMenu(e, [{
+                    title: 'Reload', onClick: () => setLyric(null),
+                }]);
+            }} />
         );
     }
     const lyricItems = lyric.content.items;
@@ -85,7 +61,7 @@ function PreviewerRender({ fileSource }: {
         );
     }
     return (
-        <>
+        <div className='d-flex d-flex-row overflow-hidden w-100 h-100'>
             <SavingRenderer lyric={lyric} />
             {lyricItems.map((lyricItem, i) => {
                 return (
@@ -116,34 +92,6 @@ function PreviewerRender({ fileSource }: {
                 }}>
                 <i className="bi bi-plus" />
             </button>
-        </>
-    );
-}
-function SavingRenderer({ lyric }: { lyric: Lyric }) {
-    const [isEditing, setIEditing] = useState(false);
-    useEffect(() => {
-        Lyric.readFileToDataNoCache(lyric.fileSource).then((lr) => {
-            if (lr && JSON.stringify(lyric.content) !== JSON.stringify(lr?.content)) {
-                setIEditing(true);
-            } else {
-                setIEditing(false);
-            }
-        });
-    }, [lyric]);
-    if (!isEditing) {
-        return null;
-    }
-    return (
-        <button className='btn btn-success' title='Save'
-            onClick={async () => {
-                if (await lyric.save()) {
-                    setIEditing(false);
-                }
-            }}
-            style={{
-                width: '20px',
-                padding: '0px',
-            }}><i className="bi bi-save" />
-        </button>
+        </div>
     );
 }

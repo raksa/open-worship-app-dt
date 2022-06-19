@@ -178,7 +178,7 @@ class FullTextPresentHelper {
             fullTextPresentHelper.show();
         }
     }
-    renderBibleFromBiblePresentList = (bibleItems: BibleItem[]) => {
+    renderBibleItems = (bibleItems: BibleItem[]) => {
         Promise.all(bibleItems.map((bibleItem) => {
             return new Promise<{
                 title: string, texts: string[]

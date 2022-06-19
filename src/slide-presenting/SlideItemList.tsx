@@ -8,7 +8,7 @@ import {
     DEFAULT_THUMBNAIL_SIZE,
     THUMBNAIL_WIDTH_SETTING_NAME,
 } from './SlideItemsControllerBase';
-import { useSlidePresenting } from '../event/PreviewingEventListener';
+import { useSlideSelecting } from '../event/PreviewingEventListener';
 import Slide from '../slide-list/Slide';
 import FileSource from '../helper/FileSource';
 import SlideList from '../slide-list/SlideList';
@@ -17,7 +17,7 @@ import SlideItemsController from './SlideItemsController';
 export default function SlideItemList() {
     const [slideFS, setSlideFS] = useState<FileSource | null>(Slide.getSelectedFileSource());
 
-    useSlidePresenting((slide) => {
+    useSlideSelecting((slide) => {
         setSlideFS(slide === null ? null : slide.fileSource);
     });
     useEffect(() => {
@@ -31,7 +31,7 @@ export default function SlideItemList() {
             slideFS.unregisterEventListener(refreshEvents);
         };
     }, [slideFS]);
-    useSlidePresenting((slide) => {
+    useSlideSelecting((slide) => {
         setSlideFS(slide === null ? null : slide.fileSource);
     });
     return (

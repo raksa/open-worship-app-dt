@@ -12,7 +12,6 @@ import BibleItem, {
 export default function BibleView({
     bibleItem, onBibleChange, onClose,
 }: {
-    i: number,
     bibleItem: BibleItem,
     onBibleChange: (bibleName: string) => void,
     onClose: () => void,

@@ -2,7 +2,7 @@ import './Presenting.scss';
 
 import SlidePreviewer from './SlidePreviewer';
 import FullTextPresentController from '../full-text-present/FullTextPresentController';
-import { useFullTextPresenting, useSlidePresenting } from '../event/PreviewingEventListener';
+import { useFullTextOpening, useSlideSelecting } from '../event/PreviewingEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
 import {
@@ -15,11 +15,11 @@ type TabType = 's' | 'f';
 export default function Presenting() {
     const [tabType, setTabType] = useStateSettingString<TabType>('presenting-tab', 's');
     const [_, setFTTabType] = useStateSettingString<FTTabType>(FULL_TEXT_TAB_KEY, 'b');
-    useFullTextPresenting(() => {
+    useFullTextOpening(() => {
         setTabType('f');
         setFTTabType('l');
     });
-    useSlidePresenting(() => setTabType('s'));
+    useSlideSelecting(() => setTabType('s'));
     useSlideItemSelecting(() => setTabType('s'));
     return (
         <div id="presenting" className="w-100 h-100">

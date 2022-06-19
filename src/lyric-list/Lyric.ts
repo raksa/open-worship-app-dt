@@ -33,8 +33,10 @@ export default class Lyric extends ItemSource<LyricType>{
                     bibleItem.isSelected = false;
                 }
             });
+            previewingEventListener.selectLyric(this);
         } else {
             Lyric.setSelectedFileSource(null);
+            previewingEventListener.selectLyric(null);
         }
         this.fileSource.refreshDir();
     }
@@ -98,14 +100,6 @@ export default class Lyric extends ItemSource<LyricType>{
             this._initItems(lyric);
         }
         return lyric;
-    }
-    static present(lyric: Lyric | null) {
-        if (lyric === null) {
-            this.setSelectedFileSource(null);
-        } else {
-            setSetting('selected-lyric', lyric.fileSource.filePath);
-        }
-        previewingEventListener.presentLyric(lyric);
     }
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();

@@ -1,6 +1,6 @@
 import {
     useBibleItemSelecting,
-    useLyricPresenting,
+    useLyricSelecting,
 } from '../event/PreviewingEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
 import TabRender from '../others/TabRender';
@@ -16,7 +16,7 @@ export type TabType = 'b' | 'l';
 export default function FullTextPreviewer() {
     const [tabType, setTabType] = useStateSettingString<TabType>(FULL_TEXT_TAB_KEY, 'b');
     useBibleItemSelecting(() => setTabType('b'));
-    useLyricPresenting(() => setTabType('l'));
+    useLyricSelecting(() => setTabType('l'));
     return (
         <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'>
             <div className="previewer-header d-flex">

@@ -63,14 +63,15 @@ export default class BibleItem extends ItemBase {
         if (b) {
             previewingEventListener.selectBibleItem(this);
             BibleItem.setSelectedItem(this);
-            Lyric.getSelected().then((lyric)=>{
-                if(lyric !== null) {
+            Lyric.getSelected().then((lyric) => {
+                if (lyric !== null) {
                     lyric.isSelected = false;
                 }
             });
+            previewingEventListener.selectBibleItem(this);
         } else {
-            previewingEventListener.selectBibleItem(null);
             BibleItem.setSelectedItem(null);
+            previewingEventListener.selectBibleItem(null);
         }
         this.fileSource?.refreshDir();
     }
@@ -117,17 +118,18 @@ export default class BibleItem extends ItemBase {
     static genItem(bibleName: string, target: BibleTargetType) {
         return new BibleItem(null, bibleName, target);
     }
-    static convertPresent(bibleItem: BibleItem, oldBibleItems: BibleItem[]) {
-        if (oldBibleItems.length < 2) {
-            return [bibleItem];
+    static convertPresent(bibleItem: BibleItem, presentingBibleItems: BibleItem[]) {
+        if (presentingBibleItems.length < 2) {
+            return [bibleItem.clone()];
         }
-        return oldBibleItems.map((oldPresent) => {
-            oldPresent.target = bibleItem.target;
-            return oldPresent;
+        return presentingBibleItems.map((presentingBibleItem) => {
+            return presentingBibleItem.clone();
         });
     }
     static setBiblePresentingSetting(bibleItems: BibleItem[]) {
-        setSetting('bible-present', JSON.stringify(bibleItems));
+        setSetting('bible-present', JSON.stringify(bibleItems.map((bibleItem) => {
+            return bibleItem.toJson();
+        })));
     }
     static getBiblePresentingSetting() {
         try {

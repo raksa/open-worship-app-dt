@@ -2,9 +2,11 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import BibleItem from '../bible-list/BibleItem';
 
-export default function ButtonAddMoreBible({ bibleItems, applyPresents }: {
+export default function ButtonAddMoreBible({
+    bibleItems, applyPresents,
+}: {
     bibleItems: BibleItem[],
-    applyPresents: (bs: BibleItem[]) => void,
+    applyPresents: (bibleItem: BibleItem[]) => void,
 }) {
     return (
         <button className='btn btn-info'
@@ -14,15 +16,21 @@ export default function ButtonAddMoreBible({ bibleItems, applyPresents }: {
             }}
             onClick={async (e) => {
                 const addBibleView = (bibleName: string) => {
-                    const newPresent = JSON.parse(JSON.stringify(bibleItems[0])) as BibleItem;
-                    newPresent.bibleName = bibleName;
-                    const newPresents = [...bibleItems, newPresent];
-                    applyPresents(newPresents);
+                    const newBibleItem = bibleItems[0].clone();
+                    newBibleItem.bibleName = bibleName;
+                    const newBibleItems = [
+                        ...bibleItems,
+                        newBibleItem,
+                    ];
+                    applyPresents(newBibleItems);
                 };
                 const bibleList = await bibleHelper.getBibleListWithStatus();
-                const bibleItemingList = bibleItems.map(({ bibleName: bibleViewing }) => bibleViewing);
-                const bibleListFiltered = bibleList.filter(([bible]) => !~bibleItemingList.indexOf(bible));
-
+                const bibleItemingList = bibleItems.map(({ bibleName }) => {
+                    return bibleName;
+                });
+                const bibleListFiltered = bibleList.filter(([bible]) => {
+                    return !~bibleItemingList.indexOf(bible);
+                });
                 showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {
                     return {
                         title: bible, disabled: !isAvailable, onClick: () => {
