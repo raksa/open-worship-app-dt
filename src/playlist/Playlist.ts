@@ -51,7 +51,7 @@ export default class Playlist extends ItemSource<PlaylistType>{
             this.validate, this._instantiate);
     }
     static async create(dir: string, name: string) {
-        return await super.create(dir, name, {
+        return super.create(dir, name, {
             items: [],
         });
     }

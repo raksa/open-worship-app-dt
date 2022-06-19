@@ -10,7 +10,7 @@ import BibleFile from './BibleFile';
 import { useBibleAdding } from '../event/PreviewingEventListener';
 
 export default function BibleList() {
-    const [list, setList] = useState<FileListType>(undefined);
+    const [list, setList] = useState<FileListType>(null);
     const [dir, setDir] = useStateSettingString<string>(Bible.SELECT_DIR_SETTING, '');
     useBibleAdding((bibleItem) => {
         Bible.addItem(bibleItem).then(() => setList(null));
@@ -20,11 +20,9 @@ export default function BibleList() {
             list={list} setList={setList}
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
-                if (name !== null) {
-                    if (await Bible.create(dir, name)) {
-                        setList(null);
-                        return false;
-                    }
+                if (await Bible.create(dir, name)) {
+                    setList(null);
+                    return false;
                 }
                 return true;
             }}

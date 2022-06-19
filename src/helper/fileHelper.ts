@@ -60,15 +60,27 @@ const fileHelpers = {
     createWriteStream: function (filePath: string) {
         return appProvider.fs.createWriteStream(filePath);
     },
-    listFiles: async function (dir: string, type: MimetypeNameType) {
+    listFiles: function (dir: string) {
+        return new Promise<string[]>((resolve, reject) => {
+            if (!dir) {
+                return resolve([]);
+            }
+            appProvider.fs.readdir(dir, (error, list) => {
+                if (error) {
+                    console.log(error);
+                    return reject(new Error('Error occurred during listing file'));
+                }
+                resolve(list);
+            });
+        });
+    },
+    listFilesWithMimetype: async function (dir: string, type: MimetypeNameType) {
         if (!dir) {
             return [];
         }
         try {
             const mimeTypes = require(`./mime/${type}-types.json`) as MimeType[];
-            console.log(dir);
-            const files = appProvider.fs.readdirSync(dir);
-            console.log(files);
+            const files = await this.listFiles(dir);
             const matchedFiles = files.map((fileName) => {
                 return getFileMetaData(fileName, mimeTypes);
             }).filter((d) => {

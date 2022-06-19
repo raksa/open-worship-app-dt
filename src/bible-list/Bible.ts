@@ -98,7 +98,7 @@ export default class Bible extends ItemSource<BibleType>{
     }
     static _initItems(bible: ItemSource<any>) {
         bible.content.items = bible.content.items.map((item: any) => {
-            return new BibleItem(item.id, item.bible, item.target,
+            return new BibleItem(item.id, item.bibleName, item.target,
                 item.metadata, bible.fileSource);
         });
     }
@@ -122,7 +122,7 @@ export default class Bible extends ItemSource<BibleType>{
         const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
         let fileSources;
         try {
-            fileSources = await fileHelpers.listFiles(dir, 'bible') || [];
+            fileSources = await fileHelpers.listFilesWithMimetype(dir, 'bible') || [];
         } catch (error: any) {
             toastEventListener.showSimpleToast({
                 title: 'Getting Default Bible File',
@@ -148,7 +148,7 @@ export default class Bible extends ItemSource<BibleType>{
         return defaultBible;
     }
     static async create(dir: string, name: string) {
-        return await super.create(dir, name, {
+        return super.create(dir, name, {
             items: [],
         });
     }

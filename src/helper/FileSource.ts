@@ -17,7 +17,6 @@ export default class FileSource extends EventHandler {
     fileName: string;
     filePath: string;
     src: string;
-    static _fileCache: Map<string, FileSource> = new Map();
     constructor(basePath: string, fileName: string,
         filePath: string, src: string,) {
         super();
@@ -84,7 +83,6 @@ export default class FileSource extends EventHandler {
     async delete() {
         try {
             await fileHelpers.deleteFile(this.filePath);
-            FileSource._fileCache.delete(this.filePath);
             this._addPropEvent('delete');
             return true;
         } catch (error: any) {
@@ -95,7 +93,7 @@ export default class FileSource extends EventHandler {
         }
         return false;
     }
-    static genFileSourceNoCache(filePath: string, fileName?: string) {
+    static genFileSource(filePath: string, fileName?: string) {
         let basePath;
         if (fileName) {
             basePath = filePath;
@@ -107,13 +105,5 @@ export default class FileSource extends EventHandler {
         }
         return new FileSource(basePath, fileName, filePath,
             appProvider.url.pathToFileURL(filePath).toString());
-    }
-    static genFileSource(filePath: string, fileName?: string) {
-        const fileSource = this.genFileSourceNoCache(filePath, fileName);
-        if (this._fileCache.has(fileSource.filePath)) {
-            return this._fileCache.get(fileSource.filePath) as FileSource;
-        }
-        this._fileCache.set(fileSource.filePath, fileSource);
-        return fileSource;
     }
 }

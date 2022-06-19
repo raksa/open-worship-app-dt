@@ -17,11 +17,9 @@ export default function SlideList() {
             list={list} setList={setList}
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
-                if (name !== null) {
-                    if (await Slide.create(dir, name)) {
-                        setList(null);
-                        return false;
-                    }
+                if (await Slide.create(dir, name)) {
+                    setList(null);
+                    return false;
                 }
                 return true;
             }}

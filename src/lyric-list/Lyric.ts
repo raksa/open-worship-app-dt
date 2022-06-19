@@ -120,7 +120,7 @@ Block3`,
         };
     }
     static async create(dir: string, name: string) {
-        return await super.create(dir, name, {
+        return super.create(dir, name, {
             items: [Lyric.toNew(name)],
         });
     }

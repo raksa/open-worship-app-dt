@@ -19,11 +19,9 @@ export default function PlaylistList() {
             list={list} setList={setList}
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
-                if (name !== null) {
-                    if (await Playlist.create(dir, name)) {
-                        setList(null);
-                        return false;
-                    }
+                if (await Playlist.create(dir, name)) {
+                    setList(null);
+                    return false;
                 }
                 return true;
             }}

@@ -34,7 +34,7 @@ export default class BibleItem extends ItemBase {
     }
     static validate(item: any) {
         try {
-            if (!item.bible ||
+            if (!item.bibleName ||
                 typeof item.id !== 'number' ||
                 !item.metadata || typeof item.metadata !== 'object' ||
                 !item.target || typeof item.target !== 'object' ||
@@ -128,7 +128,7 @@ export default class BibleItem extends ItemBase {
                 return [];
             }
             return JSON.parse(str).map((item: any) => {
-                return BibleItem.genItem(item.bible, item.target);
+                return BibleItem.genItem(item.bibleName, item.target);
             }) as BibleItem[];
         } catch (error) {
             console.log(error);

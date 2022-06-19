@@ -125,7 +125,7 @@ export default class Slide extends ItemSource<SlidePresentType>{
         return `⚠️ slide:${slide.width}x${slide.height} display:${display.width}x${display.height}`;
     }
     static async create(dir: string, name: string) {
-        return await super.create(dir, name, {
+        return super.create(dir, name, {
             items: [SlideItem.defaultSlideItem()],
         });
     }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
-export function AskingNewName({ applyName }: { applyName: (n: string | null) => void }) {
+export function AskingNewName({ applyName }: {
+    applyName: (n: string | null) => void,
+}) {
     const [creatingNewName, setCreatingNewName] = useState('');
     return (
         <li className='list-group-item'>
@@ -9,7 +11,7 @@ export function AskingNewName({ applyName }: { applyName: (n: string | null) => 
                     value={creatingNewName}
                     aria-label="file name" aria-describedby="button-addon2" autoFocus
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === 'Enter' && creatingNewName) {
                             applyName(creatingNewName);
                         } else if (e.key === 'Escape') {
                             applyName(null);

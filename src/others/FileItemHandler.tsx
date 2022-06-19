@@ -65,7 +65,7 @@ export default function FileItemHandler({
                 throw new Error('Unsupported mimetype');
         }
         const deleteEvent = fileSource.registerEventListener('select', () => {
-            setList(null);
+            setData(null);
         });
         return () => {
             fileSource.unregisterEventListener(deleteEvent);

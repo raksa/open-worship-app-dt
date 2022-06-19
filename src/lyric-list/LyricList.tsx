@@ -27,11 +27,9 @@ export default function LyricList() {
             list={list} setList={setList}
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
-                if (name !== null) {
-                    if (await Lyric.create(dir, name)) {
-                        setList(null);
-                        return false;
-                    }
+                if (await Lyric.create(dir, name)) {
+                    setList(null);
+                    return false;
                 }
                 return true;
             }}

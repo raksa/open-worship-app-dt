@@ -28,13 +28,13 @@ export default function FileListHandler({
     setList: (l: FileListType) => void,
     dir: string, setDir: (d: string) => void,
     header?: any, body: any,
-    onNewFile?: (n: string | null) => Promise<boolean>,
+    onNewFile?: (n: string) => Promise<boolean>,
     contextMenu?: ContextMenuItemType[]
 }) {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     useEffect(() => {
         if (list === null) {
-            fileHelpers.listFiles(dir, mimetype).then(setList)
+            fileHelpers.listFilesWithMimetype(dir, mimetype).then(setList)
                 .catch((error: any) => {
                     setList(undefined);
                     toastEventListener.showSimpleToast({
@@ -127,6 +127,10 @@ export default function FileListHandler({
                 <ul className="list-group">
                     {onNewFile && isCreatingNew && <AskingNewName
                         applyName={async (name) => {
+                            if(name === null) {
+                                setIsCreatingNew(false);
+                                return;
+                            }
                             onNewFile(name).then((b) => setIsCreatingNew(b));
                         }} />}
                     <RenderList list={list} setList={setList}
