@@ -181,13 +181,13 @@ export function usePresentRenderText(item: BibleItem) {
     }, [item]);
     return text;
 }
-export function usePresentToInputText(bible: string, book?: string | null,
+export function usePresentToInputText(bibleName: string, book?: string | null,
     chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
     const [text, setText] = useState<string>('');
     useEffect(() => {
-        toInputText(bible, book, chapter, startVerse, endVerse).then((text1) => {
+        toInputText(bibleName, book, chapter, startVerse, endVerse).then((text1) => {
             setText(text1);
         });
-    }, [bible, book, chapter, startVerse, endVerse]);
+    }, [bibleName, book, chapter, startVerse, endVerse]);
     return text;
 }

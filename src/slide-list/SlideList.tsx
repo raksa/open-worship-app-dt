@@ -2,14 +2,15 @@ import './SlideList.scss';
 
 import { useState } from 'react';
 import { useStateSettingString } from '../helper/settingHelper';
-import FileSource from '../helper/FileSource';
-import FileListHandler from '../others/FileListHandler';
+import FileListHandler, {
+    FileListType,
+} from '../others/FileListHandler';
 import SlideFile from './SlideFile';
 import Slide from './Slide';
 
 const id = 'slide-list';
 export default function SlideList() {
-    const [list, setList] = useState<FileSource[] | null>(null);
+    const [list, setList] = useState<FileListType>(null);
     const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
     return (
         <FileListHandler id={id} mimetype={'slide'}
@@ -17,7 +18,7 @@ export default function SlideList() {
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    if (await Slide.createNew(dir, name)) {
+                    if (await Slide.create(dir, name)) {
                         setList(null);
                         return false;
                     }

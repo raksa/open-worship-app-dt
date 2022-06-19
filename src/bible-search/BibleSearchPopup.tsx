@@ -53,8 +53,8 @@ export async function getSelectedBibleItem(): Promise<string | null> {
     if (bibleItem !== null) {
         return bibleItem.bibleName;
     }
-    const bible = getSetting('selected-bible') || null;
-    if (bible === null) {
+    const bibleName = getSetting('selected-bible') || null;
+    if (bibleName === null) {
         const bibles = await bibleHelper.getDownloadedBibleList();
         if (!bibles || !bibles.length) {
             toastEventListener.showSimpleToast({
@@ -66,7 +66,7 @@ export async function getSelectedBibleItem(): Promise<string | null> {
         setSetting('selected-bible', bibles[0]);
         return getSelectedBibleItem();
     }
-    return bible;
+    return bibleName;
 }
 export function useGetSelectedBibleItem() {
     const [bibleSelected, setBibleSelected] = useState<string | null>(null);

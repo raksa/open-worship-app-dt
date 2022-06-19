@@ -5,13 +5,14 @@ import {
     useStateSettingString,
 } from '../helper/settingHelper';
 import PlaylistFile from './PlaylistFile';
-import FileListHandler from '../others/FileListHandler';
-import FileSource from '../helper/FileSource';
+import FileListHandler, {
+    FileListType,
+} from '../others/FileListHandler';
 import Playlist from './Playlist';
 
 const id = 'playlist-list';
 export default function PlaylistList() {
-    const [list, setList] = useState<FileSource[] | null>(null);
+    const [list, setList] = useState<FileListType>(null);
     const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
     return (
         <FileListHandler id={id} mimetype={'playlist'}
@@ -19,7 +20,7 @@ export default function PlaylistList() {
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    if (await Playlist.createNew(dir, name)) {
+                    if (await Playlist.create(dir, name)) {
                         setList(null);
                         return false;
                     }

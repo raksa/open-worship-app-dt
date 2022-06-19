@@ -30,34 +30,34 @@ export function SettingBible() {
             <ul className="list-group d-flex flex-fill">
                 {bbList.map((bb, i) => {
                     return (
-                        <BibleItem key={`${i}`} bible={bb} />
+                        <BibleItem key={`${i}`} bibleName={bb} />
                     );
                 })}
             </ul>
         </div>
     );
 }
-function BibleItem({ bible }: { bible: string }) {
+function BibleItem({ bibleName }: { bibleName: string }) {
     const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
     useEffect(() => {
-        bibleHelper.checkExist(bible).then((b) => {
+        bibleHelper.checkExist(bibleName).then((b) => {
             setIsDownloaded(b);
         });
-    }, [bible]);
+    }, [bibleName]);
     const [dProgress, setDProgress] = useState<number | null>(null);
     return (
         <li className="list-group-item">
             <div>
-                <span>{bible}</span>
+                <span>{bibleName}</span>
                 {dProgress === null ?
                     <div className='float-end'>
                         <DownloadOption isDownloaded={isDownloaded}
                             onDownload={() => {
                                 setDProgress(0);
-                                bibleHelper.download(bible, {
+                                bibleHelper.download(bibleName, {
                                     onStart: (totalSize) => {
                                         toastEventListener.showSimpleToast({
-                                            title: `Start downloading ${bible}`,
+                                            title: `Start downloading ${bibleName}`,
                                             message: `Total size${totalSize}mb`,
                                         });
                                     },
@@ -77,7 +77,7 @@ function BibleItem({ bible }: { bible: string }) {
                             }}
                             onDelete={async () => {
                                 try {
-                                    await bibleHelper.delete(bible);
+                                    await bibleHelper.delete(bibleName);
                                     setIsDownloaded(false);
                                 } catch (error: any) {
                                     toastEventListener.showSimpleToast({

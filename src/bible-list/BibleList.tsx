@@ -4,14 +4,13 @@ import { useState } from 'react';
 import {
     useStateSettingString,
 } from '../helper/settingHelper';
-import FileListHandler from '../others/FileListHandler';
-import FileSource from '../helper/FileSource';
+import FileListHandler, { FileListType } from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useBibleAdding } from '../event/PreviewingEventListener';
 
 export default function BibleList() {
-    const [list, setList] = useState<FileSource[] | null>(null);
+    const [list, setList] = useState<FileListType>(undefined);
     const [dir, setDir] = useStateSettingString<string>(Bible.SELECT_DIR_SETTING, '');
     useBibleAdding((bibleItem) => {
         Bible.addItem(bibleItem).then(() => setList(null));
@@ -22,7 +21,7 @@ export default function BibleList() {
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    if (await Bible.createNew(dir, name)) {
+                    if (await Bible.create(dir, name)) {
                         setList(null);
                         return false;
                     }

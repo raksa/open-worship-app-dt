@@ -9,15 +9,15 @@ import {
 } from '../event/KeyboardEventListener';
 import { setSetting } from '../helper/settingHelper';
 
-export function BibleSelectOption({ bible }: { bible: string }) {
-    const bibleStatus = useGetBibleWithStatus(bible);
+export function BibleSelectOption({ bibleName }: { bibleName: string }) {
+    const bibleStatus = useGetBibleWithStatus(bibleName);
     if (bibleStatus === null) {
         return null;
     }
-    const [bible1, isAvailable, bibleName] = bibleStatus;
+    const [bible1, isAvailable, bibleName1] = bibleStatus;
     return (
         <option disabled={!isAvailable}
-            value={bible1}>{bibleName}</option>
+            value={bible1}>{bibleName1}</option>
     );
 }
 
@@ -54,7 +54,7 @@ export default function InputHandler({
                         setSetting('selected-bible', value);
                         onBibleChange(bibleSelected);
                     }}>
-                    {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bible={b} />)}
+                    {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bibleName={b} />)}
                 </select>
             </span>
         </>

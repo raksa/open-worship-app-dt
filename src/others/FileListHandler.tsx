@@ -6,10 +6,17 @@ import fileHelpers, {
     MimetypeNameType,
 } from '../helper/fileHelper';
 import { AskingNewName } from './AskingNewName';
-import { ContextMenuItemType, showAppContextMenu } from './AppContextMenu';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from './AppContextMenu';
 import FileSource from '../helper/FileSource';
-import { previewingEventListener, useOnSelectDir } from '../event/PreviewingEventListener';
+import {
+    previewingEventListener, useOnSelectDir,
+} from '../event/PreviewingEventListener';
 import { getSetting } from '../helper/settingHelper';
+import RenderList from './RenderList';
+
+export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
     id, mimetype, list, setList, dir, setDir,
@@ -17,8 +24,8 @@ export default function FileListHandler({
     onNewFile,
 }: {
     id: string, mimetype: MimetypeNameType,
-    list: FileSource[] | null,
-    setList: (l: FileSource[] | null) => void,
+    list: FileListType,
+    setList: (l: FileListType) => void,
     dir: string, setDir: (d: string) => void,
     header?: any, body: any,
     onNewFile?: (n: string | null) => Promise<boolean>,
@@ -27,16 +34,16 @@ export default function FileListHandler({
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     useEffect(() => {
         if (list === null) {
-            fileHelpers.listFiles(dir, mimetype).then((newList) => {
-                setList(newList === null ? [] : newList);
-            }).catch((error: any) => {
-                toastEventListener.showSimpleToast({
-                    title: 'Listing',
-                    message: error.message,
+            fileHelpers.listFiles(dir, mimetype).then(setList)
+                .catch((error: any) => {
+                    setList(undefined);
+                    toastEventListener.showSimpleToast({
+                        title: 'Listing',
+                        message: error.message,
+                    });
                 });
-            });
         }
-    }, [list, dir]);
+    }, [list]);
     useOnSelectDir(() => {
         setDir(getSetting(`${id}-selected-dir`) || '');
         setList(null);
@@ -119,10 +126,11 @@ export default function FileListHandler({
                     onSelectDirPath={applyDir} />
                 <ul className="list-group">
                     {onNewFile && isCreatingNew && <AskingNewName
-                        applyName={(name) => {
+                        applyName={async (name) => {
                             onNewFile(name).then((b) => setIsCreatingNew(b));
                         }} />}
-                    {body}
+                    <RenderList list={list} setList={setList}
+                        body={body} />
                 </ul>
             </div>
         </div >

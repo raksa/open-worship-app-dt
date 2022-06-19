@@ -2,13 +2,14 @@ import { useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
+import { FileListType } from '../others/FileListHandler';
 
 export default function LyricFile({
     index, list, setList, fileSource,
 }: {
     index: number,
-    list: FileSource[] | null,
-    setList: (newList: FileSource[] | null) => void,
+    list: FileListType,
+    setList: (newList: FileListType) => void,
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);

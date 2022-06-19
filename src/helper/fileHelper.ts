@@ -66,10 +66,17 @@ const fileHelpers = {
         }
         try {
             const mimeTypes = require(`./mime/${type}-types.json`) as MimeType[];
+            console.log(dir);
             const files = appProvider.fs.readdirSync(dir);
-            const matchedFiles = files.map((fileName) => getFileMetaData(fileName, mimeTypes))
-                .filter((d) => !!d) as FileMetadataType[];
-            return matchedFiles.map((fileMetadata) => FileSource.genFileSource(dir, fileMetadata.fileName));
+            console.log(files);
+            const matchedFiles = files.map((fileName) => {
+                return getFileMetaData(fileName, mimeTypes);
+            }).filter((d) => {
+                return !!d;
+            }) as FileMetadataType[];
+            return matchedFiles.map((fileMetadata) => {
+                return FileSource.genFileSource(dir, fileMetadata.fileName);
+            });
         } catch (error) {
             console.log(error);
             throw new Error('Error occurred during listing file');

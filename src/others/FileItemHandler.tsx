@@ -11,6 +11,7 @@ import Lyric from '../lyric-list/Lyric';
 import Playlist from '../playlist/Playlist';
 import Slide from '../slide-list/Slide';
 import Bible from '../bible-list/Bible';
+import { FileListType } from './FileListHandler';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -35,8 +36,8 @@ export default function FileItemHandler({
     data: ItemSource<any> | null | undefined,
     setData: (d: any | null | undefined) => void,
     index: number,
-    list: FileSource[] | null,
-    setList: (newList: FileSource[] | null) => void,
+    list: FileListType,
+    setList: (newList: FileListType) => void,
     fileSource: FileSource,
     className: string
     contextMenu?: ContextMenuItemType[],

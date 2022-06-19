@@ -5,13 +5,12 @@ import { presentEventListener } from '../event/PresentEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
 import { renderBGVideo } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import FileListHandler from '../others/FileListHandler';
-import FileSource from '../helper/FileSource';
+import FileListHandler, { FileListType } from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 
 const id = 'background-video';
 export default function Videos() {
-    const [list, setList] = useState<FileSource[] | null>(null);
+    const [list, setList] = useState<FileListType>(null);
     const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
     return (
         <FileListHandler id={id} mimetype={'video'}

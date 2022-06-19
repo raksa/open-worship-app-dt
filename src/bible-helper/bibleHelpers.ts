@@ -28,9 +28,9 @@ export const toLocaleNum = (n: number, numList: string[]) => {
     return `${n}`.split('').map(n1 => numList[+n1]).join('');
 };
 
-export async function genMatches(bible: string, inputText: string) {
+export async function genMatches(bibleName: string, inputText: string) {
     const kjvKeyValue = bibleHelper.getKJVKeyValue();
-    const bookKVList = await getBookKVList(bible);
+    const bookKVList = await getBookKVList(bibleName);
     if (bookKVList === null) {
         return null;
     }
@@ -51,13 +51,13 @@ export async function genMatches(bible: string, inputText: string) {
         return false;
     });
 };
-export function useMatch(bible: string, inputText: string) {
+export function useMatch(bibleName: string, inputText: string) {
     const [matches, setMatches] = useState<string[] | null>(null);
     useEffect(() => {
-        genMatches(bible, inputText).then((ms) => {
+        genMatches(bibleName, inputText).then((ms) => {
             setMatches(ms);
         });
-    }, [bible, inputText]);
+    }, [bibleName, inputText]);
     return matches;
 }
 export function useGetBookKVList(bibleSelected: string) {
@@ -71,11 +71,11 @@ export function useGetBookKVList(bibleSelected: string) {
     }, [bibleSelected]);
     return bookKVList;
 }
-export function useGetBibleWithStatus(bible: string) {
+export function useGetBibleWithStatus(bibleName: string) {
     const [bibleStatus, setBibleStatus] = useState<[string, boolean, string] | null>(null);
     useEffect(() => {
-        bibleHelper.getBibleWithStatus(bible).then((bs) => setBibleStatus(bs));
-    }, [bible]);
+        bibleHelper.getBibleWithStatus(bibleName).then((bs) => setBibleStatus(bs));
+    }, [bibleName]);
     return bibleStatus;
 }
 export function useGetChapterCount(bibleSelected: string, bookSelected: string) {
@@ -103,9 +103,9 @@ export function genDuplicatedMessage(list: BibleItem[],
 }
 
 const bibleHelper = {
-    async download(bible: string, options: DownloadOptionsType) {
+    async download(bibleName: string, options: DownloadOptionsType) {
         try {
-            await this.delete(bible);
+            await this.delete(bibleName);
             const downloadPath = await this.getWritablePath();
             if (downloadPath === null) {
                 return options.onDone(new Error('Cannot create writable path'));
@@ -115,9 +115,9 @@ const bibleHelper = {
                 key: string,
                 name: string,
                 version: string,
-            } = await fetch(`/pointers/${encodeURI(bible + '.json')}`);
-            this.setBibleCipherKey(bible, data.cipherKey);
-            if (this.getBibleCipherKey(bible) !== data.cipherKey) {
+            } = await fetch(`/pointers/${encodeURI(bibleName + '.json')}`);
+            this.setBibleCipherKey(bibleName, data.cipherKey);
+            if (this.getBibleCipherKey(bibleName) !== data.cipherKey) {
                 return options.onDone(new Error('Fail to save!'));
             }
             await startDownloading(`/${encodeURI(data.key)}`, downloadPath, data.name, options);
@@ -158,21 +158,21 @@ const bibleHelper = {
     },
     async getDownloadedBibleList() {
         const list = [];
-        for (const bible of this.getBibleList()) {
-            if (await this.checkExist(bible)) {
-                list.push(bible);
+        for (const bibleName of this.getBibleList()) {
+            if (await this.checkExist(bibleName)) {
+                list.push(bibleName);
             }
         }
         return list;
     },
-    async getBibleWithStatus(bible: string): Promise<[string, boolean, string]> {
-        const isAvailable = !!await this.checkExist(bible);
-        return [bible, isAvailable, `${!isAvailable ? '🚫' : ''}${bible}`];
+    async getBibleWithStatus(bibleName: string): Promise<[string, boolean, string]> {
+        const isAvailable = !!await this.checkExist(bibleName);
+        return [bibleName, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleName}`];
     },
     async getBibleListWithStatus(): Promise<[string, boolean, string][]> {
         const list = [];
-        for (const bible of this.getBibleList()) {
-            list.push(await this.getBibleWithStatus(bible));
+        for (const bibleName of this.getBibleList()) {
+            list.push(await this.getBibleWithStatus(bibleName));
         }
         return list;
     },
@@ -186,41 +186,41 @@ const bibleHelper = {
         }
         return appProvider.path.join(getUserWritablePath(), 'bibles');
     },
-    async toDbPath(bible: string) {
+    async toDbPath(bibleName: string) {
         const dirPath = await this.getWritablePath();
         if (dirPath === null) {
             return null;
         }
-        return appProvider.path.join(dirPath, bible);
+        return appProvider.path.join(dirPath, bibleName);
 
     },
-    async checkExist(bible: string) {
-        const biblePath = await this.toDbPath(bible);
+    async checkExist(bibleName: string) {
+        const biblePath = await this.toDbPath(bibleName);
         if (biblePath === null) {
             return false;
         }
-        if (this.getBibleCipherKey(bible) === null) {
+        if (this.getBibleCipherKey(bibleName) === null) {
             return false;
         }
         return !!await fileHelpers.checkFileExist(biblePath);
 
     },
-    async delete(bible: string) {
+    async delete(bibleName: string) {
         const basePath = await this.getWritablePath() as string;
-        const filePath = appProvider.path.join(basePath, bible);
+        const filePath = appProvider.path.join(basePath, bibleName);
         await fileHelpers.deleteFile(filePath);
-        this.setBibleCipherKey(bible, null);
+        this.setBibleCipherKey(bibleName, null);
     },
-    setBibleCipherKey(bible: string, key: string | null) {
-        setSetting(toBase64(`ck-${bible}`), toBase64(key || ''));
+    setBibleCipherKey(bibleName: string, key: string | null) {
+        setSetting(toBase64(`ck-${bibleName}`), toBase64(key || ''));
     },
-    getBibleCipherKey(bible: string) {
-        const saved = getSetting(toBase64(`ck-${bible}`));
+    getBibleCipherKey(bibleName: string) {
+        const saved = getSetting(toBase64(`ck-${bibleName}`));
         return saved ? fromBase64(saved) : null;
     },
-    async toChapter(bible: string, bookKey: string, chapterNum: number) {
+    async toChapter(bibleName: string, bookKey: string, chapterNum: number) {
         // KJV, GEN, 1
-        const info = await getInfo(bible);
+        const info = await getInfo(bibleName);
         if (info === null) {
             return null;
         }
@@ -231,11 +231,11 @@ const bibleHelper = {
         // KJV, GEN
         return bibleObj.books[bookKey].chapterCount;
     },
-    toChapterList(bible: string, bookKey: string) {
+    toChapterList(bibleName: string, bookKey: string) {
         // KJV, GEN
         const chapterCount = this.getKJVChapterCount(bookKey);
         return Array.from({ length: chapterCount }, (_, i) => {
-            return this.toChapter(bible, bookKey, i + 1);
+            return this.toChapter(bibleName, bookKey, i + 1);
         });
     },
     toIndex(bookKey: string, chapterNum: number) {
@@ -266,8 +266,8 @@ const bibleHelper = {
         indexStr = indexStr.substring(indexStr.length - 4);
         return `${indexStr}-${bookKey}.${chapterNum}.json`;
     },
-    async toBookKey(bible: string, book: string) {
-        const info = await getInfo(bible);
+    async toBookKey(bibleName: string, book: string) {
+        const info = await getInfo(bibleName);
         if (info !== null) {
             for (const k in info.books) {
                 if (info.books[k] === book) {

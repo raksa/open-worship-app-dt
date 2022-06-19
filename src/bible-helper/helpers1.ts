@@ -5,8 +5,8 @@ import appProvider from '../helper/appProvider';
 import bibleHelper from './bibleHelpers';
 import fileHelpers from '../helper/fileHelper';
 
-export async function sqlite3Read(bible: string, key: string, cipherKey: string) {
-    const dbFilePath = await bibleHelper.toDbPath(bible);
+export async function sqlite3Read(bibleName: string, key: string, cipherKey: string) {
+    const dbFilePath = await bibleHelper.toDbPath(bibleName);
     if (dbFilePath === null) {
         return Promise.resolve(null);
     }
@@ -151,22 +151,22 @@ export const bibleStorage: {
     chapterMapper: {},
 };
 
-export async function getBookKVList(bible: string) {
-    const info = await getInfo(bible);
+export async function getBookKVList(bibleName: string) {
+    const info = await getInfo(bibleName);
     if (info === null) {
         return null;
     }
     return info.books;
 }
-export async function keyToBook(bible: string, bookKey: string) {
-    const bookKVList = await getBookKVList(bible);
+export async function keyToBook(bibleName: string, bookKey: string) {
+    const bookKVList = await getBookKVList(bibleName);
     if (bookKVList === null) {
         return null;
     }
     return bookKVList[bookKey] || null;
 }
-export async function getBookVKList(bible: string) {
-    const bibleVKList = await getBookKVList(bible);
+export async function getBookVKList(bibleName: string) {
+    const bibleVKList = await getBookKVList(bibleName);
     if (bibleVKList === null) {
         return null;
     }
@@ -174,16 +174,16 @@ export async function getBookVKList(bible: string) {
         return [v, k];
     }));
 }
-export async function bookToKey(bible: string, book: string) {
-    const bookVKList = await getBookVKList(bible);
+export async function bookToKey(bibleName: string, book: string) {
+    const bookVKList = await getBookVKList(bibleName);
     if (bookVKList === null) {
         return null;
     }
     return bookVKList[book] || null;
 }
-export async function getChapterCount(bible: string, book: string) {
+export async function getChapterCount(bibleName: string, book: string) {
     if (!bibleStorage.chapterCountMapper[book]) {
-        const bookKey = await bibleHelper.toBookKey(bible, book);
+        const bookKey = await bibleHelper.toBookKey(bibleName, book);
         if (bookKey === null) {
             return null;
         }
@@ -192,22 +192,22 @@ export async function getChapterCount(bible: string, book: string) {
     }
     return bibleStorage.chapterCountMapper[book];
 }
-export async function getBookChapterData(bible: string, bookKey: string, chapterNumber: number) {
+export async function getBookChapterData(bibleName: string, bookKey: string, chapterNumber: number) {
     const fileName = bibleHelper.toFileName(bookKey, chapterNumber);
-    const cipherKey = bibleHelper.getBibleCipherKey(bible);
+    const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
     if (cipherKey === null) {
         return null;
     }
-    const vInfo = await sqlite3Read(bible, fileName, cipherKey) as ChapterType | null;
+    const vInfo = await sqlite3Read(bibleName, fileName, cipherKey) as ChapterType | null;
     if (vInfo === null) {
         return null;
     }
     return vInfo;
 }
-export async function getVerses(bible: string, bookKey: string, chapter: number) {
-    const k = `${bible} => ${bookKey} ${chapter}`;
+export async function getVerses(bibleName: string, bookKey: string, chapter: number) {
+    const k = `${bibleName} => ${bookKey} ${chapter}`;
     if (!bibleStorage.chapterMapper[k]) {
-        bibleStorage.chapterMapper[k] = await getBookChapterData(bible, bookKey, chapter);;
+        bibleStorage.chapterMapper[k] = await getBookChapterData(bibleName, bookKey, chapter);;
     }
     const chapterObj = bibleStorage.chapterMapper[k];
     if (chapterObj === null) {
@@ -216,25 +216,25 @@ export async function getVerses(bible: string, bookKey: string, chapter: number)
     return chapterObj.verses;
 }
 
-export async function initInfo(bible: string) {
-    const cipherKey = bibleHelper.getBibleCipherKey(bible);
+export async function initInfo(bibleName: string) {
+    const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
     if (cipherKey !== null) {
-        const info = await sqlite3Read(bible, '_info.js', cipherKey);
-        bibleStorage.infoMapper[bible] = info as BibleInfoType | null;
+        const info = await sqlite3Read(bibleName, '_info.js', cipherKey);
+        bibleStorage.infoMapper[bibleName] = info as BibleInfoType | null;
     }
 }
-export async function getInfo(bible: string) {
-    if (!bibleStorage.infoMapper[bible]) {
-        const cipherKey = bibleHelper.getBibleCipherKey(bible);
+export async function getInfo(bibleName: string) {
+    if (!bibleStorage.infoMapper[bibleName]) {
+        const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
         if (cipherKey !== null) {
-            const info: BibleInfoType | null = await sqlite3Read(bible, '_info.js', cipherKey);
-            bibleStorage.infoMapper[bible] = info;
+            const info: BibleInfoType | null = await sqlite3Read(bibleName, '_info.js', cipherKey);
+            bibleStorage.infoMapper[bibleName] = info;
         }
     }
-    return bibleStorage.infoMapper[bible] || null;
+    return bibleStorage.infoMapper[bibleName] || null;
 }
-export async function getBibleNumList(bible: string) {
-    const info = await getInfo(bible);
+export async function getBibleNumList(bibleName: string) {
+    const info = await getInfo(bibleName);
     if (info === null) {
         return null;
     }

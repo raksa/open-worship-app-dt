@@ -135,9 +135,7 @@ export default class Bible extends ItemSource<BibleType>{
                 return Bible.readFileToData(fileSource);
             }
         }
-        const defaultFS = await this.createNew(dir, Bible.DEFAULT_FILE_NAME, {
-            items: [],
-        });
+        const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
         const defaultBible = await Bible.readFileToData(defaultFS);
         if (!defaultBible) {
             toastEventListener.showSimpleToast({
@@ -150,7 +148,7 @@ export default class Bible extends ItemSource<BibleType>{
         return defaultBible;
     }
     static async create(dir: string, name: string) {
-        await super.createNew(dir, name, {
+        return await super.create(dir, name, {
             items: [],
         });
     }

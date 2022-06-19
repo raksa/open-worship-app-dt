@@ -6,13 +6,14 @@ import FileItemHandler from '../others/FileItemHandler';
 import Playlist from './Playlist';
 import FileSource from '../helper/FileSource';
 import BibleItemRender from '../bible-list/BibleItemRender';
+import { FileListType } from '../others/FileListHandler';
 
 export default function PlaylistFile({
     index, list, setList, fileSource,
 }: {
     index: number,
-    list: FileSource[] | null,
-    setList: (newList: FileSource[] | null) => void,
+    list: FileListType,
+    setList: (newList: FileListType) => void,
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Playlist | null | undefined>(null);

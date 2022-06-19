@@ -13,9 +13,9 @@ export default function ButtonAddMoreBible({ bibleItems, applyPresents }: {
                 padding: '0px',
             }}
             onClick={async (e) => {
-                const addBibleView = (bible: string) => {
+                const addBibleView = (bibleName: string) => {
                     const newPresent = JSON.parse(JSON.stringify(bibleItems[0])) as BibleItem;
-                    newPresent.bibleName = bible;
+                    newPresent.bibleName = bibleName;
                     const newPresents = [...bibleItems, newPresent];
                     applyPresents(newPresents);
                 };

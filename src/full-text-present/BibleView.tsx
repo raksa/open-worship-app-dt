@@ -14,7 +14,7 @@ export default function BibleView({
 }: {
     i: number,
     bibleItem: BibleItem,
-    onBibleChange: (bible: string) => void,
+    onBibleChange: (bibleName: string) => void,
     onClose: () => void,
 }) {
     const title = usePresentRenderTitle(bibleItem);
@@ -37,7 +37,7 @@ export default function BibleView({
                         onChange={(event) => {
                             onBibleChange(event.target.value);
                         }}>
-                        {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bible={b} />)}
+                        {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bibleName={b} />)}
                     </select>
                 </span>
                 {title}

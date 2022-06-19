@@ -51,7 +51,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         }
         return isSuccess;
     }
-    static async createNew(dir: string, name: string, content?: Object) {
+    static async create(dir: string, name: string, content?: Object) {
         if (!content) {
             return null;
         }

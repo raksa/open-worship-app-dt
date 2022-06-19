@@ -3,13 +3,14 @@ import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import RenderBibleItems from './RenderBibleItems';
+import { FileListType } from '../others/FileListHandler';
 
 export default function BibleFile({
     index, list, setList, fileSource,
 }: {
     index: number,
-    list: FileSource[] | null,
-    setList: (newList: FileSource[] | null) => void,
+    list: FileListType,
+    setList: (newList: FileListType) => void,
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
