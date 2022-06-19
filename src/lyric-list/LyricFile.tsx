@@ -2,6 +2,8 @@ import { useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
+import BibleItemColorNote from '../bible-list/BibleItemColorNote';
+import ItemSource from '../helper/ItemSource';
 
 export default function LyricFile({
     index, fileSource,
@@ -26,6 +28,7 @@ export default function LyricFile({
             child={<>
                 <i className="bi bi-music-note" />
                 {fileSource.name}
+                <BibleItemColorNote item={data as ItemSource<any>} />
             </>}
         />
     );

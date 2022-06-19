@@ -66,3 +66,5 @@ export default class EventHandler {
         ~index && this._onEventListeners[eventName].splice(index, 1);
     }
 }
+
+export const globalEventHandler = new EventHandler();

@@ -18,6 +18,7 @@
 
   .list-group-item {
     cursor: pointer;
+
     &:before {
       display: block;
       position: absolute;
@@ -32,7 +33,7 @@
 
     &:not(.active):hover {
       border: 1px solid var(--bs-gray-800);
-      background-color: rgba(100, 0, 131, 0.342);
+      border-color: #0d6dfd83;
     }
 
     &:hover {
@@ -49,6 +50,11 @@
       &.active {
         opacity: 0.4;
       }
+    }
+
+    &.active {
+      background-color: #0d6dfd2f;
+      border-color: #0d6dfd3f;
     }
   }
 

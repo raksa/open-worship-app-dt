@@ -23,6 +23,7 @@ export abstract class ItemBase implements ColorNorteInf {
         if (this.metadata) {
             this.metadata['colorNote'] = c;
         }
+        this.save();
     }
     get isSelected() {
         throw new Error('Method not implemented.');

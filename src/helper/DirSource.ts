@@ -1,4 +1,4 @@
-import EventHandler from '../event/EventHandler';
+import { globalEventHandler } from '../event/EventHandler';
 import { toastEventListener } from '../event/ToastEventListener';
 import { FileListType } from '../others/FileListHandler';
 import fileHelpers, {
@@ -16,7 +16,6 @@ export type RegisteredEventType = {
     key: string,
     listener: (t: FSEventType) => void,
 }
-const eventHandler = new EventHandler();
 export default class DirSource {
     _dirPath: string;
     fileSources: FileListType = null;
@@ -27,6 +26,9 @@ export default class DirSource {
     constructor(dirPath: string) {
         this._dirPath = dirPath;
         this._objectId = DirSource._objectId++;
+    }
+    toEventKey(fsType: FSEventType) {
+        return `${fsType}-${this.dirPath}`;
     }
     get dirPath() {
         return this._dirPath;
@@ -41,8 +43,8 @@ export default class DirSource {
     registerEventListener(fsTypes: FSEventType[],
         listener: FSListener): RegisteredEventType[] {
         return fsTypes.map((fsType) => {
-            const key = `${fsType}-${this.dirPath}`;
-            eventHandler._addOnEventListener(key, listener);
+            const key = this.toEventKey(fsType);
+            globalEventHandler._addOnEventListener(key, listener);
             return {
                 key,
                 listener,
@@ -51,12 +53,11 @@ export default class DirSource {
     }
     unregisterEventListener(events: RegisteredEventType[]) {
         events.forEach(({ key, listener }) => {
-            eventHandler._removeOnEventListener(key, listener);
+            globalEventHandler._removeOnEventListener(key, listener);
         });
     }
     update() {
-        const key = `update-${this.dirPath}`;
-        eventHandler._addPropEvent(key);
+        globalEventHandler._addPropEvent(this.toEventKey('update'));
     }
     delete() {
         DirSource._fileCache.delete(this.dirPath);

@@ -7,6 +7,7 @@ import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
+import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
 
 export type BibleTargetType = {
@@ -62,6 +63,11 @@ export default class BibleItem extends ItemBase {
         if (b) {
             previewingEventListener.selectBibleItem(this);
             BibleItem.setSelectedItem(this);
+            Lyric.getSelected().then((lyric)=>{
+                if(lyric !== null) {
+                    lyric.isSelected = false;
+                }
+            });
         } else {
             previewingEventListener.selectBibleItem(null);
             BibleItem.setSelectedItem(null);
@@ -167,7 +173,6 @@ export default class BibleItem extends ItemBase {
         return txt;
     }
 }
-
 
 export function usePresentRenderTitle(item: BibleItem) {
     const [title, setTitle] = useState<string>('');

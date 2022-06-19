@@ -50,9 +50,6 @@ export default function BibleFile({
                         data?.setIsOpened(!data.isOpened);
                     }}>
                     <span className='w-100 text-center'>
-                        {data.isSelected && <span style={{ color: 'red' }}>
-                            *
-                        </span>}
                         {fileSource.name}
                     </span>
                 </div>

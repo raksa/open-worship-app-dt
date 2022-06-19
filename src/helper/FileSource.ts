@@ -1,4 +1,4 @@
-import EventHandler from '../event/EventHandler';
+import { globalEventHandler } from '../event/EventHandler';
 import {
     toastEventListener,
 } from '../event/ToastEventListener';
@@ -12,10 +12,10 @@ import ItemSource from './ItemSource';
 type FSListener = (t: FSEventType) => void;
 type FSEventType = 'select' | 'update' | 'delete';
 export type RegisteredEventType = {
-    type: FSEventType,
+    key: string,
     listener: (t: FSEventType) => void,
 }
-export default class FileSource extends EventHandler {
+export default class FileSource {
     basePath: string;
     fileName: string;
     filePath: string;
@@ -23,25 +23,28 @@ export default class FileSource extends EventHandler {
     static _fileCache: Map<string, FileSource> = new Map();
     constructor(basePath: string, fileName: string,
         filePath: string, src: string) {
-        super();
         this.basePath = basePath;
         this.fileName = fileName;
         this.filePath = filePath;
         this.src = src;
     }
+    toEventKey(fsType: FSEventType) {
+        return `${fsType}-${this.filePath}`;
+    }
     registerEventListener(fsTypes: FSEventType[],
         listener: FSListener): RegisteredEventType[] {
         return fsTypes.map((fsType) => {
-            this._addOnEventListener(fsType, listener);
+            const key = this.toEventKey(fsType);
+            globalEventHandler._addOnEventListener(key, listener);
             return {
-                type: fsType,
+                key,
                 listener,
             };
         });
     }
     unregisterEventListener(events: RegisteredEventType[]) {
-        events.forEach(({ type, listener }) => {
-            this._removeOnEventListener(type, listener);
+        events.forEach(({ key: key, listener }) => {
+            globalEventHandler._removeOnEventListener(key, listener);
         });
     }
     get name() {
@@ -51,11 +54,10 @@ export default class FileSource extends EventHandler {
         return DirSource.genDirSource(this.basePath);
     }
     refreshDir() {
-        console.log(this.dirSource._objectId);
         this.dirSource.clearFileSources();
     }
     select() {
-        this._addPropEvent('select');
+        globalEventHandler._addPropEvent(this.toEventKey('select'));
     }
     async readFileToData(validator: (json: any) => boolean) {
         try {
@@ -82,7 +84,7 @@ export default class FileSource extends EventHandler {
         try {
             const content = JSON.stringify(data.toJson());
             await fileHelpers.overWriteFile(this.filePath, content);
-            this._addPropEvent('update');
+            globalEventHandler._addPropEvent(this.toEventKey('update'));
             return true;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
@@ -97,7 +99,7 @@ export default class FileSource extends EventHandler {
             await fileHelpers.deleteFile(this.filePath);
             FileSource._fileCache.delete(this.filePath);
             this.refreshDir();
-            this._addPropEvent('delete');
+            globalEventHandler._addPropEvent(this.toEventKey('delete'));
             return true;
         } catch (error: any) {
             toastEventListener.showSimpleToast({

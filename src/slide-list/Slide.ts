@@ -8,7 +8,7 @@ import {
     previewingEventListener,
 } from '../event/PreviewingEventListener';
 import {
-    setSetting, getSetting,
+    getSetting,
 } from '../helper/settingHelper';
 import FileSource from '../helper/FileSource';
 
@@ -17,6 +17,12 @@ export type SlidePresentType = {
 };
 
 export default class Slide extends ItemSource<SlidePresentType>{
+    static SELECT_SETTING_NAME = 'slide-selected';
+    constructor(fileSource: FileSource, metadata: MetaDataType,
+        content: SlidePresentType) {
+        super(fileSource, metadata, content);
+        this.SELECT_SETTING_NAME = Slide.SELECT_SETTING_NAME;
+    }
     static validator(json: any) {
         try {
             if (!json.content || typeof json.content !== 'object'
@@ -84,24 +90,11 @@ export default class Slide extends ItemSource<SlidePresentType>{
     }
     static present(slide: Slide | null) {
         if (slide === null) {
-            this.clearSelected();
+            this.setSelectedFileSource(null);
         } else {
             this.setSelectedFileSource(slide.fileSource);
         }
         previewingEventListener.presentSlide(slide);
-    }
-    static clearSelected() {
-        this.setSelectedFileSource(null);
-    }
-    static setSelectedFileSource(fileSource: FileSource | null) {
-        setSetting('selected-slide', fileSource?.filePath || '');
-    }
-    static getSelectedFileSource() {
-        const filePath = getSetting('selected-slide', '');
-        if (filePath) {
-            return FileSource.genFileSource(filePath);
-        }
-        return null;
     }
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();

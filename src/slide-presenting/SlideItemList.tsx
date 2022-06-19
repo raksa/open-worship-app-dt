@@ -45,7 +45,7 @@ function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
     useEffect(() => {
         Slide.readFileToDataNoCache(fileSource).then((sl) => {
             if (!sl) {
-                Slide.clearSelected();
+                Slide.setSelectedFileSource(null);
             }
             setSlide(sl);
         });

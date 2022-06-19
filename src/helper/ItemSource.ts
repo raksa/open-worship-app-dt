@@ -33,12 +33,13 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
     }
     static getSelectedFileSource(settingName?: string) {
         settingName = settingName || this.SELECT_SETTING_NAME;
+        
         if (!settingName) {
             return null;
         }
-        const filePath = getSetting(settingName, '');
-        if (filePath) {
-            return FileSource.genFileSource(filePath, undefined, true);
+        const selected = getSetting(settingName, '');
+        if (selected) {
+            return FileSource.genFileSource(selected, undefined, true);
         }
         return null;
     }

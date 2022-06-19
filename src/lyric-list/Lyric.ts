@@ -1,3 +1,4 @@
+import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MetaDataType, MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
@@ -16,6 +17,26 @@ export default class Lyric extends ItemSource<LyricType>{
         content: LyricType) {
         super(fileSource, metadata, content);
         this.SELECT_SETTING_NAME = Lyric.SELECT_SETTING_NAME;
+    }
+    get isSelected() {
+        const selectedFS = Lyric.getSelectedFileSource();
+        return this.fileSource.filePath === selectedFS?.filePath;
+    }
+    set isSelected(b: boolean) {
+        if (this.isSelected === b) {
+            return;
+        }
+        if (b) {
+            Lyric.setSelectedFileSource(this.fileSource);
+            BibleItem.getSelectedItem().then((bibleItem) => {
+                if (bibleItem !== null) {
+                    bibleItem.isSelected = false;
+                }
+            });
+        } else {
+            Lyric.setSelectedFileSource(null);
+        }
+        this.fileSource.refreshDir();
     }
     static validate(json: any) {
         try {
@@ -89,7 +110,7 @@ export default class Lyric extends ItemSource<LyricType>{
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();
         if (fileSource !== null) {
-            return Lyric.readFileToData(fileSource);
+            return await Lyric.readFileToData(fileSource) || null;
         }
         return null;
     }
