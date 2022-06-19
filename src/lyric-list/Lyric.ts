@@ -29,7 +29,7 @@ export default class Lyric extends ItemSource<LyricType>{
         if (b) {
             Lyric.setSelectedFileSource(this.fileSource);
             BibleItem.getSelectedItem().then((bibleItem) => {
-                if (bibleItem !== null) {
+                if (bibleItem) {
                     bibleItem.isSelected = false;
                 }
             });
@@ -104,7 +104,7 @@ export default class Lyric extends ItemSource<LyricType>{
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();
         if (fileSource !== null) {
-            return await Lyric.readFileToData(fileSource) || null;
+            return Lyric.readFileToData(fileSource);
         }
         return null;
     }

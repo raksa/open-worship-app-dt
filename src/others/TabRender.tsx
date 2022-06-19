@@ -5,7 +5,7 @@ export default function TabRender<T extends string>({
 }: {
     tabs: [T, string][],
     activeTab: T,
-    setActiveTab: (t: T) => void,
+    setActiveTab?: (t: T) => void,
     className?: string,
 }) {
     const { t } = useTranslation();
@@ -17,7 +17,7 @@ export default function TabRender<T extends string>({
                     <button className={`btn btn-link nav-link ${activeClass}`}
                         onClick={() => {
                             if (tab !== activeTab) {
-                                setActiveTab(tab);
+                                setActiveTab && setActiveTab(tab);
                             }
                         }}>
                         {t(title)}

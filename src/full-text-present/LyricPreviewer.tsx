@@ -21,7 +21,7 @@ export default function LyricPreviewer() {
     useEffect(() => {
         if (lyric === null) {
             Lyric.getSelected().then((lr) => {
-                setLyric(lr);
+                setLyric(lr || undefined);
             });
         }
     }, [lyric]);

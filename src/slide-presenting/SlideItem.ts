@@ -13,7 +13,6 @@ export default class SlideItem extends ItemBase {
     fileSource: FileSource;
     isCopied: boolean;
     _html: string;
-    _isSelected: boolean = false;
     constructor(id: number, html: string, metadata: MetaDataType,
         fileSource: FileSource) {
         super();
@@ -22,9 +21,6 @@ export default class SlideItem extends ItemBase {
         this.metadata = metadata;
         this.fileSource = fileSource;
         this.isCopied = false;
-        SlideItem.getSelectedItem().then((slideItem) => {
-            this.isSelected = slideItem?.id === this.id;
-        });
     }
     static validate(item: any) {
         try {
@@ -37,17 +33,19 @@ export default class SlideItem extends ItemBase {
         return false;
     }
     get isSelected() {
-        return this._isSelected;
+        const selected = SlideItem.getSelectedResult();
+        return selected?.fileSource.filePath === this.fileSource.filePath &&
+            selected?.id === this.id;
     }
     set isSelected(b: boolean) {
-        if (this._isSelected === b) {
+        if (this.isSelected === b) {
             return;
         }
-        this._isSelected = b;
-        if (this.isSelected) {
+        if (b) {
             SlideItem.setSelectedItem(this);
             slideListEventListenerGlobal.selectSlideItem(this);
         } else {
+            SlideItem.setSelectedItem(null);
             slideListEventListenerGlobal.selectSlideItem(null);
         }
         this.fileSource.refreshDir();
@@ -86,10 +84,10 @@ export default class SlideItem extends ItemBase {
         };
     }
     static async getSelectedItem() {
-        const selected = this.getSelected();
+        const selected = this.getSelectedResult();
         if (selected !== null) {
             const slide = await Slide.readFileToData(selected.fileSource);
-            return slide?.getItemById(selected.id) || null;
+            return slide?.getItemById(selected.id);
         }
         return null;
     }

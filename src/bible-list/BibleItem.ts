@@ -52,7 +52,7 @@ export default class BibleItem extends ItemBase {
         return true;
     }
     get isSelected() {
-        const selected = BibleItem.getSelected();
+        const selected = BibleItem.getSelectedResult();
         return selected?.fileSource.filePath === this.fileSource?.filePath &&
             selected?.id === this.id;
     }
@@ -64,7 +64,7 @@ export default class BibleItem extends ItemBase {
             previewingEventListener.selectBibleItem(this);
             BibleItem.setSelectedItem(this);
             Lyric.getSelected().then((lyric) => {
-                if (lyric !== null) {
+                if (lyric) {
                     lyric.isSelected = false;
                 }
             });
@@ -102,10 +102,10 @@ export default class BibleItem extends ItemBase {
         return false;
     }
     static async getSelectedItem() {
-        const selected = this.getSelected();
+        const selected = this.getSelectedResult();
         if (selected !== null) {
             const bible = await Bible.readFileToData(selected.fileSource);
-            return bible?.getItemById(selected.id) || null;
+            return bible?.getItemById(selected.id);
         }
         return null;
     }

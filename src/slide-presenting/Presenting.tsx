@@ -5,19 +5,14 @@ import FullTextPresentController from '../full-text-present/FullTextPresentContr
 import { useFullTextOpening, useSlideSelecting } from '../event/PreviewingEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
-import {
-    FULL_TEXT_TAB_KEY, TabType as FTTabType,
-} from '../full-text-present/FullTextPreviewer';
 import TabRender from '../others/TabRender';
 
 // s: slides, f: full text
 type TabType = 's' | 'f';
 export default function Presenting() {
     const [tabType, setTabType] = useStateSettingString<TabType>('presenting-tab', 's');
-    const [_, setFTTabType] = useStateSettingString<FTTabType>(FULL_TEXT_TAB_KEY, 'b');
     useFullTextOpening(() => {
         setTabType('f');
-        setFTTabType('l');
     });
     useSlideSelecting(() => setTabType('s'));
     useSlideItemSelecting(() => setTabType('s'));

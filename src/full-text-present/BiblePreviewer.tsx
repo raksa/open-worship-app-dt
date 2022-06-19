@@ -24,7 +24,7 @@ export default function BiblePreviewer() {
     useEffect(() => {
         if (bibleItem === null) {
             BibleItem.getSelectedItem().then((item) => {
-                setBibleItem(item);
+                setBibleItem(item || undefined);
             });
         }
     }, [bibleItem]);

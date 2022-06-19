@@ -83,11 +83,11 @@ export abstract class ItemBase implements ColorNorteInf {
         }
         return false;
     }
-    static getSelected() {
+    static getSelectedResult() {
         const selectedStr = getSetting(this.SELECT_SETTING_NAME, '');
         return this.fromSelectedItemSetting(selectedStr);
     }
-    static async getSelectedItem(): Promise<ItemBase | null> {
+    static async getSelectedItem(): Promise<ItemBase | null | undefined> {
         throw new Error('Method not implemented.');
     }
 }

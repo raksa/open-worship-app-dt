@@ -50,7 +50,7 @@ export function closeBibleSearch() {
 
 export async function getSelectedBibleItem(): Promise<string | null> {
     const bibleItem = await BibleItem.getSelectedItem();
-    if (bibleItem !== null) {
+    if (bibleItem) {
         return bibleItem.bibleName;
     }
     const bibleName = getSetting('selected-bible') || null;
@@ -81,7 +81,7 @@ function useGetDefaultInputText(): [string, Dispatch<SetStateAction<string>>] {
     const [inputText, setInputText] = useState<string>('');
     useEffect(() => {
         BibleItem.getSelectedItem().then(async (bibleItem) => {
-            if (bibleItem !== null) {
+            if (bibleItem) {
                 const text = await BibleItem.itemToTitle(bibleItem);
                 setInputText(text);
             }

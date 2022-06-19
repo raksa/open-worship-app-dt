@@ -7,17 +7,16 @@ import {
 import { editorMapper } from './EditorBoxMapper';
 import SlideItem from '../slide-presenting/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
+import FileReadError from '../others/FileReadError';
+import { showAppContextMenu } from '../others/AppContextMenu';
 
 export default function SlideItemEditorPreviewer() {
-    const [slideItem, setSlideItem] = useState<SlideItem | null>(null);
+    const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(undefined);
     useEffect(() => {
         if (slideItem === null) {
-            SlideItem.getSelectedItem()
-                .then((item) => {
-                    setSlideItem(item);
-                }).catch((error) => {
-                    console.log(error);
-                });
+            SlideItem.getSelectedItem().then((item) => {
+                setSlideItem(item || undefined);
+            });
         }
     }, [slideItem]);
     useSlideItemSelecting((item) => {
@@ -34,6 +33,15 @@ export default function SlideItemEditorPreviewer() {
                 style={{ fontSize: '3em', padding: '20px' }}>
                 No Slide Item Thumb Selected 😐
             </div>
+        );
+    }
+    if (slideItem === undefined) {
+        return (
+            <FileReadError onContextMenu={(e) => {
+                showAppContextMenu(e, [{
+                    title: 'Reload', onClick: () => setSlideItem(null),
+                }]);
+            }} />
         );
     }
     return (

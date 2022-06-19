@@ -1,8 +1,11 @@
+import { useState } from 'react';
+import BibleItem from '../bible-list/BibleItem';
+import BibleList from '../bible-list/BibleList';
 import {
-    useBibleItemSelecting,
-    useLyricSelecting,
+    useFullTextOpening,
 } from '../event/PreviewingEventListener';
-import { useStateSettingString } from '../helper/settingHelper';
+import Lyric from '../lyric-list/Lyric';
+import LyricList from '../lyric-list/LyricList';
 import TabRender from '../others/TabRender';
 import BiblePreviewer from './BiblePreviewer';
 import LyricPreviewer from './LyricPreviewer';
@@ -10,27 +13,39 @@ import LyricPreviewer from './LyricPreviewer';
 export const previewer: { show: Function } = {
     show: () => false,
 };
-export const FULL_TEXT_TAB_KEY = 'full-text-present-tab';
+export type TabType = 'b' | 'l' | null;
+export function getPreviewingTabType(): TabType {
+    if (BibleItem.getSelectedResult() !== null) {
+        return 'b';
+    }
+    if (Lyric.getSelectedFileSource() !== null) {
+        return 'l';
+    }
+    return null;
+}
 // b: bible, l: lyric
-export type TabType = 'b' | 'l';
 export default function FullTextPreviewer() {
-    const [tabType, setTabType] = useStateSettingString<TabType>(FULL_TEXT_TAB_KEY, 'b');
-    useBibleItemSelecting(() => setTabType('b'));
-    useLyricSelecting(() => setTabType('l'));
+    const [tabType, setTabType] = useState<TabType>(getPreviewingTabType());
+    useFullTextOpening(() => {
+        setTabType(getPreviewingTabType());
+    });
     return (
         <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'>
-            <div className="previewer-header d-flex">
-                <TabRender<TabType> tabs={[
-                    ['b', 'Bible'],
-                    ['l', 'Lyric'],
-                ]}
-                    activeTab={tabType}
-                    setActiveTab={setTabType} />
-            </div>
-            <div className='previewer-header p-2 flex-fill overflow-hidden'>
-                {tabType === 'b' && <BiblePreviewer />}
-                {tabType === 'l' && <LyricPreviewer />}
-            </div>
+            {tabType !== null ? <>
+                <div className="previewer-header d-flex">
+                    <TabRender<'b' | 'l'> tabs={[
+                        ['b', 'Bible'],
+                        ['l', 'Lyric'],
+                    ]} activeTab={tabType} />
+                </div>
+                <div className='previewer-header p-2 flex-fill overflow-hidden'>
+                    {tabType === 'b' && <BiblePreviewer />}
+                    {tabType === 'l' && <LyricPreviewer />}
+                </div>
+            </> : <>
+                <BibleList />
+                <LyricList />
+            </>}
         </div>
     );
 }

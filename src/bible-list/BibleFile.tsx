@@ -49,6 +49,7 @@ export default function BibleFile({
                     onClick={() => {
                         data?.setIsOpened(!data.isOpened);
                     }}>
+                    <i className={`bi ${data.isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
                     <span className='w-100 text-center'>
                         {fileSource.name}
                     </span>
