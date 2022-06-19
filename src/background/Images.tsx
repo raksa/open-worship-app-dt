@@ -2,22 +2,21 @@ import './Images.scss';
 
 import { useState } from 'react';
 import { presentEventListener } from '../event/PresentEventListener';
-import { useStateSettingString } from '../helper/settingHelper';
 import { renderBGImage } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import FileListHandler, { FileListType } from '../others/FileListHandler';
+import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
+import DirSource from '../helper/DirSource';
 
 const id = 'background-image';
 export default function Images() {
-    const [list, setList] = useState<FileListType>(null);
-    const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
+    const [dirSource, setDirSource] = useState(DirSource.genDirSource(''));
     return (
         <FileListHandler id={id} mimetype={'image'}
-            list={list} setList={setList}
-            dir={dir} setDir={setDir}
+            dirSource={dirSource}
+            setDirSource={setDirSource}
             body={<div className="d-flex justify-content-start flex-wrap">
-                {(list || []).map((fileSource, i) => {
+                {(dirSource.fileSources || []).map((fileSource, i) => {
                     return (
                         <div key={`${i}`} className="image-thumbnail card" title={fileSource.filePath}
                             onContextMenu={(e) => {

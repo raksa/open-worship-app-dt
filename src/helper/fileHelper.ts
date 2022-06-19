@@ -4,14 +4,14 @@ import {
 import appProvider from './appProvider';
 import FileSource from './FileSource';
 
-type MimeType = {
+export type MimeType = {
     type: string,
     title: string,
     mimeType: string,
     extension: string[],
 };
 
-type FileMetadataType = { fileName: string, mimeType: MimeType };
+export type FileMetadataType = { fileName: string, mimeType: MimeType };
 
 export type MetaDataType = { [key: string]: any; };
 export interface ItemSourceInf<T> {
@@ -38,7 +38,7 @@ export const createNewItem = async (dir: string, name: string,
 
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric' | 'bible';
 
-function getFileMetaData(fileName: string, mimeTypes: MimeType[]): FileMetadataType | null {
+export function getFileMetaData(fileName: string, mimeTypes: MimeType[]): FileMetadataType | null {
     const ext = fileName.substring(fileName.lastIndexOf('.'));
     const foundMT = mimeTypes.find((mt) => ~mt.extension.indexOf(ext));
     if (foundMT) {
@@ -91,8 +91,12 @@ const fileHelpers = {
             });
         } catch (error) {
             console.log(error);
-            throw new Error('Error occurred during listing file');
+            toastEventListener.showSimpleToast({
+                title: 'Getting File List',
+                message: 'Error occurred during listing file',
+            });
         }
+        return null;
     },
     checkFileExist: async function (filePath: string, fileName?: string) {
         if (fileName) {

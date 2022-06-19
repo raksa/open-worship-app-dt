@@ -21,11 +21,11 @@ export default function LyricPreviewer() {
         if (lyricFS === null) {
             return;
         }
-        const deleteEvent = lyricFS.registerEventListener('delete', () => {
+        const events = lyricFS.registerEventListener(['delete'], () => {
             setLyricFS(null);
         });
         return () => {
-            lyricFS.unregisterEventListener(deleteEvent);
+            lyricFS.unregisterEventListener(events);
         };
     }, [lyricFS]);
 
@@ -43,7 +43,7 @@ function PreviewerRender({ fileSource }: {
     useEffect(() => {
         Lyric.readFileToDataNoCache(fileSource).then((lr) => {
             if (!lr) {
-                Lyric.clearSelected();
+                Lyric.setSelectedFileSource(null);
             }
             setLyric(lr);
         });

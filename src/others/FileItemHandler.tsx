@@ -3,7 +3,9 @@ import FileReadError from './FileReadError';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
-import { copyToClipboard, isMac, openExplorer } from '../helper/appHelper';
+import {
+    copyToClipboard, isMac, openExplorer,
+} from '../helper/appHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import { MimetypeNameType } from '../helper/fileHelper';
@@ -11,7 +13,6 @@ import Lyric from '../lyric-list/Lyric';
 import Playlist from '../playlist/Playlist';
 import Slide from '../slide-list/Slide';
 import Bible from '../bible-list/Bible';
-import { FileListType } from './FileListHandler';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -30,16 +31,14 @@ export const genCommonMenu = (fileSource: FileSource) => {
 };
 export default function FileItemHandler({
     data, setData, index, fileSource, className,
-    contextMenu, setList, onDrop, onClick,
+    contextMenu, onDrop, onClick,
     child, mimetype,
 }: {
     data: ItemSource<any> | null | undefined,
     setData: (d: any | null | undefined) => void,
     index: number,
-    list: FileListType,
-    setList: (newList: FileListType) => void,
     fileSource: FileSource,
-    className: string
+    className?: string
     contextMenu?: ContextMenuItemType[],
     onDrop?: (e: any) => void,
     onClick?: () => void,
@@ -48,63 +47,65 @@ export default function FileItemHandler({
 }) {
     const [isDropOver, setIsReceivingChild] = useState(false);
     useEffect(() => {
-        switch (mimetype) {
-            case 'lyric':
-                Lyric.readFileToData(fileSource).then(setData);
-                break;
-            case 'playlist':
-                Playlist.readFileToData(fileSource).then(setData);
-                break;
-            case 'slide':
-                Slide.readFileToData(fileSource).then(setData);
-                break;
-            case 'bible':
-                Bible.readFileToData(fileSource).then(setData);
-                break;
-            default:
-                throw new Error('Unsupported mimetype');
+        if (data === null) {
+            switch (mimetype) {
+                case 'lyric':
+                    Lyric.readFileToData(fileSource).then(setData);
+                    break;
+                case 'playlist':
+                    Playlist.readFileToData(fileSource).then(setData);
+                    break;
+                case 'slide':
+                    Slide.readFileToData(fileSource).then(setData);
+                    break;
+                case 'bible':
+                    Bible.readFileToData(fileSource).then(setData);
+                    break;
+                default:
+                    throw new Error('Unsupported mimetype');
+            }
         }
-        // FIXME: check why delete not effect
-        const deleteEvent = fileSource.registerEventListener('delete', () => {
-            setData(null);
-        });
-        const refreshEvent = fileSource.registerEventListener('refresh', () => {
+        const updateEvents = fileSource.registerEventListener(['update'], () => {
             setData(null);
         });
         return () => {
-            fileSource.unregisterEventListener(deleteEvent);
-            fileSource.unregisterEventListener(refreshEvent);
+            fileSource.unregisterEventListener(updateEvents);
         };
-    });
+    }, [data]);
     const applyClick = () => {
         fileSource.select();
         onClick && onClick();
     };
-    const onContextMenu = (e: any) => {
-        showAppContextMenu(e, [
-            ...(contextMenu || []),
-            ...genCommonMenu(fileSource),
-            {
-                title: 'Delete', onClick: async () => {
-                    await fileSource.delete();
-                    setList(null);
-                },
+    const selfContextMenu = [
+        {
+            title: 'Reload', onClick: () => setData(null),
+        }, {
+            title: 'Delete', onClick: async () => {
+                await fileSource.delete();
             },
-        ]);
-    };
+        }];
     if (data === null) {
         return null;
     }
     if (data === undefined) {
-        return <FileReadError onContextMenu={onContextMenu} />;
+        return <FileReadError onContextMenu={(e) => {
+            showAppContextMenu(e, selfContextMenu);
+        }} />;
     }
     const droppingClass = isDropOver ? 'receiving-child' : '';
+    const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''} ${droppingClass}`;
     return (
-        <li className={`list-group-item mx-1 ${className} ${droppingClass}`}
+        <li className={`list-group-item mx-1 ${moreClassName}`}
             onClick={applyClick}
             data-index={index + 1}
             title={fileSource.filePath}
-            onContextMenu={onContextMenu}
+            onContextMenu={(e) => {
+                showAppContextMenu(e, [
+                    ...(contextMenu || []),
+                    ...genCommonMenu(fileSource),
+                    ...selfContextMenu,
+                ]);
+            }}
             onDragOver={(event) => {
                 event.preventDefault();
                 setIsReceivingChild(true);

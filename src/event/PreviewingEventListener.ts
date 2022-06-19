@@ -10,7 +10,6 @@ export enum PreviewingEnum {
     UPDATE_LYRIC = 'update-lyric',
     PRESENT_SLIDE = 'update-slide',
     UPDATE_SLIDE = 'update-slide',
-    SELECT_DIR = 'select-dir',
 }
 type ListenerType<T> = (data: T) => void | (() => void);
 export type RegisteredEventType<T> = {
@@ -19,7 +18,7 @@ export type RegisteredEventType<T> = {
 };
 
 export default class PreviewingEventListener extends EventHandler {
-    selectItem(bibleItem: BibleItem | null) {
+    selectBibleItem(bibleItem: BibleItem | null) {
         this._addPropEvent(PreviewingEnum.SELECT_BIBLE_ITEM, bibleItem);
     }
     presentLyric(lyric: Lyric | null) {
@@ -30,9 +29,6 @@ export default class PreviewingEventListener extends EventHandler {
     }
     presentSlide(slide: Slide | null) {
         this._addPropEvent(PreviewingEnum.PRESENT_SLIDE, slide);
-    }
-    selectingDir() {
-        this._addPropEvent(PreviewingEnum.SELECT_DIR);
     }
     updateSlide(lyric: Slide) {
         this._addPropEvent(PreviewingEnum.UPDATE_SLIDE, lyric);
@@ -109,13 +105,3 @@ export function useFullTextPresenting(listener: ListenerType<void>) {
         };
     });
 }
-export function useOnSelectDir(listener: ListenerType<void>) {
-    useEffect(() => {
-        const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.SELECT_DIR, listener);
-        return () => {
-            previewingEventListener.unregisterEventListener(event);
-        };
-    });
-}
-

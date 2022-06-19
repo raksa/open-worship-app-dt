@@ -3,11 +3,14 @@ import {
     toastEventListener,
 } from '../event/ToastEventListener';
 import appProvider from './appProvider';
-import fileHelpers, { MetaDataType } from './fileHelper';
+import DirSource from './DirSource';
+import fileHelpers, {
+    MetaDataType,
+} from './fileHelper';
 import ItemSource from './ItemSource';
 
 type FSListener = (t: FSEventType) => void;
-type FSEventType = 'select' | 'refresh' | 'update' | 'delete';
+type FSEventType = 'select' | 'update' | 'delete';
 export type RegisteredEventType = {
     type: FSEventType,
     listener: (t: FSEventType) => void,
@@ -17,30 +20,39 @@ export default class FileSource extends EventHandler {
     fileName: string;
     filePath: string;
     src: string;
+    static _fileCache: Map<string, FileSource> = new Map();
     constructor(basePath: string, fileName: string,
-        filePath: string, src: string,) {
+        filePath: string, src: string) {
         super();
         this.basePath = basePath;
         this.fileName = fileName;
         this.filePath = filePath;
         this.src = src;
     }
-    registerEventListener(fsType: FSEventType,
-        listener: FSListener): RegisteredEventType {
-        this._addOnEventListener(fsType, listener);
-        return {
-            type: fsType,
-            listener,
-        };
+    registerEventListener(fsTypes: FSEventType[],
+        listener: FSListener): RegisteredEventType[] {
+        return fsTypes.map((fsType) => {
+            this._addOnEventListener(fsType, listener);
+            return {
+                type: fsType,
+                listener,
+            };
+        });
     }
-    unregisterEventListener({ type: tfType, listener }: RegisteredEventType) {
-        this._removeOnEventListener(tfType, listener);
+    unregisterEventListener(events: RegisteredEventType[]) {
+        events.forEach(({ type, listener }) => {
+            this._removeOnEventListener(type, listener);
+        });
     }
     get name() {
         return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
     }
-    refresh() {
-        this._addPropEvent('refresh');
+    get dirSource() {
+        return DirSource.genDirSource(this.basePath);
+    }
+    refreshDir() {
+        console.log(this.dirSource._objectId);
+        this.dirSource.clearFileSources();
     }
     select() {
         this._addPropEvent('select');
@@ -83,6 +95,8 @@ export default class FileSource extends EventHandler {
     async delete() {
         try {
             await fileHelpers.deleteFile(this.filePath);
+            FileSource._fileCache.delete(this.filePath);
+            this.refreshDir();
             this._addPropEvent('delete');
             return true;
         } catch (error: any) {
@@ -93,7 +107,7 @@ export default class FileSource extends EventHandler {
         }
         return false;
     }
-    static genFileSource(filePath: string, fileName?: string) {
+    static genFileSourceNoCache(filePath: string, fileName?: string) {
         let basePath;
         if (fileName) {
             basePath = filePath;
@@ -105,5 +119,16 @@ export default class FileSource extends EventHandler {
         }
         return new FileSource(basePath, fileName, filePath,
             appProvider.url.pathToFileURL(filePath).toString());
+    }
+    static genFileSource(filePath: string, fileName?: string, refreshCache?: boolean) {
+        const fileSource = this.genFileSourceNoCache(filePath, fileName);
+        if (refreshCache) {
+            this._fileCache.delete(fileSource.filePath);
+        }
+        if (this._fileCache.has(fileSource.filePath)) {
+            return this._fileCache.get(fileSource.filePath) as FileSource;
+        }
+        this._fileCache.set(fileSource.filePath, fileSource);
+        return fileSource;
     }
 }

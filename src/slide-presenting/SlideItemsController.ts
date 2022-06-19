@@ -7,7 +7,9 @@ import { DisplayType } from '../helper/displayHelper';
 import HTML2React from '../slide-editor/HTML2React';
 import Slide from '../slide-list/Slide';
 import SlideItemsControllerBase, {
-    MAX_THUMBNAIL_SCALE, MIN_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
+    MAX_THUMBNAIL_SCALE,
+    MIN_THUMBNAIL_SCALE,
+    THUMBNAIL_SCALE_STEP,
 } from './SlideItemsControllerBase';
 import { useState, useEffect } from 'react';
 import SlideItem from './SlideItem';
@@ -16,11 +18,11 @@ export function useRefresh(controller: SlideItemsController) {
     const [n, setN] = useState(0);
     useEffect(() => {
         const fileSource = controller.slide.fileSource;
-        const deleteEvent = fileSource.registerEventListener('refresh', () => {
+        const deleteEvents = fileSource.registerEventListener(['update'], () => {
             setN(n + 1);
         });
         return () => {
-            fileSource.unregisterEventListener(deleteEvent);
+            fileSource.unregisterEventListener(deleteEvents);
         };
     });
 }

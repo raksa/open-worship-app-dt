@@ -69,7 +69,7 @@ export default class SlideItemsControllerBase {
     }
     set items(newItems: SlideItem[]) {
         this.slide.content.items = newItems;
-        this.slide.fileSource.refresh();
+        this.slide.fileSource.refreshDir();
     }
     async isModifying() {
         const slide = await Slide.readFileToDataNoCache(this.slide.fileSource);
@@ -91,14 +91,14 @@ export default class SlideItemsControllerBase {
     }
     set undo(undo: ChangeHistory[]) {
         this._history.undo = undo;
-        this.slide.fileSource.refresh();
+        this.slide.fileSource.refreshDir();
     }
     get redo() {
         return this._history.redo;
     }
     set redo(redo: ChangeHistory[]) {
         this._history.redo = redo;
-        this.slide.fileSource.refresh();
+        this.slide.fileSource.refreshDir();
     }
     get maxId() {
         return Math.max.apply(Math, this.items.map((item) => +item.id));
@@ -161,7 +161,7 @@ export default class SlideItemsControllerBase {
     delete(index: number) {
         const newItems = this.items.filter((_, i) => i !== index);
         this.setItemsWithHistory(newItems);
-        this.slide.fileSource.refresh();
+        this.slide.fileSource.refreshDir();
     }
     add(newItem: SlideItem) {
         const newItems = this.newItems;
@@ -175,7 +175,7 @@ export default class SlideItemsControllerBase {
             const slide = await Slide.readFileToData(fileSource, true);
             if (slide) {
                 this.slide = slide;
-                fileSource.refresh();
+                fileSource.refreshDir();
             }
         }
     }

@@ -1,4 +1,6 @@
-export default function FileReadError({ onContextMenu }: {
+export default function FileReadError({
+    onContextMenu,
+}: {
     onContextMenu?: (e: any) => void,
 }) {
     return (

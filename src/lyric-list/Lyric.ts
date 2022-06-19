@@ -11,6 +11,12 @@ export type LyricType = {
     items: LyricItem[],
 }
 export default class Lyric extends ItemSource<LyricType>{
+    static SELECT_SETTING_NAME = 'lyric-selected';
+    constructor(fileSource: FileSource, metadata: MetaDataType,
+        content: LyricType) {
+        super(fileSource, metadata, content);
+        this.SELECT_SETTING_NAME = Lyric.SELECT_SETTING_NAME;
+    }
     static validate(json: any) {
         try {
             if (!json.content || typeof json.content !== 'object'
@@ -45,10 +51,6 @@ export default class Lyric extends ItemSource<LyricType>{
             content,
         };
     }
-    get isSelected() {
-        const selectedFS = Lyric.getSelectedFileSource();
-        return this.fileSource.filePath === selectedFS?.filePath;
-    }
     static mimetype: MimetypeNameType = 'lyric';
     static _instantiate(fileSource: FileSource, json: {
         metadata: MetaDataType, content: any,
@@ -78,21 +80,11 @@ export default class Lyric extends ItemSource<LyricType>{
     }
     static present(lyric: Lyric | null) {
         if (lyric === null) {
-            this.clearSelected();
+            this.setSelectedFileSource(null);
         } else {
             setSetting('selected-lyric', lyric.fileSource.filePath);
         }
         previewingEventListener.presentLyric(lyric);
-    }
-    static clearSelected() {
-        setSetting('selected-lyric', '');
-    }
-    static getSelectedFileSource() {
-        const filePath = getSetting('selected-lyric', '');
-        if (filePath) {
-            return FileSource.genFileSource(filePath);
-        }
-        return null;
     }
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();

@@ -1,16 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import RenderBibleItems from './RenderBibleItems';
-import { FileListType } from '../others/FileListHandler';
 
 export default function BibleFile({
-    index, list, setList, fileSource,
+    index, fileSource,
 }: {
     index: number,
-    list: FileListType,
-    setList: (newList: FileListType) => void,
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
@@ -18,8 +15,6 @@ export default function BibleFile({
         <FileItemHandler
             index={index}
             mimetype={'bible'}
-            list={list}
-            setList={setList}
             data={data}
             setData={setData}
             fileSource={fileSource}
@@ -37,13 +32,13 @@ export default function BibleFile({
                     const targetFS = FileSource.genFileSource(item.filePath);
                     const targetBible = await Bible.readFileToData(targetFS);
                     if (targetBible) {
-                        const bibleItem = targetBible.content.items[item.index];
-                        targetBible.content.items = targetBible.content.items.filter((_, i1) => {
+                        const items = targetBible.content.items;
+                        const bibleItem = items[item.index];
+                        targetBible.content.items = items.filter((_, i1) => {
                             return `${i1}` !== `${item.index}`;
                         });
                         data.content.items.push(bibleItem);
                         data.save();
-                        setList(null);
                     }
                 } catch (error) {
                     console.log(error);

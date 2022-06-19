@@ -8,22 +8,16 @@ import {
 } from '../helper/appHelper';
 import { showAppContextMenu } from './AppContextMenu';
 import { useStateSettingBoolean } from '../helper/settingHelper';
+import DirSource from '../helper/DirSource';
 
 export default function PathSelector({
-    dirPath,
-    onRefresh,
-    onChangeDirPath,
-    onSelectDirPath,
-    prefix,
+    dirSource, prefix,
 }: {
-    dirPath: string,
-    onRefresh: () => void,
-    onChangeDirPath: (dir: string) => void,
-    onSelectDirPath: (dir: string) => void
-    prefix: string;
+    dirSource: DirSource,
+    prefix: string
 }) {
-    const [showing, setShowing] = useStateSettingBoolean(`${prefix}-showing-path-selector`, false);
-    const isShowing = !dirPath || showing;
+    const [showing, setShowing] = useStateSettingBoolean(`${prefix}-selector-opened`, false);
+    const isShowing = !dirSource.dirPath || showing;
     return (
         <div className="path-selector w-100"
             onContextMenu={(e) => {
@@ -31,24 +25,27 @@ export default function PathSelector({
                     {
                         title: 'Copy to Clipboard',
                         onClick: () => {
-                            copyToClipboard(dirPath);
+                            copyToClipboard(dirSource.dirPath);
                         },
                     },
                     {
                         title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
                         onClick: () => {
-                            openExplorer(dirPath);
+                            openExplorer(dirSource.dirPath);
                         },
                     },
                 ]);
             }}>
-            <div className='d-flex path-previewer pointer' onClick={() => setShowing(!showing)}>
+            <div className='d-flex path-previewer pointer' onClick={() => {
+                setShowing(!showing);
+            }}>
                 <i className={`bi ${isShowing ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {dirPath && <div className='ellipsis-left border-white-round px-1 flex-fill' title={dirPath}>
-                    {dirPath}</div>}
+                {dirSource.dirPath && <div className='ellipsis-left border-white-round px-1 flex-fill'
+                    title={dirSource.dirPath}>
+                    {dirSource.dirPath}</div>}
                 <div className='px-2' onClick={(e) => {
                     e.stopPropagation();
-                    onRefresh();
+                    dirSource.clearFileSources();
                 }}>
                     <i className="bi bi-arrow-clockwise" />
                 </div>
@@ -56,18 +53,18 @@ export default function PathSelector({
             {isShowing &&
                 <div className="input-group mb-3">
                     <button className="btn btn-secondary" type="button"
-                        onClick={onRefresh}>
+                        onClick={() => dirSource.clearFileSources()}>
                         <i className="bi bi-arrow-clockwise" />
                     </button>
-                    <input type="text" className="form-control" value={dirPath}
+                    <input type="text" className="form-control" value={dirSource.dirPath}
                         onChange={(e) => {
-                            onChangeDirPath(e.target.value);
+                            dirSource.dirPath = e.target.value;
                         }} />
                     <button className="btn btn-secondary" type="button"
                         onClick={() => {
                             const dirs = selectDirs();
                             if (dirs.length) {
-                                onSelectDirPath(dirs[0]);
+                                dirSource.dirPath = dirs[0];
                             }
                         }}>
                         <i className="bi bi-folder2-open" />

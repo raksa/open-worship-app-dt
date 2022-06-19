@@ -1,19 +1,18 @@
-import { FileListType } from './FileListHandler';
+import DirSource from '../helper/DirSource';
 
-export default function RenderList({ list, setList, body }: {
-    list: FileListType,
-    setList: (l: FileListType) => void,
+export default function RenderList({ dirSource, body }: {
+    dirSource: DirSource,
     body: any,
 }) {
-    if (list === undefined) {
+    if (dirSource.fileSources === undefined) {
         return (
             <div className='alert alert-warning pointer'
-                onClick={() => setList(null)}>
+                onClick={() => dirSource.clearFileSources()}>
                 Fail To Get File List
             </div>
         );
     }
-    if (list === null) {
+    if (dirSource.fileSources === null) {
         return (
             <div className='alert alert-info'>
                 Getting File List

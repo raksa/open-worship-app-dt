@@ -121,14 +121,8 @@ export default class Bible extends ItemSource<BibleType>{
     }
     static async getDefault() {
         const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
-        let fileSources;
-        try {
-            fileSources = await fileHelpers.listFilesWithMimetype(dir, 'bible') || [];
-        } catch (error: any) {
-            toastEventListener.showSimpleToast({
-                title: 'Getting Default Bible File',
-                message: error.message,
-            });
+        const fileSources = await fileHelpers.listFilesWithMimetype(dir, 'bible') || [];
+        if (fileSources === null) {
             return null;
         }
         for (const fileSource of fileSources) {

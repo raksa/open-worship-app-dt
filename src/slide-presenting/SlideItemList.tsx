@@ -24,15 +24,11 @@ export default function SlideItemList() {
         if (slideFS === null) {
             return;
         }
-        const deleteEvent = slideFS.registerEventListener('delete', () => {
-            setSlideFS(null);
-        });
-        const refreshEvent = slideFS.registerEventListener('refresh', () => {
+        const refreshEvents = slideFS.registerEventListener(['update'], () => {
             setSlideFS(Slide.getSelectedFileSource());
         });
         return () => {
-            slideFS.unregisterEventListener(deleteEvent);
-            slideFS.unregisterEventListener(refreshEvent);
+            slideFS.unregisterEventListener(refreshEvents);
         };
     }, [slideFS]);
     useSlidePresenting((slide) => {

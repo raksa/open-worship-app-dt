@@ -59,12 +59,14 @@ export default class BibleItem extends ItemBase {
         if (this.isSelected === b) {
             return;
         }
-        if (this.isSelected) {
-            previewingEventListener.selectItem(this);
+        if (b) {
+            previewingEventListener.selectBibleItem(this);
+            BibleItem.setSelectedItem(this);
         } else {
-            previewingEventListener.selectItem(null);
+            previewingEventListener.selectBibleItem(null);
+            BibleItem.setSelectedItem(null);
         }
-        this.fileSource?.refresh();
+        this.fileSource?.refreshDir();
     }
     clone() {
         return new BibleItem(this.id, this.bibleName, this.target,

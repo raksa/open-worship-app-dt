@@ -8,6 +8,11 @@ export abstract class ItemBase implements ColorNorteInf {
     abstract fileSource?: FileSource | null;
     abstract metadata?: MetaDataType;
     static SELECT_SETTING_NAME = '';
+    static _objectId = 0;
+    _objectId: number;
+    constructor() {
+        this._objectId = ItemBase._objectId++;
+    }
     get colorNote() {
         if (this.metadata && this.metadata['colorNote']) {
             return this.metadata['colorNote'];
@@ -65,10 +70,11 @@ export abstract class ItemBase implements ColorNorteInf {
             id: Number(id),
         };
     }
-    static clearSelectedItem() {
-        setSetting(this.SELECT_SETTING_NAME, '');
-    }
-    static setSelectedItemString(item: ItemBase) {
+    static setSelectedItem(item: ItemBase | null) {
+        if (item === null) {
+            setSetting(this.SELECT_SETTING_NAME, '');
+            return;
+        }
         const selectedStr = item.toSelectedItemSetting();
         if (selectedStr !== null) {
             setSetting(this.SELECT_SETTING_NAME, selectedStr);

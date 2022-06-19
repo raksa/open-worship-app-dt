@@ -6,14 +6,11 @@ import FileItemHandler from '../others/FileItemHandler';
 import Playlist from './Playlist';
 import FileSource from '../helper/FileSource';
 import BibleItemRender from '../bible-list/BibleItemRender';
-import { FileListType } from '../others/FileListHandler';
 
 export default function PlaylistFile({
-    index, list, setList, fileSource,
+    index, fileSource,
 }: {
     index: number,
-    list: FileListType,
-    setList: (newList: FileListType) => void,
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
@@ -22,8 +19,6 @@ export default function PlaylistFile({
         <FileItemHandler
             index={index}
             mimetype={'playlist'}
-            list={list}
-            setList={setList}
             data={data}
             setData={setData}
             fileSource={fileSource}
@@ -33,8 +28,7 @@ export default function PlaylistFile({
                 if (data) {
                     const receivedData = event.dataTransfer.getData('text');
                     if (data.addFromData(receivedData)) {
-                        await data.save();
-                        setList(null);
+                        data.save();
                     }
                 }
             }}

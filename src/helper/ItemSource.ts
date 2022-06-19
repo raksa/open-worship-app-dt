@@ -5,18 +5,54 @@ import {
 } from './fileHelper';
 import FileSource from './FileSource';
 import { cloneObject } from './helpers';
+import { setSetting, getSetting } from './settingHelper';
 
 export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNorteInf {
+    static SELECT_SETTING_NAME = '';
+    SELECT_SETTING_NAME: string = '';
     static mimetype: MimetypeNameType;
     fileSource: FileSource;
     content: T;
     metadata: MetaDataType;
     static _itemSourceCache: Map<string, ItemSource<any>> = new Map();
+    static _objectId = 0;
+    _objectId: number;
     constructor(fileSource: FileSource, metadata: MetaDataType,
         content: T) {
         this.fileSource = fileSource;
         this.metadata = metadata;
         this.content = content;
+        this._objectId = ItemSource._objectId++;
+    }
+    static setSelectedFileSource(fileSource: FileSource | null, settingName?: string) {
+        settingName = settingName || this.SELECT_SETTING_NAME;
+        if (!settingName) {
+            return;
+        }
+        setSetting(settingName, fileSource === null ? '' : fileSource.filePath);
+    }
+    static getSelectedFileSource(settingName?: string) {
+        settingName = settingName || this.SELECT_SETTING_NAME;
+        if (!settingName) {
+            return null;
+        }
+        const filePath = getSetting(settingName, '');
+        if (filePath) {
+            return FileSource.genFileSource(filePath, undefined, true);
+        }
+        return null;
+    }
+    get isSelected() {
+        const selectedFS = ItemSource.getSelectedFileSource(this.SELECT_SETTING_NAME);
+        return this.fileSource.filePath === selectedFS?.filePath;
+    }
+    set isSelected(b: boolean) {
+        if (this.isSelected === b) {
+            return;
+        }
+        ItemSource.setSelectedFileSource(b ? this.fileSource : null,
+            this.SELECT_SETTING_NAME);
+        this.fileSource?.refreshDir();
     }
     get colorNote() {
         return this.metadata['colorNote'] || null;
@@ -87,11 +123,11 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {
             metadata: MetaDataType,
             content: any,
-        }) => ItemSource<any>, isForceCache?: boolean) {
+        }) => ItemSource<any>, refreshCache?: boolean) {
         if (fileSource === null) {
             return null;
         }
-        if (isForceCache) {
+        if (refreshCache) {
             this._itemSourceCache.delete(fileSource.filePath);
         }
         if (this._itemSourceCache.has(fileSource.filePath)) {

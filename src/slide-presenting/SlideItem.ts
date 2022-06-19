@@ -45,12 +45,12 @@ export default class SlideItem extends ItemBase {
         }
         this._isSelected = b;
         if (this.isSelected) {
-            SlideItem.setSelectedItemString(this);
+            SlideItem.setSelectedItem(this);
             slideListEventListenerGlobal.selectSlideItem(this);
         } else {
             slideListEventListenerGlobal.selectSlideItem(null);
         }
-        this.fileSource.refresh();
+        this.fileSource.refreshDir();
     }
     get html() {
         return this._html;
@@ -58,7 +58,7 @@ export default class SlideItem extends ItemBase {
     set html(newHtml: string) {
         if (newHtml !== this._html) {
             this._html = newHtml;
-            this.fileSource.refresh();
+            this.fileSource.refreshDir();
         }
     }
     async isEditing(index: number, slide?: Slide | null) {
