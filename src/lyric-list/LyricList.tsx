@@ -24,13 +24,10 @@ export default function LyricList() {
     return (
         <FileListHandler id={id} mimetype={'lyric'}
             list={list} setList={setList}
-        dir={dir} setDir={setDir}
+            dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    const isSuccess = await Lyric.createNew(dir, name, {
-                        items: [Lyric.toNewLyric(name)],
-                    });
-                    if (isSuccess) {
+                    if (await Lyric.createNew(dir, name)) {
                         setList(null);
                         return false;
                     }

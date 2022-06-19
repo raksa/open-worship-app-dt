@@ -1,7 +1,7 @@
 import {
     slideListEventListenerGlobal,
 } from '../event/SlideListEventListener';
-import Slide, { validateSlide } from '../slide-list/Slide';
+import Slide from '../slide-list/Slide';
 import HTML2React from '../slide-editor/HTML2React';
 import SlideItem from '../slide-presenting/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
@@ -11,12 +11,17 @@ import SlideItemIFrame from '../slide-presenting/SlideItemIFrame';
 export default function PlaylistSlideItem({
     slideItemPath, width,
 }: {
-    slideItemPath: string, width: number,
+    slideItemPath: string | null,
+    width: number,
 }) {
-    const {
-        id, fileSource,
-    } = SlideItem.extractSlideItemSelected(slideItemPath);
-    const slide = useReadFileToData<Slide>(fileSource, validateSlide);
+    const result = SlideItem.fromSelectedItemSetting(slideItemPath);
+    if (result === null) {
+        return (
+            <FileReadError />
+        );
+    }
+    const { id, fileSource } = result;
+    const slide = useReadFileToData<Slide>(fileSource, Slide.validator);
     const item = !slide ? null :
         (slide.content.items.find((newItem) => {
             return newItem.id === id;

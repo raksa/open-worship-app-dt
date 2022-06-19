@@ -17,9 +17,7 @@ export default function SlideList() {
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    const data = Slide.defaultSlide();
-                    const isSuccess = await Slide.createNew(dir, name, data);
-                    if (isSuccess) {
+                    if (await Slide.createNew(dir, name)) {
                         setList(null);
                         return false;
                     }

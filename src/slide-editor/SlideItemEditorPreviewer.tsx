@@ -12,7 +12,7 @@ export default function SlideItemEditorPreviewer() {
     const [slideItem, setSlideItem] = useState<SlideItem | null>(null);
     useEffect(() => {
         if (slideItem === null) {
-            SlideItem.getSelectedSlideItem()
+            SlideItem.getSelectedItem()
                 .then((item) => {
                     setSlideItem(item);
                 }).catch((error) => {

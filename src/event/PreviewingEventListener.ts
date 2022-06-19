@@ -23,7 +23,7 @@ export default class PreviewingEventListener extends EventHandler {
     addBibleItem(bibleItem: BibleItem) {
         this._addPropEvent(PreviewingEnum.ADD_BIBLE_ITEM, bibleItem);
     }
-    selectBibleItem(bibleItem: BibleItem | null) {
+    selectItem(bibleItem: BibleItem | null) {
         this._addPropEvent(PreviewingEnum.SELECT_BIBLE_ITEM, bibleItem);
     }
     presentLyric(lyric: Lyric | null) {

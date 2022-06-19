@@ -12,7 +12,6 @@ type SlideItemProps = {
     index: number;
     isActive: boolean;
     slideItem: SlideItem;
-    fileSource: FileSource,
     onItemClick: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
     onCopy: () => void,
@@ -21,7 +20,7 @@ type SlideItemProps = {
 };
 export default function SlideItemRender({
     width, isActive, index,
-    slideItem, fileSource,
+    slideItem,
     onItemClick,
     onContextMenu,
     onCopy,
@@ -33,10 +32,11 @@ export default function SlideItemRender({
         <div className={`slide-item card ${isActive ? 'active' : ''} pointer`}
             draggable
             onDragStart={(e) => {
-                const path = SlideItem.toSlideItemSelected(fileSource,
-                    slideItem.id) || '';
-                e.dataTransfer.setData('text/plain', path);
-                onDragStart(e);
+                const path = slideItem.toSelectedItemSetting();
+                if (path !== null) {
+                    e.dataTransfer.setData('text/plain', path);
+                    onDragStart(e);
+                }
             }}
             onDragEnd={(e) => {
                 onDragEnd(e);

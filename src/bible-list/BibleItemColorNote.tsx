@@ -1,28 +1,16 @@
-import { previewingEventListener } from '../event/PreviewingEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { useTranslation } from 'react-i18next';
+import colorList from '../others/color-list.json';
+import ColorNorteInf from '../helper/ColorNorteInf';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
-import colorList from '../others/color-list.json';
-import Bible from './Bible';
-import BibleItem from './BibleItem';
 
-export default function BibleItemColorNote({
-    bibleItem, onUpdateBiblePresent,
-}: {
-    bibleItem: BibleItem,
-    onUpdateBiblePresent?: (newBiblePresent: BibleItem) => void,
+export default function BibleItemColorNote({ item }: {
+    item: ColorNorteInf,
 }) {
     const { t } = useTranslation();
-    let colorNote;
-    if (bibleItem.metadata && bibleItem.metadata['colorNote']) {
-        colorNote = bibleItem.metadata['colorNote'] as string;
-    }
     return (
-        <span className={`color-note ${colorNote ? 'active' : ''}`} onClick={(e) => {
-            if (!onUpdateBiblePresent) {
-                return;
-            }
+        <span className={`color-note ${item.colorNote ? 'active' : ''}`} onClick={(e) => {
             e.stopPropagation();
             const colors = [
                 ...Object.entries(colorList.main),
@@ -31,16 +19,13 @@ export default function BibleItemColorNote({
             showAppContextMenu(e, [{
                 title: t('no color'),
                 onClick: () => {
-                    bibleItem.metadata = bibleItem.metadata || {};
-                    delete bibleItem.metadata['colorNote'];
+                    item.colorNote = null;
                 },
             }, ...colors.map(([name, colorCode]) => {
                 return {
                     title: name,
                     onClick: () => {
-                        bibleItem.metadata = bibleItem.metadata || {};
-                        bibleItem.metadata['colorNote'] = colorCode;
-                        onUpdateBiblePresent(bibleItem);
+                        item.colorNote = colorCode;
                     },
                     otherChild: (<span style={{ float: 'right' }}>
                         <i className='bi bi-record-circle' style={{ color: colorCode }} />
@@ -49,7 +34,7 @@ export default function BibleItemColorNote({
             })]);
         }} >
             <i className='bi bi-record-circle'
-                style={colorNote ? { color: colorNote } : {}} />
+                style={item.colorNote ? { color: item.colorNote } : {}} />
         </span>
     );
 }

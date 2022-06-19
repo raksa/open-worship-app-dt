@@ -15,7 +15,7 @@ import SlideList from '../slide-list/SlideList';
 import SlideItemsController from './SlideItemsController';
 
 export default function SlideItemList() {
-    const [slideFS, setSlideFS] = useState<FileSource | null>(Slide.getSelectedSlideFileSource());
+    const [slideFS, setSlideFS] = useState<FileSource | null>(Slide.getSelectedFileSource());
 
     useSlidePresenting((slide) => {
         setSlideFS(slide === null ? null : slide.fileSource);
@@ -28,7 +28,7 @@ export default function SlideItemList() {
             setSlideFS(null);
         });
         const refreshEvent = slideFS.registerEventListener('refresh', () => {
-            setSlideFS(Slide.getSelectedSlideFileSource());
+            setSlideFS(Slide.getSelectedFileSource());
         });
         return () => {
             slideFS.unregisterEventListener(deleteEvent);
@@ -49,7 +49,7 @@ function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
     useEffect(() => {
         Slide.readFileToDataNoCache(fileSource).then((sl) => {
             if (!sl) {
-                Slide.clearSelectedSlide();
+                Slide.clearSelected();
             }
             setSlide(sl);
         });

@@ -72,7 +72,6 @@ export default function SlideItemsPreviewer({ controller }: {
                             isActive={item.isSelected}
                             index={i}
                             slideItem={item}
-                            fileSource={controller.slide.fileSource}
                             onItemClick={() => {
                                 if (controller.selectedItem === item) {
                                     controller.selectedItem = null;

@@ -101,7 +101,7 @@ export default class SlideItemsController extends SlideItemsControllerBase {
         showAppContextMenu(e, [{
             title: 'New Slide Thumb', onClick: () => {
                 const item = SlideItem.defaultSlideItem();
-                this.add(new SlideItem(item.id, item.html,
+                this.add(new SlideItem(item.id, item.html, {},
                     this.slide.fileSource));
             },
         }, {

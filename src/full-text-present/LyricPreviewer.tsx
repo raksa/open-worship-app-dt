@@ -13,7 +13,7 @@ import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
 
 export default function LyricPreviewer() {
-    const [lyricFS, setLyricFS] = useState<FileSource | null>(Lyric.getSelectedLyricFileSource());
+    const [lyricFS, setLyricFS] = useState<FileSource | null>(Lyric.getSelectedFileSource());
     useLyricPresenting((lyric) => {
         setLyricFS(lyric === null ? null : lyric.fileSource);
     });
@@ -43,7 +43,7 @@ function PreviewerRender({ fileSource }: {
     useEffect(() => {
         Lyric.readFileToDataNoCache(fileSource).then((lr) => {
             if (!lr) {
-                Lyric.clearSelectedLyric();
+                Lyric.clearSelected();
             }
             setLyric(lr);
         });

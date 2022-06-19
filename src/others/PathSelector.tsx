@@ -25,26 +25,33 @@ export default function PathSelector({
     const [showing, setShowing] = useStateSettingBoolean(`${prefix}-showing-path-selector`, false);
     const isShowing = !dirPath || showing;
     return (
-        <div className="path-selector" onContextMenu={(e) => {
-            showAppContextMenu(e, [
-                {
-                    title: 'Copy to Clipboard',
-                    onClick: () => {
-                        copyToClipboard(dirPath);
+        <div className="path-selector w-100"
+            onContextMenu={(e) => {
+                showAppContextMenu(e, [
+                    {
+                        title: 'Copy to Clipboard',
+                        onClick: () => {
+                            copyToClipboard(dirPath);
+                        },
                     },
-                },
-                {
-                    title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
-                    onClick: () => {
-                        openExplorer(dirPath);
+                    {
+                        title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
+                        onClick: () => {
+                            openExplorer(dirPath);
+                        },
                     },
-                },
-            ]);
-        }}>
-            <div className='path-previewer pointer' onClick={() => setShowing(!showing)}>
+                ]);
+            }}>
+            <div className='d-flex path-previewer pointer' onClick={() => setShowing(!showing)}>
                 <i className={`bi ${isShowing ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {dirPath && <div className='ellipsis-left border-white-round px-1' title={dirPath}>
+                {dirPath && <div className='ellipsis-left border-white-round px-1 flex-fill' title={dirPath}>
                     {dirPath}</div>}
+                <div className='px-2' onClick={(e) => {
+                    e.stopPropagation();
+                    onRefresh();
+                }}>
+                    <i className="bi bi-arrow-clockwise" />
+                </div>
             </div>
             {isShowing &&
                 <div className="input-group mb-3">

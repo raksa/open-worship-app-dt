@@ -15,7 +15,7 @@ export default function RenderBibleItems({
     return (
         <ul className='list-group'>
             {items.map((bibleItem, i1) => {
-                return <BibleItemRender key={`${i1}`} index={i1}
+                return <BibleItemRender key={i1} index={i1}
                     warningMessage={genDuplicatedMessage(items, bibleItem, i1)}
                     bibleItem={bibleItem}
                     bible={bible}

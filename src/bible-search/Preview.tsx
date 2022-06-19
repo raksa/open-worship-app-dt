@@ -30,7 +30,7 @@ export default function Preview({
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
             const newTitle = await toInputText(bibleSelected, book, chapter, sVerse, eVerse);
-            const newText = await BibleItem.bibleItemToText(BibleItem.genBibleItem(bibleSelected, {
+            const newText = await BibleItem.itemToText(BibleItem.genItem(bibleSelected, {
                 book: await bookToKey(bibleSelected, book) || '',
                 chapter,
                 startVerse: sVerse,

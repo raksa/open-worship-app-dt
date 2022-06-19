@@ -2,7 +2,7 @@ import HTML2React from '../slide-editor/HTML2React';
 
 export default function SlideItemIFrame({
     id, width, html2React,
-}: { id: string, width: number, html2React: HTML2React }) {
+}: { id: number, width: number, html2React: HTML2React }) {
     const height = width * html2React.height / html2React.width;
     const scaleX = width / html2React.width;
     const scaleY = height / html2React.height;
@@ -11,7 +11,7 @@ export default function SlideItemIFrame({
             width, height,
             transform: `scale(${scaleX},${scaleY}) translate(50%, 50%)`,
         }}>
-            <iframe title={id}
+            <iframe title={id + ''}
                 frameBorder="0"
                 style={{
                     pointerEvents: 'none',

@@ -19,8 +19,7 @@ export default function PlaylistList() {
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    const isSuccess = await Playlist.createNew(dir, name, { items: [] });
-                    if (isSuccess) {
+                    if (await Playlist.createNew(dir, name)) {
                         setList(null);
                         return false;
                     }

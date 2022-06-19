@@ -46,13 +46,13 @@ export default function BiblePreviewer() {
         bibleListDefault = bibleListDefault.filter(([_, isAvailable]) => isAvailable);
         const bibleList = bibleListDefault.map(([bible]) => bible);
         if (bibleItems.length === 1 && bibleList.length > 1) {
-            const currentBible = bibleItems[0].bible;
+            const currentBible = bibleItems[0].bibleName;
             let currentIndex = bibleList.indexOf(currentBible);
             if (~currentIndex) {
                 currentIndex = (bibleList.length + currentIndex + (isNext ? 1 : -1))
                     % bibleList.length;
                 const newPresents = [...bibleItems];
-                newPresents[0].bible = bibleList[currentIndex];
+                newPresents[0].bibleName = bibleList[currentIndex];
                 applyPresents(newPresents);
             }
         }
@@ -68,12 +68,12 @@ export default function BiblePreviewer() {
             {bibleItems.length ? bibleItems.map((bibleItem, i) => {
                 return (
                     <BibleView key={`${i}`} bibleItem={bibleItem}
-                        i={i} onBibleChange={(bible: string) => {
-                            applyPresents(bibleItems.map((bibleItem, i1) => {
+                        i={i} onBibleChange={(bibleName: string) => {
+                            applyPresents(bibleItems.map((item, i1) => {
                                 if (i1 === i) {
-                                    bibleItem.bible = bible;
+                                    item.bibleName = bibleName;
                                 }
-                                return bibleItem;
+                                return item;
                             }));
                         }}
                         onClose={() => {

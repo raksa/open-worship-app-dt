@@ -3,7 +3,7 @@ import appProvider from '../helper/appProvider';
 
 export function SettingAbout() {
     const bookKey = 'PSA';
-    const text = usePresentRenderText(BibleItem.genBibleItem('KJV', {
+    const text = usePresentRenderText(BibleItem.genItem('KJV', {
         book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
     }));
     const title = usePresentToInputText('KJV', bookKey, 150, 6, 6);

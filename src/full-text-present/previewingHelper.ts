@@ -183,13 +183,13 @@ class FullTextPresentHelper {
             return new Promise<{
                 title: string, texts: string[]
             }>(async (resolve, _) => {
-                const bibleTitle = await BibleItem.bibleItemToTitle(bibleItem);
-                const title = `<span class="bible">${bibleItem.bible}</span>|<span class="title">${bibleTitle}</span >`;
-                const verses = await getVerses(bibleItem.bible, bibleItem.target.book, bibleItem.target.chapter);
+                const bibleTitle = await BibleItem.itemToTitle(bibleItem);
+                const title = `<span class="bible">${bibleItem.bibleName}</span>|<span class="title">${bibleTitle}</span >`;
+                const verses = await getVerses(bibleItem.bibleName, bibleItem.target.book, bibleItem.target.chapter);
                 let text = '';
                 if (verses !== null) {
                     for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
-                        const verseNumb = await toLocaleNumber(bibleItem.bible, i);
+                        const verseNumb = await toLocaleNumber(bibleItem.bibleName, i);
                         text += `<span data-highlight="${i}"><span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}</span>`;
                     }
                 }

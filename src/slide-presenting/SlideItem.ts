@@ -1,25 +1,40 @@
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { getAllDisplays } from '../helper/displayHelper';
+import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { getAppInfo } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { ItemBase } from '../helper/ItemBase';
 import Slide from '../slide-list/Slide';
 
-export default class SlideItem {
-    id: string;
-    _html: string;
+export default class SlideItem extends ItemBase {
+    metadata: MetaDataType;
+    static SELECT_SETTING_NAME = 'slide-item-selected';
+    id: number;
     fileSource: FileSource;
     isCopied: boolean;
+    _html: string;
     _isSelected: boolean = false;
-    constructor(id: string, html: string,
+    constructor(id: number, html: string, metadata: MetaDataType,
         fileSource: FileSource) {
+        super();
         this.id = id;
         this._html = html;
+        this.metadata = metadata;
         this.fileSource = fileSource;
         this.isCopied = false;
-        SlideItem.getSelectedSlideItem().then((slideItem) => {
+        SlideItem.getSelectedItem().then((slideItem) => {
             this.isSelected = slideItem?.id === this.id;
         });
+    }
+    static validate(item: any) {
+        try {
+            if (item.html && item.id) {
+                return true;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return false;
     }
     get isSelected() {
         return this._isSelected;
@@ -30,7 +45,7 @@ export default class SlideItem {
         }
         this._isSelected = b;
         if (this.isSelected) {
-            SlideItem.setSelectedSlideItem(this);
+            SlideItem.setSelectedItemString(this);
             slideListEventListenerGlobal.selectSlideItem(this);
         } else {
             slideListEventListenerGlobal.selectSlideItem(null);
@@ -62,7 +77,7 @@ export default class SlideItem {
         return false;
     }
     clone() {
-        return new SlideItem(this.id, this._html, this.fileSource);
+        return new SlideItem(this.id, this._html, {}, this.fileSource);
     }
     toJson() {
         return {
@@ -70,55 +85,11 @@ export default class SlideItem {
             html: this._html,
         };
     }
-    static toSlideItemSelected(fileSource: FileSource | null, id: string | null) {
-        if (fileSource === null || id === null) {
-            return null;
-        }
-        return `${fileSource.filePath},${id}`;
-    }
-    static extractSlideItemSelected(slideFilePathId: string) {
-        const [slideFilePath, id] = slideFilePathId.split(',');
-        return {
-            fileSource: FileSource.genFileSource(slideFilePath),
-            id,
-        };
-    }
-    static parseSelectedSlideItem(selected: string, fileSource: FileSource | null) {
-        if (!selected || fileSource === null) {
-            return null;
-        }
-        try {
-            if (selected.includes(fileSource.filePath)) {
-                const id = selected.split(',')[1];
-                if (id) {
-                    return { id };
-                }
-            }
-        } catch (error) {
-            console.log(error);
-        }
-        return null;
-    }
-    static clearSelectedSlideItem() {
-        setSetting('slide-item-selected', '');
-    }
-    static setSelectedSlideItem(slideItem: SlideItem) {
-        const selected = this.toSlideItemSelected(slideItem.fileSource, slideItem.id);
+    static async getSelectedItem() {
+        const selected = this.getSelected();
         if (selected !== null) {
-            setSetting('slide-item-selected', selected);
-        }
-    }
-    static async getSelectedSlideItem() {
-        const fileSource = Slide.getSelectedSlideFileSource();
-        const slideItem = getSetting('slide-item-selected', '');
-        const result = this.parseSelectedSlideItem(slideItem, fileSource);
-        if (result !== null) {
-            const slide = await Slide.readFileToData(fileSource);
-            if (slide) {
-                return slide.content.items.find((item: any) => {
-                    return item.id === result.id;
-                }) || null;
-            }
+            const slide = await Slide.readFileToData(selected.fileSource);
+            return slide?.getItemById(selected.id) || null;
         }
         return null;
     }
@@ -135,8 +106,9 @@ export default class SlideItem {
     }
     static defaultSlideItem() {
         const { width, height } = this.getDefaultDim();
+        // TODO: set width and height for present screen
         return {
-            id: '0', // TODO: set width and height for present screen
+            id: -1,
             html: `<div style="width: ${width}px; height: ${height}px;">`
                 + this.genDefaultBoxHTML()
                 + '</div>',

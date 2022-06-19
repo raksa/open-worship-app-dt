@@ -83,7 +83,7 @@ export default function RenderFound({
         if (key === null) {
             return null;
         }
-        return BibleItem.genBibleItem(bibleSelected, {
+        return BibleItem.genItem(bibleSelected, {
             book: key,
             chapter: await fromLocaleNumber(bibleSelected, chapter),
             startVerse: await fromLocaleNumber(bibleSelected, sVerse),

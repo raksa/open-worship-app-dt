@@ -1,9 +1,13 @@
-import { toastEventListener } from '../event/ToastEventListener';
-import { MetaDataType, MimetypeNameType } from '../helper/fileHelper';
+import {
+    toastEventListener,
+} from '../event/ToastEventListener';
+import fileHelpers, {
+    MetaDataType, MimetypeNameType,
+} from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { validateMeta } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { setSetting, getSetting } from '../helper/settingHelper';
+import { getSetting } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
 
 export type BibleType = {
@@ -11,22 +15,82 @@ export type BibleType = {
     metadata: MetaDataType,
 }
 export default class Bible extends ItemSource<BibleType>{
-    get isSelected() {
-        const selectedFS = Bible.getSelectedBibleFileSource();
-        return this.fileSource.filePath === selectedFS?.filePath;
-    }
-    set isSelected(b: boolean) {
-        if (b) {
-            Bible.setSelectedBibleFileSource(this.fileSource);
-        } else {
-            Bible.setSelectedBibleFileSource(null);
+    static SELECT_DIR_SETTING = 'bible-list-selected-dir';
+    static DEFAULT_FILE_NAME = 'Default';
+    static validator(json: any) {
+        try {
+            if (!json.content || typeof json.content !== 'object'
+                || !json.content.items ||
+                !(json.content.items instanceof Array)) {
+                return false;
+            }
+            const content = json.content;
+            if (!(content.items as any[]).every((item) => {
+                return BibleItem.validate(item);
+            })) {
+                return false;
+            }
+            if (!validateMeta(json.metadata)) {
+                return false;
+            }
+        } catch (error) {
+            console.log(error);
+            return false;
         }
+        return true;
+    }
+    toJson() {
+        const content = {
+            ...this.content,
+            items: this.items.map((item) => item.toJson()),
+        };
+        return {
+            metadata: this.metadata,
+            content,
+        };
+    }
+    get items() {
+        return this.content.items;
+    }
+    get maxId() {
+        return Math.max.apply(Math, this.items.map((item) => +item.id));
+    }
+    static checkIsDefault(fileSource: FileSource) {
+        return fileSource.name === Bible.DEFAULT_FILE_NAME;
     }
     get isDefault() {
-        return this.content.metadata['isDefault'];
+        return Bible.checkIsDefault(this.fileSource);
+    }
+    get isSelected() {
+        return this.items.some((item) => item.isSelected);
+    }
+    get isOpened() {
+        return this.metadata['isOpened'] === true;
+    }
+    async setIsOpened(b: boolean) {
+        this.metadata['isOpened'] = b;
+        this.save();
+    }
+    getItemById(id: number) {
+        return this.items.find((item) => item.id === id) || null;
+    }
+    static async addItem(item: BibleItem) {
+        if (item.fileSource) {
+            const bible = await Bible.readFileToData(item.fileSource);
+            bible?.getItemById(item.id)?.update(item.bibleName, item.target, item.metadata);
+            await bible?.save();
+        } else {
+            const bible = await Bible.getDefault();
+            if (bible) {
+                bible.content.items.push(item);
+                item.fileSource = bible.fileSource;
+                item.id = bible.maxId;
+                item.isSelected = true;
+                await bible.save();
+            }
+        }
     }
     static mimetype: MimetypeNameType = 'bible';
-    static validator: (json: Object) => boolean = validateBible;
     static _instantiate(fileSource: FileSource, json: {
         metadata: MetaDataType, content: any,
     }) {
@@ -39,119 +103,55 @@ export default class Bible extends ItemSource<BibleType>{
         });
     }
     static async readFileToDataNoCache(fileSource: FileSource | null) {
-        const bible = await ItemSource._readFileToDataNoCache<Bible>(fileSource,
-            validateBible, this._instantiate);
+        const bible = await super._readFileToDataNoCache<Bible>(fileSource,
+            this.validator, this._instantiate);
         if (bible) {
             this._initItems(bible);
         }
         return bible;
     }
     static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        const bible = await ItemSource._readFileToData<Bible>(fileSource,
-            validateBible, this._instantiate, isForceCache);
+        const bible = await super._readFileToData<Bible>(fileSource,
+            this.validator, this._instantiate, isForceCache);
         if (bible) {
             this._initItems(bible);
         }
         return bible;
     }
-    static async getDefaultBible(dir: string, fileSources: FileSource[] | null) {
-        const showFailMessage = () => {
+    static async getDefault() {
+        const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
+        let fileSources;
+        try {
+            fileSources = await fileHelpers.listFiles(dir, 'bible') || [];
+        } catch (error: any) {
             toastEventListener.showSimpleToast({
-                title: 'Adding Bible',
-                message: 'Fail to add new bible',
+                title: 'Getting Default Bible File',
+                message: error.message,
             });
-        };
-        if (fileSources === null) {
-            showFailMessage();
             return null;
         }
         for (const fileSource of fileSources) {
-            const bible = await Bible.readFileToData(fileSource);
-            if (bible && bible.isDefault) {
-                return bible;
+            if (Bible.checkIsDefault(fileSource)) {
+                return Bible.readFileToData(fileSource);
             }
         }
-        const defaultFS = await this.createNew(dir, 'Default', {
+        const defaultFS = await this.createNew(dir, Bible.DEFAULT_FILE_NAME, {
             items: [],
-            metadata: {
-                isDefault: true,
-            },
         });
         const defaultBible = await Bible.readFileToData(defaultFS);
         if (!defaultBible) {
-            showFailMessage();
+            toastEventListener.showSimpleToast({
+                title: 'Getting Default Bible File',
+                message: 'Fail to get default bible file',
+            });
             return null;
         }
+        await defaultBible.setIsOpened(true);
         return defaultBible;
     }
-    static clearSelectedBible() {
-        this.setSelectedBibleFileSource(null);
-    }
-    static setSelectedBibleFileSource(fileSource: FileSource | null) {
-        setSetting('selected-bible', fileSource?.filePath || '');
-    }
-    static getSelectedBibleFileSource() {
-        const filePath = getSetting('selected-bible', '');
-        if (filePath) {
-            return FileSource.genFileSource(filePath);
-        }
-        return null;
-    }
-    static async getSelectedBible() {
-        const fileSource = this.getSelectedBibleFileSource();
-        if (fileSource !== null) {
-            return Bible.readFileToData(fileSource);
-        }
-        return null;
-    }
-    static async updateBibleItem(newBibleItem: BibleItem) {
-        const bible = await Bible.readFileToData(newBibleItem.fileSource);
-        bible?.content.items.forEach((item) => {
-            if (item.id === newBibleItem.id) {
-                item.update(newBibleItem.bible, newBibleItem.target);
-            }
+    static async create(dir: string, name: string) {
+        await super.createNew(dir, name, {
+            items: [],
         });
     }
-}
-
-function validateBibleItem(item: any) {
-    try {
-        if (!item.bible ||
-            !item.id ||
-            !item.metadata || typeof item.metadata !== 'object' ||
-            !item.target || typeof item.target !== 'object' ||
-            !item.target.book ||
-            typeof item.target.chapter !== 'number' ||
-            typeof item.target.startVerse !== 'number' ||
-            typeof item.target.endVerse !== 'number') {
-            return false;
-        }
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-    return true;
-}
-
-export function validateBible(json: any) {
-    try {
-        if (!json.content || typeof json.content !== 'object'
-            || !json.content.items ||
-            !(json.content.items instanceof Array)) {
-            return false;
-        }
-        const content = json.content;
-        if (!(content.items as any[]).every((item) => {
-            return validateBibleItem(item);
-        })) {
-            return false;
-        }
-        if (!validateMeta(json.metadata)) {
-            return false;
-        }
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-    return true;
 }

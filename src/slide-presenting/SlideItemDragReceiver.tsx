@@ -3,7 +3,7 @@ import './SlideItemDragReceiver.scss';
 import SlideItem from './SlideItem';
 
 export default function SlideItemDragReceiver({ onDrop }: {
-    onDrop: (id: string) => void,
+    onDrop: (id: number) => void,
 }) {
     return (
         <div className='slide-item-drag-receiver'
@@ -17,8 +17,10 @@ export default function SlideItemDragReceiver({ onDrop }: {
             }}
             onDrop={(event) => {
                 const path = event.dataTransfer.getData('text');
-                const result = SlideItem.extractSlideItemSelected(path);
-                onDrop(result.id);
+                const result = SlideItem.fromSelectedItemSetting(path);
+                if(result!== null) {
+                    onDrop(result.id);
+                }
             }}></div>
     );
 }

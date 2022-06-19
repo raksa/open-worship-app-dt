@@ -18,16 +18,17 @@ export default function BibleItemRender({
     onUpdateBiblePresent?: (newBiblePresent: BibleItem) => void,
 }) {
     const title = usePresentRenderTitle(bibleItem);
-    const bibleStatus = useGetBibleWithStatus(bibleItem.bible);
+    const bibleStatus = useGetBibleWithStatus(bibleItem.bibleName);
     const changeBible = onUpdateBiblePresent ? (newBible: string) => {
-        bibleItem.bible = newBible;
+        bibleItem.bibleName = newBible;
         onUpdateBiblePresent(bibleItem);
     } : null;
     return (
         <li className={`list-group-item item ${bibleItem.isSelected ? 'active' : ''}`}
             data-index={index + 1}
             onContextMenu={onContextMenu || (() => false)}
-            onClick={() => {
+            onClick={(e) => {
+                e.stopPropagation();
                 bibleItem.isSelected = !bibleItem.isSelected;
             }}>
             <span className={changeBible ? 'bible' : ''} onClick={async (e) => {
@@ -36,7 +37,7 @@ export default function BibleItemRender({
                 }
                 e.stopPropagation();
                 const bibleList = await bibleHelper.getBibleListWithStatus();
-                const currentBible = bibleItem.bible;
+                const currentBible = bibleItem.bibleName;
                 const bibleListFiltered = bibleList.filter(([bibleName]) => {
                     return currentBible !== bibleName;
                 });
@@ -53,9 +54,7 @@ export default function BibleItemRender({
             </span> | {title == null ? 'not found' : title}
             {warningMessage && <span className='float-end'
                 title={warningMessage}>⚠️</span>}
-            <BibleItemColorNote
-                bibleItem={bibleItem}
-                onUpdateBiblePresent={onUpdateBiblePresent} />
+            <BibleItemColorNote item={bibleItem} />
         </li >
     );
 }

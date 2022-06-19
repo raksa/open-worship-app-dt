@@ -1,3 +1,4 @@
+import ColorNorteInf from './ColorNorteInf';
 import {
     ItemSourceInf, MimetypeNameType,
     MetaDataType, createNewItem,
@@ -5,7 +6,7 @@ import {
 import FileSource from './FileSource';
 import { cloneObject } from './helpers';
 
-export default abstract class ItemSource<T> implements ItemSourceInf<T> {
+export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNorteInf {
     static mimetype: MimetypeNameType;
     fileSource: FileSource;
     content: T;
@@ -16,6 +17,13 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T> {
         this.fileSource = fileSource;
         this.metadata = metadata;
         this.content = content;
+    }
+    get colorNote() {
+        return this.metadata['colorNote'] || null;
+    }
+    set colorNote(c: string | null) {
+        this.metadata['colorNote'] = c;
+        this.save();
     }
     toJson() {
         return {
@@ -43,7 +51,10 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T> {
         }
         return isSuccess;
     }
-    static async createNew(dir: string, name: string, content: Object) {
+    static async createNew(dir: string, name: string, content?: Object) {
+        if (!content) {
+            return null;
+        }
         const data = JSON.stringify({
             metadata: {
                 fileVersion: 1,
@@ -81,16 +92,16 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T> {
             return null;
         }
         if (isForceCache) {
-            ItemSource._itemSourceCache.delete(fileSource.filePath);
+            this._itemSourceCache.delete(fileSource.filePath);
         }
-        if (ItemSource._itemSourceCache.has(fileSource.filePath)) {
-            return ItemSource._itemSourceCache.get(fileSource.filePath) as T;
+        if (this._itemSourceCache.has(fileSource.filePath)) {
+            return this._itemSourceCache.get(fileSource.filePath) as T;
         }
         const data = await this._readFileToDataNoCache<T>(fileSource, validator, constr);
         if (data) {
-            ItemSource._itemSourceCache.set(fileSource.filePath, data);
+            this._itemSourceCache.set(fileSource.filePath, data);
         } else {
-            ItemSource._itemSourceCache.delete(fileSource.filePath);
+            this._itemSourceCache.delete(fileSource.filePath);
         }
         return data;
     }

@@ -21,7 +21,7 @@ export default class SlideItemsControllerBase {
     getItemByIndex(index: number): SlideItem | null {
         return this.items[index] || null;
     }
-    getItemById(id: string): SlideItem | null {
+    getItemById(id: number): SlideItem | null {
         return this.items.find((item) => item.id === id) || null;
     }
     get copiedItem() {
@@ -138,7 +138,7 @@ export default class SlideItemsControllerBase {
     duplicate(index: number) {
         const newItems = this.newItems;
         const newItem = newItems[index].clone();
-        newItem.id = `${this.maxId + 1}`;
+        newItem.id = this.maxId + 1;
         newItems.splice(index + 1, 0, newItem);
         this.setItemsWithHistory(newItems);
     }
@@ -147,11 +147,11 @@ export default class SlideItemsControllerBase {
             return;
         }
         const newItem = this.copiedItem.clone();
-        newItem.id = `${this.maxId + 1}`;
+        newItem.id = this.maxId + 1;
         const newItems: SlideItem[] = [...this.items, newItem];
         this.setItemsWithHistory(newItems);
     }
-    move(id: string, toIndex: number) {
+    move(id: number, toIndex: number) {
         const fromIndex: number = this.items.findIndex((item) => item.id === id);
         const currentItems = this.newItems;
         const target = currentItems.splice(fromIndex, 1)[0];
@@ -165,7 +165,7 @@ export default class SlideItemsControllerBase {
     }
     add(newItem: SlideItem) {
         const newItems = this.newItems;
-        newItem.id = `${this.maxId + 1}`;
+        newItem.id = this.maxId + 1;
         newItems.push(newItem);
         this.setItemsWithHistory(newItems);
     }

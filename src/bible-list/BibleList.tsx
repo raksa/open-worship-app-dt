@@ -10,35 +10,19 @@ import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useBibleAdding } from '../event/PreviewingEventListener';
 
-const id = 'bible-list';
 export default function BibleList() {
     const [list, setList] = useState<FileSource[] | null>(null);
-    const [dir, setDir] = useStateSettingString<string>(`${id}-selected-dir`, '');
+    const [dir, setDir] = useStateSettingString<string>(Bible.SELECT_DIR_SETTING, '');
     useBibleAdding((bibleItem) => {
-        if (bibleItem.fileSource) {
-            Bible.updateBibleItem(bibleItem);
-        } else {
-            Bible.getDefaultBible(dir, list).then(async (bible) => {
-                if (bible !== null) {
-                    bible.content.items.push(bibleItem);
-                    await bible.save();
-                    bible.isSelected = true;
-                    setList(null);
-                }
-            });
-        }
+        Bible.addItem(bibleItem).then(() => setList(null));
     });
     return (
-        <FileListHandler id={id} mimetype={'bible'}
+        <FileListHandler id={'bible-list'} mimetype={'bible'}
             list={list} setList={setList}
             dir={dir} setDir={setDir}
             onNewFile={async (name) => {
                 if (name !== null) {
-                    const isSuccess = await Bible.createNew(dir, name, {
-                        items: [],
-                        metadata: {},
-                    });
-                    if (isSuccess) {
+                    if (await Bible.createNew(dir, name)) {
                         setList(null);
                         return false;
                     }

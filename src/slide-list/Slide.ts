@@ -17,9 +17,26 @@ export type SlidePresentType = {
 };
 
 export default class Slide extends ItemSource<SlidePresentType>{
-    get isSelected() {
-        const selectedFS = Slide.getSelectedSlideFileSource();
-        return this.fileSource.filePath === selectedFS?.filePath;
+    static validator(json: any) {
+        try {
+            if (!json.content || typeof json.content !== 'object'
+                || !json.content.items || !(json.content.items instanceof Array)) {
+                return false;
+            }
+            const content = json.content;
+            if (!(content.items as any[]).every((item) => {
+                return SlideItem.validate(item);
+            })) {
+                return false;
+            }
+            if (!validateMeta(json.metadata)) {
+                return false;
+            }
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+        return true;
     }
     toJson() {
         const content = {
@@ -31,6 +48,13 @@ export default class Slide extends ItemSource<SlidePresentType>{
             content,
         };
     }
+    get isSelected() {
+        const selectedFS = Slide.getSelectedFileSource();
+        return this.fileSource.filePath === selectedFS?.filePath;
+    }
+    getItemById(id: number) {
+        return this.content.items.find((item) => item.id === id) || null;
+    }
     static mimetype: MimetypeNameType = 'slide';
     static _instantiate(fileSource: FileSource, json: {
         metadata: MetaDataType, content: any,
@@ -39,54 +63,54 @@ export default class Slide extends ItemSource<SlidePresentType>{
     }
     static _initItems(slide: ItemSource<any>) {
         slide.content.items = slide.content.items.map((item: any) => {
-            return new SlideItem(item.id, item.html, slide.fileSource);
+            return new SlideItem(item.id, item.html, {}, slide.fileSource);
         });
     }
     static async readFileToDataNoCache(fileSource: FileSource | null) {
-        const slide = await ItemSource._readFileToDataNoCache<Slide>(fileSource,
-            validateSlide, this._instantiate);
+        const slide = await super._readFileToDataNoCache<Slide>(fileSource,
+            this.validator, this._instantiate);
         if (slide) {
             this._initItems(slide);
         }
         return slide;
     }
     static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        const slide = await ItemSource._readFileToData<Slide>(fileSource,
-            validateSlide, this._instantiate, isForceCache);
+        const slide = await super._readFileToData<Slide>(fileSource,
+            this.validator, this._instantiate, isForceCache);
         if (slide) {
             this._initItems(slide);
         }
         return slide;
     }
-    static presentSlide(slide: Slide | null) {
+    static present(slide: Slide | null) {
         if (slide === null) {
-            this.clearSelectedSlide();
+            this.clearSelected();
         } else {
-            this.setSelectedSlideFileSource(slide.fileSource);
+            this.setSelectedFileSource(slide.fileSource);
         }
         previewingEventListener.presentSlide(slide);
     }
-    static clearSelectedSlide() {
-        this.setSelectedSlideFileSource(null);
+    static clearSelected() {
+        this.setSelectedFileSource(null);
     }
-    static setSelectedSlideFileSource(fileSource: FileSource | null) {
+    static setSelectedFileSource(fileSource: FileSource | null) {
         setSetting('selected-slide', fileSource?.filePath || '');
     }
-    static getSelectedSlideFileSource() {
+    static getSelectedFileSource() {
         const filePath = getSetting('selected-slide', '');
         if (filePath) {
             return FileSource.genFileSource(filePath);
         }
         return null;
     }
-    static async getSelectedSlide() {
-        const fileSource = this.getSelectedSlideFileSource();
+    static async getSelected() {
+        const fileSource = this.getSelectedFileSource();
         if (fileSource !== null) {
             return Slide.readFileToData(fileSource);
         }
         return null;
     }
-    static getDefaultSlideList() {
+    static getDefaultList() {
         let defaultSlideList = [];
         try {
             const str = getSetting('slide-list');
@@ -94,48 +118,15 @@ export default class Slide extends ItemSource<SlidePresentType>{
         } catch (error) { }
         return defaultSlideList;
     }
-    static defaultSlide() {
-        return {
-            items: [SlideItem.defaultSlideItem()],
-        };
-    }
     static toWrongDimensionString({ slide, display }: {
         slide: { width: number, height: number },
         display: { width: number, height: number },
     }) {
         return `⚠️ slide:${slide.width}x${slide.height} display:${display.width}x${display.height}`;
     }
-}
-
-export function validateSlideItem(item: any) {
-    try {
-        if (item.html && item.id) {
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
+    static async create(dir: string, name: string) {
+        await super.createNew(dir, name, {
+            items: [SlideItem.defaultSlideItem()],
+        });
     }
-    return false;
-}
-
-export function validateSlide(json: any) {
-    try {
-        if (!json.content || typeof json.content !== 'object'
-            || !json.content.items || !(json.content.items instanceof Array)) {
-            return false;
-        }
-        const content = json.content;
-        if (!(content.items as any[]).every((item) => {
-            return validateSlideItem(item);
-        })) {
-            return false;
-        }
-        if (!validateMeta(json.metadata)) {
-            return false;
-        }
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-    return true;
 }

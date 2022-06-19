@@ -24,7 +24,7 @@ export default function SlideFile({
             className={`${data?.isSelected ? 'active' : ''}`}
             onClick={() => {
                 if (data) {
-                    Slide.presentSlide(data.isSelected ? null : data);
+                    Slide.present(data.isSelected ? null : data);
                 }
             }}
             child={<>

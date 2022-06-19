@@ -24,7 +24,7 @@ export default function LyricFile({
             className={`${data?.isSelected ? 'active' : ''}`}
             onClick={() => {
                 if (data) {
-                    Lyric.presentLyric(data.isSelected ? null : data);
+                    Lyric.present(data.isSelected ? null : data);
                 }
             }}
             child={<>

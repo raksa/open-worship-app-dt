@@ -23,12 +23,6 @@ export default function BibleFile({
             setData={setData}
             fileSource={fileSource}
             className={'bible-file'}
-            onClick={async () => {
-                if (data) {
-                    data.isSelected = !data.isSelected;
-                    setList(null);
-                }
-            }}
             onDrop={async (event) => {
                 if (!data) {
                     return;
@@ -54,13 +48,19 @@ export default function BibleFile({
                     console.log(error);
                 }
             }}
-            child={<div className='accordion accordion-flush'>
-                <div className='accordion-header pointer'>
+            child={data && <div className='accordion accordion-flush'>
+                <div className='accordion-header pointer'
+                    onClick={() => {
+                        data?.setIsOpened(!data.isOpened);
+                    }}>
                     <span className='w-100 text-center'>
+                        {data.isSelected && <span style={{ color: 'red' }}>
+                            *
+                        </span>}
                         {fileSource.name}
                     </span>
                 </div>
-                {data && <div className={`accordion-collapse collapse ${data.isSelected ? 'show' : ''}`}>
+                {<div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}>
                     <div className='accordion-body'>
                         <RenderBibleItems bible={data} index={index}
                             setBible={setData} />

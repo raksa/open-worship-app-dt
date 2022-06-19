@@ -31,23 +31,10 @@ export default function PlaylistFile({
             onDrop={async (event) => {
                 if (data) {
                     const receivedData = event.dataTransfer.getData('text');
-                    try {
-                        JSON.parse(receivedData);
-                        const bible = JSON.parse(receivedData);
-                        delete bible.groupIndex;
-                        data.content.items.push({
-                            type: 'bible',
-                            bible: bible as BibleItem,
-                        });
-                    } catch (error) {
-                        data.content.items.push({
-                            type: 'slide',
-                            slideItemPath: receivedData,
-                        });
-                    }
-                    data.save().then(() => {
+                    if (data.addFromData(receivedData)) {
+                        await data.save();
                         setList(null);
-                    });
+                    }
                 }
             }}
             child={<div className='card pointer mt-1 ps-2'>
@@ -57,19 +44,22 @@ export default function PlaylistFile({
                     {fileSource.name}
                 </div>
                 {isOpened && data && <div className='card-body d-flex flex-column'>
-                    {data.content.items.map((item, i) => {
-                        if (item.type === 'slide') {
-                            const slidePath = item.slideItemPath as string;
+                    {data.content.items.map((playlistItem, i) => {
+                        if (playlistItem.isSlideItem) {
                             return (
-                                <PlaylistSlideItem
-                                slideItemPath={slidePath}
-                                width={200} />
+                                <PlaylistSlideItem width={200}
+                                    slideItemPath={playlistItem.item.toSelectedItemSetting()} />
+                            );
+                        } else if (playlistItem.isBibleItem) {
+                            return (
+                                <BibleItemRender key={`${i}`} index={i}
+                                    bibleItem={playlistItem.item as BibleItem} />
+                            );
+                        } else if (playlistItem.isLyricItem) {
+                            return (
+                                <div>Not Supported Item Type</div>
                             );
                         }
-                        return (
-                            <BibleItemRender key={`${i}`} index={i}
-                                bibleItem={item.bible as BibleItem} />
-                        );
                     })}
                 </div>}
             </div>}

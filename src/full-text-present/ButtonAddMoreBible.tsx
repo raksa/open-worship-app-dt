@@ -15,12 +15,12 @@ export default function ButtonAddMoreBible({ bibleItems, applyPresents }: {
             onClick={async (e) => {
                 const addBibleView = (bible: string) => {
                     const newPresent = JSON.parse(JSON.stringify(bibleItems[0])) as BibleItem;
-                    newPresent.bible = bible;
+                    newPresent.bibleName = bible;
                     const newPresents = [...bibleItems, newPresent];
                     applyPresents(newPresents);
                 };
                 const bibleList = await bibleHelper.getBibleListWithStatus();
-                const bibleItemingList = bibleItems.map(({ bible: bibleViewing }) => bibleViewing);
+                const bibleItemingList = bibleItems.map(({ bibleName: bibleViewing }) => bibleViewing);
                 const bibleListFiltered = bibleList.filter(([bible]) => !~bibleItemingList.indexOf(bible));
 
                 showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {

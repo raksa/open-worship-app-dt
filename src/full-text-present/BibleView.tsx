@@ -33,7 +33,7 @@ export default function BibleView({
         }}>
             <div className="card-header">
                 <span className="input-group-text select float-start">
-                    <select className="form-select bible" value={bibleItem.bible}
+                    <select className="form-select bible" value={bibleItem.bibleName}
                         onChange={(event) => {
                             onBibleChange(event.target.value);
                         }}>

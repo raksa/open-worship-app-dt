@@ -76,9 +76,6 @@ export default function FileItemHandler({
     };
     const onContextMenu = (e: any) => {
         showAppContextMenu(e, [
-            {
-                title: 'Open', onClick: applyClick,
-            },
             ...(contextMenu || []),
             ...genCommonMenu(fileSource),
             {
