@@ -77,8 +77,14 @@ export default class Bible extends ItemSource<BibleType>{
     static async addOrphanItem(bibleItem: BibleItem) {
         if (bibleItem.fileSource) {
             const bible = await Bible.readFileToData(bibleItem.fileSource);
-            bible?.getItemById(bibleItem.id)?.update(bibleItem.bibleName, bibleItem.target, bibleItem.metadata);
-            await bible?.save();
+            if (bible) {
+                const oldBibleItem = bible.getItemById(bibleItem.id);
+                if (oldBibleItem !== null) {
+                    oldBibleItem.update(bibleItem.bibleName, bibleItem.target,
+                        bibleItem.metadata);
+                    return bible.save();
+                }
+            }
         } else {
             const bible = await Bible.getDefault();
             if (bible) {
