@@ -3,6 +3,7 @@ import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import RenderBibleItems from './RenderBibleItems';
+import BibleItem from './BibleItem';
 
 export default function BibleFile({
     index, fileSource,
@@ -26,19 +27,18 @@ export default function BibleFile({
                 const receivedData = event.dataTransfer.getData('text');
                 try {
                     const item = JSON.parse(receivedData);
-                    if (!item.filePath) {
+                    if (!item.filePath || !BibleItem.validate(item)) {
                         throw new Error('Not a bible file');
                     }
                     const targetFS = FileSource.genFileSource(item.filePath);
                     const targetBible = await Bible.readFileToData(targetFS);
                     if (targetBible) {
-                        const items = targetBible.content.items;
-                        const bibleItem = items[item.index];
-                        targetBible.content.items = items.filter((_, i1) => {
-                            return `${i1}` !== `${item.index}`;
-                        });
-                        data.content.items.push(bibleItem);
-                        data.save();
+                        const bibleItem = targetBible.getItemById(item.id);
+                        if (bibleItem !== null) {
+                            if(await targetBible.removeItem(bibleItem)){
+                                await data.addItem(bibleItem);
+                            }
+                        }
                     }
                 } catch (error) {
                     console.log(error);

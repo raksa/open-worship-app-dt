@@ -12,7 +12,6 @@ type SlideItemProps = {
     index: number;
     isActive: boolean;
     slideItem: SlideItem;
-    onItemClick: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
     onCopy: () => void,
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
@@ -21,7 +20,6 @@ type SlideItemProps = {
 export default function SlideItemRender({
     width, isActive, index,
     slideItem,
-    onItemClick,
     onContextMenu,
     onCopy,
     onDragStart,
@@ -45,7 +43,7 @@ export default function SlideItemRender({
                 width: `${width}px`,
             }}
             onClick={() => {
-                onItemClick();
+                slideItem.isSelected = !slideItem.isSelected;
             }}
             onContextMenu={(e) => onContextMenu(e)}
             onCopy={onCopy}>
@@ -59,7 +57,8 @@ export default function SlideItemRender({
                     <small className='pe-2'>
                         {html2React.width}x{html2React.height}
                     </small>
-                    <RenderIsEditing index={index} slideItem={slideItem} />
+                    <RenderIsEditing index={index}
+                        slideItem={slideItem} />
                 </div>
             </div>
             <div className="card-body overflow-hidden"

@@ -98,12 +98,22 @@ const fileHelpers = {
         }
         return null;
     },
-    checkFileExist: async function (filePath: string, fileName?: string) {
-        if (fileName) {
-            const newFilePath = appProvider.path.join(filePath, fileName);
-            return !!appProvider.fs.existsSync(newFilePath);
-        }
-        return !!appProvider.fs.existsSync(filePath);
+    checkFileExist: function (filePath: string, fileName?: string) {
+        return new Promise<boolean>((resolve, reject) => {
+            if (fileName) {
+                filePath = appProvider.path.join(filePath, fileName);
+            }
+            appProvider.fs.stat(filePath, (error) => {
+                if (error === null) {
+                    resolve(true);
+                } else if (error.code === 'ENOENT') {
+                    resolve(false);
+                } else {
+                    console.log(error);
+                    reject(new Error('Error during checking file exist'));
+                }
+            });
+        });
     },
     createDir: async function (dirPath: string) {
         try {
@@ -129,7 +139,9 @@ const fileHelpers = {
         }
     },
     overWriteFile: async function (filePath: string, txt: string) {
-        await this.deleteFile(filePath);
+        if (await this.checkFileExist(filePath)) {
+            await this.deleteFile(filePath);
+        }
         return this.createFile(txt, filePath);
     },
     renameFile: async function (basePath: string, oldFileName: string, newFileName: string) {

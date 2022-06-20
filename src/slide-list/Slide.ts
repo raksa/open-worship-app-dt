@@ -23,6 +23,23 @@ export default class Slide extends ItemSource<SlidePresentType>{
         super(fileSource, metadata, content);
         this.SELECT_SETTING_NAME = Slide.SELECT_SETTING_NAME;
     }
+    get isSelected() {
+        const selectedFS = Slide.getSelectedFileSource();
+        return this.fileSource.filePath === selectedFS?.filePath;
+    }
+    set isSelected(b: boolean) {
+        if (this.isSelected === b) {
+            return;
+        }
+        if (b) {
+            Slide.setSelectedFileSource(this.fileSource);
+            previewingEventListener.presentSlide(this);
+        } else {
+            Slide.setSelectedFileSource(null);
+            previewingEventListener.presentSlide(null);
+        }
+        this.fileSource.refreshDir();
+    }
     static validator(json: any) {
         try {
             if (!json.content || typeof json.content !== 'object'
@@ -54,10 +71,6 @@ export default class Slide extends ItemSource<SlidePresentType>{
             content,
         };
     }
-    get isSelected() {
-        const selectedFS = Slide.getSelectedFileSource();
-        return this.fileSource.filePath === selectedFS?.filePath;
-    }
     getItemById(id: number) {
         return this.content.items.find((item) => item.id === id) || null;
     }
@@ -87,14 +100,6 @@ export default class Slide extends ItemSource<SlidePresentType>{
             this._initItems(slide);
         }
         return slide;
-    }
-    static present(slide: Slide | null) {
-        if (slide === null) {
-            this.setSelectedFileSource(null);
-        } else {
-            this.setSelectedFileSource(slide.fileSource);
-        }
-        previewingEventListener.presentSlide(slide);
     }
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();

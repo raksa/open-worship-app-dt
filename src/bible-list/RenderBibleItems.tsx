@@ -27,11 +27,8 @@ export default function RenderBibleItems({
                                 },
                             },
                             {
-                                title: 'Delete', onClick: async () => {
-                                    bible.content.items = items.filter((_, i2) => {
-                                        return i2 !== i1;
-                                    });
-                                    await bible.save();
+                                title: 'Delete', onClick: () => {
+                                    bible.removeItem(bibleItem);
                                 },
                             },
                         ]);

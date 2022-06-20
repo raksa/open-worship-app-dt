@@ -35,17 +35,6 @@ export default class SlideItemsControllerBase {
             newItem.isCopied = true;
         }
     }
-    get selectedItem() {
-        return this.items.find((item) => item.isSelected) || null;
-    }
-    set selectedItem(newItem: SlideItem | null) {
-        this.items.forEach((item) => {
-            item.isSelected = false;
-        });
-        if (newItem !== null) {
-            newItem.isSelected = true;
-        }
-    }
     get selectedIndex() {
         const foundItem = this.items.find((item) => item.isSelected) || null;
         if (foundItem) {
@@ -69,7 +58,7 @@ export default class SlideItemsControllerBase {
     }
     set items(newItems: SlideItem[]) {
         this.slide.content.items = newItems;
-        this.slide.fileSource.refreshDir();
+        this.slide.save();
     }
     async isModifying() {
         const slide = await Slide.readFileToDataNoCache(this.slide.fileSource);
@@ -91,14 +80,14 @@ export default class SlideItemsControllerBase {
     }
     set undo(undo: ChangeHistory[]) {
         this._history.undo = undo;
-        this.slide.fileSource.refreshDir();
+        this.slide.save();
     }
     get redo() {
         return this._history.redo;
     }
     set redo(redo: ChangeHistory[]) {
         this._history.redo = redo;
-        this.slide.fileSource.refreshDir();
+        this.slide.save();
     }
     get maxId() {
         return Math.max.apply(Math, this.items.map((item) => +item.id));
@@ -161,7 +150,7 @@ export default class SlideItemsControllerBase {
     delete(index: number) {
         const newItems = this.items.filter((_, i) => i !== index);
         this.setItemsWithHistory(newItems);
-        this.slide.fileSource.refreshDir();
+        this.slide.save();
     }
     add(newItem: SlideItem) {
         const newItems = this.newItems;

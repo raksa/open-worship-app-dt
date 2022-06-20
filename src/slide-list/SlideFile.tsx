@@ -2,6 +2,8 @@ import { useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
+import BibleItemColorNote from '../bible-list/BibleItemColorNote';
+import ItemSource from '../helper/ItemSource';
 
 export default function SlideFile({
     index, fileSource,
@@ -19,12 +21,13 @@ export default function SlideFile({
             fileSource={fileSource}
             onClick={() => {
                 if (data) {
-                    Slide.present(data.isSelected ? null : data);
+                    data.isSelected = !data.isSelected;
                 }
             }}
             child={<>
                 <i className='bi bi-file-earmark-slides' />
                 {fileSource.name}
+                <BibleItemColorNote item={data as ItemSource<any>} />
             </>}
         />
     );

@@ -24,7 +24,7 @@ export default class SlideItem extends ItemBase {
     }
     static validate(item: any) {
         try {
-            if (item.html && item.id) {
+            if (item.html && typeof item.id === 'number') {
                 return true;
             }
         } catch (error) {
@@ -48,7 +48,7 @@ export default class SlideItem extends ItemBase {
             SlideItem.setSelectedItem(null);
             slideListEventListenerGlobal.selectSlideItem(null);
         }
-        this.fileSource.refreshDir();
+        this.fileSource.select();
     }
     get html() {
         return this._html;

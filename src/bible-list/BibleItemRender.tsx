@@ -5,6 +5,7 @@ import bibleHelper, {
 import BibleItemColorNote from './BibleItemColorNote';
 import Bible from './Bible';
 import BibleItem, { usePresentRenderTitle } from './BibleItem';
+import { useState } from 'react';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
@@ -25,6 +26,12 @@ export default function BibleItemRender({
     return (
         <li className={`list-group-item item ${bibleItem.isSelected ? 'active' : ''}`}
             data-index={index + 1}
+            draggable
+            onDragStart={(event) => {
+                const newBibleItem = bibleItem.toJson() as any;
+                newBibleItem.filePath = bibleItem.fileSource?.filePath;
+                event.dataTransfer.setData('text/plain', JSON.stringify(newBibleItem));
+            }}
             onContextMenu={onContextMenu || (() => false)}
             onClick={(e) => {
                 e.stopPropagation();

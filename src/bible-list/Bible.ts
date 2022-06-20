@@ -53,7 +53,7 @@ export default class Bible extends ItemSource<BibleType>{
         return this.content.items;
     }
     get maxId() {
-        return Math.max.apply(Math, this.items.map((item) => +item.id));
+        return Math.max.apply(Math, this.items.map((item) => +item.id)) || 0;
     }
     static checkIsDefault(fileSource: FileSource) {
         return fileSource.name === Bible.DEFAULT_FILE_NAME;
@@ -74,22 +74,31 @@ export default class Bible extends ItemSource<BibleType>{
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    static async addItem(item: BibleItem) {
-        if (item.fileSource) {
-            const bible = await Bible.readFileToData(item.fileSource);
-            bible?.getItemById(item.id)?.update(item.bibleName, item.target, item.metadata);
+    static async addOrphanItem(bibleItem: BibleItem) {
+        if (bibleItem.fileSource) {
+            const bible = await Bible.readFileToData(bibleItem.fileSource);
+            bible?.getItemById(bibleItem.id)?.update(bibleItem.bibleName, bibleItem.target, bibleItem.metadata);
             await bible?.save();
         } else {
             const bible = await Bible.getDefault();
             if (bible) {
-                bible.content.items.push(item);
-                item.fileSource = bible.fileSource;
-                item.id = bible.maxId;
-                item.isSelected = true;
-                return await bible.save();
+                bible.addItem(bibleItem);
+                return bible.save();
             }
         }
         return false;
+    }
+    async removeItem(bibleItem: BibleItem) {
+        this.content.items = this.items.filter((item) => {
+            return bibleItem.id !== item.id;
+        });
+        return this.save();
+    }
+    async addItem(item: BibleItem) {
+        item.fileSource = this.fileSource;
+        item.id = this.maxId + 1;
+        this.content.items.push(item);
+        return this.save();
     }
     static mimetype: MimetypeNameType = 'bible';
     static _instantiate(fileSource: FileSource, json: {

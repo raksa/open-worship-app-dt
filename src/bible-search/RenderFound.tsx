@@ -89,7 +89,7 @@ export default function RenderFound({
             startVerse: await fromLocaleNumber(bibleSelected, sVerse),
             endVerse: await fromLocaleNumber(bibleSelected, eVerse),
         });
-        if (await Bible.addItem(bibleItem)) {
+        if (await Bible.addOrphanItem(bibleItem)) {
             closeBibleSearch();
             return bibleItem;
         } else {

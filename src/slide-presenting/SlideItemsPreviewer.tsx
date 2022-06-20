@@ -19,6 +19,7 @@ import {
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
+import SlideItem from './SlideItem';
 
 export default function SlideItemsPreviewer({ controller }: {
     controller: SlideItemsController,
@@ -27,7 +28,7 @@ export default function SlideItemsPreviewer({ controller }: {
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useRefresh(controller);
     usePresentFGClearing(() => {
-        controller.selectedItem = null;
+        SlideItem.setSelectedItem(null);
     });
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
@@ -72,13 +73,6 @@ export default function SlideItemsPreviewer({ controller }: {
                             isActive={item.isSelected}
                             index={i}
                             slideItem={item}
-                            onItemClick={() => {
-                                if (controller.selectedItem === item) {
-                                    controller.selectedItem = null;
-                                } else {
-                                    controller.selectedItem = item;
-                                }
-                            }}
                             onContextMenu={(e) => {
                                 controller.openContextMenu(e, i);
                             }}
