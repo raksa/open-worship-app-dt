@@ -47,11 +47,7 @@ export default class BibleItem extends ItemBase {
         if (b) {
             previewingEventListener.selectBibleItem(this);
             BibleItem.setSelectedItem(this);
-            Lyric.getSelected().then((lyric) => {
-                if (lyric) {
-                    lyric.isSelected = false;
-                }
-            });
+            Lyric.clearSelection();
             previewingEventListener.selectBibleItem(this);
         } else {
             BibleItem.setSelectedItem(null);
@@ -218,6 +214,12 @@ export default class BibleItem extends ItemBase {
             txt += ` (${await toLocaleNumber(bible, i)}): ${verses[i + '']}`;
         }
         return txt;
+    }
+    static async clearSelection() {
+        const bibleItem = await this.getSelectedItem();
+        if (bibleItem) {
+            bibleItem.isSelected = false;
+        }
     }
 }
 

@@ -32,11 +32,7 @@ export default class Lyric extends ItemSource<LyricType>{
         }
         if (b) {
             Lyric.setSelectedFileSource(this.fileSource);
-            BibleItem.getSelectedItem().then((bibleItem) => {
-                if (bibleItem) {
-                    bibleItem.isSelected = false;
-                }
-            });
+            BibleItem.clearSelection();
             previewingEventListener.selectLyric(this);
         } else {
             Lyric.setSelectedFileSource(null);
@@ -80,5 +76,11 @@ Block3`,
         return super.create(dir, name, {
             items: [Lyric.toNew(name)],
         });
+    }
+    static async clearSelection() {
+        const lyric = await this.getSelected();
+        if (lyric) {
+            lyric.isSelected = false;
+        }
     }
 }
