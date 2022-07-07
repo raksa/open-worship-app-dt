@@ -76,7 +76,7 @@ export default class SlideItem extends ItemBase {
             SlideItem.setSelectedItem(null);
             slideListEventListenerGlobal.selectSlideItem(null);
         }
-        this.fileSource.selectEvent();
+        this.fileSource.fireSelectEvent();
     }
     get html() {
         return this._html;
@@ -84,7 +84,7 @@ export default class SlideItem extends ItemBase {
     set html(newHtml: string) {
         if (newHtml !== this._html) {
             this._html = newHtml;
-            this.fileSource.refreshDirEvent();
+            this.fileSource.fireRefreshDirEvent();
         }
     }
     async isEditing(index: number, slide?: Slide | null) {

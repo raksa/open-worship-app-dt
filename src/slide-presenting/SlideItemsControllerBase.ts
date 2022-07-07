@@ -172,7 +172,7 @@ export default class SlideItemsControllerBase {
             const slide = await Slide.readFileToData(fileSource, true);
             if (slide) {
                 this.slide = slide;
-                fileSource.refreshDirEvent();
+                fileSource.fireRefreshDirEvent();
             }
         }
     }

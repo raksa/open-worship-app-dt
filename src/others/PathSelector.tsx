@@ -46,7 +46,7 @@ export default function PathSelector({
                 <div className={`px-2 ${dirSource.fileSources === null ? 'rotating' : ''}`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        dirSource.reloadEvent();
+                        dirSource.fireReloadEvent();
                     }}>
                     <i className='bi bi-arrow-clockwise' />
                 </div>
@@ -55,7 +55,7 @@ export default function PathSelector({
                 <div className='input-group mb-3'>
                     <button className={`btn btn-secondary ${dirSource.fileSources === null ? 'rotating' : ''}`}
                         type='button'
-                        onClick={() => dirSource.reloadEvent()}>
+                        onClick={() => dirSource.fireReloadEvent()}>
                         <i className='bi bi-arrow-clockwise' />
                     </button>
                     <input type='text' className='form-control' value={dirSource.dirPath}

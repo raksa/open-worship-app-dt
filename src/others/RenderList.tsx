@@ -7,7 +7,7 @@ export default function RenderList({ dirSource, body }: {
     if (dirSource.fileSources === undefined) {
         return (
             <div className='alert alert-warning pointer'
-                onClick={() => dirSource.reloadEvent()}>
+                onClick={() => dirSource.fireReloadEvent()}>
                 Fail To Get File List
             </div>
         );

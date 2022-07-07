@@ -104,7 +104,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         }
         ItemSource.setSelectedFileSource(b ? this.fileSource : null,
             this.SELECT_SETTING_NAME);
-        this.fileSource?.refreshDirEvent();
+        this.fileSource?.fireRefreshDirEvent();
     }
     get colorNote() {
         return this.metadata['colorNote'] || null;
@@ -123,13 +123,6 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         const isSuccess = await this.fileSource.saveData(this);
         if (isSuccess) {
             ItemSource._itemSourceCache.set(this.fileSource.filePath, this);
-        }
-        return isSuccess;
-    }
-    async delete(): Promise<boolean> {
-        const isSuccess = await this.fileSource.delete();
-        if (isSuccess) {
-            ItemSource._itemSourceCache.delete(this.fileSource.filePath);
         }
         return isSuccess;
     }

@@ -14,7 +14,7 @@ export default function BibleList() {
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Bible.create(dirSource.dirPath, name)) {
-                    dirSource.reloadEvent();
+                    dirSource.fireReloadEvent();
                     return false;
                 }
                 return true;

@@ -14,7 +14,7 @@ export default function PlaylistList() {
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Playlist.create(dirSource.dirPath, name)) {
-                    dirSource.reloadEvent();
+                    dirSource.fireReloadEvent();
                     return false;
                 }
                 return true;

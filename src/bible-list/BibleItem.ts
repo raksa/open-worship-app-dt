@@ -53,7 +53,7 @@ export default class BibleItem extends ItemBase {
             BibleItem.setSelectedItem(null);
             previewingEventListener.selectBibleItem(null);
         }
-        this.fileSource?.refreshDirEvent();
+        this.fileSource?.fireRefreshDirEvent();
     }
     static async getSelectedItem() {
         const selected = this.getSelectedResult();
@@ -78,7 +78,7 @@ export default class BibleItem extends ItemBase {
         } else {
             BibleItem.setSelectedEditingItem(null);
         }
-        this.fileSource?.refreshDirEvent();
+        this.fileSource?.fireRefreshDirEvent();
     }
     static async getSelectedItemEditing() {
         const selected = this.getSelectedEditingResult();

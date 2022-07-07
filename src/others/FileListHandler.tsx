@@ -32,11 +32,10 @@ export default function FileListHandler({
     const getNewDirSource = () => {
         return DirSource.genDirSource(settingName, true);
     };
-    const refresh = () => {
+    const refresh = async () => {
         const newDirSource = getNewDirSource();
-        newDirSource.listFiles(mimetype).then(() => {
-            setDirSource(newDirSource);
-        });
+        await newDirSource.listFiles(mimetype);
+        setDirSource(newDirSource);
     };
 
     useEffect(() => {
@@ -91,7 +90,7 @@ export default function FileListHandler({
                                 title,
                                 message: 'File has been copied',
                             });
-                            dirSource.reloadEvent();
+                            dirSource.fireReloadEvent();
                         } catch (error: any) {
                             toastEventListener.showSimpleToast({
                                 title,

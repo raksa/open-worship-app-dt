@@ -14,7 +14,7 @@ export default function SlideList() {
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Slide.create(dirSource.dirPath, name)) {
-                    dirSource.reloadEvent();
+                    dirSource.fireReloadEvent();
                     return false;
                 }
                 return true;

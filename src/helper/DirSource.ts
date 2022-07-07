@@ -38,7 +38,7 @@ export default class DirSource {
     }
     set dirPath(newDirPath: string) {
         setSetting(this.settingName, newDirPath);
-        this.reloadEvent();
+        this.fireReloadEvent();
     }
     static toCacheKey(settingName: string) {
         const cacheKey = `${settingName}-${getSetting(settingName, '')}`;
@@ -64,10 +64,10 @@ export default class DirSource {
             globalEventHandler._removeOnEventListener(key, listener);
         });
     }
-    refreshEvent() {
+    fireRefreshEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('refresh'));
     }
-    reloadEvent() {
+    fireReloadEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('reload'));
     }
     deleteCache() {

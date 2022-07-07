@@ -74,15 +74,15 @@ export default function FileItemHandler({
         };
     }, [data]);
     const applyClick = () => {
-        fileSource.selectEvent();
+        fileSource.fireSelectEvent();
         onClick && onClick();
     };
     const selfContextMenu = [
         {
             title: 'Reload', onClick: () => setData(null),
         }, {
-            title: 'Delete', onClick: async () => {
-                await fileSource.delete();
+            title: 'Delete', onClick: () => {
+                fileSource.delete();
             },
         }];
     if (data === null) {

@@ -38,7 +38,7 @@ export default class Slide extends ItemSource<SlideType>{
             Slide.setSelectedFileSource(null);
             previewingEventListener.presentSlide(null);
         }
-        this.fileSource.refreshDirEvent();
+        this.fileSource.fireRefreshDirEvent();
     }
     getItemById(id: number) {
         return this.content.items.find((item) => item.id === id) || null;

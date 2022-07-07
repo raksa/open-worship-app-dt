@@ -51,21 +51,24 @@ export default class FileSource {
     get dirSource() {
         return DirSource.getDirSourceByDirPath(this.basePath);
     }
-    refreshDirEvent() {
-        this.dirSource?.refreshEvent();
+    fireRefreshDirEvent() {
+        this.dirSource?.fireRefreshEvent();
     }
-    selectEvent() {
+    fireReloadDirEvent() {
+        this.dirSource?.fireReloadEvent();
+    }
+    fireSelectEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('select'));
     }
-    updateEvent() {
+    fireUpdateEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('update'));
     }
-    deleteEvent() {
+    fireDeleteEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('delete'));
     }
     deleteCache() {
         FileSource._fileCache.delete(this.filePath);
-        this.deleteEvent();
+        this.fireDeleteEvent();
     }
     async readFileToData() {
         try {
@@ -83,7 +86,7 @@ export default class FileSource {
         try {
             const content = JSON.stringify(data.toJson());
             await fileHelpers.createFile(this.filePath, content, true);
-            this.updateEvent();
+            this.fireUpdateEvent();
             return true;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
@@ -97,7 +100,7 @@ export default class FileSource {
         try {
             await fileHelpers.deleteFile(this.filePath);
             this.deleteCache();
-            this.refreshDirEvent();
+            this.fireReloadDirEvent();
             return true;
         } catch (error: any) {
             toastEventListener.showSimpleToast({

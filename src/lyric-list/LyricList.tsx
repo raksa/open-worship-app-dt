@@ -14,7 +14,7 @@ export default function LyricList() {
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Lyric.create(dirSource.dirPath, name)) {
-                    dirSource.reloadEvent();
+                    dirSource.fireReloadEvent();
                     return false;
                 }
                 return true;

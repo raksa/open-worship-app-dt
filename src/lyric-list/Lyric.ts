@@ -38,7 +38,7 @@ export default class Lyric extends ItemSource<LyricType>{
             Lyric.setSelectedFileSource(null);
             previewingEventListener.selectLyric(null);
         }
-        this.fileSource.refreshDirEvent();
+        this.fileSource.fireRefreshDirEvent();
     }
     static mimetype: MimetypeNameType = 'lyric';
     static async readFileToDataNoCache(fileSource: FileSource | null) {
