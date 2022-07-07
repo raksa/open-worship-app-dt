@@ -120,7 +120,7 @@ export default class DirSource {
     }
     static getDirSourceByDirPath(dirPath: string) {
         const cacheKey = this.getCacheKeyByDirPath(dirPath);
-        if (cacheKey !== null && this._fileCache.has(dirPath)) {
+        if (cacheKey !== null && this._fileCache.has(cacheKey)) {
             return this._fileCache.get(cacheKey) as DirSource;
         }
         return null;
