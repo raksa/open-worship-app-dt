@@ -8,37 +8,45 @@ import fileHelpers, {
     MimetypeNameType,
 } from './fileHelper';
 import FileSource from './FileSource';
-import { setSetting } from './settingHelper';
+import { getSetting, setSetting } from './settingHelper';
 
 type FSListener = (t: FSEventType) => void;
-type FSEventType = 'update';
+type FSEventType = 'refresh' | 'reload';
 export type RegisteredEventType = {
     key: string,
     listener: (t: FSEventType) => void,
 }
 export default class DirSource {
-    _dirPath: string;
     fileSources: FileListType = null;
-    settingName: string | null = null;
+    settingName: string;
+    static _fileCacheKeys: string[] = [];
     static _fileCache: Map<string, DirSource> = new Map();
     static _objectId = 0;
     _objectId: number;
-    constructor(dirPath: string) {
-        this._dirPath = dirPath;
+    constructor(settingName: string) {
+        if (!settingName) {
+            throw new Error('Invalid setting name');
+        }
+        this.settingName = settingName;
         this._objectId = DirSource._objectId++;
     }
     toEventKey(fsType: FSEventType) {
-        return `${fsType}-${this.dirPath}`;
+        return `${fsType}-${this.settingName}`;
     }
     get dirPath() {
-        return this._dirPath;
+        return getSetting(this.settingName, '');
     }
     set dirPath(newDirPath: string) {
-        this._dirPath = newDirPath;
-        if (this.settingName !== null) {
-            setSetting(this.settingName, this._dirPath);
-        }
-        this.clearFileSources();
+        setSetting(this.settingName, newDirPath);
+        this.reloadEvent();
+    }
+    static toCacheKey(settingName: string) {
+        const cacheKey = `${settingName}-${getSetting(settingName, '')}`;
+        this._fileCacheKeys.push(cacheKey);
+        return cacheKey;
+    }
+    static getCacheKeyByDirPath(dirPath: string) {
+        return this._fileCacheKeys.find((cacheKey) => cacheKey.includes(dirPath)) || null;
     }
     registerEventListener(fsTypes: FSEventType[],
         listener: FSListener): RegisteredEventType[] {
@@ -56,16 +64,19 @@ export default class DirSource {
             globalEventHandler._removeOnEventListener(key, listener);
         });
     }
-    update() {
-        globalEventHandler._addPropEvent(this.toEventKey('update'));
+    refreshEvent() {
+        globalEventHandler._addPropEvent(this.toEventKey('refresh'));
     }
-    delete() {
+    reloadEvent() {
+        globalEventHandler._addPropEvent(this.toEventKey('reload'));
+    }
+    deleteCache() {
+        if (this.fileSources) {
+            while (this.fileSources.length) {
+                this.fileSources.pop()?.deleteCache();
+            }
+        }
         DirSource._fileCache.delete(this.dirPath);
-        this.update();
-    }
-    clearFileSources() {
-        this.fileSources = null;
-        this.update();
     }
     async listFiles(mimetype: MimetypeNameType) {
         if (!this.dirPath) {
@@ -92,18 +103,26 @@ export default class DirSource {
             this.fileSources = undefined;
         }
     }
-    static genDirSourceNoCache(dirPath: string) {
-        return new DirSource(dirPath);
+    static genDirSourceNoCache(settingName: string) {
+        return new DirSource(settingName);
     }
-    static genDirSource(dirPath: string, refreshCache?: boolean) {
+    static genDirSource(settingName: string, refreshCache?: boolean) {
+        const cacheKey = this.toCacheKey(settingName);
         if (refreshCache) {
-            this._fileCache.delete(dirPath);
+            this._fileCache.delete(cacheKey);
         }
-        const fileSource = this.genDirSourceNoCache(dirPath);
-        if (this._fileCache.has(dirPath)) {
-            return this._fileCache.get(dirPath) as DirSource;
+        if (this._fileCache.has(cacheKey)) {
+            return this._fileCache.get(cacheKey) as DirSource;
         }
-        this._fileCache.set(dirPath, fileSource);
-        return fileSource;
+        const dirSource = this.genDirSourceNoCache(settingName);
+        this._fileCache.set(cacheKey, dirSource);
+        return dirSource;
+    }
+    static getDirSourceByDirPath(dirPath: string) {
+        const cacheKey = this.getCacheKeyByDirPath(dirPath);
+        if (cacheKey !== null && this._fileCache.has(dirPath)) {
+            return this._fileCache.get(cacheKey) as DirSource;
+        }
+        return null;
     }
 }

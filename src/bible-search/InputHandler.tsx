@@ -2,7 +2,7 @@ import bibleHelper, {
     useGetBibleWithStatus,
     useGetBookKVList,
 } from '../bible-helper/bibleHelpers';
-import { usePresentToInputText } from '../bible-list/BibleItem';
+import { useBibleItemToInputText } from '../bible-list/BibleItem';
 import {
     KeyEnum,
     useKeyboardRegistering,
@@ -34,7 +34,7 @@ export default function InputHandler({
 }) {
     const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = usePresentToInputText(bibleSelected, bookKey, 1, 1, 2);
+    const placeholder = useBibleItemToInputText(bibleSelected, bookKey, 1, 1, 2);
 
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => onInputChange(''));
 

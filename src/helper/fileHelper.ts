@@ -26,7 +26,8 @@ export const createNewItem = async (dir: string, name: string,
     const mimeTypes = getAppMimetype(mimetype);
     const fileName = `${name}${mimeTypes[0].extension[0]}`;
     try {
-        return await fileHelpers.createFile(content, dir, fileName);
+        return await fileHelpers.createFile(appProvider.path.join(dir, fileName),
+            content);
     } catch (error: any) {
         toastEventListener.showSimpleToast({
             title: 'Creating Playlist',
@@ -124,11 +125,12 @@ const fileHelpers = {
             }
         }
     },
-    createFile: async function (txt: string, basePath: string, fileName?: string) {
+    whiteFile: async function (filePath: string, txt: string) {
         try {
-            const filePath = fileName ? appProvider.path.join(basePath, fileName) : basePath;
             if (!await this.checkFileExist(filePath)) {
-                appProvider.fs.writeFileSync(filePath, txt);
+                appProvider.fs.writeFileSync(filePath, txt, {
+                    encoding: 'utf8', flag: 'w',
+                });
                 return filePath;
             } else {
                 throw new Error('File exist');
@@ -138,11 +140,21 @@ const fileHelpers = {
             throw new Error('Error occurred during creating file');
         }
     },
-    overWriteFile: async function (filePath: string, txt: string) {
-        if (await this.checkFileExist(filePath)) {
-            await this.deleteFile(filePath);
+    createFile: async function (filePath: string, txt: string, isOverride?: boolean) {
+        try {
+            if (await this.checkFileExist(filePath)) {
+                if (isOverride) {
+                    await this.deleteFile(filePath);
+                } else {
+                    throw new Error('File exist');
+                }
+            }
+            appProvider.fs.writeFileSync(filePath, txt);
+            return filePath;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error occurred during creating file');
         }
-        return this.createFile(txt, filePath);
     },
     renameFile: async function (basePath: string, oldFileName: string, newFileName: string) {
         try {

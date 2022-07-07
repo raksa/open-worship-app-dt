@@ -4,8 +4,8 @@ import bibleHelper, {
 } from '../bible-helper/bibleHelpers';
 import BibleItemColorNote from './BibleItemColorNote';
 import Bible from './Bible';
-import BibleItem, { usePresentRenderTitle } from './BibleItem';
-import { useState } from 'react';
+import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
+import ItemReadError from '../others/ItemReadError';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
@@ -17,18 +17,23 @@ export default function BibleItemRender({
     warningMessage?: string,
     onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
 }) {
-    const title = usePresentRenderTitle(bibleItem);
+    const title = useBibleItemRenderTitle(bibleItem);
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleName);
     const changeBible = (newBibleName: string) => {
         bibleItem.bibleName = newBibleName;
         bibleItem.save();
     };
+    if (bibleItem.isError) {
+        return (
+            <ItemReadError onContextMenu={onContextMenu || (() => false)} />
+        );
+    }
     return (
-        <li className={`list-group-item item ${bibleItem.isSelected ? 'active' : ''}`}
+        <li className={`list-group-item item pointer ${bibleItem.isSelected ? 'active' : ''}`}
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
-                const newBibleItem = bibleItem.toJson() as any;
+                const newBibleItem = bibleItem.toJson();
                 newBibleItem.filePath = bibleItem.fileSource?.filePath;
                 event.dataTransfer.setData('text/plain', JSON.stringify(newBibleItem));
             }}

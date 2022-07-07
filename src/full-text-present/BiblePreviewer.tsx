@@ -16,10 +16,6 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 let isMounted = false;
 export default function BiblePreviewer() {
     const [bibleItem, setBibleItem] = useState<BibleItem | null | undefined>(null);
-    const applyPresents = (newBibleItems: BibleItem[]) => {
-        BibleItem.setBiblePresentingSetting(newBibleItems);
-        setBibleItem(null);
-    };
     useBibleItemSelecting(setBibleItem);
     useEffect(() => {
         if (bibleItem === null) {
@@ -29,13 +25,41 @@ export default function BiblePreviewer() {
         }
     }, [bibleItem]);
 
+    if (bibleItem === null) {
+        return (
+            <BibleList />
+        );
+    }
+    if (bibleItem === undefined) {
+        return (
+            <FileReadError onContextMenu={(e) => {
+                showAppContextMenu(e, [{
+                    title: 'Reload', onClick: () => setBibleItem(null),
+                }]);
+            }} />
+        );
+    }
+    return (
+        <BiblePreviewerRender bibleItem={bibleItem} />
+    );
+}
+function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
+    const [bibleItems, setBibleItems] = useState<BibleItem[]>([]);
+    const applyPresents = (newBibleItems: BibleItem[]) => {
+        BibleItem.setBiblePresentingSetting(newBibleItems);
+        setBibleItems(newBibleItems);
+    };
+
     useEffect(() => {
+        setBibleItems(BibleItem.convertPresent(bibleItem,
+            BibleItem.getBiblePresentingSetting()));
         isMounted = true;
         previewer.show = () => {
             if (!isMounted) {
                 return;
             }
-            fullTextPresentHelper.renderBibleItems(bibleItems);
+            fullTextPresentHelper.renderBibleItems(BibleItem.convertPresent(bibleItem,
+                BibleItem.getBiblePresentingSetting()));
         };
         if (getSetting(FULL_TEXT_AUTO_SAVE_SETTING) === 'true') {
             previewer.show();
@@ -43,7 +67,7 @@ export default function BiblePreviewer() {
         return () => {
             isMounted = false;
         };
-    });
+    }, [bibleItem]);
     useChangingBible(async (isNext) => {
         let bibleListDefault = await bibleHelper.getBibleListWithStatus();
         bibleListDefault = bibleListDefault.filter(([_, isAvailable]) => {
@@ -62,31 +86,17 @@ export default function BiblePreviewer() {
             }
         }
     });
-
-    if (bibleItem === null) {
-        return (
-            <BibleList />
-        );
-    }
-    if (bibleItem === undefined) {
-        return (
-            <FileReadError onContextMenu={(e) => {
-                showAppContextMenu(e, [{
-                    title: 'Reload', onClick: () => setBibleItem(null),
-                }]);
-            }} />
-        );
-    }
-    const bibleItems = BibleItem.convertPresent(bibleItem,
-        BibleItem.getBiblePresentingSetting());
     return (
         <div className='d-flex d-flex-row overflow-hidden h-100'>
             {bibleItems.length ? bibleItems.map((item, i) => {
                 return (
                     <BibleView key={`${i}`} bibleItem={item}
                         onBibleChange={(bibleName: string) => {
-                            bibleItems[i].bibleName = bibleName;
-                            applyPresents(bibleItems);
+                            const bibleItem = bibleItems.map((item1) => {
+                                return item1.clone() as BibleItem;
+                            });
+                            bibleItem[i].bibleName = bibleName;
+                            applyPresents(bibleItem);
                         }}
                         onClose={() => {
                             const newBibleItems = bibleItems.filter((_, i1) => i1 !== i);

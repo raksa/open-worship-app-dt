@@ -84,6 +84,22 @@
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
   }
 
+  .rotating {
+    i:before {
+      animation: rotating-hover 1s linear infinite;
+
+      @keyframes rotating-hover {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
+
   .rotating-hover:hover {
     i:before {
       animation: rotating-hover 1s linear infinite;

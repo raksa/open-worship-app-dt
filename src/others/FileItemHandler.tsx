@@ -32,7 +32,7 @@ export const genCommonMenu = (fileSource: FileSource) => {
 export default function FileItemHandler({
     data, setData, index, fileSource, className,
     contextMenu, onDrop, onClick,
-    child, mimetype,
+    child, mimetype, isPointer,
 }: {
     data: ItemSource<any> | null | undefined,
     setData: (d: any | null | undefined) => void,
@@ -44,6 +44,7 @@ export default function FileItemHandler({
     onClick?: () => void,
     child: any,
     mimetype: MimetypeNameType,
+    isPointer?: boolean,
 }) {
     const [isDropOver, setIsReceivingChild] = useState(false);
     useEffect(() => {
@@ -73,7 +74,7 @@ export default function FileItemHandler({
         };
     }, [data]);
     const applyClick = () => {
-        fileSource.select();
+        fileSource.selectEvent();
         onClick && onClick();
     };
     const selfContextMenu = [
@@ -95,7 +96,7 @@ export default function FileItemHandler({
     const droppingClass = isDropOver ? 'receiving-child' : '';
     const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''} ${droppingClass}`;
     return (
-        <li className={`list-group-item mx-1 ${moreClassName}`}
+        <li className={`list-group-item mx-1 ${moreClassName} ${isPointer ? 'pointer' : ''}`}
             onClick={applyClick}
             data-index={index + 1}
             title={fileSource.filePath}
@@ -107,16 +108,22 @@ export default function FileItemHandler({
                 ]);
             }}
             onDragOver={(event) => {
-                event.preventDefault();
-                setIsReceivingChild(true);
+                if (onDrop) {
+                    event.preventDefault();
+                    setIsReceivingChild(true);
+                }
             }}
             onDragLeave={(event) => {
-                event.preventDefault();
-                setIsReceivingChild(false);
+                if (onDrop) {
+                    event.preventDefault();
+                    setIsReceivingChild(false);
+                }
             }}
             onDrop={(event) => {
-                setIsReceivingChild(false);
-                onDrop && onDrop(event);
+                if (onDrop) {
+                    setIsReceivingChild(false);
+                    onDrop(event);
+                }
             }}>
             {child}
         </li>

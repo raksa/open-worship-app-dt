@@ -7,14 +7,14 @@ import Lyric from './Lyric';
 import DirSource from '../helper/DirSource';
 
 export default function LyricList() {
-    const [dirSource, setDirSource] = useState(DirSource.genDirSource(''));
+    const [dirSource, setDirSource] = useState(DirSource.genDirSource('lyric-list-selected-dir'));
     return (
         <FileListHandler id={'lyric-list'} mimetype={'lyric'}
             dirSource={dirSource}
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Lyric.create(dirSource.dirPath, name)) {
-                    dirSource.clearFileSources();
+                    dirSource.reloadEvent();
                     return false;
                 }
                 return true;

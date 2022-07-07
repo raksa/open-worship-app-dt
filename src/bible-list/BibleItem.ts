@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import { keyToBook, getVerses } from '../bible-helper/helpers1';
 import { toLocaleNumber, toInputText } from '../bible-helper/helpers2';
+import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { previewingEventListener } from '../event/PreviewingEventListener';
+import { toastEventListener } from '../event/ToastEventListener';
 import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
@@ -22,34 +24,16 @@ export default class BibleItem extends ItemBase {
     bibleName: string;
     target: BibleTargetType;
     metadata: MetaDataType;
-    fileSource: FileSource | null;
-    constructor(id: number | null, bibleName: string,
+    fileSource?: FileSource;
+    constructor(id: number, bibleName: string,
         target: BibleTargetType, metadata?: MetaDataType,
         fileSource?: FileSource) {
         super();
-        this.id = id === null ? -1 : id;
+        this.id = id;
         this.bibleName = bibleName;
         this.target = target;
         this.metadata = metadata || {};
-        this.fileSource = fileSource || null;
-    }
-    static validate(item: any) {
-        try {
-            if (!item.bibleName ||
-                typeof item.id !== 'number' ||
-                !item.metadata || typeof item.metadata !== 'object' ||
-                !item.target || typeof item.target !== 'object' ||
-                !item.target.book ||
-                typeof item.target.chapter !== 'number' ||
-                typeof item.target.startVerse !== 'number' ||
-                typeof item.target.endVerse !== 'number') {
-                return false;
-            }
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
-        return true;
+        this.fileSource = fileSource;
     }
     get isSelected() {
         const selected = BibleItem.getSelectedResult();
@@ -73,33 +57,7 @@ export default class BibleItem extends ItemBase {
             BibleItem.setSelectedItem(null);
             previewingEventListener.selectBibleItem(null);
         }
-        this.fileSource?.refreshDir();
-    }
-    clone() {
-        return new BibleItem(this.id, this.bibleName, this.target,
-            this.metadata, this.fileSource || undefined);
-    }
-    toJson() {
-        return {
-            id: this.id,
-            bibleName: this.bibleName,
-            target: this.target,
-            metadata: this.metadata,
-        };
-    }
-    async save() {
-        if (this.fileSource === null) {
-            return false;
-        }
-        const bible = await Bible.readFileToData(this.fileSource);
-        if (bible) {
-            const bibleItem = bible.getItemById(this.id);
-            if (bibleItem !== null) {
-                bibleItem.update(this.bibleName, this.target, this.metadata);
-                return bible.save();
-            }
-        }
-        return false;
+        this.fileSource?.refreshDirEvent();
     }
     static async getSelectedItem() {
         const selected = this.getSelectedResult();
@@ -109,22 +67,109 @@ export default class BibleItem extends ItemBase {
         }
         return null;
     }
-    update(bibleNam: string, target: BibleTargetType,
-        metadata?: MetaDataType) {
-        this.bibleName = bibleNam;
-        this.target = target;
-        this.metadata = metadata || this.metadata;
+    get isSelectedEditing() {
+        const selected = BibleItem.getSelectedEditingResult();
+        return selected?.fileSource.filePath === this.fileSource?.filePath &&
+            selected?.id === this.id;
     }
-    static genItem(bibleName: string, target: BibleTargetType) {
-        return new BibleItem(null, bibleName, target);
+    set isSelectedEditing(b: boolean) {
+        if (this.isSelectedEditing === b) {
+            return;
+        }
+        if (b) {
+            BibleItem.setSelectedEditingItem(this);
+            openBibleSearch();
+        } else {
+            BibleItem.setSelectedEditingItem(null);
+        }
+        this.fileSource?.refreshDirEvent();
+    }
+    static async getSelectedItemEditing() {
+        const selected = this.getSelectedEditingResult();
+        if (selected !== null) {
+            const bible = await Bible.readFileToData(selected.fileSource);
+            return bible?.getItemById(selected.id);
+        }
+        return null;
+    }
+    static fromJson(json: any, fileSource?: FileSource) {
+        this.validate(json);
+        return new BibleItem(json.id, json.bibleName, json.target,
+            json.metadata, fileSource);
+    }
+    static fromJsonError(json: any, fileSource?: FileSource) {
+        const item = new BibleItem(-1, '', {} as any, {}, fileSource);
+        item.jsonError = json;
+        return item;
+    }
+    toJson() {
+        if (this.isError) {
+            return this.jsonError;
+        }
+        return {
+            id: this.id,
+            bibleName: this.bibleName,
+            target: this.target,
+            metadata: this.metadata,
+        };
+    }
+    static validate(json: any) {
+        if (!json.bibleName ||
+            typeof json.id !== 'number' ||
+            (json.metadata && typeof json.metadata !== 'object') ||
+            !json.target || typeof json.target !== 'object' ||
+            !json.target.book ||
+            typeof json.target.chapter !== 'number' ||
+            typeof json.target.startVerse !== 'number' ||
+            typeof json.target.endVerse !== 'number') {
+            console.log(json);
+            throw new Error('Invalid bible item data');
+        }
+    }
+    clone() {
+        try {
+            const bibleItem = BibleItem.fromJson(this.toJson(), this.fileSource);
+            bibleItem.id = -1;
+            return bibleItem;
+        } catch (error: any) {
+            toastEventListener.showSimpleToast({
+                title: 'Cloning Playlist Item',
+                message: error.message,
+            });
+        }
+        return null;
+    }
+    async save() {
+        if (this.fileSource === null) {
+            return false;
+        }
+        const bible = await Bible.readFileToData(this.fileSource || null);
+        if (bible) {
+            const bibleItem = bible.getItemById(this.id);
+            if (bibleItem !== null) {
+                bibleItem.update(this);
+                return bible.save();
+            }
+        }
+        return false;
+    }
+    update(bibleItem: BibleItem) {
+        this.bibleName = bibleItem.bibleName;
+        this.target = bibleItem.target;
+        this.metadata = bibleItem.metadata || this.metadata;
     }
     static convertPresent(bibleItem: BibleItem, presentingBibleItems: BibleItem[]) {
+        let list;
         if (presentingBibleItems.length < 2) {
-            return [bibleItem.clone()];
+            list = [bibleItem.clone()];
+        } else {
+            list = presentingBibleItems.map((presentingBibleItem) => {
+                const newItem = presentingBibleItem.clone();
+                newItem?.update(bibleItem);
+                return newItem;
+            });
         }
-        return presentingBibleItems.map((presentingBibleItem) => {
-            return presentingBibleItem.clone();
-        });
+        return list.filter((item) => item !== null) as BibleItem[];
     }
     static setBiblePresentingSetting(bibleItems: BibleItem[]) {
         setSetting('bible-present', JSON.stringify(bibleItems.map((bibleItem) => {
@@ -138,7 +183,7 @@ export default class BibleItem extends ItemBase {
                 return [];
             }
             return JSON.parse(str).map((item: any) => {
-                return BibleItem.genItem(item.bibleName, item.target);
+                return BibleItem.fromJson(item);
             }) as BibleItem[];
         } catch (error) {
             console.log(error);
@@ -176,21 +221,21 @@ export default class BibleItem extends ItemBase {
     }
 }
 
-export function usePresentRenderTitle(item: BibleItem) {
+export function useBibleItemRenderTitle(item: BibleItem) {
     const [title, setTitle] = useState<string>('');
     useEffect(() => {
         BibleItem.itemToTitle(item).then(setTitle);
     }, [item]);
     return title;
 }
-export function usePresentRenderText(item: BibleItem) {
+export function useBibleItemRenderText(item: BibleItem) {
     const [text, setText] = useState<string>('');
     useEffect(() => {
         BibleItem.itemToText(item).then(setText);
     }, [item]);
     return text;
 }
-export function usePresentToInputText(bibleName: string, book?: string | null,
+export function useBibleItemToInputText(bibleName: string, book?: string | null,
     chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
     const [text, setText] = useState<string>('');
     useEffect(() => {

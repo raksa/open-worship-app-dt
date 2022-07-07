@@ -8,11 +8,10 @@ import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
 
-const id = 'background-video';
 export default function Videos() {
-    const [dirSource, setDirSource] = useState(DirSource.genDirSource(''));
+    const [dirSource, setDirSource] = useState(DirSource.genDirSource('video-list-selected-dir'));
     return (
-        <FileListHandler id={id} mimetype={'video'}
+        <FileListHandler id={'background-video'} mimetype={'video'}
             dirSource={dirSource}
             setDirSource={setDirSource}
             header={undefined}

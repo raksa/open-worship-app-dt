@@ -1,4 +1,5 @@
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import { toastEventListener } from '../event/ToastEventListener';
 import { getAllDisplays } from '../helper/displayHelper';
 import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
@@ -22,15 +23,42 @@ export default class SlideItem extends ItemBase {
         this.fileSource = fileSource;
         this.isCopied = false;
     }
-    static validate(item: any) {
-        try {
-            if (item.html && typeof item.id === 'number') {
-                return true;
-            }
-        } catch (error) {
-            console.log(error);
+    static fromJson(json: any, fileSource: FileSource) {
+        this.validate(json);
+        return new SlideItem(json.id, json.html, json.metadata, fileSource);
+    }
+    static fromJsonError(json: any, fileSource: FileSource) {
+        const item = new SlideItem(-1, '', {}, fileSource);
+        item.jsonError = json;
+        return item;
+    }
+    toJson() {
+        if (this.isError) {
+            return this.jsonError;
         }
-        return false;
+        return {
+            id: this.id,
+            html: this._html,
+        };
+    }
+    static validate(json: any) {
+        if (!json.html || typeof json.id !== 'number') {
+            console.log(json);
+            throw new Error('Invalid slide item data');
+        }
+    }
+    clone() {
+        try {
+            const slideItem = SlideItem.fromJson(this.toJson(), this.fileSource);
+            slideItem.id = -1;
+            return slideItem;
+        } catch (error: any) {
+            toastEventListener.showSimpleToast({
+                title: 'Cloning Slide Item',
+                message: error.message,
+            });
+        }
+        return null;
     }
     get isSelected() {
         const selected = SlideItem.getSelectedResult();
@@ -48,7 +76,7 @@ export default class SlideItem extends ItemBase {
             SlideItem.setSelectedItem(null);
             slideListEventListenerGlobal.selectSlideItem(null);
         }
-        this.fileSource.select();
+        this.fileSource.selectEvent();
     }
     get html() {
         return this._html;
@@ -56,7 +84,7 @@ export default class SlideItem extends ItemBase {
     set html(newHtml: string) {
         if (newHtml !== this._html) {
             this._html = newHtml;
-            this.fileSource.refreshDir();
+            this.fileSource.refreshDirEvent();
         }
     }
     async isEditing(index: number, slide?: Slide | null) {
@@ -73,15 +101,6 @@ export default class SlideItem extends ItemBase {
             }
         }
         return false;
-    }
-    clone() {
-        return new SlideItem(this.id, this._html, {}, this.fileSource);
-    }
-    toJson() {
-        return {
-            id: this.id,
-            html: this._html,
-        };
     }
     static async getSelectedItem() {
         const selected = this.getSelectedResult();

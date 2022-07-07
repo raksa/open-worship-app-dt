@@ -8,10 +8,14 @@ export abstract class ItemBase implements ColorNorteInf {
     abstract fileSource?: FileSource | null;
     abstract metadata?: MetaDataType;
     static SELECT_SETTING_NAME = '';
+    jsonError: any;
     static _objectId = 0;
     _objectId: number;
     constructor() {
         this._objectId = ItemBase._objectId++;
+    }
+    get isError() {
+        return !!this.jsonError;
     }
     get colorNote() {
         if (this.metadata && this.metadata['colorNote']) {
@@ -24,6 +28,12 @@ export abstract class ItemBase implements ColorNorteInf {
             this.metadata['colorNote'] = c;
         }
         this.save();
+    }
+    get isSelectedEditing() {
+        throw new Error('Method not implemented.');
+    }
+    set isSelectedEditing(b: boolean) {
+        throw new Error('Method not implemented.');
     }
     get isSelected() {
         throw new Error('Method not implemented.');
@@ -40,7 +50,10 @@ export abstract class ItemBase implements ColorNorteInf {
     toJson() {
         throw new Error('Method not implemented.');
     }
-    static fromJson(json: any): any {
+    static fromJson(json: any, fileSource?: FileSource): any {
+        throw new Error('Method not implemented.');
+    }
+    static fromJsonError(json: any, fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
     static validate(json: any) {
@@ -58,7 +71,7 @@ export abstract class ItemBase implements ColorNorteInf {
         }
         return ItemBase._toSelectedItemSetting(this.fileSource, this.id);
     }
-    static fromSelectedItemSetting(selectedItemSetting: string | null) {
+    static extractItemSetting(selectedItemSetting: string | null) {
         if (selectedItemSetting === null) {
             return null;
         }
@@ -71,21 +84,33 @@ export abstract class ItemBase implements ColorNorteInf {
             id: Number(id),
         };
     }
-    static setSelectedItem(item: ItemBase | null) {
+    static _setItemSetting(settingName: string, item: ItemBase | null) {
         if (item === null) {
-            setSetting(this.SELECT_SETTING_NAME, '');
+            setSetting(settingName, '');
             return;
         }
         const selectedStr = item.toSelectedItemSetting();
         if (selectedStr !== null) {
-            setSetting(this.SELECT_SETTING_NAME, selectedStr);
+            setSetting(settingName, selectedStr);
             return true;
         }
         return false;
     }
+    static _getSettingResult(settingName: string) {
+        const selectedStr = getSetting(settingName, '');
+        return this.extractItemSetting(selectedStr);
+    }
+    static setSelectedItem(item: ItemBase | null) {
+        return this._setItemSetting(this.SELECT_SETTING_NAME, item);
+    }
     static getSelectedResult() {
-        const selectedStr = getSetting(this.SELECT_SETTING_NAME, '');
-        return this.fromSelectedItemSetting(selectedStr);
+        return this._getSettingResult(this.SELECT_SETTING_NAME);
+    }
+    static setSelectedEditingItem(item: ItemBase | null) {
+        return this._setItemSetting(`${this.SELECT_SETTING_NAME}-editing`, item);
+    }
+    static getSelectedEditingResult() {
+        return this._getSettingResult(`${this.SELECT_SETTING_NAME}-editing`);
     }
     static async getSelectedItem(): Promise<ItemBase | null | undefined> {
         throw new Error('Method not implemented.');

@@ -8,11 +8,10 @@ import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
 
-const id = 'background-image';
 export default function Images() {
-    const [dirSource, setDirSource] = useState(DirSource.genDirSource(''));
+    const [dirSource, setDirSource] = useState(DirSource.genDirSource('image-list-selected-dir'));
     return (
-        <FileListHandler id={id} mimetype={'image'}
+        <FileListHandler id={'background-image'} mimetype={'image'}
             dirSource={dirSource}
             setDirSource={setDirSource}
             body={<div className="d-flex justify-content-start flex-wrap">

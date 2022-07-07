@@ -17,7 +17,7 @@ export default function SlideItemDragReceiver({ onDrop }: {
             }}
             onDrop={(event) => {
                 const path = event.dataTransfer.getData('text');
-                const result = SlideItem.fromSelectedItemSetting(path);
+                const result = SlideItem.extractItemSetting(path);
                 if(result!== null) {
                     onDrop(result.id);
                 }

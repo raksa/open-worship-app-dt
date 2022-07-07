@@ -4,6 +4,7 @@ import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import RenderBibleItems from './RenderBibleItems';
 import BibleItem from './BibleItem';
+import { toastEventListener } from '../event/ToastEventListener';
 
 export default function BibleFile({
     index, fileSource,
@@ -26,28 +27,26 @@ export default function BibleFile({
                 }
                 const receivedData = event.dataTransfer.getData('text');
                 try {
-                    const item = JSON.parse(receivedData);
-                    if (!item.filePath || !BibleItem.validate(item)) {
+                    const json = JSON.parse(receivedData);
+                    if (!json.filePath) {
                         throw new Error('Not a bible file');
                     }
-                    const targetFS = FileSource.genFileSource(item.filePath);
-                    const targetBible = await Bible.readFileToData(targetFS);
-                    if (targetBible) {
-                        const bibleItem = targetBible.getItemById(item.id);
-                        if (bibleItem !== null) {
-                            if(await targetBible.removeItem(bibleItem)){
-                                await data.addItem(bibleItem);
-                            }
-                        }
-                    }
-                } catch (error) {
-                    console.log(error);
+                    const fromFS = FileSource.genFileSource(json.filePath);
+                    const bibleItem = BibleItem.fromJson(json, fromFS);
+                    data.moveItemFrom(bibleItem, fromFS);
+                } catch (error: any) {
+                    toastEventListener.showSimpleToast({
+                        title: 'Receiving Bible Item',
+                        message: error.message,
+                    });
                 }
             }}
             child={data && <div className='accordion accordion-flush'>
                 <div className='accordion-header pointer'
                     onClick={() => {
-                        data?.setIsOpened(!data.isOpened);
+                        if (data) {
+                            data.setIsOpened(!data.isOpened);
+                        }
                     }}>
                     <i className={`bi ${data.isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
                     <span className='w-100 text-center'>

@@ -43,7 +43,7 @@ export default function PlaylistFile({
                         if (playlistItem.isSlideItem) {
                             return (
                                 <PlaylistSlideItem width={200}
-                                    slideItemPath={playlistItem.item.toSelectedItemSetting()} />
+                                    slideItemPath={playlistItem.path} />
                             );
                         } else if (playlistItem.isBibleItem) {
                             return (

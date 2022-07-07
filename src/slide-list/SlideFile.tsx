@@ -19,6 +19,7 @@ export default function SlideFile({
             data={data}
             setData={setData}
             fileSource={fileSource}
+            isPointer
             onClick={() => {
                 if (data) {
                     data.isSelected = !data.isSelected;

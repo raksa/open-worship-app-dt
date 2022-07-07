@@ -10,7 +10,6 @@ import {
     ContextMenuItemType, showAppContextMenu,
 } from './AppContextMenu';
 import FileSource from '../helper/FileSource';
-import { getSetting } from '../helper/settingHelper';
 import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
 
@@ -29,22 +28,29 @@ export default function FileListHandler({
     contextMenu?: ContextMenuItemType[]
 }) {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const selectedDirSetting = `${id}-selected-dir`;
-    const reloadDirSource = async () => {
-        const selectedDir = getSetting(selectedDirSetting, '');
-        const newDirSource = DirSource.genDirSource(selectedDir, true);
-        newDirSource.settingName = selectedDirSetting;
-        await newDirSource.listFiles(mimetype);
-        setDirSource(newDirSource);
+    const settingName = dirSource.settingName;
+    const getNewDirSource = () => {
+        return DirSource.genDirSource(settingName, true);
     };
+    const refresh = () => {
+        const newDirSource = getNewDirSource();
+        newDirSource.listFiles(mimetype).then(() => {
+            setDirSource(newDirSource);
+        });
+    };
+
     useEffect(() => {
         if (dirSource.fileSources === null) {
-            reloadDirSource();
+            refresh();
         }
-        const updateEvents = dirSource.registerEventListener(['update'],
-            reloadDirSource);
+        const refreshEvents = dirSource.registerEventListener(['refresh'], refresh);
+        const reloadEvents = dirSource.registerEventListener(['reload'], () => {
+            dirSource.deleteCache();
+            setDirSource(getNewDirSource());
+        });
         return () => {
-            dirSource.unregisterEventListener(updateEvents);
+            dirSource.unregisterEventListener(refreshEvents);
+            dirSource.unregisterEventListener(reloadEvents);
         };
     }, [dirSource]);
     return (
@@ -85,7 +91,7 @@ export default function FileListHandler({
                                 title,
                                 message: 'File has been copied',
                             });
-                            dirSource.clearFileSources();
+                            dirSource.reloadEvent();
                         } catch (error: any) {
                             toastEventListener.showSimpleToast({
                                 title,

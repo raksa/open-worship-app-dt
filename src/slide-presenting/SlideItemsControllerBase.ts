@@ -90,7 +90,11 @@ export default class SlideItemsControllerBase {
         this.slide.save();
     }
     get maxId() {
-        return Math.max.apply(Math, this.items.map((item) => +item.id));
+        // TODO: leverage Slide instead
+        if (this.items.length) {
+            return Math.max.apply(Math, this.items.map((item) => item.id));
+        }
+        return 0;
     }
     setItemsWithHistory(newItems: SlideItem[]) {
         const currentItems = this.newItems;
@@ -127,18 +131,22 @@ export default class SlideItemsControllerBase {
     duplicate(index: number) {
         const newItems = this.newItems;
         const newItem = newItems[index].clone();
-        newItem.id = this.maxId + 1;
-        newItems.splice(index + 1, 0, newItem);
-        this.setItemsWithHistory(newItems);
+        if (newItem !== null) {
+            newItem.id = this.maxId + 1;
+            newItems.splice(index + 1, 0, newItem);
+            this.setItemsWithHistory(newItems);
+        }
     }
     paste() {
         if (this.copiedItem === null) {
             return;
         }
         const newItem = this.copiedItem.clone();
-        newItem.id = this.maxId + 1;
-        const newItems: SlideItem[] = [...this.items, newItem];
-        this.setItemsWithHistory(newItems);
+        if (newItem !== null) {
+            newItem.id = this.maxId + 1;
+            const newItems: SlideItem[] = [...this.items, newItem];
+            this.setItemsWithHistory(newItems);
+        }
     }
     move(id: number, toIndex: number) {
         const fromIndex: number = this.items.findIndex((item) => item.id === id);
@@ -164,7 +172,7 @@ export default class SlideItemsControllerBase {
             const slide = await Slide.readFileToData(fileSource, true);
             if (slide) {
                 this.slide = slide;
-                fileSource.refreshDir();
+                fileSource.refreshDirEvent();
             }
         }
     }

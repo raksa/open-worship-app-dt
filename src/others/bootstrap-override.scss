@@ -16,8 +16,11 @@
     overflow-y: auto;
   }
 
+  .receiving-child {
+    border: 1px solid greenyellow;
+  }
+
   .list-group-item {
-    cursor: pointer;
 
     &:before {
       display: block;

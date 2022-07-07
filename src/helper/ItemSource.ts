@@ -1,12 +1,15 @@
+import { toastEventListener } from '../event/ToastEventListener';
 import ColorNorteInf from './ColorNorteInf';
 import {
     ItemSourceInf, MimetypeNameType,
     MetaDataType, createNewItem,
 } from './fileHelper';
 import FileSource from './FileSource';
-import { cloneObject } from './helpers';
+import { cloneObject, validateMeta } from './helpers';
+import { ItemBase } from './ItemBase';
 import { setSetting, getSetting } from './settingHelper';
 
+export type ItemSourceAnyType = ItemSource<any>;
 export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNorteInf {
     static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
@@ -14,15 +17,64 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
     fileSource: FileSource;
     content: T;
     metadata: MetaDataType;
-    static _itemSourceCache: Map<string, ItemSource<any>> = new Map();
+    static _itemSourceCache: Map<string, ItemSourceAnyType> = new Map();
     static _objectId = 0;
     _objectId: number;
     constructor(fileSource: FileSource, metadata: MetaDataType,
         content: T) {
+        this._objectId = ItemSource._objectId++;
         this.fileSource = fileSource;
         this.metadata = metadata;
-        this.content = content;
-        this._objectId = ItemSource._objectId++;
+        const newContent = cloneObject<any>(content);
+        newContent.items = newContent.items.map((item: any) => {
+            try {
+                return this.itemFromJson(item);
+            } catch (error: any) {
+                toastEventListener.showSimpleToast({
+                    title: 'Instantiating Bible Item',
+                    message: error.message,
+                });
+            }
+            return this.itemFromJsonError(item);
+        });
+        this.content = newContent;
+    }
+    get maxId() {
+        if(this.items.length) {
+            return Math.max.apply(Math, this.items.map((item) => item.id));
+        }
+        return 0;
+    }
+    get items(): ItemBase[] {
+        throw new Error('Method not implemented.');
+    }
+    static fromJson(json: any, fileSource: FileSource): ItemSourceAnyType {
+        throw new Error('Method not implemented.');
+    }
+    itemFromJson(json: any): any {
+        throw new Error('Method not implemented.');
+    }
+    itemFromJsonError(json: any): any {
+        throw new Error('Method not implemented.');
+    }
+    toJson() {
+        const content = {
+            ...this.content,
+            items: this.items.map((item) => item.toJson()),
+        };
+        const json = {
+            metadata: this.metadata,
+            content,
+        };
+        ItemSource.validate(json);
+        return json;
+    }
+    static validate(json: any) {
+        if (!json.content || typeof json.content !== 'object'
+            || !json.content.items || !(json.content.items instanceof Array)
+            || !validateMeta(json.metadata)) {
+            throw new Error('Invalid data');
+        }
     }
     static setSelectedFileSource(fileSource: FileSource | null, settingName?: string) {
         settingName = settingName || this.SELECT_SETTING_NAME;
@@ -52,7 +104,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         }
         ItemSource.setSelectedFileSource(b ? this.fileSource : null,
             this.SELECT_SETTING_NAME);
-        this.fileSource?.refreshDir();
+        this.fileSource?.refreshDirEvent();
     }
     get colorNote() {
         return this.metadata['colorNote'] || null;
@@ -61,13 +113,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         this.metadata['colorNote'] = c;
         this.save();
     }
-    toJson() {
-        return {
-            metadata: this.metadata,
-            content: this.content as Object,
-        };
-    }
-    clone<F extends ItemSource<any>>() {
+    clone<F extends ItemSourceAnyType>() {
         const item = Object.assign(Object.create(Object.getPrototypeOf(this)), this) as F;
         item.metadata = cloneObject(item.metadata);
         item.content = cloneObject(item.content);
@@ -105,25 +151,24 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         }
         return null;
     }
-    static async _readFileToDataNoCache<T extends ItemSource<any>>(fileSource: FileSource | null
-        , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {
-            metadata: MetaDataType,
-            content: any,
-        }) => ItemSource<any>) {
+    static async readFileToDataNoCache(fileSource: FileSource | null) {
         if (fileSource === null) {
             return null;
         }
-        const json = await fileSource.readFileToData(validator);
-        if (json) {
-            return constr(fileSource, json) as T;
+        const json = await fileSource.readFileToData();
+        if (json !== null) {
+            try {
+                return this.fromJson(json, fileSource);
+            } catch (error: any) {
+                toastEventListener.showSimpleToast({
+                    title: 'Instantiating Data',
+                    message: error.message,
+                });
+            }
         }
-        return json;
+        return undefined;
     }
-    static async _readFileToData<T extends ItemSource<any>>(fileSource: FileSource | null
-        , validator: (json: Object) => boolean, constr: (fileSource: FileSource, json: {
-            metadata: MetaDataType,
-            content: any,
-        }) => ItemSource<any>, refreshCache?: boolean) {
+    static async readFileToData(fileSource: FileSource | null, refreshCache?: boolean) {
         if (fileSource === null) {
             return null;
         }
@@ -131,9 +176,9 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
             this._itemSourceCache.delete(fileSource.filePath);
         }
         if (this._itemSourceCache.has(fileSource.filePath)) {
-            return this._itemSourceCache.get(fileSource.filePath) as T;
+            return this._itemSourceCache.get(fileSource.filePath);
         }
-        const data = await this._readFileToDataNoCache<T>(fileSource, validator, constr);
+        const data = await this.readFileToDataNoCache(fileSource);
         if (data) {
             this._itemSourceCache.set(fileSource.filePath, data);
         } else {

@@ -1,11 +1,8 @@
-import {
-    toastEventListener,
-} from '../event/ToastEventListener';
+import { toastEventListener } from '../event/ToastEventListener';
 import fileHelpers, {
     MetaDataType, MimetypeNameType,
 } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
-import { validateMeta } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
@@ -17,43 +14,18 @@ export type BibleType = {
 export default class Bible extends ItemSource<BibleType>{
     static SELECT_DIR_SETTING = 'bible-list-selected-dir';
     static DEFAULT_FILE_NAME = 'Default';
-    static validator(json: any) {
-        try {
-            if (!json.content || typeof json.content !== 'object'
-                || !json.content.items ||
-                !(json.content.items instanceof Array)) {
-                return false;
-            }
-            const content = json.content;
-            if (!(content.items as any[]).every((item) => {
-                return BibleItem.validate(item);
-            })) {
-                return false;
-            }
-            if (!validateMeta(json.metadata)) {
-                return false;
-            }
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
-        return true;
+    static fromJson(json: any, fileSource: FileSource) {
+        this.validate(json);
+        return new Bible(fileSource, json.metadata, json.content);
     }
-    toJson() {
-        const content = {
-            ...this.content,
-            items: this.items.map((item) => item.toJson()),
-        };
-        return {
-            metadata: this.metadata,
-            content,
-        };
+    itemFromJson(json: any) {
+        return BibleItem.fromJson(json, this.fileSource);
+    }
+    itemFromJsonError(json: any) {
+        return BibleItem.fromJsonError(json, this.fileSource);
     }
     get items() {
         return this.content.items;
-    }
-    get maxId() {
-        return Math.max.apply(Math, this.items.map((item) => +item.id)) || 0;
     }
     static checkIsDefault(fileSource: FileSource) {
         return fileSource.name === Bible.DEFAULT_FILE_NAME;
@@ -74,17 +46,11 @@ export default class Bible extends ItemSource<BibleType>{
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    static async addOrphanItem(bibleItem: BibleItem) {
-        if (bibleItem.fileSource) {
-            const bible = await Bible.readFileToData(bibleItem.fileSource);
-            if (bible) {
-                const oldBibleItem = bible.getItemById(bibleItem.id);
-                if (oldBibleItem !== null) {
-                    oldBibleItem.update(bibleItem.bibleName, bibleItem.target,
-                        bibleItem.metadata);
-                    return bible.save();
-                }
-            }
+    static async updateOrToDefault(bibleItem: BibleItem) {
+        const selectedBibleItem = await BibleItem.getSelectedItem();
+        if (selectedBibleItem) {
+            selectedBibleItem.update(bibleItem);
+            return selectedBibleItem.save();
         } else {
             const bible = await Bible.getDefault();
             if (bible) {
@@ -95,9 +61,8 @@ export default class Bible extends ItemSource<BibleType>{
         return false;
     }
     async removeItem(bibleItem: BibleItem) {
-        this.content.items = this.items.filter((item) => {
-            return bibleItem.id !== item.id;
-        });
+        const index = this.items.indexOf(bibleItem);
+        this.content.items.splice(index, 1);
         return this.save();
     }
     async addItem(item: BibleItem) {
@@ -106,33 +71,34 @@ export default class Bible extends ItemSource<BibleType>{
         this.content.items.push(item);
         return this.save();
     }
-    static mimetype: MimetypeNameType = 'bible';
-    static _instantiate(fileSource: FileSource, json: {
-        metadata: MetaDataType, content: any,
-    }) {
-        return new Bible(fileSource, json.metadata, json.content);
-    }
-    static _initItems(bible: ItemSource<any>) {
-        bible.content.items = bible.content.items.map((item: any) => {
-            return new BibleItem(item.id, item.bibleName, item.target,
-                item.metadata, bible.fileSource);
-        });
-    }
-    static async readFileToDataNoCache(fileSource: FileSource | null) {
-        const bible = await super._readFileToDataNoCache<Bible>(fileSource,
-            this.validator, this._instantiate);
-        if (bible) {
-            this._initItems(bible);
+    async moveItemFrom(bibleItem: BibleItem, fileSource: FileSource) {
+        try {
+            const isSelected = bibleItem.isSelected;
+            const id = bibleItem.id;
+            await this.addItem(bibleItem);
+            const fromBible = await Bible.readFileToData(fileSource);
+            if (fromBible) {
+                const item = fromBible.getItemById(id);
+                if (item !== null) {
+                    await fromBible.removeItem(item);
+                }
+            }
+            if (isSelected) {
+                bibleItem.isSelected = true;
+            }
+        } catch (error: any) {
+            toastEventListener.showSimpleToast({
+                title: 'Moving Bible Item',
+                message: error.message,
+            });
         }
-        return bible;
+    }
+    static mimetype: MimetypeNameType = 'bible';
+    static async readFileToDataNoCache(fileSource: FileSource | null) {
+        return super.readFileToDataNoCache(fileSource) as Promise<Bible | null | undefined>;
     }
     static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        const bible = await super._readFileToData<Bible>(fileSource,
-            this.validator, this._instantiate, isForceCache);
-        if (bible) {
-            this._initItems(bible);
-        }
-        return bible;
+        return super.readFileToData(fileSource, isForceCache) as Promise<Bible | null | undefined>;
     }
     static async getDefault() {
         const dir = getSetting(Bible.SELECT_DIR_SETTING, '');

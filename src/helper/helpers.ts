@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import appProvider from './appProvider';
 import FileSource from './FileSource';
-import ItemSource from './ItemSource';
+import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
 export function getAppInfo() {
     return appProvider.ipcRenderer.sendSync('main:app:info') as {
@@ -121,12 +121,11 @@ export function validateMeta(meta: any) {
     }
     return false;
 }
-export function useReadFileToData<T extends ItemSource<any>>(fileSource: FileSource | null,
-    validator: (json: any) => boolean) {
+export function useReadFileToData<T extends ItemSourceAnyType>(fileSource: FileSource | null) {
     const [data, setData] = useState<T | null | undefined>(null);
     useEffect(() => {
         if (fileSource !== null) {
-            fileSource.readFileToData(validator).then((itemSource: any) => {
+            fileSource.readFileToData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }

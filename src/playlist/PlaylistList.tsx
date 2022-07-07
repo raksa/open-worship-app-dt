@@ -7,14 +7,14 @@ import Playlist from './Playlist';
 import DirSource from '../helper/DirSource';
 
 export default function PlaylistList() {
-    const [dirSource, setDirSource] = useState(DirSource.genDirSource(''));
+    const [dirSource, setDirSource] = useState(DirSource.genDirSource('playlist-list-selected-dir'));
     return (
         <FileListHandler id={'playlist-list'} mimetype={'playlist'}
             dirSource={dirSource}
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Playlist.create(dirSource.dirPath, name)) {
-                    dirSource.clearFileSources();
+                    dirSource.reloadEvent();
                     return false;
                 }
                 return true;

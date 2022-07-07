@@ -14,14 +14,14 @@ export default function PlaylistSlideItem({
     slideItemPath: string | null,
     width: number,
 }) {
-    const result = SlideItem.fromSelectedItemSetting(slideItemPath);
+    const result = SlideItem.extractItemSetting(slideItemPath);
     if (result === null) {
         return (
             <FileReadError />
         );
     }
     const { id, fileSource } = result;
-    const slide = useReadFileToData<Slide>(fileSource, Slide.validator);
+    const slide = useReadFileToData<Slide>(fileSource);
     const item = !slide ? null :
         (slide.content.items.find((newItem) => {
             return newItem.id === id;

@@ -46,52 +46,65 @@ export function openBibleSearch() {
 }
 export function closeBibleSearch() {
     windowEventListener.fireEvent(closeBibleSearchEvent);
+    BibleItem.setSelectedEditingItem(null);
 }
 
-export async function getSelectedBibleItem(): Promise<string | null> {
-    const bibleItem = await BibleItem.getSelectedItem();
-    if (bibleItem) {
+export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
+    if (bibleItem !== null) {
         return bibleItem.bibleName;
     }
     const bibleName = getSetting('selected-bible') || null;
     if (bibleName === null) {
-        const bibles = await bibleHelper.getDownloadedBibleList();
-        if (!bibles || !bibles.length) {
+        const bibleNames = await bibleHelper.getDownloadedBibleList();
+        if (!bibleNames || !bibleNames.length) {
             toastEventListener.showSimpleToast({
                 title: 'Getting Selected Bible',
                 message: 'Unable to get selected bible',
             });
             return null;
         }
-        setSetting('selected-bible', bibles[0]);
-        return getSelectedBibleItem();
+        setSetting('selected-bible', bibleNames[0]);
+        return bibleNames[0];
     }
     return bibleName;
 }
-export function useGetSelectedBibleItem() {
-    const [bibleSelected, setBibleSelected] = useState<string | null>(null);
+export function useGetSelectedBibleItem(bibleItem: BibleItem | null) {
+    const [bibleNameSelected, setBibleNameSelected] = useState<string | null>(null);
     useEffect(() => {
-        getSelectedBibleItem().then((bible) => {
-            setBibleSelected(bible);
+        getSelectedEditingBibleItem(bibleItem).then((bibleName) => {
+            setBibleNameSelected(bibleName);
         });
     });
-    return [bibleSelected, setBibleSelected] as [string | null, (b: string | null) => void];
+    return [bibleNameSelected, setBibleNameSelected] as [string | null, (b: string | null) => void];
 }
-function useGetDefaultInputText(): [string, Dispatch<SetStateAction<string>>] {
+function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
     useEffect(() => {
-        BibleItem.getSelectedItem().then(async (bibleItem) => {
-            if (bibleItem) {
-                const text = await BibleItem.itemToTitle(bibleItem);
+        if (bibleItem !== null) {
+            BibleItem.itemToTitle(bibleItem).then((text) => {
                 setInputText(text);
-            }
-        });
-    });
-    return [inputText, setInputText];
+            });
+        }
+    }, [bibleItem]);
+    return [inputText, setInputText] as [string, (s: string) => void];
 }
 export default function BibleSearchPopup() {
-    const [inputText, setInputText] = useGetDefaultInputText();
-    const [bibleSelected, setBibleSelected] = useGetSelectedBibleItem();
+    const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
+    useEffect(() => {
+        BibleItem.getSelectedItemEditing().then((item) => {
+            setBibleItem(item || null);
+        });
+    });
+    return (
+        <Modal>
+            <BibleSearchRender bibleItem={bibleItem} />
+        </Modal>
+    );
+}
+
+function BibleSearchRender({ bibleItem }: { bibleItem: BibleItem | null }) {
+    const [inputText, setInputText] = useGetDefaultInputText(bibleItem);
+    const [bibleSelected, setBibleSelected] = useGetSelectedBibleItem(bibleItem);
 
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => {
         !inputText && closeBibleSearch();
@@ -139,7 +152,7 @@ export default function BibleSearchPopup() {
         setInputText(txt);
     };
     const handleBibleChange = async (preBible: string) => {
-        const bible = await getSelectedBibleItem();
+        const bible = await getSelectedEditingBibleItem(null);
         if (bible == null) {
             return;
         }
@@ -162,53 +175,51 @@ export default function BibleSearchPopup() {
     };
 
     return (
-        <Modal>
-            <div id="bible-search-popup" className="app-modal shadow card">
-                <Header />
-                <div className="body card-body w-100">
-                    <div className="input-group">
-                        <span className="input-group-text">
-                            <i className="bi bi-search"></i>
-                        </span>
-                        <InputHandler
-                            inputText={inputText}
-                            onInputChange={setInputText}
-                            bibleSelected={bibleSelected}
-                            onBibleChange={handleBibleChange} />
-                    </div>
-                    <div className="found">
-                        {!book && <RenderBookOption
-                            bibleSelected={bibleSelected}
-                            inputText={inputText}
-                            onSelect={applyBookSelection}
-                        />}
-                        {book && chapter === null && <RenderChapterOption
-                            bibleSelected={bibleSelected}
-                            bookSelected={book}
-                            inputText={inputText}
-                            onSelect={applyChapterSelection}
-                        />}
-                        {book && chapter !== null && <RenderFound
-                            bibleSelected={bibleSelected}
-                            book={book}
-                            chapter={chapter}
-                            startVerse={startVerse}
-                            endVerse={endVerse}
-                            applyChapterSelection={applyChapterSelection}
-                            onVerseChange={(newStartVerse, newEndVerse) => {
-                                applyVerseSelection(newStartVerse, newEndVerse);
-                            }}
-                        />}
-                        {book && chapter !== null && <Preview
-                            bibleSelected={bibleSelected}
-                            book={book}
-                            chapter={chapter}
-                            startVerse={startVerse}
-                            endVerse={endVerse}
-                        />}
-                    </div>
+        <div id="bible-search-popup" className="app-modal shadow card">
+            <Header />
+            <div className="body card-body w-100">
+                <div className="input-group">
+                    <span className="input-group-text">
+                        <i className="bi bi-search"></i>
+                    </span>
+                    <InputHandler
+                        inputText={inputText}
+                        onInputChange={setInputText}
+                        bibleSelected={bibleSelected}
+                        onBibleChange={handleBibleChange} />
+                </div>
+                <div className="found">
+                    {!book && <RenderBookOption
+                        bibleSelected={bibleSelected}
+                        inputText={inputText}
+                        onSelect={applyBookSelection}
+                    />}
+                    {book && chapter === null && <RenderChapterOption
+                        bibleSelected={bibleSelected}
+                        bookSelected={book}
+                        inputText={inputText}
+                        onSelect={applyChapterSelection}
+                    />}
+                    {book && chapter !== null && <RenderFound
+                        bibleSelected={bibleSelected}
+                        book={book}
+                        chapter={chapter}
+                        startVerse={startVerse}
+                        endVerse={endVerse}
+                        applyChapterSelection={applyChapterSelection}
+                        onVerseChange={(newStartVerse, newEndVerse) => {
+                            applyVerseSelection(newStartVerse, newEndVerse);
+                        }}
+                    />}
+                    {book && chapter !== null && <Preview
+                        bibleSelected={bibleSelected}
+                        book={book}
+                        chapter={chapter}
+                        startVerse={startVerse}
+                        endVerse={endVerse}
+                    />}
                 </div>
             </div>
-        </Modal>
+        </div>
     );
 }

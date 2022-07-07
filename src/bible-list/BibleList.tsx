@@ -7,14 +7,14 @@ import BibleFile from './BibleFile';
 import DirSource from '../helper/DirSource';
 
 export default function BibleList() {
-    const [dirSource, setDirSource] = useState(DirSource.genDirSource(''));
+    const [dirSource, setDirSource] = useState(DirSource.genDirSource('bible-list-selected-dir'));
     return (
         <FileListHandler id={'bible-list'} mimetype={'bible'}
             dirSource={dirSource}
             setDirSource={setDirSource}
             onNewFile={async (name) => {
                 if (await Bible.create(dirSource.dirPath, name)) {
-                    dirSource.clearFileSources();
+                    dirSource.reloadEvent();
                     return false;
                 }
                 return true;

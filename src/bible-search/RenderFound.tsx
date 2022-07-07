@@ -83,13 +83,17 @@ export default function RenderFound({
         if (key === null) {
             return null;
         }
-        const bibleItem = BibleItem.genItem(bibleSelected, {
-            book: key,
-            chapter: await fromLocaleNumber(bibleSelected, chapter),
-            startVerse: await fromLocaleNumber(bibleSelected, sVerse),
-            endVerse: await fromLocaleNumber(bibleSelected, eVerse),
+        const bibleItem = BibleItem.fromJson({
+            id: -1,
+            bibleName: bibleSelected,
+            target: {
+                book: key,
+                chapter: await fromLocaleNumber(bibleSelected, chapter),
+                startVerse: await fromLocaleNumber(bibleSelected, sVerse),
+                endVerse: await fromLocaleNumber(bibleSelected, eVerse),
+            },
         });
-        if (await Bible.addOrphanItem(bibleItem)) {
+        if (await Bible.updateOrToDefault(bibleItem)) {
             closeBibleSearch();
             return bibleItem;
         } else {

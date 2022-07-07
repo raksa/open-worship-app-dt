@@ -1,12 +1,16 @@
-import BibleItem, { usePresentRenderText, usePresentToInputText } from '../bible-list/BibleItem';
+import BibleItem, { useBibleItemRenderText, useBibleItemToInputText } from '../bible-list/BibleItem';
 import appProvider from '../helper/appProvider';
 
 export function SettingAbout() {
     const bookKey = 'PSA';
-    const text = usePresentRenderText(BibleItem.genItem('KJV', {
-        book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
+    const text = useBibleItemRenderText(BibleItem.fromJson({
+        id: -1,
+        bibleName: 'KJV',
+        target: {
+            book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
+        },
     }));
-    const title = usePresentToInputText('KJV', bookKey, 150, 6, 6);
+    const title = useBibleItemToInputText('KJV', bookKey, 150, 6, 6);
     return (
         <div>
             <div className="card border-success mb-3 mx-auto mt-5"

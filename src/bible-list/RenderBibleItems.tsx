@@ -1,5 +1,4 @@
 import { setSetting } from '../helper/settingHelper';
-import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { genDuplicatedMessage } from '../bible-helper/bibleHelpers';
 import Bible from './Bible';
@@ -23,7 +22,7 @@ export default function RenderBibleItems({
                             {
                                 title: 'Quick Edit', onClick: () => {
                                     setSetting('bible-list-editing', `${i1}`);
-                                    openBibleSearch();
+                                    bibleItem.isSelectedEditing = true;
                                 },
                             },
                             {

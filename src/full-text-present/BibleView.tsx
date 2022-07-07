@@ -5,8 +5,8 @@ import { BibleSelectOption } from '../bible-search/InputHandler';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import appProvider from '../helper/appProvider';
 import BibleItem, {
-    usePresentRenderText,
-    usePresentRenderTitle,
+    useBibleItemRenderText,
+    useBibleItemRenderTitle,
 } from '../bible-list/BibleItem';
 
 export default function BibleView({
@@ -16,8 +16,8 @@ export default function BibleView({
     onBibleChange: (bibleName: string) => void,
     onClose: () => void,
 }) {
-    const title = usePresentRenderTitle(bibleItem);
-    const text = usePresentRenderText(bibleItem);
+    const title = useBibleItemRenderTitle(bibleItem);
+    const text = useBibleItemRenderText(bibleItem);
     const bibleList = bibleHelper.getBibleList();
     return (
         <div className="bible-view card flex-fill" onContextMenu={(e) => {

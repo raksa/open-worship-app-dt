@@ -4,10 +4,8 @@ import {
 } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import DirSource from './DirSource';
-import fileHelpers, {
-    MetaDataType,
-} from './fileHelper';
-import ItemSource from './ItemSource';
+import fileHelpers from './fileHelper';
+import { ItemSourceAnyType } from './ItemSource';
 
 type FSListener = (t: FSEventType) => void;
 type FSEventType = 'select' | 'update' | 'delete';
@@ -51,27 +49,28 @@ export default class FileSource {
         return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
     }
     get dirSource() {
-        return DirSource.genDirSource(this.basePath);
+        return DirSource.getDirSourceByDirPath(this.basePath);
     }
-    refreshDir() {
-        this.dirSource.clearFileSources();
+    refreshDirEvent() {
+        this.dirSource?.refreshEvent();
     }
-    select() {
+    selectEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('select'));
     }
-    async readFileToData(validator: (json: any) => boolean) {
+    updateEvent() {
+        globalEventHandler._addPropEvent(this.toEventKey('update'));
+    }
+    deleteEvent() {
+        globalEventHandler._addPropEvent(this.toEventKey('delete'));
+    }
+    deleteCache() {
+        FileSource._fileCache.delete(this.filePath);
+        this.deleteEvent();
+    }
+    async readFileToData() {
         try {
             const str = await fileHelpers.readFile(this.filePath);
-            if (str !== null) {
-                const json = JSON.parse(str);
-                if (validator(json)) {
-                    return {
-                        metadata: json.metadata as MetaDataType,
-                        content: json.content,
-                    };
-                }
-                return undefined;
-            }
+            return JSON.parse(str);
         } catch (error: any) {
             toastEventListener.showSimpleToast({
                 title: 'Reading File Data',
@@ -80,11 +79,11 @@ export default class FileSource {
         }
         return null;
     }
-    async saveData(data: ItemSource<any>) {
+    async saveData(data: ItemSourceAnyType) {
         try {
             const content = JSON.stringify(data.toJson());
-            await fileHelpers.overWriteFile(this.filePath, content);
-            globalEventHandler._addPropEvent(this.toEventKey('update'));
+            await fileHelpers.createFile(this.filePath, content, true);
+            this.updateEvent();
             return true;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
@@ -97,9 +96,8 @@ export default class FileSource {
     async delete() {
         try {
             await fileHelpers.deleteFile(this.filePath);
-            FileSource._fileCache.delete(this.filePath);
-            this.refreshDir();
-            globalEventHandler._addPropEvent(this.toEventKey('delete'));
+            this.deleteCache();
+            this.refreshDirEvent();
             return true;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
