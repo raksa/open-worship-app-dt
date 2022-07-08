@@ -47,7 +47,7 @@ export default class Bible extends ItemSource<BibleType>{
         return this.items.find((item) => item.id === id) || null;
     }
     static async updateOrToDefault(bibleItem: BibleItem) {
-        const selectedBibleItem = await BibleItem.getSelectedItem();
+        const selectedBibleItem = await BibleItem.getSelectedItemEditing();
         if (selectedBibleItem) {
             selectedBibleItem.update(bibleItem);
             return selectedBibleItem.save();
