@@ -190,10 +190,12 @@ export default function RenderFound({
                         onClick={addBibleItem}
                         data-tool-tip={keyboardEventListener.toShortcutKey(addListEventMapper)}
                     >Add Bible List</button>
+                    {/* TODO: change to "Save to Bible List when editing" */}
                     <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
                         onClick={addBibleItemAndPresent}
                         data-tool-tip={keyboardEventListener.toShortcutKey(presentEventMapper)}
                     >Present</button>
+                    {/* TODO: change to "Save & Present when editing" */}
                 </div>
             }
         </div>
