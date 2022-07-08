@@ -16,7 +16,6 @@ import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers1';
 import { toastEventListener } from '../event/ToastEventListener';
 import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';
-import { previewingEventListener } from '../event/PreviewingEventListener';
 
 let mouseDownInd: number | null = null;
 function mouseUp() {

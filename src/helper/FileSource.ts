@@ -5,7 +5,7 @@ import {
 import appProvider from './appProvider';
 import DirSource from './DirSource';
 import fileHelpers from './fileHelper';
-import { ItemSourceAnyType } from './ItemSource';
+import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
 type FSListener = (t: FSEventType) => void;
 type FSEventType = 'select' | 'update' | 'delete';
@@ -68,6 +68,7 @@ export default class FileSource {
     }
     deleteCache() {
         FileSource._fileCache.delete(this.filePath);
+        ItemSource.deleteCache(this.filePath);
         this.fireDeleteEvent();
     }
     async readFileToData() {

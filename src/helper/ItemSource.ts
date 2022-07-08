@@ -40,7 +40,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         this.content = newContent;
     }
     get maxId() {
-        if(this.items.length) {
+        if (this.items.length) {
             return Math.max.apply(Math, this.items.map((item) => item.id));
         }
         return 0;
@@ -124,6 +124,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         if (isSuccess) {
             ItemSource._itemSourceCache.set(this.fileSource.filePath, this);
         }
+        this.fileSource.fireReloadDirEvent();
         return isSuccess;
     }
     static async create(dir: string, name: string, content?: Object) {
@@ -161,12 +162,15 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         }
         return undefined;
     }
+    static deleteCache(key: string) {
+        this._itemSourceCache.delete(key);
+    }
     static async readFileToData(fileSource: FileSource | null, refreshCache?: boolean) {
         if (fileSource === null) {
             return null;
         }
         if (refreshCache) {
-            this._itemSourceCache.delete(fileSource.filePath);
+            this.deleteCache(fileSource.filePath);
         }
         if (this._itemSourceCache.has(fileSource.filePath)) {
             return this._itemSourceCache.get(fileSource.filePath);
@@ -175,7 +179,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         if (data) {
             this._itemSourceCache.set(fileSource.filePath, data);
         } else {
-            this._itemSourceCache.delete(fileSource.filePath);
+            this.deleteCache(fileSource.filePath);
         }
         return data;
     }
