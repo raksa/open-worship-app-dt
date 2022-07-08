@@ -13,8 +13,11 @@ class SettingManager {
             const str = fs.readFileSync(fileSettingPath, 'utf8');
             this._setting = JSON.parse(str);
         } catch (error) {
-            console.log(error);
-            this.save();
+            if (error.code === 'ENOENT') {
+                this.save();
+            } else {
+                console.log(error);
+            }
         }
     }
     get presentWidth() {

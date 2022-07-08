@@ -101,11 +101,13 @@ export default function FileListHandler({
                 }
             }}>
             {header && <div className='card-header'>{header}
-                {onNewFile && <button className="btn btn-sm btn-outline-info float-end"
-                    title="New File"
-                    onClick={() => setIsCreatingNew(true)}>
-                    <i className="bi bi-file-earmark-plus" />
-                </button>}
+                {onNewFile && dirSource.dirPath &&
+                    <button className="btn btn-sm btn-outline-info float-end"
+                        title="New File"
+                        onClick={() => setIsCreatingNew(true)}>
+                        <i className="bi bi-file-earmark-plus" />
+                    </button>
+                }
             </div>}
             <div className='card-body pb-5' onContextMenu={(e: any) => {
                 showAppContextMenu(e, [

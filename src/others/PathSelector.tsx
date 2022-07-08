@@ -43,21 +43,25 @@ export default function PathSelector({
                 {dirSource.dirPath && <div className='ellipsis-left border-white-round px-1 flex-fill'
                     title={dirSource.dirPath}>
                     {dirSource.dirPath}</div>}
-                <div className={`px-2 ${dirSource.fileSources === null ? 'rotating' : ''}`}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        dirSource.fireReloadEvent();
-                    }}>
-                    <i className='bi bi-arrow-clockwise' />
-                </div>
+                {dirSource.dirPath &&
+                    <div className={`px-2 ${dirSource.fileSources === null ? 'rotating' : ''}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dirSource.fireReloadEvent();
+                        }}>
+                        <i className='bi bi-arrow-clockwise' />
+                    </div>
+                }
             </div>
             {isShowing &&
                 <div className='input-group mb-3'>
-                    <button className={`btn btn-secondary ${dirSource.fileSources === null ? 'rotating' : ''}`}
-                        type='button'
-                        onClick={() => dirSource.fireReloadEvent()}>
-                        <i className='bi bi-arrow-clockwise' />
-                    </button>
+                    {dirSource.dirPath &&
+                        <button className={`btn btn-secondary ${dirSource.fileSources === null ? 'rotating' : ''}`}
+                            type='button'
+                            onClick={() => dirSource.fireReloadEvent()}>
+                            <i className='bi bi-arrow-clockwise' />
+                        </button>
+                    }
                     <input type='text' className='form-control' value={dirSource.dirPath}
                         onChange={(e) => {
                             dirSource.dirPath = e.target.value;
