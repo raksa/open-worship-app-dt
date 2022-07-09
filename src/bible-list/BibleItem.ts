@@ -23,7 +23,7 @@ export default class BibleItem extends ItemBase {
     id: number;
     bibleName: string;
     target: BibleTargetType;
-    metadata: MetaDataType;
+    metadata?: MetaDataType;
     fileSource?: FileSource;
     constructor(id: number, bibleName: string,
         target: BibleTargetType, metadata?: MetaDataType,
@@ -32,7 +32,7 @@ export default class BibleItem extends ItemBase {
         this.id = id;
         this.bibleName = bibleName;
         this.target = target;
-        this.metadata = metadata || {};
+        this.metadata = metadata;
         this.fileSource = fileSource;
     }
     get isSelected() {

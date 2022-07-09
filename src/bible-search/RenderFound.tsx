@@ -92,9 +92,10 @@ export default function RenderFound({
                 endVerse: await fromLocaleNumber(bibleSelected, eVerse),
             },
         });
-        if (await Bible.updateOrToDefault(bibleItem)) {
+        const savedBibleItem = await Bible.updateOrToDefault(bibleItem);
+        if (savedBibleItem !== null) {
             closeBibleSearch();
-            return bibleItem;
+            return savedBibleItem;
         } else {
             toastEventListener.showSimpleToast({
                 title: 'Adding bible',
@@ -148,6 +149,7 @@ export default function RenderFound({
     const sVerse = found.sVerse;
     const eVerse = found.eVerse;
     const verseCount = Object.values(found.verses).length;
+    const isSelectEditing = !!BibleItem.getSelectedEditingResult();
     return (
         <div className="render-found card border-success mb-3 mx-auto mt-5">
             <div className="card-body">
@@ -189,13 +191,11 @@ export default function RenderFound({
                     <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
                         onClick={addBibleItem}
                         data-tool-tip={keyboardEventListener.toShortcutKey(addListEventMapper)}
-                    >Add Bible List</button>
-                    {/* TODO: change to "Save to Bible List when editing" */}
+                    >{isSelectEditing ? 'Save Bible Item' : 'Add Bible Item'}</button>
                     <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
                         onClick={addBibleItemAndPresent}
                         data-tool-tip={keyboardEventListener.toShortcutKey(presentEventMapper)}
-                    >Present</button>
-                    {/* TODO: change to "Save & Present when editing" */}
+                    >{isSelectEditing ? 'Save and Present' : 'Present'}</button>
                 </div>
             }
         </div>
