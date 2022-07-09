@@ -108,11 +108,11 @@ class SettingManager {
     }
     syncPresentWindow(appManager) {
         const bounds = this.presentDisplay.bounds;
-        appManager.showWinWidth = bounds.width;
-        appManager.showWinHeight = bounds.height;
+        appManager.presentScreenWidth = bounds.width;
+        appManager.presentScreenHeight = bounds.height;
         appManager.previewResizeDim = {
-            width: appManager.showWinWidth / 3,
-            height: appManager.showWinHeight / 3,
+            width: appManager.presentScreenWidth / 3,
+            height: appManager.presentScreenHeight / 3,
         };
         if (appManager.presentWin !== null) {
             appManager.presentWin?.setBounds(bounds);

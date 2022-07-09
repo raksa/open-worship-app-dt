@@ -7,8 +7,8 @@ const eventListener = require('./eventListener');
 const settingManager = require('./settingManager');
 
 const appManager = {
-    showWinWidth: null,
-    showWinHeight: null,
+    presentScreenWidth: null,
+    presentScreenHeight: null,
     previewResizeDim: null,
     mainWin: null,
     presentWin: null,
@@ -70,8 +70,8 @@ const appManager = {
             let img = await this.presentWin.webContents.capturePage({
                 x: 0,
                 y: 0,
-                width: this.showWinWidth,
-                height: this.showWinHeight,
+                width: this.presentScreenWidth,
+                height: this.presentScreenHeight,
             });
             img = img.resize(this.previewResizeDim);
             const base64 = img.toJPEG(100).toString('base64');
