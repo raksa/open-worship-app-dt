@@ -25,6 +25,9 @@ const appManager = {
                 preload: `${__dirname}/preload.js`,
             },
         });
+        this.mainWin.on('closed', _ => {
+            process.exit(0);
+        });
         settingManager.syncMainWindow(this);
         if (isDev) {
             this.mainWin.loadURL('http://localhost:3000');
@@ -65,7 +68,7 @@ const appManager = {
             return;
         }
         try {
-            let img = await this.presentWin?.webContents.capturePage({
+            let img = await this.presentWin.webContents.capturePage({
                 x: 0,
                 y: 0,
                 width: this.showWinWidth,
