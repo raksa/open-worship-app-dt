@@ -92,28 +92,6 @@ function initMainScreen(appManager) {
         hidePresent();
         appManager.mainWin.webContents.send('app:main:hiding-present');
     });
-    ipcMain.on('present:app:capture-preview', () => {
-        try {
-            appManager.presentWin.webContents.capturePage({
-                x: 0,
-                y: 0,
-                width: appManager.showWinWidth,
-                height: appManager.showWinHeight,
-            }).then((img) => {
-                img = img.resize(appManager.previewResizeDim);
-                const base64 = img.toJPEG(100).toString('base64');
-                const data = base64 ? 'data:image/png;base64,' + base64 : '';
-                if (data) {
-                    appManager.mainWin.webContents.send('app:main:captured-preview', data);
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    });
-
     ipcMain.on('main:app:db-read', async (event, data) => {
         const value = await readValue(data.dbFilePath, data.table, data.key);
         event.reply(data.waitingEventName, value);

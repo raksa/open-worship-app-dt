@@ -29,26 +29,12 @@ ipcRenderer.on('app:present:get-rendering-info', (event, arg) => {
 function closeWin() {
     ipcRenderer.send('present:app:hide-present');
 }
-function sendPreview() {
-    ipcRenderer.send('present:app:capture-preview');
-}
 function getFullText() {
     return document.getElementById('full-text');
 }
 function getShadow(id) {
     const element = document.getElementById(id);
     return element.shadowRoot ? element.shadowRoot : element.attachShadow({ mode: 'open' });
-}
-function observe(target) {
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            sendPreview();
-        });
-    });
-    observer.observe(target, {
-        subtree: true,
-        childList: true,
-    });
 }
 function backup() {
     localStorage.setItem('backup', JSON.stringify({
@@ -122,11 +108,6 @@ function clearOldBackground() {
 }
 function onLoad() {
     restore();
-    observe(getShadow('background'));
-    observe(getShadow('foreground'));
-    observe(getFullText());
-    observe(getShadow('alert'));
-    setInterval(sendPreview, 1e3);
     document.addEventListener('wheel', function (e) {
         if (e.ctrlKey && getRendered().fullText) {
             const isUp = e.deltaY < 0;

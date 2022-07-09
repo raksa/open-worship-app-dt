@@ -12,6 +12,7 @@ const appManager = {
     previewResizeDim: null,
     mainWin: null,
     presentWin: null,
+    capturedPresentScreenData: '',
     createMainWindow() {
         const bounds = settingManager.mainWinBounds;
         this.mainWin = new electron.BrowserWindow({
@@ -56,6 +57,33 @@ const appManager = {
         }
         const presentUrl = `${__dirname}/${isDev ? '../public' : '../dist'}/present.html`;
         this.presentWin.loadFile(presentUrl);
+        this.capturePresentScreen();
+    },
+    async capturePresentScreen() {
+        if (this.presentWin === null) {
+            this.capturedPresentScreenData = '';
+            return;
+        }
+        try {
+            let img = await this.presentWin.webContents.capturePage({
+                x: 0,
+                y: 0,
+                width: this.showWinWidth,
+                height: this.showWinHeight,
+            });
+            img = img.resize(this.previewResizeDim);
+            const base64 = img.toJPEG(100).toString('base64');
+            const data = base64 ? 'data:image/png;base64,' + base64 : '';
+            if (data && this.capturedPresentScreenData !== data) {
+                this.capturedPresentScreenData = data;
+                this.mainWin.webContents.send('app:main:captured-preview',
+                    this.capturedPresentScreenData);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            this.capturePresentScreen();
+        }
     },
     init() {
         this.createMainWindow();
