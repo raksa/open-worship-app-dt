@@ -1,12 +1,12 @@
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from './AppContextMenu';
 import { useTranslation } from 'react-i18next';
-import colorList from '../others/color-list.json';
-import ColorNorteInf from '../helper/ColorNorteInf';
+import colorList from './color-list.json';
+import ColorNoteInf from '../helper/ColorNoteInf';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
-export default function BibleItemColorNote({ item }: {
-    item: ColorNorteInf,
+export default function ItemColorNote({ item }: {
+    item: ColorNoteInf,
 }) {
     const { t } = useTranslation();
     return (

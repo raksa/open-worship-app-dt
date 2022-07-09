@@ -2,7 +2,7 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper, {
     useGetBibleWithStatus,
 } from '../bible-helper/bibleHelpers';
-import BibleItemColorNote from './BibleItemColorNote';
+import ItemColorNote from '../others/ItemColorNote';
 import Bible from './Bible';
 import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
@@ -66,7 +66,7 @@ export default function BibleItemRender({
             </span> | {title == null ? 'not found' : title}
             {warningMessage && <span className='float-end'
                 title={warningMessage}>⚠️</span>}
-            <BibleItemColorNote item={bibleItem} />
+            <ItemColorNote item={bibleItem} />
         </li >
     );
 }

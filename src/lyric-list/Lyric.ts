@@ -16,6 +16,9 @@ export default class Lyric extends ItemSource<LyricType>{
         this.validate(json);
         return new Lyric(fileSource, json.metadata, json.content);
     }
+    get items() {
+        return this.content.items;
+    }
     itemFromJson(json: any) {
         return LyricItem.fromJson(json, this.fileSource);
     }

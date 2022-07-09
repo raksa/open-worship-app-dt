@@ -2,7 +2,7 @@ import { useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
-import BibleItemColorNote from '../bible-list/BibleItemColorNote';
+import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 
 export default function SlideFile({
@@ -28,7 +28,7 @@ export default function SlideFile({
             child={<>
                 <i className='bi bi-file-earmark-slides' />
                 {fileSource.name}
-                <BibleItemColorNote item={data as ItemSource<any>} />
+                <ItemColorNote item={data as ItemSource<any>} />
             </>}
         />
     );

@@ -1,5 +1,5 @@
 import { toastEventListener } from '../event/ToastEventListener';
-import ColorNorteInf from './ColorNorteInf';
+import ColorNoteInf from './ColorNoteInf';
 import {
     ItemSourceInf, MimetypeNameType,
     MetaDataType, createNewItem,
@@ -10,7 +10,7 @@ import { ItemBase } from './ItemBase';
 import { setSetting, getSetting } from './settingHelper';
 
 export type ItemSourceAnyType = ItemSource<any>;
-export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNorteInf {
+export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNoteInf {
     static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
     static mimetype: MimetypeNameType;
@@ -45,7 +45,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         }
         return 0;
     }
-    get items(): ItemBase[] {
+    get items(): any[] {
         throw new Error('Method not implemented.');
     }
     static fromJson(json: any, fileSource: FileSource): ItemSourceAnyType {

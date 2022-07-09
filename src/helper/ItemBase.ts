@@ -1,9 +1,9 @@
 import FileSource from '../helper/FileSource';
 import { setSetting, getSetting } from '../helper/settingHelper';
-import ColorNorteInf from './ColorNorteInf';
+import ColorNoteInf from './ColorNoteInf';
 import { MetaDataType } from './fileHelper';
 
-export abstract class ItemBase implements ColorNorteInf {
+export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
     abstract fileSource?: FileSource | null;
     abstract metadata?: MetaDataType;
@@ -24,9 +24,8 @@ export abstract class ItemBase implements ColorNorteInf {
         return null;
     }
     set colorNote(c: string | null) {
-        if (this.metadata) {
-            this.metadata['colorNote'] = c;
-        }
+        this.metadata = this.metadata || {};
+        this.metadata['colorNote'] = c;
         this.save();
     }
     get isSelectedEditing() {
