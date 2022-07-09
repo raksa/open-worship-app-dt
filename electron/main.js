@@ -64,7 +64,6 @@ const appManager = {
     },
     async capturePresentScreen() {
         if (this.presentWin === null) {
-            this.capturedPresentScreenData = '';
             return;
         }
         try {
@@ -81,12 +80,16 @@ const appManager = {
                 this.capturedPresentScreenData = data;
                 this.mainWin.webContents.send('app:main:captured-preview',
                     this.capturedPresentScreenData);
+            } else {
+                setTimeout(() => {
+                    this.capturedPresentScreenData = '';
+                }, 3e3);
             }
             this.capturePresentScreen();
         } catch (error) {
             console.log(error);
             setTimeout(() => {
-                this.capturePresentScreen();
+                this.capturePresentScreen = '';
             }, 3e3);
         }
     },
