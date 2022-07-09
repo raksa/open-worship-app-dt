@@ -13,12 +13,14 @@ export default function AppEditing() {
         'h2': '3',
     };
     return (
-        <ResizeActor settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+        <ResizeActor settingName={resizeSettingName}
+            flexSizeDefault={flexSizeDefault}
             resizeKinds={['v']}
             sizeKeys={[
                 ['h1', 'flex v'],
                 ['h2', 'flex v']]}>
-            <ResizeActor settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+            <ResizeActor settingName={resizeSettingName}
+                flexSizeDefault={flexSizeDefault}
                 resizeKinds={['v']}
                 sizeKeys={[
                     ['h1-v1', 'flex-item'],

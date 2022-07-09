@@ -1,8 +1,9 @@
 import { useBibleItemSelecting, useLyricSelecting } from '../event/PreviewingEventListener';
 import {
-    getSetting, useStateSettingString,
+    getSetting, setSetting, useStateSettingString,
 } from '../helper/settingHelper';
 import TabRender from '../others/TabRender';
+import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
 import BiblePreviewer from './BiblePreviewer';
 import LyricPreviewer from './LyricPreviewer';
 
@@ -11,10 +12,18 @@ export const previewer: { show: Function } = {
 };
 const FT_TAB_SETTING_NAME = 'full-text-previewer';
 export function getIsPreviewingBible() {
-    return getSetting(FT_TAB_SETTING_NAME) === 'b';
+    return getIsShowingFTPreviewer() &&
+        getSetting(FT_TAB_SETTING_NAME) === 'b';
+}
+export function setIsPreviewingBible() {
+    return setSetting(FT_TAB_SETTING_NAME, 'b');
 }
 export function getIsPreviewingLyric() {
-    return getSetting(FT_TAB_SETTING_NAME) === 'l';
+    return getIsShowingFTPreviewer() &&
+        getSetting(FT_TAB_SETTING_NAME) === 'l';
+}
+export function setIsPreviewingLyric() {
+    return setSetting(FT_TAB_SETTING_NAME, 'l');
 }
 export type TabType = 'b' | 'l';
 // b: bible, l: lyric

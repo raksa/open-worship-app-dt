@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import BibleItem from '../bible-list/BibleItem';
+import { setIsPreviewingBible, setIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 import EventHandler from './EventHandler';
@@ -19,9 +20,15 @@ export type RegisteredEventType<T> = {
 
 export default class PreviewingEventListener extends EventHandler {
     selectBibleItem(bibleItem: BibleItem | null) {
+        if (bibleItem !== null) {
+            setIsPreviewingBible();
+        }
         this._addPropEvent(PreviewingEnum.SELECT_BIBLE_ITEM, bibleItem);
     }
     selectLyric(lyric: Lyric | null) {
+        if (lyric !== null) {
+            setIsPreviewingLyric();
+        }
         this._addPropEvent(PreviewingEnum.SELECT_LYRIC, lyric);
     }
     updateLyric(lyric: Lyric) {

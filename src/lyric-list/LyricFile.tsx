@@ -6,6 +6,7 @@ import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
+import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
 
 export default function LyricFile({
     index, fileSource,

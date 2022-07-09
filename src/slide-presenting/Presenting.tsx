@@ -4,13 +4,22 @@ import SlidePreviewer from './SlidePreviewer';
 import FullTextPresentController from '../full-text-present/FullTextPresentController';
 import { useFullTextOpening, useSlideSelecting } from '../event/PreviewingEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
-import { useStateSettingString } from '../helper/settingHelper';
+import { getSetting, useStateSettingString } from '../helper/settingHelper';
 import TabRender from '../others/TabRender';
+
+const PRESENT_TAB_SETTING_NAME = 'presenting-tab';
+export function getIsShowingSlidePreviewer() {
+    return getSetting(PRESENT_TAB_SETTING_NAME) === 's';
+}
+export function getIsShowingFTPreviewer() {
+    return getSetting(PRESENT_TAB_SETTING_NAME) === 'f';
+}
 
 // s: slides, f: full text
 type TabType = 's' | 'f';
 export default function Presenting() {
-    const [tabType, setTabType] = useStateSettingString<TabType>('presenting-tab', 's');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        PRESENT_TAB_SETTING_NAME, 's');
     useFullTextOpening(() => {
         setTabType('f');
     });

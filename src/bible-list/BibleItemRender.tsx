@@ -6,6 +6,9 @@ import ItemColorNote from '../others/ItemColorNote';
 import Bible from './Bible';
 import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
+import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
+import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
+import { previewingEventListener } from '../event/PreviewingEventListener';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
@@ -40,6 +43,10 @@ export default function BibleItemRender({
             onContextMenu={onContextMenu || (() => false)}
             onClick={(e) => {
                 e.stopPropagation();
+                if (bibleItem.isSelected && !getIsPreviewingBible()) {
+                    previewingEventListener.selectBibleItem(bibleItem);
+                    return;
+                }
                 bibleItem.isSelected = !bibleItem.isSelected;
             }}>
             <span className={'bible'}

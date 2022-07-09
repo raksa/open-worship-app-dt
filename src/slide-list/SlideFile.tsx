@@ -4,6 +4,8 @@ import FileSource from '../helper/FileSource';
 import Slide from './Slide';
 import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
+import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
+import { previewingEventListener } from '../event/PreviewingEventListener';
 
 export default function SlideFile({
     index, fileSource,
@@ -22,6 +24,10 @@ export default function SlideFile({
             isPointer
             onClick={() => {
                 if (data) {
+                    if (data.isSelected && !getIsShowingSlidePreviewer()) {
+                        previewingEventListener.presentSlide(data);
+                        return;
+                    }
                     data.isSelected = !data.isSelected;
                 }
             }}

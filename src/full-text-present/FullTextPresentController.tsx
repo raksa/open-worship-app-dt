@@ -15,7 +15,8 @@ export default function FullTextPresentController() {
         <div id="full-text-present-controller"
             className="card w-100 h-100 border-white-round">
             <div className="card-body flex v">
-                <ResizeActor settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                <ResizeActor settingName={resizeSettingName}
+                    flexSizeDefault={flexSizeDefault}
                     resizeKinds={['v']}
                     sizeKeys={[
                         ['previewer', 'overflow-hidden'],
