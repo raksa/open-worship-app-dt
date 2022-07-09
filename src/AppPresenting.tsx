@@ -26,18 +26,27 @@ export default function AppPresenting() {
             <ResizeActor settingName={resizeSettingName}
                 flexSizeDefault={flexSizeDefault}
                 resizeKinds={['h', 'h']}
-                sizeKeys={[['h1', 'flex v'], ['h2', 'flex v'], ['h3', 'right d-flex flex-column']]}>
+                sizeKeys={[
+                    ['h1', 'flex v'], ['h2', 'flex v'],
+                    ['h3', 'right d-flex flex-column'],
+                ]}>
                 <ResizeActor settingName={resizeSettingName}
                     flexSizeDefault={flexSizeDefault}
                     resizeKinds={['v']}
-                    sizeKeys={[['h1-v1', 'flex-item'], ['h1-v2', 'flex-item']]}>
+                    sizeKeys={[
+                        ['h1-v1', 'flex-item'],
+                        ['h1-v2', 'flex-item'],
+                    ]}>
                     <SlideList />
                     <PlaylistList />
                 </ResizeActor>
                 <ResizeActor settingName={resizeSettingName}
                     flexSizeDefault={flexSizeDefault}
                     resizeKinds={['v']}
-                    sizeKeys={[['h2-v1', 'flex-item'], ['h2-v2', 'flex-item']]}>
+                    sizeKeys={[
+                        ['h2-v1', 'flex-item'],
+                        ['h2-v2', 'flex-item'],
+                    ]}>
                     <Presenting />
                     <Background />
                 </ResizeActor>
@@ -46,7 +55,10 @@ export default function AppPresenting() {
                         <ResizeActor settingName={resizeSettingName}
                             flexSizeDefault={flexSizeDefault}
                             resizeKinds={['v']}
-                            sizeKeys={[['h3-v1', 'flex-item'], ['h3-v2', 'flex-item']]}>
+                            sizeKeys={[
+                                ['h3-v1', 'flex-item'],
+                                ['h3-v2', 'flex-item'],
+                            ]}>
                             <BibleList />
                             <LyricList />
                         </ResizeActor>

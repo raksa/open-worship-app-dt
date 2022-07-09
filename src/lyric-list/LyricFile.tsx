@@ -4,6 +4,8 @@ import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
+import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
+import { previewingEventListener } from '../event/PreviewingEventListener';
 
 export default function LyricFile({
     index, fileSource,
@@ -22,6 +24,10 @@ export default function LyricFile({
             isPointer
             onClick={() => {
                 if (data) {
+                    if (data.isSelected && !getIsPreviewingLyric()) {
+                        previewingEventListener.selectLyric(data);
+                        return;
+                    }
                     data.isSelected = !data.isSelected;
                 }
             }}
