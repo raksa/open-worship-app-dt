@@ -8,6 +8,7 @@ import DirSource from '../helper/DirSource';
 
 export default function BibleList() {
     const [dirSource, setDirSource] = useState(DirSource.genDirSource('bible-list-selected-dir'));
+    Bible.getDefault();
     return (
         <FileListHandler id={'bible-list'} mimetype={'bible'}
             dirSource={dirSource}
