@@ -1,7 +1,7 @@
 import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import SlideEditor from './SlideEditor';
-import ReSizer from '../resizer/ReSizer';
+import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-presenting/SlideItem';
 import HTML2React from './HTML2React';
 
@@ -35,9 +35,9 @@ export default function SlideItemEditor({ slideItem }: {
                     applyScale(e.deltaY > 0);
                 }
             }}>
-            <ReSizer settingName={resizeSettingName}
+            <ResizeActor settingName={resizeSettingName}
                 flexSizeDefault={flexSizeDefault}
-                resizerKinds={['v']}
+                resizeKinds={['v']}
                 sizeKeys={[
                     ['editor-v1', 'flex-item'],
                     ['editor-v2', 'flex-item']]}>
@@ -56,7 +56,7 @@ export default function SlideItemEditor({ slideItem }: {
                 </div>
                 <Tools scale={scale} applyScale={applyScale} setScale={setScale}
                     minScale={minScale} maxScale={maxScale} scaleStep={scaleStep} />
-            </ReSizer>
+            </ResizeActor>
         </div>
     );
 }

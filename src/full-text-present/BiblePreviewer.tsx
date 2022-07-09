@@ -10,8 +10,6 @@ import { getSetting } from '../helper/settingHelper';
 import fullTextPresentHelper from './previewingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import BibleList from '../bible-list/BibleList';
-import FileReadError from '../others/FileReadError';
-import { showAppContextMenu } from '../others/AppContextMenu';
 
 let isMounted = false;
 export default function BiblePreviewer() {
@@ -32,19 +30,7 @@ export default function BiblePreviewer() {
     }
     if (bibleItem === undefined) {
         return (
-            <FileReadError onContextMenu={(e) => {
-                showAppContextMenu(e, [
-                    {
-                        title: 'Reload', onClick: () => setBibleItem(null),
-                    },
-                    {
-                        title: 'Unselect', onClick: () => {
-                            BibleItem.setSelectedItem(null);
-                            setBibleItem(null);
-                        },
-                    },
-                ]);
-            }} />
+            <BibleList />
         );
     }
     return (

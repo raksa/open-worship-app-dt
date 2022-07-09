@@ -1,7 +1,7 @@
 @import '../others/variables.scss';
 $color : rgb(73, 103, 123);
 
-.flex-resizer {
+.flex-resize-actor {
   flex: 0 0 4px;
   background: var(--bs-dark);
   background-repeat: no-repeat;
@@ -100,7 +100,7 @@ $color : rgb(73, 103, 123);
   }
 
   &:hover {
-    z-index: $z-index-resizer-top;
+    z-index: $z-index-resize-actor-top;
 
     .mover {
       i {

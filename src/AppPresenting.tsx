@@ -6,7 +6,7 @@ import Presenting from './slide-presenting/Presenting';
 import { getWindowMode } from './App';
 import PlaylistList from './playlist/PlaylistList';
 import LyricList from './lyric-list/LyricList';
-import ReSizer from './resizer/ReSizer';
+import ResizeActor from './resize-actor/ResizeActor';
 
 export default function AppPresenting() {
     const resizeSettingName = `${getWindowMode()}-window-size`;
@@ -23,35 +23,39 @@ export default function AppPresenting() {
     };
     return (
         <>
-            <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                resizerKinds={['h', 'h']}
+            <ResizeActor settingName={resizeSettingName}
+                flexSizeDefault={flexSizeDefault}
+                resizeKinds={['h', 'h']}
                 sizeKeys={[['h1', 'flex v'], ['h2', 'flex v'], ['h3', 'right d-flex flex-column']]}>
-                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                    resizerKinds={['v']}
+                <ResizeActor settingName={resizeSettingName}
+                    flexSizeDefault={flexSizeDefault}
+                    resizeKinds={['v']}
                     sizeKeys={[['h1-v1', 'flex-item'], ['h1-v2', 'flex-item']]}>
                     <SlideList />
                     <PlaylistList />
-                </ReSizer>
-                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                    resizerKinds={['v']}
+                </ResizeActor>
+                <ResizeActor settingName={resizeSettingName}
+                    flexSizeDefault={flexSizeDefault}
+                    resizeKinds={['v']}
                     sizeKeys={[['h2-v1', 'flex-item'], ['h2-v2', 'flex-item']]}>
                     <Presenting />
                     <Background />
-                </ReSizer>
+                </ResizeActor>
                 <>
                     <div className='flex-fill flex v h-100'>
-                        <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                            resizerKinds={['v']}
+                        <ResizeActor settingName={resizeSettingName}
+                            flexSizeDefault={flexSizeDefault}
+                            resizeKinds={['v']}
                             sizeKeys={[['h3-v1', 'flex-item'], ['h3-v2', 'flex-item']]}>
                             <BibleList />
                             <LyricList />
-                        </ReSizer>
+                        </ResizeActor>
                     </div>
                     <div>
                         <MiniPresentScreen />
                     </div>
                 </>
-            </ReSizer>
+            </ResizeActor>
         </>
     );
 }

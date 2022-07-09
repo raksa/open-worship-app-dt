@@ -5,13 +5,9 @@ import fullTextPresentHelper from './previewingHelper';
 import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import { getSetting } from '../helper/settingHelper';
-import {
-    useLyricSelecting,
-} from '../event/PreviewingEventListener';
+import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
-import FileReadError from '../others/FileReadError';
-import { showAppContextMenu } from '../others/AppContextMenu';
 import SavingRenderer from '../lyric-list/SavingRenderer';
 
 let isMounted = false;
@@ -47,11 +43,7 @@ export default function LyricPreviewer() {
     }
     if (lyric === undefined) {
         return (
-            <FileReadError onContextMenu={(e) => {
-                showAppContextMenu(e, [{
-                    title: 'Reload', onClick: () => setLyric(null),
-                }]);
-            }} />
+            <LyricList />
         );
     }
     const lyricItems = lyric.content.items;

@@ -3,7 +3,7 @@ import './FullTextPresentController.scss';
 import CustomStyle from './CustomStyle';
 import Utils from './Utils';
 import FullTextPreviewer, { previewer } from './FullTextPreviewer';
-import ReSizer from '../resizer/ReSizer';
+import ResizeActor from '../resize-actor/ResizeActor';
 
 export default function FullTextPresentController() {
     const resizeSettingName = 'full-text-present-window-size';
@@ -15,8 +15,8 @@ export default function FullTextPresentController() {
         <div id="full-text-present-controller"
             className="card w-100 h-100 border-white-round">
             <div className="card-body flex v">
-                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                    resizerKinds={['v']}
+                <ResizeActor settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
+                    resizeKinds={['v']}
                     sizeKeys={[
                         ['previewer', 'overflow-hidden'],
                         ['tools', 'h-100 d-flex flex-column', {
@@ -28,7 +28,7 @@ export default function FullTextPresentController() {
                         <Utils onShow={() => previewer.show()} />
                         <CustomStyle />
                     </>
-                </ReSizer>
+                </ResizeActor>
             </div>
         </div>
     );

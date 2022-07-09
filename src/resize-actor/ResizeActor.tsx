@@ -1,18 +1,18 @@
 import { Fragment, useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import FlexResizer, { ResizerKindType } from './FlexResizer';
+import FlexResize, { ResizeKindType } from './FlexResizeActor';
 
 export type Size = { [key: string]: string };
-export default function ReSizer({
+export default function ResizeActor({
     settingName,
     flexSizeDefault,
-    resizerKinds,
+    resizeKinds,
     sizeKeys,
     children,
 }: {
     settingName: string,
     flexSizeDefault: Size,
-    resizerKinds: ResizerKindType[],
+    resizeKinds: ResizeKindType[],
     sizeKeys: [string, string, any?][],
     children: any[],
 }) {
@@ -22,12 +22,12 @@ export default function ReSizer({
             {sizeKeys.map(([key, classList, style = {}], i) => {
                 return (
                     <Fragment key={i}>
-                        {i !== 0 && <FlexResizer
+                        {i !== 0 && <FlexResize
                             checkSize={() => {
                                 const size = saveSize(settingName);
                                 setFlexSize(size);
                             }}
-                            type={resizerKinds[i - 1]} />}
+                            type={resizeKinds[i - 1]} />}
                         <div data-fs={key} data-fs-default={flexSize[key]}
                             className={classList}
                             style={{ flex: flexSize[key] || 1, ...style }}>

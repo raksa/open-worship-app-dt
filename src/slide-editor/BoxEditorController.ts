@@ -1,6 +1,6 @@
 import { getRotationDeg, removePX } from '../helper/helpers';
 
-type ResizerType = {
+type ResizeType = {
   left: boolean, top: boolean, xResize: boolean, yResize: boolean,
 };
 type BoxInfoType = {
@@ -25,8 +25,8 @@ export default class BoxEditorController {
   mousePressX = 0;
   mousePressY = 0;
   scaleFactor = 1;
-  resizerList: {
-    [key: string]: ResizerType
+  resizeActorList: {
+    [key: string]: ResizeType
   } = {
       'right-mid': { left: false, top: false, xResize: true, yResize: false },
       'left-mid': { left: true, top: false, xResize: true, yResize: false },
@@ -62,7 +62,7 @@ export default class BoxEditorController {
     const moveHandler = (event: MouseEvent) => this.moveHandler(event);
     this.addEvent({ eventName: 'mousedown', target: this.target, listener: moveHandler });
     // handle resize
-    for (const [key, value] of Object.entries(this.resizerList)) {
+    for (const [key, value] of Object.entries(this.resizeActorList)) {
       const ele = this.target.querySelector(`.${key}`) as HTMLDivElement;
       const resizeHandler = (event: MouseEvent) => this.resizeHandler(event, value);
       this.addEvent({ eventName: 'mousedown', target: ele, listener: resizeHandler });
@@ -175,7 +175,7 @@ export default class BoxEditorController {
     window.addEventListener('mousemove', eventMoveHandler, false);
     window.addEventListener('mouseup', eventEndHandler, false);
   }
-  resizeHandler(event: MouseEvent, options: ResizerType) {
+  resizeHandler(event: MouseEvent, options: ResizeType) {
     if (this.editor === null || this.target === null) {
       return;
     }

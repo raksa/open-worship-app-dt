@@ -1,13 +1,13 @@
-import './FlexResizer.scss';
+import './FlexResizeActor.scss';
 
 import React from 'react';
 
-export type ResizerKindType = 'v' | 'h';
+export type ResizeKindType = 'v' | 'h';
 export interface Props {
-    type: ResizerKindType,
+    type: ResizeKindType,
     checkSize: () => void,
 }
-export default class FlexResizer extends React.Component<Props, {}> {
+export default class FlexResizeActor extends React.Component<Props, {}> {
     myRef: React.RefObject<HTMLDivElement>;
     prevSize: number = 0;
     nextSize: number = 0;
@@ -148,7 +148,7 @@ export default class FlexResizer extends React.Component<Props, {}> {
     }
     render() {
         return (
-            <div className={`flex-resizer ${this.props.type}`} ref={this.myRef}>
+            <div className={`flex-resize-actor ${this.props.type}`} ref={this.myRef}>
                 <div className='mover'>
                     {[['left', 'chevron-left'], ['right', 'chevron-right'],
                     ['up', 'chevron-up'], ['down', 'chevron-down']].map(([type, icon], i) => {

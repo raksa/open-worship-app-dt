@@ -148,7 +148,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
                     <div className='tools'>
                         <div className={`object ${this.editingController.rotatorCN}`} />
                         <div className="rotate-link" />
-                        {Object.keys(this.editingController.resizerList)
+                        {Object.keys(this.editingController.resizeActorList)
                             .map((cn, i) => <div key={`${i}`} className={`object ${cn}`} />)
                         }
                     </div>
