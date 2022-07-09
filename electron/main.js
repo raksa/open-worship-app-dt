@@ -53,10 +53,10 @@ const appManager = {
         });
         settingManager.syncPresentWindow(this);
         if (isPresentCanFullScreen) {
-            this.presentWin.setFullScreen(true);
+            this.presentWin?.setFullScreen(true);
         }
         const presentUrl = `${__dirname}/${isDev ? '../public' : '../dist'}/present.html`;
-        this.presentWin.loadFile(presentUrl);
+        this.presentWin?.loadFile(presentUrl);
         this.capturePresentScreen();
     },
     async capturePresentScreen() {
@@ -65,7 +65,7 @@ const appManager = {
             return;
         }
         try {
-            let img = await this.presentWin.webContents.capturePage({
+            let img = await this.presentWin?.webContents.capturePage({
                 x: 0,
                 y: 0,
                 width: this.showWinWidth,
@@ -79,10 +79,12 @@ const appManager = {
                 this.mainWin.webContents.send('app:main:captured-preview',
                     this.capturedPresentScreenData);
             }
+            this.capturePresentScreen();
         } catch (error) {
             console.log(error);
-        } finally {
-            this.capturePresentScreen();
+            setTimeout(() => {
+                this.capturePresentScreen();
+            }, 3e3);
         }
     },
     init() {

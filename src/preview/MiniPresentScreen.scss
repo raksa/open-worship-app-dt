@@ -40,6 +40,17 @@
       animation: fade-out 1s;
       position: absolute;
     }
+
+    .scroll-controller {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      opacity: 0;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
   }
 }
 

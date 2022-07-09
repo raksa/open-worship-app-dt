@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePresentDataThrowing } from '../event/PresentEventListener';
+import PresentScrollCont from '../full-text-present/PresentScrollCont';
 
 export default function PresentScreenPreviewer() {
     const [src, setSrc] = useState('');
@@ -29,8 +30,13 @@ export default function PresentScreenPreviewer() {
         );
     }
     return (
-        <img className='image-in' src={src} alt="preview" style={{
-            display: !src ? 'none' : '',
-        }} />
+        <>
+            <img className='image-in' src={src} alt="preview" style={{
+                display: !src ? 'none' : '',
+            }} />
+            <div className='scroll-controller w-100'>
+                <PresentScrollCont />
+            </div>
+        </>
     );
 }

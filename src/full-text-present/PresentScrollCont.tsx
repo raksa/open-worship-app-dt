@@ -1,10 +1,12 @@
+import './PresentScrollCont.scss';
+
 import { useState } from 'react';
 import fullTextPresentHelper from './previewingHelper';
 
-export default function ScrollController() {
+export default function PresentScrollCont() {
     const [moveUp, setMoveUp] = useState(0);
     return (
-        <div className="scroll-manager card ms-2" onWheel={(e) => {
+        <div className="present-scroll-controller card" onWheel={(e) => {
             e.stopPropagation();
             let unit = 30;
             if (e.ctrlKey) {
@@ -19,10 +21,7 @@ export default function ScrollController() {
             setMoveUp(moveUp + (isUp ? 1 : -1) * unit);
             fullTextPresentHelper.setRenderScroll(unit, isUp);
         }}>
-            <div className="card-header">
-                Scroll Controller, [Ctrl] | [Shift] + 🖱️scroll
-            </div>
-            <div className="card-body">
+            <div className="card-body" title='Scroll Controller, [Ctrl] | [Shift] + 🖱️scroll'>
                 <div className="inline">
                     <button className="btn btn-sm btn-info w-100" onClick={() => {
                         fullTextPresentHelper.setScrollTop();

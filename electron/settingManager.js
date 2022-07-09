@@ -115,7 +115,7 @@ class SettingManager {
             height: appManager.showWinHeight / 3,
         };
         if (appManager.presentWin !== null) {
-            appManager.presentWin.setBounds(bounds);
+            appManager.presentWin?.setBounds(bounds);
         }
     }
 }

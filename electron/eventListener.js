@@ -20,8 +20,7 @@ if (!isDev) {
 function hasXApiKey() {
     const timeStr = Date.now() + '';
     const md5sum = crypto.createHash('md5').update(key + timeStr);
-    const text = `${timeStr}.${md5sum.digest('hex')}`;
-    return text;
+    return `${timeStr}.${md5sum.digest('hex')}`;
 }
 
 function initMainScreen(appManager) {
@@ -35,19 +34,19 @@ function initMainScreen(appManager) {
     // TODO: use shareProps.mainWin.on or shareProps.presentWin.on
     let presentShown = false;
     ipcMain.on('main:app:show-present', () => {
-        appManager.presentWin.show();
+        appManager.presentWin?.show();
         appManager.mainWin.focus();
         presentShown = true;
     });
     const hidePresent = () => {
-        appManager.presentWin.close();
+        appManager.presentWin?.close();
         appManager.createPresentWindow();
         appManager.mainWin.focus();
         presentShown = false;
     };
     ipcMain.on('main:app:hide-present', hidePresent);
     ipcMain.on('main:app:present-eval-script', (_, args) => {
-        appManager.presentWin.webContents.executeJavaScript(`
+        appManager.presentWin?.webContents.executeJavaScript(`
         (() => {
             ${args.script};
             addHighlightEvent();
@@ -79,7 +78,7 @@ function initMainScreen(appManager) {
             data.show = presentShown;
             appManager.mainWin.webContents.send(replyEventName, data);
         });
-        appManager.presentWin.webContents.send('app:present:get-rendering-info', replyEventName);
+        appManager.presentWin?.webContents.send('app:present:get-rendering-info', replyEventName);
     });
 
     ipcMain.on('present:app:change-bible', (_, isNext) => {
