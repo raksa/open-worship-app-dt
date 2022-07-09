@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import FlexResize, { ResizeKindType } from './FlexResizeActor';
+import FlexResizeActor, { ResizeKindType } from './FlexResizeActor';
 
 export type Size = { [key: string]: string };
 export default function ResizeActor({
@@ -22,7 +22,7 @@ export default function ResizeActor({
             {sizeKeys.map(([key, classList, style = {}], i) => {
                 return (
                     <Fragment key={i}>
-                        {i !== 0 && <FlexResize
+                        {i !== 0 && <FlexResizeActor
                             checkSize={() => {
                                 const size = saveSize(settingName);
                                 setFlexSize(size);
