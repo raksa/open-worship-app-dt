@@ -17,6 +17,9 @@ export default class Slide extends ItemSource<SlideType>{
         this.validate(json);
         return new Slide(fileSource, json.metadata, json.content);
     }
+    get items() {
+        return this.content.items;
+    }
     itemFromJson(json: any) {
         return SlideItem.fromJson(json, this.fileSource);
     }
