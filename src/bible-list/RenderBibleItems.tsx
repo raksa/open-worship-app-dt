@@ -3,6 +3,7 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import { genDuplicatedMessage } from '../bible-helper/bibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
+import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 
 export default function RenderBibleItems({
     bible,
@@ -33,6 +34,10 @@ export default function RenderBibleItems({
                         ]);
                     }} />;
             })}
+            {bible.isDefault && <button className='btn btn-outline-primary btn-sm'
+                onClick={() => openBibleSearch()}>
+                Add Bible Item
+            </button>}
         </ul>
     );
 }

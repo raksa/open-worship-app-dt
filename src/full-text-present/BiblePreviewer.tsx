@@ -33,9 +33,17 @@ export default function BiblePreviewer() {
     if (bibleItem === undefined) {
         return (
             <FileReadError onContextMenu={(e) => {
-                showAppContextMenu(e, [{
-                    title: 'Reload', onClick: () => setBibleItem(null),
-                }]);
+                showAppContextMenu(e, [
+                    {
+                        title: 'Reload', onClick: () => setBibleItem(null),
+                    },
+                    {
+                        title: 'Unselect', onClick: () => {
+                            BibleItem.setSelectedItem(null);
+                            setBibleItem(null);
+                        },
+                    },
+                ]);
             }} />
         );
     }
@@ -92,11 +100,11 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
                 return (
                     <BibleView key={`${i}`} bibleItem={item}
                         onBibleChange={(bibleName: string) => {
-                            const bibleItem = bibleItems.map((item1) => {
+                            const bibleItem1 = bibleItems.map((item1) => {
                                 return item1.clone() as BibleItem;
                             });
-                            bibleItem[i].bibleName = bibleName;
-                            applyPresents(bibleItem);
+                            bibleItem1[i].bibleName = bibleName;
+                            applyPresents(bibleItem1);
                         }}
                         onClose={() => {
                             const newBibleItems = bibleItems.filter((_, i1) => i1 !== i);
