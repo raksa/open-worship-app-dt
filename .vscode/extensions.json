@@ -2,6 +2,10 @@
     "recommendations": [
         "hediet.vscode-drawio",
         "sonarsource.sonarlint-vscode",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "streetsidesoftware.code-spell-checker",
+        "editorconfig.editorconfig",
+        "mhutchie.git-graph",
+        "PKief.material-icon-theme"
     ]
 }
