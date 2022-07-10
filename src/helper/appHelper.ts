@@ -26,7 +26,10 @@ appProvider.ipcRenderer.on('app:main:present-ctrl-scrolling', (event: any, isUp:
     presentEventListener.presentCtrlScrolling(isUp);
 });
 appProvider.ipcRenderer.on('app:main:captured-preview', (event: any, data: string) => {
-    presentEventListener.fireDataEvent(data);
+    console.log('app:main:captured-preview');
+    Array.from(document.querySelectorAll('.captured-present-screen')).forEach((element) => {
+        (element as HTMLImageElement).src = data;
+    });
 });
 appProvider.ipcRenderer.on('app:main:hiding-present', (event: any, data: string) => {
     presentEventListener.fireHideEvent();
@@ -34,6 +37,16 @@ appProvider.ipcRenderer.on('app:main:hiding-present', (event: any, data: string)
 appProvider.ipcRenderer.on('app:main:display-changed', (event: any, data: string) => {
     presentEventListener.displayChanged();
 });
+
+export function capturePresentScreen() {
+    return new Promise<string | null>((resolve) => {
+        const replyEventName = `cps-${Date.now()}`;
+        appProvider.ipcRenderer.once(replyEventName, (_, data) => {
+            resolve(data || null);
+        });
+        appProvider.ipcRenderer.send('app:main:captured-preview', replyEventName);
+    });
+}
 
 export function copyToClipboard(str: string) {
     appProvider.electron.clipboard.writeText(str);

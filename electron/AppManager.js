@@ -10,7 +10,6 @@ class AppManager {
         this.previewResizeDim = null;
         this.mainWin = null;
         this.presentWin = null;
-        this.capturedPresentScreenData = '';
         this.settingController = new SettingController(this);
         this._isShowingPS = false;
 
@@ -97,23 +96,10 @@ class AppManager {
                 img = img.resize(this.previewResizeDim);
                 const base64 = img.toJPEG(100).toString('base64');
                 const data = base64 ? 'data:image/png;base64,' + base64 : '';
-                if (data && this.capturedPresentScreenData !== data) {
-                    this.capturedPresentScreenData = data;
-                    this.mainWin.webContents.send('app:main:captured-preview',
-                        this.capturedPresentScreenData);
-                } else {
-                    setTimeout(() => {
-                        this.capturedPresentScreenData = '';
-                    }, 3e3);
-                }
+                return data;
             }
         } catch (error) {
             console.log(error);
-            setTimeout(() => {
-                this.capturePresentScreen = '';
-            }, 3e3);
-        } finally {
-            this.capturePresentScreen();
         }
     }
 }

@@ -63,6 +63,11 @@ function initMainScreen(appManager) {
         appManager.presentWin.webContents.send('app:present:get-rendering-info', replyEventName);
     });
 
+    ipcMain.on('app:main:captured-preview', async(_, replyEventName) => {
+        const data = await appManager.capturePresentScreen();
+        appManager.mainWin.webContents.send(replyEventName, data);
+    });
+
     ipcMain.on('present:app:change-bible', (_, isNext) => {
         appManager.mainWin.webContents.send('app:main:present-change-bible', isNext);
     });

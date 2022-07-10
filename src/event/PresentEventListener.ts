@@ -8,7 +8,6 @@ import SlideItem from '../slide-presenting/SlideItem';
 import EventHandler from './EventHandler';
 
 export enum PresentTypeEnum {
-    DATA = 'data',
     HIDE = 'hide',
     RENDER_BG = 'render-bg',
     CLEAR_BG = 'clear-bg',
@@ -28,9 +27,6 @@ export type RegisteredEventType<T> = {
 }
 
 export default class PresentEventListener extends EventHandler {
-    fireDataEvent(data: string) {
-        this._addPropEvent(PresentTypeEnum.DATA, data);
-    }
     fireHideEvent() {
         this._addPropEvent(PresentTypeEnum.HIDE);
     }
@@ -84,15 +80,6 @@ export default class PresentEventListener extends EventHandler {
 
 export const presentEventListener = new PresentEventListener();
 
-export function usePresentDataThrowing(listener: ListenerType<string>) {
-    useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.DATA, listener);
-        return () => {
-            presentEventListener.unregisterPresentEventListener(event);
-        };
-    });
-}
 export function usePresentHiding(listener: ListenerType<void>) {
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
