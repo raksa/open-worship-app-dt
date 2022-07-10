@@ -14,14 +14,16 @@ class AppManager {
         this.settingController = new SettingController(this);
         this._isShowingPS = false;
 
-        this.createMainWindow();
-        this.createPresentWindow();
         electron.app.on('activate', () => {
             if (electron.BrowserWindow.getAllWindows().length === 0) {
                 this.createMainWindow();
                 this.createPresentWindow();
             }
         });
+
+        this.createMainWindow();
+        this.createPresentWindow();
+        this.capturePresentScreen();
     }
     get isShowingPS() {
         return this._isShowingPS;
@@ -83,36 +85,35 @@ class AppManager {
         }
         const presentUrl = `${__dirname}/${isDev ? '../public' : '../dist'}/present.html`;
         presentWin.loadFile(presentUrl);
-        this.capturePresentScreen();
     }
     async capturePresentScreen() {
         try {
-            if(this.presentWin.isDestroyed()) {
-                return;
+            if (this.presentWin && !this.presentWin.isDestroyed()) {
+                let img = await this.presentWin.webContents.capturePage({
+                    x: 0, y: 0,
+                    width: this.presentScreenWidth,
+                    height: this.presentScreenHeight,
+                });
+                img = img.resize(this.previewResizeDim);
+                const base64 = img.toJPEG(100).toString('base64');
+                const data = base64 ? 'data:image/png;base64,' + base64 : '';
+                if (data && this.capturedPresentScreenData !== data) {
+                    this.capturedPresentScreenData = data;
+                    this.mainWin.webContents.send('app:main:captured-preview',
+                        this.capturedPresentScreenData);
+                } else {
+                    setTimeout(() => {
+                        this.capturedPresentScreenData = '';
+                    }, 3e3);
+                }
             }
-            let img = await this.presentWin.webContents.capturePage({
-                x: 0, y: 0,
-                width: this.presentScreenWidth,
-                height: this.presentScreenHeight,
-            });
-            img = img.resize(this.previewResizeDim);
-            const base64 = img.toJPEG(100).toString('base64');
-            const data = base64 ? 'data:image/png;base64,' + base64 : '';
-            if (data && this.capturedPresentScreenData !== data) {
-                this.capturedPresentScreenData = data;
-                this.mainWin.webContents.send('app:main:captured-preview',
-                    this.capturedPresentScreenData);
-            } else {
-                setTimeout(() => {
-                    this.capturedPresentScreenData = '';
-                }, 3e3);
-            }
-            this.capturePresentScreen();
         } catch (error) {
             console.log(error);
             setTimeout(() => {
                 this.capturePresentScreen = '';
             }, 3e3);
+        } finally {
+            this.capturePresentScreen();
         }
     }
 }
