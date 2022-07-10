@@ -31,6 +31,10 @@ class SettingController {
         this._setting.mainWinBounds = bounds;
         this.save();
     }
+    resetMainBounds() {
+        this.mainWinBounds = this.primaryDisplay.bounds;
+        this.appManager.mainWin.setBounds(this.mainWinBounds);
+    }
     get allDisplays() {
         return electron.screen.getAllDisplays();
     }

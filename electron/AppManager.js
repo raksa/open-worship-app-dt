@@ -23,7 +23,7 @@ class AppManager {
         });
     }
     get isShowingPS() {
-        return !!this.presentWin?.isVisible();
+        return !!this.presentWin.isVisible();
     }
     set isShowingPS(b) {
         if (b) {
@@ -95,9 +95,6 @@ class AppManager {
         this.capturePresentScreen();
     }
     async capturePresentScreen() {
-        if (this.presentWin === null) {
-            return;
-        }
         try {
             let img = await this.presentWin.webContents.capturePage({
                 x: 0,
