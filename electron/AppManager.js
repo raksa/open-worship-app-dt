@@ -12,6 +12,7 @@ class AppManager {
         this.presentWin = null;
         this.capturedPresentScreenData = '';
         this.settingController = new SettingController(this);
+        this._isShowingPS = false;
 
         this.createMainWindow();
         this.createPresentWindow();
@@ -23,22 +24,15 @@ class AppManager {
         });
     }
     get isShowingPS() {
-        return !!this.presentWin.isVisible();
+        return this._isShowingPS;
     }
     set isShowingPS(b) {
+        this._isShowingPS = b;
         if (b) {
-            if (this.isShowingPS) {
-                return;
-            }
             this.presentWin.show();
-            this.mainWin.focus();
         } else {
-            if (!this.isShowingPS) {
-                return;
-            }
             this.presentWin.close();
             this.createPresentWindow();
-            this.mainWin.focus();
         }
     }
     createMainWindow() {
@@ -83,9 +77,6 @@ class AppManager {
             },
         });
         this.presentWin = presentWin;
-        presentWin.on('closed', _ => {
-            this.isShowingPS = false;
-        });
         this.settingController.syncPresentWindow();
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
@@ -96,9 +87,11 @@ class AppManager {
     }
     async capturePresentScreen() {
         try {
+            if(this.presentWin.isDestroyed()) {
+                return;
+            }
             let img = await this.presentWin.webContents.capturePage({
-                x: 0,
-                y: 0,
+                x: 0, y: 0,
                 width: this.presentScreenWidth,
                 height: this.presentScreenHeight,
             });

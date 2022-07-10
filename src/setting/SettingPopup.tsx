@@ -15,8 +15,16 @@ export const openSettingEvent = {
     window: WindowEnum.Setting,
     state: StateEnum.Open,
 };
-export const openSetting = () => windowEventListener.fireEvent(openSettingEvent);
-export const closeSetting = () => window.location.reload();
+export const closeSettingEvent = {
+    window: WindowEnum.Setting,
+    state: StateEnum.Close,
+};
+export function openSetting() {
+    windowEventListener.fireEvent(openSettingEvent);
+}
+export function closeSetting() {
+    windowEventListener.fireEvent(closeSettingEvent);
+}
 
 export default function SettingPopup() {
     return (

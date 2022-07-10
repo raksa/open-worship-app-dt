@@ -87,6 +87,9 @@ class SettingController {
         };
         bounds.height -= bounds.y;
         this.appManager.presentWin.setBounds(bounds);
+        if (this.appManager.isShowingPS) {
+            this.appManager.presentWin.show();
+        }
     }
 }
 
