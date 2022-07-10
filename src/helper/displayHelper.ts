@@ -7,12 +7,11 @@ export type DisplayType = {
 };
 export function getAllDisplays() {
     return appProvider.ipcRenderer.sendSync('main:app:get-displays') as {
-        mainDisplay: DisplayType,
         presentDisplay: DisplayType,
         displays: DisplayType[],
     };
 }
-export function saveDisplaySetting(data: { mainDisplayId: string, presentDisplayId: string }) {
+export function saveDisplaySetting(data: { presentDisplayId: string }) {
     const success = !!appProvider.ipcRenderer.sendSync('main:app:set-displays', data);
     toastEventListener.showSimpleToast({
         title: 'Save Display',

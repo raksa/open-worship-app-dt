@@ -57,35 +57,17 @@ function Language() {
 }
 
 function Display() {
-    const { displays, mainDisplay, presentDisplay } = useDisplay();
+    const { displays, presentDisplay } = useDisplay();
 
     return (
         <div className='card'>
             <div className='card-header'>Display</div>
             <div className='card-body'>
                 <div className="input-group">
-                    <span >Main Display:</span>
-                    <select className="form-select" aria-label="Default select example"
-                        value={mainDisplay.id} onChange={(e) => {
-                            saveDisplaySetting({
-                                mainDisplayId: e.target.value,
-                                presentDisplayId: presentDisplay.id,
-                            });
-                        }}>
-                        {displays.map(({ id, bounds }, i) => {
-                            return (
-                                <option key={i} value={id}>
-                                    screen{i} {bounds.width}x{bounds.height}</option>
-                            );
-                        })}
-                    </select>
-                </div>
-                <div className="input-group">
                     <span >Present Display:</span>
                     <select className="form-select" aria-label="Default select example"
                         value={presentDisplay.id} onChange={(e) => {
                             saveDisplaySetting({
-                                mainDisplayId: mainDisplay.id,
                                 presentDisplayId: e.target.value,
                             });
                         }}>
