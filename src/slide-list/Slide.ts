@@ -1,4 +1,4 @@
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from './SlideItem';
 import { MimetypeNameType } from '../helper/fileHelper';
 import ItemSource from '../helper/ItemSource';
 import { previewingEventListener } from '../event/PreviewingEventListener';
@@ -77,5 +77,11 @@ export default class Slide extends ItemSource<SlideType>{
         return super.create(dir, name, {
             items: [SlideItem.defaultSlideItem()],
         });
+    }
+    deleteItem(item: SlideItem) {
+        if (SlideItem.copiedItem === item) {
+            SlideItem.copiedItem = null;
+        }
+        // TODO: delete item
     }
 }

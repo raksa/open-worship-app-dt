@@ -1,4 +1,4 @@
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import Slide from '../slide-list/Slide';
 
 export const MIN_THUMBNAIL_SCALE = 1;

@@ -4,7 +4,7 @@ import { getPresentRendered } from '../helper/appHelper';
 import { getAllDisplays } from '../helper/displayHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import EventHandler from './EventHandler';
 
 export enum PresentTypeEnum {

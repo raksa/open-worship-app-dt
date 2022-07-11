@@ -1,6 +1,6 @@
 import './SlideItemDragReceiver.scss';
 
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 
 export default function SlideItemDragReceiver({ onDrop }: {
     onDrop: (id: number) => void,

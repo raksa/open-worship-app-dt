@@ -1,4 +1,4 @@
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import { useEffect, useState } from 'react';
 
 export default function RenderIsEditing({ slideItem, index }: {

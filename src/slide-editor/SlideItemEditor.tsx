@@ -2,7 +2,7 @@ import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './Tools';
 import SlideEditor from './SlideEditor';
 import ResizeActor from '../resize-actor/ResizeActor';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import HTML2React from './HTML2React';
 
 export default function SlideItemEditor({ slideItem }: {

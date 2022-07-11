@@ -12,7 +12,7 @@ import SlideItemsControllerBase, {
     THUMBNAIL_SCALE_STEP,
 } from './SlideItemsControllerBase';
 import { useState, useEffect } from 'react';
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 
 export function useRefresh(controller: SlideItemsController) {
     const [n, setN] = useState(0);
@@ -32,7 +32,7 @@ const openContextMenu = (e: any,
     showAppContextMenu(e, [
         {
             title: 'Copy', onClick: () => {
-                controller.copiedItem = controller.items[index] || null;
+                SlideItem.copiedItem = controller.items[index] || null;
             },
         },
         {
@@ -107,7 +107,7 @@ export default class SlideItemsController extends SlideItemsControllerBase {
                     this.slide.fileSource));
             },
         }, {
-            title: 'Paste', disabled: this.copiedItem === null,
+            title: 'Paste', disabled: SlideItem.copiedItem === null,
             onClick: () => this.paste(),
         }]);
     }

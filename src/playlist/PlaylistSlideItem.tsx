@@ -3,7 +3,7 @@ import {
 } from '../event/SlideListEventListener';
 import Slide from '../slide-list/Slide';
 import HTML2React from '../slide-editor/HTML2React';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
 import FileReadError from '../others/FileReadError';
 import SlideItemIFrame from '../slide-presenting/SlideItemIFrame';

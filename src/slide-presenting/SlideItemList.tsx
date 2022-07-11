@@ -3,7 +3,7 @@ import {
     useSlideItemSizing,
 } from '../event/SlideListEventListener';
 import SlideItemsMenu from './SlideItemsMenu';
-import SlideItemsPreviewer from './SlideItemsPreviewer';
+import SlideFile from './SlideFile';
 import {
     DEFAULT_THUMBNAIL_SIZE,
     THUMBNAIL_WIDTH_SETTING_NAME,
@@ -79,7 +79,7 @@ function PreviewerRender({ fileSource }: { fileSource: FileSource | null }) {
             onContextMenu={(e) => controller.showSlideItemContextMenu(e)}
             onPaste={() => controller.paste()}>
             <SlideItemsMenu controller={controller} />
-            <SlideItemsPreviewer controller={controller} />
+            <SlideFile controller={controller} />
         </div>
     );
 }

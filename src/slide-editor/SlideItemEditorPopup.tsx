@@ -5,7 +5,7 @@ import HeaderEditorPopup from './HeaderEditorPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import { editorMapper } from './EditorBoxMapper';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 
 export const openItemSlideEditEvent = {

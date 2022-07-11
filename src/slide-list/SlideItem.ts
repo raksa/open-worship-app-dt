@@ -5,7 +5,7 @@ import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { getAppInfo } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
-import Slide from '../slide-list/Slide';
+import Slide from './Slide';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -14,6 +14,7 @@ export default class SlideItem extends ItemBase {
     fileSource: FileSource;
     isCopied: boolean;
     _html: string;
+    static copiedItem: SlideItem | null = null;
     constructor(id: number, html: string, metadata: MetaDataType,
         fileSource: FileSource) {
         super();

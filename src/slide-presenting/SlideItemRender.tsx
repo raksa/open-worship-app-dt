@@ -1,7 +1,7 @@
 import './SlideItem.scss';
 
 import { ContextMenuEventType } from '../others/AppContextMenu';
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import HTML2React from '../slide-editor/HTML2React';
 import FileSource from '../helper/FileSource';
 import SlideItemIFrame from './SlideItemIFrame';

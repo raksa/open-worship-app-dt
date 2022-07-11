@@ -19,12 +19,13 @@ import {
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 
-export default function SlideItemsPreviewer({ controller }: {
+export default function SlideFile({ controller }: {
     controller: SlideItemsController,
 }) {
-    const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
+    const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
+        DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useRefresh(controller);
     usePresentFGClearing(() => {
@@ -39,7 +40,8 @@ export default function SlideItemsPreviewer({ controller }: {
             }
             const length = controller.items.length;
             if (length) {
-                let ind = e.key === KeyEnum.ArrowLeft ? selectedIndex - 1 : selectedIndex + 1;
+                let ind = e.key === KeyEnum.ArrowLeft ?
+                    selectedIndex - 1 : selectedIndex + 1;
                 if (ind >= length) {
                     ind = 0;
                 } else if (ind < 0) {

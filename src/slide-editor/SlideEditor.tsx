@@ -10,7 +10,7 @@ import { editorMapper } from './EditorBoxMapper';
 import { useEffect, useState } from 'react';
 import { cloneObject } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import HTML2React from './HTML2React';
 import HTML2ReactChild from './HTML2ReactChild';
 

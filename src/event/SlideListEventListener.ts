@@ -3,7 +3,7 @@ import { ToolingType } from '../slide-editor/helps';
 import {
     getSetting, useStateSettingNumber,
 } from '../helper/settingHelper';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import EventHandler from './EventHandler';
 import HTML2ReactChild from '../slide-editor/HTML2ReactChild';
 

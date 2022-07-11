@@ -1,14 +1,11 @@
 import './SlideItemEditorPreviewer.scss';
 
 import { useEffect, useState } from 'react';
-import {
-    useSlideItemSelecting,
-} from '../event/SlideListEventListener';
+import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import { editorMapper } from './EditorBoxMapper';
-import SlideItem from '../slide-presenting/SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
-import FileReadError from '../others/FileReadError';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import SlideItemList from '../slide-presenting/SlideItemList';
 
 export default function SlideItemEditorPreviewer() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(undefined);
@@ -37,11 +34,7 @@ export default function SlideItemEditorPreviewer() {
     }
     if (slideItem === undefined) {
         return (
-            <FileReadError onContextMenu={(e) => {
-                showAppContextMenu(e, [{
-                    title: 'Reload', onClick: () => setSlideItem(null),
-                }]);
-            }} />
+            <SlideItemList />
         );
     }
     return (
