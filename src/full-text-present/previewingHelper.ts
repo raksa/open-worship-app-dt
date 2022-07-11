@@ -200,7 +200,7 @@ class FullTextPresentHelper {
         });
     }
     renderLyricsList = (lyric: Lyric) => {
-        const newList = lyric.content.items.map((lyricItem) => {
+        const newList = lyric.items.map((lyricItem) => {
             const texts = lyricItem.text.split('===').map((text, i) => {
                 return `<span data-highlight="${i}">${text.trim().replace(/\n/g, '<br/>')}</span>`;
             });

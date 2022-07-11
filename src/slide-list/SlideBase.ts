@@ -1,21 +1,22 @@
-import SlideItem from '../slide-list/SlideItem';
-import Slide from '../slide-list/Slide';
+import SlideItem from './SlideItem';
+import { MetaDataType } from '../helper/fileHelper';
+import ItemSource from '../helper/ItemSource';
+import FileSource from '../helper/FileSource';
+import { ChangeHistory } from './slideHelpers';
+import Slide from './Slide';
 
-export const MIN_THUMBNAIL_SCALE = 1;
-export const THUMBNAIL_SCALE_STEP = 0.2;
-export const MAX_THUMBNAIL_SCALE = 3;
-export const DEFAULT_THUMBNAIL_SIZE = 250;
-export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenting-item-thumbnail-size';
-export type ChangeHistory = { items: SlideItem[] };
+export type SlideType = {
+    items: SlideItem[],
+};
 
-export default class SlideItemsControllerBase {
-    slide: Slide;
+export default class SlideBase extends ItemSource<SlideType>{
     _history: {
         undo: ChangeHistory[];
         redo: ChangeHistory[];
-    } = { undo: [], redo: [] };
-    constructor(slide: Slide) {
-        this.slide = slide;
+    };
+    constructor(fileSource: FileSource, metadata: MetaDataType,
+        content: SlideType) {
+        super(fileSource, metadata, content);
         this._history = { undo: [], redo: [] };
     }
     getItemByIndex(index: number): SlideItem | null {
@@ -51,17 +52,17 @@ export default class SlideItemsControllerBase {
         }
     }
     get items() {
-        return this.slide.content.items;
+        return this.content.items;
     }
     get newItems() {
         return [...this.items];
     }
     set items(newItems: SlideItem[]) {
-        this.slide.content.items = newItems;
-        this.slide.save();
+        this.content.items = newItems;
+        this.save();
     }
     async isModifying() {
-        const slide = await Slide.readFileToDataNoCache(this.slide.fileSource);
+        const slide = await Slide.readFileToDataNoCache(this.fileSource);
         if (slide) {
             for (let i = 0; i < this.items.length; i++) {
                 if (await this.items[i].isEditing(i, slide)) {
@@ -80,14 +81,14 @@ export default class SlideItemsControllerBase {
     }
     set undo(undo: ChangeHistory[]) {
         this._history.undo = undo;
-        this.slide.save();
+        this.save();
     }
     get redo() {
         return this._history.redo;
     }
     set redo(redo: ChangeHistory[]) {
         this._history.redo = redo;
-        this.slide.save();
+        this.save();
     }
     get maxId() {
         // TODO: leverage Slide instead
@@ -158,22 +159,12 @@ export default class SlideItemsControllerBase {
     delete(index: number) {
         const newItems = this.items.filter((_, i) => i !== index);
         this.setItemsWithHistory(newItems);
-        this.slide.save();
+        this.save();
     }
     add(newItem: SlideItem) {
         const newItems = this.newItems;
         newItem.id = this.maxId + 1;
         newItems.push(newItem);
         this.setItemsWithHistory(newItems);
-    }
-    async save() {
-        if (await this.slide.save()) {
-            const fileSource = this.slide.fileSource;
-            const slide = await Slide.readFileToData(fileSource, true);
-            if (slide) {
-                this.slide = slide;
-                fileSource.fireRefreshDirEvent();
-            }
-        }
     }
 }

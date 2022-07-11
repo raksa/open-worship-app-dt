@@ -1,8 +1,8 @@
 import SlideList from './slide-list/SlideList';
 import SlideItemEditorPreviewer from './slide-editor/SlideItemEditorPreviewer';
-import SlideItemList from './slide-presenting/SlideItemList';
 import { getWindowMode } from './App';
 import ResizeActor from './resize-actor/ResizeActor';
+import SlidePreviewer from './slide-presenting/SlidePreviewer';
 
 export default function AppEditing() {
     const resizeSettingName = `${getWindowMode()}-window-size`;
@@ -26,7 +26,7 @@ export default function AppEditing() {
                     ['h1-v1', 'flex-item'],
                     ['h1-v2', 'flex-item']]}>
                 <SlideList />
-                <SlideItemList />
+                <SlidePreviewer />
             </ResizeActor>
             <SlideItemEditorPreviewer />
         </ResizeActor>

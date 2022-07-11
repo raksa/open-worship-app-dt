@@ -1,6 +1,6 @@
 import './SlidePreviewer.scss';
 
-import SlideItemList from './SlideItemList';
+import SlideItemsPreviewer from './SlideItemsPreviewer';
 import { renderFG } from '../helper/presentingHelpers';
 import {
     useSlideItemSelecting,
@@ -10,12 +10,18 @@ import { presentEventListener } from '../event/PresentEventListener';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
-} from './SlideItemsControllerBase';
+} from '../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
+import Slide from '../slide-list/Slide';
+import { useSlideSelecting } from '../event/PreviewingEventListener';
+import { useEffect, useState } from 'react';
+import SlideList from '../slide-list/SlideList';
 
 export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
+    const [slide, setSlide] = useState<Slide | null | undefined>(null);
+    useSlideSelecting(setSlide);
     useSlideItemSelecting((item) => {
         if (item !== null) {
             renderFG(item.html);
@@ -24,10 +30,22 @@ export default function SlidePreviewer() {
             presentEventListener.clearFG();
         }
     });
+    useEffect(() => {
+        if (slide === null) {
+            Slide.getSelected().then((sl) => {
+                setSlide(sl || undefined);
+            });
+        }
+    }, [slide]);
+    if (!slide) {
+        return (
+            <SlideList />
+        );
+    }
     return (
         <div id='slide-previewer' className='card w-100 h-100'>
             <div className='card-body w-100 h-100'>
-                <SlideItemList />
+                <SlideItemsPreviewer slide={slide}/>
             </div>
             <SlidePreviewerFooter thumbnailSize={thumbSize}
                 setThumbnailSize={(s) => setThumbSize(s)} />

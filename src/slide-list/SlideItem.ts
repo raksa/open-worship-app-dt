@@ -91,9 +91,9 @@ export default class SlideItem extends ItemBase {
     async isEditing(index: number, slide?: Slide | null) {
         slide = slide || await Slide.readFileToDataNoCache(this.fileSource);
         if (slide) {
-            const slideItem = slide.content.items.find((item) => item.id === this.id);
+            const slideItem = slide.items.find((item) => item.id === this.id);
             if (slideItem) {
-                if (index !== slide.content.items.indexOf(slideItem)) {
+                if (index !== slide.items.indexOf(slideItem)) {
                     return true;
                 }
                 return slideItem.html !== this._html;

@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import {
     keyboardEventListener,
 } from '../event/KeyboardEventListener';
-import SlideItemsController from './SlideItemsController';
+import Slide from '../slide-list/Slide';
 
-export default function MenuIsModifying({ controller, eventMapper }: {
-    controller: SlideItemsController, eventMapper: any,
+export default function MenuIsModifying({ slide, eventMapper }: {
+    slide: Slide, eventMapper: any,
 }) {
     const [isModifying, setIsModifying] = useState(false);
     useEffect(() => {
-        controller.isModifying().then(setIsModifying);
+        slide.isModifying().then(setIsModifying);
     });
     if (!isModifying) {
         return null;
@@ -19,7 +19,7 @@ export default function MenuIsModifying({ controller, eventMapper }: {
             data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
             title="save slide thumbs"
             onClick={() => {
-                controller.save();
+                slide.save();
             }}>Save</button>
     );
 }

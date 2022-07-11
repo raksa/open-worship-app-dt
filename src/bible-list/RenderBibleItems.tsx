@@ -10,7 +10,7 @@ export default function RenderBibleItems({
 }: {
     bible: Bible,
 }) {
-    const items = bible.content.items;
+    const items = bible.items;
     return (
         <ul className='list-group'>
             {items.map((bibleItem, i1) => {

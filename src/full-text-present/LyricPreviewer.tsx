@@ -36,17 +36,12 @@ export default function LyricPreviewer() {
             isMounted = false;
         };
     });
-    if (lyric === null) {
+    if (!lyric) {
         return (
             <LyricList />
         );
     }
-    if (lyric === undefined) {
-        return (
-            <LyricList />
-        );
-    }
-    const lyricItems = lyric.content.items;
+    const lyricItems = lyric.items;
     if (!lyricItems.length) {
         return (
             <>No Lyric Available</>

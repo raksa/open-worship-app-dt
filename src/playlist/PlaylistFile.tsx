@@ -39,7 +39,7 @@ export default function PlaylistFile({
                     {fileSource.name}
                 </div>
                 {isOpened && data && <div className='card-body d-flex flex-column'>
-                    {data.content.items.map((playlistItem, i) => {
+                    {data.items.map((playlistItem, i) => {
                         if (playlistItem.isSlideItem) {
                             return (
                                 <PlaylistSlideItem width={200}

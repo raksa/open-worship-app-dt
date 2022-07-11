@@ -8,37 +8,36 @@ import {
 } from '../event/SlideListEventListener';
 import { isWindowEditingMode } from '../App';
 import { Fragment, useState } from 'react';
-import SlideItemsController, {
-    useRefresh,
-} from './SlideItemsController';
 import SlideItemRender from './SlideItemRender';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
-} from './SlideItemsControllerBase';
+    useRefresh,
+} from '../slide-list/slideHelpers';
 import { usePresentFGClearing } from '../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import SlideItem from '../slide-list/SlideItem';
+import Slide from '../slide-list/Slide';
 
-export default function SlideFile({ controller }: {
-    controller: SlideItemsController,
+export default function SlideItems({ slide }: {
+    slide: Slide,
 }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useRefresh(controller);
+    useRefresh(slide);
     usePresentFGClearing(() => {
         SlideItem.setSelectedItem(null);
     });
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
         const arrowListener = (e: KeyboardEvent) => {
-            const selectedIndex = controller.selectedIndex;
+            const selectedIndex = slide.selectedIndex;
             if (~selectedIndex) {
                 return;
             }
-            const length = controller.items.length;
+            const length = slide.items.length;
             if (length) {
                 let ind = e.key === KeyEnum.ArrowLeft ?
                     selectedIndex - 1 : selectedIndex + 1;
@@ -47,7 +46,7 @@ export default function SlideFile({ controller }: {
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                controller.selectedIndex = ind;
+                slide.selectedIndex = ind;
             }
         };
         const useCallback = (key: KeyEnum) => {
@@ -60,7 +59,7 @@ export default function SlideFile({ controller }: {
     }
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {controller.items.map((item, i) => {
+            {slide.items.map((item, i) => {
                 const shouldReceiveAtLeft = draggingIndex !== null &&
                     draggingIndex !== 0 && i === 0;
                 const shouldReceiveAtRight = draggingIndex !== null &&
@@ -69,17 +68,17 @@ export default function SlideFile({ controller }: {
                     <Fragment key={`${i}`}>
                         {shouldReceiveAtLeft && <SlideItemDragReceiver
                             onDrop={(id) => {
-                                controller.move(id, i);
+                                slide.move(id, i);
                             }} />}
                         <SlideItemRender
                             isActive={item.isSelected}
                             index={i}
                             slideItem={item}
                             onContextMenu={(e) => {
-                                controller.openContextMenu(e, i);
+                                slide.openContextMenu(e, i);
                             }}
                             onCopy={() => {
-                                controller.copiedItem = item;
+                                slide.copiedItem = item;
                             }}
                             width={thumbSize}
                             onDragStart={() => {
@@ -91,7 +90,7 @@ export default function SlideFile({ controller }: {
                         />
                         {shouldReceiveAtRight && <SlideItemDragReceiver
                             onDrop={(id) => {
-                                controller.move(id, i);
+                                slide.move(id, i);
                             }} />}
                     </Fragment>
                 );

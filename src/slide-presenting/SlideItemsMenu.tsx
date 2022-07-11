@@ -6,15 +6,13 @@ import {
 } from '../event/KeyboardEventListener';
 import { useDisplay } from '../event/PresentEventListener';
 import Slide from '../slide-list/Slide';
+import { useRefresh } from '../slide-list/slideHelpers';
 import MenuIsModifying from './MenuIsModifying';
-import SlideItemsController, {
-    useRefresh,
-} from './SlideItemsController';
 
-export default function SlideItemsMenu({ controller }: {
-    controller: SlideItemsController,
+export default function SlideItemsMenu({ slide }: {
+    slide: Slide,
 }) {
-    useRefresh(controller);
+    useRefresh(slide);
     const { presentDisplay } = useDisplay();
     const eventMapper = {
         wControlKey: [WindowsControlEnum.Ctrl],
@@ -22,36 +20,36 @@ export default function SlideItemsMenu({ controller }: {
         lControlKey: [LinuxControlEnum.Ctrl],
         key: 's',
     };
-    useKeyboardRegistering(eventMapper, () => controller.slide.save());
-    const foundWrongDimension = controller.checkIsWrongDimension(presentDisplay);
+    useKeyboardRegistering(eventMapper, () => slide.save());
+    const foundWrongDimension = slide.checkIsWrongDimension(presentDisplay);
     return (
         <div style={{
             borderBottom: '1px solid #00000024',
             backgroundColor: '#00000020',
-            minHeight: (!!controller.undo.length || !!controller.redo.length
-                || controller.isModifying) ? '35px' : '0px',
+            minHeight: (!!slide.undo.length || !!slide.redo.length
+                || slide.isModifying) ? '35px' : '0px',
         }}>
             <div className="btn-group control d-flex justify-content-center'">
-                {!!controller.undo.length &&
+                {!!slide.undo.length &&
                     <button type="button" className="btn btn-sm btn-info"
                         title="clear all"
-                        onClick={() => controller.undoChanges()}>
+                        onClick={() => slide.undoChanges()}>
                         undo
                         <i className="bi bi-arrow-90deg-left"></i></button>
                 }
-                {!!controller.redo.length &&
+                {!!slide.redo.length &&
                     <button type="button" className="btn btn-sm btn-info"
                         title="clear background"
-                        onClick={() => controller.redoChanges()}>
+                        onClick={() => slide.redoChanges()}>
                         redo
                         <i className="bi bi-arrow-90deg-right"></i></button>
                 }
-                <MenuIsModifying controller={controller}
+                <MenuIsModifying slide={slide}
                     eventMapper={eventMapper} />
                 {foundWrongDimension !== null &&
                     <button type="button" className="btn btn-sm btn-warning"
                         title={Slide.toWrongDimensionString(foundWrongDimension)}
-                        onClick={() => controller.fixSlideDimension(presentDisplay)}>
+                        onClick={() => slide.fixSlideDimension(presentDisplay)}>
                         Fix Slide Dimension</button>
                 }
             </div>

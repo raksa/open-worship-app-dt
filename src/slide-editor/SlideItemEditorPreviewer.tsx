@@ -5,7 +5,6 @@ import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import { editorMapper } from './EditorBoxMapper';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
-import SlideItemList from '../slide-presenting/SlideItemList';
 
 export default function SlideItemEditorPreviewer() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(undefined);
@@ -24,17 +23,12 @@ export default function SlideItemEditorPreviewer() {
             setSlideItem(item);
         });
     });
-    if (slideItem === null) {
+    if (!slideItem) {
         return (
             <div className='slide-item-editor empty'
                 style={{ fontSize: '3em', padding: '20px' }}>
-                No Slide Item Thumb Selected 😐
+                No Slide Item Selected 😐
             </div>
-        );
-    }
-    if (slideItem === undefined) {
-        return (
-            <SlideItemList />
         );
     }
     return (

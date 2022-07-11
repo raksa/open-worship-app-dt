@@ -1,10 +1,10 @@
-import SlideItemsController from './SlideItemsController';
+import Slide from '../slide-list/Slide';
 import {
     DEFAULT_THUMBNAIL_SIZE,
     MIN_THUMBNAIL_SCALE,
     MAX_THUMBNAIL_SCALE,
     THUMBNAIL_SCALE_STEP,
-} from './SlideItemsControllerBase';
+} from '../slide-list/slideHelpers';
 
 export default function SlidePreviewerFooter({ thumbnailSize, setThumbnailSize }: {
     thumbnailSize: number,
@@ -23,7 +23,7 @@ export default function SlidePreviewerFooter({ thumbnailSize, setThumbnailSize }
                         onChange={(e) => {
                             setThumbnailSize((+e.target.value) * DEFAULT_THUMBNAIL_SIZE);
                         }} onWheel={(e) => {
-                            const newScale = SlideItemsController.toScaleThumbSize(e.deltaY > 0,
+                            const newScale = Slide.toScaleThumbSize(e.deltaY > 0,
                                 currentScale);
                             setThumbnailSize(newScale * DEFAULT_THUMBNAIL_SIZE);
                         }} />
