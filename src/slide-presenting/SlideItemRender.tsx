@@ -1,33 +1,30 @@
-import './SlideItem.scss';
+import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import SlideItem from '../slide-list/SlideItem';
 import HTML2React from '../slide-editor/HTML2React';
-import FileSource from '../helper/FileSource';
 import SlideItemIFrame from './SlideItemIFrame';
 import RenderIsEditing from './RenderIsEditing';
 
-type SlideItemProps = {
-    width: number,
-    index: number;
-    isActive: boolean;
-    slideItem: SlideItem;
-    onContextMenu: (e: ContextMenuEventType) => void,
-    onCopy: () => void,
-    onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
-    onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
-};
 export default function SlideItemRender({
-    width, isActive, index,
+    width, index,
     slideItem,
     onContextMenu,
     onCopy,
     onDragStart,
     onDragEnd,
-}: SlideItemProps) {
+}: {
+    width: number,
+    index: number;
+    slideItem: SlideItem;
+    onContextMenu: (e: ContextMenuEventType) => void,
+    onCopy: () => void,
+    onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
+    onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
+}) {
     const html2React = HTML2React.parseHTML(slideItem.html);
     return (
-        <div className={`slide-item card ${isActive ? 'active' : ''} pointer`}
+        <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
             onDragStart={(e) => {
                 const path = slideItem.toSelectedItemSetting();
@@ -49,7 +46,7 @@ export default function SlideItemRender({
             onCopy={onCopy}>
             <div className="card-header d-flex">
                 <div>
-                    {index + 1} {isActive && <span>
+                    {index + 1} {slideItem.isSelected && <span>
                         <i className="bi bi-collection" />
                     </span>}
                 </div>

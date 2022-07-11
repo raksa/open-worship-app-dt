@@ -18,9 +18,6 @@ export default class Slide extends SlideBase {
         this.validate(json);
         return new Slide(fileSource, json.metadata, json.content);
     }
-    get items() {
-        return this.content.items;
-    }
     itemFromJson(json: any) {
         return SlideItem.fromJson(json, this.fileSource);
     }
@@ -42,6 +39,7 @@ export default class Slide extends SlideBase {
             Slide.setSelectedFileSource(null);
             previewingEventListener.presentSlide(null);
         }
+        this.fileSource.fireSelectEvent();
         this.fileSource.fireRefreshDirEvent();
     }
     getItemById(id: number) {

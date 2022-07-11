@@ -37,8 +37,8 @@ export default class PreviewingEventListener extends EventHandler {
     presentSlide(slide: Slide | null) {
         this._addPropEvent(PreviewingEnum.SELECT_SLIDE, slide);
     }
-    updateSlide(lyric: Slide) {
-        this._addPropEvent(PreviewingEnum.UPDATE_SLIDE, lyric);
+    updateSlide(slide: Slide) {
+        this._addPropEvent(PreviewingEnum.UPDATE_SLIDE, slide);
     }
     registerEventListener(type: PreviewingEnum, listener: ListenerType<any>):
         RegisteredEventType<any> {

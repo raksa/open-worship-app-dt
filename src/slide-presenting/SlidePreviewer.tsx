@@ -22,9 +22,10 @@ export default function SlidePreviewer() {
         DEFAULT_THUMBNAIL_SIZE);
     const [slide, setSlide] = useState<Slide | null | undefined>(null);
     useSlideSelecting(setSlide);
-    useSlideItemSelecting((item) => {
-        if (item !== null) {
-            renderFG(item.html);
+    useSlideItemSelecting(() => setSlide(null));
+    useSlideItemSelecting((slideItem) => {
+        if (slideItem !== null) {
+            renderFG(slideItem.html);
             presentEventListener.renderFG();
         } else {
             presentEventListener.clearFG();
@@ -36,6 +37,15 @@ export default function SlidePreviewer() {
                 setSlide(sl || undefined);
             });
         }
+        if (slide) {
+            const registerEvent = slide.fileSource.registerEventListener(
+                ['select', 'update', 'delete'], () => {
+                    setSlide(null);
+                });
+            return () => {
+                slide.fileSource.unregisterEventListener(registerEvent);
+            };
+        }
     }, [slide]);
     if (!slide) {
         return (
@@ -45,7 +55,7 @@ export default function SlidePreviewer() {
     return (
         <div id='slide-previewer' className='card w-100 h-100'>
             <div className='card-body w-100 h-100'>
-                <SlideItemsPreviewer slide={slide}/>
+                <SlideItemsPreviewer slide={slide} />
             </div>
             <SlidePreviewerFooter thumbnailSize={thumbSize}
                 setThumbnailSize={(s) => setThumbSize(s)} />

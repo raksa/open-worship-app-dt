@@ -107,7 +107,10 @@ export default class SlideItem extends ItemBase {
         const selected = this.getSelectedResult();
         if (selected !== null) {
             const slide = await Slide.readFileToData(selected.fileSource);
-            return slide?.getItemById(selected.id);
+            const selectSlide = await Slide.getSelected();
+            if (slide?.fileSource.filePath === selectSlide?.fileSource.filePath) {
+                return slide?.getItemById(selected.id);
+            }
         }
         return null;
     }

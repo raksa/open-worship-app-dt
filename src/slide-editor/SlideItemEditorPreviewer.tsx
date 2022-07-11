@@ -2,27 +2,30 @@ import './SlideItemEditorPreviewer.scss';
 
 import { useEffect, useState } from 'react';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
-import { editorMapper } from './EditorBoxMapper';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
+import { useSlideSelecting } from '../event/PreviewingEventListener';
 
 export default function SlideItemEditorPreviewer() {
-    const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(undefined);
+    const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
     useEffect(() => {
         if (slideItem === null) {
             SlideItem.getSelectedItem().then((item) => {
                 setSlideItem(item || undefined);
             });
         }
-    }, [slideItem]);
-    useSlideItemSelecting((item) => {
-        if (item?.id === slideItem?.id) {
-            return;
+        if (slideItem) {
+            const registerEvent = slideItem.fileSource.registerEventListener(
+                ['select', 'update', 'delete'], () => {
+                    setSlideItem(null);
+                });
+            return () => {
+                slideItem.fileSource.unregisterEventListener(registerEvent);
+            };
         }
-        editorMapper.stopAllModes().then(() => {
-            setSlideItem(item);
-        });
-    });
+    }, [slideItem]);
+    useSlideSelecting(() => setSlideItem(null));
+    useSlideItemSelecting(setSlideItem);
     if (!slideItem) {
         return (
             <div className='slide-item-editor empty'

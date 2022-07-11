@@ -71,7 +71,6 @@ export default function SlideItems({ slide }: {
                                 slide.move(id, i);
                             }} />}
                         <SlideItemRender
-                            isActive={item.isSelected}
                             index={i}
                             slideItem={item}
                             onContextMenu={(e) => {
@@ -86,8 +85,7 @@ export default function SlideItems({ slide }: {
                             }}
                             onDragEnd={() => {
                                 setDraggingIndex(null);
-                            }}
-                        />
+                            }} />
                         {shouldReceiveAtRight && <SlideItemDragReceiver
                             onDrop={(id) => {
                                 slide.move(id, i);
