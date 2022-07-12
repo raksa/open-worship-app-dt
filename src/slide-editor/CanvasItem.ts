@@ -4,7 +4,7 @@ import {
     cloneObject,
     getRotationDeg, removePX,
 } from '../helper/helpers';
-import Canvas, {
+import {
     HAlignmentEnum, VAlignmentEnum,
 } from './Canvas';
 import { editorMapper } from './EditorBoxMapper';

@@ -6,7 +6,6 @@ import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
 import CanvasItem from './CanvasItem';
-import CanvasController from './CanvasController';
 
 export type NewDataType = { [key: string]: any };
 type PropsType = {
