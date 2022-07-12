@@ -6,7 +6,7 @@ import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
 
-export default function SlideItemEditorSlideItemEditorGround() {
+export default function SlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
     useEffect(() => {
         if (slideItem === null) {
@@ -15,10 +15,9 @@ export default function SlideItemEditorSlideItemEditorGround() {
             });
         }
         if (slideItem) {
-            const registerEvent = slideItem.fileSource.registerEventListener(
-                ['select', 'update', 'delete'], () => {
-                    setSlideItem(null);
-                });
+            const registerEvent = slideItem.fileSource.registerEventListener(['select'], () => {
+                setSlideItem(null);
+            });
             return () => {
                 slideItem.fileSource.unregisterEventListener(registerEvent);
             };

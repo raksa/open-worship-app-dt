@@ -88,8 +88,8 @@ export default class SlideItem extends ItemBase {
         Slide.readFileToData(this.fileSource).then((slide) => {
             if (slide) {
                 slideEditingManager.save(slide);
+                this.fileSource.fireUpdateEvent();
             }
-            this.fileSource.fireUpdateEvent();
         });
     }
     async isEditing(index: number, slide?: Slide | null) {
