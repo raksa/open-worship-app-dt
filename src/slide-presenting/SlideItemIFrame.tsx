@@ -1,11 +1,15 @@
-import HTML2React from '../slide-editor/HTML2React';
-
 export default function SlideItemIFrame({
-    id, width, html2React,
-}: { id: number, width: number, html2React: HTML2React }) {
-    const height = width * html2React.height / html2React.width;
-    const scaleX = width / html2React.width;
-    const scaleY = height / html2React.height;
+    id, width, canvasDim,
+}: {
+    id: number, width: number, canvasDim: {
+        htmlString: string,
+        width: number,
+        height: number,
+    }
+}) {
+    const height = width * canvasDim.height / canvasDim.width;
+    const scaleX = width / canvasDim.width;
+    const scaleY = height / canvasDim.height;
     return (
         <div style={{
             width, height,
@@ -16,11 +20,11 @@ export default function SlideItemIFrame({
                 style={{
                     pointerEvents: 'none',
                     borderStyle: 'none',
-                    width: `${html2React.width}px`,
-                    height: `${html2React.height}px`,
+                    width: `${canvasDim.width}px`,
+                    height: `${canvasDim.height}px`,
                     transform: 'translate(-50%, -50%)',
                 }}
-                srcDoc={`<style>html,body {overflow: hidden;}</style>${html2React.htmlString}`}
+                srcDoc={`<style>html,body {overflow: hidden;}</style>${canvasDim.htmlString}`}
             />
         </div>
     );

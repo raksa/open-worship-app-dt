@@ -4,7 +4,7 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
 import { DisplayType } from '../helper/displayHelper';
-import HTML2React from '../slide-editor/HTML2React';
+import Canvas from '../slide-editor/Canvas';
 import { toastEventListener } from '../event/ToastEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
@@ -201,8 +201,8 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     checkIsWrongDimension({ bounds }: DisplayType) {
         const found = this.items.map((item) => {
-            const html2React = HTML2React.parseHTML(item.html);
-            return { width: html2React.width, height: html2React.height };
+            const canvasDim = Canvas.parseHtmlDim(item.html);
+            return { width: canvasDim.width, height: canvasDim.height };
         }).find(({ width, height }: { width: number, height: number }) => {
             return bounds.width !== width || bounds.height !== height;
         });
@@ -216,10 +216,10 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     async fixSlideDimension({ bounds }: DisplayType) {
         this.items.forEach((item) => {
-            const html2React = HTML2React.parseHTML(item.html);
-            html2React.width = bounds.width;
-            html2React.height = bounds.height;
-            item.html = html2React.htmlString;
+            const canvasDim = Canvas.parseHtmlDim(item.html);
+            canvasDim.width = bounds.width;
+            canvasDim.height = bounds.height;
+            item.html = canvasDim.htmlString;
         });
         slideEditingManager.save(this);
     }

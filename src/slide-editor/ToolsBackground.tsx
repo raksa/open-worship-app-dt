@@ -1,34 +1,35 @@
-import { useState } from 'react';
-import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import ColorPicker from '../others/ColorPicker';
 import Tool from './Tool';
 import Align from './Align';
-import HTML2ReactChild from './HTML2ReactChild';
+import CanvasItem from './CanvasItem';
 
-export default function ToolsBackground({ data }: {
-    data: HTML2ReactChild,
+export default function ToolsBackground({ canvasItem }: {
+    canvasItem: CanvasItem,
 }) {
-    const [color, setColor] = useState<string>(data.backgroundColor);
-    const onColorChange = (newColor: string) => {
-        setColor(newColor);
-        slideListEventListenerGlobal.tooling({ box: { backgroundColor: newColor } });
-    };
+    const canvasController = canvasItem.canvasController;
     return (
         <>
             <Tool title='Background Color'>
-                <ColorPicker color={color} onColorChange={onColorChange} />
+                <ColorPicker color={canvasItem.color}
+                    onColorChange={(newColor: string) => {
+                        canvasController.applyToolingData({
+                            box: {
+                                backgroundColor: newColor,
+                            },
+                        });
+                    }} />
             </Tool>
             <Tool title='Box Alignment'>
                 <Align onData={(newData) => {
-                    slideListEventListenerGlobal.tooling({ box: newData });
+                    canvasController.applyToolingData({ box: newData });
                 }} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info' onClick={() => {
-                    slideListEventListenerGlobal.tooling({ box: { layerBack: true } });
+                    canvasController.applyToolingData({ box: { layerBack: true } });
                 }}><i className="bi bi-layer-backward" /></button>
                 <button className='btn btn-info' onClick={() => {
-                    slideListEventListenerGlobal.tooling({ box: { layerFront: true } });
+                    canvasController.applyToolingData({ box: { layerFront: true } });
                 }}><i className="bi bi-layer-forward" /></button>
             </Tool>
         </>

@@ -1,6 +1,6 @@
 import {
     VAlignmentEnum, HAlignmentEnum,
-} from './HTML2React';
+} from './Canvas';
 
 export default function Align({ onData, isText }: {
     onData: (data: {

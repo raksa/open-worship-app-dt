@@ -1,4 +1,8 @@
-import { VAlignmentEnum, HAlignmentEnum } from './HTML2React';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
+import CanvasController from './CanvasController';
+import CanvasItem from './CanvasItem';
+import { editorMapper } from './EditorBoxMapper';
 
 export function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,
@@ -43,3 +47,46 @@ export type ToolingType = {
     text?: ToolingTextType,
     box?: ToolingBoxType,
 };
+
+export function showCanvasContextMenu(e: any,
+    canvasController: CanvasController) {
+    showAppContextMenu(e, [
+        {
+            title: 'New',
+            onClick: () => canvasController.newBox(),
+        },
+        {
+            title: 'Paste',
+            disabled: canvasController.isCopied === null,
+            onClick: () => canvasController.paste(),
+        },
+    ]);
+}
+
+export function showBoxContextMenu(e: any, canvasController: CanvasController,
+    index: number, canvasItem: CanvasItem,
+) {
+    showAppContextMenu(e, [
+        {
+            title: 'Copy', onClick: () => {
+                canvasController.copiedItem = canvasItem;
+            },
+        },
+        {
+            title: 'Duplicate', onClick: () => {
+                canvasController.duplicate(canvasItem);
+            },
+        },
+        {
+            title: 'Edit', onClick: async () => {
+                await editorMapper.getByIndex(index)?.stopAllModes();
+                editorMapper.getByIndex(index)?.startEditingMode();
+            },
+        },
+        {
+            title: 'Delete', onClick: () => {
+                canvasController.deleteItem(canvasItem);
+            },
+        },
+    ]);
+}

@@ -1,27 +1,24 @@
 import './Tools.scss';
 
-import { useState } from 'react';
-import { useSlideBoxEditing } from '../event/SlideListEventListener';
 import { useStateSettingString } from '../helper/settingHelper';
 import ToolsBackground from './ToolsBackground';
 import ToolsText from './ToolsText';
-import HTML2ReactChild from './HTML2ReactChild';
 import TabRender from '../others/TabRender';
+import CanvasItem from './CanvasItem';
 
 // t: text, b: box
 type TabType = 't' | 'b';
 export default function Tools({
-    scale, applyScale, setScale, minScale, maxScale, scaleStep,
+    canvasItem,
+    scale, applyScale, setScale,
+    minScale, maxScale, scaleStep,
 }: {
+    canvasItem: CanvasItem,
     scale: number, applyScale: (isUp: boolean) => void,
     setScale: (newScale: number) => void,
     minScale: number, maxScale: number, scaleStep: number
 }) {
-    const [data, setData] = useState<HTML2ReactChild | null>(null);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
-    useSlideBoxEditing((newData) => {
-        setData(newData);
-    });
     return (
         <div className="tools d-flex flex-column w-100 h-100">
             <div className="tools-header d-flex">
@@ -42,10 +39,10 @@ export default function Tools({
                 </div>
             </div>
             <div className='tools-body d-flex flex-row flex-fill'>
-                {data && <>
-                    {tabType === 't' && <ToolsText data={data} />}
-                    {tabType === 'b' && <ToolsBackground data={data} />}
-                </>}
+                {tabType === 't' && <ToolsText
+                    canvasItem={canvasItem} />}
+                {tabType === 'b' && <ToolsBackground
+                    canvasItem={canvasItem} />}
             </div>
         </div>
     );

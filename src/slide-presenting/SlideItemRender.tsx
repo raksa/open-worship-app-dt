@@ -2,7 +2,7 @@ import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import SlideItem from '../slide-list/SlideItem';
-import HTML2React from '../slide-editor/HTML2React';
+import Canvas from '../slide-editor/Canvas';
 import SlideItemIFrame from './SlideItemIFrame';
 import RenderIsEditing from './RenderIsEditing';
 
@@ -22,7 +22,7 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
-    const html2React = HTML2React.parseHTML(slideItem.html);
+    const canvasDim = Canvas.parseHtmlDim(slideItem.html);
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
@@ -52,7 +52,7 @@ export default function SlideItemRender({
                 </div>
                 <div className='flex-fill d-flex justify-content-end'>
                     <small className='pe-2'>
-                        {html2React.width}x{html2React.height}
+                        {canvasDim.width}x{canvasDim.height}
                     </small>
                     <RenderIsEditing index={index}
                         slideItem={slideItem} />
@@ -63,7 +63,7 @@ export default function SlideItemRender({
                 <SlideItemIFrame
                     id={slideItem.id}
                     width={width}
-                    html2React={html2React} />
+                    canvasDim={canvasDim} />
             </div>
         </div>
     );

@@ -2,7 +2,7 @@ import {
     slideListEventListenerGlobal,
 } from '../event/SlideListEventListener';
 import Slide from '../slide-list/Slide';
-import HTML2React from '../slide-editor/HTML2React';
+import Canvas from '../slide-editor/Canvas';
 import SlideItem from '../slide-list/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
 import FileReadError from '../others/FileReadError';
@@ -37,7 +37,7 @@ export default function PlaylistSlideItem({
                 slideListEventListenerGlobal.selectSlideItem(item);
             }}>
             <SlideItemIFrame id={id} width={width}
-                html2React={HTML2React.parseHTML(item.html)} />
+                canvasDim={Canvas.parseHtmlDim(item.html)} />
         </div>
     );
 }

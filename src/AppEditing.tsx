@@ -1,5 +1,5 @@
 import SlideList from './slide-list/SlideList';
-import SlideItemEditorPreviewer from './slide-editor/SlideItemEditorPreviewer';
+import SlideItemEditorSlideItemEditorGround from './slide-editor/SlideItemEditorGround';
 import { getWindowMode } from './App';
 import ResizeActor from './resize-actor/ResizeActor';
 import SlidePreviewer from './slide-presenting/SlidePreviewer';
@@ -28,7 +28,7 @@ export default function AppEditing() {
                 <SlideList />
                 <SlidePreviewer />
             </ResizeActor>
-            <SlideItemEditorPreviewer />
+            <SlideItemEditorSlideItemEditorGround />
         </ResizeActor>
     );
 }

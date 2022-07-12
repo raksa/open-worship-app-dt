@@ -6,7 +6,7 @@ import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
 
-export default function SlideItemEditorPreviewer() {
+export default function SlideItemEditorSlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
     useEffect(() => {
         if (slideItem === null) {
