@@ -16,6 +16,7 @@ import Slide from '../slide-list/Slide';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
 import { useEffect, useState } from 'react';
 import SlideList from '../slide-list/SlideList';
+import SlideItemsMenu from './SlideItemsMenu';
 
 export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
@@ -55,6 +56,7 @@ export default function SlidePreviewer() {
     return (
         <div id='slide-previewer' className='card w-100 h-100'>
             <div className='card-body w-100 h-100'>
+                <SlideItemsMenu slide={slide} />
                 <SlideItemsPreviewer slide={slide} />
             </div>
             <SlidePreviewerFooter thumbnailSize={thumbSize}

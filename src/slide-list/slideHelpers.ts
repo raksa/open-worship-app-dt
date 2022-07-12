@@ -38,36 +38,41 @@ export function useRefresh(slide: Slide) {
     });
 }
 
-export const openSlideContextMenu = (e: any,
-    slide: Slide, index: number) => {
+export function openSlideContextMenu(e: any,
+    slide: Slide, slideItem: SlideItem) {
     showAppContextMenu(e, [
         {
             title: 'Copy', onClick: () => {
-                SlideItem.copiedItem = slide.items[index] || null;
+                SlideItem.copiedItem = slideItem;
             },
         },
         {
             title: 'Duplicate', onClick: () => {
-                slide.duplicate(index);
+                slide.duplicateItem(slideItem);
             },
         },
         {
             title: 'Quick Edit', onClick: () => {
                 const isEditing = isWindowEditingMode();
-                const item = slide.getItemByIndex(index);
-                if (item !== null) {
-                    if (isEditing) {
-                        slideListEventListenerGlobal.selectSlideItem(item);
-                    } else {
-                        openItemSlideEdit(item);
-                    }
+                if (isEditing) {
+                    slideListEventListenerGlobal.selectSlideItem(slideItem);
+                } else {
+                    openItemSlideEdit(slideItem);
                 }
             },
         },
         {
             title: 'Delete', onClick: () => {
-                slide.delete(index);
+                slide.deleteItem(slideItem);
             },
         },
     ]);
-};
+}
+
+export function useSlideIsModifying(slide: Slide) {
+    const [isModifying, setIsModifying] = useState(false);
+    useEffect(() => {
+        slide.isModifying().then(setIsModifying);
+    });
+    return isModifying;
+}

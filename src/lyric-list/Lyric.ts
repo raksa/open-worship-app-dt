@@ -3,7 +3,6 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
-import { getSetting } from '../helper/settingHelper';
 import LyricItem from './LyricItem';
 
 export type LyricType = {
@@ -56,14 +55,6 @@ export default class Lyric extends ItemSource<LyricType>{
             return Lyric.readFileToData(fileSource);
         }
         return null;
-    }
-    static getDefaultList() {
-        let defaultLyricList = [];
-        try {
-            const str = getSetting('lyric-list');
-            defaultLyricList = JSON.parse(str);
-        } catch (error) { }
-        return defaultLyricList;
     }
     static toNew(name: string) {
         return {

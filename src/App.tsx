@@ -14,6 +14,7 @@ import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
 import TabRender from './others/TabRender';
+import { useEffect } from 'react';
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
@@ -25,10 +26,25 @@ export function isWindowEditingMode() {
     return windowType === 'e';
 }
 
+let startEditingSlide: (() => void) | null = null;
+export function goEditSlide() {
+    if (startEditingSlide !== null) {
+        startEditingSlide();
+    }
+}
+
 // e: editing, p: presenting
 type TabType = 'e' | 'p';
 export default function App() {
     const [tabType, setTabType] = useStateSettingString<TabType>(WINDOW_TYPE, 'p');
+    useEffect(() => {
+        startEditingSlide = () => {
+            setTabType('e');
+        };
+        return () => {
+            startEditingSlide = null;
+        };
+    });
     return (
         <div id="app" className="dark d-flex flex-column">
             <div className="app-header d-flex">

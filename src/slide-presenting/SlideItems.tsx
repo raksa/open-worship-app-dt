@@ -68,13 +68,13 @@ export default function SlideItems({ slide }: {
                     <Fragment key={`${i}`}>
                         {shouldReceiveAtLeft && <SlideItemDragReceiver
                             onDrop={(id) => {
-                                slide.move(id, i);
+                                slide.moveItem(id, i);
                             }} />}
                         <SlideItemRender
                             index={i}
                             slideItem={item}
                             onContextMenu={(e) => {
-                                slide.openContextMenu(e, i);
+                                slide.openContextMenu(e, item);
                             }}
                             onCopy={() => {
                                 slide.copiedItem = item;
@@ -88,7 +88,7 @@ export default function SlideItems({ slide }: {
                             }} />
                         {shouldReceiveAtRight && <SlideItemDragReceiver
                             onDrop={(id) => {
-                                slide.move(id, i);
+                                slide.moveItem(id, i);
                             }} />}
                     </Fragment>
                 );

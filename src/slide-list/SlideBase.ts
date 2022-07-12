@@ -2,8 +2,19 @@ import SlideItem from './SlideItem';
 import { MetaDataType } from '../helper/fileHelper';
 import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
-import { ChangeHistory } from './slideHelpers';
 import Slide from './Slide';
+import { DisplayType } from '../helper/displayHelper';
+import HTML2React from '../slide-editor/HTML2React';
+import { toastEventListener } from '../event/ToastEventListener';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import {
+    ChangeHistory,
+    MAX_THUMBNAIL_SCALE,
+    MIN_THUMBNAIL_SCALE,
+    openSlideContextMenu,
+    THUMBNAIL_SCALE_STEP,
+} from './slideHelpers';
+import slideEditingManager from './slideEditingManager';
 
 export type SlideType = {
     items: SlideItem[],
@@ -13,17 +24,21 @@ export default class SlideBase extends ItemSource<SlideType>{
     _history: {
         undo: ChangeHistory[];
         redo: ChangeHistory[];
-    };
+    } = { undo: [], redo: [] };
     constructor(fileSource: FileSource, metadata: MetaDataType,
         content: SlideType) {
         super(fileSource, metadata, content);
+        this.initHistory();
+    }
+    initHistory() {
         this._history = { undo: [], redo: [] };
     }
-    getItemByIndex(index: number): SlideItem | null {
-        return this.items[index] || null;
-    }
-    getItemById(id: number): SlideItem | null {
-        return this.items.find((item) => item.id === id) || null;
+    loadEditingCache() {
+        const data = slideEditingManager.getData(this.fileSource);
+        if (data !== null) {
+            this._history = data.history;
+            this.content = data.content;
+        }
     }
     get copiedItem() {
         return this.items.find((item) => item.isCopied) || null;
@@ -59,17 +74,28 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     set items(newItems: SlideItem[]) {
         this.content.items = newItems;
-        this.save();
+    }
+    getItemByIndex(index: number): SlideItem | null {
+        return this.items[index] || null;
+    }
+    getItemById(id: number): SlideItem | null {
+        return this.items.find((item) => item.id === id) || null;
+    }
+    async save(): Promise<boolean> {
+        const isSuccess = await super.save();
+        if (isSuccess) {
+            slideEditingManager.delete(this.fileSource);
+        }
+        return isSuccess;
     }
     async isModifying() {
-        const slide = await Slide.readFileToDataNoCache(this.fileSource);
+        const slide = await Slide.readFileToDataNoCache(this.fileSource, true);
         if (slide) {
             for (let i = 0; i < this.items.length; i++) {
                 if (await this.items[i].isEditing(i, slide)) {
                     return true;
                 }
             }
-
             if (slide.content.items.length !== this.items.length) {
                 return true;
             }
@@ -81,17 +107,14 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     set undo(undo: ChangeHistory[]) {
         this._history.undo = undo;
-        this.save();
     }
     get redo() {
         return this._history.redo;
     }
     set redo(redo: ChangeHistory[]) {
         this._history.redo = redo;
-        this.save();
     }
     get maxId() {
-        // TODO: leverage Slide instead
         if (this.items.length) {
             return Math.max.apply(Math, this.items.map((item) => item.id));
         }
@@ -104,6 +127,7 @@ export default class SlideBase extends ItemSource<SlideType>{
             items: [...currentItems],
         }];
         this.redo = [];
+        slideEditingManager.save(this);
     }
     undoChanges() {
         const undo = [...this.undo];
@@ -116,6 +140,7 @@ export default class SlideBase extends ItemSource<SlideType>{
                 items: currentItems,
             }];
         }
+        slideEditingManager.save(this);
     }
     redoChanges() {
         const redo = [...this.redo];
@@ -128,17 +153,19 @@ export default class SlideBase extends ItemSource<SlideType>{
                 items: currentItems,
             }];
         }
+        slideEditingManager.save(this);
     }
-    duplicate(index: number) {
+    duplicateItem(slideItem: SlideItem) {
         const newItems = this.newItems;
-        const newItem = newItems[index].clone();
+        const newItem = slideItem.clone();
         if (newItem !== null) {
             newItem.id = this.maxId + 1;
+            const index = this.items.indexOf(slideItem);
             newItems.splice(index + 1, 0, newItem);
             this.setItemsWithHistory(newItems);
         }
     }
-    paste() {
+    pasteItem() {
         if (this.copiedItem === null) {
             return;
         }
@@ -149,22 +176,85 @@ export default class SlideBase extends ItemSource<SlideType>{
             this.setItemsWithHistory(newItems);
         }
     }
-    move(id: number, toIndex: number) {
+    moveItem(id: number, toIndex: number) {
         const fromIndex: number = this.items.findIndex((item) => item.id === id);
         const currentItems = this.newItems;
         const target = currentItems.splice(fromIndex, 1)[0];
         currentItems.splice(toIndex, 0, target);
         this.setItemsWithHistory(currentItems);
     }
-    delete(index: number) {
-        const newItems = this.items.filter((_, i) => i !== index);
+    deleteItem(slideItem: SlideItem) {
+        const newItems = this.items.filter((item) => item !== slideItem);
         this.setItemsWithHistory(newItems);
-        this.save();
     }
-    add(newItem: SlideItem) {
+    addItem(slideItem: SlideItem) {
         const newItems = this.newItems;
-        newItem.id = this.maxId + 1;
-        newItems.push(newItem);
+        slideItem.id = this.maxId + 1;
+        newItems.push(slideItem);
         this.setItemsWithHistory(newItems);
+    }
+    static toWrongDimensionString({ slide, display }: {
+        slide: { width: number, height: number },
+        display: { width: number, height: number },
+    }) {
+        return `⚠️ slide:${slide.width}x${slide.height} display:${display.width}x${display.height}`;
+    }
+    checkIsWrongDimension({ bounds }: DisplayType) {
+        const found = this.items.map((item) => {
+            const html2React = HTML2React.parseHTML(item.html);
+            return { width: html2React.width, height: html2React.height };
+        }).find(({ width, height }: { width: number, height: number }) => {
+            return bounds.width !== width || bounds.height !== height;
+        });
+        if (found) {
+            return {
+                slide: found,
+                display: { width: bounds.width, height: bounds.height },
+            };
+        }
+        return null;
+    }
+    async fixSlideDimension({ bounds }: DisplayType) {
+        this.items.forEach((item) => {
+            const html2React = HTML2React.parseHTML(item.html);
+            html2React.width = bounds.width;
+            html2React.height = bounds.height;
+            item.html = html2React.htmlString;
+        });
+        slideEditingManager.save(this);
+    }
+    showSlideItemContextMenu(e: any) {
+        showAppContextMenu(e, [{
+            title: 'New Slide Thumb', onClick: () => {
+                const item = SlideItem.defaultSlideItem();
+                this.addItem(new SlideItem(item.id, item.html, {},
+                    this.fileSource));
+            },
+        }, {
+            title: 'Paste', disabled: SlideItem.copiedItem === null,
+            onClick: () => this.pasteItem(),
+        }]);
+    }
+    openContextMenu(e: any, slideItem: SlideItem) {
+        openSlideContextMenu(e, this, slideItem);
+    }
+    static toScaleThumbSize(isUp: boolean, currentScale: number) {
+        let newScale = currentScale + (isUp ? -1 : 1) * THUMBNAIL_SCALE_STEP;
+        if (newScale < MIN_THUMBNAIL_SCALE) {
+            newScale = MIN_THUMBNAIL_SCALE;
+        }
+        if (newScale > MAX_THUMBNAIL_SCALE) {
+            newScale = MAX_THUMBNAIL_SCALE;
+        }
+        return newScale;
+    }
+    async rollBack() {
+        this.initHistory();
+        const slide = await Slide.readFileToDataNoCache(this.fileSource, true);
+        if (slide) {
+            this.content = slide.content;
+        }
+        slideEditingManager.delete(this.fileSource);
+        this.fileSource.fireReloadDirEvent();
     }
 }

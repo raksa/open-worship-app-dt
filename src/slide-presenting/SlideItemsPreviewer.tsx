@@ -1,7 +1,6 @@
 import {
     useSlideItemSizing,
 } from '../event/SlideListEventListener';
-import SlideItemsMenu from './SlideItemsMenu';
 import SlideItems from './SlideItems';
 import {
     DEFAULT_THUMBNAIL_SIZE,
@@ -23,8 +22,7 @@ export default function SlideItemsPreviewer({ slide }: { slide: Slide }) {
                 setThumbSize(newScale * DEFAULT_THUMBNAIL_SIZE);
             }}
             onContextMenu={(e) => slide.showSlideItemContextMenu(e)}
-            onPaste={() => slide.paste()}>
-            <SlideItemsMenu slide={slide} />
+            onPaste={() => slide.pasteItem()}>
             <SlideItems slide={slide} />
         </div>
     );

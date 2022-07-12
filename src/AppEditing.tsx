@@ -15,7 +15,7 @@ export default function AppEditing() {
     return (
         <ResizeActor settingName={resizeSettingName}
             flexSizeDefault={flexSizeDefault}
-            resizeKinds={['v']}
+            resizeKinds={['h']}
             sizeKeys={[
                 ['h1', 'flex v'],
                 ['h2', 'flex v']]}>

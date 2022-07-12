@@ -89,14 +89,14 @@ export default class SlideItem extends ItemBase {
         }
     }
     async isEditing(index: number, slide?: Slide | null) {
-        slide = slide || await Slide.readFileToDataNoCache(this.fileSource);
+        slide = slide || await Slide.readFileToDataNoCache(this.fileSource, true);
         if (slide) {
-            const slideItem = slide.items.find((item) => item.id === this.id);
+            const slideItem = slide.getItemById(this.id);
             if (slideItem) {
                 if (index !== slide.items.indexOf(slideItem)) {
                     return true;
                 }
-                return slideItem.html !== this._html;
+                return slideItem.html !== this.html;
             } else {
                 return true;
             }
