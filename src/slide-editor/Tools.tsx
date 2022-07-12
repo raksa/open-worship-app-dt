@@ -5,20 +5,33 @@ import ToolsBackground from './ToolsBackground';
 import ToolsText from './ToolsText';
 import TabRender from '../others/TabRender';
 import CanvasItem from './CanvasItem';
+import CanvasController, { EditingEnum } from './CanvasController';
+import { useEffect, useState } from 'react';
 
 // t: text, b: box
 type TabType = 't' | 'b';
 export default function Tools({
-    canvasItem,
+    canvasController,
     scale, applyScale, setScale,
     minScale, maxScale, scaleStep,
 }: {
-    canvasItem: CanvasItem,
+    canvasController: CanvasController,
     scale: number, applyScale: (isUp: boolean) => void,
     setScale: (newScale: number) => void,
     minScale: number, maxScale: number, scaleStep: number
 }) {
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
+    const [canvasItem, setCanvasItem] = useState<CanvasItem | null>(
+        canvasController.selectedCanvasItem);
+    useEffect(() => {
+        const regEvents = canvasController.registerEditingEventListener(
+            [EditingEnum.SELECT, EditingEnum.UPDATE], () => {
+                setCanvasItem(canvasController.selectedCanvasItem);
+            });
+        return () => {
+            canvasController.unregisterEditingEventListener(regEvents);
+        };
+    }, [canvasController]);
     return (
         <div className="tools d-flex flex-column w-100 h-100">
             <div className="tools-header d-flex">
@@ -39,10 +52,12 @@ export default function Tools({
                 </div>
             </div>
             <div className='tools-body d-flex flex-row flex-fill'>
-                {tabType === 't' && <ToolsText
-                    canvasItem={canvasItem} />}
-                {tabType === 'b' && <ToolsBackground
-                    canvasItem={canvasItem} />}
+                {canvasItem !== null && <>
+                    {tabType === 't' && <ToolsText
+                        canvasItem={canvasItem} />}
+                    {tabType === 'b' && <ToolsBackground
+                        canvasItem={canvasItem} />}
+                </>}
             </div>
         </div>
     );

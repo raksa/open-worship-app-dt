@@ -4,20 +4,20 @@ import SlideItemEditorCanvas from './SlideItemEditorCanvas';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './CanvasController';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
 }) {
-    const [canvasController, setCanvasController] = useState<CanvasController>(
-        new CanvasController(slideItem));
+    const canvasController = new CanvasController(slideItem);
     useEffect(() => {
-        const newCC = new CanvasController(slideItem);
-        setCanvasController(newCC);
-        return () => {
-            newCC.destroy();
-        };
+        canvasController.slideItem = slideItem;
     }, [slideItem]);
+    useEffect(() => {
+        return () => {
+            canvasController.destroy();
+        };
+    });
     const resizeSettingName = 'editor-window-size';
     const flexSizeDefault = {
         'editor-v1': '3',
@@ -65,14 +65,13 @@ export default function SlideItemEditor({ slideItem }: {
                         </div>
                     </div>
                 </div>
-                {canvasController.selectedCanvasItem !== null && <Tools
-                    canvasItem={canvasController.selectedCanvasItem}
+                <Tools canvasController={canvasController}
                     scale={scale}
                     applyScale={applyScale}
                     setScale={setScale}
                     minScale={minScale}
                     maxScale={maxScale}
-                    scaleStep={scaleStep} />}
+                    scaleStep={scaleStep} />
             </ResizeActor>
         </div>
     );

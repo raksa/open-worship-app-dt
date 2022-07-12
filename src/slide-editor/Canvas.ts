@@ -35,13 +35,13 @@ export default class Canvas {
             htmlString: html,
         };
     }
-    static parseHtml(canvasController: CanvasController,
+    static fromHtml(canvasController: CanvasController,
         html: string): Canvas {
         const div = document.createElement('div');
         div.innerHTML = html;
         const mainDiv = div.firstChild as HTMLDivElement;
         const children = Array.from(mainDiv.children).map((ele): CanvasItem => {
-            return CanvasItem.parseHtml(canvasController, ele.outerHTML);
+            return CanvasItem.fromHtml(canvasController, ele.outerHTML);
         });
         return new Canvas({
             width: removePX(mainDiv.style.width) || 500,
@@ -61,7 +61,7 @@ export default class Canvas {
     }
     static fromSlideItem(canvasController: CanvasController,
         slideItem: SlideItem) {
-        return Canvas.parseHtml(canvasController, slideItem.html);
+        return Canvas.fromHtml(canvasController, slideItem.html);
     }
     destroy() {
         this.canvasItems.forEach((item) => {

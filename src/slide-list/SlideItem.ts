@@ -6,6 +6,7 @@ import FileSource from '../helper/FileSource';
 import { getAppInfo } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
+import slideEditingManager from './slideEditingManager';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -83,10 +84,13 @@ export default class SlideItem extends ItemBase {
         return this._html;
     }
     set html(newHtml: string) {
-        if (newHtml !== this._html) {
-            this._html = newHtml;
-            this.fileSource.fireRefreshDirEvent();
-        }
+        this._html = newHtml;
+        Slide.readFileToData(this.fileSource).then((slide) => {
+            if (slide) {
+                slideEditingManager.save(slide);
+            }
+            this.fileSource.fireUpdateEvent();
+        });
     }
     async isEditing(index: number, slide?: Slide | null) {
         slide = slide || await Slide.readFileToDataNoCache(this.fileSource, true);

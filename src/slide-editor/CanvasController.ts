@@ -18,20 +18,30 @@ export default class CanvasController extends EventHandler {
     copiedItem: CanvasItem | null;
     _selectedItem: CanvasItem | null;
     _canvas: Canvas;
-    slideItem: SlideItem;
+    _slideItem: SlideItem;
+    static _objectId = 0;
+    _objectId: number;
     constructor(slideItem: SlideItem) {
         super();
+        this._objectId = CanvasController._objectId + 1;
         this.copiedItem = null;
         this._selectedItem = null;
-        this._canvas = Canvas.parseHtml(this, slideItem.html);
-        this.slideItem = slideItem;
+        this._slideItem = slideItem;
+        this._canvas = Canvas.fromHtml(this, this.slideItem.html);
+    }
+    get slideItem() {
+        return this._slideItem;
+    }
+    set slideItem(slideItem: SlideItem) {
+        this._slideItem = slideItem;
+        this._canvas = Canvas.fromHtml(this, this.slideItem.html);
     }
     get selectedCanvasItem() {
         return this._selectedItem;
     }
     set selectedCanvasItem(canvasItem: CanvasItem | null) {
         this._selectedItem = canvasItem;
-        this._addPropEvent(EditingEnum.SELECT);
+        this.fireSelectEvent();
     }
     get isCopied() {
         if (this.copiedItem === null) {
@@ -53,6 +63,13 @@ export default class CanvasController extends EventHandler {
     }
     set canvasItems(newItems: CanvasItem[]) {
         this._canvas.canvasItems = newItems;
+        this.slideItem.html = this.canvas.htmlString;
+        this.fireUpdateEvent();
+    }
+    fireSelectEvent() {
+        this._addPropEvent(EditingEnum.SELECT);
+    }
+    fireUpdateEvent() {
         this.slideItem.html = this.canvas.htmlString;
         this._addPropEvent(EditingEnum.UPDATE);
     }
@@ -89,7 +106,7 @@ export default class CanvasController extends EventHandler {
     newBox() {
         const newCanvasItems = this.newCanvasItems;
         const newBoxHTML = SlideItem.genDefaultBoxHTML();
-        newCanvasItems.push(CanvasItem.parseHtml(this, newBoxHTML));
+        newCanvasItems.push(CanvasItem.fromHtml(this, newBoxHTML));
         this.canvasItems = newCanvasItems;
     }
     applyToolingData(data: ToolingType) {
@@ -98,13 +115,17 @@ export default class CanvasController extends EventHandler {
             this.canvasItems = newCanvasItems;
         }
     }
-    registerEditingEventListener(type: EditingEnum, listener: ListenerType<any>):
-        RegisteredEventType<any> {
-        this._addOnEventListener(type, listener);
-        return { type, listener };
+    registerEditingEventListener(types: EditingEnum[], listener: ListenerType<any>):
+        RegisteredEventType<any>[] {
+        return types.map((type) => {
+            this._addOnEventListener(type, listener);
+            return { type, listener };
+        });
     }
-    unregisterEditingEventListener({ type, listener }: RegisteredEventType<any>) {
-        this._removeOnEventListener(type, listener);
+    unregisterEditingEventListener(regEvents: RegisteredEventType<any>[]) {
+        regEvents.forEach(({ type, listener }) => {
+            this._removeOnEventListener(type, listener);
+        });
     }
     destroy() {
         this.canvas.destroy();

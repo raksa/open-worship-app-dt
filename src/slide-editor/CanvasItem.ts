@@ -81,7 +81,7 @@ export default class CanvasItem {
     get htmlString() {
         return this.html.outerHTML;
     }
-    static parseHtml(canvasController: CanvasController,
+    static fromHtml(canvasController: CanvasController,
         html: string) {
         const div = document.createElement('div');
         div.innerHTML = html;
@@ -146,9 +146,10 @@ export default class CanvasItem {
         Object.entries(data).forEach(([key, value]) => {
             self[key] = value;
         });
+        this.canvasController.fireUpdateEvent();
     }
     clone() {
-        return cloneObject(this);
+        return CanvasItem.fromHtml(this.canvasController, this.htmlString);
     }
     destroy() {
         (this as any).canvasController = null;

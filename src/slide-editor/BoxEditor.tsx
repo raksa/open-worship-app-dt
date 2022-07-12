@@ -54,9 +54,11 @@ export class BoxEditor extends Component<PropsType, StateType>{
     }
     startControllingMode() {
         this.setState({ isControllable: true });
+        this.canvasController.selectedCanvasItem = this.canvasItem;
     }
     startEditingMode() {
         this.setState({ isEditable: true });
+        this.canvasController.selectedCanvasItem = this.canvasItem;
     }
     stopControllingMode() {
         if (!this.isControllable) {
