@@ -94,7 +94,7 @@ const slideEditingManager = {
         data[fileSource.filePath] = cacheData;
         this.setObject(data);
         if (!isSilent) {
-            fileSource.fireReloadDirEvent();
+            fileSource.fireUpdateEvent();
         }
     },
     saveBySlideBase(slideBase: SlideBase, isSilent?: boolean) {

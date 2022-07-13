@@ -16,7 +16,7 @@ export default function SlideItemEditorGround() {
         }
         if (slideItem) {
             const registerEvent = slideItem.fileSource.registerEventListener(
-                ['select', 'update', 'delete'], () => {
+                ['select', 'delete'], () => {
                 setSlideItem(null);
             });
             return () => {

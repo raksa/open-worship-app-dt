@@ -40,8 +40,12 @@ export default function SlidePreviewer() {
         }
         if (slide) {
             const registerEvent = slide.fileSource.registerEventListener(
-                ['select', 'update', 'delete'], () => {
-                    setSlide(null);
+                ['select', 'update', 'edit', 'delete'], (newSlideItem) => {
+                    if (newSlideItem) {
+                        slide.updateItem(newSlideItem);
+                    } else {
+                        setSlide(null);
+                    }
                 });
             return () => {
                 slide.fileSource.unregisterEventListener(registerEvent);

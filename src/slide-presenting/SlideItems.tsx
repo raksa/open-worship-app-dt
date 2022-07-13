@@ -20,9 +20,7 @@ import SlideItemDragReceiver from './SlideItemDragReceiver';
 import SlideItem from '../slide-list/SlideItem';
 import Slide from '../slide-list/Slide';
 
-export default function SlideItems({ slide }: {
-    slide: Slide,
-}) {
+export default function SlideItems({ slide }: { slide: Slide }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);

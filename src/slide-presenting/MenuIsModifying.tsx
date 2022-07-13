@@ -12,17 +12,11 @@ export default function MenuIsModifying({ slide, eventMapper }: {
         return null;
     }
     return (
-        <>
-            <button type='button' className='btn btn-sm btn-info'
-                onClick={() => {
-                    slide.rollBack();
-                }}>Rollback</button>
-            <button type='button' className='btn btn-sm btn-success tool-tip tool-tip-fade'
-                data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
-                title='save slide thumbs'
-                onClick={() => {
-                    slide.save();
-                }}>Save</button>
-        </>
+        <button type='button' className='btn btn-sm btn-success tool-tip tool-tip-fade'
+            data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+            title='save slide thumbs'
+            onClick={() => {
+                slide.save();
+            }}>Save</button>
     );
 }

@@ -22,12 +22,12 @@ export default function SlideItemsMenu({ slide }: {
     };
     useKeyboardRegistering(eventMapper, () => slide.save());
     const foundWrongDimension = slide.checkIsWrongDimension(presentDisplay);
+    const isHavingHistories = !!slide.undo.length || !!slide.redo.length;
     return (
         <div style={{
             borderBottom: '1px solid #00000024',
             backgroundColor: '#00000020',
-            minHeight: (!!slide.undo.length || !!slide.redo.length
-                || slide.isModifying) ? '35px' : '0px',
+            minHeight: (isHavingHistories || slide.isModifying) ? '35px' : '0px',
         }}>
             <div className="btn-group control d-flex justify-content-center'">
                 {!!slide.undo.length &&
@@ -44,6 +44,10 @@ export default function SlideItemsMenu({ slide }: {
                         redo
                         <i className="bi bi-arrow-90deg-right"></i></button>
                 }
+                {isHavingHistories && <button type='button'
+                    className='btn btn-sm btn-info' onClick={() => {
+                        slide.rollBack();
+                    }}>Rollback</button>}
                 <MenuIsModifying slide={slide}
                     eventMapper={eventMapper} />
                 {foundWrongDimension !== null &&

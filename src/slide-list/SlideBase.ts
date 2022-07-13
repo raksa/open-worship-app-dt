@@ -69,7 +69,7 @@ export default class SlideBase extends ItemSource<SlideType>{
         return this.content.items;
     }
     get newItems() {
-        return [...this.items];
+        return this.items.map((item) => item.clone(true) as SlideItem);
     }
     set items(newItems: SlideItem[]) {
         this.content.items = newItems;
@@ -120,10 +120,10 @@ export default class SlideBase extends ItemSource<SlideType>{
         return 0;
     }
     setItemsWithHistory(newItems: SlideItem[]) {
-        const currentItems = this.newItems;
+        const currentNewItems = this.newItems;
         this.items = newItems;
         this.undo = [...this.undo, {
-            items: [...currentItems],
+            items: [...currentNewItems],
         }];
         this.redo = [];
         slideEditingManager.saveBySlideBase(this);
@@ -133,26 +133,28 @@ export default class SlideBase extends ItemSource<SlideType>{
         if (undo.length) {
             const lastDone = undo.pop() as ChangeHistory;
             this.undo = undo;
-            const currentItems = this.newItems;
+            const newItems = this.newItems;
             this.items = lastDone.items;
             this.redo = [...this.redo, {
-                items: currentItems,
+                items: newItems,
             }];
         }
         slideEditingManager.saveBySlideBase(this);
+        this.fileSource.fireSelectEvent();
     }
     redoChanges() {
         const redo = [...this.redo];
         if (redo.length) {
             const lastRollback = redo.pop() as ChangeHistory;
             this.redo = redo;
-            const currentItems = this.newItems;
+            const newItems = this.newItems;
             this.items = lastRollback.items;
             this.undo = [...this.undo, {
-                items: currentItems,
+                items: newItems,
             }];
         }
         slideEditingManager.saveBySlideBase(this);
+        this.fileSource.fireSelectEvent();
     }
     duplicateItem(slideItem: SlideItem) {
         const newItems = this.newItems;
@@ -177,10 +179,19 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     moveItem(id: number, toIndex: number) {
         const fromIndex: number = this.items.findIndex((item) => item.id === id);
-        const currentItems = this.newItems;
-        const target = currentItems.splice(fromIndex, 1)[0];
-        currentItems.splice(toIndex, 0, target);
-        this.setItemsWithHistory(currentItems);
+        const newItems = this.newItems;
+        const target = newItems.splice(fromIndex, 1)[0];
+        newItems.splice(toIndex, 0, target);
+        this.setItemsWithHistory(newItems);
+    }
+    updateItem(slideItem: SlideItem) {
+        const newItems = this.newItems.map((item) => {
+            if (item.id === slideItem.id) {
+                return slideItem;
+            }
+            return item;
+        });
+        this.setItemsWithHistory(newItems);
     }
     deleteItem(slideItem: SlideItem) {
         const newItems = this.items.filter((item) => item !== slideItem);
@@ -254,6 +265,7 @@ export default class SlideBase extends ItemSource<SlideType>{
             this.content = slide.content;
         }
         slideEditingManager.delete(this.fileSource);
-        this.fileSource.fireReloadDirEvent();
+        this.fileSource.fireUpdateEvent();
+        this.fileSource.fireSelectEvent();
     }
 }

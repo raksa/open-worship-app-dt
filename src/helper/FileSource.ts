@@ -6,8 +6,8 @@ import DirSource from './DirSource';
 import fileHelpers from './fileHelper';
 import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
-type FSListener = (slideItem?:SlideItem) => void;
-type FSEventType = 'select' | 'update' | 'edit' | 'delete';
+type FSListener = (slideItem?: SlideItem) => void;
+type FSEventType = 'select' | 'update' | 'edit' | 'delete' | 'delete-cache';
 export type RegisteredEventType = {
     key: string,
     listener: FSListener,
@@ -68,10 +68,13 @@ export default class FileSource {
     fireDeleteEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('delete'));
     }
+    fireDeleteCacheEvent() {
+        globalEventHandler._addPropEvent(this.toEventKey('delete-cache'));
+    }
     deleteCache() {
         FileSource._fileCache.delete(this.filePath);
         ItemSource.deleteCache(this.filePath);
-        this.fireDeleteEvent();
+        this.fireDeleteCacheEvent();
     }
     async readFileToData() {
         try {
@@ -102,6 +105,7 @@ export default class FileSource {
     async delete() {
         try {
             await fileHelpers.deleteFile(this.filePath);
+            this.fireDeleteEvent();
             this.deleteCache();
             this.fireReloadDirEvent();
             return true;

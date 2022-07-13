@@ -5,7 +5,6 @@ import SlideItem from '../slide-list/SlideItem';
 import Canvas from '../slide-editor/Canvas';
 import SlideItemIFrame from './SlideItemIFrame';
 import RenderIsEditing from './RenderIsEditing';
-import { useEffect, useState } from 'react';
 
 export default function SlideItemRender({
     width, index,
@@ -23,20 +22,7 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
-    const [localSlideItem, setLocalSlideItem] = useState(slideItem);
-    useEffect(() => {
-        setLocalSlideItem(slideItem);
-        const regEvents = slideItem.fileSource.registerEventListener(
-            ['edit'], (newItem) => {
-                if(newItem && newItem.id === slideItem.id) {
-                    setLocalSlideItem(newItem);
-                }
-            });
-        return () => {
-            slideItem.fileSource.unregisterEventListener(regEvents);
-        };
-    }, [slideItem]);
-    const canvasDim = Canvas.parseHtmlDim(localSlideItem.html);
+    const canvasDim = Canvas.parseHtmlDim(slideItem.html);
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
@@ -69,13 +55,13 @@ export default function SlideItemRender({
                         {canvasDim.width}x{canvasDim.height}
                     </small>
                     <RenderIsEditing index={index}
-                        slideItem={localSlideItem} />
+                        slideItem={slideItem} />
                 </div>
             </div>
             <div className="card-body overflow-hidden"
                 style={{ width, padding: '0px' }} >
                 <SlideItemIFrame
-                    id={localSlideItem.id}
+                    id={slideItem.id}
                     width={width}
                     canvasDim={canvasDim} />
             </div>
