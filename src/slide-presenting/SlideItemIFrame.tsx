@@ -10,6 +10,8 @@ export default function SlideItemIFrame({
     const height = width * canvasDim.height / canvasDim.width;
     const scaleX = width / canvasDim.width;
     const scaleY = height / canvasDim.height;
+    // TODO: debug why iframe not refresh at first time
+    console.log('*sir*', canvasDim.htmlString.split('<div')[2]);
     return (
         <div style={{
             width, height,

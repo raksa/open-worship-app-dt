@@ -66,7 +66,7 @@ export default function FileItemHandler({
                     throw new Error('Unsupported mimetype');
             }
         }
-        const updateEvents = fileSource.registerEventListener(['update'], () => {
+        const updateEvents = fileSource.registerEventListener(['update', 'edit'], () => {
             setData(null);
         });
         return () => {

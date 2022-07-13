@@ -126,7 +126,7 @@ export default class SlideBase extends ItemSource<SlideType>{
             items: [...currentItems],
         }];
         this.redo = [];
-        slideEditingManager.save(this);
+        slideEditingManager.saveBySlideBase(this);
     }
     undoChanges() {
         const undo = [...this.undo];
@@ -139,7 +139,7 @@ export default class SlideBase extends ItemSource<SlideType>{
                 items: currentItems,
             }];
         }
-        slideEditingManager.save(this);
+        slideEditingManager.saveBySlideBase(this);
     }
     redoChanges() {
         const redo = [...this.redo];
@@ -152,7 +152,7 @@ export default class SlideBase extends ItemSource<SlideType>{
                 items: currentItems,
             }];
         }
-        slideEditingManager.save(this);
+        slideEditingManager.saveBySlideBase(this);
     }
     duplicateItem(slideItem: SlideItem) {
         const newItems = this.newItems;
@@ -220,7 +220,7 @@ export default class SlideBase extends ItemSource<SlideType>{
             canvasDim.height = bounds.height;
             item.html = canvasDim.htmlString;
         });
-        slideEditingManager.save(this);
+        slideEditingManager.saveBySlideBase(this);
     }
     showSlideItemContextMenu(e: any) {
         showAppContextMenu(e, [{

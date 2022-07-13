@@ -34,7 +34,10 @@ export default class SlideItem extends ItemBase {
         item.jsonError = json;
         return item;
     }
-    toJson() {
+    toJson(): {
+        id: number,
+        html: string,
+    } {
         if (this.isError) {
             return this.jsonError;
         }
@@ -85,12 +88,12 @@ export default class SlideItem extends ItemBase {
     }
     set html(newHtml: string) {
         this._html = newHtml;
-        Slide.readFileToData(this.fileSource).then((slide) => {
-            if (slide) {
-                slideEditingManager.save(slide);
-                this.fileSource.fireUpdateEvent();
-            }
-        });
+        slideEditingManager.saveBySlideItem(this, true);
+        const newItem = this.clone();
+        if (newItem !== null) { 
+            newItem.id = this.id;
+            this.fileSource.fireEditEvent(newItem);
+        }
     }
     async isEditing(index: number, slide?: Slide | null) {
         slide = slide || await Slide.readFileToDataNoCache(this.fileSource, true);

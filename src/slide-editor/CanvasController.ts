@@ -70,7 +70,6 @@ export default class CanvasController extends EventHandler {
         this._addPropEvent(EditingEnum.SELECT);
     }
     fireUpdateEvent() {
-        this.slideItem.html = this.canvas.htmlString;
         this._addPropEvent(EditingEnum.UPDATE);
     }
     cloneItem(canvasItem: CanvasItem) {

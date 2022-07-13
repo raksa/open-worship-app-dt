@@ -5,6 +5,7 @@ import {
 } from './slideHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import SlideBase from './SlideBase';
+import Slide from './Slide';
 
 const slideEditingManager = {
     SETTING_NAME: 'slide-editing-cache',
@@ -67,9 +68,7 @@ const slideEditingManager = {
     itemsToJson(items: SlideItem[]) {
         return items.map((item) => item.toJson());
     },
-    save(slideBase: SlideBase) {
-        const data = this.getObject();
-        const fileSource = slideBase.fileSource;
+    slideBaseToCacheData(slideBase: SlideBase) {
         const undo = slideBase._history.undo.map((history) => {
             return {
                 items: this.itemsToJson(history.items),
@@ -80,18 +79,39 @@ const slideEditingManager = {
                 items: this.itemsToJson(history.items),
             };
         });
-        const cacheData = {
-            content: {
-                items: this.itemsToJson(slideBase.items),
-            },
+        return {
             history: {
                 undo,
                 redo,
             },
+            content: {
+                items: this.itemsToJson(slideBase.items),
+            },
         };
+    },
+    save(cacheData: Object, fileSource: FileSource, isSilent?: boolean) {
+        const data = this.getObject();
         data[fileSource.filePath] = cacheData;
         this.setObject(data);
-        slideBase.fileSource.fireReloadDirEvent();
+        if (!isSilent) {
+            fileSource.fireReloadDirEvent();
+        }
+    },
+    saveBySlideBase(slideBase: SlideBase, isSilent?: boolean) {
+        const cacheData = this.slideBaseToCacheData(slideBase);
+        this.save(cacheData, slideBase.fileSource, isSilent);
+    },
+    saveBySlideItem: async function (slideItem: SlideItem, isSilent?: boolean) {
+        const slide = await Slide.readFileToData(slideItem.fileSource);
+        if (slide) {
+            const cacheData = this.slideBaseToCacheData(slide);
+            cacheData.content.items.forEach((item) => {
+                if (item.id === slideItem.id) {
+                    item.html = slideItem.html;
+                }
+            });
+            this.save(cacheData, slideItem.fileSource, isSilent);
+        }
     },
     delete(fileSource: FileSource) {
         const data = this.getObject();

@@ -1,17 +1,16 @@
 import { globalEventHandler } from '../event/EventHandler';
-import {
-    toastEventListener,
-} from '../event/ToastEventListener';
+import { toastEventListener } from '../event/ToastEventListener';
+import SlideItem from '../slide-list/SlideItem';
 import appProvider from './appProvider';
 import DirSource from './DirSource';
 import fileHelpers from './fileHelper';
 import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
-type FSListener = (t: FSEventType) => void;
-type FSEventType = 'select' | 'update' | 'delete';
+type FSListener = (slideItem?:SlideItem) => void;
+type FSEventType = 'select' | 'update' | 'edit' | 'delete';
 export type RegisteredEventType = {
     key: string,
-    listener: (t: FSEventType) => void,
+    listener: FSListener,
 }
 export default class FileSource {
     basePath: string;
@@ -62,6 +61,9 @@ export default class FileSource {
     }
     fireUpdateEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('update'));
+    }
+    fireEditEvent(slideItem: SlideItem) {
+        globalEventHandler._addPropEvent(this.toEventKey('edit'), slideItem);
     }
     fireDeleteEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('delete'));
