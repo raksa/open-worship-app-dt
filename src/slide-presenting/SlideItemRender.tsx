@@ -36,7 +36,7 @@ export default function SlideItemRender({
             slideItem.fileSource.unregisterEventListener(regEvents);
         };
     }, [slideItem]);
-    const canvasDim = Canvas.parseHtmlDim(slideItem.html);
+    const canvasDim = Canvas.parseHtmlDim(localSlideItem.html);
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable

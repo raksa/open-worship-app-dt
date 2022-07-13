@@ -52,10 +52,12 @@ export default class SlideItem extends ItemBase {
             throw new Error('Invalid slide item data');
         }
     }
-    clone() {
+    clone(isDuplicateId?: boolean) {
         try {
             const slideItem = SlideItem.fromJson(this.toJson(), this.fileSource);
-            slideItem.id = -1;
+            if (!isDuplicateId) {
+                slideItem.id = -1;
+            }
             return slideItem;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
@@ -89,9 +91,8 @@ export default class SlideItem extends ItemBase {
     set html(newHtml: string) {
         this._html = newHtml;
         slideEditingManager.saveBySlideItem(this, true);
-        const newItem = this.clone();
-        if (newItem !== null) { 
-            newItem.id = this.id;
+        const newItem = this.clone(true);
+        if (newItem !== null) {
             this.fileSource.fireEditEvent(newItem);
         }
     }

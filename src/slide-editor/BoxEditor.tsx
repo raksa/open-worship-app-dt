@@ -1,7 +1,7 @@
 import './BoxEditor.scss';
 import './EditorControllerBoxWrapper.scss';
 
-import { Component } from 'react';
+import { Component, CSSProperties, useEffect, useState } from 'react';
 import BoxEditorController from './BoxEditorController';
 import { ContextMenuEventType } from '../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
@@ -10,6 +10,7 @@ import CanvasItem from './CanvasItem';
 export type NewDataType = { [key: string]: any };
 type PropsType = {
     canvasItem: CanvasItem,
+    onUpdate: () => void,
     onContextMenu: (e: ContextMenuEventType) => void,
     scale: number,
 };
@@ -99,6 +100,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
             }
             resolve();
             this.canvasItem.update(info);
+            this.props.onUpdate();
         });
     }
     render() {
@@ -111,6 +113,8 @@ export class BoxEditor extends Component<PropsType, StateType>{
         this.startEditingMode();
     }
     controllingGen() {
+        const editingController = this.editingController;
+        const onContextMenu = this.props.onContextMenu;
         const { isControllable } = this.state;
         const { canvasItem } = this.props;
         const style = canvasItem.style;
@@ -126,7 +130,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 zIndex: canvasItem.zIndex,
             }}>
                 <div className={`box-editor ${isControllable ? 'controllable' : ''}`}
-                    onContextMenu={this.props.onContextMenu}
+                    onContextMenu={onContextMenu}
                     onDoubleClick={(e) => this.onDoubleClick(e)}
                     style={{
                         transform: 'translate(-50%, -50%)',
@@ -138,10 +142,11 @@ export class BoxEditor extends Component<PropsType, StateType>{
                         <RenderText text={canvasItem.text} />
                     </div>
                     <div className='tools'>
-                        <div className={`object ${this.editingController.rotatorCN}`} />
+                        <div className={`object ${editingController.rotatorCN}`} />
                         <div className="rotate-link" />
-                        {Object.keys(this.editingController.resizeActorList)
-                            .map((cn, i) => <div key={`${i}`} className={`object ${cn}`} />)
+                        {Object.keys(editingController.resizeActorList)
+                            .map((cn, i) => <div key={`${i}`}
+                                className={`object ${cn}`} />)
                         }
                     </div>
                 </div>
@@ -149,11 +154,24 @@ export class BoxEditor extends Component<PropsType, StateType>{
         );
     }
     normalGen() {
-        const { canvasItem } = this.props;
-        const style = { ...canvasItem.style, ...canvasItem.normalStyle };
+        const onContextMenu = this.props.onContextMenu;
+        const isEditable = this.state.isEditable;
+        const canvasItem = this.canvasItem;
+        const style: CSSProperties = {
+            ...canvasItem.style,
+            ...canvasItem.normalStyle,
+        };
         return (
-            <div onContextMenu={this.props.onContextMenu}
-                className={`box-editor pointer ${this.state.isEditable ? 'editable' : ''}`}
+            <div onContextMenu={async(e) => {
+                if(isEditable) {
+                    e.stopPropagation();
+                    await editorMapper.stopAllModes();
+                    this.startControllingMode();
+                } else {
+                    onContextMenu(e);
+                }
+            }}
+                className={`box-editor pointer ${isEditable ? 'editable' : ''}`}
                 style={style}
                 ref={(r) => {
                     this.divRef = r;
@@ -165,25 +183,43 @@ export class BoxEditor extends Component<PropsType, StateType>{
                 }}
                 onClick={async (e) => {
                     e.stopPropagation();
-                    if (this.isEditable) {
+                    if (isEditable) {
                         return;
                     }
                     await editorMapper.stopAllModes();
                     this.startControllingMode();
                 }}
                 onDoubleClick={(e) => this.onDoubleClick(e)}>
-                {this.state.isEditable ?
-                    <textarea style={{ color: style.color }}
-                        className='w-100 h-100' value={canvasItem.text}
-                        onChange={(e) => {
-                            this.canvasItem.update({ text: e.target.value });
-                        }} />
-                    : <RenderText text={canvasItem.text} />}
+                {isEditable ? <RenderTextAreaInput color={style.color}
+                    text={canvasItem.text}
+                    setText={(text) => {
+                        canvasItem.update({ text });
+                    }} />
+                    : <RenderText text={canvasItem.text} />
+                }
             </div>
         );
     }
 }
 
+function RenderTextAreaInput({ color, text, setText }: {
+    color?: string, text: string,
+    setText: (t: string) => void,
+}) {
+    const [localText, setLocalText] = useState(text);
+    useEffect(() => {
+        setLocalText(text);
+    }, [text]);
+    return (
+        <textarea style={{ color }}
+            className='w-100 h-100' value={localText}
+            onChange={(e) => {
+                const newText = e.target.value;
+                setLocalText(newText);
+                setText(newText);
+            }} />
+    );
+}
 function RenderText({ text }: { text: string }) {
     return (
         <span dangerouslySetInnerHTML={{

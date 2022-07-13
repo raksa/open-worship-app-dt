@@ -146,7 +146,6 @@ export default class CanvasItem {
         Object.entries(data).forEach(([key, value]) => {
             self[key] = value;
         });
-        this.canvasController.fireUpdateEvent();
     }
     clone() {
         return CanvasItem.fromHtml(this.canvasController, this.htmlString);

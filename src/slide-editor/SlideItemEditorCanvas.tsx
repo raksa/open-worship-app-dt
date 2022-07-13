@@ -15,11 +15,12 @@ export default function SlideItemEditorCanvas({
     canvasController: CanvasController,
     scale: number,
 }) {
-    const [canvasItems, setCanvasItems] = useState<CanvasItem[]>(canvasController.canvasItems);
+    const [localCanvasItems, setLocalCanvasItems] = useState<CanvasItem[]>(
+        canvasController.canvasItems);
     useEffect(() => {
         const regEvents = canvasController.registerEditingEventListener(
             [EditingEnum.UPDATE], () => {
-                setCanvasItems(canvasController.newCanvasItems);
+                setLocalCanvasItems(canvasController.newCanvasItems);
             });
         return () => {
             canvasController.unregisterEditingEventListener(regEvents);
@@ -38,8 +39,10 @@ export default function SlideItemEditorCanvas({
             }}
                 onContextMenu={(e) => showCanvasContextMenu(e, canvasController)}
                 onDoubleClick={() => editorMapper.stopAllModes()} >
-                {canvasItems.map((canvasItem, i) => {
-                    return <BoxEditor
+                {localCanvasItems.map((canvasItem, i) => {
+                    return <BoxEditor onUpdate={() => {
+                        canvasController.canvasItems = localCanvasItems;
+                    }}
                         scale={scale} key={`${i}`}
                         onContextMenu={(e) => showBoxContextMenu(e,
                             canvasController, i, canvasItem)}
