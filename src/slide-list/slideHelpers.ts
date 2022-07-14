@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { isWindowEditingMode } from '../App';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import FileSource, { FSEventType } from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
+import CanvasController from '../slide-editor/canvas/CanvasController';
 import { openItemSlideEdit } from '../slide-editor/SlideItemEditorPopup';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
@@ -25,11 +27,10 @@ export function toScaleThumbSize(isUp: boolean, currentScale: number) {
     return newScale;
 }
 
-export function useRefresh(slide: Slide) {
+export function useFSRefresh(fileSource: FileSource, eventTypes: FSEventType[]) {
     const [n, setN] = useState(0);
     useEffect(() => {
-        const fileSource = slide.fileSource;
-        const deleteEvents = fileSource.registerEventListener(['update'], () => {
+        const deleteEvents = fileSource.registerEventListener(eventTypes, () => {
             setN(n + 1);
         });
         return () => {

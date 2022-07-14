@@ -1,10 +1,10 @@
 import './SlideItemRender.scss';
 
-import { ContextMenuEventType } from '../others/AppContextMenu';
-import SlideItem from '../slide-list/SlideItem';
-import Canvas from '../slide-editor/Canvas';
+import { ContextMenuEventType } from '../../others/AppContextMenu';
+import SlideItem from '../../slide-list/SlideItem';
+import Canvas from '../../slide-editor/canvas/Canvas';
 import SlideItemIFrame from './SlideItemIFrame';
-import RenderIsEditing from './RenderIsEditing';
+import RenderIsEditing from '../RenderIsEditing';
 
 export default function SlideItemRender({
     width, index,
@@ -58,12 +58,10 @@ export default function SlideItemRender({
                         slideItem={slideItem} />
                 </div>
             </div>
-            <div className="card-body overflow-hidden"
+            <div className="card-body w-100 h-100 overflow-hidden"
                 style={{ width, padding: '0px' }} >
-                <SlideItemIFrame
-                    id={slideItem.id}
-                    width={width}
-                    canvasDim={canvasDim} />
+                <SlideItemIFrame id={slideItem.id}
+                    width={width} canvasDim={canvasDim} />
             </div>
         </div>
     );

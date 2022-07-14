@@ -8,17 +8,17 @@ import { useSlideSelecting } from '../event/PreviewingEventListener';
 
 export default function SlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
+    const reloadSlide = async () => {
+        const newSlide = await SlideItem.getSelectedItem();
+        setSlideItem(newSlide || undefined);
+    };
     useEffect(() => {
         if (slideItem === null) {
-            SlideItem.getSelectedItem().then((item) => {
-                setSlideItem(item || undefined);
-            });
+            reloadSlide();
         }
         if (slideItem) {
             const registerEvent = slideItem.fileSource.registerEventListener(
-                ['select', 'delete'], () => {
-                setSlideItem(null);
-            });
+                ['select', 'delete'], reloadSlide);
             return () => {
                 slideItem.fileSource.unregisterEventListener(registerEvent);
             };

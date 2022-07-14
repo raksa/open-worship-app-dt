@@ -1,22 +1,23 @@
 import './SlidePreviewer.scss';
 
 import SlideItemsPreviewer from './SlideItemsPreviewer';
-import { renderFG } from '../helper/presentingHelpers';
+import { renderFG } from '../../helper/presentingHelpers';
 import {
     useSlideItemSelecting,
     useSlideItemSizing,
-} from '../event/SlideListEventListener';
-import { presentEventListener } from '../event/PresentEventListener';
+} from '../../event/SlideListEventListener';
+import { presentEventListener } from '../../event/PresentEventListener';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
-} from '../slide-list/slideHelpers';
+} from '../../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
-import Slide from '../slide-list/Slide';
-import { useSlideSelecting } from '../event/PreviewingEventListener';
+import Slide from '../../slide-list/Slide';
+import { useSlideSelecting } from '../../event/PreviewingEventListener';
 import { useEffect, useState } from 'react';
-import SlideList from '../slide-list/SlideList';
+import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
+import SlideItem from '../../slide-list/SlideItem';
 
 export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
@@ -32,21 +33,21 @@ export default function SlidePreviewer() {
             presentEventListener.clearFG();
         }
     });
+    const reloadSlide = async (editingItem?: SlideItem) => {
+        if (editingItem && slide) {
+            slide.updateItem(editingItem);
+        } else {
+            const newSlide = await Slide.getSelected();
+            setSlide(newSlide || undefined);
+        }
+    };
     useEffect(() => {
         if (slide === null) {
-            Slide.getSelected().then((sl) => {
-                setSlide(sl || undefined);
-            });
+            reloadSlide();
         }
         if (slide) {
             const registerEvent = slide.fileSource.registerEventListener(
-                ['select', 'update', 'edit', 'delete'], (newSlideItem) => {
-                    if (newSlideItem) {
-                        slide.updateItem(newSlideItem);
-                    } else {
-                        setSlide(null);
-                    }
-                });
+                ['select', 'update', 'edit', 'delete'], reloadSlide);
             return () => {
                 slide.fileSource.unregisterEventListener(registerEvent);
             };

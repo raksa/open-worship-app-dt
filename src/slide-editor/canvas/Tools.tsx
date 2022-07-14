@@ -1,15 +1,16 @@
 import './Tools.scss';
 
-import { useStateSettingString } from '../helper/settingHelper';
+import { useStateSettingString } from '../../helper/settingHelper';
 import ToolsBackground from './ToolsBackground';
 import ToolsText from './ToolsText';
-import TabRender from '../others/TabRender';
+import TabRender from '../../others/TabRender';
 import CanvasItem from './CanvasItem';
-import CanvasController, { EditingEnum } from './CanvasController';
+import CanvasController from './CanvasController';
 import { useEffect, useState } from 'react';
+import CanvasItems from './CanvasItems';
 
 // t: text, b: box
-type TabType = 't' | 'b';
+type TabType = 't' | 'b' | 'c';
 export default function Tools({
     canvasController,
     scale, applyScale, setScale,
@@ -25,7 +26,7 @@ export default function Tools({
         canvasController.selectedCanvasItem);
     useEffect(() => {
         const regEvents = canvasController.registerEditingEventListener(
-            [EditingEnum.SELECT, EditingEnum.UPDATE], () => {
+            ['select', 'update'], () => {
                 setCanvasItem(canvasController.selectedCanvasItem);
             });
         return () => {
@@ -38,6 +39,7 @@ export default function Tools({
                 <TabRender<TabType> tabs={[
                     ['t', 'Text'],
                     ['b', 'Box'],
+                    ['c', 'Items'],
                 ]}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
@@ -53,11 +55,13 @@ export default function Tools({
             </div>
             <div className='tools-body d-flex flex-row flex-fill'>
                 {canvasItem !== null && <>
-                    {tabType === 't' && <ToolsText
-                        canvasItem={canvasItem} />}
-                    {tabType === 'b' && <ToolsBackground
-                        canvasItem={canvasItem} />}
+                    {tabType === 't' && <ToolsText canvasItem={canvasItem}
+                        canvasController={canvasController} />}
+                    {tabType === 'b' && <ToolsBackground canvasItem={canvasItem}
+                        canvasController={canvasController} />}
                 </>}
+                {tabType === 'c' && <CanvasItems
+                    canvasController={canvasController} />}
             </div>
         </div>
     );

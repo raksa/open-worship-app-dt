@@ -1,30 +1,30 @@
 import {
     KeyEnum,
     useKeyboardRegistering,
-} from '../event/KeyboardEventListener';
-import { WindowEnum } from '../event/WindowEventListener';
+} from '../../event/KeyboardEventListener';
+import { WindowEnum } from '../../event/WindowEventListener';
 import {
     useSlideItemSizing,
-} from '../event/SlideListEventListener';
-import { isWindowEditingMode } from '../App';
+} from '../../event/SlideListEventListener';
+import { isWindowEditingMode } from '../../App';
 import { Fragment, useState } from 'react';
 import SlideItemRender from './SlideItemRender';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
-    useRefresh,
-} from '../slide-list/slideHelpers';
-import { usePresentFGClearing } from '../event/PresentEventListener';
+    useFSRefresh,
+} from '../../slide-list/slideHelpers';
+import { usePresentFGClearing } from '../../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import SlideItem from '../slide-list/SlideItem';
-import Slide from '../slide-list/Slide';
+import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 
 export default function SlideItems({ slide }: { slide: Slide }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useRefresh(slide);
+    useFSRefresh(slide.fileSource, ['update']);
     usePresentFGClearing(() => {
         SlideItem.setSelectedItem(null);
     });

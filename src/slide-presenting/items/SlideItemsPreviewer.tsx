@@ -1,12 +1,12 @@
 import {
     useSlideItemSizing,
-} from '../event/SlideListEventListener';
+} from '../../event/SlideListEventListener';
 import SlideItems from './SlideItems';
 import {
     DEFAULT_THUMBNAIL_SIZE,
     THUMBNAIL_WIDTH_SETTING_NAME,
-} from '../slide-list/slideHelpers';
-import Slide from '../slide-list/Slide';
+} from '../../slide-list/slideHelpers';
+import Slide from '../../slide-list/Slide';
 
 export default function SlideItemsPreviewer({ slide }: { slide: Slide }) {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,

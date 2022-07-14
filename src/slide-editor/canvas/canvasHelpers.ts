@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../../others/AppContextMenu';
 import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
 import CanvasController from './CanvasController';
 import CanvasItem from './CanvasItem';

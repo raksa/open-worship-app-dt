@@ -1,6 +1,6 @@
 import './Presenting.scss';
 
-import SlidePreviewer from './SlidePreviewer';
+import SlidePreviewer from './items/SlidePreviewer';
 import FullTextPresentController from '../full-text-present/FullTextPresentController';
 import { useFullTextOpening, useSlideSelecting } from '../event/PreviewingEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';

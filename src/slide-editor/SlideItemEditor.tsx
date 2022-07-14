@@ -1,23 +1,20 @@
 import { useStateSettingNumber } from '../helper/settingHelper';
-import Tools from './Tools';
-import SlideItemEditorCanvas from './SlideItemEditorCanvas';
+import Tools from './canvas/Tools';
+import SlideItemEditorCanvas from './canvas/SlideItemEditorCanvas';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
-import CanvasController from './CanvasController';
-import { useEffect } from 'react';
+import CanvasController from './canvas/CanvasController';
+import { useEffect, useState } from 'react';
+import { useFSRefresh } from '../slide-list/slideHelpers';
 
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
 }) {
-    const canvasController = new CanvasController(slideItem);
+    const [canvasController, setCanvasController] = useState(new CanvasController(slideItem));
     useEffect(() => {
-        canvasController.slideItem = slideItem;
+        setCanvasController(new CanvasController(slideItem));
     }, [slideItem]);
-    useEffect(() => {
-        return () => {
-            canvasController.destroy();
-        };
-    });
+    useFSRefresh(slideItem.fileSource, ['edit']);
     const resizeSettingName = 'editor-window-size';
     const flexSizeDefault = {
         'editor-v1': '3',

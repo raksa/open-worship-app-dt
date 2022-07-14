@@ -1,10 +1,10 @@
-import Slide from '../slide-list/Slide';
+import Slide from '../../slide-list/Slide';
 import {
     DEFAULT_THUMBNAIL_SIZE,
     MIN_THUMBNAIL_SCALE,
     MAX_THUMBNAIL_SCALE,
     THUMBNAIL_SCALE_STEP,
-} from '../slide-list/slideHelpers';
+} from '../../slide-list/slideHelpers';
 
 export default function SlidePreviewerFooter({ thumbnailSize, setThumbnailSize }: {
     thumbnailSize: number,

@@ -1,12 +1,15 @@
-import ColorPicker from '../others/ColorPicker';
+import ColorPicker from '../../others/ColorPicker';
 import Tool from './Tool';
 import Align from './Align';
 import CanvasItem from './CanvasItem';
+import CanvasController from './CanvasController';
 
-export default function ToolsBackground({ canvasItem }: {
+export default function ToolsBackground({
+    canvasItem, canvasController,
+}: {
+    canvasController: CanvasController,
     canvasItem: CanvasItem,
 }) {
-    const canvasController = canvasItem.canvasController;
     return (
         <>
             <Tool title='Background Color'>

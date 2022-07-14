@@ -3,16 +3,14 @@ import {
     MacControlEnum,
     useKeyboardRegistering,
     WindowsControlEnum,
-} from '../event/KeyboardEventListener';
-import { useDisplay } from '../event/PresentEventListener';
-import Slide from '../slide-list/Slide';
-import { useRefresh } from '../slide-list/slideHelpers';
+} from '../../event/KeyboardEventListener';
+import { useDisplay } from '../../event/PresentEventListener';
+import Slide from '../../slide-list/Slide';
+import { useFSRefresh } from '../../slide-list/slideHelpers';
 import MenuIsModifying from './MenuIsModifying';
 
-export default function SlideItemsMenu({ slide }: {
-    slide: Slide,
-}) {
-    useRefresh(slide);
+export default function SlideItemsMenu({ slide }: { slide: Slide }) {
+    useFSRefresh(slide.fileSource, ['update']);
     const { presentDisplay } = useDisplay();
     const eventMapper = {
         wControlKey: [WindowsControlEnum.Ctrl],
@@ -44,11 +42,8 @@ export default function SlideItemsMenu({ slide }: {
                         redo
                         <i className="bi bi-arrow-90deg-right"></i></button>
                 }
-                {isHavingHistories && <button type='button'
-                    className='btn btn-sm btn-info' onClick={() => {
-                        slide.rollBack();
-                    }}>Rollback</button>}
                 <MenuIsModifying slide={slide}
+                    isHavingHistories={isHavingHistories}
                     eventMapper={eventMapper} />
                 {foundWrongDimension !== null &&
                     <button type="button" className="btn btn-sm btn-warning"

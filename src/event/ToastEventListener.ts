@@ -3,18 +3,16 @@ import { SimpleToastType } from '../others/Toast';
 import EventHandler from './EventHandler';
 
 type ListenerType = (toast: SimpleToastType) => void;
-export enum ToastTypeEnum {
-    Simple = 'simple',
-}
+export type ToastEventType = 'simple';
 export type RegisteredEventType = {
-    type: ToastTypeEnum,
+    type: ToastEventType,
     listener: ListenerType,
 };
 export default class ToastEventListener extends EventHandler {
     showSimpleToast(toast: SimpleToastType) {
-        this._addPropEvent(ToastTypeEnum.Simple, toast);
+        this._addPropEvent('simple', toast);
     }
-    registerToastEventListener(type: ToastTypeEnum, listener: ListenerType): RegisteredEventType {
+    registerToastEventListener(type: ToastEventType, listener: ListenerType): RegisteredEventType {
         this._addOnEventListener(type, listener);
         return {
             type,
@@ -30,9 +28,8 @@ export const toastEventListener = new ToastEventListener();
 
 export function useToastSimpleShowing(listener: ListenerType) {
     useEffect(() => {
-        const event = toastEventListener.registerToastEventListener(
-            ToastTypeEnum.Simple, listener);
-            return () => {
+        const event = toastEventListener.registerToastEventListener('simple', listener);
+        return () => {
             toastEventListener.unregisterToastEventListener(event);
         };
     });

@@ -2,15 +2,16 @@ import './BoxEditor.scss';
 import './EditorControllerBoxWrapper.scss';
 
 import { Component, CSSProperties, useEffect, useState } from 'react';
-import BoxEditorController from './BoxEditorController';
-import { ContextMenuEventType } from '../others/AppContextMenu';
+import BoxEditorController from '../BoxEditorController';
+import { ContextMenuEventType } from '../../others/AppContextMenu';
 import { editorMapper } from './EditorBoxMapper';
 import CanvasItem from './CanvasItem';
+import CanvasController from './CanvasController';
 
 export type NewDataType = { [key: string]: any };
 type PropsType = {
     canvasItem: CanvasItem,
-    onUpdate: () => void,
+    canvasController: CanvasController,
     onContextMenu: (e: ContextMenuEventType) => void,
     scale: number,
 };
@@ -33,11 +34,14 @@ export class BoxEditor extends Component<PropsType, StateType>{
             this.applyControl();
         };
     }
+    fireUpdateEvent(){
+        return this.canvasController.fireUpdateEvent();
+    }
     get canvasItem() {
         return this.props.canvasItem;
     }
     get canvasController() {
-        return this.canvasItem.canvasController;
+        return this.props.canvasController;
     }
     get isControllable() {
         return this.state.isControllable;
@@ -100,7 +104,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
             }
             resolve();
             this.canvasItem.update(info);
-            this.props.onUpdate();
+            this.fireUpdateEvent();
         });
     }
     render() {
@@ -194,6 +198,7 @@ export class BoxEditor extends Component<PropsType, StateType>{
                     text={canvasItem.text}
                     setText={(text) => {
                         canvasItem.update({ text });
+                        this.fireUpdateEvent();
                     }} />
                     : <RenderText text={canvasItem.text} />
                 }

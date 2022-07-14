@@ -4,7 +4,7 @@ import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener'
 import HeaderEditorPopup from './HeaderEditorPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
-import { editorMapper } from './EditorBoxMapper';
+import { editorMapper } from './canvas/EditorBoxMapper';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 

@@ -1,18 +1,13 @@
 import { CSSProperties } from 'react';
-import { BLACK_COLOR } from '../others/ColorPicker';
-import {
-    cloneObject,
-    getRotationDeg, removePX,
-} from '../helper/helpers';
-import {
+import { BLACK_COLOR } from '../../others/ColorPicker';
+import { getRotationDeg, removePX } from '../../helper/helpers';
+import Canvas, {
     HAlignmentEnum, VAlignmentEnum,
 } from './Canvas';
 import { editorMapper } from './EditorBoxMapper';
-import { ToolingType, tooling2BoxProps } from './helps';
-import CanvasController from './CanvasController';
+import { ToolingType, tooling2BoxProps } from './canvasHelpers';
 
 export default class CanvasItem {
-    canvasController: CanvasController;
     text: string;
     fontSize: number;
     color: string;
@@ -25,14 +20,12 @@ export default class CanvasItem {
     verticalAlignment: VAlignmentEnum;
     backgroundColor: string;
     zIndex: number;
-    constructor(canvasController: CanvasController,
-        { text, fontSize, color, top, left, rotate, width, height,
-            horizontalAlignment, verticalAlignment, backgroundColor, zIndex }: {
-                text: string, fontSize: number, color: string, top: number, left: number,
-                rotate: number, width: number, height: number, horizontalAlignment: HAlignmentEnum,
-                verticalAlignment: VAlignmentEnum, backgroundColor: string, zIndex: number,
-            }) {
-        this.canvasController = canvasController;
+    constructor({ text, fontSize, color, top, left, rotate, width, height,
+        horizontalAlignment, verticalAlignment, backgroundColor, zIndex }: {
+            text: string, fontSize: number, color: string, top: number, left: number,
+            rotate: number, width: number, height: number, horizontalAlignment: HAlignmentEnum,
+            verticalAlignment: VAlignmentEnum, backgroundColor: string, zIndex: number,
+        }) {
         this.text = text;
         this.fontSize = fontSize;
         this.color = color;
@@ -81,13 +74,12 @@ export default class CanvasItem {
     get htmlString() {
         return this.html.outerHTML;
     }
-    static fromHtml(canvasController: CanvasController,
-        html: string) {
+    static fromHtml(html: string) {
         const div = document.createElement('div');
         div.innerHTML = html;
         const element = div.firstChild as HTMLDivElement;
         const style = element.style;
-        return new CanvasItem(canvasController, {
+        return new CanvasItem({
             text: element.innerHTML.split('<br>').join('\n'),
             fontSize: removePX(style.fontSize) || 30,
             color: style.color || BLACK_COLOR,
@@ -102,16 +94,15 @@ export default class CanvasItem {
             zIndex: +style.zIndex || 0,
         });
     }
-    static genNewChild(canvasController: CanvasController,
+    static genNewChild(canvas: Canvas,
         data: ToolingType, newList: CanvasItem[],
         index: number) {
-        const canvas = canvasController.canvas;
         const { text, box } = data;
         const boxProps = tooling2BoxProps(data, {
             width: newList[index].width, height: newList[index].height,
             parentWidth: canvas.width, parentHeight: canvas.height,
         });
-        const newCanvasItem = new CanvasItem(canvasController, {
+        const newCanvasItem = new CanvasItem({
             ...newList[index], ...text, ...box, ...boxProps,
         });
         newCanvasItem.rotate = box && box.rotate !== undefined ? box.rotate : newCanvasItem.rotate;
@@ -119,16 +110,13 @@ export default class CanvasItem {
             box.backgroundColor : newCanvasItem.backgroundColor;
         return newCanvasItem;
     }
-    static genNewCanvasItems(canvasController: CanvasController,
-        data: ToolingType) {
-        const canvas = canvasController.canvas;
+    static genNewCanvasItems(canvas: Canvas, data: ToolingType) {
         if (!~editorMapper.selectedIndex) {
             return null;
         }
         let newList = [...canvas.canvasItems];
         const index = editorMapper.selectedIndex;
-        newList[index] = this.genNewChild(canvasController,
-            data, newList, index);
+        newList[index] = this.genNewChild(canvas, data, newList, index);
         if (data.box?.layerBack || data.box?.layerFront) {
             newList = newList.map((be, i) => {
                 if (i === index) {
@@ -148,9 +136,6 @@ export default class CanvasItem {
         });
     }
     clone() {
-        return CanvasItem.fromHtml(this.canvasController, this.htmlString);
-    }
-    destroy() {
-        (this as any).canvasController = null;
+        return CanvasItem.fromHtml(this.htmlString);
     }
 }

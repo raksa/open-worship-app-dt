@@ -1,12 +1,15 @@
-import ColorPicker from '../others/ColorPicker';
+import ColorPicker from '../../others/ColorPicker';
 import Tool from './Tool';
 import Align from './Align';
 import CanvasItem from './CanvasItem';
+import CanvasController from './CanvasController';
 
-export default function ToolsText({ canvasItem }: {
+export default function ToolsText({
+    canvasItem, canvasController,
+}: {
+    canvasController: CanvasController,
     canvasItem: CanvasItem,
 }) {
-    const canvasController = canvasItem.canvasController;
     const applyFontSize = (fontSize: number) => {
         canvasController.applyToolingData({
             text: { fontSize },

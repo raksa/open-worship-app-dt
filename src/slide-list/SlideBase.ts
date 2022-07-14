@@ -4,7 +4,7 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
 import { DisplayType } from '../helper/displayHelper';
-import Canvas from '../slide-editor/Canvas';
+import Canvas from '../slide-editor/canvas/Canvas';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     ChangeHistory,

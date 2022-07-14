@@ -1,5 +1,5 @@
-import { removePX } from '../helper/helpers';
-import SlideItem from '../slide-list/SlideItem';
+import { removePX } from '../../helper/helpers';
+import SlideItem from '../../slide-list/SlideItem';
 import CanvasController from './CanvasController';
 import CanvasItem from './CanvasItem';
 
@@ -41,7 +41,7 @@ export default class Canvas {
         div.innerHTML = html;
         const mainDiv = div.firstChild as HTMLDivElement;
         const children = Array.from(mainDiv.children).map((ele): CanvasItem => {
-            return CanvasItem.fromHtml(canvasController, ele.outerHTML);
+            return CanvasItem.fromHtml(ele.outerHTML);
         });
         return new Canvas({
             width: removePX(mainDiv.style.width) || 500,
@@ -62,10 +62,5 @@ export default class Canvas {
     static fromSlideItem(canvasController: CanvasController,
         slideItem: SlideItem) {
         return Canvas.fromHtml(canvasController, slideItem.html);
-    }
-    destroy() {
-        this.canvasItems.forEach((item) => {
-            item.destroy();
-        });
     }
 }

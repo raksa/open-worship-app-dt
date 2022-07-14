@@ -1,16 +1,13 @@
-import EventHandler from '../event/EventHandler';
-import SlideItem from '../slide-list/SlideItem';
+import EventHandler from '../../event/EventHandler';
+import SlideItem from '../../slide-list/SlideItem';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
-import { ToolingType } from './helps';
+import { ToolingType } from './canvasHelpers';
 
 type ListenerType<T> = (data: T) => void;
-export enum EditingEnum {
-    SELECT = 'select',
-    UPDATE = 'update',
-}
+export type CCEventType = 'select' | 'update';
 export type RegisteredEventType<T> = {
-    type: EditingEnum,
+    type: CCEventType,
     listener: ListenerType<T>,
 };
 
@@ -67,10 +64,10 @@ export default class CanvasController extends EventHandler {
         this.fireUpdateEvent();
     }
     fireSelectEvent() {
-        this._addPropEvent(EditingEnum.SELECT);
+        this._addPropEvent('select');
     }
     fireUpdateEvent() {
-        this._addPropEvent(EditingEnum.UPDATE);
+        this._addPropEvent('update');
     }
     cloneItem(canvasItem: CanvasItem) {
         const newCanvasItem = canvasItem.clone();
@@ -105,16 +102,16 @@ export default class CanvasController extends EventHandler {
     newBox() {
         const newCanvasItems = this.newCanvasItems;
         const newBoxHTML = SlideItem.genDefaultBoxHTML();
-        newCanvasItems.push(CanvasItem.fromHtml(this, newBoxHTML));
+        newCanvasItems.push(CanvasItem.fromHtml(newBoxHTML));
         this.canvasItems = newCanvasItems;
     }
     applyToolingData(data: ToolingType) {
-        const newCanvasItems = CanvasItem.genNewCanvasItems(this, data);
+        const newCanvasItems = CanvasItem.genNewCanvasItems(this.canvas, data);
         if (newCanvasItems !== null) {
             this.canvasItems = newCanvasItems;
         }
     }
-    registerEditingEventListener(types: EditingEnum[], listener: ListenerType<any>):
+    registerEditingEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {
         return types.map((type) => {
             this._addOnEventListener(type, listener);
@@ -125,8 +122,5 @@ export default class CanvasController extends EventHandler {
         regEvents.forEach(({ type, listener }) => {
             this._removeOnEventListener(type, listener);
         });
-    }
-    destroy() {
-        this.canvas.destroy();
     }
 }
