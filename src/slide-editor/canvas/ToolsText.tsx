@@ -11,7 +11,7 @@ export default function ToolsText({
     canvasItem: CanvasItem,
 }) {
     const applyFontSize = (fontSize: number) => {
-        canvasController.applyToolingData({
+        canvasController.applyToolingData(canvasItem, {
             text: { fontSize },
         });
     };
@@ -20,12 +20,12 @@ export default function ToolsText({
             <Tool>
                 <ColorPicker color={canvasItem.color}
                     onColorChange={(newColor: string) => {
-                        canvasController.applyToolingData({ text: { color: newColor } });
+                        canvasController.applyToolingData(canvasItem, { text: { color: newColor } });
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
                 <Align isText onData={(newData) => {
-                    canvasController.applyToolingData({ text: newData });
+                    canvasController.applyToolingData(canvasItem, { text: newData });
                 }} />
             </Tool>
             <Tool title='Font Size'>
@@ -48,7 +48,7 @@ export default function ToolsText({
             </Tool>
             <Tool title='Rotate'>
                 <button className='btn btn-info' onClick={() => {
-                    canvasController.applyToolingData({ box: { rotate: 0 } });
+                    canvasController.applyToolingData(canvasItem, { box: { rotate: 0 } });
                 }}
                 >UnRotate</button>
             </Tool>

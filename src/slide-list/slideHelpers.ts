@@ -30,13 +30,13 @@ export function toScaleThumbSize(isUp: boolean, currentScale: number) {
 export function useFSRefresh(fileSource: FileSource, eventTypes: FSEventType[]) {
     const [n, setN] = useState(0);
     useEffect(() => {
-        const deleteEvents = fileSource.registerEventListener(eventTypes, () => {
+        const regEvents = fileSource.registerEventListener(eventTypes, () => {
             setN(n + 1);
         });
         return () => {
-            fileSource.unregisterEventListener(deleteEvents);
+            fileSource.unregisterEventListener(regEvents);
         };
-    });
+    }, [fileSource]);
 }
 
 export function openSlideContextMenu(e: any,

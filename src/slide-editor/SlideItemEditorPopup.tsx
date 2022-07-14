@@ -4,7 +4,6 @@ import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener'
 import HeaderEditorPopup from './HeaderEditorPopup';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
-import { editorMapper } from './canvas/EditorBoxMapper';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 
@@ -20,10 +19,7 @@ export function openItemSlideEdit(slideItem: SlideItem) {
     windowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
 }
 export function closeItemSlideEdit() {
-    const close = () => {
-        windowEventListener.fireEvent(closeItemSlideEditEvent);
-    };
-    editorMapper.stopAllModes().then(close);
+    windowEventListener.fireEvent(closeItemSlideEditEvent);
 }
 
 export default function SlideItemEditorPopup({

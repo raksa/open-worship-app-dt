@@ -15,7 +15,7 @@ export default function ToolsBackground({
             <Tool title='Background Color'>
                 <ColorPicker color={canvasItem.color}
                     onColorChange={(newColor: string) => {
-                        canvasController.applyToolingData({
+                        canvasController.applyToolingData(canvasItem, {
                             box: {
                                 backgroundColor: newColor,
                             },
@@ -24,15 +24,15 @@ export default function ToolsBackground({
             </Tool>
             <Tool title='Box Alignment'>
                 <Align onData={(newData) => {
-                    canvasController.applyToolingData({ box: newData });
+                    canvasController.applyToolingData(canvasItem, { box: newData });
                 }} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info' onClick={() => {
-                    canvasController.applyToolingData({ box: { layerBack: true } });
+                    canvasController.applyToolingData(canvasItem, { box: { layerBack: true } });
                 }}><i className="bi bi-layer-backward" /></button>
                 <button className='btn btn-info' onClick={() => {
-                    canvasController.applyToolingData({ box: { layerFront: true } });
+                    canvasController.applyToolingData(canvasItem, { box: { layerFront: true } });
                 }}><i className="bi bi-layer-forward" /></button>
             </Tool>
         </>

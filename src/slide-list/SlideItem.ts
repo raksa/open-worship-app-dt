@@ -6,7 +6,7 @@ import FileSource from '../helper/FileSource';
 import { getAppInfo } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
-import slideEditingManager from './slideEditingManager';
+import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -90,7 +90,7 @@ export default class SlideItem extends ItemBase {
     }
     set html(newHtml: string) {
         this._html = newHtml;
-        slideEditingManager.saveBySlideItem(this, true);
+        slideEditingCacheManager.saveBySlideItem(this, true);
         const newItem = this.clone(true);
         if (newItem !== null) {
             this.fileSource.fireEditEvent(newItem);

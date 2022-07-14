@@ -1,13 +1,14 @@
-import SlideItem from './SlideItem';
+import SlideItem from '../slide-list/SlideItem';
 import FileSource from '../helper/FileSource';
 import {
     ChangeHistory,
-} from './slideHelpers';
+} from '../slide-list/slideHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import SlideBase from './SlideBase';
-import Slide from './Slide';
+import SlideBase from '../slide-list/SlideBase';
+import Slide from '../slide-list/Slide';
+import { MetaDataType } from '../helper/fileHelper';
 
-const slideEditingManager = {
+const slideEditingCacheManager = {
     SETTING_NAME: 'slide-editing-cache',
     getObject() {
         const str = getSetting(this.SETTING_NAME, '{}');
@@ -20,6 +21,18 @@ const slideEditingManager = {
     setObject(data: Object) {
         setSetting(this.SETTING_NAME, JSON.stringify(data));
     },
+    getMetadata(fileSource: FileSource): MetaDataType {
+        const data = this.getObject();
+        const slideData = data[fileSource.filePath];
+        return slideData && slideData[fileSource.filePath] || {};
+    },
+    setMetadata(fileSource: FileSource, key:string, value:string) {
+        const data = this.getObject();
+        const cacheData = data[fileSource.filePath];
+        cacheData[fileSource.filePath] = cacheData[fileSource.filePath] || {};
+        cacheData[key] = value;
+        this.save(cacheData, fileSource);
+    },
     getData(fileSource: FileSource): {
         history: {
             undo: ChangeHistory[],
@@ -27,12 +40,15 @@ const slideEditingManager = {
         },
         content: {
             items: SlideItem[],
-        }
+        },
     } | null {
         const data = this.getObject();
         const slideData = data[fileSource.filePath];
         if (slideData && typeof slideData.history === 'object' &&
             typeof slideData.content === 'object') {
+            const convertItems = (items: any[]) => {
+                return this.itemsFromJson(fileSource, items);
+            };
             try {
                 const undo = slideData.history.undo;
                 const redo = slideData.history.redo;
@@ -40,17 +56,17 @@ const slideEditingManager = {
                     history: {
                         undo: undo.map((undoItem: any) => {
                             return {
-                                items: this.itemsFromJson(fileSource, undoItem.items),
+                                items: convertItems(undoItem.items),
                             };
                         }),
                         redo: redo.map((redoItem: any) => {
                             return {
-                                items: this.itemsFromJson(fileSource, redoItem.items),
+                                items: convertItems(redoItem.items),
                             };
                         }),
                     },
                     content: {
-                        items: this.itemsFromJson(fileSource, slideData.content.items),
+                        items: convertItems(slideData.content.items),
                     },
                 };
             } catch (error) {
@@ -120,4 +136,4 @@ const slideEditingManager = {
     },
 };
 
-export default slideEditingManager;
+export default slideEditingCacheManager;

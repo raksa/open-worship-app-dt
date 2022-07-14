@@ -4,15 +4,15 @@ import SlideItemEditorCanvas from './canvas/SlideItemEditorCanvas';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useFSRefresh } from '../slide-list/slideHelpers';
 
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
 }) {
-    const [canvasController, setCanvasController] = useState(new CanvasController(slideItem));
+    const canvasController = CanvasController.getInstant(slideItem);
     useEffect(() => {
-        setCanvasController(new CanvasController(slideItem));
+        canvasController.slideItem = slideItem;
     }, [slideItem]);
     useFSRefresh(slideItem.fileSource, ['edit']);
     const resizeSettingName = 'editor-window-size';

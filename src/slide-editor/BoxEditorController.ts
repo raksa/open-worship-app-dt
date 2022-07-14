@@ -269,3 +269,5 @@ export default class BoxEditorController {
     return info;
   }
 }
+
+export const boxEditorController = new BoxEditorController();

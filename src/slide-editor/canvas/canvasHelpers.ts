@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react';
 import { showAppContextMenu } from '../../others/AppContextMenu';
+import SlideItem from '../../slide-list/SlideItem';
 import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
-import CanvasController from './CanvasController';
+import CanvasController, { CCEventType } from './CanvasController';
 import CanvasItem from './CanvasItem';
-import { editorMapper } from './EditorBoxMapper';
 
 export function tooling2BoxProps(toolingData: ToolingType, state: {
     parentWidth: number, parentHeight: number, width: number, height: number,
@@ -63,8 +64,9 @@ export function showCanvasContextMenu(e: any,
     ]);
 }
 
-export function showBoxContextMenu(e: any, canvasController: CanvasController,
-    index: number, canvasItem: CanvasItem,
+export function showBoxContextMenu(e: any,
+    canvasController: CanvasController,
+    canvasItem: CanvasItem,
 ) {
     showAppContextMenu(e, [
         {
@@ -79,8 +81,7 @@ export function showBoxContextMenu(e: any, canvasController: CanvasController,
         },
         {
             title: 'Edit', onClick: async () => {
-                await editorMapper.getByIndex(index)?.stopAllModes();
-                editorMapper.getByIndex(index)?.startEditingMode();
+                canvasItem.isEditing = true;
             },
         },
         {
@@ -89,4 +90,16 @@ export function showBoxContextMenu(e: any, canvasController: CanvasController,
             },
         },
     ]);
+}
+
+export function useCCRefresh(canvasController:CanvasController, eventTypes: CCEventType[]) {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+        const regEvents = canvasController.registerEventListener(eventTypes, () => {
+            setN(n + 1);
+        });
+        return () => {
+            canvasController.unregisterEventListener(regEvents);
+        };
+    }, [canvasController]);
 }

@@ -3,9 +3,8 @@ import {
     KeyEnum,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { editorMapper } from './EditorBoxMapper';
 import CanvasController from './CanvasController';
-import { showBoxContextMenu, showCanvasContextMenu } from './canvasHelpers';
+import { showCanvasContextMenu } from './canvasHelpers';
 
 export default function SlideItemEditorCanvas({
     canvasController, scale,
@@ -15,7 +14,9 @@ export default function SlideItemEditorCanvas({
 }) {
     useKeyboardRegistering({
         key: KeyEnum.Escape,
-    }, () => editorMapper.stopAllModes());
+    }, () => {
+        canvasController.stopAllMod();
+    });
     const canvas = canvasController.canvas;
     return (
         <>
@@ -25,14 +26,12 @@ export default function SlideItemEditorCanvas({
                 transform: 'translate(-50%, -50%)',
             }}
                 onContextMenu={(e) => showCanvasContextMenu(e, canvasController)}
-                onDoubleClick={() => editorMapper.stopAllModes()} >
+                onDoubleClick={() => {
+                    canvasController.stopAllMod();
+                }} >
                 {canvasController.canvasItems.map((canvasItem, i) => {
+                    console.log(canvasController.canvasItems.indexOf(canvasItem));
                     return <BoxEditor scale={scale} key={`${i}`}
-                        onContextMenu={(e) => showBoxContextMenu(e,
-                            canvasController, i, canvasItem)}
-                        ref={(be) => {
-                            editorMapper.setEditor(`${i}`, be);
-                        }}
                         canvasItem={canvasItem}
                         canvasController={canvasController} />;
                 })}

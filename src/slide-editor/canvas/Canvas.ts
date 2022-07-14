@@ -41,7 +41,7 @@ export default class Canvas {
         div.innerHTML = html;
         const mainDiv = div.firstChild as HTMLDivElement;
         const children = Array.from(mainDiv.children).map((ele): CanvasItem => {
-            return CanvasItem.fromHtml(ele.outerHTML);
+            return CanvasItem.fromHtml(canvasController, ele.outerHTML);
         });
         return new Canvas({
             width: removePX(mainDiv.style.width) || 500,

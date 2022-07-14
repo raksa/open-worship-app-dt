@@ -5,7 +5,7 @@ import CanvasItem from './CanvasItem';
 import { ToolingType } from './canvasHelpers';
 
 type ListenerType<T> = (data: T) => void;
-export type CCEventType = 'select' | 'update';
+export type CCEventType = 'select' | 'start-editing' | 'update';
 export type RegisteredEventType<T> = {
     type: CCEventType,
     listener: ListenerType<T>,
@@ -16,14 +16,13 @@ export default class CanvasController extends EventHandler {
     _selectedItem: CanvasItem | null;
     _canvas: Canvas;
     _slideItem: SlideItem;
-    static _objectId = 0;
-    _objectId: number;
+    static _instant: CanvasController | null = null;
     constructor(slideItem: SlideItem) {
         super();
-        this._objectId = CanvasController._objectId + 1;
         this.copiedItem = null;
         this._selectedItem = null;
         this._slideItem = slideItem;
+        (window as any).cc = this;
         this._canvas = Canvas.fromHtml(this, this.slideItem.html);
     }
     get slideItem() {
@@ -33,12 +32,8 @@ export default class CanvasController extends EventHandler {
         this._slideItem = slideItem;
         this._canvas = Canvas.fromHtml(this, this.slideItem.html);
     }
-    get selectedCanvasItem() {
-        return this._selectedItem;
-    }
-    set selectedCanvasItem(canvasItem: CanvasItem | null) {
-        this._selectedItem = canvasItem;
-        this.fireSelectEvent();
+    get selectedCanvasItems() {
+        return this.canvasItems.filter((item) => item.isSelected);
     }
     get isCopied() {
         if (this.copiedItem === null) {
@@ -66,11 +61,19 @@ export default class CanvasController extends EventHandler {
     fireSelectEvent() {
         this._addPropEvent('select');
     }
+    fireStartEditingEvent(canvasItem: CanvasItem) {
+        this.canvasItems.forEach((item) => {
+            if (item !== canvasItem) {
+                item._isEditing = false;
+            }
+        });
+        this._addPropEvent('start-editing');
+    }
     fireUpdateEvent() {
         this._addPropEvent('update');
     }
     cloneItem(canvasItem: CanvasItem) {
-        const newCanvasItem = canvasItem.clone();
+        const newCanvasItem = canvasItem.clone(this);
         newCanvasItem.top += 10;
         newCanvasItem.left += 10;
         return newCanvasItem;
@@ -102,25 +105,37 @@ export default class CanvasController extends EventHandler {
     newBox() {
         const newCanvasItems = this.newCanvasItems;
         const newBoxHTML = SlideItem.genDefaultBoxHTML();
-        newCanvasItems.push(CanvasItem.fromHtml(newBoxHTML));
+        newCanvasItems.push(CanvasItem.fromHtml(this, newBoxHTML));
         this.canvasItems = newCanvasItems;
     }
-    applyToolingData(data: ToolingType) {
-        const newCanvasItems = CanvasItem.genNewCanvasItems(this.canvas, data);
+    applyToolingData(canvasItem: CanvasItem, data: ToolingType) {
+        const newCanvasItems = CanvasItem.genNewCanvasItems(this, canvasItem, data);
         if (newCanvasItems !== null) {
             this.canvasItems = newCanvasItems;
         }
     }
-    registerEditingEventListener(types: CCEventType[], listener: ListenerType<any>):
+    registerEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {
         return types.map((type) => {
             this._addOnEventListener(type, listener);
             return { type, listener };
         });
     }
-    unregisterEditingEventListener(regEvents: RegisteredEventType<any>[]) {
+    unregisterEventListener(regEvents: RegisteredEventType<any>[]) {
         regEvents.forEach(({ type, listener }) => {
             this._removeOnEventListener(type, listener);
         });
+    }
+    stopAllMod() {
+        this.canvasItems.forEach((item) => {
+            item.isSelected = false;
+            item.isEditing = false;
+        });
+    }
+    static getInstant(slideItem: SlideItem) {
+        if (CanvasController._instant === null) {
+            CanvasController._instant = new CanvasController(slideItem);
+        }
+        return CanvasController._instant;
     }
 }

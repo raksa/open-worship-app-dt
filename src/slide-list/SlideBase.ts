@@ -13,7 +13,7 @@ import {
     openSlideContextMenu,
     THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
-import slideEditingManager from './slideEditingManager';
+import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 
 export type SlideType = {
     items: SlideItem[],
@@ -33,7 +33,7 @@ export default class SlideBase extends ItemSource<SlideType>{
         this._history = { undo: [], redo: [] };
     }
     loadEditingCache() {
-        const data = slideEditingManager.getData(this.fileSource);
+        const data = slideEditingCacheManager.getData(this.fileSource);
         if (data !== null) {
             this._history = data.history;
             this.content = data.content;
@@ -83,7 +83,7 @@ export default class SlideBase extends ItemSource<SlideType>{
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
         if (isSuccess) {
-            slideEditingManager.delete(this.fileSource);
+            slideEditingCacheManager.delete(this.fileSource);
         }
         return isSuccess;
     }
@@ -126,7 +126,7 @@ export default class SlideBase extends ItemSource<SlideType>{
             items: [...currentNewItems],
         }];
         this.redo = [];
-        slideEditingManager.saveBySlideBase(this);
+        slideEditingCacheManager.saveBySlideBase(this);
     }
     undoChanges() {
         const undo = [...this.undo];
@@ -139,7 +139,7 @@ export default class SlideBase extends ItemSource<SlideType>{
                 items: newItems,
             }];
         }
-        slideEditingManager.saveBySlideBase(this);
+        slideEditingCacheManager.saveBySlideBase(this);
         this.fileSource.fireSelectEvent();
     }
     redoChanges() {
@@ -153,7 +153,7 @@ export default class SlideBase extends ItemSource<SlideType>{
                 items: newItems,
             }];
         }
-        slideEditingManager.saveBySlideBase(this);
+        slideEditingCacheManager.saveBySlideBase(this);
         this.fileSource.fireSelectEvent();
     }
     duplicateItem(slideItem: SlideItem) {
@@ -231,7 +231,7 @@ export default class SlideBase extends ItemSource<SlideType>{
             canvasDim.height = bounds.height;
             item.html = canvasDim.htmlString;
         });
-        slideEditingManager.saveBySlideBase(this);
+        slideEditingCacheManager.saveBySlideBase(this);
     }
     showSlideItemContextMenu(e: any) {
         showAppContextMenu(e, [{
@@ -264,7 +264,7 @@ export default class SlideBase extends ItemSource<SlideType>{
         if (slide) {
             this.content = slide.content;
         }
-        slideEditingManager.delete(this.fileSource);
+        slideEditingCacheManager.delete(this.fileSource);
         this.fileSource.fireUpdateEvent();
         this.fileSource.fireSelectEvent();
     }
