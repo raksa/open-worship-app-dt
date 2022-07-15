@@ -6,73 +6,78 @@ import { ToolingType, tooling2BoxProps } from './canvasHelpers';
 import CanvasController from './CanvasController';
 import SlideItem from '../../slide-list/SlideItem';
 
+type CanvasItemPropsType = {
+    text: string, fontSize: number, color: string,
+    top: number, left: number,
+    rotate: number, width: number, height: number,
+    horizontalAlignment: HAlignmentEnum,
+    verticalAlignment: VAlignmentEnum,
+    backgroundColor: string, zIndex: number,
+};
 export default class CanvasItem {
-    text: string;
-    fontSize: number;
-    color: string;
-    top: number;
-    left: number;
-    rotate: number;
-    width: number;
-    height: number;
-    horizontalAlignment: HAlignmentEnum;
-    verticalAlignment: VAlignmentEnum;
-    backgroundColor: string;
-    zIndex: number;
-    _isSelected: boolean;
+    static _objectId = 0;
+    _objectId: number;
+    props: CanvasItemPropsType;
+    _isControlling: boolean;
     _isEditing: boolean;
-    slideItem: SlideItem;
+    slideItem: SlideItem | null;
     constructor(canvasController: CanvasController,
-        { text, fontSize, color, top, left, rotate, width, height,
-            horizontalAlignment, verticalAlignment, backgroundColor, zIndex }: {
-                text: string, fontSize: number, color: string, top: number, left: number,
-                rotate: number, width: number, height: number, horizontalAlignment: HAlignmentEnum,
-                verticalAlignment: VAlignmentEnum, backgroundColor: string, zIndex: number,
-            }) {
-        this.text = text;
-        this.fontSize = fontSize;
-        this.color = color;
-        this.top = top;
-        this.left = left;
-        this.rotate = rotate;
-        this.width = width;
-        this.height = height;
-        this.horizontalAlignment = horizontalAlignment;
-        this.verticalAlignment = verticalAlignment;
-        this.backgroundColor = backgroundColor;
-        this.zIndex = zIndex;
-        this._isSelected = false;
+        props: CanvasItemPropsType) {
+        this._objectId = CanvasItem._objectId++;
+        this.props = props;
+        this._isControlling = false;
         this._isEditing = false;
         this.slideItem = canvasController.slideItem;
     }
+    get isSelected() {
+        return this.isControlling;
+    }
+    get isControlling() {
+        return this._isControlling;
+    }
+    set isControlling(b: boolean) {
+        this._isControlling = b;
+        this.canvasController?.fireControlEvent(this);
+    }
+    get isEditing() {
+        return this._isEditing;
+    }
+    set isEditing(b: boolean) {
+        this._isEditing = b;
+        this.canvasController?.fireEditEvent(this);
+    }
     get canvasController() {
+        if (this.slideItem === null) {
+            return null;
+        }
         return CanvasController.getInstant(this.slideItem);
     }
     get style() {
         const style: CSSProperties = {
             display: 'flex',
-            fontSize: `${this.fontSize}px`,
-            color: this.color,
-            alignItems: this.verticalAlignment,
-            justifyContent: this.horizontalAlignment,
-            backgroundColor: this.backgroundColor,
+            fontSize: `${this.props.fontSize}px`,
+            color: this.props.color,
+            alignItems: this.props.verticalAlignment,
+            justifyContent: this.props.horizontalAlignment,
+            backgroundColor: this.props.backgroundColor,
         };
         return style;
     }
     get normalStyle() {
         const style: CSSProperties = {
-            top: `${this.top}px`, left: `${this.left}px`,
-            transform: `rotate(${this.rotate}deg)`,
-            width: `${this.width}px`,
-            height: `${this.height}px`,
+            top: `${this.props.top}px`,
+            left: `${this.props.left}px`,
+            transform: `rotate(${this.props.rotate}deg)`,
+            width: `${this.props.width}px`,
+            height: `${this.props.height}px`,
             position: 'absolute',
-            zIndex: this.zIndex,
+            zIndex: this.props.zIndex,
         };
         return style;
     }
     get html() {
         const div = document.createElement('div');
-        div.innerHTML = this.text;
+        div.innerHTML = this.props.text;
         const targetStyle = div.style as any;
         const style = { ...this.style, ...this.normalStyle } as any;
         Object.keys(style).forEach((k) => {
@@ -103,66 +108,35 @@ export default class CanvasItem {
             zIndex: +style.zIndex || 0,
         });
     }
-    static genNewChild(canvasController: CanvasController,
-        data: ToolingType, newList: CanvasItem[],
-        index: number) {
-        const { text, box } = data;
+    applyToolingData(data: ToolingType) {
+        const { text: text = {}, box: box = {} } = data;
+        const canvasController = this.canvasController;
+        if (canvasController === null) {
+            return;
+        }
         const canvas = canvasController.canvas;
         const boxProps = tooling2BoxProps(data, {
-            width: newList[index].width, height: newList[index].height,
-            parentWidth: canvas.width, parentHeight: canvas.height,
+            width: this.props.width,
+            height: this.props.height,
+            parentWidth: canvas.width,
+            parentHeight: canvas.height,
         });
-        const newCanvasItem = new CanvasItem(canvasController, {
-            ...newList[index], ...text, ...box, ...boxProps,
-        });
-        newCanvasItem.rotate = box && box.rotate !== undefined ? box.rotate : newCanvasItem.rotate;
-        newCanvasItem.backgroundColor = box && box.backgroundColor !== undefined ?
-            box.backgroundColor : newCanvasItem.backgroundColor;
-        return newCanvasItem;
+        const newProps = {
+            ...text, ...box, ...boxProps,
+        };
+        newProps.rotate = box?.rotate ?? this.props.rotate;
+        newProps.backgroundColor = box?.backgroundColor ??
+            this.props.backgroundColor;
+        this.applyProps(newProps);
     }
-    static genNewCanvasItems(canvasController: CanvasController,
-        canvasItem: CanvasItem, data: ToolingType) {
-        let newList = [...canvasController.canvasItems];
-        const index = newList.indexOf(canvasItem);
-        if (index < 0) {
-            return null;
-        }
-        newList[index] = this.genNewChild(canvasController,
-            data, newList, index);
-        if (data.box?.layerBack || data.box?.layerFront) {
-            newList = newList.map((be, i) => {
-                if (i === index) {
-                    be.zIndex = data.box?.layerBack ? 1 : 2;
-                } else {
-                    be.zIndex = data.box?.layerBack ? 2 : 1;
-                }
-                return be;
-            });
-        }
-        return newList;
-    }
-    update(data: { [key: string]: any }) {
-        const self = this as any;
-        Object.entries(data).forEach(([key, value]) => {
-            self[key] = value;
+    applyProps(props: { [key: string]: any }) {
+        const propsAny = this.props as any;
+        Object.entries(props).forEach(([key, value]) => {
+            propsAny[key] = value;
         });
+        this.canvasController?.fireUpdateEvent();
     }
     clone(canvasController: CanvasController) {
         return CanvasItem.fromHtml(canvasController, this.htmlString);
-    }
-
-    get isSelected() {
-        return this._isSelected;
-    }
-    set isSelected(b: boolean) {
-        this._isSelected = b;
-        this.canvasController?.fireSelectEvent();
-    }
-    get isEditing() {
-        return this._isEditing;
-    }
-    set isEditing(b: boolean) {
-        this._isEditing = b;
-        this.canvasController?.fireStartEditingEvent(this);
     }
 }

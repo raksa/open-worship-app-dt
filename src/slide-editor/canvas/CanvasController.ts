@@ -3,9 +3,10 @@ import SlideItem from '../../slide-list/SlideItem';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
 import { ToolingType } from './canvasHelpers';
+import { getSetting } from '../../helper/settingHelper';
 
 type ListenerType<T> = (data: T) => void;
-export type CCEventType = 'select' | 'start-editing' | 'update';
+export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
 export type RegisteredEventType<T> = {
     type: CCEventType,
     listener: ListenerType<T>,
@@ -15,6 +16,10 @@ export default class CanvasController extends EventHandler {
     copiedItem: CanvasItem | null;
     _selectedItem: CanvasItem | null;
     _canvas: Canvas;
+    MAX_SCALE = 3;
+    MIN_SCALE = 0.2;
+    SCALE_STEP = 0.1;
+    _scale: number = 1;
     _slideItem: SlideItem;
     static _instant: CanvasController | null = null;
     constructor(slideItem: SlideItem) {
@@ -22,8 +27,18 @@ export default class CanvasController extends EventHandler {
         this.copiedItem = null;
         this._selectedItem = null;
         this._slideItem = slideItem;
-        (window as any).cc = this;
         this._canvas = Canvas.fromHtml(this, this.slideItem.html);
+        const defaultData = +(getSetting('editor-scale') || NaN);
+        if (!isNaN(defaultData)) {
+            this._scale = defaultData;
+        }
+    }
+    get scale() {
+        return this._scale;
+    }
+    set scale(n: number) {
+        this._scale = n;
+        this._addPropEvent('scale');
     }
     get slideItem() {
         return this._slideItem;
@@ -31,15 +46,16 @@ export default class CanvasController extends EventHandler {
     set slideItem(slideItem: SlideItem) {
         this._slideItem = slideItem;
         this._canvas = Canvas.fromHtml(this, this.slideItem.html);
+        this.fireUpdateEvent();
     }
     get selectedCanvasItems() {
-        return this.canvasItems.filter((item) => item.isSelected);
+        return this.canvas.canvasItems.filter((item) => item.isSelected);
     }
     get isCopied() {
         if (this.copiedItem === null) {
             return false;
         }
-        return this.canvasItems.indexOf(this.copiedItem) > -1;
+        return this.canvas.canvasItems.indexOf(this.copiedItem) > -1;
     }
     get newCanvasItems() {
         return [...this._canvas.canvasItems];
@@ -50,69 +66,79 @@ export default class CanvasController extends EventHandler {
     set canvas(newCanvas: Canvas) {
         this._canvas = newCanvas;
     }
-    get canvasItems() {
-        return this._canvas.canvasItems;
-    }
-    set canvasItems(newItems: CanvasItem[]) {
-        this._canvas.canvasItems = newItems;
-        this.slideItem.html = this.canvas.htmlString;
-        this.fireUpdateEvent();
-    }
     fireSelectEvent() {
         this._addPropEvent('select');
     }
-    fireStartEditingEvent(canvasItem: CanvasItem) {
-        this.canvasItems.forEach((item) => {
+    fireControlEvent(canvasItem: CanvasItem) {
+        this.canvas.canvasItems.forEach((item) => {
+            if (item !== canvasItem) {
+                item._isControlling = false;
+            }
+        });
+        this._addPropEvent('control');
+        this.fireSelectEvent();
+    }
+    fireEditEvent(canvasItem: CanvasItem) {
+        this.canvas.canvasItems.forEach((item) => {
             if (item !== canvasItem) {
                 item._isEditing = false;
             }
         });
-        this._addPropEvent('start-editing');
+        this._addPropEvent('edit');
     }
     fireUpdateEvent() {
-        this._addPropEvent('update');
+        this.slideItem.html = this.canvas.htmlString;
+        this._addPropEvent('update', this.slideItem);
     }
     cloneItem(canvasItem: CanvasItem) {
         const newCanvasItem = canvasItem.clone(this);
-        newCanvasItem.top += 10;
-        newCanvasItem.left += 10;
+        newCanvasItem.props.top += 10;
+        newCanvasItem.props.left += 10;
         return newCanvasItem;
     }
     duplicate(canvasItem: CanvasItem) {
         const newCanvasItems = this.newCanvasItems;
         const newCanvasItem = this.cloneItem(canvasItem);
-        const index = this.canvasItems.indexOf(canvasItem);
+        const index = this.canvas.canvasItems.indexOf(canvasItem);
         newCanvasItems.splice(index + 1, 0, newCanvasItem);
-        this.canvasItems = newCanvasItems;
+        this.canvas.canvasItems = newCanvasItems;
     }
     deleteItem(canvasItem: CanvasItem) {
         if (this.copiedItem === canvasItem) {
             this.copiedItem = null;
         }
-        const newCanvasItems = this.canvasItems.filter((item) => {
+        const newCanvasItems = this.canvas.canvasItems.filter((item) => {
             return item === canvasItem;
         });
-        this.canvasItems = newCanvasItems;
+        this.canvas.canvasItems = newCanvasItems;
     }
     paste() {
         const newCanvasItems = this.newCanvasItems;
         if (this.copiedItem !== null) {
             const newCanvasItem = this.cloneItem(this.copiedItem);
             newCanvasItems.push(newCanvasItem);
-            this.canvasItems = newCanvasItems;
+            this.canvas.canvasItems = newCanvasItems;
         }
     }
     newBox() {
         const newCanvasItems = this.newCanvasItems;
         const newBoxHTML = SlideItem.genDefaultBoxHTML();
         newCanvasItems.push(CanvasItem.fromHtml(this, newBoxHTML));
-        this.canvasItems = newCanvasItems;
+        this.canvas.canvasItems = newCanvasItems;
     }
     applyToolingData(canvasItem: CanvasItem, data: ToolingType) {
-        const newCanvasItems = CanvasItem.genNewCanvasItems(this, canvasItem, data);
-        if (newCanvasItems !== null) {
-            this.canvasItems = newCanvasItems;
+        if (data.box?.layerBack || data.box?.layerFront) {
+            const newCanvasItems = this.canvas.canvasItems.map((item) => {
+                if (item === canvasItem) {
+                    item.props.zIndex = data.box?.layerBack ? 1 : 2;
+                } else {
+                    item.props.zIndex = data.box?.layerBack ? 2 : 1;
+                }
+                return item;
+            });
+            this.canvas.canvasItems = newCanvasItems;
         }
+        canvasItem.applyToolingData(data);
     }
     registerEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {
@@ -127,8 +153,8 @@ export default class CanvasController extends EventHandler {
         });
     }
     stopAllMod() {
-        this.canvasItems.forEach((item) => {
-            item.isSelected = false;
+        this.canvas.canvasItems.forEach((item) => {
+            item.isControlling = false;
             item.isEditing = false;
         });
     }
@@ -136,6 +162,19 @@ export default class CanvasController extends EventHandler {
         if (CanvasController._instant === null) {
             CanvasController._instant = new CanvasController(slideItem);
         }
+        if (CanvasController._instant.slideItem.id !== slideItem.id) {
+            CanvasController._instant.slideItem = slideItem;
+        }
         return CanvasController._instant;
     }
+    applyScale(isUp: boolean){
+        let newScale = this.scale + (isUp ? -1 : 1) * this.SCALE_STEP;
+        if (newScale < this.MIN_SCALE) {
+            newScale = this.MIN_SCALE;
+        }
+        if (newScale > this.MAX_SCALE) {
+            newScale = this.MAX_SCALE;
+        }
+        this.scale = newScale;
+    };
 }

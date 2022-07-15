@@ -14,16 +14,32 @@ export enum VAlignmentEnum {
     Bottom = 'end',
 }
 
+type CanvasPropsType = {
+    width: number, height: number,
+    children: CanvasItem[],
+};
 export default class Canvas {
-    width: number;
-    height: number;
-    canvasItems: CanvasItem[];
-    constructor({ width, height, children }: {
-        width: number, height: number, children: CanvasItem[],
-    }) {
-        this.width = width;
-        this.height = height;
-        this.canvasItems = children;
+    static _objectId = 0;
+    _objectId: number;
+    props: CanvasPropsType;
+    constructor(props: CanvasPropsType) {
+        this._objectId = CanvasItem._objectId++;
+        this.props = props;
+    }
+    get width() {
+        return this.props.width;
+    }
+    get height() {
+        return this.props.height;
+    }
+    get canvasItems() {
+        return this.props.children;
+    }
+    set canvasItems(canvasItems: CanvasItem[]) {
+        this.props.children.forEach((item)=>{
+            item.slideItem = null;
+        });
+        this.props.children = canvasItems;
     }
     static parseHtmlDim(html: string) {
         const div = document.createElement('div');
@@ -51,7 +67,7 @@ export default class Canvas {
     }
     get html() {
         const div = document.createElement('div');
-        const newHtml = `<div style="width: ${this.width}px; height: ${this.height}px;">` +
+        const newHtml = `<div style="width: ${this.props.width}px; height: ${this.props.height}px;">` +
             `${this.canvasItems.map((child) => child.htmlString).join('')}</div>`;
         div.innerHTML = newHtml;
         return div.firstChild as HTMLDivElement;

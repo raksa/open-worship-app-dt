@@ -1,44 +1,27 @@
-import { useStateSettingNumber } from '../helper/settingHelper';
 import Tools from './canvas/Tools';
 import SlideItemEditorCanvas from './canvas/SlideItemEditorCanvas';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
-import { useEffect } from 'react';
-import { useFSRefresh } from '../slide-list/slideHelpers';
+import { useCCScale } from './canvas/canvasHelpers';
 
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
 }) {
     const canvasController = CanvasController.getInstant(slideItem);
-    useEffect(() => {
-        canvasController.slideItem = slideItem;
-    }, [slideItem]);
-    useFSRefresh(slideItem.fileSource, ['edit']);
+    const scale = useCCScale(canvasController);
+
     const resizeSettingName = 'editor-window-size';
     const flexSizeDefault = {
         'editor-v1': '3',
         'editor-v2': '1',
     };
-    const [scale, setScale] = useStateSettingNumber('editor-scale', 1);
-    const maxScale = 3;
-    const minScale = 0.2;
-    const scaleStep = 0.1;
-    const applyScale = (isUp: boolean) => {
-        let newScale = scale + (isUp ? -1 : 1) * scaleStep;
-        if (newScale < minScale) {
-            newScale = minScale;
-        }
-        if (newScale > maxScale) {
-            newScale = maxScale;
-        }
-        setScale(newScale);
-    };
+
     return (
         <div className='slide-item-editor flex v w-100 h-100'
             onWheel={(e) => {
                 if (e.ctrlKey) {
-                    applyScale(e.deltaY > 0);
+                    canvasController.applyScale(e.deltaY > 0);
                 }
             }}>
             <ResizeActor settingName={resizeSettingName}
@@ -62,13 +45,7 @@ export default function SlideItemEditor({ slideItem }: {
                         </div>
                     </div>
                 </div>
-                <Tools canvasController={canvasController}
-                    scale={scale}
-                    applyScale={applyScale}
-                    setScale={setScale}
-                    minScale={minScale}
-                    maxScale={maxScale}
-                    scaleStep={scaleStep} />
+                <Tools canvasController={canvasController} />
             </ResizeActor>
         </div>
     );

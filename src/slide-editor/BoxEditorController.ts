@@ -15,7 +15,8 @@ type ListenedEvent = {
   listener: (event: MouseEvent) => void,
 };
 export default class BoxEditorController {
-  onDone: Function | null = null;
+  onDone: () => void = () => false;
+  onClick: (e: any) => void = () => false;
   editor: HTMLDivElement | null = null;
   target: HTMLDivElement | null = null;
   minWidth = 40;
@@ -77,6 +78,7 @@ export default class BoxEditorController {
       return;
     }
     event.stopPropagation();
+    let isMoving = false;
     const target = event.currentTarget as HTMLDivElement;
     if (target.className.indexOf('dot') > -1) {
       return;
@@ -88,6 +90,7 @@ export default class BoxEditorController {
 
     const eventMouseMoveHandler = (movingEvent: MouseEvent) => {
       movingEvent.stopPropagation();
+      isMoving = true;
       this.repositionElement(
         this.initX + (movingEvent.clientX - this.mousePressX) / this.scaleFactor,
         this.initY + (movingEvent.clientY - this.mousePressY) / this.scaleFactor,
@@ -98,8 +101,10 @@ export default class BoxEditorController {
         return;
       }
       endingEvent.stopPropagation();
-      if (this.onDone !== null) {
+      if (isMoving) {
         this.onDone();
+      } else {
+        this.onClick(endingEvent);
       }
       window.removeEventListener('mousemove', eventMouseMoveHandler, false);
       window.removeEventListener('mouseup', eventMouseUpHandler);

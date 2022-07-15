@@ -47,31 +47,28 @@ export default function FileItemHandler({
     isPointer?: boolean,
 }) {
     const [isDropOver, setIsReceivingChild] = useState(false);
+    const loadData = () => {
+        switch (mimetype) {
+            case 'lyric':
+                Lyric.readFileToData(fileSource).then(setData);
+                break;
+            case 'playlist':
+                Playlist.readFileToData(fileSource).then(setData);
+                break;
+            case 'slide':
+                Slide.readFileToData(fileSource).then(setData);
+                break;
+            case 'bible':
+                Bible.readFileToData(fileSource).then(setData);
+                break;
+            default:
+                throw new Error('Unsupported mimetype');
+        }
+    };
     useEffect(() => {
         if (data === null) {
-            switch (mimetype) {
-                case 'lyric':
-                    Lyric.readFileToData(fileSource).then(setData);
-                    break;
-                case 'playlist':
-                    Playlist.readFileToData(fileSource).then(setData);
-                    break;
-                case 'slide':
-                    Slide.readFileToData(fileSource).then(setData);
-                    break;
-                case 'bible':
-                    Bible.readFileToData(fileSource).then(setData);
-                    break;
-                default:
-                    throw new Error('Unsupported mimetype');
-            }
+            loadData();
         }
-        const updateEvents = fileSource.registerEventListener(['update', 'edit'], () => {
-            setData(null);
-        });
-        return () => {
-            fileSource.unregisterEventListener(updateEvents);
-        };
     }, [data]);
     const applyClick = () => {
         fileSource.fireSelectEvent();

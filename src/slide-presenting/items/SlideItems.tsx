@@ -12,7 +12,6 @@ import SlideItemRender from './SlideItemRender';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
-    useFSRefresh,
 } from '../../slide-list/slideHelpers';
 import { usePresentFGClearing } from '../../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
@@ -24,7 +23,6 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useFSRefresh(slide.fileSource, ['update']);
     usePresentFGClearing(() => {
         SlideItem.setSelectedItem(null);
     });

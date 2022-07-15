@@ -1,20 +1,22 @@
 import { CSSProperties, useEffect, useState } from 'react';
 import CanvasItem from './CanvasItem';
-import CanvasController from './CanvasController';
 import { showBoxContextMenu, useCCRefresh } from './canvasHelpers';
 import BoxEditorRenderText from './BoxEditorRenderText';
 
 export default function BoxEditorNormalMode({
-    canvasItem, canvasController,
+    canvasItem,
 }: {
     canvasItem: CanvasItem,
-    canvasController: CanvasController,
 }) {
+    const canvasController = canvasItem.canvasController;
+    if (canvasController === null) {
+        return null;
+    }
     const style: CSSProperties = {
         ...canvasItem.style,
         ...canvasItem.normalStyle,
     };
-    useCCRefresh(canvasController, ['start-editing']);
+    useCCRefresh(canvasController, ['edit']);
     return (
         <div className={`box-editor pointer ${canvasItem.isEditing ? 'editable' : ''}`}
             style={style}
@@ -36,19 +38,19 @@ export default function BoxEditorNormalMode({
                 if (canvasItem.isEditing) {
                     return;
                 }
-                canvasItem.isSelected = !canvasItem.isSelected;
+                canvasItem.isControlling = !canvasItem.isControlling;
             }}
             onDoubleClick={(e) => {
                 e.stopPropagation();
                 canvasItem.isEditing = true;
             }}>
             {canvasItem.isEditing ? <RenderTextAreaInput color={style.color}
-                text={canvasItem.text}
+                text={canvasItem.props.text}
                 setText={(text) => {
-                    canvasItem.update({ text });
+                    canvasItem.applyProps({ text });
                     canvasController.fireUpdateEvent();
                 }} />
-                : <BoxEditorRenderText text={canvasItem.text} />
+                : <BoxEditorRenderText text={canvasItem.props.text} />
             }
         </div>
     );

@@ -91,10 +91,7 @@ export default class SlideItem extends ItemBase {
     set html(newHtml: string) {
         this._html = newHtml;
         slideEditingCacheManager.saveBySlideItem(this, true);
-        const newItem = this.clone(true);
-        if (newItem !== null) {
-            this.fileSource.fireEditEvent(newItem);
-        }
+        this.fileSource.fireEditEvent(this);
     }
     async isEditing(index: number, slide?: Slide | null) {
         slide = slide || await Slide.readFileToDataNoCache(this.fileSource, true);

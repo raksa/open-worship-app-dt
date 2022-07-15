@@ -3,6 +3,7 @@ import './ColorPicker.scss';
 import { RgbaColorPicker } from 'react-colorful';
 import { showAppContextMenu } from './AppContextMenu';
 import { copyToClipboard } from '../helper/appHelper';
+import { useEffect, useState } from 'react';
 
 export const BLACK_COLOR = 'rgba(0,0,0,1)';
 type RGBAType = { r: number, g: number, b: number, a: number };
@@ -23,6 +24,10 @@ function objectToRGBA(rbga: RGBAType): string {
 export default function ColorPicker({ color, onColorChange }: {
     color: string, onColorChange: (color: string) => void
 }) {
+    const [localColor, setLocalColor] = useState(color);
+    useEffect(() => {
+        setLocalColor(color);
+    }, [color]);
     return (
         <div className="color-picker">
             <div className='p-3 overflow-hidden'>
@@ -36,9 +41,13 @@ export default function ColorPicker({ color, onColorChange }: {
                     ]);
                 }}>{color}</button>
                 <RgbaColorPicker
-                    color={rgba2Object(color)}
+                    color={rgba2Object(localColor)}
+                    onMouseUp={() => {
+                        onColorChange(localColor);
+                    }}
                     onChange={(newColor) => {
-                        onColorChange(objectToRGBA(newColor));
+
+                        setLocalColor(objectToRGBA(newColor));
                     }}
                 />
             </div>

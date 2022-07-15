@@ -4,7 +4,10 @@ import {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import CanvasController from './CanvasController';
-import { showCanvasContextMenu } from './canvasHelpers';
+import {
+    showCanvasContextMenu,
+    useCCCanvasItems,
+} from './canvasHelpers';
 
 export default function SlideItemEditorCanvas({
     canvasController, scale,
@@ -12,28 +15,26 @@ export default function SlideItemEditorCanvas({
     canvasController: CanvasController,
     scale: number,
 }) {
+    const canvasItems = useCCCanvasItems(canvasController);
     useKeyboardRegistering({
         key: KeyEnum.Escape,
     }, () => {
         canvasController.stopAllMod();
     });
-    const canvas = canvasController.canvas;
     return (
         <>
             <div className='editor blank-bg border-white-round' style={{
-                width: `${canvas.width}px`,
-                height: `${canvas.height}px`,
+                width: `${canvasController.canvas.width}px`,
+                height: `${canvasController.canvas.height}px`,
                 transform: 'translate(-50%, -50%)',
             }}
                 onContextMenu={(e) => showCanvasContextMenu(e, canvasController)}
                 onDoubleClick={() => {
                     canvasController.stopAllMod();
                 }} >
-                {canvasController.canvasItems.map((canvasItem, i) => {
-                    console.log(canvasController.canvasItems.indexOf(canvasItem));
+                {canvasItems.map((canvasItem, i) => {
                     return <BoxEditor scale={scale} key={`${i}`}
-                        canvasItem={canvasItem}
-                        canvasController={canvasController} />;
+                        canvasItem={canvasItem} />;
                 })}
             </div>
         </>

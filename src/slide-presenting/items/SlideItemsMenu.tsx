@@ -6,11 +6,9 @@ import {
 } from '../../event/KeyboardEventListener';
 import { useDisplay } from '../../event/PresentEventListener';
 import Slide from '../../slide-list/Slide';
-import { useFSRefresh } from '../../slide-list/slideHelpers';
 import MenuIsModifying from './MenuIsModifying';
 
 export default function SlideItemsMenu({ slide }: { slide: Slide }) {
-    useFSRefresh(slide.fileSource, ['update']);
     const { presentDisplay } = useDisplay();
     const eventMapper = {
         wControlKey: [WindowsControlEnum.Ctrl],

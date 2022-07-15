@@ -3,33 +3,35 @@ import './BoxEditor.scss';
 import { useEffect } from 'react';
 import { boxEditorController } from '../BoxEditorController';
 import CanvasItem from './CanvasItem';
-import CanvasController from './CanvasController';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMod from './BoxEditorControllingMod';
-import { useCCRefresh } from './canvasHelpers';
+import { useCIControl } from './canvasHelpers';
 
 export type NewDataType = { [key: string]: any };
 export function BoxEditor({
-    canvasItem, canvasController, scale,
+    canvasItem, scale,
 }: {
-    canvasItem: CanvasItem, canvasController: CanvasController,
-    scale: number,
+    canvasItem: CanvasItem, scale: number,
 }) {
-    console.log(canvasController.canvasItems.indexOf(canvasItem));
-    useCCRefresh(canvasController, ['select']);
+    const isControlling = useCIControl(canvasItem);
+    const canvasController = canvasItem.canvasController;
+    if (canvasController === null) {
+        return null;
+    }
     useEffect(() => {
         boxEditorController.setScaleFactor(scale);
     }, [scale]);
+    boxEditorController.onClick = () => {
+        canvasItem.isControlling = false;
+    };
     boxEditorController.onDone = () => {
         const info = boxEditorController.getInfo();
         if (info !== null) {
-            canvasItem.update(info);
+            canvasItem.applyProps(info);
             canvasController.fireUpdateEvent();
         }
     };
-    return canvasItem.isSelected ?
-        <BoxEditorControllingMod canvasItem={canvasItem}
-            canvasController={canvasController} /> :
-        <BoxEditorNormalMode canvasItem={canvasItem}
-            canvasController={canvasController} />;
+    return isControlling ?
+        <BoxEditorControllingMod canvasItem={canvasItem} /> :
+        <BoxEditorNormalMode canvasItem={canvasItem} />;
 }

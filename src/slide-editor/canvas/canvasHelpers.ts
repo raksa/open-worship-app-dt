@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import SlideItem from '../../slide-list/SlideItem';
 import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
 import CanvasController, { CCEventType } from './CanvasController';
 import CanvasItem from './CanvasItem';
@@ -92,14 +91,71 @@ export function showBoxContextMenu(e: any,
     ]);
 }
 
-export function useCCRefresh(canvasController:CanvasController, eventTypes: CCEventType[]) {
+export function useCCRefresh(canvasController: CanvasController, eventTypes: CCEventType[],
+    callback?: () => void) {
     const [n, setN] = useState(0);
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(eventTypes, () => {
             setN(n + 1);
+            if (callback) {
+                callback();
+            }
+        });
+        return () => {
+            canvasController.unregisterEventListener(regEvents);
+        };
+    });
+}
+
+export function useCCScale(canvasController: CanvasController) {
+    const [scale, setScale] = useState(canvasController.scale);
+    useEffect(() => {
+        const regEvents = canvasController.registerEventListener(['scale'], () => {
+            setScale(canvasController.scale);
+        });
+        return () => {
+            canvasController.unregisterEventListener(regEvents);
+        };
+    });
+    return scale;
+}
+
+export function useCIControl(canvasItem: CanvasItem) {
+    const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
+    useEffect(() => {
+        const canvasController = canvasItem.canvasController;
+        const regEvents = canvasController ? canvasController.registerEventListener(['control'], () => {
+            setIsControlling(canvasItem.isControlling);
+        }) : [];
+        return () => {
+            canvasController?.unregisterEventListener(regEvents);
+        };
+    }, [canvasItem]);
+    return isControlling;
+}
+
+export function useCCSelect(canvasController: CanvasController) {
+    const [selectedItems, setSelectedItems] = useState(canvasController.selectedCanvasItems);
+    useEffect(() => {
+        const regEvents = canvasController.registerEventListener(['select'], () => {
+            setSelectedItems(canvasController.selectedCanvasItems);
         });
         return () => {
             canvasController.unregisterEventListener(regEvents);
         };
     }, [canvasController]);
+    return selectedItems;
+}
+
+export function useCCCanvasItems(canvasController: CanvasController) {
+    const [canvasItems, setCanvasItems] = useState(canvasController.canvas.canvasItems);
+    useEffect(() => {
+        const regEvents = canvasController.registerEventListener(['update'], () => {
+            setCanvasItems(canvasController.canvas.canvasItems);
+        });
+        return () => {
+            canvasController.unregisterEventListener(regEvents);
+        };
+    }, [canvasController]);
+    return canvasItems;
 }

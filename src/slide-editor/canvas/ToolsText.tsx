@@ -2,53 +2,41 @@ import ColorPicker from '../../others/ColorPicker';
 import Tool from './Tool';
 import Align from './Align';
 import CanvasItem from './CanvasItem';
-import CanvasController from './CanvasController';
+import ToolsTextFontControl from './ToolsTextFontControl';
 
 export default function ToolsText({
-    canvasItem, canvasController,
+    canvasItem,
 }: {
-    canvasController: CanvasController,
     canvasItem: CanvasItem,
 }) {
-    const applyFontSize = (fontSize: number) => {
-        canvasController.applyToolingData(canvasItem, {
-            text: { fontSize },
-        });
-    };
+    const canvasController = canvasItem.canvasController;
+    if (canvasController === null) {
+        return null;
+    }
     return (
         <div className='d-flex'>
             <Tool>
-                <ColorPicker color={canvasItem.color}
+                <ColorPicker color={canvasItem.props.color}
                     onColorChange={(newColor: string) => {
-                        canvasController.applyToolingData(canvasItem, { text: { color: newColor } });
+                        canvasController.applyToolingData(canvasItem, {
+                            text: { color: newColor },
+                        });
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
                 <Align isText onData={(newData) => {
-                    canvasController.applyToolingData(canvasItem, { text: newData });
+                    canvasController.applyToolingData(canvasItem, {
+                        text: newData,
+                    });
                 }} />
             </Tool>
-            <Tool title='Font Size'>
-                <input className='form-control' type="number" style={{ maxWidth: '100px' }}
-                    value={canvasItem.fontSize}
-                    onChange={(e) => {
-                        applyFontSize(+e.target.value);
-                    }} />
-                <select className="form-select form-select-sm"
-                    value={canvasItem.fontSize}
-                    onChange={(e) => {
-                        applyFontSize(+e.target.value);
-                    }} >
-                    <option>--</option>
-                    {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
-                        .reverse().map((n, i) => {
-                            return <option key={`${i}`} value={n}>{n}px</option>;
-                        })}
-                </select>
-            </Tool>
+            <ToolsTextFontControl canvasItem={canvasItem}
+                canvasController={canvasController} />
             <Tool title='Rotate'>
                 <button className='btn btn-info' onClick={() => {
-                    canvasController.applyToolingData(canvasItem, { box: { rotate: 0 } });
+                    canvasController.applyToolingData(canvasItem, {
+                        box: { rotate: 0 },
+                    });
                 }}
                 >UnRotate</button>
             </Tool>

@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { isWindowEditingMode } from '../App';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import FileSource, { FSEventType } from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import CanvasController from '../slide-editor/canvas/CanvasController';
+import Canvas from '../slide-editor/canvas/Canvas';
 import { openItemSlideEdit } from '../slide-editor/SlideItemEditorPopup';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
@@ -25,18 +24,6 @@ export function toScaleThumbSize(isUp: boolean, currentScale: number) {
         newScale = MAX_THUMBNAIL_SCALE;
     }
     return newScale;
-}
-
-export function useFSRefresh(fileSource: FileSource, eventTypes: FSEventType[]) {
-    const [n, setN] = useState(0);
-    useEffect(() => {
-        const regEvents = fileSource.registerEventListener(eventTypes, () => {
-            setN(n + 1);
-        });
-        return () => {
-            fileSource.unregisterEventListener(regEvents);
-        };
-    }, [fileSource]);
 }
 
 export function openSlideContextMenu(e: any,
@@ -74,6 +61,30 @@ export function useSlideIsModifying(slide: Slide) {
     const [isModifying, setIsModifying] = useState(false);
     useEffect(() => {
         slide.isModifying().then(setIsModifying);
+        const updateEvents = slide.fileSource.registerEventListener(
+            ['update'], () => {
+                slide.isModifying().then(setIsModifying);
+            });
+        return () => {
+            slide.fileSource.unregisterEventListener(updateEvents);
+        };
     });
     return isModifying;
+}
+
+export function useSlideItemDim(slideItem: SlideItem) {
+    const [canvasDim, setCanvasDim] = useState(Canvas.parseHtmlDim(slideItem.html));
+    useEffect(() => {
+        const updateEvents = slideItem.fileSource.registerEventListener(
+            ['edit'], (item) => {
+                if (item && item.id === slideItem.id) {
+                    const newCanvasDim = Canvas.parseHtmlDim(item.html);
+                    setCanvasDim(newCanvasDim);
+                }
+            });
+        return () => {
+            slideItem.fileSource.unregisterEventListener(updateEvents);
+        };
+    }, [slideItem]);
+    return canvasDim;
 }

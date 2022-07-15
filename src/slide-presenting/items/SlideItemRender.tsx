@@ -2,9 +2,9 @@ import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
-import Canvas from '../../slide-editor/canvas/Canvas';
 import SlideItemIFrame from './SlideItemIFrame';
 import RenderIsEditing from '../RenderIsEditing';
+import { useSlideItemDim } from '../../slide-list/slideHelpers';
 
 export default function SlideItemRender({
     width, index,
@@ -22,7 +22,7 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
-    const canvasDim = Canvas.parseHtmlDim(slideItem.html);
+    const canvasDim = useSlideItemDim(slideItem);
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
