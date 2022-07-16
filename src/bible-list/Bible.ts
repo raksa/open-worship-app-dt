@@ -71,7 +71,7 @@ export default class Bible extends ItemSource<BibleType>{
     }
     async addItem(item: BibleItem) {
         item.fileSource = this.fileSource;
-        item.id = this.maxId + 1;
+        item.id = this.maxItemId + 1;
         this.content.items.push(item);
         return this.save();
     }

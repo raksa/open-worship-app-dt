@@ -2,23 +2,28 @@ import './EditorControllerBoxWrapper.scss';
 
 import { boxEditorController } from '../BoxEditorController';
 import CanvasItem from './CanvasItem';
-import { showBoxContextMenu, useCCRefresh } from './canvasHelpers';
+import { showCanvasItemContextMenu, useCIRefresh } from './canvasHelpers';
 import BoxEditorRenderText from './BoxEditorRenderText';
 
 export default function BoxEditorControllingMod({ canvasItem }: {
     canvasItem: CanvasItem,
 }) {
-    const canvasController = canvasItem.canvasController;
-    if (canvasController === null) {
-        return null;
-    }
-    useCCRefresh(canvasController, ['update']);
+    useCIRefresh(canvasItem, ['update']);
     return (
         <div className="editor-controller-box-wrapper"
             ref={(div) => {
                 if (div !== null) {
                     boxEditorController.release();
                     boxEditorController.initEvent(div);
+                    boxEditorController.onClick = () => {
+                        canvasItem.isControlling = false;
+                    };
+                    boxEditorController.onDone = () => {
+                        const info = boxEditorController.getInfo();
+                        if (info !== null) {
+                            canvasItem.applyProps(info);
+                        }
+                    };
                 }
             }}
             style={{
@@ -32,10 +37,11 @@ export default function BoxEditorControllingMod({ canvasItem }: {
             <div className={'box-editor controllable'}
                 onContextMenu={(e) => {
                     e.stopPropagation();
-                    showBoxContextMenu(e, canvasController, canvasItem);
+                    showCanvasItemContextMenu(e, canvasItem);
                 }}
                 onDoubleClick={(e) => {
                     e.stopPropagation();
+                    canvasItem.canvasController?.stopAllMods();
                     canvasItem.isEditing = true;
                 }}
                 style={{

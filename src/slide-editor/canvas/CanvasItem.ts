@@ -1,10 +1,11 @@
 import { CSSProperties } from 'react';
 import { BLACK_COLOR } from '../../others/ColorPicker';
-import { getRotationDeg, removePX } from '../../helper/helpers';
+import { getAppInfo, getRotationDeg, removePX } from '../../helper/helpers';
 import { HAlignmentEnum, VAlignmentEnum } from './Canvas';
 import { ToolingType, tooling2BoxProps } from './canvasHelpers';
 import CanvasController from './CanvasController';
 import SlideItem from '../../slide-list/SlideItem';
+import FileSource from '../../helper/FileSource';
 
 type CanvasItemPropsType = {
     text: string, fontSize: number, color: string,
@@ -18,19 +19,29 @@ export default class CanvasItem {
     static _objectId = 0;
     _objectId: number;
     props: CanvasItemPropsType;
+    _isSelected: boolean;
     _isControlling: boolean;
     _isEditing: boolean;
-    slideItem: SlideItem | null;
-    constructor(canvasController: CanvasController,
+    id: number;
+    slideItemId: number;
+    fileSource: FileSource;
+    constructor(id: number, slideItemId: number, fileSource: FileSource,
         props: CanvasItemPropsType) {
         this._objectId = CanvasItem._objectId++;
+        this.id = id;
+        this.slideItemId = slideItemId;
+        this.fileSource = fileSource;
         this.props = props;
+        this._isSelected = false;
         this._isControlling = false;
         this._isEditing = false;
-        this.slideItem = canvasController.slideItem;
     }
     get isSelected() {
-        return this.isControlling;
+        return this._isSelected;
+    }
+    set isSelected(b: boolean) {
+        this._isSelected = b;
+        this.canvasController?.fireSelectEvent(this);
     }
     get isControlling() {
         return this._isControlling;
@@ -47,10 +58,12 @@ export default class CanvasItem {
         this.canvasController?.fireEditEvent(this);
     }
     get canvasController() {
-        if (this.slideItem === null) {
+        const key = SlideItem.genKeyByFileSource(this.fileSource, this.slideItemId);
+        const slideItem = SlideItem.getByKey(key);
+        if (slideItem === null) {
             return null;
         }
-        return CanvasController.getInstant(this.slideItem);
+        return CanvasController.getInstant(slideItem);
     }
     get style() {
         const style: CSSProperties = {
@@ -77,6 +90,7 @@ export default class CanvasItem {
     }
     get html() {
         const div = document.createElement('div');
+        div.id = `${this.id}`;
         div.innerHTML = this.props.text;
         const targetStyle = div.style as any;
         const style = { ...this.style, ...this.normalStyle } as any;
@@ -88,12 +102,12 @@ export default class CanvasItem {
     get htmlString() {
         return this.html.outerHTML;
     }
-    static fromHtml(canvasController: CanvasController, html: string) {
+    static fromHtml(canvasController: CanvasController, htmlString: string) {
         const div = document.createElement('div');
-        div.innerHTML = html;
+        div.innerHTML = htmlString;
         const element = div.firstChild as HTMLDivElement;
         const style = element.style;
-        return new CanvasItem(canvasController, {
+        const props = {
             text: element.innerHTML.split('<br>').join('\n'),
             fontSize: removePX(style.fontSize) || 30,
             color: style.color || BLACK_COLOR,
@@ -106,7 +120,14 @@ export default class CanvasItem {
             verticalAlignment: (style.alignItems || VAlignmentEnum.Top) as VAlignmentEnum,
             backgroundColor: style.backgroundColor || 'transparent',
             zIndex: +style.zIndex || 0,
-        });
+        };
+        let id = +element.id;
+        if (!element.id || isNaN(id)) {
+            id = -1;
+            props.text = 'Invalid canvas item id';
+        }
+        const slideItem = canvasController.slideItem;
+        return new CanvasItem(id, slideItem.id, slideItem.fileSource, props);
     }
     applyToolingData(data: ToolingType) {
         const { text: text = {}, box: box = {} } = data;
@@ -134,9 +155,30 @@ export default class CanvasItem {
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
+        this.canvasController?.syncHtmlString();
         this.canvasController?.fireUpdateEvent();
     }
-    clone(canvasController: CanvasController) {
+    clone() {
+        const canvasController = this.canvasController;
+        if (canvasController === null) {
+            return null;
+        }
         return CanvasItem.fromHtml(canvasController, this.htmlString);
+    }
+    static genDefaultHtmlString(width: number = 700, height: number = 400) {
+        return '<div id="0" class="box-editor pointer " style="top: 279px; left: 356px; transform: rotate(0deg); '
+            + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
+            + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
+            + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
+    }
+    static genKey(canvasController: CanvasController, id: number) {
+        return `${canvasController.slideItem.key}#${id}`;
+    }
+    static extractKey(key: string) {
+        const arr = key.split('#');
+        return {
+            slideItemKey: arr[0],
+            id: +arr[1],
+        };
     }
 }

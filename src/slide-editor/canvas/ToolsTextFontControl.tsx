@@ -1,10 +1,9 @@
 import Tool from './Tool';
 import CanvasItem from './CanvasItem';
-import CanvasController from './CanvasController';
 import { useEffect, useState } from 'react';
 
-export default function ToolsTextFontControl({ canvasItem, canvasController }: {
-    canvasItem: CanvasItem, canvasController: CanvasController,
+export default function ToolsTextFontControl({ canvasItem }: {
+    canvasItem: CanvasItem,
 }) {
     const [localFontSize, setLocalFontSize] = useState(canvasItem.props.fontSize);
     useEffect(() => {
@@ -12,7 +11,7 @@ export default function ToolsTextFontControl({ canvasItem, canvasController }: {
     }, [canvasItem]);
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
-        canvasController.applyToolingData(canvasItem, {
+        canvasItem.applyToolingData({
             text: { fontSize },
         });
     };

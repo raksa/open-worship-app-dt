@@ -37,7 +37,7 @@ export default function PlaylistSlideItem({
                 slideListEventListenerGlobal.selectSlideItem(item);
             }}>
             <SlideItemIFrame id={id} width={width}
-                canvasDim={Canvas.parseHtmlDim(item.html)} />
+                canvasDim={Canvas.parseHtmlDim(item.htmlString)} />
         </div>
     );
 }

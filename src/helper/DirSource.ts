@@ -20,7 +20,7 @@ export default class DirSource {
     fileSources: FileListType = null;
     settingName: string;
     static _fileCacheKeys: string[] = [];
-    static _fileCache: Map<string, DirSource> = new Map();
+    static _fileCache = new Map<string, DirSource>();
     static _objectId = 0;
     _objectId: number;
     constructor(settingName: string) {

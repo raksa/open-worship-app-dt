@@ -62,7 +62,7 @@ export function useSlideIsModifying(slide: Slide) {
     useEffect(() => {
         slide.isModifying().then(setIsModifying);
         const updateEvents = slide.fileSource.registerEventListener(
-            ['update'], () => {
+            ['update', 'edit'], () => {
                 slide.isModifying().then(setIsModifying);
             });
         return () => {
@@ -73,12 +73,12 @@ export function useSlideIsModifying(slide: Slide) {
 }
 
 export function useSlideItemDim(slideItem: SlideItem) {
-    const [canvasDim, setCanvasDim] = useState(Canvas.parseHtmlDim(slideItem.html));
+    const [canvasDim, setCanvasDim] = useState(Canvas.parseHtmlDim(slideItem.htmlString));
     useEffect(() => {
         const updateEvents = slideItem.fileSource.registerEventListener(
             ['edit'], (item) => {
                 if (item && item.id === slideItem.id) {
-                    const newCanvasDim = Canvas.parseHtmlDim(item.html);
+                    const newCanvasDim = Canvas.parseHtmlDim(item.htmlString);
                     setCanvasDim(newCanvasDim);
                 }
             });

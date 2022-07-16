@@ -1,22 +1,19 @@
-import { CSSProperties, useEffect, useState } from 'react';
+import { CSSProperties } from 'react';
 import CanvasItem from './CanvasItem';
-import { showBoxContextMenu, useCCRefresh } from './canvasHelpers';
+import { showCanvasItemContextMenu, useCIRefresh } from './canvasHelpers';
 import BoxEditorRenderText from './BoxEditorRenderText';
+import BoxEditorTextArea from './BoxEditorTextArea';
 
 export default function BoxEditorNormalMode({
     canvasItem,
 }: {
     canvasItem: CanvasItem,
 }) {
-    const canvasController = canvasItem.canvasController;
-    if (canvasController === null) {
-        return null;
-    }
     const style: CSSProperties = {
         ...canvasItem.style,
         ...canvasItem.normalStyle,
     };
-    useCCRefresh(canvasController, ['edit']);
+    useCIRefresh(canvasItem, ['edit', 'update']);
     return (
         <div className={`box-editor pointer ${canvasItem.isEditing ? 'editable' : ''}`}
             style={style}
@@ -25,7 +22,7 @@ export default function BoxEditorNormalMode({
                 if (canvasItem.isEditing) {
                     canvasItem.isEditing = false;
                 } else {
-                    showBoxContextMenu(e, canvasController, canvasItem);
+                    showCanvasItemContextMenu(e, canvasItem);
                 }
             }}
             onKeyUp={(e) => {
@@ -38,39 +35,21 @@ export default function BoxEditorNormalMode({
                 if (canvasItem.isEditing) {
                     return;
                 }
+                canvasItem.canvasController?.stopAllMods();
                 canvasItem.isControlling = !canvasItem.isControlling;
+                canvasItem.isSelected = canvasItem.isControlling;
             }}
             onDoubleClick={(e) => {
                 e.stopPropagation();
                 canvasItem.isEditing = true;
             }}>
-            {canvasItem.isEditing ? <RenderTextAreaInput color={style.color}
+            {canvasItem.isEditing ? <BoxEditorTextArea color={style.color}
                 text={canvasItem.props.text}
                 setText={(text) => {
                     canvasItem.applyProps({ text });
-                    canvasController.fireUpdateEvent();
                 }} />
                 : <BoxEditorRenderText text={canvasItem.props.text} />
             }
         </div>
-    );
-}
-
-function RenderTextAreaInput({ color, text, setText }: {
-    color?: string, text: string,
-    setText: (t: string) => void,
-}) {
-    const [localText, setLocalText] = useState(text);
-    useEffect(() => {
-        setLocalText(text);
-    }, [text]);
-    return (
-        <textarea style={{ color }}
-            className='w-100 h-100' value={localText}
-            onChange={(e) => {
-                const newText = e.target.value;
-                setLocalText(newText);
-                setText(newText);
-            }} />
     );
 }

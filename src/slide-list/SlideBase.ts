@@ -113,9 +113,10 @@ export default class SlideBase extends ItemSource<SlideType>{
     set redo(redo: ChangeHistory[]) {
         this._history.redo = redo;
     }
-    get maxId() {
+    get maxItemId() {
         if (this.items.length) {
-            return Math.max.apply(Math, this.items.map((item) => item.id));
+            const ids = this.items.map((item) => item.id);
+            return Math.max.apply(Math, ids);
         }
         return 0;
     }
@@ -140,7 +141,6 @@ export default class SlideBase extends ItemSource<SlideType>{
             }];
         }
         slideEditingCacheManager.saveBySlideBase(this);
-        this.fileSource.fireSelectEvent();
     }
     redoChanges() {
         const redo = [...this.redo];
@@ -154,13 +154,12 @@ export default class SlideBase extends ItemSource<SlideType>{
             }];
         }
         slideEditingCacheManager.saveBySlideBase(this);
-        this.fileSource.fireSelectEvent();
     }
     duplicateItem(slideItem: SlideItem) {
         const newItems = this.newItems;
         const newItem = slideItem.clone();
         if (newItem !== null) {
-            newItem.id = this.maxId + 1;
+            newItem.id = this.maxItemId + 1;
             const index = this.items.indexOf(slideItem);
             newItems.splice(index + 1, 0, newItem);
             this.setItemsWithHistory(newItems);
@@ -172,7 +171,7 @@ export default class SlideBase extends ItemSource<SlideType>{
         }
         const newItem = this.copiedItem.clone();
         if (newItem !== null) {
-            newItem.id = this.maxId + 1;
+            newItem.id = this.maxItemId + 1;
             const newItems: SlideItem[] = [...this.items, newItem];
             this.setItemsWithHistory(newItems);
         }
@@ -194,12 +193,19 @@ export default class SlideBase extends ItemSource<SlideType>{
         this.setItemsWithHistory(newItems);
     }
     deleteItem(slideItem: SlideItem) {
-        const newItems = this.items.filter((item) => item !== slideItem);
+        const newItems = this.items.filter((item) => {
+            return item !== slideItem;
+        });
+        const result = SlideItem.getSelectedResult();
+        if (result?.id === slideItem.id) {
+            SlideItem.setSelectedItem(null);
+        }
         this.setItemsWithHistory(newItems);
+        this.fileSource.fireDeleteEvent();
     }
     addItem(slideItem: SlideItem) {
         const newItems = this.newItems;
-        slideItem.id = this.maxId + 1;
+        slideItem.id = this.maxItemId + 1;
         newItems.push(slideItem);
         this.setItemsWithHistory(newItems);
     }
@@ -211,7 +217,7 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     checkIsWrongDimension({ bounds }: DisplayType) {
         const found = this.items.map((item) => {
-            const canvasDim = Canvas.parseHtmlDim(item.html);
+            const canvasDim = Canvas.parseHtmlDim(item.htmlString);
             return { width: canvasDim.width, height: canvasDim.height };
         }).find(({ width, height }: { width: number, height: number }) => {
             return bounds.width !== width || bounds.height !== height;
@@ -226,10 +232,10 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     async fixSlideDimension({ bounds }: DisplayType) {
         this.items.forEach((item) => {
-            const canvasDim = Canvas.parseHtmlDim(item.html);
+            const canvasDim = Canvas.parseHtmlDim(item.htmlString);
             canvasDim.width = bounds.width;
             canvasDim.height = bounds.height;
-            item.html = canvasDim.htmlString;
+            item.htmlString = canvasDim.htmlString;
         });
         slideEditingCacheManager.saveBySlideBase(this);
     }
@@ -266,6 +272,5 @@ export default class SlideBase extends ItemSource<SlideType>{
         }
         slideEditingCacheManager.delete(this.fileSource);
         this.fileSource.fireUpdateEvent();
-        this.fileSource.fireSelectEvent();
     }
 }

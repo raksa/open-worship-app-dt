@@ -251,6 +251,9 @@ export default class BoxEditorController {
       this.repositionElement(newX, newY);
     };
     const eventMouseUpHandler = (endingEvent: MouseEvent) => {
+      if (this.onDone !== null) {
+        this.onDone();
+      }
       endingEvent.stopPropagation();
       window.removeEventListener('mousemove', eventMouseMoveHandler, false);
       window.removeEventListener('mouseup', eventMouseUpHandler);

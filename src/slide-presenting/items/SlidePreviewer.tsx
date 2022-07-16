@@ -27,7 +27,7 @@ export default function SlidePreviewer() {
     useSlideItemSelecting(() => setSlide(null));
     useSlideItemSelecting((slideItem) => {
         if (slideItem !== null) {
-            renderFG(slideItem.html);
+            renderFG(slideItem.htmlString);
             presentEventListener.renderFG();
         } else {
             presentEventListener.clearFG();
@@ -47,7 +47,9 @@ export default function SlidePreviewer() {
         }
         if (slide) {
             const registerEvent = slide.fileSource.registerEventListener(
-                ['select', 'update', 'edit', 'delete'], reloadSlide);
+                ['select', 'update', 'edit', 'delete'], ()=>{
+                    setSlide(null);
+                });
             return () => {
                 slide.fileSource.unregisterEventListener(registerEvent);
             };

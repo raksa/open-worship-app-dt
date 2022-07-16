@@ -39,7 +39,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         });
         this.content = newContent;
     }
-    get maxId() {
+    get maxItemId() {
         if (this.items.length) {
             return Math.max.apply(Math, this.items.map((item) => item.id));
         }

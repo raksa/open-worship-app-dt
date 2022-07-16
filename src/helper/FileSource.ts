@@ -17,7 +17,7 @@ export default class FileSource {
     fileName: string;
     filePath: string;
     src: string;
-    static _fileCache: Map<string, FileSource> = new Map();
+    static _fileCache = new Map<string, FileSource>();
     constructor(basePath: string, fileName: string,
         filePath: string, src: string) {
         this.basePath = basePath;

@@ -14,23 +14,9 @@ export function BoxEditor({
     canvasItem: CanvasItem, scale: number,
 }) {
     const isControlling = useCIControl(canvasItem);
-    const canvasController = canvasItem.canvasController;
-    if (canvasController === null) {
-        return null;
-    }
     useEffect(() => {
         boxEditorController.setScaleFactor(scale);
     }, [scale]);
-    boxEditorController.onClick = () => {
-        canvasItem.isControlling = false;
-    };
-    boxEditorController.onDone = () => {
-        const info = boxEditorController.getInfo();
-        if (info !== null) {
-            canvasItem.applyProps(info);
-            canvasController.fireUpdateEvent();
-        }
-    };
     return isControlling ?
         <BoxEditorControllingMod canvasItem={canvasItem} /> :
         <BoxEditorNormalMode canvasItem={canvasItem} />;

@@ -3,10 +3,10 @@ import { toastEventListener } from '../event/ToastEventListener';
 import { getAllDisplays } from '../helper/displayHelper';
 import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
-import { getAppInfo } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
+import CanvasItem from '../slide-editor/canvas/CanvasItem';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -14,18 +14,93 @@ export default class SlideItem extends ItemBase {
     id: number;
     fileSource: FileSource;
     isCopied: boolean;
-    _html: string;
+    _htmlString: string;
     static copiedItem: SlideItem | null = null;
-    constructor(id: number, html: string, metadata: MetaDataType,
+    static _cache = new Map<string, SlideItem>();
+    constructor(id: number, htmlString: string, metadata: MetaDataType,
         fileSource: FileSource) {
         super();
         this.id = id;
-        this._html = html;
+        this._htmlString = htmlString;
         this.metadata = metadata;
         this.fileSource = fileSource;
         this.isCopied = false;
+        const key = SlideItem.genKey(this);
+        SlideItem._cache.set(key, this);
     }
-    static fromJson(json: any, fileSource: FileSource) {
+    get key() {
+        return SlideItem.genKey(this);
+    }
+    get isSelected() {
+        const selected = SlideItem.getSelectedResult();
+        return selected?.fileSource.filePath === this.fileSource.filePath &&
+            selected?.id === this.id;
+    }
+    set isSelected(b: boolean) {
+        if (this.isSelected === b) {
+            return;
+        }
+        if (b) {
+            SlideItem.setSelectedItem(this);
+            slideListEventListenerGlobal.selectSlideItem(this);
+        } else {
+            SlideItem.setSelectedItem(null);
+            slideListEventListenerGlobal.selectSlideItem(null);
+        }
+        this.fileSource.fireSelectEvent();
+    }
+    get htmlString() {
+        return this._htmlString;
+    }
+    set htmlString(newHtmlString: string) {
+        this._htmlString = newHtmlString;
+        slideEditingCacheManager.saveBySlideItem(this, true);
+        this.fileSource.fireEditEvent(this);
+    }
+    async isEditing(index: number, slide?: Slide | null) {
+        slide = slide || await Slide.readFileToDataNoCache(this.fileSource, true);
+        if (slide) {
+            const slideItem = slide.getItemById(this.id);
+            if (slideItem) {
+                if (index !== slide.items.indexOf(slideItem)) {
+                    return true;
+                }
+                return slideItem.htmlString !== this.htmlString;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+    static async getSelectedItem() {
+        const selected = this.getSelectedResult();
+        if (selected !== null) {
+            const slide = await Slide.readFileToData(selected.fileSource);
+            const selectSlide = await Slide.getSelected();
+            if (slide?.fileSource.filePath === selectSlide?.fileSource.filePath) {
+                return slide?.getItemById(selected.id);
+            }
+        }
+        return null;
+    }
+    static getDefaultDim() {
+        const { presentDisplay } = getAllDisplays();
+        const { width, height } = presentDisplay.bounds;
+        return { width, height };
+    }
+    static defaultSlideItem() {
+        const { width, height } = this.getDefaultDim();
+        // TODO: set width and height for present screen
+        return {
+            id: -1,
+            html: `<div style="width: ${width}px; height: ${height}px;">`
+                + CanvasItem.genDefaultHtmlString()
+                + '</div>',
+        };
+    }
+    static fromJson(json: {
+        id: number, html: string, metadata: MetaDataType,
+    }, fileSource: FileSource) {
         this.validate(json);
         return new SlideItem(json.id, json.html, json.metadata, fileSource);
     }
@@ -37,13 +112,15 @@ export default class SlideItem extends ItemBase {
     toJson(): {
         id: number,
         html: string,
+        metadata: MetaDataType,
     } {
         if (this.isError) {
             return this.jsonError;
         }
         return {
             id: this.id,
-            html: this._html,
+            html: this._htmlString,
+            metadata: this.metadata,
         };
     }
     static validate(json: any) {
@@ -67,77 +144,23 @@ export default class SlideItem extends ItemBase {
         }
         return null;
     }
-    get isSelected() {
-        const selected = SlideItem.getSelectedResult();
-        return selected?.fileSource.filePath === this.fileSource.filePath &&
-            selected?.id === this.id;
+    static genKeyByFileSource(fileSource: FileSource, id: number) {
+        return `${fileSource.filePath}:${id}`;
     }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
-            return;
-        }
-        if (b) {
-            SlideItem.setSelectedItem(this);
-            slideListEventListenerGlobal.selectSlideItem(this);
-        } else {
-            SlideItem.setSelectedItem(null);
-            slideListEventListenerGlobal.selectSlideItem(null);
-        }
-        this.fileSource.fireSelectEvent();
+    static genKey(slideItem: SlideItem) {
+        return this.genKeyByFileSource(slideItem.fileSource, slideItem.id);
     }
-    get html() {
-        return this._html;
+    genKey() {
+        return SlideItem.genKeyByFileSource(this.fileSource, this.id);
     }
-    set html(newHtml: string) {
-        this._html = newHtml;
-        slideEditingCacheManager.saveBySlideItem(this, true);
-        this.fileSource.fireEditEvent(this);
-    }
-    async isEditing(index: number, slide?: Slide | null) {
-        slide = slide || await Slide.readFileToDataNoCache(this.fileSource, true);
-        if (slide) {
-            const slideItem = slide.getItemById(this.id);
-            if (slideItem) {
-                if (index !== slide.items.indexOf(slideItem)) {
-                    return true;
-                }
-                return slideItem.html !== this.html;
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-    static async getSelectedItem() {
-        const selected = this.getSelectedResult();
-        if (selected !== null) {
-            const slide = await Slide.readFileToData(selected.fileSource);
-            const selectSlide = await Slide.getSelected();
-            if (slide?.fileSource.filePath === selectSlide?.fileSource.filePath) {
-                return slide?.getItemById(selected.id);
-            }
-        }
-        return null;
-    }
-    static getDefaultDim() {
-        const { presentDisplay } = getAllDisplays();
-        const { width, height } = presentDisplay.bounds;
-        return { width, height };
-    }
-    static genDefaultBoxHTML(width: number = 700, height: number = 400) {
-        return '<div class="box-editor pointer " style="top: 279px; left: 356px; transform: rotate(0deg); '
-            + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
-            + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
-            + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
-    }
-    static defaultSlideItem() {
-        const { width, height } = this.getDefaultDim();
-        // TODO: set width and height for present screen
+    static extractKey(key: string) {
+        const arr = key.split(':');
         return {
-            id: -1,
-            html: `<div style="width: ${width}px; height: ${height}px;">`
-                + this.genDefaultBoxHTML()
-                + '</div>',
+            filePath: arr[0],
+            id: arr[1],
         };
+    }
+    static getByKey(key: string) {
+        return this._cache.get(key) || null;
     }
 }

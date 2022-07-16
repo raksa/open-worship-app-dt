@@ -7,14 +7,15 @@ import TabRender from '../../others/TabRender';
 import CanvasController from './CanvasController';
 import { Fragment } from 'react';
 import CanvasItems from './CanvasItems';
-import { useCCScale, useCCSelect } from './canvasHelpers';
+import { useCCScale, useCCRefresh } from './canvasHelpers';
 
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';
 export default function Tools({ canvasController }: {
     canvasController: CanvasController,
 }) {
-    const selectedCanvasItems = useCCSelect(canvasController);
+    const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
+    useCCRefresh(canvasController, ['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
     const scale = useCCScale(canvasController);
     return (
@@ -45,7 +46,7 @@ export default function Tools({ canvasController }: {
                 </div>
             </div>
             <div className='tools-body d-flex flex-row flex-fill'>
-                {selectedCanvasItems.map((canvasItem, i) => {
+                {selectedCanvasItems?.map((canvasItem, i) => {
                     return (
                         <Fragment key={i}>
                             {tabType === 't' && <ToolsText

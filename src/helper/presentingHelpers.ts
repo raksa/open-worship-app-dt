@@ -1,10 +1,10 @@
 import { renderPresent } from './appHelper';
 
-export function renderFG(html: string) {
+export function renderFG(htmlString: string) {
     renderPresent({
         script: `
 const shadow = getShadow('foreground');
-shadow.innerHTML = \`${html}\`;
+shadow.innerHTML = \`${htmlString}\`;
 `});
 }
 export function clearForeground() {

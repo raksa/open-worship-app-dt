@@ -123,7 +123,7 @@ const slideEditingCacheManager = {
             const cacheData = this.slideBaseToCacheData(slide);
             cacheData.content.items.forEach((item) => {
                 if (item.id === slideItem.id) {
-                    item.html = slideItem.html;
+                    item.html = slideItem.htmlString;
                 }
             });
             this.save(cacheData, slideItem.fileSource, isSilent);

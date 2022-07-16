@@ -40,8 +40,6 @@ export type ToolingBoxType = {
     rotate?: number,
     horizontalAlignment?: HAlignmentEnum,
     verticalAlignment?: VAlignmentEnum,
-    layerBack?: boolean,
-    layerFront?: boolean,
 };
 export type ToolingType = {
     text?: ToolingTextType,
@@ -53,7 +51,7 @@ export function showCanvasContextMenu(e: any,
     showAppContextMenu(e, [
         {
             title: 'New',
-            onClick: () => canvasController.newBox(),
+            onClick: () => canvasController.addNewBox(),
         },
         {
             title: 'Paste',
@@ -63,48 +61,65 @@ export function showCanvasContextMenu(e: any,
     ]);
 }
 
-export function showBoxContextMenu(e: any,
-    canvasController: CanvasController,
+export function showCanvasItemContextMenu(e: any,
     canvasItem: CanvasItem,
 ) {
     showAppContextMenu(e, [
         {
             title: 'Copy', onClick: () => {
-                canvasController.copiedItem = canvasItem;
+                const canvasController = canvasItem.canvasController;
+                if (canvasController !== null) {
+                    canvasController.copiedItem = canvasItem;
+                }
             },
         },
         {
             title: 'Duplicate', onClick: () => {
-                canvasController.duplicate(canvasItem);
+                const canvasController = canvasItem.canvasController;
+                canvasController?.duplicate(canvasItem);
             },
         },
         {
             title: 'Edit', onClick: async () => {
+                canvasItem.canvasController?.stopAllMods();
                 canvasItem.isEditing = true;
             },
         },
         {
             title: 'Delete', onClick: () => {
-                canvasController.deleteItem(canvasItem);
+                const canvasController = canvasItem.canvasController;
+                canvasController?.deleteItem(canvasItem);
             },
         },
     ]);
 }
 
-export function useCCRefresh(canvasController: CanvasController, eventTypes: CCEventType[],
-    callback?: () => void) {
+export function useCCRefresh(canvasController:CanvasController,
+    eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
     useEffect(() => {
-        const regEvents = canvasController.registerEventListener(eventTypes, () => {
-            setN(n + 1);
-            if (callback) {
-                callback();
-            }
-        });
+        const regEvents = canvasController.registerEventListener(
+            eventTypes, () => {
+                setN(n + 1);
+            });
         return () => {
-            canvasController.unregisterEventListener(regEvents);
+            canvasController?.unregisterEventListener(regEvents);
         };
-    });
+    }, [canvasController, n]);
+}
+export function useCIRefresh(canvasItem: CanvasItem,
+    eventTypes: CCEventType[]) {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+        const canvasController = canvasItem.canvasController;
+        const regEvents = canvasController ? canvasController.registerEventListener(
+            eventTypes, () => {
+                setN(n + 1);
+            }) : [];
+        return () => {
+            canvasController?.unregisterEventListener(regEvents);
+        };
+    }, [canvasItem, n]);
 }
 
 export function useCCScale(canvasController: CanvasController) {
@@ -124,38 +139,15 @@ export function useCIControl(canvasItem: CanvasItem) {
     const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
     useEffect(() => {
         const canvasController = canvasItem.canvasController;
-        const regEvents = canvasController ? canvasController.registerEventListener(['control'], () => {
-            setIsControlling(canvasItem.isControlling);
-        }) : [];
+        const regEvents = canvasController ? canvasController.registerEventListener(
+            ['control'], (item: CanvasItem) => {
+                if (item.id === canvasItem.id) {
+                    setIsControlling(canvasItem.isControlling);
+                }
+            }) : [];
         return () => {
             canvasController?.unregisterEventListener(regEvents);
         };
     }, [canvasItem]);
     return isControlling;
-}
-
-export function useCCSelect(canvasController: CanvasController) {
-    const [selectedItems, setSelectedItems] = useState(canvasController.selectedCanvasItems);
-    useEffect(() => {
-        const regEvents = canvasController.registerEventListener(['select'], () => {
-            setSelectedItems(canvasController.selectedCanvasItems);
-        });
-        return () => {
-            canvasController.unregisterEventListener(regEvents);
-        };
-    }, [canvasController]);
-    return selectedItems;
-}
-
-export function useCCCanvasItems(canvasController: CanvasController) {
-    const [canvasItems, setCanvasItems] = useState(canvasController.canvas.canvasItems);
-    useEffect(() => {
-        const regEvents = canvasController.registerEventListener(['update'], () => {
-            setCanvasItems(canvasController.canvas.canvasItems);
-        });
-        return () => {
-            canvasController.unregisterEventListener(regEvents);
-        };
-    }, [canvasController]);
-    return canvasItems;
 }

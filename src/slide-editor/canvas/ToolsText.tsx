@@ -18,23 +18,22 @@ export default function ToolsText({
             <Tool>
                 <ColorPicker color={canvasItem.props.color}
                     onColorChange={(newColor: string) => {
-                        canvasController.applyToolingData(canvasItem, {
+                        canvasItem.applyToolingData({
                             text: { color: newColor },
                         });
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
                 <Align isText onData={(newData) => {
-                    canvasController.applyToolingData(canvasItem, {
+                    canvasItem.applyToolingData({
                         text: newData,
                     });
                 }} />
             </Tool>
-            <ToolsTextFontControl canvasItem={canvasItem}
-                canvasController={canvasController} />
+            <ToolsTextFontControl canvasItem={canvasItem} />
             <Tool title='Rotate'>
                 <button className='btn btn-info' onClick={() => {
-                    canvasController.applyToolingData(canvasItem, {
+                    canvasItem.applyToolingData({
                         box: { rotate: 0 },
                     });
                 }}
