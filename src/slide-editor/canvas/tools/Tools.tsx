@@ -1,13 +1,13 @@
 import './Tools.scss';
 
-import { useStateSettingString } from '../../helper/settingHelper';
-import ToolsBox from './ToolsBox';
-import ToolsText from './ToolsText';
-import TabRender from '../../others/TabRender';
-import CanvasController from './CanvasController';
+import { useStateSettingString } from '../../../helper/settingHelper';
+import ToolsBox from '../ToolsBox';
+import ToolsText from '../ToolsText';
+import TabRender from '../../../others/TabRender';
+import CanvasController from '../CanvasController';
 import { Fragment } from 'react';
-import CanvasItems from './CanvasItems';
-import { useCCScale, useCCRefresh } from './canvasHelpers';
+import CanvasItems from '../CanvasItems';
+import { useCCScale, useCCRefresh } from '../canvasHelpers';
 
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';

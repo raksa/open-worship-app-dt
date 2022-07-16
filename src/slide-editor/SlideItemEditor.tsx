@@ -1,4 +1,4 @@
-import Tools from './canvas/Tools';
+import Tools from './canvas/tools/Tools';
 import SlideItemEditorCanvas from './canvas/SlideItemEditorCanvas';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
