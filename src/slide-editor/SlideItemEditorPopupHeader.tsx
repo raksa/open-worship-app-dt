@@ -8,7 +8,7 @@ import {
 } from '../event/KeyboardEventListener';
 import { closeItemSlideEdit } from './SlideItemEditorPopup';
 
-export default function HeaderEditorPopup() {
+export default function SlideItemEditorPopupHeader() {
     const { t } = useTranslation();
     const eventMapper = {
         wControlKey: [WindowsControlEnum.Ctrl],

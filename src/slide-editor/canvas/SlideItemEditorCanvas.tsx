@@ -1,4 +1,4 @@
-import { BoxEditor } from './BoxEditor';
+import { BoxEditor } from './box/BoxEditor';
 import {
     KeyEnum,
     useKeyboardRegistering,

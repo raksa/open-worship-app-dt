@@ -1,7 +1,7 @@
-import ColorPicker from '../../others/ColorPicker';
+import ColorPicker from '../../../others/ColorPicker';
 import Tool from './Tool';
-import Align from './Align';
-import CanvasItem from './CanvasItem';
+import ToolAlign from './ToolAlign';
+import CanvasItem from '../CanvasItem';
 
 export default function ToolsBox({
     canvasItem,
@@ -25,7 +25,7 @@ export default function ToolsBox({
                     }} />
             </Tool>
             <Tool title='Box Alignment'>
-                <Align onData={(newData) => {
+                <ToolAlign onData={(newData) => {
                     canvasItem.applyToolingData({
                         box: newData,
                     });

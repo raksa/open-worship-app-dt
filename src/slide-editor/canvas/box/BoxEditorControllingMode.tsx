@@ -1,11 +1,11 @@
-import './EditorControllerBoxWrapper.scss';
+import './BoxEditorControllingMode.scss';
 
-import { boxEditorController } from '../BoxEditorController';
-import CanvasItem from './CanvasItem';
-import { showCanvasItemContextMenu, useCIRefresh } from './canvasHelpers';
+import { boxEditorController } from '../../BoxEditorController';
+import CanvasItem from '../CanvasItem';
+import { showCanvasItemContextMenu, useCIRefresh } from '../canvasHelpers';
 import BoxEditorRenderText from './BoxEditorRenderText';
 
-export default function BoxEditorControllingMod({ canvasItem }: {
+export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem,
 }) {
     useCIRefresh(canvasItem, ['update']);

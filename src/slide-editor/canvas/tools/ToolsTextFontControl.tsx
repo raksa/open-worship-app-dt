@@ -1,5 +1,5 @@
 import Tool from './Tool';
-import CanvasItem from './CanvasItem';
+import CanvasItem from '../CanvasItem';
 import { useEffect, useState } from 'react';
 
 export default function ToolsTextFontControl({ canvasItem }: {

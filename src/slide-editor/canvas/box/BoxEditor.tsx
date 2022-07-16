@@ -1,11 +1,11 @@
 import './BoxEditor.scss';
 
 import { useEffect } from 'react';
-import { boxEditorController } from '../BoxEditorController';
-import CanvasItem from './CanvasItem';
+import { boxEditorController } from '../../BoxEditorController';
+import CanvasItem from '../CanvasItem';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
-import BoxEditorControllingMod from './BoxEditorControllingMod';
-import { useCIControl } from './canvasHelpers';
+import BoxEditorControllingMode from './BoxEditorControllingMode';
+import { useCIControl } from '../canvasHelpers';
 
 export type NewDataType = { [key: string]: any };
 export function BoxEditor({
@@ -18,6 +18,6 @@ export function BoxEditor({
         boxEditorController.setScaleFactor(scale);
     }, [scale]);
     return isControlling ?
-        <BoxEditorControllingMod canvasItem={canvasItem} /> :
+        <BoxEditorControllingMode canvasItem={canvasItem} /> :
         <BoxEditorNormalMode canvasItem={canvasItem} />;
 }

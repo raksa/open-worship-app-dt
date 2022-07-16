@@ -1,12 +1,12 @@
 import './Tools.scss';
 
 import { useStateSettingString } from '../../../helper/settingHelper';
-import ToolsBox from '../ToolsBox';
-import ToolsText from '../ToolsText';
+import ToolsBox from './ToolsBox';
+import ToolsText from './ToolsText';
 import TabRender from '../../../others/TabRender';
 import CanvasController from '../CanvasController';
 import { Fragment } from 'react';
-import CanvasItems from '../CanvasItems';
+import ToolCanvasItems from './ToolCanvasItems';
 import { useCCScale, useCCRefresh } from '../canvasHelpers';
 
 // t: text, b: box
@@ -57,7 +57,7 @@ export default function Tools({ canvasController }: {
                         </Fragment>
                     );
                 })}
-                {tabType === 'c' && <CanvasItems
+                {tabType === 'c' && <ToolCanvasItems
                     canvasController={canvasController} />}
             </div>
         </div>

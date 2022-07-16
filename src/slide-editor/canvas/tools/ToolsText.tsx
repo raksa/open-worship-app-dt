@@ -1,7 +1,7 @@
-import ColorPicker from '../../others/ColorPicker';
+import ColorPicker from '../../../others/ColorPicker';
 import Tool from './Tool';
-import Align from './Align';
-import CanvasItem from './CanvasItem';
+import ToolAlign from './ToolAlign';
+import CanvasItem from '../CanvasItem';
 import ToolsTextFontControl from './ToolsTextFontControl';
 
 export default function ToolsText({
@@ -24,7 +24,7 @@ export default function ToolsText({
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
-                <Align isText onData={(newData) => {
+                <ToolAlign isText onData={(newData) => {
                     canvasItem.applyToolingData({
                         text: newData,
                     });

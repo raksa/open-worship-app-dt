@@ -1,7 +1,7 @@
 import './SlideItemEditorPopup.scss';
 
 import { KeyEnum, useKeyboardRegistering } from '../event/KeyboardEventListener';
-import HeaderEditorPopup from './HeaderEditorPopup';
+import SlideItemEditorPopupHeader from './SlideItemEditorPopupHeader';
 import { StateEnum, WindowEnum, windowEventListener } from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import SlideItem from '../slide-list/SlideItem';
@@ -34,7 +34,7 @@ export default function SlideItemEditorPopup({
         <Modal>
             <div id="slide-item-editor-popup"
                 className="app-modal shadow card">
-                <HeaderEditorPopup />
+                <SlideItemEditorPopupHeader />
                 <div className="body card-body w-100">
                     <SlideItemEditor slideItem={slideItem} />
                 </div>

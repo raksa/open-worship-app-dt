@@ -1,8 +1,8 @@
 import {
     VAlignmentEnum, HAlignmentEnum,
-} from './Canvas';
+} from '../Canvas';
 
-export default function Align({ onData, isText }: {
+export default function ToolAlign({ onData, isText }: {
     onData: (data: {
         verticalAlignment?: VAlignmentEnum,
         horizontalAlignment?: HAlignmentEnum,

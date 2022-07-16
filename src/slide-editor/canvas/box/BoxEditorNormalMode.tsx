@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
-import CanvasItem from './CanvasItem';
-import { showCanvasItemContextMenu, useCIRefresh } from './canvasHelpers';
+import CanvasItem from '../CanvasItem';
+import { showCanvasItemContextMenu, useCIRefresh } from '../canvasHelpers';
 import BoxEditorRenderText from './BoxEditorRenderText';
 import BoxEditorTextArea from './BoxEditorTextArea';
 

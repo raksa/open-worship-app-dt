@@ -1,7 +1,7 @@
-import CanvasController from './CanvasController';
-import { showCanvasItemContextMenu, useCCRefresh } from './canvasHelpers';
+import CanvasController from '../CanvasController';
+import { showCanvasItemContextMenu, useCCRefresh } from '../canvasHelpers';
 
-export default function CanvasItems({ canvasController }: {
+export default function ToolCanvasItems({ canvasController }: {
     canvasController: CanvasController,
 }) {
     const canvasItems = canvasController.canvas.canvasItems;
