@@ -29,7 +29,8 @@ export function closeSetting() {
 export default function SettingPopup() {
     return (
         <Modal>
-            <div id="setting-popup" className="app-modal shadow card">
+            <div id='setting-popup'
+                className='app-modal shadow card'>
                 <HeaderEditorPopup />
                 <Setting />
             </div>
@@ -41,8 +42,8 @@ type TabType = 'g' | 'b' | 'a';
 function Setting() {
     const [tabType, setTabType] = useStateSettingString<TabType>('popup-setting-tab', 'b');
     return (
-        <div className="card-body d-flex flex-column">
-            <div className="setting-header d-flex">
+        <div className='card-body d-flex flex-column'>
+            <div className='setting-header d-flex'>
                 <TabRender<TabType> tabs={[
                     ['g', 'General'],
                     ['b', 'Bible'],
@@ -51,7 +52,7 @@ function Setting() {
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
-            <div className="setting-body flex-fill flex h">
+            <div className='setting-body flex-fill flex h'>
                 {tabType === 'g' && <SettingGeneral />}
                 {tabType === 'b' && <SettingBible />}
                 {tabType === 'a' && <SettingAbout />}

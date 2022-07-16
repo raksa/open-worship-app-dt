@@ -18,7 +18,7 @@ async function renderCapture() {
 export default function PresentScreenPreviewer() {
     return (
         <>
-            <img className='captured-present-screen image-in' alt="preview"
+            <img className='captured-present-screen image-in' alt='preview'
                 ref={(dom) => {
                     domImg = dom;
                     renderCapture();

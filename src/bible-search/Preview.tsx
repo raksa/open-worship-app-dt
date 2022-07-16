@@ -52,26 +52,26 @@ export default function Preview({
     }
     const { title, text } = rendered;
     return (
-        <div className="card border-success mb-3 mx-auto mt-5"
+        <div className='card border-success mb-3 mx-auto mt-5'
             style={{ maxHeight: '375px' }}>
-            <div className="card-header bg-transparent border-success">
+            <div className='card-header bg-transparent border-success'>
                 {title}
-                <div className="btn-group float-end">
-                    <button type="button" className="btn btn-sm btn-outline-danger"
+                <div className='btn-group float-end'>
+                    <button type='button' className='btn btn-sm btn-outline-danger'
                         onClick={() => {
                             copyToClipboard(title);
                         }}>copy title</button>
-                    <button type="button" className="btn btn-sm btn-outline-success"
+                    <button type='button' className='btn btn-sm btn-outline-success'
                         onClick={() => {
                             copyToClipboard(text);
                         }}>copy verse text</button>
-                    <button type="button" className="btn btn-sm btn-outline-info"
+                    <button type='button' className='btn btn-sm btn-outline-info'
                         onClick={() => {
                             copyToClipboard(`${title}\n${text}`);
                         }}>copy all</button>
                 </div>
             </div>
-            <div className="card-body bg-transparent border-success select-text">
+            <div className='card-body bg-transparent border-success select-text'>
                 {text}
             </div>
         </div>

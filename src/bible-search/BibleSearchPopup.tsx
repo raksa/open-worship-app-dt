@@ -124,9 +124,9 @@ function BibleSearchRender({ bibleItem }: { bibleItem: BibleItem | null }) {
     if (bibleSelected === null) {
         return (
             <Modal>
-                <div id="bible-search-popup" className="app-modal shadow card">
+                <div id='bible-search-popup' className='app-modal shadow card'>
                     <Header />
-                    <div className="body card-body w-100">
+                    <div className='body card-body w-100'>
                         Bible not available!
                     </div>
                 </div>
@@ -175,12 +175,12 @@ function BibleSearchRender({ bibleItem }: { bibleItem: BibleItem | null }) {
     };
 
     return (
-        <div id="bible-search-popup" className="app-modal shadow card">
+        <div id='bible-search-popup' className='app-modal shadow card'>
             <Header />
-            <div className="body card-body w-100">
-                <div className="input-group">
-                    <span className="input-group-text">
-                        <i className="bi bi-search"></i>
+            <div className='body card-body w-100'>
+                <div className='input-group'>
+                    <span className='input-group-text'>
+                        <i className='bi bi-search'></i>
                     </span>
                     <InputHandler
                         inputText={inputText}
@@ -188,7 +188,7 @@ function BibleSearchRender({ bibleItem }: { bibleItem: BibleItem | null }) {
                         bibleSelected={bibleSelected}
                         onBibleChange={handleBibleChange} />
                 </div>
-                <div className="found">
+                <div className='found'>
                     {!book && <RenderBookOption
                         bibleSelected={bibleSelected}
                         inputText={inputText}

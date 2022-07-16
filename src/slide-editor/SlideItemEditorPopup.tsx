@@ -32,10 +32,10 @@ export default function SlideItemEditorPopup({
     }, closeItemSlideEdit);
     return (
         <Modal>
-            <div id="slide-item-editor-popup"
-                className="app-modal shadow card">
+            <div id='slide-item-editor-popup'
+                className='app-modal shadow card'>
                 <SlideItemEditorPopupHeader />
-                <div className="body card-body w-100">
+                <div className='body card-body w-100'>
                     <SlideItemEditor slideItem={slideItem} />
                 </div>
             </div>

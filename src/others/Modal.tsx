@@ -7,7 +7,7 @@ interface MyProps {
 }
 
 export default function Modal({ children }: React.PropsWithChildren<MyProps>) {
-    return <div className="modal-container  w-100 h-100">
+    return <div className='modal-container  w-100 h-100'>
         {children}
     </div>;
 }

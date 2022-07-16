@@ -68,7 +68,7 @@ export default function BibleItemRender({
                         };
                     }));
                 }}>
-                <i className="bi bi-bookmark" />
+                <i className='bi bi-bookmark' />
                 {bibleStatus === null ? null : bibleStatus[2]}
             </span> | {title == null ? 'not found' : title}
             {warningMessage && <span className='float-end'

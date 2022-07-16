@@ -25,7 +25,7 @@ export default function SavingRenderer({ lyric }: { lyric: Lyric }) {
             style={{
                 width: '20px',
                 padding: '0px',
-            }}><i className="bi bi-save" />
+            }}><i className='bi bi-save' />
         </button>
     );
 }

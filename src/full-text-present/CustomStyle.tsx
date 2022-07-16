@@ -7,8 +7,8 @@ import TabRender from '../others/TabRender';
 
 export default function CustomStyle() {
     return (
-        <div className="custom-style card pointer border-white-round mt-1">
-            <div className="card-header">
+        <div className='custom-style card pointer border-white-round mt-1'>
+            <div className='card-header'>
                 Custom Style
             </div>
             <Body />
@@ -23,7 +23,7 @@ function Body() {
         'tull-text-present-custom-style-tab', 'a');
     return (
         <div className='card-body'>
-            <div className="d-flex">
+            <div className='d-flex'>
                 <TabRender<TabType> tabs={[
                     ['a', 'Appearance'],
                     ['s', 'Shadow'],

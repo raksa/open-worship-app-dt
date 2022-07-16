@@ -44,10 +44,10 @@ export default function SlideItemRender({
             }}
             onContextMenu={(e) => onContextMenu(e)}
             onCopy={onCopy}>
-            <div className="card-header d-flex">
+            <div className='card-header d-flex'>
                 <div>
                     {index + 1} {slideItem.isSelected && <span>
-                        <i className="bi bi-collection" />
+                        <i className='bi bi-collection' />
                     </span>}
                 </div>
                 <div className='flex-fill d-flex justify-content-end'>
@@ -58,7 +58,7 @@ export default function SlideItemRender({
                         slideItem={slideItem} />
                 </div>
             </div>
-            <div className="card-body w-100 h-100 overflow-hidden"
+            <div className='card-body w-100 h-100 overflow-hidden'
                 style={{ width, padding: '0px' }} >
                 <SlideItemIFrame id={slideItem.id}
                     width={width} canvasDim={canvasDim} />

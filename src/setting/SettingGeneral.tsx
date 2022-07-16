@@ -63,9 +63,9 @@ function Display() {
         <div className='card'>
             <div className='card-header'>Display</div>
             <div className='card-body'>
-                <div className="input-group">
+                <div className='input-group'>
                     <span >Present Display:</span>
-                    <select className="form-select" aria-label="Default select example"
+                    <select className='form-select' aria-label='Default select example'
                         value={presentDisplay.id} onChange={(e) => {
                             saveDisplaySetting({
                                 presentDisplayId: e.target.value,

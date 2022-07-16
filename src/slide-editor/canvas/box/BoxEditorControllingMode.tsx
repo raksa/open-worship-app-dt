@@ -10,13 +10,13 @@ export default function BoxEditorControllingMode({ canvasItem }: {
 }) {
     useCIRefresh(canvasItem, ['update']);
     return (
-        <div className="editor-controller-box-wrapper"
+        <div className='editor-controller-box-wrapper'
             ref={(div) => {
                 if (div !== null) {
                     boxEditorController.release();
                     boxEditorController.initEvent(div);
                     boxEditorController.onClick = () => {
-                        canvasItem.isControlling = false;
+                        canvasItem.canvasController?.stopAllMods();
                     };
                     boxEditorController.onDone = () => {
                         const info = boxEditorController.getInfo();
@@ -55,7 +55,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 </div>
                 <div className='tools'>
                     <div className={`object ${boxEditorController.rotatorCN}`} />
-                    <div className="rotate-link" />
+                    <div className='rotate-link' />
                     {Object.keys(boxEditorController.resizeActorList)
                         .map((cn, i) => <div key={`${i}`}
                             className={`object ${cn}`} />)

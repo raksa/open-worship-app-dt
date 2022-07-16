@@ -68,17 +68,17 @@ export default function RenderChapterOption({
         applyAttemptIndex = 0;
     }
     return <>
-        <span className="input-group-text float-start">
-            <i className="bi bi-box-arrow-in-right"></i>
+        <span className='input-group-text float-start'>
+            <i className='bi bi-box-arrow-in-right'></i>
         </span>
-        <div className="row w-75 align-items-start g-2">
+        <div className='row w-75 align-items-start g-2'>
             {matches === null ? <div>not matched chapters</div> :
                 matches.map((chapter, i) => {
                     const highlight = i === applyAttemptIndex;
                     const className = `chapter-select btn btn-outline-success ${highlight ? 'active' : ''}`;
                     return (
-                        <div className="col-2" key={`${i}`}>
-                            <button type="button" onClick={() => {
+                        <div className='col-2' key={`${i}`}>
+                            <button type='button' onClick={() => {
                                 onSelect(chapter);
                             }} className={className}>
                                 <RendChapterAsync bibleSelected={bibleSelected} chapter={chapter} />
@@ -98,6 +98,6 @@ function RendChapterAsync({ bibleSelected, chapter }: {
     }
     return `${n}` !== `${chapter}` ? (<>
         <span>{n}</span>
-        (<small className="text-muted">{chapter}</small>)
+        (<small className='text-muted'>{chapter}</small>)
     </>) : (<span>{chapter}</span>);
 }

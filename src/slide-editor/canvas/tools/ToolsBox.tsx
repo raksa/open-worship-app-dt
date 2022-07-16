@@ -35,11 +35,11 @@ export default function ToolsBox({
                 <button className='btn btn-info' onClick={() => {
                     canvasItem.canvasController?.applyOrderingData(
                         canvasItem, true);
-                }}><i className="bi bi-layer-backward" /></button>
+                }}><i className='bi bi-layer-backward' /></button>
                 <button className='btn btn-info' onClick={() => {
                     canvasItem.canvasController?.applyOrderingData(
                         canvasItem, false);
-                }}><i className="bi bi-layer-forward" /></button>
+                }}><i className='bi bi-layer-forward' /></button>
             </Tool>
         </>
     );

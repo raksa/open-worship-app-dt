@@ -15,11 +15,11 @@ export default function Videos() {
             dirSource={dirSource}
             setDirSource={setDirSource}
             header={undefined}
-            body={<div className="d-flex justify-content-start flex-wrap">
+            body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
                     const vRef = createRef<HTMLVideoElement>();
                     return (
-                        <div key={`${i}`} className="video-thumbnail card"
+                        <div key={`${i}`} className='video-thumbnail card'
                             title={fileSource.filePath}
                             onContextMenu={(e) => {
                                 showAppContextMenu(e, genCommonMenu(fileSource),);
@@ -37,12 +37,12 @@ export default function Videos() {
                                 renderBGVideo(fileSource.src);
                                 presentEventListener.renderBG();
                             }}>
-                            <div className="card-body">
+                            <div className='card-body'>
                                 <video ref={vRef} loop
                                     muted src={fileSource.src}></video>
                             </div>
-                            <div className="card-footer">
-                                <p className="ellipsis-left card-text">
+                            <div className='card-footer'>
+                                <p className='ellipsis-left card-text'>
                                     {fileSource.fileName}
                                 </p>
                             </div>

@@ -18,11 +18,11 @@ export default function Header() {
     };
     useKeyboardRegistering(eventMapper, closeBibleSearch);
     return (
-        <div className="card-header text-center w-100">
+        <div className='card-header text-center w-100'>
             <span>📖 {t('bible-search')}</span>
-            <button type="button" onClick={closeBibleSearch}
+            <button type='button' onClick={closeBibleSearch}
                 data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
-                className="tool-tip tool-tip-fade tool-tip-left btn-close float-end"></button>
+                className='tool-tip tool-tip-fade tool-tip-left btn-close float-end'></button>
         </div>
     );
 }

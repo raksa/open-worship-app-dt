@@ -28,9 +28,9 @@ export default function ShowHidePresent() {
         <div className={`show-hide tool-tip tool-tip-fade form-check form-switch pointer ${isShowing ? 'show' : ''}`}
             onClick={() => isShowing ? onHide() : onShow()}
             data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F5' })}>
-            <input className="form-check-input pointer" type="checkbox"
+            <input className='form-check-input pointer' type='checkbox'
                 checked={isShowing} onChange={() => false} />
-            <i className="bi bi-file-slides-fill" />
+            <i className='bi bi-file-slides-fill' />
         </div>
     );
 }

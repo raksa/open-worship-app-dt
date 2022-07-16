@@ -19,6 +19,11 @@ type CanvasPropsType = {
     width: number, height: number,
     canvasItems: CanvasItem[],
 };
+export type CanvasDimType = {
+    width: number,
+    height: number,
+    htmlString: string,
+}
 export default class Canvas {
     static _objectId = 0;
     _objectId: number;
@@ -66,7 +71,7 @@ export default class Canvas {
         }
         return CanvasController.getInstant(slideItem);
     }
-    static parseHtmlDim(htmlString: string) {
+    static parseHtmlDim(htmlString: string): CanvasDimType {
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         const mainDiv = div.firstChild as HTMLDivElement;

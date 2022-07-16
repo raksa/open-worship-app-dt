@@ -29,7 +29,7 @@ export default function ColorPicker({ color, onColorChange }: {
         setLocalColor(color);
     }, [color]);
     return (
-        <div className="color-picker">
+        <div className='color-picker'>
             <div className='p-3 overflow-hidden'>
                 <button className='btn btn-sm btn-info' onClick={(e) => {
                     showAppContextMenu(e, [

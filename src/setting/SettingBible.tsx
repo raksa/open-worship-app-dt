@@ -27,7 +27,7 @@ export function SettingBible() {
                 ><i className={`bi bi-arrow-clockwise ${isRefreshing ? 'rotating' : ''}`}></i>
                     Refresh</button>
             </div>
-            <ul className="list-group d-flex flex-fill">
+            <ul className='list-group d-flex flex-fill'>
                 {bbList.map((bb, i) => {
                     return (
                         <BibleItem key={`${i}`} bibleName={bb} />
@@ -46,7 +46,7 @@ function BibleItem({ bibleName }: { bibleName: string }) {
     }, [bibleName]);
     const [dProgress, setDProgress] = useState<number | null>(null);
     return (
-        <li className="list-group-item">
+        <li className='list-group-item'>
             <div>
                 <span>{bibleName}</span>
                 {dProgress === null ?
@@ -87,9 +87,9 @@ function BibleItem({ bibleName }: { bibleName: string }) {
                                 }
                             }} />
                     </div> : <div>
-                        <div className="progress">
-                            <div className="progress-bar progress-bar-striped progress-bar-animated"
-                                role="progressbar" aria-valuenow={dProgress * 100}
+                        <div className='progress'>
+                            <div className='progress-bar progress-bar-striped progress-bar-animated'
+                                role='progressbar' aria-valuenow={dProgress * 100}
                                 aria-valuemin={0} aria-valuemax={100} style={{ width: `${dProgress * 100}%` }}></div>
                         </div>
                     </div>
@@ -106,7 +106,7 @@ function DownloadOption({ isDownloaded, onDownload, onDelete }: {
     if (isDownloaded === null) {
         return (
             <button disabled className='btn btn-danger'>Unable to Download
-                <i className="bi bi-cloud-arrow-down" />
+                <i className='bi bi-cloud-arrow-down' />
             </button>
         );
     }
@@ -119,7 +119,7 @@ function DownloadOption({ isDownloaded, onDownload, onDelete }: {
     return (
         <button className='btn btn-info'
             onClick={onDownload}>Download
-            <i className="bi bi-cloud-arrow-down" />
+            <i className='bi bi-cloud-arrow-down' />
         </button>
     );
 }

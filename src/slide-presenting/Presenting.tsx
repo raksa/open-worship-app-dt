@@ -26,7 +26,7 @@ export default function Presenting() {
     useSlideSelecting(() => setTabType('s'));
     useSlideItemSelecting(() => setTabType('s'));
     return (
-        <div id="presenting" className="w-100 h-100">
+        <div id='presenting' className='w-100 h-100'>
             <TabRender<TabType> tabs={[
                 ['s', 'Slide'],
                 ['f', 'Full Text'],
@@ -34,7 +34,7 @@ export default function Presenting() {
                 activeTab={tabType}
                 setActiveTab={setTabType}
                 className='header' />
-            <div className="body w-100 p-10">
+            <div className='body w-100 p-10'>
                 {tabType === 's' && <SlidePreviewer />}
                 {tabType === 'f' && <FullTextPresentController />}
             </div>

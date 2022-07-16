@@ -91,7 +91,7 @@ export default function AppContextMenu() {
             if (self !== null) {
                 setPositionMenu(self, data.event);
             }
-        }} className="app-context-menu">
+        }} className='app-context-menu'>
             {data.items.map((item, i) => {
                 return (
                     <div key={`${i}`} className={`app-context-menu-item ${item.disabled ? 'disabled' : ''}`}

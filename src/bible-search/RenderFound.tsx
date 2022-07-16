@@ -151,9 +151,9 @@ export default function RenderFound({
     const verseCount = Object.values(found.verses).length;
     const isSelectEditing = !!BibleItem.getSelectedEditingResult();
     return (
-        <div className="render-found card border-success mb-3 mx-auto mt-5">
-            <div className="card-body">
-                <div className="verse-select d-flex align-content-start flex-wrap">
+        <div className='render-found card border-success mb-3 mx-auto mt-5'>
+            <div className='card-body'>
+                <div className='verse-select d-flex align-content-start flex-wrap'>
                     {Array.from({ length: verseCount }, (_, i) => {
                         const ind = i + 1;
                         const started = sVerse === ind;
@@ -187,12 +187,12 @@ export default function RenderFound({
                 </div>
             </div>
             {!isWindowEditingMode() &&
-                <div className="card-footer bg-transparent border-success d-flex justify-content-evenly">
-                    <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
+                <div className='card-footer bg-transparent border-success d-flex justify-content-evenly'>
+                    <button type='button' className='tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5'
                         onClick={addBibleItem}
                         data-tool-tip={keyboardEventListener.toShortcutKey(addListEventMapper)}
                     >{isSelectEditing ? 'Save Bible Item' : 'Add Bible Item'}</button>
-                    <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
+                    <button type='button' className='tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5'
                         onClick={addBibleItemAndPresent}
                         data-tool-tip={keyboardEventListener.toShortcutKey(presentEventMapper)}
                     >{isSelectEditing ? 'Save and Present' : 'Present'}</button>

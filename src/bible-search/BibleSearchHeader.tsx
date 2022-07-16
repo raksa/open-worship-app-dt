@@ -20,9 +20,9 @@ export default function BibleSearchHeader() {
     return (
         <button style={{ width: '220px' }} onClick={openBibleSearch}
             data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
-            type="button" className="tool-tip tool-tip-fade btn btn-labeled btn-primary">
-            <span className="btn-label">
-                <i className="bi bi-book"></i>
+            type='button' className='tool-tip tool-tip-fade btn btn-labeled btn-primary'>
+            <span className='btn-label'>
+                <i className='bi bi-book'></i>
             </span>
             {t('bible-search')}
         </button>

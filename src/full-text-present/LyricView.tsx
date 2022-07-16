@@ -13,17 +13,17 @@ export default function LyricView({
     onClose: () => void,
 }) {
     return (
-        <div className="lyric-view flex-fill">
-            <div className="input-group">
-                <input className="form-control" type="text" placeholder='title'
+        <div className='lyric-view flex-fill'>
+            <div className='input-group'>
+                <input className='form-control' type='text' placeholder='title'
                     value={lyricItem.title} onChange={(e) => {
                         const newItem = cloneObject(lyricItem);
                         newItem.title = e.target.value;
                         onLyricChange(newItem);
                     }} />
                 {lyricItems.length > 1 &&
-                    <button className="btn btn-outline-danger" onClick={onClose} >
-                        <i className="bi bi-x-lg" />
+                    <button className='btn btn-outline-danger' onClick={onClose} >
+                        <i className='bi bi-x-lg' />
                     </button>
                 }
             </div>

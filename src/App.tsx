@@ -46,26 +46,26 @@ export default function App() {
         };
     });
     return (
-        <div id="app" className="dark d-flex flex-column">
-            <div className="app-header d-flex">
+        <div id='app' className='dark d-flex flex-column'>
+            <div className='app-header d-flex'>
                 <TabRender<TabType> tabs={[
                     ['e', 'Editing'],
                     ['p', 'Presenting'],
                 ]}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
-                <div className="highlight-border-bottom d-flex justify-content-center flex-fill">
+                <div className='highlight-border-bottom d-flex justify-content-center flex-fill'>
                     <BibleSearchHeader />
                 </div>
                 <div className='highlight-border-bottom'>
                     <SettingHeader />
                 </div>
             </div>
-            <div className="app-body flex-fill flex h border-white-round">
+            <div className='app-body flex-fill flex h border-white-round'>
                 {tabType === 'e' && <AppEditing />}
                 {tabType === 'p' && <AppPresenting />}
             </div>
-            <div id="pseudo-windows">
+            <div id='pseudo-windows'>
                 <HandleBibleSearch />
                 <HandleItemSlideEdit />
                 <HandleSetting />

@@ -17,13 +17,13 @@ export default function ToolsTextFontControl({ canvasItem }: {
     };
     return (
         <Tool title='Font Size'>
-            <input className='form-control' type="number"
+            <input className='form-control' type='number'
                 style={{ maxWidth: '100px' }}
                 value={localFontSize}
                 onChange={(e) => {
                     applyFontSize(+e.target.value);
                 }} />
-            <select className="form-select form-select-sm"
+            <select className='form-select form-select-sm'
                 value={localFontSize}
                 onChange={(e) => {
                     applyFontSize(+e.target.value);

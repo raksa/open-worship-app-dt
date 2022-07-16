@@ -43,27 +43,27 @@ export default function RenderBookOption({
         applyAttemptIndex = 0;
     }
     return <>
-        <span className="input-group-text float-start">
-            <i className="bi bi-bookmark"></i>
+        <span className='input-group-text float-start'>
+            <i className='bi bi-bookmark'></i>
         </span>
-        <div className="row w-75 align-items-start g-2">
+        <div className='row w-75 align-items-start g-2'>
             {(matches === null || bookKVList == null) ?
                 <div>No matched found</div> :
                 matches.map((k, i) => {
                     const highlight = i === applyAttemptIndex;
                     return (
-                        <div key={`${i}`} className="col-6">
+                        <div key={`${i}`} className='col-6'>
                             <button ref={(self) => {
                                 if (self && highlight && !isVisible(self)) {
                                     self.scrollIntoView({ block: 'end', behavior: 'smooth' });
                                 }
-                            }} type="button" onClick={() => {
+                            }} type='button' onClick={() => {
                                 onSelect(bookKVList[k]);
                             }} style={{ width: '240px', overflowX: 'auto' }}
                                 className={`text-nowrap btn-sm btn btn-outline-success ${highlight ? 'active' : ''}`}>
                                 <span>{bookKVList[k]}</span>
                                 {bookKVList[k] !== kjvKeyValue[k] &&
-                                    <>(<small className="text-muted">{kjvKeyValue[k]}</small>)</>}
+                                    <>(<small className='text-muted'>{kjvKeyValue[k]}</small>)</>}
                             </button>
                         </div>
                     );

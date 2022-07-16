@@ -14,10 +14,10 @@ export default function Images() {
         <FileListHandler id={'background-image'} mimetype={'image'}
             dirSource={dirSource}
             setDirSource={setDirSource}
-            body={<div className="d-flex justify-content-start flex-wrap">
+            body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
                     return (
-                        <div key={`${i}`} className="image-thumbnail card" title={fileSource.filePath}
+                        <div key={`${i}`} className='image-thumbnail card' title={fileSource.filePath}
                             onContextMenu={(e) => {
                                 showAppContextMenu(e, genCommonMenu(fileSource),);
                             }}
@@ -25,11 +25,11 @@ export default function Images() {
                                 renderBGImage(fileSource.src);
                                 presentEventListener.renderBG();
                             }}>
-                            <div className="card-body">
-                                <img src={fileSource.src} className="card-img-top" alt="..." />
+                            <div className='card-body'>
+                                <img src={fileSource.src} className='card-img-top' alt='...' />
                             </div>
-                            <div className="card-footer">
-                                <p className="ellipsis-left card-text">{fileSource.fileName}</p>
+                            <div className='card-footer'>
+                                <p className='ellipsis-left card-text'>{fileSource.fileName}</p>
                             </div>
                         </div>
                     );

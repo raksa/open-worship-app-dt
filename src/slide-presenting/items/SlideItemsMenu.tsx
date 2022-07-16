@@ -25,26 +25,26 @@ export default function SlideItemsMenu({ slide }: { slide: Slide }) {
             backgroundColor: '#00000020',
             minHeight: (isHavingHistories || slide.isModifying) ? '35px' : '0px',
         }}>
-            <div className="btn-group control d-flex justify-content-center'">
+            <div className='btn-group control d-flex justify-content-center'>
                 {!!slide.undo.length &&
-                    <button type="button" className="btn btn-sm btn-info"
-                        title="clear all"
+                    <button type='button' className='btn btn-sm btn-info'
+                        title='clear all'
                         onClick={() => slide.undoChanges()}>
                         undo
-                        <i className="bi bi-arrow-90deg-left"></i></button>
+                        <i className='bi bi-arrow-90deg-left'></i></button>
                 }
                 {!!slide.redo.length &&
-                    <button type="button" className="btn btn-sm btn-info"
-                        title="clear background"
+                    <button type='button' className='btn btn-sm btn-info'
+                        title='clear background'
                         onClick={() => slide.redoChanges()}>
                         redo
-                        <i className="bi bi-arrow-90deg-right"></i></button>
+                        <i className='bi bi-arrow-90deg-right'></i></button>
                 }
                 <MenuIsModifying slide={slide}
                     isHavingHistories={isHavingHistories}
                     eventMapper={eventMapper} />
                 {foundWrongDimension !== null &&
-                    <button type="button" className="btn btn-sm btn-warning"
+                    <button type='button' className='btn btn-sm btn-warning'
                         title={Slide.toWrongDimensionString(foundWrongDimension)}
                         onClick={() => slide.fixSlideDimension(presentDisplay)}>
                         Fix Slide Dimension</button>

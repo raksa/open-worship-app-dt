@@ -1,11 +1,10 @@
+import { CanvasDimType } from '../../slide-editor/canvas/Canvas';
+
 export default function SlideItemIFrame({
     id, width, canvasDim,
 }: {
-    id: number, width: number, canvasDim: {
-        htmlString: string,
-        width: number,
-        height: number,
-    }
+    id: number, width: number,
+    canvasDim: CanvasDimType,
 }) {
     const height = width * canvasDim.height / canvasDim.width;
     const scaleX = width / canvasDim.width;
@@ -16,7 +15,7 @@ export default function SlideItemIFrame({
             transform: `scale(${scaleX},${scaleY}) translate(50%, 50%)`,
         }}>
             <iframe title={id + ''}
-                frameBorder="0"
+                frameBorder='0'
                 style={{
                     pointerEvents: 'none',
                     borderStyle: 'none',

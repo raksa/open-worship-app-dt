@@ -12,9 +12,9 @@ export default function FullTextPresentController() {
         'tools': '1',
     };
     return (
-        <div id="full-text-present-controller"
-            className="card w-100 h-100 border-white-round">
-            <div className="card-body flex v">
+        <div id='full-text-present-controller'
+            className='card w-100 h-100 border-white-round'>
+            <div className='card-body flex v'>
                 <ResizeActor settingName={resizeSettingName}
                     flexSizeDefault={flexSizeDefault}
                     resizeKinds={['v']}

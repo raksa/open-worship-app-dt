@@ -102,10 +102,10 @@ export default function FileListHandler({
             }}>
             {header && <div className='card-header'>{header}
                 {onNewFile && dirSource.dirPath &&
-                    <button className="btn btn-sm btn-outline-info float-end"
-                        title="New File"
+                    <button className='btn btn-sm btn-outline-info float-end'
+                        title='New File'
                         onClick={() => setIsCreatingNew(true)}>
-                        <i className="bi bi-file-earmark-plus" />
+                        <i className='bi bi-file-earmark-plus' />
                     </button>
                 }
             </div>}
@@ -130,7 +130,7 @@ export default function FileListHandler({
             }}>
                 <PathSelector prefix={`path-${id}`}
                     dirSource={dirSource} />
-                <ul className="list-group">
+                <ul className='list-group'>
                     {onNewFile && isCreatingNew && <AskingNewName
                         applyName={async (name) => {
                             if (name === null) {

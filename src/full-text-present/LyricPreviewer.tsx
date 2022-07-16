@@ -67,7 +67,7 @@ export default function LyricPreviewer() {
                         }} />
                 );
             })}
-            <button className="btn btn-info" title='Add More Lyric'
+            <button className='btn btn-info' title='Add More Lyric'
                 style={{
                     width: '20px',
                     padding: '0px',
@@ -77,7 +77,7 @@ export default function LyricPreviewer() {
                     newLyric.content.items.push(cloneObject(lyricItems[0]));
                     setLyric(newLyric);
                 }}>
-                <i className="bi bi-plus" />
+                <i className='bi bi-plus' />
             </button>
         </div>
     );

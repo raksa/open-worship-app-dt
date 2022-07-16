@@ -20,7 +20,7 @@ export default function BibleView({
     const text = useBibleItemRenderText(bibleItem);
     const bibleList = bibleHelper.getBibleList();
     return (
-        <div className="bible-view card flex-fill" onContextMenu={(e) => {
+        <div className='bible-view card flex-fill' onContextMenu={(e) => {
             showAppContextMenu(e, [
                 {
                     title: 'Copy', onClick: () => {
@@ -30,9 +30,9 @@ export default function BibleView({
                 },
             ]);
         }}>
-            <div className="card-header">
-                <span className="input-group-text select float-start">
-                    <select className="form-select bible" value={bibleItem.bibleName}
+            <div className='card-header'>
+                <span className='input-group-text select float-start'>
+                    <select className='form-select bible' value={bibleItem.bibleName}
                         onChange={(event) => {
                             onBibleChange(event.target.value);
                         }}>
@@ -40,9 +40,9 @@ export default function BibleView({
                     </select>
                 </span>
                 {title}
-                <button className="btn-close float-end" onClick={onClose} />
+                <button className='btn-close float-end' onClick={onClose} />
             </div>
-            <div className="card-body p-3">
+            <div className='card-body p-3'>
                 <p className='select-text'>{text}</p>
             </div>
         </div>

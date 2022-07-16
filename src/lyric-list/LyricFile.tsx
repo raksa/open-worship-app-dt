@@ -32,7 +32,7 @@ export default function LyricFile({
                 }
             }}
             child={<>
-                <i className="bi bi-music-note" />
+                <i className='bi bi-music-note' />
                 {fileSource.name}
                 <ItemColorNote item={data as ItemSource<any>} />
             </>}

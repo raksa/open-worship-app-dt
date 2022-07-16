@@ -19,8 +19,8 @@ export default function Tools({ canvasController }: {
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
     const scale = useCCScale(canvasController);
     return (
-        <div className="tools d-flex flex-column w-100 h-100">
-            <div className="tools-header d-flex">
+        <div className='tools d-flex flex-column w-100 h-100'>
+            <div className='tools-header d-flex'>
                 <TabRender<TabType> tabs={[
                     ['t', 'Text'],
                     ['b', 'Box'],
@@ -31,7 +31,7 @@ export default function Tools({ canvasController }: {
                 <div className='align-self-end flex-fill d-flex justify-content-end'>
                     <span>{scale.toFixed(1)}x</span>
                     <div style={{ maxWidth: '200px' }}>
-                        <input type="range" className='form-range'
+                        <input type='range' className='form-range'
                             onChange={(e) => {
                                 canvasController.scale = +e.target.value;
                             }}
