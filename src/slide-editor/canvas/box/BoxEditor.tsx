@@ -18,7 +18,9 @@ export function BoxEditor({
         boxEditorController.setScaleFactor(scale);
     }, [scale]);
     // TODO: switch box by tab, shift
-    // TODO: key => ctl+d, delete, copy&paste
+    // TODO: key => ctl+d, delete, copy&paste, paste across slideItem
+    // TODO: ruler, snap
+    // TODO: ctrl|alt resize => anchor center base
     return isControlling ?
         <BoxEditorControllingMode canvasItem={canvasItem} /> :
         <BoxEditorNormalMode canvasItem={canvasItem} />;

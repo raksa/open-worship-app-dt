@@ -1,7 +1,5 @@
 import { toastEventListener } from '../event/ToastEventListener';
-import {
-    MetaDataType, MimetypeNameType,
-} from '../helper/fileHelper';
+import { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem from './PlaylistItem';
@@ -15,6 +13,9 @@ export default class Playlist extends ItemSource<PlaylistType>{
     static fromJson(json: any, fileSource: FileSource) {
         this.validate(json);
         return new Playlist(fileSource, json.metadata, json.content);
+    }
+    get items() {
+        return this.content.items;
     }
     itemFromJson(json: any) {
         return PlaylistItem.fromJson(json, this.fileSource);
