@@ -17,6 +17,8 @@ export function BoxEditor({
     useEffect(() => {
         boxEditorController.setScaleFactor(scale);
     }, [scale]);
+    // TODO: switch box by tab, shift
+    // TODO: key => ctl+d, delete, copy&paste
     return isControlling ?
         <BoxEditorControllingMode canvasItem={canvasItem} /> :
         <BoxEditorNormalMode canvasItem={canvasItem} />;
