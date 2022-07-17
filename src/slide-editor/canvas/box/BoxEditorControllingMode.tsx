@@ -8,6 +8,7 @@ import BoxEditorRenderText from './BoxEditorRenderText';
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem,
 }) {
+    // TODO: move box by left right up down key, shift&ctl
     useCIRefresh(canvasItem, ['update']);
     return (
         <div className='editor-controller-box-wrapper'
