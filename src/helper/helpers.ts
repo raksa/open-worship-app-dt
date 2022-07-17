@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toastEventListener } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from './FileSource';
 import ItemSource, { ItemSourceAnyType } from './ItemSource';
@@ -131,4 +132,23 @@ export function useReadFileToData<T extends ItemSourceAnyType>(fileSource: FileS
         }
     }, [fileSource]);
     return data;
+}
+
+export function useFontList() {
+    const [fontListString, setFontListString] = useState<string[] | null>(null);
+    useEffect(() => {
+        if (fontListString === null) {
+            appProvider.fontList.getFonts().then((fonts) => {
+                const newFontList = fonts.map((fontString) => fontString.replace(/"/g, ''));
+                setFontListString(newFontList);
+            }).catch((error) => {
+                console.log(error);
+                toastEventListener.showSimpleToast({
+                    title: 'Loading Fonts',
+                    message: 'Fail to load font list',
+                });
+            });
+        }
+    });
+    return fontListString;
 }

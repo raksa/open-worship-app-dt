@@ -1,8 +1,20 @@
 import Tool from './Tool';
 import CanvasItem from '../CanvasItem';
 import { useEffect, useState } from 'react';
+import { useFontList } from '../../../helper/helpers';
 
 export default function ToolsTextFontControl({ canvasItem }: {
+    canvasItem: CanvasItem,
+}) {
+    return (
+        <Tool title='Font Size'>
+            <FontSize canvasItem={canvasItem} />
+            <hr />
+            <FontFamily canvasItem={canvasItem} />
+        </Tool>
+    );
+}
+function FontSize({ canvasItem }: {
     canvasItem: CanvasItem,
 }) {
     const [localFontSize, setLocalFontSize] = useState(canvasItem.props.fontSize);
@@ -16,7 +28,7 @@ export default function ToolsTextFontControl({ canvasItem }: {
         });
     };
     return (
-        <Tool title='Font Size'>
+        <div>
             <input className='form-control' type='number'
                 style={{ maxWidth: '100px' }}
                 value={localFontSize}
@@ -35,6 +47,40 @@ export default function ToolsTextFontControl({ canvasItem }: {
                             value={n}>{n}px</option>;
                     })}
             </select>
-        </Tool>
+        </div>
+    );
+}
+function FontFamily({ canvasItem }: {
+    canvasItem: CanvasItem,
+}) {
+    const fontList = useFontList();
+    const [localFontFamily, setLocalFontFamily] = useState(canvasItem.props.fontFamily);
+    const applyFontFamily = (fontFamily: string) => {
+        setLocalFontFamily(fontFamily);
+        canvasItem.applyToolingData({
+            text: { fontFamily: fontFamily },
+        });
+    };
+    if (fontList === null) {
+        return null;
+    }
+    return (
+        <div>
+            <select className='form-select form-select-sm'
+                value={localFontFamily}
+                onChange={(e) => {
+                    if (e.target.value === '--') {
+                        return;
+                    }
+                    applyFontFamily(e.target.value);
+                }} >
+                <option>--</option>
+                {fontList.map((ff, i) => {
+                    return <option key={i} value={ff}>
+                        {ff}
+                    </option>;
+                })}
+            </select>
+        </div>
     );
 }

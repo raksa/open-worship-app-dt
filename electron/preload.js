@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const electron = require('electron');
 const url = require('url');
+const fontList = require('font-list');
 const ipcRenderer = electron.ipcRenderer;
 
 const httpsProvider = {
@@ -52,6 +53,7 @@ const provider = {
     ipcRenderer,
     crypto,
     url,
+    fontList,
 };
 
 global.provider = window.provider = provider;

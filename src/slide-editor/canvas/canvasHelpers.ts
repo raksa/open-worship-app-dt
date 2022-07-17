@@ -32,6 +32,7 @@ export function tooling2BoxProps(toolingData: ToolingType, state: {
 export type ToolingTextType = {
     color?: string,
     fontSize?: number,
+    fontFamily?: string,
     horizontalAlignment?: HAlignmentEnum,
     verticalAlignment?: VAlignmentEnum,
 };

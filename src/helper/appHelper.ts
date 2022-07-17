@@ -25,12 +25,6 @@ appProvider.ipcRenderer.on('app:main:present-change-bible', (event: any, isNext:
 appProvider.ipcRenderer.on('app:main:present-ctrl-scrolling', (event: any, isUp: boolean) => {
     presentEventListener.presentCtrlScrolling(isUp);
 });
-appProvider.ipcRenderer.on('app:main:captured-preview', (event: any, data: string) => {
-    console.log('app:main:captured-preview');
-    Array.from(document.querySelectorAll('.captured-present-screen')).forEach((element) => {
-        (element as HTMLImageElement).src = data;
-    });
-});
 appProvider.ipcRenderer.on('app:main:hiding-present', (event: any, data: string) => {
     presentEventListener.fireHideEvent();
 });

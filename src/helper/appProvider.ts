@@ -14,6 +14,9 @@ export default (window as any).provider as {
     ipcRenderer: typeof electronNS.ipcRenderer;
     crypto: typeof crypto;
     url: typeof url;
+    fontList: {
+        getFonts: () => Promise<string[]>,
+    };
     cipher: {
         encrypt: (text: string, key: string) => string,
         decrypt: (text: string, key: string) => string,

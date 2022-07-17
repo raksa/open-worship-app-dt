@@ -8,7 +8,8 @@ import SlideItem from '../../slide-list/SlideItem';
 import FileSource from '../../helper/FileSource';
 
 type CanvasItemPropsType = {
-    text: string, fontSize: number, color: string,
+    text: string, color: string,
+    fontSize: number, fontFamily: string,
     top: number, left: number,
     rotate: number, width: number, height: number,
     horizontalAlignment: HAlignmentEnum,
@@ -69,6 +70,7 @@ export default class CanvasItem {
         const style: CSSProperties = {
             display: 'flex',
             fontSize: `${this.props.fontSize}px`,
+            fontFamily: this.props.fontFamily,
             color: this.props.color,
             alignItems: this.props.verticalAlignment,
             justifyContent: this.props.horizontalAlignment,
@@ -110,6 +112,7 @@ export default class CanvasItem {
         const props = {
             text: element.innerHTML.split('<br>').join('\n'),
             fontSize: removePX(style.fontSize) || 30,
+            fontFamily: style.fontFamily.replace(/"/g, '') || '',
             color: style.color || BLACK_COLOR,
             top: removePX(style.top) || 3,
             left: removePX(style.left) || 3,
@@ -145,9 +148,12 @@ export default class CanvasItem {
         const newProps = {
             ...text, ...box, ...boxProps,
         };
-        newProps.rotate = box?.rotate ?? this.props.rotate;
-        newProps.backgroundColor = box?.backgroundColor ??
-            this.props.backgroundColor;
+        if (box?.rotate) {
+            newProps.rotate = box.rotate;
+        }
+        if (box?.backgroundColor) {
+            newProps.backgroundColor = box.backgroundColor;
+        }
         this.applyProps(newProps);
     }
     applyProps(props: { [key: string]: any }) {
