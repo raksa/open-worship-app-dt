@@ -72,7 +72,7 @@ export function useSlideIsModifying(slide: Slide) {
     return isModifying;
 }
 
-export function useSlideItemDim(slideItem: SlideItem) {
+export function useCanvasDim(slideItem: SlideItem) {
     const [canvasDim, setCanvasDim] = useState(Canvas.parseHtmlDim(slideItem.htmlString));
     useEffect(() => {
         const updateEvents = slideItem.fileSource.registerEventListener(

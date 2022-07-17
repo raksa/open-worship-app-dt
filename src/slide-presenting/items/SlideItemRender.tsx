@@ -4,7 +4,7 @@ import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemIFrame from './SlideItemIFrame';
 import RenderIsEditing from '../RenderIsEditing';
-import { useSlideItemDim } from '../../slide-list/slideHelpers';
+import { useCanvasDim } from '../../slide-list/slideHelpers';
 
 export default function SlideItemRender({
     width, index,
@@ -22,7 +22,7 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
-    const canvasDim = useSlideItemDim(slideItem);
+    const canvasDim = useCanvasDim(slideItem);
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
@@ -58,10 +58,9 @@ export default function SlideItemRender({
                         slideItem={slideItem} />
                 </div>
             </div>
-            <div className='card-body w-100 h-100 overflow-hidden'
-                style={{ width, padding: '0px' }} >
-                <SlideItemIFrame id={slideItem.id}
-                    width={width} canvasDim={canvasDim} />
+            <div className='card-body overflow-hidden'
+                style={{ padding: '0px' }} >
+                <SlideItemIFrame canvasDim={canvasDim} />
             </div>
         </div>
     );
