@@ -23,7 +23,9 @@ export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     const [slide, setSlide] = useState<Slide | null | undefined>(null);
-    useSlideSelecting(setSlide);
+    useSlideSelecting(()=>{
+        setSlide(null);
+    });
     useSlideItemSelecting(() => setSlide(null));
     useSlideItemSelecting((slideItem) => {
         if (slideItem !== null) {
@@ -47,7 +49,7 @@ export default function SlidePreviewer() {
         }
         if (slide) {
             const registerEvent = slide.fileSource.registerEventListener(
-                ['select', 'update', 'edit', 'delete'], ()=>{
+                ['select', 'update', 'edit', 'delete', 'refresh-dir'], ()=>{
                     setSlide(null);
                 });
             return () => {

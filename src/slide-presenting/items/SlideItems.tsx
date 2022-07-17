@@ -7,7 +7,7 @@ import {
     useSlideItemSizing,
 } from '../../event/SlideListEventListener';
 import { isWindowEditingMode } from '../../App';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import SlideItemRender from './SlideItemRender';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,

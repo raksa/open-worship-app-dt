@@ -7,7 +7,7 @@ import fileHelpers from './fileHelper';
 import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
 type FSListener = (slideItem?: SlideItem) => void;
-export type FSEventType = 'select' | 'update' | 'edit' | 'delete' | 'delete-cache';
+export type FSEventType = 'select' | 'update' | 'edit' | 'delete' | 'delete-cache' | 'refresh-dir';
 export type RegisteredEventType = {
     key: string,
     listener: FSListener,
