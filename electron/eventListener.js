@@ -50,6 +50,13 @@ function initMainScreen(appManager) {
         });
         event.returnValue = result.filePaths;
     });
+    ipcMain.on('main:app:select-files', async (event, filters) => {
+        const result = await dialog.showOpenDialog(appManager.mainWin, {
+            properties: ['openFile', 'multiSelections'],
+            filters,
+        });
+        event.returnValue = result.filePaths;
+    });
 
     ipcMain.on('main:app:is-presenting', (event) => {
         event.returnValue = appManager.isShowingPS;
@@ -63,7 +70,7 @@ function initMainScreen(appManager) {
         appManager.presentWin.webContents.send('app:present:get-rendering-info', replyEventName);
     });
 
-    ipcMain.on('app:main:captured-preview', async(_, replyEventName) => {
+    ipcMain.on('app:main:captured-preview', async (_, replyEventName) => {
         const data = await appManager.capturePresentScreen();
         appManager.mainWin.webContents.send(replyEventName, data);
     });

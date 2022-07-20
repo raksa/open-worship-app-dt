@@ -3,6 +3,8 @@ import SlideItem from '../../slide-list/SlideItem';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
 import { getSetting, setSetting } from '../../helper/settingHelper';
+import FileSource from '../../helper/FileSource';
+import { toastEventListener } from '../../event/ToastEventListener';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -164,5 +166,20 @@ export default class CanvasController extends EventHandler {
         regEvents.forEach(({ type, listener }) => {
             this._removeOnEventListener(type, listener);
         });
+    }
+    insertMedia(fileSource: FileSource, event: any) {
+        try {
+            const rect = (event.target as HTMLDivElement).getBoundingClientRect();
+            const x = (event.clientX - rect.left) / this.scale;
+            const y = (event.clientY - rect.top) / this.scale;
+            console.log(fileSource);
+            console.log(x, y);
+            // TODO: insert media
+        } catch (error) {
+            toastEventListener.showSimpleToast({
+                title: 'Insert Image or Video',
+                message: 'Fail to insert medias',
+            });
+        }
     }
 }

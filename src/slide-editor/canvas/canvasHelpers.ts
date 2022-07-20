@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { selectFiles } from '../../helper/appHelper';
+import { getAppMimetype, getMimetypeExtensions } from '../../helper/fileHelper';
+import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
 import CanvasController, { CCEventType } from './CanvasController';
@@ -59,6 +62,21 @@ export function showCanvasContextMenu(e: any,
             disabled: canvasController.isCopied === null,
             onClick: () => canvasController.paste(),
         },
+        {
+            title: 'Insert Medias',
+            onClick: () => {
+                const imageExts = getMimetypeExtensions('image');
+                const videoExts = getMimetypeExtensions('video');
+                const filePaths = selectFiles([
+                    { name: 'Images', extensions: imageExts },
+                    { name: 'Movies', extensions: videoExts },
+                ]);
+                filePaths.forEach((filePath) => {
+                    const fileSource = FileSource.genFileSource(filePath);
+                    canvasController.insertMedia(fileSource, e);
+                });
+            },
+        },
     ]);
 }
 
@@ -95,7 +113,7 @@ export function showCanvasItemContextMenu(e: any,
     ]);
 }
 
-export function useCCRefresh(canvasController:CanvasController,
+export function useCCRefresh(canvasController: CanvasController,
     eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
     useEffect(() => {

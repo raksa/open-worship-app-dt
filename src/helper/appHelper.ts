@@ -54,6 +54,11 @@ export function copyToClipboard(str: string) {
 export function selectDirs() {
     return appProvider.ipcRenderer.sendSync('main:app:select-dirs') as string[];
 }
+export function selectFiles(filters: {
+    name: string, extensions: string[],
+}[]) {
+    return appProvider.ipcRenderer.sendSync('main:app:select-files', filters) as string[];
+}
 
 export type RenderedType = {
     background?: boolean,

@@ -39,22 +39,39 @@ export const createNewItem = async (dir: string, name: string,
 
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric' | 'bible';
 
-export function getFileMetaData(fileName: string, mimeTypes: MimeType[]): FileMetadataType | null {
+export function getFileMetaData(fileName: string,
+    mimeTypes: MimeType[]): FileMetadataType | null {
     const ext = fileName.substring(fileName.lastIndexOf('.'));
-    const foundMT = mimeTypes.find((mt) => ~mt.extension.indexOf(ext));
+    const foundMT = mimeTypes.find((mt) => {
+        return ~mt.extension.indexOf(ext);
+    });
     if (foundMT) {
         return { fileName, mimeType: foundMT };
     }
     return null;
 }
 
-export function getAppMimetype(mt: MimetypeNameType) {
-    return require(`./mime/${mt}-types.json`) as MimeType[];
+export function getAppMimetype(mimetype: MimetypeNameType) {
+    return require(`./mime/${mimetype}-types.json`) as MimeType[];
+}
+export function getMimetypeExtensions(mimetype: MimetypeNameType) {
+    const imageTypes = getAppMimetype(mimetype);
+    return imageTypes.reduce((r: string[], imageType) => {
+        r.push(...imageType.extension);
+        return r;
+    }, []).map((ext) => {
+        return ext.replace('.', '');
+    });
 }
 
-export function isSupportedMimetype(fileMimetype: string, mt: MimetypeNameType) {
-    const mimeTypes = getAppMimetype(mt);
-    return mimeTypes.map((mimeType) => mimeType.mimeType).some((type) => type === fileMimetype);
+export function isSupportedMimetype(fileMimetype: string,
+    mimetype: MimetypeNameType) {
+    const mimeTypes = getAppMimetype(mimetype);
+    return mimeTypes.map((mimeType) => {
+        return mimeType.mimeType;
+    }).some((type) => {
+        return type === fileMimetype;
+    });
 }
 
 const fileHelpers = {
@@ -75,12 +92,12 @@ const fileHelpers = {
             });
         });
     },
-    listFilesWithMimetype: async function (dir: string, type: MimetypeNameType) {
+    listFilesWithMimetype: async function (dir: string, mimetype: MimetypeNameType) {
         if (!dir) {
             return [];
         }
         try {
-            const mimeTypes = require(`./mime/${type}-types.json`) as MimeType[];
+            const mimeTypes = require(`./mime/${mimetype}-types.json`) as MimeType[];
             const files = await this.listFiles(dir);
             const matchedFiles = files.map((fileName) => {
                 return getFileMetaData(fileName, mimeTypes);

@@ -53,11 +53,6 @@ export default function SlideItemEditorCanvas({
                             event.currentTarget.style.opacity = '1';
                         }} onDrop={async (event) => {
                             event.preventDefault();
-
-                            const rect = event.currentTarget.getBoundingClientRect();
-                            const x = (event.clientX - rect.left) / scale;
-                            const y = (event.clientY - rect.top) / scale;
-
                             event.currentTarget.style.opacity = '1';
                             for (const file of Array.from(event.dataTransfer.files)) {
                                 if (!isSupportType(file.type)) {
@@ -67,9 +62,7 @@ export default function SlideItemEditorCanvas({
                                     });
                                 } else {
                                     const fileSource = FileSource.genFileSource(file.path, file.name);
-                                    console.log(fileSource);
-                                    console.log(x, y);
-                                    // TODO: insert image or video
+                                    canvasController.insertMedia(fileSource, event);
                                 }
                             }
                         }}
