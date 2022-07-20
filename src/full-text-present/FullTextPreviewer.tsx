@@ -1,4 +1,6 @@
-import { useBibleItemSelecting, useLyricSelecting } from '../event/PreviewingEventListener';
+import {
+    useBibleItemSelecting, useLyricSelecting,
+} from '../event/PreviewingEventListener';
 import {
     getSetting, setSetting, useStateSettingString,
 } from '../helper/settingHelper';

@@ -7,7 +7,6 @@ import Bible from './Bible';
 import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
-import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 
 export default function BibleItemRender({

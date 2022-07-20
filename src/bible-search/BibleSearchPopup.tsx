@@ -1,8 +1,6 @@
 import './BibleSearchPopup.scss';
 
-import {
-    Dispatch, SetStateAction, useEffect, useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 import {
     KeyEnum, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';

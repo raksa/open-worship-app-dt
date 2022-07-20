@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import BibleItem from '../bible-list/BibleItem';
-import { setIsPreviewingBible, setIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
+import {
+    setIsPreviewingBible, setIsPreviewingLyric,
+} from '../full-text-present/FullTextPreviewer';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 import EventHandler from './EventHandler';

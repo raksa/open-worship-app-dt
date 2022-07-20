@@ -6,7 +6,6 @@ import {
 } from './fileHelper';
 import FileSource from './FileSource';
 import { cloneObject, validateMeta } from './helpers';
-import { ItemBase } from './ItemBase';
 import { setSetting, getSetting } from './settingHelper';
 
 export type ItemSourceAnyType = ItemSource<any>;

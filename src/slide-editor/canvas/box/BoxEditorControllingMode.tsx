@@ -2,7 +2,9 @@ import './BoxEditorControllingMode.scss';
 
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
-import { showCanvasItemContextMenu, useCIRefresh } from '../canvasHelpers';
+import {
+    showCanvasItemContextMenu, useCIRefresh,
+} from '../canvasHelpers';
 import BoxEditorRenderText from './BoxEditorRenderText';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
