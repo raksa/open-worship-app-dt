@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { isWindowEditingMode } from '../App';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import FileSource, { FSEventType } from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import Canvas from '../slide-editor/canvas/Canvas';
 import { openItemSlideEdit } from '../slide-editor/SlideItemEditorPopup';
@@ -87,4 +88,24 @@ export function useCanvasDim(slideItem: SlideItem) {
         };
     }, [slideItem]);
     return canvasDim;
+}
+
+export function useFSRefresh(events: FSEventType[], fileSource: FileSource | null,
+    callback?: () => void) {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+        if (fileSource === null) {
+            return;
+        }
+        const registerEvent = fileSource.registerEventListener(
+            events, () => {
+                setN(n + 1);
+                if (callback) {
+                    callback();
+                }
+            });
+        return () => {
+            fileSource.unregisterEventListener(registerEvent);
+        };
+    }, [fileSource, n]);
 }

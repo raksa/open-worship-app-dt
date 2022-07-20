@@ -5,6 +5,7 @@ import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
+import { useFSRefresh } from '../slide-list/slideHelpers';
 
 export default function SlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
@@ -16,16 +17,10 @@ export default function SlideItemEditorGround() {
         if (slideItem === null) {
             reloadSlide();
         }
-        if (slideItem) {
-            const registerEvent = slideItem.fileSource.registerEventListener(
-                ['select', 'delete'], () => {
-                    setSlideItem(null);
-                });
-            return () => {
-                slideItem.fileSource.unregisterEventListener(registerEvent);
-            };
-        }
     }, [slideItem]);
+    useFSRefresh(['select', 'delete'], slideItem?.fileSource || null, () => {
+        setSlideItem(null);
+    });
     useSlideSelecting(() => setSlideItem(null));
     useSlideItemSelecting(setSlideItem);
     if (!slideItem) {

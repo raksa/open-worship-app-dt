@@ -1,15 +1,13 @@
 import './SlidePreviewer.scss';
 
 import SlideItemsPreviewer from './SlideItemsPreviewer';
-import { renderFG } from '../../helper/presentingHelpers';
 import {
-    useSlideItemSelecting,
     useSlideItemSizing,
 } from '../../event/SlideListEventListener';
-import { presentEventListener } from '../../event/PresentEventListener';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
+    useFSRefresh,
 } from '../../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
@@ -23,17 +21,8 @@ export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     const [slide, setSlide] = useState<Slide | null | undefined>(null);
-    useSlideSelecting(()=>{
+    useSlideSelecting(() => {
         setSlide(null);
-    });
-    useSlideItemSelecting(() => setSlide(null));
-    useSlideItemSelecting((slideItem) => {
-        if (slideItem !== null) {
-            renderFG(slideItem.htmlString);
-            presentEventListener.renderFG();
-        } else {
-            presentEventListener.clearFG();
-        }
     });
     const reloadSlide = async (editingItem?: SlideItem) => {
         if (editingItem && slide) {
@@ -47,16 +36,11 @@ export default function SlidePreviewer() {
         if (slide === null) {
             reloadSlide();
         }
-        if (slide) {
-            const registerEvent = slide.fileSource.registerEventListener(
-                ['select', 'update', 'edit', 'delete', 'refresh-dir'], ()=>{
-                    setSlide(null);
-                });
-            return () => {
-                slide.fileSource.unregisterEventListener(registerEvent);
-            };
-        }
     }, [slide]);
+    useFSRefresh(['delete', 'update', 'refresh-dir'],
+        slide?.fileSource || null, () => {
+            setSlide(null);
+        });
     if (!slide) {
         return (
             <SlideList />
