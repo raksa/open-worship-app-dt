@@ -64,7 +64,7 @@ export default function SlidePreviewer() {
     }
     return (
         <div id='slide-previewer' className='card w-100 h-100'>
-            <div className='card-body w-100 h-100'>
+            <div className='card-body w-100 h-100 overflow-hidden'>
                 <SlideItemsMenu slide={slide} />
                 <SlideItemsPreviewer slide={slide} />
             </div>

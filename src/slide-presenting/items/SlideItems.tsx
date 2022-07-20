@@ -56,33 +56,35 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     return (
         <div className='d-flex flex-wrap justify-content-center'>
             {slide.items.map((item, i) => {
-                const shouldReceiveAtLeft = draggingIndex !== null &&
+                const shouldReceiveAtFirst = draggingIndex !== null &&
                     draggingIndex !== 0 && i === 0;
-                const shouldReceiveAtRight = draggingIndex !== null &&
+                const shouldReceiveAtLast = draggingIndex !== null &&
                     draggingIndex !== i && draggingIndex !== i + 1;
                 return (
                     <Fragment key={`${i}`}>
-                        {shouldReceiveAtLeft && <SlideItemDragReceiver
+                        {shouldReceiveAtFirst && <SlideItemDragReceiver
+                            width={thumbSize}
                             onDrop={(id) => {
                                 slide.moveItem(id, i);
                             }} />}
                         <SlideItemRender
                             index={i}
                             slideItem={item}
+                            width={thumbSize}
                             onContextMenu={(e) => {
                                 slide.openContextMenu(e, item);
                             }}
                             onCopy={() => {
                                 slide.copiedItem = item;
                             }}
-                            width={thumbSize}
                             onDragStart={() => {
                                 setDraggingIndex(i);
                             }}
                             onDragEnd={() => {
                                 setDraggingIndex(null);
                             }} />
-                        {shouldReceiveAtRight && <SlideItemDragReceiver
+                        {shouldReceiveAtLast && <SlideItemDragReceiver
+                            width={thumbSize}
                             onDrop={(id) => {
                                 slide.moveItem(id, i);
                             }} />}

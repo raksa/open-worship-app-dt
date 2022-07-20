@@ -12,7 +12,8 @@ export default function SlideItemsPreviewer({ slide }: { slide: Slide }) {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
         DEFAULT_THUMBNAIL_SIZE);
     return (
-        <div className='w-100 h-100' style={{ overflow: 'auto' }}
+        <div className='w-100 h-100 pb-5'
+            style={{ overflow: 'auto' }}
             onWheel={(e) => {
                 if (!e.ctrlKey) {
                     return;
