@@ -8,6 +8,9 @@ import {
     showCanvasContextMenu,
     useCCRefresh,
 } from './canvasHelpers';
+import { toastEventListener } from '../../event/ToastEventListener';
+import { isSupportedMimetype } from '../../helper/fileHelper';
+import FileSource from '../../helper/FileSource';
 
 export default function SlideItemEditorCanvas({
     canvasController, scale,
@@ -20,6 +23,10 @@ export default function SlideItemEditorCanvas({
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => {
         canvasController.stopAllMods();
     });
+    const isSupportType = (fileType: string) => {
+        return isSupportedMimetype(fileType, 'image') ||
+            isSupportedMimetype(fileType, 'video');
+    };
     return (
         <div className='editor-container w-100 h-100'>
             <div className='overflow-hidden' style={{
@@ -34,6 +41,38 @@ export default function SlideItemEditorCanvas({
                         height: `${canvasController.canvas.height}px`,
                         transform: 'translate(-50%, -50%)',
                     }}
+                        onDragOver={(event) => {
+                            event.preventDefault();
+                            if (Array.from(event.dataTransfer.items).every((item) => {
+                                return isSupportType(item.type);
+                            })) {
+                                event.currentTarget.style.opacity = '0.5';
+                            }
+                        }} onDragLeave={(event) => {
+                            event.preventDefault();
+                            event.currentTarget.style.opacity = '1';
+                        }} onDrop={async (event) => {
+                            event.preventDefault();
+
+                            const rect = event.currentTarget.getBoundingClientRect();
+                            const x = (event.clientX - rect.left) / scale;
+                            const y = (event.clientY - rect.top) / scale;
+
+                            event.currentTarget.style.opacity = '1';
+                            for (const file of Array.from(event.dataTransfer.files)) {
+                                if (!isSupportType(file.type)) {
+                                    toastEventListener.showSimpleToast({
+                                        title: 'Insert Image or Video',
+                                        message: 'Unsupported file type!',
+                                    });
+                                } else {
+                                    const fileSource = FileSource.genFileSource(file.path, file.name);
+                                    console.log(fileSource);
+                                    console.log(x, y);
+                                    // TODO: insert image or video
+                                }
+                            }
+                        }}
                         onContextMenu={(e) => showCanvasContextMenu(e, canvasController)}
                         onDoubleClick={() => {
                             canvasController.stopAllMods();

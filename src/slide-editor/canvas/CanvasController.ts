@@ -2,7 +2,7 @@ import EventHandler from '../../event/EventHandler';
 import SlideItem from '../../slide-list/SlideItem';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
-import { getSetting } from '../../helper/settingHelper';
+import { getSetting, setSetting } from '../../helper/settingHelper';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -38,6 +38,7 @@ export default class CanvasController extends EventHandler {
     }
     set scale(n: number) {
         this._scale = n;
+        setSetting('editor-scale', n + '');
         this._addPropEvent('scale');
     }
     get isCopied() {
