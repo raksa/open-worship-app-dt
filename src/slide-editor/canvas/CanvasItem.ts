@@ -1,5 +1,4 @@
 import { CSSProperties } from 'react';
-import { BLACK_COLOR } from '../../others/ColorPicker';
 import { getRotationDeg, removePX } from '../../helper/helpers';
 import { HAlignmentEnum, VAlignmentEnum } from './Canvas';
 import {
@@ -11,8 +10,6 @@ import SlideItem from '../../slide-list/SlideItem';
 import FileSource from '../../helper/FileSource';
 
 export type CanvasItemPropsType = {
-    text: string, color: string,
-    fontSize: number, fontFamily: string,
     top: number, left: number,
     rotate: number, width: number, height: number,
     horizontalAlignment: HAlignmentEnum,
@@ -99,19 +96,8 @@ export default class CanvasItem {
         };
         return style;
     }
-    get html() {
-        const div = document.createElement('div');
-        div.id = `${this.id}`;
-        div.innerHTML = this.props.text;
-        const targetStyle = div.style as any;
-        const style = {
-            ...this.getStyle(),
-            ...this.getBoxStyle(),
-        } as any;
-        Object.keys(style).forEach((k) => {
-            targetStyle[k] = style[k];
-        });
-        return div;
+    get html(): HTMLDivElement {
+        throw new Error('Method not implemented.');
     }
     get htmlString() {
         return this.html.outerHTML;
@@ -122,10 +108,6 @@ export default class CanvasItem {
         const element = div.firstChild as HTMLDivElement;
         const style = element.style;
         return {
-            text: element.innerHTML.split('<br>').join('\n'),
-            fontSize: removePX(style.fontSize) || 30,
-            fontFamily: style.fontFamily.replace(/"/g, '') || '',
-            color: style.color || BLACK_COLOR,
             top: removePX(style.top) || 3,
             left: removePX(style.left) || 3,
             rotate: getRotationDeg(style.transform),
@@ -186,6 +168,9 @@ export default class CanvasItem {
         };
     }
     static genDefaultHtmlString(_width: number = 700, _height: number = 400): string {
+        throw new Error('Method not implemented.');
+    }
+    static htmlToType(_htmlString: string): CanvasItemType | null {
         throw new Error('Method not implemented.');
     }
 }

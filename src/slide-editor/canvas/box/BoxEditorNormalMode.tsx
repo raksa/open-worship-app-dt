@@ -1,55 +1,61 @@
 import { CSSProperties } from 'react';
-import CanvasItem from '../CanvasItem';
-import { showCanvasItemContextMenu, useCIRefresh } from '../canvasHelpers';
-import BoxEditorRenderText from './BoxEditorRenderText';
+import {
+    showCanvasItemContextMenu, useCIRefresh,
+} from '../canvasHelpers';
+import CanvasItemText from '../CanvasItemText';
 import BoxEditorTextArea from './BoxEditorTextArea';
 
 export default function BoxEditorNormalMode({
-    canvasItem,
+    canvasItemText,
 }: {
-    canvasItem: CanvasItem,
+    canvasItemText: CanvasItemText,
 }) {
     const style: CSSProperties = {
-        ...canvasItem.getStyle(),
-        ...canvasItem.getBoxStyle(),
+        ...canvasItemText.getStyle(),
+        ...canvasItemText.getBoxStyle(),
     };
-    useCIRefresh(canvasItem, ['edit', 'update']);
+    useCIRefresh(canvasItemText, ['edit', 'update']);
+    if (!canvasItemText.isEditing) {
+        return (
+            <div className='box-editor pointer'
+                style={style}
+                onContextMenu={async (e) => {
+                    e.stopPropagation();
+                    showCanvasItemContextMenu(e, canvasItemText);
+                }}
+                onClick={async (e) => {
+                    e.stopPropagation();
+                    canvasItemText.canvasController?.stopAllMods();
+                    canvasItemText.isControlling = true;
+                    canvasItemText.isSelected = true;
+                }}>
+                <span dangerouslySetInnerHTML={{
+                    __html: canvasItemText.props.text.split('\n').join('<br>'),
+                }} />
+            </div>
+        );
+    }
     return (
-        <div className={`box-editor pointer ${canvasItem.isEditing ? 'editable' : ''}`}
+        <div className='box-editor pointer editable'
             style={style}
+            onClick={(e) => {
+                e.stopPropagation();
+            }}
             onContextMenu={async (e) => {
                 e.stopPropagation();
-                if (canvasItem.isEditing) {
-                    canvasItem.isEditing = false;
-                } else {
-                    showCanvasItemContextMenu(e, canvasItem);
-                }
+                canvasItemText.isEditing = false;
             }}
             onKeyUp={(e) => {
                 if (e.key === 'Escape' || (e.key === 'Enter' && e.ctrlKey)) {
-                    canvasItem.isEditing = false;
+                    canvasItemText.isEditing = false;
                 }
-            }}
-            onClick={async (e) => {
-                e.stopPropagation();
-                if (canvasItem.isEditing) {
-                    return;
-                }
-                canvasItem.canvasController?.stopAllMods();
-                canvasItem.isControlling = !canvasItem.isControlling;
-                canvasItem.isSelected = canvasItem.isControlling;
-            }}
-            onDoubleClick={(e) => {
-                e.stopPropagation();
-                canvasItem.isEditing = true;
             }}>
-            {canvasItem.isEditing ? <BoxEditorTextArea color={style.color}
-                text={canvasItem.props.text}
+            <BoxEditorTextArea
+                color={style.color}
+                text={canvasItemText.props.text}
                 setText={(text) => {
-                    canvasItem.applyProps({ text });
+                    canvasItemText.applyProps({ text });
                 }} />
-                : <BoxEditorRenderText text={canvasItem.props.text} />
-            }
         </div>
     );
 }

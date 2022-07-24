@@ -5,7 +5,6 @@ import CanvasItem from '../CanvasItem';
 import {
     showCanvasItemContextMenu, useCIRefresh,
 } from '../canvasHelpers';
-import BoxEditorRenderText from './BoxEditorRenderText';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem,
@@ -18,9 +17,6 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 if (div !== null) {
                     boxEditorController.release();
                     boxEditorController.initEvent(div);
-                    boxEditorController.onClick = () => {
-                        canvasItem.canvasController?.stopAllMods();
-                    };
                     boxEditorController.onDone = () => {
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
@@ -38,14 +34,19 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 zIndex: canvasItem.props.zIndex,
             }}>
             <div className={'box-editor controllable'}
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
                 onContextMenu={(e) => {
                     e.stopPropagation();
                     showCanvasItemContextMenu(e, canvasItem);
                 }}
                 onDoubleClick={(e) => {
                     e.stopPropagation();
-                    canvasItem.canvasController?.stopAllMods();
-                    canvasItem.isEditing = true;
+                    if (canvasItem.isTypeText) {
+                        canvasItem.canvasController?.stopAllMods();
+                        canvasItem.isEditing = true;
+                    }
                 }}
                 style={{
                     border: canvasItem.isSelected ? '2px dashed green' : undefined,
@@ -53,9 +54,10 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     width: `${canvasItem.props.width}px`,
                     height: `${canvasItem.props.height}px`,
                 }}>
-                <div className='w-100 h-100' style={canvasItem.getStyle()}>
-                    <BoxEditorRenderText text={canvasItem.props.text} />
-                </div>
+                <div className='w-100 h-100' style={canvasItem.getStyle()}
+                    dangerouslySetInnerHTML={{
+                        __html: canvasItem.html.innerHTML,
+                    }} />
                 <div className='tools'>
                     <div className={`object ${boxEditorController.rotatorCN}`} />
                     <div className='rotate-link' />

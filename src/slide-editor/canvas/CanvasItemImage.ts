@@ -5,39 +5,29 @@ import CanvasController from './CanvasController';
 import FileSource from '../../helper/FileSource';
 import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
 import { CanvasItemType, ToolingTextType } from './canvasHelpers';
+import img404 from './404.png';
 
-type CanvasItemTextPropsType = CanvasItemPropsType & {
-    text: string,
-    color: string,
-    fontSize: number,
-    fontFamily: string,
+type CanvasItemImagePropsType = CanvasItemPropsType & {
+    fileSource: FileSource | null,
 };
-export default class CanvasItemText extends CanvasItem {
-    props: CanvasItemTextPropsType;
+export default class CanvasItemImage extends CanvasItem {
+    props: CanvasItemImagePropsType;
     constructor(id: number, slideItemId: number, fileSource: FileSource,
-        props: CanvasItemTextPropsType) {
+        props: CanvasItemImagePropsType) {
         super(id, slideItemId, fileSource, props);
         this.props = props;
     }
     get type(): CanvasItemType {
-        return 'text';
+        return 'image';
     }
     getStyle() {
-        const style: CSSProperties = {
-            display: 'flex',
-            fontSize: `${this.props.fontSize}px`,
-            fontFamily: this.props.fontFamily,
-            color: this.props.color,
-            alignItems: this.props.verticalAlignment,
-            justifyContent: this.props.horizontalAlignment,
-            backgroundColor: this.props.backgroundColor,
-        };
-        return style;
+        return {};
     }
     get html(): HTMLDivElement {
         const div = document.createElement('div');
         div.id = `${this.id}`;
-        div.innerHTML = this.props.text;
+        const src = this.props.fileSource?.src || img404;
+        div.innerHTML = `<img src="${src}"></img>`;
         const targetStyle = div.style as any;
         const style = {
             ...this.getStyle(),
@@ -52,34 +42,31 @@ export default class CanvasItemText extends CanvasItem {
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         const element = div.firstChild as HTMLDivElement;
-        const style = element.style;
-        const textProps = {
-            text: element.innerHTML.split('<br>').join('\n'),
-            fontSize: removePX(style.fontSize) || 30,
-            fontFamily: style.fontFamily.replace(/"/g, '') || '',
-            color: style.color || BLACK_COLOR,
+        const src = (element.firstChild as HTMLImageElement)?.getAttribute('src');
+        const imageProps = {
+            fileSource: src ? FileSource.genFileSource(src) : null,
         };
         let id = +element.id;
         if (!element.id || isNaN(id)) {
             id = -1;
-            textProps.text = 'Invalid canvas item id';
+            imageProps.fileSource = null;
         }
         const boxProps = super.htmlToBoxProps(htmlString);
         const slideItem = canvasController.slideItem;
-        return new CanvasItemText(id, slideItem.id, slideItem.fileSource, {
-            ...textProps,
+        return new CanvasItemImage(id, slideItem.id, slideItem.fileSource, {
+            ...imageProps,
             ...boxProps,
         });
     }
     applyTextData(text: ToolingTextType) {
         this.applyProps(text);
     }
-    clone(): CanvasItemText | null {
+    clone(): CanvasItemImage | null {
         const canvasController = this.canvasController;
         if (canvasController === null) {
             return null;
         }
-        return CanvasItemText.fromHtml(canvasController, this.htmlString);
+        return CanvasItemImage.fromHtml(canvasController, this.htmlString);
     }
     static genDefaultHtmlString(width: number = 700, height: number = 400) {
         return '<div id="0" class="box-editor pointer " style="top: 279px; left: 356px; transform: rotate(0deg); '
@@ -87,10 +74,13 @@ export default class CanvasItemText extends CanvasItem {
             + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
             + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
     }
-    static htmlToType(htmlString: string) {
+    static htmlToType(htmlString: string): CanvasItemType | null {
         const div = document.createElement('div');
         div.innerHTML = htmlString;
-        const element = div.firstChild as HTMLDivElement;
-        return element.innerText ? 'text' : null;
+        const anyChild = div.firstChild as any;
+        if (anyChild.getAttribute && anyChild.getAttribute('src')) {
+            return 'image';
+        }
+        return null;
     }
 }

@@ -67,7 +67,7 @@ export default function SlideItemEditorCanvas({
                             }
                         }}
                         onContextMenu={(e) => showCanvasContextMenu(e, canvasController)}
-                        onDoubleClick={() => {
+                        onClick={() => {
                             canvasController.stopAllMods();
                         }} >
                         {canvasItems.map((canvasItem, i) => {

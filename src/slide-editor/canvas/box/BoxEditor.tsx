@@ -6,6 +6,7 @@ import CanvasItem from '../CanvasItem';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMode from './BoxEditorControllingMode';
 import { useCIControl } from '../canvasHelpers';
+import CanvasItemText from '../CanvasItemText';
 
 export type NewDataType = { [key: string]: any };
 export function BoxEditor({
@@ -21,7 +22,18 @@ export function BoxEditor({
     // TODO: key => ctl+d, delete, copy&paste, paste across slideItem
     // TODO: ruler, snap
     // TODO: ctrl|alt resize => anchor center base
-    return isControlling ?
-        <BoxEditorControllingMode canvasItem={canvasItem} /> :
-        <BoxEditorNormalMode canvasItem={canvasItem} />;
+    if (isControlling) {
+        return (
+            <BoxEditorControllingMode
+                canvasItem={canvasItem} />
+        );
+    }
+
+    if (canvasItem.isTypeText) {
+        return (
+            <BoxEditorNormalMode
+                canvasItemText={canvasItem as CanvasItemText} />
+        );
+    }
+    return null;
 }

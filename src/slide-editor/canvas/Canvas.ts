@@ -3,6 +3,7 @@ import { removePX } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import CanvasController from './CanvasController';
 import CanvasItem from './CanvasItem';
+import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 
 export enum HAlignmentEnum {
@@ -88,8 +89,12 @@ export default class Canvas {
         div.innerHTML = htmlString;
         const mainDiv = div.firstChild as HTMLDivElement;
         const children = Array.from(mainDiv.children).map((ele): CanvasItem => {
+            const childHtmlString = ele.outerHTML;
+            if (CanvasItemImage.htmlToType(childHtmlString) === 'image') {
+                return CanvasItemImage.fromHtml(canvasController, childHtmlString);
+            }
             // TODO: handle other type of element
-            return CanvasItemText.fromHtml(canvasController, ele.outerHTML);
+            return CanvasItemText.fromHtml(canvasController, childHtmlString);
         });
         const slideItem = canvasController.slideItem;
         return new Canvas(slideItem.id, slideItem.fileSource, {
