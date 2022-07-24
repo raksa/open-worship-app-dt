@@ -53,7 +53,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     width: `${canvasItem.props.width}px`,
                     height: `${canvasItem.props.height}px`,
                 }}>
-                <div className='w-100 h-100' style={canvasItem.style}>
+                <div className='w-100 h-100' style={canvasItem.getStyle()}>
                     <BoxEditorRenderText text={canvasItem.props.text} />
                 </div>
                 <div className='tools'>

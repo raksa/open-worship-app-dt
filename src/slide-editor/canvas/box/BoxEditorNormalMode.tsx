@@ -10,8 +10,8 @@ export default function BoxEditorNormalMode({
     canvasItem: CanvasItem,
 }) {
     const style: CSSProperties = {
-        ...canvasItem.style,
-        ...canvasItem.normalStyle,
+        ...canvasItem.getStyle(),
+        ...canvasItem.getBoxStyle(),
     };
     useCIRefresh(canvasItem, ['edit', 'update']);
     return (

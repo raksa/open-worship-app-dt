@@ -1,31 +1,29 @@
 import Tool from './Tool';
-import CanvasItem from '../CanvasItem';
+import CanvasItemText from '../CanvasItemText';
 import { useEffect, useState } from 'react';
 import { useFontList } from '../../../helper/helpers';
 
-export default function ToolsTextFontControl({ canvasItem }: {
-    canvasItem: CanvasItem,
+export default function ToolsTextFontControl({ canvasItemText }: {
+    canvasItemText: CanvasItemText,
 }) {
     return (
         <Tool title='Font Size'>
-            <FontSize canvasItem={canvasItem} />
+            <FontSize canvasItemText={canvasItemText} />
             <hr />
-            <FontFamily canvasItem={canvasItem} />
+            <FontFamily canvasItemText={canvasItemText} />
         </Tool>
     );
 }
-function FontSize({ canvasItem }: {
-    canvasItem: CanvasItem,
+function FontSize({ canvasItemText }: {
+    canvasItemText: CanvasItemText,
 }) {
-    const [localFontSize, setLocalFontSize] = useState(canvasItem.props.fontSize);
+    const [localFontSize, setLocalFontSize] = useState(canvasItemText.props.fontSize);
     useEffect(() => {
-        setLocalFontSize(canvasItem.props.fontSize);
-    }, [canvasItem]);
+        setLocalFontSize(canvasItemText.props.fontSize);
+    }, [canvasItemText]);
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
-        canvasItem.applyToolingData({
-            text: { fontSize },
-        });
+        canvasItemText.applyTextData({ fontSize });
     };
     return (
         <div>
@@ -50,15 +48,15 @@ function FontSize({ canvasItem }: {
         </div>
     );
 }
-function FontFamily({ canvasItem }: {
-    canvasItem: CanvasItem,
+function FontFamily({ canvasItemText }: {
+    canvasItemText: CanvasItemText,
 }) {
     const fontList = useFontList();
-    const [localFontFamily, setLocalFontFamily] = useState(canvasItem.props.fontFamily);
+    const [localFontFamily, setLocalFontFamily] = useState(canvasItemText.props.fontFamily);
     const applyFontFamily = (fontFamily: string) => {
         setLocalFontFamily(fontFamily);
-        canvasItem.applyToolingData({
-            text: { fontFamily: fontFamily },
+        canvasItemText.applyTextData({
+            fontFamily: fontFamily,
         });
     };
     if (fontList === null) {

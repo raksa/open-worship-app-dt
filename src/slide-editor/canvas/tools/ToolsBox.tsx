@@ -17,18 +17,14 @@ export default function ToolsBox({
             <Tool title='Background Color'>
                 <ColorPicker color={canvasItem.props.backgroundColor}
                     onColorChange={(newColor: string) => {
-                        canvasItem.applyToolingData({
-                            box: {
-                                backgroundColor: newColor,
-                            },
+                        canvasItem.applyBoxData({
+                            backgroundColor: newColor,
                         });
                     }} />
             </Tool>
             <Tool title='Box Alignment'>
                 <ToolAlign onData={(newData) => {
-                    canvasItem.applyToolingData({
-                        box: newData,
-                    });
+                    canvasItem.applyBoxData(newData);
                 }} />
             </Tool>
             <Tool title='Box Layer'>

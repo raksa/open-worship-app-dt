@@ -1,36 +1,38 @@
 import { useEffect, useState } from 'react';
 import { selectFiles } from '../../helper/appHelper';
-import { getAppMimetype, getMimetypeExtensions } from '../../helper/fileHelper';
+import { getMimetypeExtensions } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
 import CanvasController, { CCEventType } from './CanvasController';
 import CanvasItem from './CanvasItem';
 
-export function tooling2BoxProps(toolingData: ToolingType, state: {
-    parentWidth: number, parentHeight: number, width: number, height: number,
+export function tooling2BoxProps(boxData: ToolingBoxType, state: {
+    parentWidth: number, parentHeight: number,
+    width: number, height: number,
 }) {
-    const { box } = toolingData;
     const boxProps: { top?: number, left?: number } = {};
-    if (box) {
-        if (box.verticalAlignment === VAlignmentEnum.Top) {
+    if (boxData) {
+        if (boxData.verticalAlignment === VAlignmentEnum.Top) {
             boxProps.top = 0;
-        } else if (box.verticalAlignment === VAlignmentEnum.Center) {
+        } else if (boxData.verticalAlignment === VAlignmentEnum.Center) {
             boxProps.top = (state.parentHeight - state.height) / 2;
-        } else if (box.verticalAlignment === VAlignmentEnum.Bottom) {
+        } else if (boxData.verticalAlignment === VAlignmentEnum.Bottom) {
             boxProps.top = state.parentHeight - state.height;
         }
-        if (box.horizontalAlignment === HAlignmentEnum.Left) {
+        if (boxData.horizontalAlignment === HAlignmentEnum.Left) {
             boxProps.left = 0;
-        } else if (box.horizontalAlignment === HAlignmentEnum.Center) {
+        } else if (boxData.horizontalAlignment === HAlignmentEnum.Center) {
             boxProps.left = (state.parentWidth - state.width) / 2;
-        } else if (box.horizontalAlignment === HAlignmentEnum.Right) {
+        } else if (boxData.horizontalAlignment === HAlignmentEnum.Right) {
             boxProps.left = state.parentWidth - state.width;
         }
     }
 
     return boxProps;
 }
+
+export type CanvasItemType = 'text' | 'image' | 'video' | 'audio';
 
 export type ToolingTextType = {
     color?: string,
@@ -44,10 +46,6 @@ export type ToolingBoxType = {
     rotate?: number,
     horizontalAlignment?: HAlignmentEnum,
     verticalAlignment?: VAlignmentEnum,
-};
-export type ToolingType = {
-    text?: ToolingTextType,
-    box?: ToolingBoxType,
 };
 
 export function showCanvasContextMenu(e: any,

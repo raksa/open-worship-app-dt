@@ -1,40 +1,41 @@
 import ColorPicker from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
-import CanvasItem from '../CanvasItem';
+import CanvasItemText from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
+import CanvasItem from '../CanvasItem';
 
-export default function ToolsText({
-    canvasItem,
-}: {
+export default function ToolsText({ canvasItem }: {
     canvasItem: CanvasItem,
 }) {
-    const canvasController = canvasItem.canvasController;
+    if (canvasItem.type !== 'text') {
+        return null;
+    }
+    const canvasItemText = canvasItem as CanvasItemText;
+    const canvasController = canvasItemText.canvasController;
     if (canvasController === null) {
         return null;
     }
     return (
         <div className='d-flex'>
             <Tool>
-                <ColorPicker color={canvasItem.props.color}
+                <ColorPicker color={canvasItemText.props.color}
                     onColorChange={(newColor: string) => {
-                        canvasItem.applyToolingData({
-                            text: { color: newColor },
+                        canvasItemText.applyTextData({
+                            color: newColor,
                         });
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
                 <ToolAlign isText onData={(newData) => {
-                    canvasItem.applyToolingData({
-                        text: newData,
-                    });
+                    canvasItemText.applyTextData(newData);
                 }} />
             </Tool>
-            <ToolsTextFontControl canvasItem={canvasItem} />
+            <ToolsTextFontControl canvasItemText={canvasItemText} />
             <Tool title='Rotate'>
                 <button className='btn btn-info' onClick={() => {
-                    canvasItem.applyToolingData({
-                        box: { rotate: 0 },
+                    canvasItemText.applyBoxData({
+                        rotate: 0,
                     });
                 }}
                 >UnRotate</button>
