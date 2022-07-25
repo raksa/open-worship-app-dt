@@ -10,9 +10,14 @@ export default function ToolCanvasItems({ canvasController }: {
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem, i) => {
                 return (
-                    <div className='card' key={i} onContextMenu={(e) => {
-                        showCanvasItemContextMenu(e, canvasItem);
-                    }}>
+                    <div className='card' key={i}
+                        onClick={() => {
+                            canvasController.stopAllMods();
+                            canvasItem.isSelected = true;
+                        }}
+                        onContextMenu={(e) => {
+                            showCanvasItemContextMenu(e, canvasItem);
+                        }}>
                         <div className='card-header'>
                             {canvasItem.id}:
                             {canvasItem.props.width}x{canvasItem.props.height}

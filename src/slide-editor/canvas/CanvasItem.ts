@@ -58,6 +58,7 @@ export default class CanvasItem {
     set isSelected(b: boolean) {
         this._isSelected = b;
         this.canvasController?.fireSelectEvent(this);
+        this.isControlling = b;
     }
     get isControlling() {
         return this._isControlling;
@@ -166,9 +167,6 @@ export default class CanvasItem {
             slideItemKey: arr[0],
             id: +arr[1],
         };
-    }
-    static genDefaultHtmlString(_width: number = 700, _height: number = 400): string {
-        throw new Error('Method not implemented.');
     }
     static htmlToType(_htmlString: string): CanvasItemType | null {
         throw new Error('Method not implemented.');

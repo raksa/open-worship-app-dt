@@ -8,6 +8,7 @@ export type MimeType = {
     type: string,
     title: string,
     mimeType: string,
+    mimeTypeName: MimetypeNameType,
     extension: string[],
 };
 
@@ -40,7 +41,8 @@ export const createNewItem = async (dir: string, name: string,
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric' | 'bible';
 
 export function getFileMetaData(fileName: string,
-    mimeTypes: MimeType[]): FileMetadataType | null {
+    mimeTypes?: MimeType[]): FileMetadataType | null {
+    mimeTypes = mimeTypes || getAllAppMimetype();
     const ext = fileName.substring(fileName.lastIndexOf('.'));
     const foundMT = mimeTypes.find((mt) => {
         return ~mt.extension.indexOf(ext);
@@ -51,8 +53,22 @@ export function getFileMetaData(fileName: string,
     return null;
 }
 
+export function getAllAppMimetype() {
+    const mimeTypeNames: MimetypeNameType[] = ['image', 'video',
+        'slide', 'playlist', 'lyric', 'bible'];
+    return mimeTypeNames.map((mimeTypeName) => {
+        return getAppMimetype(mimeTypeName);
+    }).reduce((acc, cur) => {
+        return acc.concat(cur);
+    }, []);
+}
+
 export function getAppMimetype(mimetype: MimetypeNameType) {
-    return require(`./mime/${mimetype}-types.json`) as MimeType[];
+    const json = require(`./mime/${mimetype}-types.json`);
+    json.forEach((data: any) => {
+        data.mimeTypeName = mimetype;
+    });
+    return json as MimeType[];
 }
 export function getMimetypeExtensions(mimetype: MimetypeNameType) {
     const imageTypes = getAppMimetype(mimetype);

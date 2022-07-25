@@ -53,7 +53,7 @@ export function showCanvasContextMenu(e: any,
     showAppContextMenu(e, [
         {
             title: 'New',
-            onClick: () => canvasController.addNewBox(),
+            onClick: () => canvasController.addNewTextBox(),
         },
         {
             title: 'Paste',
@@ -71,7 +71,7 @@ export function showCanvasContextMenu(e: any,
                 ]);
                 filePaths.forEach((filePath) => {
                     const fileSource = FileSource.genFileSource(filePath);
-                    canvasController.insertMedia(fileSource, e);
+                    canvasController.addNewMedia(fileSource, e);
                 });
             },
         },

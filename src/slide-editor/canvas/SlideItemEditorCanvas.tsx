@@ -62,7 +62,7 @@ export default function SlideItemEditorCanvas({
                                     });
                                 } else {
                                     const fileSource = FileSource.genFileSource(file.path, file.name);
-                                    canvasController.insertMedia(fileSource, event);
+                                    canvasController.addNewMedia(fileSource, event);
                                 }
                             }
                         }}

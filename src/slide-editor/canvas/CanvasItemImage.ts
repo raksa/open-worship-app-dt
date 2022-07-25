@@ -1,6 +1,4 @@
-import { CSSProperties } from 'react';
-import { BLACK_COLOR } from '../../others/ColorPicker';
-import { getAppInfo, removePX } from '../../helper/helpers';
+import { getAppInfo } from '../../helper/helpers';
 import CanvasController from './CanvasController';
 import FileSource from '../../helper/FileSource';
 import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
@@ -41,10 +39,10 @@ export default class CanvasItemImage extends CanvasItem {
     static fromHtml(canvasController: CanvasController, htmlString: string) {
         const div = document.createElement('div');
         div.innerHTML = htmlString;
-        const element = div.firstChild as HTMLDivElement;
-        const src = (element.firstChild as HTMLImageElement)?.getAttribute('src');
+        const element = div.firstElementChild as HTMLDivElement;
+        const img = element.firstElementChild as HTMLImageElement;
         const imageProps = {
-            fileSource: src ? FileSource.genFileSource(src) : null,
+            fileSource: img.src ? FileSource.genFileSourceFromSrc(img.src) : null,
         };
         let id = +element.id;
         if (!element.id || isNaN(id)) {
@@ -69,10 +67,12 @@ export default class CanvasItemImage extends CanvasItem {
         return CanvasItemImage.fromHtml(canvasController, this.htmlString);
     }
     static genDefaultHtmlString(width: number = 700, height: number = 400) {
-        return '<div id="0" class="box-editor pointer " style="top: 279px; left: 356px; transform: rotate(0deg); '
+        return '<div id="0" class="box-editor pointer" style="top: 279px; left: 356px; transform: rotate(0deg); '
             + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
             + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
-            + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
+            + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">
+                ${getAppInfo().name}
+            </div>`;
     }
     static htmlToType(htmlString: string): CanvasItemType | null {
         const div = document.createElement('div');
@@ -82,5 +82,27 @@ export default class CanvasItemImage extends CanvasItem {
             return 'image';
         }
         return null;
+    }
+    static genFromInsertion(canvasController: CanvasController, x: number, y: number,
+        fileSource: FileSource) {
+        return new Promise<CanvasItemImage>((resolve, reject) => {
+            const image = document.createElement('img');
+            image.src = fileSource.src;
+            const width = image.clientWidth;
+            const height = image.clientHeight;
+            image.onload = () => {
+                const htmlString = '<div id="0" '
+                    + `style="position: absolute; top: ${x}px; left: ${y}px; `
+                    + 'transform: rotate(0deg); z-index: 2; '
+                    + `width: ${width}px; height: ${height}px;">
+                        <img src="${fileSource.src}"></img>
+                    </div>`;
+                const newItem = CanvasItemImage.fromHtml(canvasController, htmlString);
+                resolve(newItem);
+            };
+            image.onerror = () => {
+                reject(new Error('Image load error'));
+            };
+        });
     }
 }

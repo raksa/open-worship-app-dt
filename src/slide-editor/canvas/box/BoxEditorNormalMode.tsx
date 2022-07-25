@@ -15,26 +15,24 @@ export default function BoxEditorNormalMode({
         ...canvasItemText.getBoxStyle(),
     };
     useCIRefresh(canvasItemText, ['edit', 'update']);
-    if (!canvasItemText.isEditing) {
+    if (canvasItemText.isTypeText && canvasItemText.isEditing) {
         return (
-            <div className='box-editor pointer'
-                style={style}
-                onContextMenu={async (e) => {
-                    e.stopPropagation();
-                    showCanvasItemContextMenu(e, canvasItemText);
-                }}
-                onClick={async (e) => {
-                    e.stopPropagation();
-                    canvasItemText.canvasController?.stopAllMods();
-                    canvasItemText.isControlling = true;
-                    canvasItemText.isSelected = true;
-                }}>
-                <span dangerouslySetInnerHTML={{
-                    __html: canvasItemText.props.text.split('\n').join('<br>'),
-                }} />
-            </div>
+            <EditMode canvasItemText={canvasItemText}
+                style={style} />
         );
     }
+    return (
+        <ViewMode canvasItemText={canvasItemText}
+            style={style} />
+    );
+}
+
+function EditMode({
+    canvasItemText, style,
+}: {
+    canvasItemText: CanvasItemText,
+    style: CSSProperties
+}) {
     return (
         <div className='box-editor pointer editable'
             style={style}
@@ -56,6 +54,31 @@ export default function BoxEditorNormalMode({
                 setText={(text) => {
                     canvasItemText.applyProps({ text });
                 }} />
+        </div>
+    );
+}
+
+function ViewMode({
+    canvasItemText, style,
+}: {
+    canvasItemText: CanvasItemText,
+    style: CSSProperties
+}) {
+    return (
+        <div className='box-editor pointer'
+            style={style}
+            onContextMenu={async (e) => {
+                e.stopPropagation();
+                showCanvasItemContextMenu(e, canvasItemText);
+            }}
+            onClick={async (e) => {
+                e.stopPropagation();
+                canvasItemText.canvasController?.stopAllMods();
+                canvasItemText.isSelected = true;
+            }}>
+            <span dangerouslySetInnerHTML={{
+                __html: canvasItemText.props.text.split('\n').join('<br>'),
+            }} />
         </div>
     );
 }

@@ -82,10 +82,16 @@ export default class CanvasItemText extends CanvasItem {
         return CanvasItemText.fromHtml(canvasController, this.htmlString);
     }
     static genDefaultHtmlString(width: number = 700, height: number = 400) {
-        return '<div id="0" class="box-editor pointer " style="top: 279px; left: 356px; transform: rotate(0deg); '
-            + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
-            + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
-            + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">${getAppInfo().name}</div>`;
+        return '<div id="0" '
+            + 'style="position: absolute; top: 279px; left: 356px; '
+            + 'transform: rotate(0deg); z-index: 2; '
+            + 'background-color: rgba(255, 0, 255, 0.39); '
+            + `width: ${width}px; height: ${height}px; `
+            + 'display: flex; font-size: 60px; color: rgb(255, 254, 254); '
+            + 'align-items: center; justify-content: center; '
+            + `">
+                ${getAppInfo().name}
+            </div>`;
     }
     static htmlToType(htmlString: string) {
         const div = document.createElement('div');

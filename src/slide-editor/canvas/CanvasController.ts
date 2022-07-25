@@ -5,6 +5,8 @@ import CanvasItem from './CanvasItem';
 import { getSetting, setSetting } from '../../helper/settingHelper';
 import FileSource from '../../helper/FileSource';
 import { toastEventListener } from '../../event/ToastEventListener';
+import CanvasItemText from './CanvasItemText';
+import CanvasItemImage from './CanvasItemImage';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -104,13 +106,34 @@ export default class CanvasController extends EventHandler {
             this.canvas.canvasItems = newCanvasItems;
         }
     }
-    addNewBox() {
+    addNewItem(canvasItem: CanvasItem) {
         const newCanvasItems = this.canvas.newCanvasItems;
-        const newBoxHTML = CanvasItem.genDefaultHtmlString();
-        const newCanvasItem = CanvasItem.fromHtml(this, newBoxHTML);
-        newCanvasItem.id = this.canvas.maxItemId + 1;
-        newCanvasItems.push(newCanvasItem);
+        canvasItem.id = this.canvas.maxItemId + 1;
+        newCanvasItems.push(canvasItem);
         this.canvas.canvasItems = newCanvasItems;
+    }
+    addNewTextBox() {
+        const newBoxHTML = CanvasItemText.genDefaultHtmlString();
+        const newCanvasItem = CanvasItemText.fromHtml(this, newBoxHTML);
+        this.addNewItem(newCanvasItem);
+    }
+    async addNewMedia(fileSource: FileSource, event: any) {
+        try {
+            const rect = (event.target as HTMLDivElement).getBoundingClientRect();
+            const x = Math.floor((event.clientX - rect.left) / this.scale);
+            const y = Math.floor((event.clientY - rect.top) / this.scale);
+            if (fileSource.metadata?.mimeType.mimeTypeName === 'image') {
+                const newItem = await CanvasItemImage.genFromInsertion(this, x, y, fileSource);
+                this.addNewItem(newItem);
+                return;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        toastEventListener.showSimpleToast({
+            title: 'Insert Image or Video',
+            message: 'Fail to insert medias',
+        });
     }
     applyOrderingData(canvasItem: CanvasItem, isBack: boolean) {
         const newCanvasItems = this.canvas.canvasItems.map((item) => {
@@ -155,6 +178,9 @@ export default class CanvasController extends EventHandler {
         this._cacheMap.set(slideItemKey, canvasController);
         return canvasController;
     }
+    static getDefaultBox() {
+        return CanvasItemText.genDefaultHtmlString();
+    }
     registerEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {
         return types.map((type) => {
@@ -166,20 +192,5 @@ export default class CanvasController extends EventHandler {
         regEvents.forEach(({ type, listener }) => {
             this._removeOnEventListener(type, listener);
         });
-    }
-    insertMedia(fileSource: FileSource, event: any) {
-        try {
-            const rect = (event.target as HTMLDivElement).getBoundingClientRect();
-            const x = (event.clientX - rect.left) / this.scale;
-            const y = (event.clientY - rect.top) / this.scale;
-            console.log(fileSource);
-            console.log(x, y);
-            // TODO: insert media
-        } catch (error) {
-            toastEventListener.showSimpleToast({
-                title: 'Insert Image or Video',
-                message: 'Fail to insert medias',
-            });
-        }
     }
 }

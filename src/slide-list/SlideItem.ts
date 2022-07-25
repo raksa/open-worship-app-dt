@@ -7,6 +7,7 @@ import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 import CanvasItem from '../slide-editor/canvas/CanvasItem';
+import CanvasController from '../slide-editor/canvas/CanvasController';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -94,7 +95,7 @@ export default class SlideItem extends ItemBase {
         return {
             id: -1,
             html: `<div style="width: ${width}px; height: ${height}px;">`
-                + CanvasItem.genDefaultHtmlString()
+                + CanvasController.getDefaultBox()
                 + '</div>',
         };
     }
