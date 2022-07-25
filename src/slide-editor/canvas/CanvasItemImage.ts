@@ -10,6 +10,8 @@ type CanvasItemImagePropsType = CanvasItemPropsType & {
 };
 export default class CanvasItemImage extends CanvasItem {
     props: CanvasItemImagePropsType;
+    imageWidth: number = 0;
+    imageHeight: number = 0;
     constructor(id: number, slideItemId: number, fileSource: FileSource,
         props: CanvasItemImagePropsType) {
         super(id, slideItemId, fileSource, props);
@@ -17,6 +19,25 @@ export default class CanvasItemImage extends CanvasItem {
     }
     get type(): CanvasItemType {
         return 'image';
+    }
+    async initSize() {
+        if (this.imageWidth || this.imageHeight) {
+            return Promise.resolve();
+        }
+        return new Promise<void>((resolve) => {
+            const image = document.createElement('img');
+            image.src = this.props.fileSource?.src || img404;
+            image.onload = () => {
+                this.imageWidth = image.naturalWidth;
+                this.imageHeight = image.naturalHeight;
+                resolve();
+            };
+            image.onerror = () => {
+                this.imageWidth = 0;
+                this.imageHeight = 0;
+                resolve();
+            };
+        });
     }
     getStyle() {
         return {};
@@ -75,13 +96,7 @@ export default class CanvasItemImage extends CanvasItem {
             </div>`;
     }
     static htmlToType(htmlString: string): CanvasItemType | null {
-        const div = document.createElement('div');
-        div.innerHTML = htmlString;
-        const anyChild = div.firstChild as any;
-        if (anyChild.getAttribute && anyChild.getAttribute('src')) {
-            return 'image';
-        }
-        return null;
+        return htmlString.includes('<img') ? 'image' : null;
     }
     static genFromInsertion(canvasController: CanvasController, x: number, y: number,
         fileSource: FileSource) {

@@ -5,6 +5,8 @@ import CanvasItem from '../CanvasItem';
 import {
     showCanvasItemContextMenu, useCIRefresh,
 } from '../canvasHelpers';
+import { BENImageRender } from './BENImageMode';
+import CanvasItemImage from '../CanvasItemImage';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem,
@@ -54,10 +56,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     width: `${canvasItem.props.width}px`,
                     height: `${canvasItem.props.height}px`,
                 }}>
-                <div className='w-100 h-100' style={canvasItem.getStyle()}
-                    dangerouslySetInnerHTML={{
-                        __html: canvasItem.html.innerHTML,
-                    }} />
+                <BECRender canvasItem={canvasItem} />
                 <div className='tools'>
                     <div className={`object ${boxEditorController.rotatorCN}`} />
                     <div className='rotate-link' />
@@ -69,4 +68,24 @@ export default function BoxEditorControllingMode({ canvasItem }: {
             </div>
         </div>
     );
+}
+
+function BECRender({ canvasItem }: {
+    canvasItem: CanvasItem,
+}) {
+    if (canvasItem.isTypeText) {
+        return (
+            <div className='w-100 h-100'
+                style={canvasItem.getStyle()}
+                dangerouslySetInnerHTML={{
+                    __html: canvasItem.html.innerHTML,
+                }} />
+        );
+    }
+    if (canvasItem.isTypeImage) {
+        return (
+            <BENImageRender canvasItemImage={canvasItem as CanvasItemImage} />
+        );
+    }
+    return null;
 }

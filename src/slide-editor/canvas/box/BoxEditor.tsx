@@ -6,7 +6,6 @@ import CanvasItem from '../CanvasItem';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMode from './BoxEditorControllingMode';
 import { useCIControl } from '../canvasHelpers';
-import CanvasItemText from '../CanvasItemText';
 
 export type NewDataType = { [key: string]: any };
 export function BoxEditor({
@@ -28,12 +27,8 @@ export function BoxEditor({
                 canvasItem={canvasItem} />
         );
     }
-
-    if (canvasItem.isTypeText) {
-        return (
-            <BoxEditorNormalMode
-                canvasItemText={canvasItem as CanvasItemText} />
-        );
-    }
-    return null;
+    return (
+        <BoxEditorNormalMode
+            canvasItem={canvasItem} />
+    );
 }

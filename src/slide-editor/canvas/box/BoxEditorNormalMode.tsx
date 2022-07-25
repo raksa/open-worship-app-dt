@@ -1,84 +1,40 @@
 import { CSSProperties } from 'react';
 import {
-    showCanvasItemContextMenu, useCIRefresh,
+    useCIRefresh,
 } from '../canvasHelpers';
+import CanvasItem from '../CanvasItem';
+import CanvasItemImage from '../CanvasItemImage';
 import CanvasItemText from '../CanvasItemText';
-import BoxEditorTextArea from './BoxEditorTextArea';
+import BENImageMode from './BENImageMode';
+import BENTextEditMode from './BENTextEditMode';
+import BENTextViewMode from './BENTextViewMode';
 
-export default function BoxEditorNormalMode({
-    canvasItemText,
-}: {
-    canvasItemText: CanvasItemText,
+export default function BoxEditorNormalMode({ canvasItem }: {
+    canvasItem: CanvasItem,
 }) {
     const style: CSSProperties = {
-        ...canvasItemText.getStyle(),
-        ...canvasItemText.getBoxStyle(),
+        ...canvasItem.getStyle(),
+        ...canvasItem.getBoxStyle(),
     };
-    useCIRefresh(canvasItemText, ['edit', 'update']);
-    if (canvasItemText.isTypeText && canvasItemText.isEditing) {
+    useCIRefresh(canvasItem, ['edit', 'update']);
+    if (canvasItem.isTypeImage) {
         return (
-            <EditMode canvasItemText={canvasItemText}
+            <BENImageMode canvasItemImage={canvasItem as CanvasItemImage}
                 style={style} />
         );
     }
-    return (
-        <ViewMode canvasItemText={canvasItemText}
-            style={style} />
-    );
-}
-
-function EditMode({
-    canvasItemText, style,
-}: {
-    canvasItemText: CanvasItemText,
-    style: CSSProperties
-}) {
-    return (
-        <div className='box-editor pointer editable'
-            style={style}
-            onClick={(e) => {
-                e.stopPropagation();
-            }}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                canvasItemText.isEditing = false;
-            }}
-            onKeyUp={(e) => {
-                if (e.key === 'Escape' || (e.key === 'Enter' && e.ctrlKey)) {
-                    canvasItemText.isEditing = false;
-                }
-            }}>
-            <BoxEditorTextArea
-                color={style.color}
-                text={canvasItemText.props.text}
-                setText={(text) => {
-                    canvasItemText.applyProps({ text });
-                }} />
-        </div>
-    );
-}
-
-function ViewMode({
-    canvasItemText, style,
-}: {
-    canvasItemText: CanvasItemText,
-    style: CSSProperties
-}) {
-    return (
-        <div className='box-editor pointer'
-            style={style}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemText);
-            }}
-            onClick={async (e) => {
-                e.stopPropagation();
-                canvasItemText.canvasController?.stopAllMods();
-                canvasItemText.isSelected = true;
-            }}>
-            <span dangerouslySetInnerHTML={{
-                __html: canvasItemText.props.text.split('\n').join('<br>'),
-            }} />
-        </div>
-    );
+    if (canvasItem.isTypeText && canvasItem.isEditing) {
+        const canvasItemText = canvasItem as CanvasItemText;
+        if (canvasItem.isTypeText) {
+            return (
+                <BENTextEditMode canvasItemText={canvasItemText}
+                    style={style} />
+            );
+        }
+        return (
+            <BENTextViewMode canvasItemText={canvasItemText}
+                style={style} />
+        );
+    }
+    return null;
 }
