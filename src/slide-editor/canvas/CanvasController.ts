@@ -66,8 +66,8 @@ export default class CanvasController extends EventHandler {
     fireUpdateEvent() {
         this._addPropEvent('update', this.slideItem);
     }
-    cloneItem(canvasItem: CanvasItem) {
-        const newCanvasItem = canvasItem.clone();
+    async cloneItem(canvasItem: CanvasItem) {
+        const newCanvasItem = await canvasItem.clone();
         if (newCanvasItem === null) {
             return null;
         }
@@ -76,9 +76,9 @@ export default class CanvasController extends EventHandler {
         newCanvasItem.id = this.canvas.maxItemId + 1;
         return newCanvasItem;
     }
-    duplicate(canvasItem: CanvasItem) {
+    async duplicate(canvasItem: CanvasItem) {
         const newCanvasItems = this.canvas.newCanvasItems;
-        const newCanvasItem = this.cloneItem(canvasItem);
+        const newCanvasItem = await this.cloneItem(canvasItem);
         if (newCanvasItem === null) {
             return;
         }
@@ -95,10 +95,10 @@ export default class CanvasController extends EventHandler {
         });
         this.canvas.canvasItems = newCanvasItems;
     }
-    paste() {
+    async paste() {
         const newCanvasItems = this.canvas.newCanvasItems;
         if (this.copiedItem !== null) {
-            const newCanvasItem = this.cloneItem(this.copiedItem);
+            const newCanvasItem = await this.cloneItem(this.copiedItem);
             if (newCanvasItem === null) {
                 return;
             }
@@ -112,9 +112,9 @@ export default class CanvasController extends EventHandler {
         newCanvasItems.push(canvasItem);
         this.canvas.canvasItems = newCanvasItems;
     }
-    addNewTextBox() {
+    async addNewTextBox() {
         const newBoxHTML = CanvasItemText.genDefaultHtmlString();
-        const newCanvasItem = CanvasItemText.fromHtml(this, newBoxHTML);
+        const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
         this.addNewItem(newCanvasItem);
     }
     async addNewMedia(fileSource: FileSource, event: any) {

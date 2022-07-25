@@ -11,6 +11,9 @@ export default function ToolCanvasItems({ canvasController }: {
             {canvasItems.map((canvasItem, i) => {
                 return (
                     <div className='card' key={i}
+                        style={{
+                            maxWidth: '200px',
+                        }}
                         onClick={() => {
                             canvasController.stopAllMods();
                             canvasItem.isSelected = true;

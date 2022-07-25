@@ -48,7 +48,7 @@ export default class CanvasItemText extends CanvasItem {
         });
         return div;
     }
-    static fromHtml(canvasController: CanvasController, htmlString: string) {
+    static async fromHtml(canvasController: CanvasController, htmlString: string) {
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         const element = div.firstChild as HTMLDivElement;
@@ -74,7 +74,7 @@ export default class CanvasItemText extends CanvasItem {
     applyTextData(text: ToolingTextType) {
         this.applyProps(text);
     }
-    clone(): CanvasItemText | null {
+    async clone() {
         const canvasController = this.canvasController;
         if (canvasController === null) {
             return null;

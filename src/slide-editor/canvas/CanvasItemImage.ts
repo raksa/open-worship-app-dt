@@ -57,7 +57,7 @@ export default class CanvasItemImage extends CanvasItem {
         });
         return div;
     }
-    static fromHtml(canvasController: CanvasController, htmlString: string) {
+    static async fromHtml(canvasController: CanvasController, htmlString: string) {
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         const element = div.firstElementChild as HTMLDivElement;
@@ -72,15 +72,17 @@ export default class CanvasItemImage extends CanvasItem {
         }
         const boxProps = super.htmlToBoxProps(htmlString);
         const slideItem = canvasController.slideItem;
-        return new CanvasItemImage(id, slideItem.id, slideItem.fileSource, {
+        const canvasItem = new CanvasItemImage(id, slideItem.id, slideItem.fileSource, {
             ...imageProps,
             ...boxProps,
         });
+        await canvasItem.initSize();
+        return canvasItem;
     }
     applyTextData(text: ToolingTextType) {
         this.applyProps(text);
     }
-    clone(): CanvasItemImage | null {
+    async clone() {
         const canvasController = this.canvasController;
         if (canvasController === null) {
             return null;

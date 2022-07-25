@@ -84,24 +84,35 @@ export default class Canvas {
         };
     }
     static fromHtml(canvasController: CanvasController,
-        htmlString: string): Canvas {
-        const div = document.createElement('div');
-        div.innerHTML = htmlString;
-        const mainDiv = div.firstChild as HTMLDivElement;
-        const children = Array.from(mainDiv.children).map((ele): CanvasItem => {
-            const childHtmlString = ele.outerHTML;
-            if (CanvasItemImage.htmlToType(childHtmlString) === 'image') {
-                return CanvasItemImage.fromHtml(canvasController, childHtmlString);
-            }
-            // TODO: handle other type of element
-            return CanvasItemText.fromHtml(canvasController, childHtmlString);
-        });
+        htmlString: string) {
         const slideItem = canvasController.slideItem;
+        const canvasDim = this.parseHtmlDim(htmlString);
         return new Canvas(slideItem.id, slideItem.fileSource, {
-            width: removePX(mainDiv.style.width) || 500,
-            height: removePX(mainDiv.style.height) || 150,
-            canvasItems: children,
+            width: canvasDim.width,
+            height: canvasDim.height,
+            canvasItems: [],
         });
+    }
+    async initChildren(canvasController: CanvasController) {
+        if (!this.canvasItems.length) {
+            const div = document.createElement('div');
+            div.innerHTML = canvasController.slideItem.htmlString;
+            const mainDiv = div.firstChild as HTMLDivElement;
+            const children: CanvasItem[] = [];
+            for (const ele of Array.from(mainDiv.children)) {
+                const childHtmlString = ele.outerHTML;
+                let child: CanvasItem;
+                if (CanvasItemImage.htmlToType(childHtmlString) === 'image') {
+                    child = await CanvasItemImage.fromHtml(canvasController, childHtmlString);
+                } else {
+                    child = await CanvasItemText.fromHtml(canvasController, childHtmlString);
+                }
+                // TODO: handle other type of element
+                children.push(child);
+            }
+            this.canvasItems = children;
+            canvasController.fireUpdateEvent();
+        }
     }
     get html() {
         const div = document.createElement('div');

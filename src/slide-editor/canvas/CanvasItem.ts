@@ -120,7 +120,7 @@ export default class CanvasItem {
             zIndex: +style.zIndex || 0,
         };
     }
-    static fromHtml(_canvasController: CanvasController, _htmlString: string): CanvasItem {
+    static fromHtml(_canvasController: CanvasController, _htmlString: string): Promise<CanvasItem | null> {
         throw new Error('Method not implemented.');
     }
     applyBoxData(boxData: ToolingBoxType) {
@@ -155,7 +155,7 @@ export default class CanvasItem {
         this.canvasController?.syncHtmlString();
         this.canvasController?.fireUpdateEvent();
     }
-    clone(): CanvasItem | null {
+    async clone(): Promise<CanvasItem | null> {
         throw new Error('Method not implemented.');
     }
     static genKey(canvasController: CanvasController, id: number) {

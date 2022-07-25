@@ -32,18 +32,18 @@ export function BENImageRender({ canvasItemImage }: {
     canvasItemImage: CanvasItemImage,
 }) {
     const [src, setSrc] = useState(canvasItemImage.props.fileSource?.src || null);
+
     const pWidth = canvasItemImage.props.width;
     const pHeight = canvasItemImage.props.height;
-    let width = canvasItemImage.imageWidth;
-    if (pWidth < canvasItemImage.imageWidth ||
-        pHeight < canvasItemImage.imageHeight) {
-        const rWidth = pWidth / canvasItemImage.imageWidth;
-        const rHeight = pHeight / canvasItemImage.imageHeight;
-        const mR = Math.min(rWidth, rHeight);
-        width = mR * canvasItemImage.imageWidth;
-    }
+    const rWidth = pWidth / canvasItemImage.imageWidth;
+    const rHeight = pHeight / canvasItemImage.imageHeight;
+    const mR = Math.min(rWidth, rHeight);
+    const width = mR * canvasItemImage.imageWidth;
     return (
         <img width={width}
+            style={{
+                pointerEvents: 'none',
+            }}
             src={src || img404} onError={() => {
                 setSrc(img404);
             }} />
