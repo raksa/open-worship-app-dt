@@ -6,8 +6,8 @@ import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
-import CanvasItem from '../slide-editor/canvas/CanvasItem';
 import CanvasController from '../slide-editor/canvas/CanvasController';
+import { genDefaultHtmlString } from '../slide-editor/canvas/box/BENTextViewMode';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -28,6 +28,9 @@ export default class SlideItem extends ItemBase {
         this.isCopied = false;
         const key = SlideItem.genKey(this);
         SlideItem._cache.set(key, this);
+    }
+    get canvasController() {
+        return CanvasController.getInstant(this);
     }
     get key() {
         return SlideItem.genKey(this);
@@ -73,14 +76,19 @@ export default class SlideItem extends ItemBase {
         }
         return false;
     }
-    static async getSelectedItem() {
+    static getSelectedEditingResult() {
         const selected = this.getSelectedResult();
+        const slideSelected = Slide.getSelectedFileSource();
+        if (selected?.fileSource.filePath === slideSelected?.filePath) {
+            return selected;
+        }
+        return null;
+    }
+    static async getSelectedItem() {
+        const selected = this.getSelectedEditingResult();
         if (selected !== null) {
             const slide = await Slide.readFileToData(selected.fileSource);
-            const selectSlide = await Slide.getSelected();
-            if (slide?.fileSource.filePath === selectSlide?.fileSource.filePath) {
-                return slide?.getItemById(selected.id);
-            }
+            return slide?.getItemById(selected.id);
         }
         return null;
     }
@@ -95,7 +103,7 @@ export default class SlideItem extends ItemBase {
         return {
             id: -1,
             html: `<div style="width: ${width}px; height: ${height}px;">`
-                + CanvasController.getDefaultBox()
+                + genDefaultHtmlString()
                 + '</div>',
         };
     }

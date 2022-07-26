@@ -10,9 +10,10 @@ export default function ToolCanvasItems({ canvasController }: {
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem, i) => {
                 return (
-                    <div className='card' key={i}
+                    <div className='card pointer align-self-start m-2' key={i}
                         style={{
                             maxWidth: '200px',
+                            border: canvasItem.isSelected ? '2px dashed green' : undefined,
                         }}
                         onClick={() => {
                             canvasController.stopAllMods();

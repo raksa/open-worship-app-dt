@@ -7,6 +7,8 @@ import FileSource from '../../helper/FileSource';
 import { toastEventListener } from '../../event/ToastEventListener';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
+import BibleItem from '../../bible-list/BibleItem';
+import { genDefaultHtmlString } from './box/BENTextViewMode';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -113,7 +115,7 @@ export default class CanvasController extends EventHandler {
         this.canvas.canvasItems = newCanvasItems;
     }
     async addNewTextBox() {
-        const newBoxHTML = CanvasItemText.genDefaultHtmlString();
+        const newBoxHTML = genDefaultHtmlString();
         const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
         this.addNewItem(newCanvasItem);
     }
@@ -134,6 +136,12 @@ export default class CanvasController extends EventHandler {
             title: 'Insert Image or Video',
             message: 'Fail to insert medias',
         });
+    }
+    async addNewBibleItem(bibleItem: BibleItem) {
+        // TODO: add bible item
+        const newBoxHTML = genDefaultHtmlString();
+        const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
+        this.addNewItem(newCanvasItem);
     }
     applyOrderingData(canvasItem: CanvasItem, isBack: boolean) {
         const newCanvasItems = this.canvas.canvasItems.map((item) => {
@@ -177,9 +185,6 @@ export default class CanvasController extends EventHandler {
         const canvasController = new CanvasController(slideItem);
         this._cacheMap.set(slideItemKey, canvasController);
         return canvasController;
-    }
-    static getDefaultBox() {
-        return CanvasItemText.genDefaultHtmlString();
     }
     registerEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { toastEventListener } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from './FileSource';
-import ItemSource, { ItemSourceAnyType } from './ItemSource';
+import { ItemSourceAnyType } from './ItemSource';
 
 export function getAppInfo() {
     return appProvider.ipcRenderer.sendSync('main:app:info') as {
@@ -15,7 +15,7 @@ export function getAppInfo() {
 export function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
-    for (var i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;

@@ -3,6 +3,8 @@ import {
     showCanvasItemContextMenu,
 } from '../canvasHelpers';
 import CanvasItemText from '../CanvasItemText';
+import reactDOMServer from 'react-dom/server';
+import { getAppInfo } from '../../../helper/helpers';
 
 export default function BENTextViewMode({
     canvasItemText, style,
@@ -37,4 +39,25 @@ export function BENTextRender({ canvasItemText }: {
                 __html: canvasItemText.html.innerHTML,
             }} />
     );
+}
+
+export function genDefaultHtmlString(width: number = 700,
+    height: number = 400) {
+    return reactDOMServer.renderToString(<div
+        id='0'
+        style={{
+            position: 'absolute',
+            top: '279px',
+            left: '356px',
+            transform: 'rotate(0deg)',
+            zIndex: '2',
+            backgroundColor: 'rgba(255, 0, 255, 0.39)',
+            width: `${width}px`,
+            height: `${height}px`,
+            display: 'flex',
+            fontSize: '60px',
+            color: 'rgb(255, 254, 254)',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }}>{getAppInfo().name}</div>);
 }
