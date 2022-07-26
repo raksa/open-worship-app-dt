@@ -41,19 +41,24 @@ export function BENTextRender({ canvasItemText }: {
     );
 }
 
-export function genDefaultHtmlString(width: number = 700,
-    height: number = 400) {
+export function genTextDefaultBoxStyle(width: number = 700,
+    height: number = 400): CSSProperties {
+    return {
+        position: 'absolute',
+        top: '279px',
+        left: '356px',
+        transform: 'rotate(0deg)',
+        zIndex: '2',
+        backgroundColor: 'rgba(255, 0, 255, 0.39)',
+        width: `${width}px`,
+        height: `${height}px`,
+    };
+}
+export function genTextDefaultHtmlString(width?: number, height?: number) {
     return reactDOMServer.renderToString(<div
         id='0'
         style={{
-            position: 'absolute',
-            top: '279px',
-            left: '356px',
-            transform: 'rotate(0deg)',
-            zIndex: '2',
-            backgroundColor: 'rgba(255, 0, 255, 0.39)',
-            width: `${width}px`,
-            height: `${height}px`,
+            ...genTextDefaultBoxStyle(width, height),
             display: 'flex',
             fontSize: '60px',
             color: 'rgb(255, 254, 254)',

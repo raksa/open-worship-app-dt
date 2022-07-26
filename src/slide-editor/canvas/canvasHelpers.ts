@@ -32,7 +32,7 @@ export function tooling2BoxProps(boxData: ToolingBoxType, state: {
     return boxProps;
 }
 
-export type CanvasItemType = 'text' | 'image' | 'video' | 'audio';
+export type CanvasItemType = 'text' | 'image' | 'video' | 'audio'| 'bible';
 
 export type ToolingTextType = {
     color?: string,

@@ -7,7 +7,7 @@ import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 import CanvasController from '../slide-editor/canvas/CanvasController';
-import { genDefaultHtmlString } from '../slide-editor/canvas/box/BENTextViewMode';
+import { genTextDefaultHtmlString } from '../slide-editor/canvas/box/BENTextViewMode';
 
 export default class SlideItem extends ItemBase {
     metadata: MetaDataType;
@@ -16,6 +16,7 @@ export default class SlideItem extends ItemBase {
     fileSource: FileSource;
     isCopied: boolean;
     _htmlString: string;
+    presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     static _cache = new Map<string, SlideItem>();
     constructor(id: number, htmlString: string, metadata: MetaDataType,
@@ -103,7 +104,7 @@ export default class SlideItem extends ItemBase {
         return {
             id: -1,
             html: `<div style="width: ${width}px; height: ${height}px;">`
-                + genDefaultHtmlString()
+                + genTextDefaultHtmlString()
                 + '</div>',
         };
     }

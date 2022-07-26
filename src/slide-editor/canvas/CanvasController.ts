@@ -8,7 +8,7 @@ import { toastEventListener } from '../../event/ToastEventListener';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import BibleItem from '../../bible-list/BibleItem';
-import { genDefaultHtmlString } from './box/BENTextViewMode';
+import { genTextDefaultHtmlString } from './box/BENTextViewMode';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -115,7 +115,7 @@ export default class CanvasController extends EventHandler {
         this.canvas.canvasItems = newCanvasItems;
     }
     async addNewTextBox() {
-        const newBoxHTML = genDefaultHtmlString();
+        const newBoxHTML = genTextDefaultHtmlString();
         const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
         this.addNewItem(newCanvasItem);
     }
@@ -139,7 +139,7 @@ export default class CanvasController extends EventHandler {
     }
     async addNewBibleItem(bibleItem: BibleItem) {
         // TODO: add bible item
-        const newBoxHTML = genDefaultHtmlString();
+        const newBoxHTML = genTextDefaultHtmlString();
         const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
         this.addNewItem(newCanvasItem);
     }

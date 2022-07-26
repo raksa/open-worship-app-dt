@@ -87,8 +87,6 @@ export default function RenderFoundButtons({
         }
         return isBibleSelectEditing ? 'Save Bible Item' : 'Add Bible Item';
     };
-    console.log(isWindowEditing, isSlideSelectEditing);
-
     return (
         <div className='card-footer bg-transparent border-success d-flex justify-content-evenly'>
             {isWindowEditing && !isSlideSelectEditing ? null :

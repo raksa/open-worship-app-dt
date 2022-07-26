@@ -49,6 +49,9 @@ export default class CanvasItem {
     get isTypeText() {
         return this.type === 'text';
     }
+    get isTypeBible() {
+        return this.type === 'bible';
+    }
     get type(): CanvasItemType {
         throw new Error('Method not implemented.');
     }
