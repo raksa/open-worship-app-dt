@@ -8,7 +8,7 @@ import { removePX } from '../../helper/helpers';
 import BibleItem from '../../bible-list/BibleItem';
 
 type CanvasItemBiblePropsType = CanvasItemPropsType & {
-    bibleItem: BibleItem | null,
+    bibleItems: BibleItem[] | null,
     color: string,
     fontSize: number,
     fontFamily: string,
@@ -55,9 +55,9 @@ export default class CanvasItemBible extends CanvasItem {
         const element = div.firstChild as HTMLDivElement;
         const style = element.style;
         // TODO: extract bible item from html
-        const bibleItem = null;
+        const bibleItems: BibleItem[] | null = null;
         const bibleProps = {
-            bibleItem,
+            bibleItems,
             fontSize: removePX(style.fontSize) || 30,
             fontFamily: style.fontFamily.replace(/"/g, '') || '',
             color: style.color || BLACK_COLOR,
@@ -65,7 +65,7 @@ export default class CanvasItemBible extends CanvasItem {
         let id = +element.id;
         if (!element.id || isNaN(id)) {
             id = -1;
-            bibleProps.bibleItem = null;
+            bibleProps.bibleItems = null;
         }
         const boxProps = super.htmlToBoxProps(htmlString);
         const slideItem = canvasController.slideItem;
