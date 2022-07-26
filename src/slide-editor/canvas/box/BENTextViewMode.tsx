@@ -22,9 +22,19 @@ export default function BENTextViewMode({
                 canvasItemText.canvasController?.stopAllMods();
                 canvasItemText.isSelected = true;
             }}>
-            <span dangerouslySetInnerHTML={{
-                __html: canvasItemText.props.text.split('\n').join('<br>'),
-            }} />
+            <BENTextRender canvasItemText={canvasItemText} />
         </div>
+    );
+}
+
+export function BENTextRender({ canvasItemText }: {
+    canvasItemText: CanvasItemText,
+}) {
+    return (
+        <div className='w-100 h-100'
+            style={canvasItemText.getStyle()}
+            dangerouslySetInnerHTML={{
+                __html: canvasItemText.html.innerHTML,
+            }} />
     );
 }

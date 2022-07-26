@@ -23,9 +23,9 @@ export default function BoxEditorNormalMode({ canvasItem }: {
                 style={style} />
         );
     }
-    if (canvasItem.isTypeText && canvasItem.isEditing) {
+    if (canvasItem.isTypeText) {
         const canvasItemText = canvasItem as CanvasItemText;
-        if (canvasItem.isTypeText) {
+        if (canvasItem.isEditing) {
             return (
                 <BENTextEditMode canvasItemText={canvasItemText}
                     style={style} />

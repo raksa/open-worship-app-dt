@@ -7,6 +7,8 @@ import {
 } from '../canvasHelpers';
 import { BENImageRender } from './BENImageMode';
 import CanvasItemImage from '../CanvasItemImage';
+import { BENTextRender } from './BENTextViewMode';
+import CanvasItemText from '../CanvasItemText';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem,
@@ -75,16 +77,14 @@ function BECRender({ canvasItem }: {
 }) {
     if (canvasItem.isTypeText) {
         return (
-            <div className='w-100 h-100'
-                style={canvasItem.getStyle()}
-                dangerouslySetInnerHTML={{
-                    __html: canvasItem.html.innerHTML,
-                }} />
+            <BENTextRender
+                canvasItemText={canvasItem as CanvasItemText} />
         );
     }
     if (canvasItem.isTypeImage) {
         return (
-            <BENImageRender canvasItemImage={canvasItem as CanvasItemImage} />
+            <BENImageRender
+                canvasItemImage={canvasItem as CanvasItemImage} />
         );
     }
     return null;
