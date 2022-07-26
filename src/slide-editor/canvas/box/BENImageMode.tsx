@@ -40,12 +40,15 @@ export function BENImageRender({ canvasItemImage }: {
     const mR = Math.min(rWidth, rHeight);
     const width = mR * canvasItemImage.imageWidth;
     return (
-        <img width={width}
-            style={{
-                pointerEvents: 'none',
-            }}
-            src={src || img404} onError={() => {
-                setSrc(img404);
-            }} />
+        <div className='w-100 h-100 d-flex justify-content-center'>
+            <img className='align-self-center'
+                width={width}
+                style={{
+                    pointerEvents: 'none',
+                }}
+                src={src || img404} onError={() => {
+                    setSrc(img404);
+                }} />
+        </div>
     );
 }
