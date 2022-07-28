@@ -1,6 +1,7 @@
 import Bible from '../bible-list/Bible';
 import { toastEventListener } from '../event/ToastEventListener';
 import FileSource from '../helper/FileSource';
+import { anyObjectType } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { ItemSourceAnyType } from '../helper/ItemSource';
 import Lyric from '../lyric-list/Lyric';
@@ -36,7 +37,7 @@ export default class PlaylistItem {
     get isLyricItem() {
         return this.type === 'lyric';
     }
-    static fromJson(json: any, fileSource: FileSource) {
+    static fromJson(json: anyObjectType, fileSource: FileSource) {
         this.validate(json);
         const itemFS = FileSource.genFileSource(json.path);
         let item;
@@ -52,7 +53,7 @@ export default class PlaylistItem {
         }
         return new PlaylistItem(json.type, item as any, fileSource);
     }
-    static fromJsonError(json: any, fileSource: FileSource) {
+    static fromJsonError(json: anyObjectType, fileSource: FileSource) {
         const item = new PlaylistItem('' as any, {} as any, fileSource);
         item.jsonError = json;
         return item;
@@ -68,7 +69,7 @@ export default class PlaylistItem {
         PlaylistItem.validate(json);
         return json;
     }
-    static validate(json: any) {
+    static validate(json: anyObjectType) {
         if (!['slide', 'bible', 'lyric'].includes(json.type)
             || json.path && typeof json.path !== 'string') {
             console.log(json);

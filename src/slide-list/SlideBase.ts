@@ -1,5 +1,4 @@
 import SlideItem from './SlideItem';
-import { MetaDataType } from '../helper/fileHelper';
 import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
@@ -14,6 +13,7 @@ import {
     THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
+import { anyObjectType } from '../helper/helpers';
 
 export type SlideType = {
     items: SlideItem[],
@@ -24,7 +24,7 @@ export default class SlideBase extends ItemSource<SlideType>{
         undo: ChangeHistory[];
         redo: ChangeHistory[];
     } = { undo: [], redo: [] };
-    constructor(fileSource: FileSource, metadata: MetaDataType,
+    constructor(fileSource: FileSource, metadata: anyObjectType,
         content: SlideType) {
         super(fileSource, metadata, content);
         this.initHistory();
@@ -217,8 +217,10 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     checkIsWrongDimension({ bounds }: DisplayType) {
         const found = this.items.map((item) => {
-            const canvasDim = Canvas.parseHtmlDim(item.htmlString);
-            return { width: canvasDim.width, height: canvasDim.height };
+            return {
+                width: item.width,
+                height: item.height,
+            };
         }).find(({ width, height }: { width: number, height: number }) => {
             return bounds.width !== width || bounds.height !== height;
         });
@@ -232,19 +234,20 @@ export default class SlideBase extends ItemSource<SlideType>{
     }
     async fixSlideDimension({ bounds }: DisplayType) {
         this.items.forEach((item) => {
-            const canvasDim = Canvas.parseHtmlDim(item.htmlString);
-            canvasDim.width = bounds.width;
-            canvasDim.height = bounds.height;
-            item.htmlString = canvasDim.htmlString;
+            item.width = bounds.width;
+            item.height = bounds.height;
         });
         slideEditingCacheManager.saveBySlideBase(this);
     }
     showSlideItemContextMenu(e: any) {
         showAppContextMenu(e, [{
-            title: 'New Slide Thumb', onClick: () => {
+            title: 'New Slide Item', onClick: () => {
                 const item = SlideItem.defaultSlideItem();
-                this.addItem(new SlideItem(item.id, item.html, {},
-                    this.fileSource));
+                const { width, height } = SlideItem.getDefaultDim();
+                this.addItem(new SlideItem(item.id, {
+                    metadata: { width, height },
+                    canvasItems: [], // TODO: add default canvas item
+                }, this.fileSource));
             },
         }, {
             title: 'Paste', disabled: SlideItem.copiedItem === null,

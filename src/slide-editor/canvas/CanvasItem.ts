@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { getRotationDeg, removePX } from '../../helper/helpers';
+import { anyObjectType, cloneObject } from '../../helper/helpers';
 import { HAlignmentEnum, VAlignmentEnum } from './Canvas';
 import {
     CanvasItemType,
@@ -9,27 +9,52 @@ import CanvasController from './CanvasController';
 import SlideItem from '../../slide-list/SlideItem';
 import FileSource from '../../helper/FileSource';
 
+export function genTextDefaultBoxStyle(width: number = 700,
+    height: number = 400): CanvasItemPropsType {
+    return {
+        top: 279,
+        left: 356,
+        zIndex: 2,
+        backgroundColor: 'rgba(255, 0, 255, 0.39)',
+        width,
+        height,
+        rotate: 0,
+        horizontalAlignment: HAlignmentEnum.Center,
+        verticalAlignment: VAlignmentEnum.Center,
+        type: 'text',
+    };
+}
+
 export type CanvasItemPropsType = {
-    top: number, left: number,
-    rotate: number, width: number, height: number,
+    top: number,
+    left: number,
+    rotate: number,
+    width: number,
+    height: number,
     horizontalAlignment: HAlignmentEnum,
     verticalAlignment: VAlignmentEnum,
-    backgroundColor: string, zIndex: number,
+    backgroundColor: string,
+    zIndex: number,
+    type: CanvasItemType,
 };
-export default class CanvasItem {
+export default class CanvasItem<T extends CanvasItemPropsType> {
     static _objectId = 0;
     _objectId: number;
-    props: CanvasItemPropsType;
+    props: T;
     _isSelected: boolean;
     _isControlling: boolean;
     _isEditing: boolean;
     id: number;
     slideItemId: number;
     fileSource: FileSource;
-    constructor(id: number, slideItemId: number, fileSource: FileSource,
-        props: CanvasItemPropsType) {
+    constructor(id: number, canvasController: CanvasController,
+        props: T) {
         this._objectId = CanvasItem._objectId++;
         this.id = id;
+        const {
+            id: slideItemId,
+            fileSource,
+        } = canvasController.slideItem;
         this.slideItemId = slideItemId;
         this.fileSource = fileSource;
         this.props = props;
@@ -38,22 +63,19 @@ export default class CanvasItem {
         this._isEditing = false;
     }
     get isTypeAudio() {
-        return this.type === 'audio';
+        return this.props.type === 'audio';
     }
     get isTypeImage() {
-        return this.type === 'image';
+        return this.props.type === 'image';
     }
     get isTypeVideo() {
-        return this.type === 'video';
+        return this.props.type === 'video';
     }
     get isTypeText() {
-        return this.type === 'text';
+        return this.props.type === 'text';
     }
     get isTypeBible() {
-        return this.type === 'bible';
-    }
-    get type(): CanvasItemType {
-        throw new Error('Method not implemented.');
+        return this.props.type === 'bible';
     }
     get isSelected() {
         return this._isSelected;
@@ -85,45 +107,45 @@ export default class CanvasItem {
         }
         return CanvasController.getInstant(slideItem);
     }
+    static genStyle(_props: CanvasItemPropsType) {
+        throw new Error('Method not implemented.');
+    }
     getStyle(): CSSProperties {
         throw new Error('Method not implemented.');
     }
-    getBoxStyle(): CSSProperties {
+    static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
         const style: CSSProperties = {
-            top: `${this.props.top}px`,
-            left: `${this.props.left}px`,
-            transform: `rotate(${this.props.rotate}deg)`,
-            width: `${this.props.width}px`,
-            height: `${this.props.height}px`,
+            top: `${props.top}px`,
+            left: `${props.left}px`,
+            transform: `rotate(${props.rotate}deg)`,
+            width: `${props.width}px`,
+            height: `${props.height}px`,
             position: 'absolute',
-            zIndex: this.props.zIndex,
+            zIndex: props.zIndex,
         };
         return style;
     }
-    get html(): HTMLDivElement {
-        throw new Error('Method not implemented.');
+    getBoxStyle(): CSSProperties {
+        return CanvasItem.genBoxStyle(this.props);
     }
-    get htmlString() {
-        return this.html.outerHTML;
+    toJson(): anyObjectType {
+        return cloneObject(this.props);
     }
-    static htmlToBoxProps(htmlString: string): CanvasItemPropsType {
-        const div = document.createElement('div');
-        div.innerHTML = htmlString;
-        const element = div.firstChild as HTMLDivElement;
-        const style = element.style;
+    static propsFromJson(json: { [key: string]: any }): CanvasItemPropsType {
         return {
-            top: removePX(style.top) || 3,
-            left: removePX(style.left) || 3,
-            rotate: getRotationDeg(style.transform),
-            width: removePX(style.width) || 500,
-            height: removePX(style.height) || 150,
-            horizontalAlignment: (style.justifyContent || HAlignmentEnum.Left) as HAlignmentEnum,
-            verticalAlignment: (style.alignItems || VAlignmentEnum.Top) as VAlignmentEnum,
-            backgroundColor: style.backgroundColor || 'transparent',
-            zIndex: +style.zIndex || 0,
+            top: json['top'],
+            left: json['left'],
+            rotate: json['rotate'],
+            width: json['width'],
+            height: json['height'],
+            horizontalAlignment: json['horizontalAlignment'],
+            verticalAlignment: json['verticalAlignment'],
+            backgroundColor: json['backgroundColor'],
+            zIndex: json['zIndex'],
+            type: json['type'],
         };
     }
-    static fromHtml(_canvasController: CanvasController, _htmlString: string): Promise<CanvasItem | null> {
+    static fromJson(_canvasController: CanvasController, _json: object): CanvasItem<any> {
         throw new Error('Method not implemented.');
     }
     applyBoxData(boxData: ToolingBoxType) {
@@ -141,7 +163,6 @@ export default class CanvasItem {
         const newProps = {
             ...boxData, ...boxProps,
         };
-        // TODO: move rotate to box
         if (boxData?.rotate) {
             newProps.rotate = boxData.rotate;
         }
@@ -150,16 +171,21 @@ export default class CanvasItem {
         }
         this.applyProps(newProps);
     }
-    applyProps(props: { [key: string]: any }) {
+    applyProps(props: anyObjectType) {
         const propsAny = this.props as any;
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
-        this.canvasController?.syncHtmlString();
         this.canvasController?.fireUpdateEvent();
     }
-    async clone(): Promise<CanvasItem | null> {
-        throw new Error('Method not implemented.');
+    clone(): CanvasItem<T> | null {
+        const canvasController = this.canvasController;
+        if (canvasController === null) {
+            return null;
+        }
+        const item = this.constructor(canvasController, this.toJson());
+        item.id = -1;
+        return item;
     }
     static genKey(canvasController: CanvasController, id: number) {
         return `${canvasController.slideItem.key}#${id}`;
@@ -170,8 +196,5 @@ export default class CanvasItem {
             slideItemKey: arr[0],
             id: +arr[1],
         };
-    }
-    static htmlToType(_htmlString: string): CanvasItemType | null {
-        throw new Error('Method not implemented.');
     }
 }

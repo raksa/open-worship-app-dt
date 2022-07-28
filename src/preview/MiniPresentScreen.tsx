@@ -6,11 +6,13 @@ import ClearControl from './ClearControl';
 import { presentEventListener } from '../event/PresentEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import { renderFG } from '../helper/presentingHelpers';
+import { genSlideItemHtmlString } from '../slide-presenting/items/SlideItemRenderers';
 
 export default function MiniPresentScreen() {
-    useSlideItemSelecting((slideItem) => {
+    useSlideItemSelecting(async(slideItem) => {
         if (slideItem !== null) {
-            renderFG(slideItem.htmlString);
+            const htmlString = await genSlideItemHtmlString(slideItem);
+            renderFG(htmlString);
             presentEventListener.renderFG();
         } else {
             presentEventListener.clearFG();

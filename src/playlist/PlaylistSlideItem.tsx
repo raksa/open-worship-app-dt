@@ -6,7 +6,7 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import SlideItem from '../slide-list/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
 import FileReadError from '../others/FileReadError';
-import SlideItemIFrame from '../slide-presenting/items/SlideItemIFrame';
+import { SlideItemIFrame } from '../slide-presenting/items/SlideItemRenderers';
 
 export default function PlaylistSlideItem({
     slideItemPath, width,
@@ -36,7 +36,7 @@ export default function PlaylistSlideItem({
             onClick={() => {
                 slideListEventListenerGlobal.selectSlideItem(item);
             }}>
-            <SlideItemIFrame canvasDim={Canvas.parseHtmlDim(item.htmlString)} />
+            <SlideItemIFrame slideItem={item} />
         </div>
     );
 }

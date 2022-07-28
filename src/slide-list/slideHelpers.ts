@@ -73,23 +73,6 @@ export function useSlideIsModifying(slide: Slide) {
     return isModifying;
 }
 
-export function useCanvasDim(slideItem: SlideItem) {
-    const [canvasDim, setCanvasDim] = useState(Canvas.parseHtmlDim(slideItem.htmlString));
-    useEffect(() => {
-        const updateEvents = slideItem.fileSource.registerEventListener(
-            ['edit'], (item) => {
-                if (item && item.id === slideItem.id) {
-                    const newCanvasDim = Canvas.parseHtmlDim(item.htmlString);
-                    setCanvasDim(newCanvasDim);
-                }
-            });
-        return () => {
-            slideItem.fileSource.unregisterEventListener(updateEvents);
-        };
-    }, [slideItem]);
-    return canvasDim;
-}
-
 export function useFSRefresh(events: FSEventType[], fileSource: FileSource | null,
     callback?: () => void) {
     const [n, setN] = useState(0);

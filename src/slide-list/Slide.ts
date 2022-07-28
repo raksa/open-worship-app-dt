@@ -3,19 +3,20 @@ import { MimetypeNameType } from '../helper/fileHelper';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import SlideBase from './SlideBase';
+import { anyObjectType } from '../helper/helpers';
 
 export default class Slide extends SlideBase {
     static mimetype: MimetypeNameType = 'slide';
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
-    static fromJson(json: any, fileSource: FileSource) {
+    static fromJson(json: anyObjectType, fileSource: FileSource) {
         this.validate(json);
         return new Slide(fileSource, json.metadata, json.content);
     }
-    itemFromJson(json: any) {
-        return SlideItem.fromJson(json, this.fileSource);
+    itemFromJson(json: anyObjectType) {
+        return SlideItem.fromJson(json as any, this.fileSource);
     }
-    itemFromJsonError(json: any) {
+    itemFromJsonError(json: anyObjectType) {
         return SlideItem.fromJsonError(json, this.fileSource);
     }
     get isSelected() {

@@ -1,5 +1,5 @@
 import FileSource from '../../helper/FileSource';
-import { removePX } from '../../helper/helpers';
+import { anyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import CanvasController from './CanvasController';
 import CanvasItem from './CanvasItem';
@@ -19,13 +19,8 @@ export enum VAlignmentEnum {
 
 type CanvasPropsType = {
     width: number, height: number,
-    canvasItems: CanvasItem[],
+    canvasItems: CanvasItem<any>[],
 };
-export type CanvasDimType = {
-    width: number,
-    height: number,
-    htmlString: string,
-}
 export default class Canvas {
     static _objectId = 0;
     _objectId: number;
@@ -60,9 +55,8 @@ export default class Canvas {
     get canvasItems() {
         return this.props.canvasItems;
     }
-    set canvasItems(canvasItems: CanvasItem[]) {
+    set canvasItems(canvasItems: CanvasItem<any>[]) {
         this.props.canvasItems = canvasItems;
-        this.canvasController?.syncHtmlString();
         this.canvasController?.fireUpdateEvent();
     }
     get canvasController() {
@@ -73,59 +67,27 @@ export default class Canvas {
         }
         return CanvasController.getInstant(slideItem);
     }
-    static parseHtmlDim(htmlString: string): CanvasDimType {
-        const div = document.createElement('div');
-        div.innerHTML = htmlString;
-        const mainDiv = div.firstChild as HTMLDivElement;
-        return {
-            width: removePX(mainDiv.style.width) || 500,
-            height: removePX(mainDiv.style.height) || 150,
-            htmlString: htmlString,
-        };
-    }
-    static fromHtml(canvasController: CanvasController,
-        htmlString: string) {
+    static fromJson(canvasController: CanvasController,
+        json: anyObjectType) {
         const slideItem = canvasController.slideItem;
-        const canvasDim = this.parseHtmlDim(htmlString);
-        return new Canvas(slideItem.id, slideItem.fileSource, {
-            width: canvasDim.width,
-            height: canvasDim.height,
-            canvasItems: [],
-        });
-    }
-    async initChildren(canvasController: CanvasController) {
-        if (!this.canvasItems.length) {
-            const div = document.createElement('div');
-            div.innerHTML = canvasController.slideItem.htmlString;
-            const mainDiv = div.firstChild as HTMLDivElement;
-            const children: CanvasItem[] = [];
-            for (const ele of Array.from(mainDiv.children)) {
-                const childHtmlString = ele.outerHTML;
-                let child: CanvasItem;
-                if (CanvasItemImage.htmlToType(childHtmlString) === 'image') {
-                    child = await CanvasItemImage.fromHtml(canvasController, childHtmlString);
-                } else {
-                    child = await CanvasItemText.fromHtml(canvasController, childHtmlString);
-                }
-                // TODO: handle other type of element
-                children.push(child);
+        const canvasItems: CanvasItem<any>[] = json.canvasItems.map((item: anyObjectType) => {
+            let canvasItem: CanvasItem<any>;
+            if (item.type === 'image') {
+                canvasItem = CanvasItemImage.fromJson(canvasController, item);
+            } else {
+                canvasItem = CanvasItemText.fromJson(canvasController, item);
             }
-            this.canvasItems = children;
-            canvasController.fireUpdateEvent();
-        }
-    }
-    get html() {
-        const div = document.createElement('div');
-        const newHtml = `<div style="width: ${this.props.width}px; height: ${this.props.height}px;">` +
-            `${this.canvasItems.map((child) => child.htmlString).join('')}</div>`;
-        div.innerHTML = newHtml;
-        return div.firstChild as HTMLDivElement;
-    }
-    get htmlString() {
-        return this.html.outerHTML;
+            // TODO: handle other type of element
+            canvasItems.push(canvasItem);
+        });
+        return new Canvas(slideItem.id, slideItem.fileSource, {
+            width: json.width,
+            height: json.height,
+            canvasItems,
+        });
     }
     static fromSlideItem(canvasController: CanvasController,
         slideItem: SlideItem) {
-        return Canvas.fromHtml(canvasController, slideItem.htmlString);
+        return Canvas.fromJson(canvasController, slideItem.toJson());
     }
 }

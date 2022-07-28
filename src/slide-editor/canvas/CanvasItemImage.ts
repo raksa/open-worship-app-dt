@@ -1,121 +1,83 @@
-import { getAppInfo } from '../../helper/helpers';
+import { anyObjectType } from '../../helper/helpers';
 import CanvasController from './CanvasController';
 import FileSource from '../../helper/FileSource';
-import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
-import { CanvasItemType, ToolingTextType } from './canvasHelpers';
-import img404 from './404.png';
+import CanvasItem, { CanvasItemPropsType, genTextDefaultBoxStyle } from './CanvasItem';
 
-type CanvasItemImagePropsType = CanvasItemPropsType & {
-    fileSource: FileSource | null,
+export type CanvasItemImagePropsType = CanvasItemPropsType & {
+    filePath: string,
+    imageDataUrl?: string,
+    imageWidth: number;
+    imageHeight: number;
 };
-export default class CanvasItemImage extends CanvasItem {
-    props: CanvasItemImagePropsType;
-    imageWidth: number = 0;
-    imageHeight: number = 0;
-    constructor(id: number, slideItemId: number, fileSource: FileSource,
-        props: CanvasItemImagePropsType) {
-        super(id, slideItemId, fileSource, props);
-        this.props = props;
-    }
-    get type(): CanvasItemType {
-        return 'image';
-    }
-    async initSize() {
-        if (this.imageWidth || this.imageHeight) {
-            return Promise.resolve();
-        }
-        return new Promise<void>((resolve) => {
-            const image = document.createElement('img');
-            image.src = this.props.fileSource?.src || img404;
-            image.onload = () => {
-                this.imageWidth = image.naturalWidth;
-                this.imageHeight = image.naturalHeight;
-                resolve();
-            };
-            image.onerror = () => {
-                this.imageWidth = 0;
-                this.imageHeight = 0;
-                resolve();
-            };
-        });
-    }
-    getStyle() {
+export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
+    static gegStyle(_props: CanvasItemImagePropsType) {
         return {};
     }
-    get html(): HTMLDivElement {
-        const div = document.createElement('div');
-        div.id = `${this.id}`;
-        const src = this.props.fileSource?.src || img404;
-        div.innerHTML = `<img src="${src}"></img>`;
-        const targetStyle = div.style as any;
-        const style = {
-            ...this.getStyle(),
-            ...this.getBoxStyle(),
-        } as any;
-        Object.keys(style).forEach((k) => {
-            targetStyle[k] = style[k];
-        });
-        return div;
+    getStyle() {
+        return CanvasItemImage.gegStyle(this.props);
     }
-    static async fromHtml(canvasController: CanvasController, htmlString: string) {
-        const div = document.createElement('div');
-        div.innerHTML = htmlString;
-        const element = div.firstElementChild as HTMLDivElement;
-        const img = element.firstElementChild as HTMLImageElement;
-        const imageProps = {
-            fileSource: img.src ? FileSource.genFileSourceFromSrc(img.src) : null,
+    toJson() {
+        return {
+            filePath: this.props.filePath,
+            imageWidth: this.props.imageWidth,
+            imageHeight: this.props.imageHeight,
+            ...super.toJson(),
         };
-        let id = +element.id;
-        if (!element.id || isNaN(id)) {
-            id = -1;
-            imageProps.fileSource = null;
-        }
-        const boxProps = super.htmlToBoxProps(htmlString);
-        const slideItem = canvasController.slideItem;
-        const canvasItem = new CanvasItemImage(id, slideItem.id, slideItem.fileSource, {
-            ...imageProps,
-            ...boxProps,
+    }
+    static fromJson(canvasController: CanvasController,
+        json: anyObjectType) {
+        return new CanvasItemImage(json.id, canvasController, {
+            filePath: json.filePath,
+            imageWidth: json.imageWidth,
+            imageHeight: json.imageHeight,
+            ...super.propsFromJson(json),
         });
-        await canvasItem.initSize();
-        return canvasItem;
     }
-    applyTextData(text: ToolingTextType) {
-        this.applyProps(text);
-    }
-    async clone() {
-        const canvasController = this.canvasController;
-        if (canvasController === null) {
-            return null;
-        }
-        return CanvasItemImage.fromHtml(canvasController, this.htmlString);
-    }
-    static genDefaultHtmlString(width: number = 700, height: number = 400) {
-        return '<div id="0" class="box-editor pointer" style="top: 279px; left: 356px; transform: rotate(0deg); '
-            + `width: ${width}px; height: ${height}px; z-index: 2; display: flex; font-size: 60px; `
-            + 'color: rgb(255, 254, 254); align-items: center; justify-content: center; '
-            + `background-color: rgba(255, 0, 255, 0.39); position: absolute;">
-                ${getAppInfo().name}
-            </div>`;
-    }
-    static htmlToType(htmlString: string): CanvasItemType | null {
-        return htmlString.includes('<img') ? 'image' : null;
-    }
-    static genFromInsertion(canvasController: CanvasController, x: number, y: number,
+    static genFromInsertion(canvasController: CanvasController,
+        x: number, y: number,
         fileSource: FileSource) {
         return new Promise<CanvasItemImage>((resolve, reject) => {
             const image = document.createElement('img');
             image.src = fileSource.src;
-            const width = image.clientWidth;
-            const height = image.clientHeight;
             image.onload = () => {
-                const htmlString = '<div id="0" '
-                    + `style="position: absolute; top: ${x}px; left: ${y}px; `
-                    + 'transform: rotate(0deg); z-index: 2; '
-                    + `width: ${width}px; height: ${height}px;">
-                        <img src="${fileSource.src}"></img>
-                    </div>`;
-                const newItem = CanvasItemImage.fromHtml(canvasController, htmlString);
+                const imageWidth = image.clientWidth;
+                const imageHeight = image.clientHeight;
+                const newItem = CanvasItemImage.fromJson(canvasController, {
+                    filePath: fileSource.filePath,
+                    imageWidth,
+                    imageHeight,
+                    ...genTextDefaultBoxStyle(),
+                    left: x,
+                    top: y,
+                });
                 resolve(newItem);
+            };
+            image.onerror = () => {
+                reject(new Error('Image load error'));
+            };
+        });
+    }
+    async loadImageData() {
+        const fileSource = FileSource.genFileSource(this.props.filePath);
+        this.props.imageDataUrl = await CanvasItemImage.readImageData(fileSource);
+    }
+    static readImageData(fileSource: FileSource) {
+        return new Promise<string>((resolve, reject) => {
+            const image = document.createElement('img');
+            image.src = fileSource.src;
+            image.onload = () => {
+                const canvas = document.createElement('canvas');
+                const imageWidth = image.clientWidth;
+                const imageHeight = image.clientHeight;
+                const ctx = canvas.getContext('2d');
+                if (ctx === null) {
+                    return reject(new Error('Fail to read image'));
+                }
+                ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+                const imageData = ctx.getImageData(0, 0,
+                    imageWidth, imageHeight);
+                const dataUrl = `url(data:${fileSource.metadata?.appMimetype.mimetype};${imageData}`;
+                resolve(dataUrl);
             };
             image.onerror = () => {
                 reject(new Error('Image load error'));

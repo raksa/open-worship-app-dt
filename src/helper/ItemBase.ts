@@ -1,12 +1,12 @@
 import FileSource from '../helper/FileSource';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import ColorNoteInf from './ColorNoteInf';
-import { MetaDataType } from './fileHelper';
+import { anyObjectType } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
     abstract fileSource?: FileSource | null;
-    abstract metadata?: MetaDataType;
+    abstract metadata?: anyObjectType;
     static SELECT_SETTING_NAME = '';
     jsonError: any;
     static _objectId = 0;
@@ -49,13 +49,13 @@ export abstract class ItemBase implements ColorNoteInf {
     toJson() {
         throw new Error('Method not implemented.');
     }
-    static fromJson(json: any, fileSource?: FileSource): any {
+    static fromJson(json: anyObjectType, fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
-    static fromJsonError(json: any, fileSource?: FileSource): any {
+    static fromJsonError(json: anyObjectType, fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
-    static validate(json: any) {
+    static validate(json: anyObjectType) {
         throw new Error('Method not implemented.');
     }
     static _toSelectedItemSetting(fileSource: FileSource | null, id: number | string | null) {

@@ -5,12 +5,14 @@ import {
 import CanvasItem from '../CanvasItem';
 import CanvasItemImage from '../CanvasItemImage';
 import CanvasItemText from '../CanvasItemText';
-import BENImageMode from './BENImageMode';
+import BENViewImageMode from './BENViewImageMode';
 import BENTextEditMode from './BENTextEditMode';
-import BENTextViewMode from './BENTextViewMode';
+import BENViewTextMode from './BENViewTextMode';
+import BENViewBibleMode from './BENViewBibleMode';
+import CanvasItemBible from '../CanvasItemBible';
 
 export default function BoxEditorNormalMode({ canvasItem }: {
-    canvasItem: CanvasItem,
+    canvasItem: CanvasItem<any>,
 }) {
     const style: CSSProperties = {
         ...canvasItem.getStyle(),
@@ -19,7 +21,8 @@ export default function BoxEditorNormalMode({ canvasItem }: {
     useCIRefresh(canvasItem, ['edit', 'update']);
     if (canvasItem.isTypeImage) {
         return (
-            <BENImageMode canvasItemImage={canvasItem as CanvasItemImage}
+            <BENViewImageMode
+                canvasItemImage={canvasItem as CanvasItemImage}
                 style={style} />
         );
     }
@@ -32,7 +35,14 @@ export default function BoxEditorNormalMode({ canvasItem }: {
             );
         }
         return (
-            <BENTextViewMode canvasItemText={canvasItemText}
+            <BENViewTextMode canvasItemText={canvasItemText}
+                style={style} />
+        );
+    }
+    if (canvasItem.isTypeBible) {
+        return (
+            <BENViewBibleMode
+                canvasItemBible={canvasItem as CanvasItemBible}
                 style={style} />
         );
     }

@@ -3,29 +3,32 @@ import {
 } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from './FileSource';
+import { anyObjectType } from './helpers';
 
-export type MimeType = {
+export type AppMimetypeType = {
     type: string,
     title: string,
-    mimeType: string,
-    mimeTypeName: MimetypeNameType,
+    mimetype: string,
+    mimetypeName: MimetypeNameType,
     extension: string[],
 };
 
-export type FileMetadataType = { fileName: string, mimeType: MimeType };
+export type FileMetadataType = {
+    fileName: string,
+    appMimetype: AppMimetypeType,
+};
 
-export type MetaDataType = { [key: string]: any; };
 export interface ItemSourceInf<T> {
     fileSource: FileSource;
-    metadata: MetaDataType,
+    metadata: anyObjectType,
     content: T;
     toJson: () => Object;
 }
 export const createNewItem = async (dir: string, name: string,
     content: string, mimetype: MimetypeNameType) => {
     // TODO: verify file name before create
-    const mimeTypes = getAppMimetype(mimetype);
-    const fileName = `${name}${mimeTypes[0].extension[0]}`;
+    const mimetypeList = getAppMimetype(mimetype);
+    const fileName = `${name}${mimetypeList[0].extension[0]}`;
     try {
         return await fileHelpers.createFile(appProvider.path.join(dir, fileName),
             content);
@@ -41,23 +44,23 @@ export const createNewItem = async (dir: string, name: string,
 export type MimetypeNameType = 'image' | 'video' | 'slide' | 'playlist' | 'lyric' | 'bible';
 
 export function getFileMetaData(fileName: string,
-    mimeTypes?: MimeType[]): FileMetadataType | null {
-    mimeTypes = mimeTypes || getAllAppMimetype();
+    mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
+    mimetypeList = mimetypeList || getAllAppMimetype();
     const ext = fileName.substring(fileName.lastIndexOf('.'));
-    const foundMT = mimeTypes.find((mt) => {
+    const foundMT = mimetypeList.find((mt) => {
         return ~mt.extension.indexOf(ext);
     });
     if (foundMT) {
-        return { fileName, mimeType: foundMT };
+        return { fileName, appMimetype: foundMT };
     }
     return null;
 }
 
 export function getAllAppMimetype() {
-    const mimeTypeNames: MimetypeNameType[] = ['image', 'video',
+    const mimetypeNames: MimetypeNameType[] = ['image', 'video',
         'slide', 'playlist', 'lyric', 'bible'];
-    return mimeTypeNames.map((mimeTypeName) => {
-        return getAppMimetype(mimeTypeName);
+    return mimetypeNames.map((mimetypeName) => {
+        return getAppMimetype(mimetypeName);
     }).reduce((acc, cur) => {
         return acc.concat(cur);
     }, []);
@@ -66,9 +69,9 @@ export function getAllAppMimetype() {
 export function getAppMimetype(mimetype: MimetypeNameType) {
     const json = require(`./mime/${mimetype}-types.json`);
     json.forEach((data: any) => {
-        data.mimeTypeName = mimetype;
+        data.mimetypeName = mimetype;
     });
-    return json as MimeType[];
+    return json as AppMimetypeType[];
 }
 export function getMimetypeExtensions(mimetype: MimetypeNameType) {
     const imageTypes = getAppMimetype(mimetype);
@@ -82,9 +85,9 @@ export function getMimetypeExtensions(mimetype: MimetypeNameType) {
 
 export function isSupportedMimetype(fileMimetype: string,
     mimetype: MimetypeNameType) {
-    const mimeTypes = getAppMimetype(mimetype);
-    return mimeTypes.map((mimeType) => {
-        return mimeType.mimeType;
+    const mimetypeList = getAppMimetype(mimetype);
+    return mimetypeList.map((mimetype) => {
+        return mimetype.mimetype;
     }).some((type) => {
         return type === fileMimetype;
     });
@@ -113,10 +116,10 @@ const fileHelpers = {
             return [];
         }
         try {
-            const mimeTypes = require(`./mime/${mimetype}-types.json`) as MimeType[];
+            const mimetypeList = require(`./mime/${mimetype}-types.json`) as AppMimetypeType[];
             const files = await this.listFiles(dir);
             const matchedFiles = files.map((fileName) => {
-                return getFileMetaData(fileName, mimeTypes);
+                return getFileMetaData(fileName, mimetypeList);
             }).filter((d) => {
                 return !!d;
             }) as FileMetadataType[];

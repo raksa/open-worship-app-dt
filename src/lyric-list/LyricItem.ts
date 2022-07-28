@@ -1,5 +1,6 @@
 import { toastEventListener } from '../event/ToastEventListener';
 import FileSource from '../helper/FileSource';
+import { anyObjectType } from '../helper/helpers';
 
 export default class LyricItem {
     title: string;
@@ -14,11 +15,11 @@ export default class LyricItem {
     get isError() {
         return !!this.jsonError;
     }
-    static fromJson(json: any, fileSource: FileSource) {
+    static fromJson(json: anyObjectType, fileSource: FileSource) {
         this.validate(json);
         return new LyricItem(json.title, json.text, fileSource);
     }
-    static fromJsonError(json: any, fileSource: FileSource) {
+    static fromJsonError(json: anyObjectType, fileSource: FileSource) {
         const item = new LyricItem('', '', fileSource);
         item.jsonError = json;
         return item;
@@ -34,7 +35,7 @@ export default class LyricItem {
         LyricItem.validate(json);
         return json;
     }
-    static validate(json: any) {
+    static validate(json: anyObjectType) {
         if (!json.title || !json.text) {
             console.log(json);
             throw new Error('Invalid lyric item data');

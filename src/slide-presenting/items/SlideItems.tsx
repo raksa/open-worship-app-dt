@@ -17,7 +17,7 @@ import {
 import { usePresentFGClearing } from '../../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import SlideItem from '../../slide-list/SlideItem';
+import SlideItem, { SlideItemContext } from '../../slide-list/SlideItem';
 import Slide from '../../slide-list/Slide';
 
 export default function SlideItems({ slide }: { slide: Slide }) {
@@ -69,22 +69,23 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                             onDrop={(id) => {
                                 slide.moveItem(id, i);
                             }} />}
-                        <SlideItemRender
-                            index={i}
-                            slideItem={item}
-                            width={thumbSize}
-                            onContextMenu={(e) => {
-                                slide.openContextMenu(e, item);
-                            }}
-                            onCopy={() => {
-                                slide.copiedItem = item;
-                            }}
-                            onDragStart={() => {
-                                setDraggingIndex(i);
-                            }}
-                            onDragEnd={() => {
-                                setDraggingIndex(null);
-                            }} />
+                        <SlideItemContext.Provider value={item}>
+                            <SlideItemRender
+                                index={i}
+                                width={thumbSize}
+                                onContextMenu={(e) => {
+                                    slide.openContextMenu(e, item);
+                                }}
+                                onCopy={() => {
+                                    slide.copiedItem = item;
+                                }}
+                                onDragStart={() => {
+                                    setDraggingIndex(i);
+                                }}
+                                onDragEnd={() => {
+                                    setDraggingIndex(null);
+                                }} />
+                        </SlideItemContext.Provider>
                         {shouldReceiveAtLast && <SlideItemDragReceiver
                             width={thumbSize}
                             onDrop={(id) => {

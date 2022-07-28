@@ -4,7 +4,7 @@ import { FileListType } from '../others/FileListHandler';
 import fileHelpers, {
     FileMetadataType,
     getFileMetaData,
-    MimeType,
+    AppMimetypeType,
     MimetypeNameType,
 } from './fileHelper';
 import FileSource from './FileSource';
@@ -84,10 +84,10 @@ export default class DirSource {
             return;
         }
         try {
-            const mimeTypes = require(`./mime/${mimetype}-types.json`) as MimeType[];
+            const mimetypeList = require(`./mime/${mimetype}-types.json`) as AppMimetypeType[];
             const files = await fileHelpers.listFiles(this.dirPath);
             const matchedFiles = files.map((fileName) => {
-                return getFileMetaData(fileName, mimeTypes);
+                return getFileMetaData(fileName, mimetypeList);
             }).filter((d) => {
                 return !!d;
             }) as FileMetadataType[];

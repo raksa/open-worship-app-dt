@@ -4,6 +4,10 @@ import appProvider from './appProvider';
 import FileSource from './FileSource';
 import { ItemSourceAnyType } from './ItemSource';
 
+export type anyObjectType = {
+    [key: string]: any;
+};
+
 export function getAppInfo() {
     return appProvider.ipcRenderer.sendSync('main:app:info') as {
         name: string,
@@ -85,6 +89,8 @@ function cleanDiv(children: HTMLCollection) {
         }
     }
 }
+
+// remove unused methods
 
 export function getRotationDeg(str: string) {
     const match = str.match(/rotate\((.+)deg\)/);

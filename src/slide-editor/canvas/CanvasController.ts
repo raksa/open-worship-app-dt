@@ -5,10 +5,10 @@ import CanvasItem from './CanvasItem';
 import { getSetting, setSetting } from '../../helper/settingHelper';
 import FileSource from '../../helper/FileSource';
 import { toastEventListener } from '../../event/ToastEventListener';
-import CanvasItemText from './CanvasItemText';
+import CanvasItemText, { genTextDefaultProps } from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import BibleItem from '../../bible-list/BibleItem';
-import { genTextDefaultHtmlString } from './box/BENTextViewMode';
+import CanvasItemBible from './CanvasItemBible';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -18,7 +18,7 @@ export type RegisteredEventType<T> = {
 };
 
 export default class CanvasController extends EventHandler {
-    copiedItem: CanvasItem | null;
+    copiedItem: CanvasItem<any> | null;
     canvas: Canvas;
     MAX_SCALE = 3;
     MIN_SCALE = 0.2;
@@ -33,7 +33,7 @@ export default class CanvasController extends EventHandler {
         this._objectId = CanvasController._objectId++;
         this.copiedItem = null;
         this.slideItem = slideItem;
-        this.canvas = Canvas.fromHtml(this, this.slideItem.htmlString);
+        this.canvas = Canvas.fromSlideItem(this, this.slideItem);
         const defaultData = +(getSetting('editor-scale') || NaN);
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
@@ -53,22 +53,19 @@ export default class CanvasController extends EventHandler {
         }
         return this.canvas.canvasItems.indexOf(this.copiedItem) > -1;
     }
-    syncHtmlString() {
-        this.slideItem.htmlString = this.canvas.htmlString;
-    }
-    fireSelectEvent(canvasItem: CanvasItem) {
+    fireSelectEvent(canvasItem: CanvasItem<any>) {
         this._addPropEvent('select', canvasItem);
     }
-    fireControlEvent(canvasItem: CanvasItem) {
+    fireControlEvent(canvasItem: CanvasItem<any>) {
         this._addPropEvent('control', canvasItem);
     }
-    fireEditEvent(canvasItem: CanvasItem) {
+    fireEditEvent(canvasItem: CanvasItem<any>) {
         this._addPropEvent('edit', canvasItem);
     }
     fireUpdateEvent() {
         this._addPropEvent('update', this.slideItem);
     }
-    async cloneItem(canvasItem: CanvasItem) {
+    async cloneItem(canvasItem: CanvasItem<any>) {
         const newCanvasItem = await canvasItem.clone();
         if (newCanvasItem === null) {
             return null;
@@ -78,7 +75,7 @@ export default class CanvasController extends EventHandler {
         newCanvasItem.id = this.canvas.maxItemId + 1;
         return newCanvasItem;
     }
-    async duplicate(canvasItem: CanvasItem) {
+    async duplicate(canvasItem: CanvasItem<any>) {
         const newCanvasItems = this.canvas.newCanvasItems;
         const newCanvasItem = await this.cloneItem(canvasItem);
         if (newCanvasItem === null) {
@@ -88,7 +85,7 @@ export default class CanvasController extends EventHandler {
         newCanvasItems.splice(index + 1, 0, newCanvasItem);
         this.canvas.canvasItems = newCanvasItems;
     }
-    deleteItem(canvasItem: CanvasItem) {
+    deleteItem(canvasItem: CanvasItem<any>) {
         if (this.copiedItem === canvasItem) {
             this.copiedItem = null;
         }
@@ -108,15 +105,15 @@ export default class CanvasController extends EventHandler {
             this.canvas.canvasItems = newCanvasItems;
         }
     }
-    addNewItem(canvasItem: CanvasItem) {
+    addNewItem(canvasItem: CanvasItem<any>) {
         const newCanvasItems = this.canvas.newCanvasItems;
         canvasItem.id = this.canvas.maxItemId + 1;
         newCanvasItems.push(canvasItem);
         this.canvas.canvasItems = newCanvasItems;
     }
     async addNewTextBox() {
-        const newBoxHTML = genTextDefaultHtmlString();
-        const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
+        const props = genTextDefaultProps();
+        const newCanvasItem = CanvasItemText.fromJson(this, props);
         this.addNewItem(newCanvasItem);
     }
     async addNewMedia(fileSource: FileSource, event: any) {
@@ -124,7 +121,7 @@ export default class CanvasController extends EventHandler {
             const rect = (event.target as HTMLDivElement).getBoundingClientRect();
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
-            if (fileSource.metadata?.mimeType.mimeTypeName === 'image') {
+            if (fileSource.metadata?.appMimetype.mimetypeName === 'image') {
                 const newItem = await CanvasItemImage.genFromInsertion(this, x, y, fileSource);
                 this.addNewItem(newItem);
                 return;
@@ -138,12 +135,15 @@ export default class CanvasController extends EventHandler {
         });
     }
     async addNewBibleItem(bibleItem: BibleItem) {
-        // TODO: add bible item
-        const newBoxHTML = genTextDefaultHtmlString();
-        const newCanvasItem = await CanvasItemText.fromHtml(this, newBoxHTML);
+        const props = genTextDefaultProps();
+        const newCanvasItem = CanvasItemBible.fromJson(this, {
+            bibleNames: [bibleItem.bibleName],
+            bibleItem: bibleItem.toJson(),
+            ...props,
+        });
         this.addNewItem(newCanvasItem);
     }
-    applyOrderingData(canvasItem: CanvasItem, isBack: boolean) {
+    applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {
         const newCanvasItems = this.canvas.canvasItems.map((item) => {
             if (item === canvasItem) {
                 item.props.zIndex = isBack ? 1 : 2;

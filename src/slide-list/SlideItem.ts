@@ -1,34 +1,48 @@
+import React from 'react';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import { getAllDisplays } from '../helper/displayHelper';
-import { MetaDataType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 import CanvasController from '../slide-editor/canvas/CanvasController';
-import { genTextDefaultHtmlString } from '../slide-editor/canvas/box/BENTextViewMode';
+import { anyObjectType } from '../helper/helpers';
 
 export default class SlideItem extends ItemBase {
-    metadata: MetaDataType;
+    metadata: anyObjectType;
     static SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     fileSource: FileSource;
+    _canvasItemsJson: anyObjectType[];
     isCopied: boolean;
-    _htmlString: string;
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     static _cache = new Map<string, SlideItem>();
-    constructor(id: number, htmlString: string, metadata: MetaDataType,
-        fileSource: FileSource) {
+    constructor(id: number, jsonData: {
+        metadata: anyObjectType,
+        canvasItems: anyObjectType[],
+    }, fileSource: FileSource) {
         super();
         this.id = id;
-        this._htmlString = htmlString;
-        this.metadata = metadata;
+        this.metadata = jsonData.metadata;
+        this._canvasItemsJson = jsonData.canvasItems;
         this.fileSource = fileSource;
         this.isCopied = false;
         const key = SlideItem.genKey(this);
         SlideItem._cache.set(key, this);
+    }
+    get width() {
+        return this.metadata.width;
+    }
+    set width(width: number) {
+        this.metadata.width = width;
+    }
+    get height() {
+        return this.metadata.height;
+    }
+    set height(height: number) {
+        this.metadata.height = height;
     }
     get canvasController() {
         return CanvasController.getInstant(this);
@@ -54,11 +68,11 @@ export default class SlideItem extends ItemBase {
         }
         this.fileSource.fireSelectEvent();
     }
-    get htmlString() {
-        return this._htmlString;
+    get canvasItemsJson() {
+        return this._canvasItemsJson;
     }
-    set htmlString(newHtmlString: string) {
-        this._htmlString = newHtmlString;
+    set canvasItemsJson(canvasItemsJson: anyObjectType[]) {
+        this._canvasItemsJson = canvasItemsJson;
         slideEditingCacheManager.saveBySlideItem(this, true);
         this.fileSource.fireEditEvent(this);
     }
@@ -70,7 +84,7 @@ export default class SlideItem extends ItemBase {
                 if (index !== slide.items.indexOf(slideItem)) {
                     return true;
                 }
-                return slideItem.htmlString !== this.htmlString;
+                return JSON.stringify(slideItem.toJson()) !== JSON.stringify(this.toJson());
             } else {
                 return true;
             }
@@ -100,40 +114,44 @@ export default class SlideItem extends ItemBase {
     }
     static defaultSlideItem() {
         const { width, height } = this.getDefaultDim();
-        // TODO: set width and height for present screen
+        // TODO: add default canvas item
         return {
             id: -1,
-            html: `<div style="width: ${width}px; height: ${height}px;">`
-                + genTextDefaultHtmlString()
-                + '</div>',
+            width,
+            height,
+            canvasItems: [],
         };
     }
     static fromJson(json: {
-        id: number, html: string, metadata: MetaDataType,
+        id: number, canvasItems: anyObjectType[],
+        metadata: anyObjectType,
     }, fileSource: FileSource) {
         this.validate(json);
-        return new SlideItem(json.id, json.html, json.metadata, fileSource);
+        return new SlideItem(json.id, json, fileSource);
     }
-    static fromJsonError(json: any, fileSource: FileSource) {
-        const item = new SlideItem(-1, '', {}, fileSource);
+    static fromJsonError(json: anyObjectType, fileSource: FileSource) {
+        const item = new SlideItem(-1, {
+            metadata: {},
+            canvasItems: [],
+        }, fileSource);
         item.jsonError = json;
         return item;
     }
     toJson(): {
         id: number,
-        html: string,
-        metadata: MetaDataType,
+        canvasItems: anyObjectType[],
+        metadata: anyObjectType,
     } {
         if (this.isError) {
             return this.jsonError;
         }
         return {
             id: this.id,
-            html: this._htmlString,
+            canvasItems: this.canvasItemsJson,
             metadata: this.metadata,
         };
     }
-    static validate(json: any) {
+    static validate(json: anyObjectType) {
         if (!json.html || typeof json.id !== 'number') {
             console.log(json);
             throw new Error('Invalid slide item data');
@@ -174,3 +192,5 @@ export default class SlideItem extends ItemBase {
         return this._cache.get(key) || null;
     }
 }
+
+export const SlideItemContext = React.createContext<SlideItem | null>(null);

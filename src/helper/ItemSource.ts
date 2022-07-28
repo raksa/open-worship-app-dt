@@ -1,11 +1,14 @@
 import { toastEventListener } from '../event/ToastEventListener';
 import ColorNoteInf from './ColorNoteInf';
 import {
-    ItemSourceInf, MimetypeNameType,
-    MetaDataType, createNewItem,
+    ItemSourceInf,
+    MimetypeNameType,
+    createNewItem,
 } from './fileHelper';
 import FileSource from './FileSource';
-import { cloneObject, validateMeta } from './helpers';
+import {
+    anyObjectType, cloneObject, validateMeta,
+} from './helpers';
 import { setSetting, getSetting } from './settingHelper';
 
 export type ItemSourceAnyType = ItemSource<any>;
@@ -15,11 +18,11 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
     static mimetype: MimetypeNameType;
     fileSource: FileSource;
     content: T;
-    metadata: MetaDataType;
+    metadata: anyObjectType;
     static _itemSourceCache: Map<string, ItemSourceAnyType> = new Map();
     static _objectId = 0;
     _objectId: number;
-    constructor(fileSource: FileSource, metadata: MetaDataType,
+    constructor(fileSource: FileSource, metadata: anyObjectType,
         content: T) {
         this._objectId = ItemSource._objectId++;
         this.fileSource = fileSource;
@@ -47,13 +50,13 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
     get items(): any[] {
         throw new Error('Method not implemented.');
     }
-    static fromJson(json: any, fileSource: FileSource): ItemSourceAnyType {
+    static fromJson(_json: anyObjectType, _fileSource: FileSource): ItemSourceAnyType {
         throw new Error('Method not implemented.');
     }
-    itemFromJson(json: any): any {
+    itemFromJson(_json: anyObjectType): any {
         throw new Error('Method not implemented.');
     }
-    itemFromJsonError(json: any): any {
+    itemFromJsonError(_json: anyObjectType): any {
         throw new Error('Method not implemented.');
     }
     toJson() {
@@ -68,7 +71,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
         ItemSource.validate(json);
         return json;
     }
-    static validate(json: any) {
+    static validate(json: anyObjectType) {
         if (!json.content || typeof json.content !== 'object'
             || !json.content.items || !(json.content.items instanceof Array)
             || !validateMeta(json.metadata)) {

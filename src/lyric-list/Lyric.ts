@@ -2,6 +2,7 @@ import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
+import { anyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import LyricItem from './LyricItem';
 
@@ -11,17 +12,17 @@ export type LyricType = {
 export default class Lyric extends ItemSource<LyricType>{
     static SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
-    static fromJson(json: any, fileSource: FileSource) {
+    static fromJson(json: anyObjectType, fileSource: FileSource) {
         this.validate(json);
         return new Lyric(fileSource, json.metadata, json.content);
     }
     get items() {
         return this.content.items;
     }
-    itemFromJson(json: any) {
+    itemFromJson(json: anyObjectType) {
         return LyricItem.fromJson(json, this.fileSource);
     }
-    itemFromJsonError(json: any) {
+    itemFromJsonError(json: anyObjectType) {
         return LyricItem.fromJsonError(json, this.fileSource);
     }
     get isSelected() {

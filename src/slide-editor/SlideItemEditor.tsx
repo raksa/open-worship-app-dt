@@ -13,10 +13,7 @@ export default function SlideItemEditor({ slideItem }: {
         CanvasController.getInstant(slideItem));
     useEffect(() => {
         const newCanvasController = CanvasController.getInstant(slideItem);
-        newCanvasController.canvas
-            .initChildren(newCanvasController).then(() => {
-                setCanvasController(newCanvasController);
-            });
+        setCanvasController(newCanvasController);
     }, [slideItem]);
     const scale = useCCScale(canvasController);
 

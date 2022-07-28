@@ -3,7 +3,7 @@ import { toastEventListener } from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import appProvider from './appProvider';
 import DirSource from './DirSource';
-import fileHelpers, { getFileMetaData, MimeType } from './fileHelper';
+import fileHelpers, { getFileMetaData, AppMimetypeType } from './fileHelper';
 import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
 type FSListener = (slideItem?: SlideItem) => void;
@@ -143,9 +143,5 @@ export default class FileSource {
         }
         this._fileCache.set(fileSource.filePath, fileSource);
         return fileSource;
-    }
-    static genFileSourceFromSrc(src: string) {
-        const filePath = src.split('file://')[1];
-        return this.genFileSource(filePath);
     }
 }

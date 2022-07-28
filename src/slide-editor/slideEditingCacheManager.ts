@@ -6,7 +6,7 @@ import {
 import { getSetting, setSetting } from '../helper/settingHelper';
 import SlideBase from '../slide-list/SlideBase';
 import Slide from '../slide-list/Slide';
-import { MetaDataType } from '../helper/fileHelper';
+import { anyObjectType } from '../helper/helpers';
 
 const slideEditingCacheManager = {
     SETTING_NAME: 'slide-editing-cache',
@@ -21,12 +21,12 @@ const slideEditingCacheManager = {
     setObject(data: Object) {
         setSetting(this.SETTING_NAME, JSON.stringify(data));
     },
-    getMetadata(fileSource: FileSource): MetaDataType {
+    getMetadata(fileSource: FileSource): anyObjectType {
         const data = this.getObject();
         const slideData = data[fileSource.filePath];
         return slideData && slideData[fileSource.filePath] || {};
     },
-    setMetadata(fileSource: FileSource, key:string, value:string) {
+    setMetadata(fileSource: FileSource, key: string, value: string) {
         const data = this.getObject();
         const cacheData = data[fileSource.filePath];
         cacheData[fileSource.filePath] = cacheData[fileSource.filePath] || {};
@@ -77,8 +77,8 @@ const slideEditingCacheManager = {
         return null;
     },
     itemsFromJson(fileSource: FileSource, items: any[]) {
-        return items.map((json: any) => {
-            return SlideItem.fromJson(json, fileSource);
+        return items.map((json: anyObjectType) => {
+            return SlideItem.fromJson(json as any, fileSource);
         });
     },
     itemsToJson(items: SlideItem[]) {
@@ -123,7 +123,8 @@ const slideEditingCacheManager = {
             const cacheData = this.slideBaseToCacheData(slide);
             cacheData.content.items.forEach((item) => {
                 if (item.id === slideItem.id) {
-                    item.html = slideItem.htmlString;
+                    item.canvasItems = slideItem.canvasItemsJson;
+                    item.metadata = slideItem.metadata;
                 }
             });
             this.save(cacheData, slideItem.fileSource, isSilent);

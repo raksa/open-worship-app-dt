@@ -7,11 +7,10 @@ import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMode from './BoxEditorControllingMode';
 import { useCIControl } from '../canvasHelpers';
 
-export type NewDataType = { [key: string]: any };
 export function BoxEditor({
     canvasItem, scale,
 }: {
-    canvasItem: CanvasItem, scale: number,
+    canvasItem: CanvasItem<any>, scale: number,
 }) {
     const isControlling = useCIControl(canvasItem);
     useEffect(() => {

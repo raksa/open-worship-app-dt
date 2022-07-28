@@ -6,9 +6,9 @@ import ToolsTextFontControl from './ToolsTextFontControl';
 import CanvasItem from '../CanvasItem';
 
 export default function ToolsText({ canvasItem }: {
-    canvasItem: CanvasItem,
+    canvasItem: CanvasItem<any>,
 }) {
-    if (canvasItem.type !== 'text') {
+    if (canvasItem.isTypeText) {
         return null;
     }
     const canvasItemText = canvasItem as CanvasItemText;
@@ -32,14 +32,6 @@ export default function ToolsText({ canvasItem }: {
                 }} />
             </Tool>
             <ToolsTextFontControl canvasItemText={canvasItemText} />
-            <Tool title='Rotate'>
-                <button className='btn btn-info' onClick={() => {
-                    canvasItemText.applyBoxData({
-                        rotate: 0,
-                    });
-                }}
-                >UnRotate</button>
-            </Tool>
         </div>
     );
 }

@@ -1,14 +1,13 @@
 import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
-import SlideItem from '../../slide-list/SlideItem';
-import SlideItemIFrame from './SlideItemIFrame';
+import { SlideItemContext } from '../../slide-list/SlideItem';
 import RenderIsEditing from '../RenderIsEditing';
-import { useCanvasDim } from '../../slide-list/slideHelpers';
+import { useContext } from 'react';
+import { SlideItemIFrame } from './SlideItemRenderers';
 
 export default function SlideItemRender({
     width, index,
-    slideItem,
     onContextMenu,
     onCopy,
     onDragStart,
@@ -16,13 +15,15 @@ export default function SlideItemRender({
 }: {
     width: number,
     index: number;
-    slideItem: SlideItem;
     onContextMenu: (e: ContextMenuEventType) => void,
     onCopy: () => void,
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
-    const canvasDim = useCanvasDim(slideItem);
+    const slideItem = useContext(SlideItemContext);
+    if (slideItem === null) {
+        return null;
+    }
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
@@ -52,7 +53,7 @@ export default function SlideItemRender({
                 </div>
                 <div className='flex-fill d-flex justify-content-end'>
                     <small className='pe-2'>
-                        {canvasDim.width}x{canvasDim.height}
+                        {slideItem.width}x{slideItem.height}
                     </small>
                     <RenderIsEditing index={index}
                         slideItem={slideItem} />
@@ -60,7 +61,7 @@ export default function SlideItemRender({
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >
-                <SlideItemIFrame canvasDim={canvasDim} />
+                <SlideItemIFrame slideItem={slideItem} />
             </div>
         </div>
     );

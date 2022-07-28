@@ -32,15 +32,8 @@ export function tooling2BoxProps(boxData: ToolingBoxType, state: {
     return boxProps;
 }
 
-export type CanvasItemType = 'text' | 'image' | 'video' | 'audio'| 'bible';
+export type CanvasItemType = 'text' | 'image' | 'video' | 'audio' | 'bible';
 
-export type ToolingTextType = {
-    color?: string,
-    fontSize?: number,
-    fontFamily?: string,
-    horizontalAlignment?: HAlignmentEnum,
-    verticalAlignment?: VAlignmentEnum,
-};
 export type ToolingBoxType = {
     backgroundColor?: string,
     rotate?: number,
@@ -79,7 +72,7 @@ export function showCanvasContextMenu(e: any,
 }
 
 export function showCanvasItemContextMenu(e: any,
-    canvasItem: CanvasItem,
+    canvasItem: CanvasItem<any>,
 ) {
     showAppContextMenu(e, [
         {
@@ -124,7 +117,7 @@ export function useCCRefresh(canvasController: CanvasController,
         };
     }, [canvasController, n]);
 }
-export function useCIRefresh(canvasItem: CanvasItem,
+export function useCIRefresh(canvasItem: CanvasItem<any>,
     eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
     useEffect(() => {
@@ -152,12 +145,12 @@ export function useCCScale(canvasController: CanvasController) {
     return scale;
 }
 
-export function useCIControl(canvasItem: CanvasItem) {
+export function useCIControl(canvasItem: CanvasItem<any>) {
     const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
     useEffect(() => {
         const canvasController = canvasItem.canvasController;
         const regEvents = canvasController ? canvasController.registerEventListener(
-            ['control'], (item: CanvasItem) => {
+            ['control'], (item: CanvasItem<any>) => {
                 if (item.id === canvasItem.id) {
                     setIsControlling(canvasItem.isControlling);
                 }

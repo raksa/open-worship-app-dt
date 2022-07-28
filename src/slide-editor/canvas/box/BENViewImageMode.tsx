@@ -1,11 +1,13 @@
-import { CSSProperties, useState } from 'react';
+import { CSSProperties } from 'react';
 import {
     showCanvasItemContextMenu,
 } from '../canvasHelpers';
-import CanvasItemImage from '../CanvasItemImage';
+import CanvasItemImage, {
+    CanvasItemImagePropsType,
+} from '../CanvasItemImage';
 import img404 from '../404.png';
 
-export default function BENImageMode({
+export default function BENViewImageMode({
     canvasItemImage, style,
 }: {
     canvasItemImage: CanvasItemImage,
@@ -23,22 +25,20 @@ export default function BENImageMode({
                 canvasItemImage.canvasController?.stopAllMods();
                 canvasItemImage.isSelected = true;
             }}>
-            <BENImageRender canvasItemImage={canvasItemImage} />
+            <BENImageRender props={canvasItemImage.props} />
         </div>
     );
 }
 
-export function BENImageRender({ canvasItemImage }: {
-    canvasItemImage: CanvasItemImage,
+export function BENImageRender({ props }: {
+    props: CanvasItemImagePropsType,
 }) {
-    const [src, setSrc] = useState(canvasItemImage.props.fileSource?.src || null);
-
-    const pWidth = canvasItemImage.props.width;
-    const pHeight = canvasItemImage.props.height;
-    const rWidth = pWidth / canvasItemImage.imageWidth;
-    const rHeight = pHeight / canvasItemImage.imageHeight;
+    const pWidth = props.width;
+    const pHeight = props.height;
+    const rWidth = pWidth / props.imageWidth;
+    const rHeight = pHeight / props.imageHeight;
     const mR = Math.min(rWidth, rHeight);
-    const width = mR * canvasItemImage.imageWidth;
+    const width = mR * props.imageWidth;
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             <img className='align-self-center'
@@ -46,9 +46,7 @@ export function BENImageRender({ canvasItemImage }: {
                 style={{
                     pointerEvents: 'none',
                 }}
-                src={src || img404} onError={() => {
-                    setSrc(img404);
-                }} />
+                src={props.imageDataUrl || img404} />
         </div>
     );
 }

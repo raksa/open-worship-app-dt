@@ -5,13 +5,14 @@ import CanvasItem from '../CanvasItem';
 import {
     showCanvasItemContextMenu, useCIRefresh,
 } from '../canvasHelpers';
-import { BENImageRender } from './BENImageMode';
+import { BENImageRender } from './BENViewImageMode';
 import CanvasItemImage from '../CanvasItemImage';
-import { BENTextRender } from './BENTextViewMode';
+import { BENTextRender } from './BENViewTextMode';
 import CanvasItemText from '../CanvasItemText';
+import { BENBibleRender } from './BENViewBibleMode';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
-    canvasItem: CanvasItem,
+    canvasItem: CanvasItem<any>,
 }) {
     // TODO: move box by left right up down key, shift&ctl
     useCIRefresh(canvasItem, ['update']);
@@ -73,18 +74,21 @@ export default function BoxEditorControllingMode({ canvasItem }: {
 }
 
 function BECRender({ canvasItem }: {
-    canvasItem: CanvasItem,
+    canvasItem: CanvasItem<any>,
 }) {
-    if (canvasItem.isTypeText) {
-        return (
-            <BENTextRender
-                canvasItemText={canvasItem as CanvasItemText} />
-        );
-    }
     if (canvasItem.isTypeImage) {
         return (
-            <BENImageRender
-                canvasItemImage={canvasItem as CanvasItemImage} />
+            <BENImageRender props={canvasItem.props} />
+        );
+    }
+    if (canvasItem.isTypeText) {
+        return (
+            <BENTextRender props={canvasItem.props} />
+        );
+    }
+    if (canvasItem.isTypeBible) {
+        return (
+            <BENBibleRender props={canvasItem.props} />
         );
     }
     return null;

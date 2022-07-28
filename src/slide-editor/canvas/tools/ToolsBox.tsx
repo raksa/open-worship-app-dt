@@ -6,7 +6,7 @@ import CanvasItem from '../CanvasItem';
 export default function ToolsBox({
     canvasItem,
 }: {
-    canvasItem: CanvasItem,
+    canvasItem: CanvasItem<any>,
 }) {
     const canvasController = canvasItem.canvasController;
     if (canvasController === null) {
@@ -36,6 +36,14 @@ export default function ToolsBox({
                     canvasItem.canvasController?.applyOrderingData(
                         canvasItem, false);
                 }}><i className='bi bi-layer-forward' /></button>
+            </Tool>
+            <Tool title='Rotate'>
+                <button className='btn btn-info' onClick={() => {
+                    canvasItem.applyBoxData({
+                        rotate: 0,
+                    });
+                }}
+                >UnRotate</button>
             </Tool>
         </>
     );

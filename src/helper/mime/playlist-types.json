@@ -2,7 +2,7 @@
     {
         "type": "OpenWorship Playlist",
         "title": "Json file for OpenWorship playlist",
-        "mimeType": "application/json",
+        "mimetype": "application/json",
         "extension": [
             ".owp"
         ]
