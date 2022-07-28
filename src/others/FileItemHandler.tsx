@@ -32,7 +32,7 @@ export const genCommonMenu = (fileSource: FileSource) => {
 export default function FileItemHandler({
     data, setData, index, fileSource, className,
     contextMenu, onDrop, onClick,
-    child, mimetype, isPointer,
+    child, mimetype, isPointer, onDelete,
 }: {
     data: ItemSource<any> | null | undefined,
     setData: (d: any | null | undefined) => void,
@@ -45,6 +45,7 @@ export default function FileItemHandler({
     child: any,
     mimetype: MimetypeNameType,
     isPointer?: boolean,
+    onDelete?: () => void,
 }) {
     const [isDropOver, setIsReceivingChild] = useState(false);
     const loadData = () => {
@@ -78,8 +79,9 @@ export default function FileItemHandler({
         {
             title: 'Reload', onClick: () => setData(null),
         }, {
-            title: 'Delete', onClick: () => {
-                fileSource.delete();
+            title: 'Delete', onClick: async () => {
+                await fileSource.delete();
+                onDelete && onDelete();
             },
         }];
     if (data === null) {

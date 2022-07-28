@@ -1,45 +1,45 @@
 import {
-    VAlignmentEnum, HAlignmentEnum,
+    VAlignmentType, HAlignmentType,
 } from '../Canvas';
 
 export default function ToolAlign({ onData, isText }: {
     onData: (data: {
-        verticalAlignment?: VAlignmentEnum,
-        horizontalAlignment?: HAlignmentEnum,
+        verticalAlignment?: VAlignmentType,
+        horizontalAlignment?: HAlignmentType,
     }) => void,
     isText?: boolean,
 }) {
     return (
         <div>
             <button className='btn btn-info' onClick={() => {
-                onData({ verticalAlignment: VAlignmentEnum.Top });
+                onData({ verticalAlignment: 'top' });
             }}><i className='bi bi-align-top' /></button>
             <button className='btn btn-info' onClick={() => {
-                onData({ verticalAlignment: VAlignmentEnum.Center });
+                onData({ verticalAlignment: 'center' });
             }}><i className='bi bi-align-middle' /></button>
             <button className='btn btn-info' onClick={() => {
-                onData({ verticalAlignment: VAlignmentEnum.Bottom });
+                onData({ verticalAlignment: 'bottom' });
             }}><i className='bi bi-align-bottom' /></button>
             <hr />
             {isText ? <>
                 <button className='btn btn-info' onClick={() => {
-                    onData({ horizontalAlignment: HAlignmentEnum.Left });
+                    onData({ horizontalAlignment: 'left' });
                 }}><i className='bi bi-text-left' /></button>
                 <button className='btn btn-info' onClick={() => {
-                    onData({ horizontalAlignment: HAlignmentEnum.Center });
+                    onData({ horizontalAlignment: 'center' });
                 }}><i className='bi bi-text-center' /></button>
                 <button className='btn btn-info' onClick={() => {
-                    onData({ horizontalAlignment: HAlignmentEnum.Right });
+                    onData({ horizontalAlignment: 'right' });
                 }}><i className='bi bi-text-right' /></button>
             </> : <>
                 <button className='btn btn-info' onClick={() => {
-                    onData({ horizontalAlignment: HAlignmentEnum.Left });
+                    onData({ horizontalAlignment: 'left' });
                 }}><i className='bi bi-align-start' /></button>
                 <button className='btn btn-info' onClick={() => {
-                    onData({ horizontalAlignment: HAlignmentEnum.Center });
+                    onData({ horizontalAlignment: 'center' });
                 }}><i className='bi bi-align-center' /></button>
                 <button className='btn btn-info' onClick={() => {
-                    onData({ horizontalAlignment: HAlignmentEnum.Right });
+                    onData({ horizontalAlignment: 'right' });
                 }}><i className='bi bi-align-end' /></button>
             </>}
         </div>

@@ -18,7 +18,7 @@ export default function BoxEditorNormalMode({ canvasItem }: {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
     };
-    useCIRefresh(canvasItem, ['edit', 'update']);
+    useCIRefresh(['edit', 'update']);
     if (canvasItem.isTypeImage) {
         return (
             <BENViewImageMode

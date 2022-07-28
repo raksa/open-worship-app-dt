@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+import { useContextCC } from '../CanvasController';
 import {
     showCanvasItemContextMenu,
 } from '../canvasHelpers';
@@ -12,17 +13,23 @@ export default function BENViewBibleMode({
     canvasItemBible: CanvasItemBible,
     style: CSSProperties
 }) {
+    const canvasController = useContextCC();
+    if (canvasController === null) {
+        return null;
+    }
     return (
         <div className='box-editor pointer'
             style={style}
             onContextMenu={async (e) => {
                 e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemBible);
+                showCanvasItemContextMenu(e,
+                    canvasController, canvasItemBible);
             }}
             onClick={async (e) => {
                 e.stopPropagation();
-                canvasItemBible.canvasController?.stopAllMods();
-                canvasItemBible.isSelected = true;
+                canvasController.stopAllMods();
+                canvasController.setItemIsSelecting(
+                    canvasItemBible, true);
             }}>
             <BENBibleRender props={canvasItemBible.props} />
         </div>
@@ -35,9 +42,9 @@ export function BENBibleRender({ props }: {
     return (
         <div className='w-100 h-100'
             style={CanvasItemBible.genStyle(props)}>
-            {props.bibleItem.book}{' '}
-            {props.bibleItem.chapter}:{props.bibleItem.startVerse}
-            {props.bibleItem.endVerse ? `-${props.bibleItem.endVerse}` : ''}
+            {props.bibleItemTarget.book}{' '}
+            {props.bibleItemTarget.chapter}:{props.bibleItemTarget.startVerse}
+            {props.bibleItemTarget.endVerse ? `-${props.bibleItemTarget.endVerse}` : ''}
         </div>
     );
 }

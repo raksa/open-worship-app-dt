@@ -4,9 +4,8 @@ import { keyToBook, getVerses } from '../bible-helper/helpers1';
 import { toLocaleNumber, toInputText } from '../bible-helper/helpers2';
 import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { toastEventListener } from '../event/ToastEventListener';
 import FileSource from '../helper/FileSource';
-import { anyObjectType } from '../helper/helpers';
+import { anyObjectType, cloneObject } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -123,17 +122,9 @@ export default class BibleItem extends ItemBase {
         }
     }
     clone() {
-        try {
-            const bibleItem = BibleItem.fromJson(this.toJson(), this.fileSource);
-            bibleItem.id = -1;
-            return bibleItem;
-        } catch (error: any) {
-            toastEventListener.showSimpleToast({
-                title: 'Cloning Playlist Item',
-                message: error.message,
-            });
-        }
-        return null;
+        const bibleItem = cloneObject(this);
+        bibleItem.id = -1;
+        return bibleItem;
     }
     async save() {
         if (this.fileSource === null) {
@@ -161,11 +152,11 @@ export default class BibleItem extends ItemBase {
         } else {
             list = presentingBibleItems.map((presentingBibleItem) => {
                 const newItem = presentingBibleItem.clone();
-                newItem?.update(bibleItem);
+                newItem.update(bibleItem);
                 return newItem;
             });
         }
-        return list.filter((item) => item !== null) as BibleItem[];
+        return list.filter((item) => item !== null);
     }
     static setBiblePresentingSetting(bibleItems: BibleItem[]) {
         setSetting('bible-present', JSON.stringify(bibleItems.map((bibleItem) => {

@@ -1,13 +1,12 @@
 import React from 'react';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import { toastEventListener } from '../event/ToastEventListener';
 import { getAllDisplays } from '../helper/displayHelper';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 import CanvasController from '../slide-editor/canvas/CanvasController';
-import { anyObjectType } from '../helper/helpers';
+import { anyObjectType, cloneObject } from '../helper/helpers';
 
 export default class SlideItem extends ItemBase {
     metadata: anyObjectType;
@@ -117,8 +116,10 @@ export default class SlideItem extends ItemBase {
         // TODO: add default canvas item
         return {
             id: -1,
-            width,
-            height,
+            metadata: {
+                width,
+                height,
+            },
             canvasItems: [],
         };
     }
@@ -152,25 +153,24 @@ export default class SlideItem extends ItemBase {
         };
     }
     static validate(json: anyObjectType) {
-        if (!json.html || typeof json.id !== 'number') {
+        if (typeof json.id !== 'number' ||
+            typeof json.metadata !== 'object' ||
+            typeof json.metadata.width !== 'number' ||
+            typeof json.metadata.height !== 'number' ||
+            !(json.canvasItems instanceof Array)) {
             console.log(json);
             throw new Error('Invalid slide item data');
         }
+        json.canvasItems.forEach((item: anyObjectType) => {
+            CanvasController.checkValidCanvasItem(item);
+        });
     }
     clone(isDuplicateId?: boolean) {
-        try {
-            const slideItem = SlideItem.fromJson(this.toJson(), this.fileSource);
-            if (!isDuplicateId) {
-                slideItem.id = -1;
-            }
-            return slideItem;
-        } catch (error: any) {
-            toastEventListener.showSimpleToast({
-                title: 'Cloning Slide Item',
-                message: error.message,
-            });
+        const slideItem = cloneObject(this);
+        if (!isDuplicateId) {
+            slideItem.id = -1;
         }
-        return null;
+        return slideItem;
     }
     static genKeyByFileSource(fileSource: FileSource, id: number) {
         return `${fileSource.filePath}:${id}`;

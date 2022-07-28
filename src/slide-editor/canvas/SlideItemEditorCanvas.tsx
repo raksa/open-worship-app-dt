@@ -3,21 +3,23 @@ import {
     KeyEnum,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import CanvasController from './CanvasController';
+import { useContextCC } from './CanvasController';
 import {
     showCanvasContextMenu,
     useCCRefresh,
+    useCCScale,
 } from './canvasHelpers';
 import { toastEventListener } from '../../event/ToastEventListener';
 import { isSupportedMimetype } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
 
-export default function SlideItemEditorCanvas({
-    canvasController, scale,
-}: {
-    canvasController: CanvasController,
-    scale: number,
-}) {
+export default function SlideItemEditorCanvas() {
+    const canvasController = useContextCC();
+    if (canvasController === null) {
+        return null;
+    }
+
+    const scale = useCCScale(canvasController);
     const canvasItems = canvasController.canvas.canvasItems;
     useCCRefresh(canvasController, ['update']);
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => {

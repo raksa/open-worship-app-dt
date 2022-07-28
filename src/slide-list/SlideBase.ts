@@ -69,7 +69,7 @@ export default class SlideBase extends ItemSource<SlideType>{
         return this.content.items;
     }
     get newItems() {
-        return this.items.map((item) => item.clone(true) as SlideItem);
+        return this.items.map((item) => item.clone(true));
     }
     set items(newItems: SlideItem[]) {
         this.content.items = newItems;
@@ -123,9 +123,10 @@ export default class SlideBase extends ItemSource<SlideType>{
     setItemsWithHistory(newItems: SlideItem[]) {
         const currentNewItems = this.newItems;
         this.items = newItems;
-        this.undo = [...this.undo, {
+        const newHistory: ChangeHistory = {
             items: [...currentNewItems],
-        }];
+        };
+        this.undo = [...this.undo, newHistory];
         this.redo = [];
         slideEditingCacheManager.saveBySlideBase(this);
     }

@@ -1,5 +1,4 @@
-import CanvasController from './CanvasController';
-import { BibleTargetType } from '../../bible-list/BibleItem';
+import BibleItem, { BibleTargetType } from '../../bible-list/BibleItem';
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from './CanvasItemText';
@@ -7,32 +6,38 @@ import { anyObjectType } from '../../helper/helpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleNames: string[];
-    bibleItem: BibleTargetType,
+    bibleItemTarget: BibleTargetType,
 };
 export default class CanvasItemBible extends CanvasItemText {
     props: CanvasItemBiblePropsType;
-    constructor(id: number, canvasController: CanvasController,
-        props: CanvasItemBiblePropsType) {
-        super(id, canvasController, props);
+    constructor(id: number, props: CanvasItemBiblePropsType) {
+        super(id, props);
         this.props = props;
     }
     toJson() {
         return {
             bibleNames: this.props.bibleNames,
-            bibleItem: this.props.bibleItem,
+            bibleItem: this.props.bibleItemTarget,
             ...super.toJson(),
         };
     }
-    static fromJson(canvasController: CanvasController,
-        json: anyObjectType) {
-        return new CanvasItemBible(json.id, canvasController, {
+    static fromJson(json: anyObjectType) {
+        return new CanvasItemBible(json.id, {
             bibleNames: json.bibleNames,
-            bibleItem: json.bibleItem,
+            bibleItemTarget: json.bibleItemTarget,
             text: '',
             color: json.color,
             fontSize: json.fontSize,
             fontFamily: json.fontFamily,
             ...super.propsFromJson(json),
+        });
+    }
+    static validate(json: anyObjectType) {
+        super.validate(json);
+        BibleItem.validate({
+            id: -1,
+            target: json.bibleItemTarget,
+            bibleName: json.bibleNames[0],
         });
     }
 }

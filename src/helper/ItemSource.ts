@@ -7,7 +7,7 @@ import {
 } from './fileHelper';
 import FileSource from './FileSource';
 import {
-    anyObjectType, cloneObject, validateMeta,
+    anyObjectType, cloneObject, validateAppMeta,
 } from './helpers';
 import { setSetting, getSetting } from './settingHelper';
 
@@ -74,7 +74,7 @@ export default abstract class ItemSource<T> implements ItemSourceInf<T>, ColorNo
     static validate(json: anyObjectType) {
         if (!json.content || typeof json.content !== 'object'
             || !json.content.items || !(json.content.items instanceof Array)
-            || !validateMeta(json.metadata)) {
+            || !validateAppMeta(json.metadata)) {
             throw new Error('Invalid data');
         }
     }

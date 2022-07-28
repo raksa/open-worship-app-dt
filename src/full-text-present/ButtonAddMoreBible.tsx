@@ -17,14 +17,12 @@ export default function ButtonAddMoreBible({
             onClick={async (e) => {
                 const addBibleView = (bibleName: string) => {
                     const newBibleItem = bibleItems[0].clone();
-                    if (newBibleItem !== null) {
-                        newBibleItem.bibleName = bibleName;
-                        const newBibleItems = [
-                            ...bibleItems,
-                            newBibleItem,
-                        ];
-                        applyPresents(newBibleItems);
-                    }
+                    newBibleItem.bibleName = bibleName;
+                    const newBibleItems = [
+                        ...bibleItems,
+                        newBibleItem,
+                    ];
+                    applyPresents(newBibleItems);
                 };
                 const bibleList = await bibleHelper.getBibleListWithStatus();
                 const bibleItemingList = bibleItems.map(({ bibleName }) => {

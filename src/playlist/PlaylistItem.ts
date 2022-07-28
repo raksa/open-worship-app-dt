@@ -1,7 +1,6 @@
 import Bible from '../bible-list/Bible';
-import { toastEventListener } from '../event/ToastEventListener';
 import FileSource from '../helper/FileSource';
-import { anyObjectType } from '../helper/helpers';
+import { anyObjectType, cloneObject } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { ItemSourceAnyType } from '../helper/ItemSource';
 import Lyric from '../lyric-list/Lyric';
@@ -77,14 +76,6 @@ export default class PlaylistItem {
         }
     }
     clone() {
-        try {
-            return PlaylistItem.fromJson(this.toJson(), this.fileSource);
-        } catch (error: any) {
-            toastEventListener.showSimpleToast({
-                title: 'Cloning Playlist Item',
-                message: error.message,
-            });
-        }
-        return null;
+        return cloneObject(this);
     }
 }

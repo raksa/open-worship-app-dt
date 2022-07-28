@@ -5,15 +5,20 @@ import ToolsBox from './ToolsBox';
 import ToolsText from './ToolsText';
 import TabRender from '../../../others/TabRender';
 import CanvasController from '../CanvasController';
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
 import ToolCanvasItems from './ToolCanvasItems';
 import { useCCScale, useCCRefresh } from '../canvasHelpers';
+import { SlideItemContext } from '../../../slide-list/SlideItem';
 
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';
-export default function Tools({ canvasController }: {
-    canvasController: CanvasController,
-}) {
+export default function Tools() {
+    const slideItem = useContext(SlideItemContext);
+    if (slideItem === null) {
+        return null;
+    }
+    const canvasController = CanvasController.getInstant(slideItem);
+
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
     useCCRefresh(canvasController, ['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
@@ -57,8 +62,7 @@ export default function Tools({ canvasController }: {
                         </Fragment>
                     );
                 })}
-                {tabType === 'c' && <ToolCanvasItems
-                    canvasController={canvasController} />}
+                {tabType === 'c' && <ToolCanvasItems />}
             </div>
         </div>
     );

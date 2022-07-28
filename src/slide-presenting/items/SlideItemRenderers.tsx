@@ -11,7 +11,14 @@ import FileSource from '../../helper/FileSource';
 export function SlideItemIFrame({ slideItem }: {
     slideItem: SlideItem,
 }) {
-    const styleString = '<style>html,body {overflow: hidden;}</style>';
+    if (slideItem.isError) {
+        return (
+            <div className='alert alert-danger'>Error</div>
+        );
+    }
+    const styleString = `<style>
+        html,body {overflow: hidden;}
+    </style>`;
     const [parentWidth, setWidth] = useState(0);
     const scale = parentWidth / slideItem.width;
     return (

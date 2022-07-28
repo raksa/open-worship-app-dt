@@ -6,16 +6,19 @@ import {
     showCanvasItemContextMenu, useCIRefresh,
 } from '../canvasHelpers';
 import { BENImageRender } from './BENViewImageMode';
-import CanvasItemImage from '../CanvasItemImage';
 import { BENTextRender } from './BENViewTextMode';
-import CanvasItemText from '../CanvasItemText';
 import { BENBibleRender } from './BENViewBibleMode';
+import { useContextCC } from '../CanvasController';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
+    const canvasController = useContextCC();
+    if (canvasController === null) {
+        return null;
+    }
     // TODO: move box by left right up down key, shift&ctl
-    useCIRefresh(canvasItem, ['update']);
+    useCIRefresh(['update']);
     return (
         <div className='editor-controller-box-wrapper'
             ref={(div) => {
@@ -25,7 +28,8 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     boxEditorController.onDone = () => {
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
-                            canvasItem.applyProps(info);
+                            canvasItem.applyProps(
+                                canvasController, info);
                         }
                     };
                 }
@@ -44,13 +48,14 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 }}
                 onContextMenu={(e) => {
                     e.stopPropagation();
-                    showCanvasItemContextMenu(e, canvasItem);
+                    showCanvasItemContextMenu(e,
+                        canvasController, canvasItem);
                 }}
                 onDoubleClick={(e) => {
                     e.stopPropagation();
                     if (canvasItem.isTypeText) {
-                        canvasItem.canvasController?.stopAllMods();
-                        canvasItem.isEditing = true;
+                        canvasController.stopAllMods();
+                        canvasController.setItemIsEditing(canvasItem, true);
                     }
                 }}
                 style={{

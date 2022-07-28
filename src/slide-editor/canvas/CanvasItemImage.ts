@@ -24,17 +24,15 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             ...super.toJson(),
         };
     }
-    static fromJson(canvasController: CanvasController,
-        json: anyObjectType) {
-        return new CanvasItemImage(json.id, canvasController, {
+    static fromJson(json: anyObjectType) {
+        return new CanvasItemImage(json.id, {
             filePath: json.filePath,
             imageWidth: json.imageWidth,
             imageHeight: json.imageHeight,
             ...super.propsFromJson(json),
         });
     }
-    static genFromInsertion(canvasController: CanvasController,
-        x: number, y: number,
+    static genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
         return new Promise<CanvasItemImage>((resolve, reject) => {
             const image = document.createElement('img');
@@ -42,7 +40,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             image.onload = () => {
                 const imageWidth = image.clientWidth;
                 const imageHeight = image.clientHeight;
-                const newItem = CanvasItemImage.fromJson(canvasController, {
+                const newItem = CanvasItemImage.fromJson({
                     filePath: fileSource.filePath,
                     imageWidth,
                     imageHeight,
@@ -83,5 +81,16 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
                 reject(new Error('Image load error'));
             };
         });
+    }
+    static validate(json: anyObjectType) {
+        super.validate(json);
+        if (typeof json.filePath !== 'string' ||
+            typeof json.color !== 'string' ||
+            typeof json.imageWidth !== 'number' ||
+            typeof json.imageHeight !== 'number'
+        ) {
+            console.log(json);
+            throw new Error('Invalid canvas item image data');
+        }
     }
 }

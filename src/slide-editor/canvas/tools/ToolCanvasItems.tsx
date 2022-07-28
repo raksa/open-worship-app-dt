@@ -1,10 +1,13 @@
 import { CanvasItemRenderer } from '../../../slide-presenting/items/SlideItemRenderers';
-import CanvasController from '../CanvasController';
+import { useContextCC } from '../CanvasController';
 import { showCanvasItemContextMenu, useCCRefresh } from '../canvasHelpers';
 
-export default function ToolCanvasItems({ canvasController }: {
-    canvasController: CanvasController,
-}) {
+export default function ToolCanvasItems() {
+    const canvasController = useContextCC();
+    if(canvasController === null) {
+        return null;
+    }
+
     const canvasItems = canvasController.canvas.canvasItems;
     useCCRefresh(canvasController, ['update']);
     return (
@@ -18,10 +21,11 @@ export default function ToolCanvasItems({ canvasController }: {
                         }}
                         onClick={() => {
                             canvasController.stopAllMods();
-                            canvasItem.isSelected = true;
+                            canvasController.setItemIsSelecting(canvasItem, true);
                         }}
                         onContextMenu={(e) => {
-                            showCanvasItemContextMenu(e, canvasItem);
+                            showCanvasItemContextMenu(e,
+                                canvasController, canvasItem);
                         }}>
                         <div className='card-header'>
                             {canvasItem.id}:

@@ -4,31 +4,33 @@ import ToolAlign from './ToolAlign';
 import CanvasItemText from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
 import CanvasItem from '../CanvasItem';
+import { useContextCC } from '../CanvasController';
 
 export default function ToolsText({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
-    if (canvasItem.isTypeText) {
-        return null;
-    }
-    const canvasItemText = canvasItem as CanvasItemText;
-    const canvasController = canvasItemText.canvasController;
+    const canvasController = useContextCC();
     if (canvasController === null) {
         return null;
     }
+    if (!canvasItem.isTypeText) {
+        return null;
+    }
+    const canvasItemText = canvasItem as CanvasItemText;
     return (
         <div className='d-flex'>
             <Tool>
                 <ColorPicker color={canvasItemText.props.color}
                     onColorChange={(newColor: string) => {
-                        canvasItemText.applyTextData({
+                        canvasItemText.applyTextData(canvasController, {
                             color: newColor,
                         });
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
                 <ToolAlign isText onData={(newData) => {
-                    canvasItemText.applyTextData(newData);
+                    canvasItemText.applyTextData(
+                        canvasController, newData);
                 }} />
             </Tool>
             <ToolsTextFontControl canvasItemText={canvasItemText} />

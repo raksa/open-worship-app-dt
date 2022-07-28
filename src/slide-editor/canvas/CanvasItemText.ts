@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import CanvasController from './CanvasController';
 import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
 import { CanvasItemType } from './canvasHelpers';
-import { HAlignmentEnum, VAlignmentEnum } from './Canvas';
+import { HAlignmentType, VAlignmentType } from './Canvas';
 import { anyObjectType } from '../../helper/helpers';
 
 export function genTextDefaultProps(): TextPropsType {
@@ -18,14 +18,16 @@ export type TextPropsType = {
     color: string,
     fontSize: number,
     fontFamily: string,
+    horizontalAlignment?: HAlignmentType,
+    verticalAlignment?: VAlignmentType,
 };
 export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
 export type ToolingTextType = {
     color?: string,
     fontSize?: number,
     fontFamily?: string,
-    horizontalAlignment?: HAlignmentEnum,
-    verticalAlignment?: VAlignmentEnum,
+    horizontalAlignment?: HAlignmentType,
+    verticalAlignment?: VAlignmentType,
 };
 export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
     get type(): CanvasItemType {
@@ -55,9 +57,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             ...super.toJson(),
         };
     }
-    static fromJson(canvasController: CanvasController,
-        json: anyObjectType) {
-        return new CanvasItemText(json.id, canvasController, {
+    static fromJson(json: anyObjectType) {
+        return new CanvasItemText(json.id, {
             text: json.text,
             color: json.color,
             fontSize: json.fontSize,
@@ -65,7 +66,21 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             ...super.propsFromJson(json),
         });
     }
-    applyTextData(textData: ToolingTextType) {
-        this.applyProps(textData);
+    applyTextData(canvasController: CanvasController,
+        textData: ToolingTextType) {
+        this.applyProps(canvasController, textData);
+    }
+    static validate(json: anyObjectType) {
+        super.validate(json);
+        if (typeof json.text !== 'string' ||
+            typeof json.color !== 'string' ||
+            typeof json.fontSize !== 'number' ||
+            typeof json.fontFamily !== 'string' ||
+            !['left', 'center', 'right'].includes(json.horizontalAlignment) ||
+            !['start', 'center', 'end'].includes(json.verticalAlignment)
+        ) {
+            console.log(json);
+            throw new Error('Invalid canvas item text data');
+        }
     }
 }

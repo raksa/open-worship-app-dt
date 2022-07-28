@@ -1,6 +1,5 @@
-import { toastEventListener } from '../event/ToastEventListener';
 import FileSource from '../helper/FileSource';
-import { anyObjectType } from '../helper/helpers';
+import { anyObjectType, cloneObject } from '../helper/helpers';
 
 export default class LyricItem {
     title: string;
@@ -42,14 +41,6 @@ export default class LyricItem {
         }
     }
     clone() {
-        try {
-            return LyricItem.fromJson(this.toJson(), this.fileSource);
-        } catch (error: any) {
-            toastEventListener.showSimpleToast({
-                title: 'Cloning Lyric Item',
-                message: error.message,
-            });
-        }
-        return null;
+        return cloneObject(this);
     }
 }

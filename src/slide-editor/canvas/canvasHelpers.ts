@@ -3,8 +3,8 @@ import { selectFiles } from '../../helper/appHelper';
 import { getMimetypeExtensions } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { VAlignmentEnum, HAlignmentEnum } from './Canvas';
-import CanvasController, { CCEventType } from './CanvasController';
+import { VAlignmentType, HAlignmentType } from './Canvas';
+import CanvasController, { CCEventType, useContextCC } from './CanvasController';
 import CanvasItem from './CanvasItem';
 
 export function tooling2BoxProps(boxData: ToolingBoxType, state: {
@@ -13,22 +13,21 @@ export function tooling2BoxProps(boxData: ToolingBoxType, state: {
 }) {
     const boxProps: { top?: number, left?: number } = {};
     if (boxData) {
-        if (boxData.verticalAlignment === VAlignmentEnum.Top) {
+        if (boxData.verticalAlignment === 'top') {
             boxProps.top = 0;
-        } else if (boxData.verticalAlignment === VAlignmentEnum.Center) {
+        } else if (boxData.verticalAlignment === 'center') {
             boxProps.top = (state.parentHeight - state.height) / 2;
-        } else if (boxData.verticalAlignment === VAlignmentEnum.Bottom) {
+        } else if (boxData.verticalAlignment === 'bottom') {
             boxProps.top = state.parentHeight - state.height;
         }
-        if (boxData.horizontalAlignment === HAlignmentEnum.Left) {
+        if (boxData.horizontalAlignment === 'left') {
             boxProps.left = 0;
-        } else if (boxData.horizontalAlignment === HAlignmentEnum.Center) {
+        } else if (boxData.horizontalAlignment === 'center') {
             boxProps.left = (state.parentWidth - state.width) / 2;
-        } else if (boxData.horizontalAlignment === HAlignmentEnum.Right) {
+        } else if (boxData.horizontalAlignment === 'right') {
             boxProps.left = state.parentWidth - state.width;
         }
     }
-
     return boxProps;
 }
 
@@ -37,8 +36,8 @@ export type CanvasItemType = 'text' | 'image' | 'video' | 'audio' | 'bible';
 export type ToolingBoxType = {
     backgroundColor?: string,
     rotate?: number,
-    horizontalAlignment?: HAlignmentEnum,
-    verticalAlignment?: VAlignmentEnum,
+    horizontalAlignment?: HAlignmentType,
+    verticalAlignment?: VAlignmentType,
 };
 
 export function showCanvasContextMenu(e: any,
@@ -72,33 +71,29 @@ export function showCanvasContextMenu(e: any,
 }
 
 export function showCanvasItemContextMenu(e: any,
+    canvasController: CanvasController,
     canvasItem: CanvasItem<any>,
 ) {
     showAppContextMenu(e, [
         {
             title: 'Copy', onClick: () => {
-                const canvasController = canvasItem.canvasController;
-                if (canvasController !== null) {
-                    canvasController.copiedItem = canvasItem;
-                }
+                canvasController.copiedItem = canvasItem;
             },
         },
         {
             title: 'Duplicate', onClick: () => {
-                const canvasController = canvasItem.canvasController;
-                canvasController?.duplicate(canvasItem);
+                canvasController.duplicate(canvasItem);
             },
         },
         {
             title: 'Edit', onClick: async () => {
-                canvasItem.canvasController?.stopAllMods();
-                canvasItem.isEditing = true;
+                canvasController.stopAllMods();
+                canvasController.setItemIsEditing(canvasItem, true);
             },
         },
         {
             title: 'Delete', onClick: () => {
-                const canvasController = canvasItem.canvasController;
-                canvasController?.deleteItem(canvasItem);
+                canvasController.deleteItem(canvasItem);
             },
         },
     ]);
@@ -117,11 +112,10 @@ export function useCCRefresh(canvasController: CanvasController,
         };
     }, [canvasController, n]);
 }
-export function useCIRefresh(canvasItem: CanvasItem<any>,
-    eventTypes: CCEventType[]) {
+export function useCIRefresh(eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
+    const canvasController = useContextCC();
     useEffect(() => {
-        const canvasController = canvasItem.canvasController;
         const regEvents = canvasController ? canvasController.registerEventListener(
             eventTypes, () => {
                 setN(n + 1);
@@ -129,7 +123,7 @@ export function useCIRefresh(canvasItem: CanvasItem<any>,
         return () => {
             canvasController?.unregisterEventListener(regEvents);
         };
-    }, [canvasItem, n]);
+    }, [n]);
 }
 
 export function useCCScale(canvasController: CanvasController) {
@@ -146,9 +140,9 @@ export function useCCScale(canvasController: CanvasController) {
 }
 
 export function useCIControl(canvasItem: CanvasItem<any>) {
+    const canvasController = useContextCC();
     const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
     useEffect(() => {
-        const canvasController = canvasItem.canvasController;
         const regEvents = canvasController ? canvasController.registerEventListener(
             ['control'], (item: CanvasItem<any>) => {
                 if (item.id === canvasItem.id) {

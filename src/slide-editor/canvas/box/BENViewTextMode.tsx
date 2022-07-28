@@ -1,8 +1,11 @@
 import { CSSProperties } from 'react';
+import { useContextCC } from '../CanvasController';
 import {
     showCanvasItemContextMenu,
 } from '../canvasHelpers';
-import CanvasItemText, { CanvasItemTextPropsType } from '../CanvasItemText';
+import CanvasItemText, {
+    CanvasItemTextPropsType,
+} from '../CanvasItemText';
 
 export default function BENViewTextMode({
     canvasItemText, style,
@@ -10,17 +13,22 @@ export default function BENViewTextMode({
     canvasItemText: CanvasItemText,
     style: CSSProperties
 }) {
+    const canvasController = useContextCC();
+    if (canvasController === null) {
+        return null;
+    }
     return (
         <div className='box-editor pointer'
             style={style}
             onContextMenu={async (e) => {
                 e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemText);
+                showCanvasItemContextMenu(e,
+                    canvasController, canvasItemText);
             }}
             onClick={async (e) => {
                 e.stopPropagation();
-                canvasItemText.canvasController?.stopAllMods();
-                canvasItemText.isSelected = true;
+                canvasController.stopAllMods();
+                canvasController.setItemIsSelecting(canvasItemText, true);
             }}>
             <BENTextRender props={canvasItemText.props} />
         </div>

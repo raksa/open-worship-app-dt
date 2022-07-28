@@ -1,21 +1,11 @@
-import FileSource from '../../helper/FileSource';
 import { anyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
-import CanvasController from './CanvasController';
 import CanvasItem from './CanvasItem';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 
-export enum HAlignmentEnum {
-    Left = 'left',
-    Center = 'center',
-    Right = 'right',
-}
-export enum VAlignmentEnum {
-    Top = 'start',
-    Center = 'center',
-    Bottom = 'end',
-}
+export type HAlignmentType = 'left' | 'center' | 'right';
+export type VAlignmentType = 'top' | 'center' | 'bottom';
 
 type CanvasPropsType = {
     width: number, height: number,
@@ -25,14 +15,9 @@ export default class Canvas {
     static _objectId = 0;
     _objectId: number;
     props: CanvasPropsType;
-    slideItemId: number;
-    fileSource: FileSource;
-    constructor(slideItemId: number, fileSource: FileSource,
-        props: CanvasPropsType) {
+    constructor(props: CanvasPropsType) {
         this._objectId = CanvasItem._objectId++;
         this.props = props;
-        this.slideItemId = slideItemId;
-        this.fileSource = fileSource;
     }
     get maxItemId() {
         if (this.canvasItems.length) {
@@ -57,37 +42,25 @@ export default class Canvas {
     }
     set canvasItems(canvasItems: CanvasItem<any>[]) {
         this.props.canvasItems = canvasItems;
-        this.canvasController?.fireUpdateEvent();
     }
-    get canvasController() {
-        const key = SlideItem.genKeyByFileSource(this.fileSource, this.slideItemId);
-        const slideItem = SlideItem.getByKey(key);
-        if (slideItem === null) {
-            return null;
-        }
-        return CanvasController.getInstant(slideItem);
-    }
-    static fromJson(canvasController: CanvasController,
-        json: anyObjectType) {
-        const slideItem = canvasController.slideItem;
+    static fromJson(json: anyObjectType) {
         const canvasItems: CanvasItem<any>[] = json.canvasItems.map((item: anyObjectType) => {
             let canvasItem: CanvasItem<any>;
             if (item.type === 'image') {
-                canvasItem = CanvasItemImage.fromJson(canvasController, item);
+                canvasItem = CanvasItemImage.fromJson(item);
             } else {
-                canvasItem = CanvasItemText.fromJson(canvasController, item);
+                canvasItem = CanvasItemText.fromJson(item);
             }
             // TODO: handle other type of element
             canvasItems.push(canvasItem);
         });
-        return new Canvas(slideItem.id, slideItem.fileSource, {
+        return new Canvas({
             width: json.width,
             height: json.height,
             canvasItems,
         });
     }
-    static fromSlideItem(canvasController: CanvasController,
-        slideItem: SlideItem) {
-        return Canvas.fromJson(canvasController, slideItem.toJson());
+    static fromSlideItem(slideItem: SlideItem) {
+        return Canvas.fromJson(slideItem.toJson());
     }
 }

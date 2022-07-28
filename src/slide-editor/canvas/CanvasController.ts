@@ -1,5 +1,5 @@
 import EventHandler from '../../event/EventHandler';
-import SlideItem from '../../slide-list/SlideItem';
+import SlideItem, { SlideItemContext } from '../../slide-list/SlideItem';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
 import { getSetting, setSetting } from '../../helper/settingHelper';
@@ -9,6 +9,8 @@ import CanvasItemText, { genTextDefaultProps } from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import BibleItem from '../../bible-list/BibleItem';
 import CanvasItemBible from './CanvasItemBible';
+import { useContext } from 'react';
+import { anyObjectType } from '../../helper/helpers';
 
 type ListenerType<T> = (data: T) => void;
 export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
@@ -33,7 +35,7 @@ export default class CanvasController extends EventHandler {
         this._objectId = CanvasController._objectId++;
         this.copiedItem = null;
         this.slideItem = slideItem;
-        this.canvas = Canvas.fromSlideItem(this, this.slideItem);
+        this.canvas = Canvas.fromSlideItem(this.slideItem);
         const defaultData = +(getSetting('editor-scale') || NaN);
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
@@ -66,10 +68,7 @@ export default class CanvasController extends EventHandler {
         this._addPropEvent('update', this.slideItem);
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
-        const newCanvasItem = await canvasItem.clone();
-        if (newCanvasItem === null) {
-            return null;
-        }
+        const newCanvasItem = canvasItem.clone();
         newCanvasItem.props.top += 20;
         newCanvasItem.props.left += 20;
         newCanvasItem.id = this.canvas.maxItemId + 1;
@@ -83,7 +82,7 @@ export default class CanvasController extends EventHandler {
         }
         const index = this.canvas.canvasItems.indexOf(canvasItem);
         newCanvasItems.splice(index + 1, 0, newCanvasItem);
-        this.canvas.canvasItems = newCanvasItems;
+        this.setCanvasItems(newCanvasItems);
     }
     deleteItem(canvasItem: CanvasItem<any>) {
         if (this.copiedItem === canvasItem) {
@@ -92,7 +91,7 @@ export default class CanvasController extends EventHandler {
         const newCanvasItems = this.canvas.canvasItems.filter((item) => {
             return item !== canvasItem;
         });
-        this.canvas.canvasItems = newCanvasItems;
+        this.setCanvasItems(newCanvasItems);
     }
     async paste() {
         const newCanvasItems = this.canvas.newCanvasItems;
@@ -102,18 +101,18 @@ export default class CanvasController extends EventHandler {
                 return;
             }
             newCanvasItems.push(newCanvasItem);
-            this.canvas.canvasItems = newCanvasItems;
+            this.setCanvasItems(newCanvasItems);
         }
     }
     addNewItem(canvasItem: CanvasItem<any>) {
         const newCanvasItems = this.canvas.newCanvasItems;
         canvasItem.id = this.canvas.maxItemId + 1;
         newCanvasItems.push(canvasItem);
-        this.canvas.canvasItems = newCanvasItems;
+        this.setCanvasItems(newCanvasItems);
     }
     async addNewTextBox() {
         const props = genTextDefaultProps();
-        const newCanvasItem = CanvasItemText.fromJson(this, props);
+        const newCanvasItem = CanvasItemText.fromJson(props);
         this.addNewItem(newCanvasItem);
     }
     async addNewMedia(fileSource: FileSource, event: any) {
@@ -122,7 +121,7 @@ export default class CanvasController extends EventHandler {
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
             if (fileSource.metadata?.appMimetype.mimetypeName === 'image') {
-                const newItem = await CanvasItemImage.genFromInsertion(this, x, y, fileSource);
+                const newItem = await CanvasItemImage.genFromInsertion(x, y, fileSource);
                 this.addNewItem(newItem);
                 return;
             }
@@ -136,7 +135,7 @@ export default class CanvasController extends EventHandler {
     }
     async addNewBibleItem(bibleItem: BibleItem) {
         const props = genTextDefaultProps();
-        const newCanvasItem = CanvasItemBible.fromJson(this, {
+        const newCanvasItem = CanvasItemBible.fromJson({
             bibleNames: [bibleItem.bibleName],
             bibleItem: bibleItem.toJson(),
             ...props,
@@ -152,18 +151,18 @@ export default class CanvasController extends EventHandler {
             }
             return item;
         });
-        this.canvas.canvasItems = newCanvasItems;
+        this.setCanvasItems(newCanvasItems);
     }
     stopAllMods(isSilent?: boolean) {
         this.canvas.canvasItems.forEach((item) => {
             if (isSilent) {
-                item._isSelected = false;
-                item._isControlling = false;
-                item._isEditing = false;
-            } else {
                 item.isSelected = false;
                 item.isControlling = false;
                 item.isEditing = false;
+            } else {
+                this.setItemIsSelecting(item, false);
+                this.setItemIsControlling(item, false);
+                this.setItemIsEditing(item, false);
             }
         });
     }
@@ -186,6 +185,27 @@ export default class CanvasController extends EventHandler {
         this._cacheMap.set(slideItemKey, canvasController);
         return canvasController;
     }
+    setCanvasItems(canvasItems: CanvasItem<any>[]) {
+        this.canvas.canvasItems = canvasItems;
+        this.fireUpdateEvent();
+    }
+    setItemIsSelecting(canvasItem: CanvasItem<any>, b: boolean) {
+        canvasItem.isSelected = b;
+        this.fireSelectEvent(canvasItem);
+    }
+    setItemIsControlling(canvasItem: CanvasItem<any>, b: boolean) {
+        canvasItem.isControlling = b;
+        this.fireControlEvent(canvasItem);
+    }
+    setItemIsEditing(canvasItem: CanvasItem<any>, b: boolean) {
+        canvasItem.isEditing = b;
+        this.fireEditEvent(canvasItem);
+    }
+    static checkValidCanvasItem(json: anyObjectType) {
+        if(json.type === 'text') {
+            CanvasItemText.validate(json);
+        }
+    }
     registerEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {
         return types.map((type) => {
@@ -198,4 +218,12 @@ export default class CanvasController extends EventHandler {
             this._removeOnEventListener(type, listener);
         });
     }
+}
+
+export function useContextCC() {
+    const slideItem = useContext(SlideItemContext);
+    if (slideItem === null) {
+        return null;
+    }
+    return CanvasController.getInstant(slideItem);
 }

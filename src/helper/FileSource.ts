@@ -3,7 +3,7 @@ import { toastEventListener } from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import appProvider from './appProvider';
 import DirSource from './DirSource';
-import fileHelpers, { getFileMetaData, AppMimetypeType } from './fileHelper';
+import fileHelpers, { getFileMetaData } from './fileHelper';
 import ItemSource, { ItemSourceAnyType } from './ItemSource';
 
 type FSListener = (slideItem?: SlideItem) => void;

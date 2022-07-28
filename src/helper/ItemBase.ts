@@ -31,13 +31,13 @@ export abstract class ItemBase implements ColorNoteInf {
     get isSelectedEditing() {
         throw new Error('Method not implemented.');
     }
-    set isSelectedEditing(b: boolean) {
+    set isSelectedEditing(_b: boolean) {
         throw new Error('Method not implemented.');
     }
     get isSelected() {
         throw new Error('Method not implemented.');
     }
-    set isSelected(b: boolean) {
+    set isSelected(_b: boolean) {
         throw new Error('Method not implemented.');
     }
     async save(): Promise<boolean> {
@@ -49,13 +49,13 @@ export abstract class ItemBase implements ColorNoteInf {
     toJson() {
         throw new Error('Method not implemented.');
     }
-    static fromJson(json: anyObjectType, fileSource?: FileSource): any {
+    static fromJson(_json: anyObjectType, _fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
-    static fromJsonError(json: anyObjectType, fileSource?: FileSource): any {
+    static fromJsonError(_json: anyObjectType, _fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
-    static validate(json: anyObjectType) {
+    static validate(_json: anyObjectType) {
         throw new Error('Method not implemented.');
     }
     static _toSelectedItemSetting(fileSource: FileSource | null, id: number | string | null) {

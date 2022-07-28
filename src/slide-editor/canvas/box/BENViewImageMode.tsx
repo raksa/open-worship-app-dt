@@ -6,6 +6,7 @@ import CanvasItemImage, {
     CanvasItemImagePropsType,
 } from '../CanvasItemImage';
 import img404 from '../404.png';
+import { useContextCC } from '../CanvasController';
 
 export default function BENViewImageMode({
     canvasItemImage, style,
@@ -13,17 +14,22 @@ export default function BENViewImageMode({
     canvasItemImage: CanvasItemImage,
     style: CSSProperties
 }) {
+    const canvasController = useContextCC();
+    if (canvasController === null) {
+        return null;
+    }
     return (
         <div className='box-editor pointer'
             style={style}
             onContextMenu={async (e) => {
                 e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemImage);
+                showCanvasItemContextMenu(e,
+                    canvasController, canvasItemImage);
             }}
             onClick={async (e) => {
                 e.stopPropagation();
-                canvasItemImage.canvasController?.stopAllMods();
-                canvasItemImage.isSelected = true;
+                canvasController.stopAllMods();
+                canvasController.setItemIsSelecting(canvasItemImage, true);
             }}>
             <BENImageRender props={canvasItemImage.props} />
         </div>

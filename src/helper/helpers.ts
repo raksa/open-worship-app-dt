@@ -24,7 +24,9 @@ export function getRandomColor() {
     }
     return color;
 }
-export const cloneObject = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
+export const cloneObject = <T>(obj: T): T => {
+    return Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
+};
 
 // https://stackoverflow.com/a/41698614/17066360
 export function isVisible(elem: any) {
@@ -118,7 +120,7 @@ export function getWindowDim() {
         document.body.clientHeight;
     return { width, height };
 }
-export function validateMeta(meta: any) {
+export function validateAppMeta(meta: any) {
     try {
         if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
             return true;

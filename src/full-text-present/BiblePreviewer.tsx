@@ -87,7 +87,7 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
                     <BibleView key={`${i}`} bibleItem={item}
                         onBibleChange={(bibleName: string) => {
                             const bibleItem1 = bibleItems.map((item1) => {
-                                return item1.clone() as BibleItem;
+                                return item1.clone();
                             });
                             bibleItem1[i].bibleName = bibleName;
                             applyPresents(bibleItem1);
