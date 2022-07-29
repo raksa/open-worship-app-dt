@@ -1,7 +1,4 @@
 import { CSSProperties } from 'react';
-import {
-    useCIRefresh,
-} from '../canvasHelpers';
 import CanvasItem from '../CanvasItem';
 import CanvasItemImage from '../CanvasItemImage';
 import CanvasItemText from '../CanvasItemText';
@@ -10,6 +7,7 @@ import BENTextEditMode from './BENTextEditMode';
 import BENViewTextMode from './BENViewTextMode';
 import BENViewBibleMode from './BENViewBibleMode';
 import CanvasItemBible from '../CanvasItemBible';
+import { useCCRefresh } from '../canvasHelpers';
 
 export default function BoxEditorNormalMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
@@ -18,7 +16,7 @@ export default function BoxEditorNormalMode({ canvasItem }: {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
     };
-    useCIRefresh(['edit', 'update']);
+    useCCRefresh(['edit', 'update']);
     if (canvasItem.isTypeImage) {
         return (
             <BENViewImageMode

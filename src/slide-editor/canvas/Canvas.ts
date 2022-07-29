@@ -1,6 +1,7 @@
 import { anyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import CanvasItem from './CanvasItem';
+import CanvasItemBible from './CanvasItemBible';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 
@@ -8,7 +9,8 @@ export type HAlignmentType = 'left' | 'center' | 'right';
 export type VAlignmentType = 'top' | 'center' | 'bottom';
 
 type CanvasPropsType = {
-    width: number, height: number,
+    width: number,
+    height: number,
     canvasItems: CanvasItem<any>[],
 };
 export default class Canvas {
@@ -43,20 +45,24 @@ export default class Canvas {
     set canvasItems(canvasItems: CanvasItem<any>[]) {
         this.props.canvasItems = canvasItems;
     }
-    static fromJson(json: anyObjectType) {
-        const canvasItems: CanvasItem<any>[] = json.canvasItems.map((item: anyObjectType) => {
-            let canvasItem: CanvasItem<any>;
-            if (item.type === 'image') {
-                canvasItem = CanvasItemImage.fromJson(item);
-            } else {
-                canvasItem = CanvasItemText.fromJson(item);
+    static fromJson({ metadata, canvasItems: canvasItemsJson }: {
+        metadata: anyObjectType,
+        canvasItems: anyObjectType[],
+    }) {
+        const canvasItems = canvasItemsJson.map((json: anyObjectType) => {
+            if (json.type === 'image') {
+                return CanvasItemImage.fromJson(json);
+            } else if (json.type === 'text') {
+                return CanvasItemText.fromJson(json);
+            } else if (json.type === 'bible') {
+                return CanvasItemBible.fromJson(json as any);
             }
             // TODO: handle other type of element
-            canvasItems.push(canvasItem);
-        });
+            return null;
+        }).filter((item) => item !== null) as CanvasItem<any>[];
         return new Canvas({
-            width: json.width,
-            height: json.height,
+            width: metadata.width,
+            height: metadata.height,
             canvasItems,
         });
     }

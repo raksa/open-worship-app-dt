@@ -15,6 +15,7 @@ import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';
 import { ConsumeVerseType } from './RenderFound';
 import SlideItem from '../slide-list/SlideItem';
+import { canvasController } from '../slide-editor/canvas/CanvasController';
 
 export default function RenderFoundButtons({
     found, book, chapter,
@@ -50,8 +51,7 @@ export default function RenderFoundButtons({
             },
         });
         if (isWindowEditing) {
-            const slideItem = await SlideItem.getSelectedItem();
-            slideItem?.canvasController.addNewBibleItem(bibleItem);
+            canvasController.addNewBibleItem(bibleItem);
             closeBibleSearch();
             return null;
         }

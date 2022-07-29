@@ -4,7 +4,7 @@ import { getMimetypeExtensions } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { VAlignmentType, HAlignmentType } from './Canvas';
-import CanvasController, { CCEventType, useContextCC } from './CanvasController';
+import { canvasController, CCEventType } from './CanvasController';
 import CanvasItem from './CanvasItem';
 
 export function tooling2BoxProps(boxData: ToolingBoxType, state: {
@@ -40,8 +40,7 @@ export type ToolingBoxType = {
     verticalAlignment?: VAlignmentType,
 };
 
-export function showCanvasContextMenu(e: any,
-    canvasController: CanvasController) {
+export function showCanvasContextMenu(e: any) {
     showAppContextMenu(e, [
         {
             title: 'New',
@@ -71,7 +70,6 @@ export function showCanvasContextMenu(e: any,
 }
 
 export function showCanvasItemContextMenu(e: any,
-    canvasController: CanvasController,
     canvasItem: CanvasItem<any>,
 ) {
     showAppContextMenu(e, [
@@ -99,8 +97,7 @@ export function showCanvasItemContextMenu(e: any,
     ]);
 }
 
-export function useCCRefresh(canvasController: CanvasController,
-    eventTypes: CCEventType[]) {
+export function useCCRefresh(eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(
@@ -108,25 +105,12 @@ export function useCCRefresh(canvasController: CanvasController,
                 setN(n + 1);
             });
         return () => {
-            canvasController?.unregisterEventListener(regEvents);
-        };
-    }, [canvasController, n]);
-}
-export function useCIRefresh(eventTypes: CCEventType[]) {
-    const [n, setN] = useState(0);
-    const canvasController = useContextCC();
-    useEffect(() => {
-        const regEvents = canvasController ? canvasController.registerEventListener(
-            eventTypes, () => {
-                setN(n + 1);
-            }) : [];
-        return () => {
-            canvasController?.unregisterEventListener(regEvents);
+            canvasController.unregisterEventListener(regEvents);
         };
     }, [n]);
 }
 
-export function useCCScale(canvasController: CanvasController) {
+export function useCCScale() {
     const [scale, setScale] = useState(canvasController.scale);
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(['scale'], () => {
@@ -140,17 +124,16 @@ export function useCCScale(canvasController: CanvasController) {
 }
 
 export function useCIControl(canvasItem: CanvasItem<any>) {
-    const canvasController = useContextCC();
     const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
     useEffect(() => {
-        const regEvents = canvasController ? canvasController.registerEventListener(
+        const regEvents = canvasController.registerEventListener(
             ['control'], (item: CanvasItem<any>) => {
                 if (item.id === canvasItem.id) {
                     setIsControlling(canvasItem.isControlling);
                 }
-            }) : [];
+            });
         return () => {
-            canvasController?.unregisterEventListener(regEvents);
+            canvasController.unregisterEventListener(regEvents);
         };
     }, [canvasItem]);
     return isControlling;

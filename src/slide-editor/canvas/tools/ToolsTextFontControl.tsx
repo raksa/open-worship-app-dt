@@ -2,7 +2,6 @@ import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
 import { useEffect, useState } from 'react';
 import { useFontList } from '../../../helper/helpers';
-import { useContextCC } from '../CanvasController';
 
 export default function ToolsTextFontControl({ canvasItemText }: {
     canvasItemText: CanvasItemText,
@@ -18,18 +17,13 @@ export default function ToolsTextFontControl({ canvasItemText }: {
 function FontSize({ canvasItemText }: {
     canvasItemText: CanvasItemText,
 }) {
-    const canvasController = useContextCC();
-    if (canvasController === null) {
-        return null;
-    }
     const [localFontSize, setLocalFontSize] = useState(canvasItemText.props.fontSize);
     useEffect(() => {
         setLocalFontSize(canvasItemText.props.fontSize);
     }, [canvasItemText]);
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
-        canvasItemText.applyTextData(
-            canvasController, { fontSize });
+        canvasItemText.applyTextData({ fontSize });
     };
     return (
         <div>
@@ -57,15 +51,11 @@ function FontSize({ canvasItemText }: {
 function FontFamily({ canvasItemText }: {
     canvasItemText: CanvasItemText,
 }) {
-    const canvasController = useContextCC();
-    if (canvasController === null) {
-        return null;
-    }
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(canvasItemText.props.fontFamily);
     const applyFontFamily = (fontFamily: string) => {
         setLocalFontFamily(fontFamily);
-        canvasItemText.applyTextData(canvasController, {
+        canvasItemText.applyTextData({
             fontFamily: fontFamily,
         });
     };

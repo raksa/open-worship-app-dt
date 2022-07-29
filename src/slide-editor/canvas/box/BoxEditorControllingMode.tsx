@@ -3,22 +3,18 @@ import './BoxEditorControllingMode.scss';
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import {
-    showCanvasItemContextMenu, useCIRefresh,
+    showCanvasItemContextMenu, useCCRefresh,
 } from '../canvasHelpers';
 import { BENImageRender } from './BENViewImageMode';
 import { BENTextRender } from './BENViewTextMode';
 import { BENBibleRender } from './BENViewBibleMode';
-import { useContextCC } from '../CanvasController';
+import { canvasController } from '../CanvasController';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
-    const canvasController = useContextCC();
-    if (canvasController === null) {
-        return null;
-    }
     // TODO: move box by left right up down key, shift&ctl
-    useCIRefresh(['update']);
+    useCCRefresh(['update']);
     return (
         <div className='editor-controller-box-wrapper'
             ref={(div) => {
@@ -28,8 +24,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     boxEditorController.onDone = () => {
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
-                            canvasItem.applyProps(
-                                canvasController, info);
+                            canvasItem.applyProps(info);
                         }
                     };
                 }
@@ -48,8 +43,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 }}
                 onContextMenu={(e) => {
                     e.stopPropagation();
-                    showCanvasItemContextMenu(e,
-                        canvasController, canvasItem);
+                    showCanvasItemContextMenu(e, canvasItem);
                 }}
                 onDoubleClick={(e) => {
                     e.stopPropagation();

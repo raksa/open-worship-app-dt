@@ -4,25 +4,18 @@ import { useStateSettingString } from '../../../helper/settingHelper';
 import ToolsBox from './ToolsBox';
 import ToolsText from './ToolsText';
 import TabRender from '../../../others/TabRender';
-import CanvasController from '../CanvasController';
-import { Fragment, useContext } from 'react';
+import { Fragment } from 'react';
 import ToolCanvasItems from './ToolCanvasItems';
 import { useCCScale, useCCRefresh } from '../canvasHelpers';
-import { SlideItemContext } from '../../../slide-list/SlideItem';
+import { canvasController } from '../CanvasController';
 
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';
 export default function Tools() {
-    const slideItem = useContext(SlideItemContext);
-    if (slideItem === null) {
-        return null;
-    }
-    const canvasController = CanvasController.getInstant(slideItem);
-
-    const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
-    useCCRefresh(canvasController, ['select']);
+    const selectedCanvasItems = canvasController.canvas?.selectedCanvasItems||[];
+    useCCRefresh(['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
-    const scale = useCCScale(canvasController);
+    const scale = useCCScale();
     return (
         <div className='tools d-flex flex-column w-100 h-100'>
             <div className='tools-header d-flex'>

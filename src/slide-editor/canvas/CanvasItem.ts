@@ -1,11 +1,11 @@
 import { CSSProperties } from 'react';
 import { anyObjectType, cloneObject } from '../../helper/helpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
+import { canvasController } from './CanvasController';
 import {
     CanvasItemType,
     tooling2BoxProps, ToolingBoxType,
 } from './canvasHelpers';
-import CanvasController from './CanvasController';
 
 export function genTextDefaultBoxStyle(width: number = 700,
     height: number = 400): CanvasItemPropsType {
@@ -49,20 +49,37 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
         this.isControlling = false;
         this.isEditing = false;
     }
+    static checkIsTypeAudio(type: string) {
+        return type === 'audio';
+    }
     get isTypeAudio() {
-        return this.props.type === 'audio';
+        // TODO: implement CameraItemAudio
+        return CanvasItem.checkIsTypeAudio(this.props.type);
+    }
+    static checkIsTypeImage(type: string) {
+        return type === 'image';
     }
     get isTypeImage() {
-        return this.props.type === 'image';
+        return CanvasItem.checkIsTypeImage(this.props.type);
+    }
+    static checkIsTypeVideo(type: string) {
+        return type === 'video';
     }
     get isTypeVideo() {
-        return this.props.type === 'video';
+        // TODO: implement CameraItemVideo
+        return CanvasItem.checkIsTypeVideo(this.props.type);
+    }
+    static checkIsTypeText(type: string) {
+        return type === 'text';
     }
     get isTypeText() {
-        return this.props.type === 'text';
+        return CanvasItem.checkIsTypeText(this.props.type);
+    }
+    static checkIsTypeBible(type: string) {
+        return type === 'bible';
     }
     get isTypeBible() {
-        return this.props.type === 'bible';
+        return CanvasItem.checkIsTypeBible(this.props.type);
     }
     static genStyle(_props: CanvasItemPropsType) {
         throw new Error('Method not implemented.');
@@ -84,8 +101,18 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     getBoxStyle(): CSSProperties {
         return CanvasItem.genBoxStyle(this.props);
     }
-    toJson(): anyObjectType {
-        return cloneObject(this.props);
+    toJson() {
+        return {
+            top: this.props.top,
+            left: this.props.left,
+            rotate: this.props.rotate,
+            width: this.props.width,
+            height: this.props.height,
+            horizontalAlignment: this.props.horizontalAlignment as string,
+            verticalAlignment: this.props.verticalAlignment as string,
+            backgroundColor: this.props.backgroundColor,
+            type: this.props.type,
+        };
     }
     static propsFromJson(json: { [key: string]: any }): CanvasItemPropsType {
         return {
@@ -100,11 +127,14 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
             type: json['type'],
         };
     }
-    static fromJson(_canvasController: CanvasController, _json: object): CanvasItem<any> {
+    static fromJson(_json: object): CanvasItem<any> {
         throw new Error('Method not implemented.');
     }
-    applyBoxData(canvasController: CanvasController, boxData: ToolingBoxType) {
+    applyBoxData(boxData: ToolingBoxType) {
         const canvas = canvasController.canvas;
+        if (canvas === null) {
+            return;
+        }
         const boxProps = tooling2BoxProps(boxData, {
             width: this.props.width,
             height: this.props.height,
@@ -120,9 +150,9 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
         if (boxData?.backgroundColor) {
             newProps.backgroundColor = boxData.backgroundColor;
         }
-        this.applyProps(canvasController, newProps);
+        this.applyProps(newProps);
     }
-    applyProps(canvasController: CanvasController, props: anyObjectType) {
+    applyProps(props: anyObjectType) {
         const propsAny = this.props as any;
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
@@ -134,19 +164,11 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
         newItem.id = -1;
         return newItem;
     }
-    static genKey(canvasController: CanvasController, id: number) {
-        return `${canvasController.slideItem.key}#${id}`;
-    }
-    static extractKey(key: string) {
-        const arr = key.split('#');
-        return {
-            slideItemKey: arr[0],
-            id: +arr[1],
-        };
+    async initProps() {
+        return;
     }
     static validate(json: anyObjectType) {
-        if (!['text', 'image', 'video', 'audio', 'bible'].includes(json.type) ||
-            typeof json.top !== 'number' ||
+        if (typeof json.top !== 'number' ||
             typeof json.left !== 'number' ||
             typeof json.rotate !== 'number' ||
             typeof json.width !== 'number' ||

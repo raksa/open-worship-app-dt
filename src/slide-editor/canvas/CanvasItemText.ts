@@ -1,16 +1,19 @@
 import { CSSProperties } from 'react';
-import CanvasController from './CanvasController';
-import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
+import CanvasItem, {
+    CanvasItemPropsType, genTextDefaultBoxStyle,
+} from './CanvasItem';
 import { CanvasItemType } from './canvasHelpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
-import { anyObjectType } from '../../helper/helpers';
+import { anyObjectType, getAppInfo } from '../../helper/helpers';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
-        text: '',
+        text: getAppInfo().name,
         color: 'white',
         fontSize: 60,
         fontFamily: '',
+        textHorizontalAlignment: 'center',
+        textVerticalAlignment: 'center',
     };
 }
 export type TextPropsType = {
@@ -18,16 +21,16 @@ export type TextPropsType = {
     color: string,
     fontSize: number,
     fontFamily: string,
-    horizontalAlignment?: HAlignmentType,
-    verticalAlignment?: VAlignmentType,
+    textHorizontalAlignment: HAlignmentType,
+    textVerticalAlignment: VAlignmentType,
 };
 export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
 export type ToolingTextType = {
     color?: string,
     fontSize?: number,
     fontFamily?: string,
-    horizontalAlignment?: HAlignmentType,
-    verticalAlignment?: VAlignmentType,
+    textHorizontalAlignment?: HAlignmentType,
+    textVerticalAlignment?: VAlignmentType,
 };
 export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
     get type(): CanvasItemType {
@@ -54,6 +57,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             color: this.props.color,
             fontSize: this.props.fontSize,
             fontFamily: this.props.fontFamily,
+            textHorizontalAlignment: this.props.textHorizontalAlignment as string,
+            textVerticalAlignment: this.props.textHorizontalAlignment as string,
             ...super.toJson(),
         };
     }
@@ -63,12 +68,19 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             color: json.color,
             fontSize: json.fontSize,
             fontFamily: json.fontFamily,
+            textHorizontalAlignment: json.textHorizontalAlignment as HAlignmentType,
+            textVerticalAlignment: json.textVerticalAlignment as VAlignmentType,
             ...super.propsFromJson(json),
         });
     }
-    applyTextData(canvasController: CanvasController,
-        textData: ToolingTextType) {
-        this.applyProps(canvasController, textData);
+    static genDefaultItem() {
+        return CanvasItemText.fromJson({
+            ...genTextDefaultProps(),
+            ...genTextDefaultBoxStyle(),
+        });
+    }
+    applyTextData(textData: ToolingTextType) {
+        this.applyProps(textData);
     }
     static validate(json: anyObjectType) {
         super.validate(json);

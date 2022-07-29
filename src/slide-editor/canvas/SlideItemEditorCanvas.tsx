@@ -3,7 +3,6 @@ import {
     KeyEnum,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { useContextCC } from './CanvasController';
 import {
     showCanvasContextMenu,
     useCCRefresh,
@@ -12,35 +11,35 @@ import {
 import { toastEventListener } from '../../event/ToastEventListener';
 import { isSupportedMimetype } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
+import { canvasController } from './CanvasController';
 
 export default function SlideItemEditorCanvas() {
-    const canvasController = useContextCC();
-    if (canvasController === null) {
-        return null;
-    }
-
-    const scale = useCCScale(canvasController);
-    const canvasItems = canvasController.canvas.canvasItems;
-    useCCRefresh(canvasController, ['update']);
+    const scale = useCCScale();
+    useCCRefresh(['update']);
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => {
         canvasController.stopAllMods();
     });
     const isSupportType = (fileType: string) => {
         return isSupportedMimetype(fileType, 'image') ||
-            isSupportedMimetype(fileType, 'video');
+        isSupportedMimetype(fileType, 'video');
     };
+    const canvas = canvasController.canvas;
+    if(canvas == null) {
+        return null;
+    }
+    const canvasItems = canvas.canvasItems || [];
     return (
         <div className='editor-container w-100 h-100'>
             <div className='overflow-hidden' style={{
-                width: `${canvasController.canvas.width * scale + 20}px`,
-                height: `${canvasController.canvas.height * scale + 20}px`,
+                width: `${canvas.width * scale + 20}px`,
+                height: `${canvas.height * scale + 20}px`,
             }}>
                 <div className='w-100 h-100' style={{
                     transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
                 }}>
                     <div className='editor blank-bg border-white-round' style={{
-                        width: `${canvasController.canvas.width}px`,
-                        height: `${canvasController.canvas.height}px`,
+                        width: `${canvas.width}px`,
+                        height: `${canvas.height}px`,
                         transform: 'translate(-50%, -50%)',
                     }}
                         onDragOver={(event) => {
@@ -68,7 +67,7 @@ export default function SlideItemEditorCanvas() {
                                 }
                             }
                         }}
-                        onContextMenu={(e) => showCanvasContextMenu(e, canvasController)}
+                        onContextMenu={(e) => showCanvasContextMenu(e)}
                         onClick={() => {
                             canvasController.stopAllMods();
                         }} >

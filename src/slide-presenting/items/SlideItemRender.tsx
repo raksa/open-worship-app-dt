@@ -1,18 +1,16 @@
 import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
-import { SlideItemContext } from '../../slide-list/SlideItem';
 import RenderIsEditing from '../RenderIsEditing';
-import { useContext } from 'react';
 import { SlideItemIFrame } from './SlideItemRenderers';
+import SlideItem from '../../slide-list/SlideItem';
 
 export default function SlideItemRender({
-    width, index,
-    onContextMenu,
-    onCopy,
-    onDragStart,
-    onDragEnd,
+    slideItem, width, index,
+    onContextMenu, onCopy,
+    onDragStart, onDragEnd,
 }: {
+    slideItem: SlideItem;
     width: number,
     index: number;
     onContextMenu: (e: ContextMenuEventType) => void,
@@ -20,10 +18,6 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
-    const slideItem = useContext(SlideItemContext);
-    if (slideItem === null) {
-        return null;
-    }
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable

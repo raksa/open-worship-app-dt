@@ -4,6 +4,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import SlideBase from './SlideBase';
 import { anyObjectType } from '../helper/helpers';
+import { openSlideContextMenu } from './slideHelpers';
 
 export default class Slide extends SlideBase {
     static mimetype: MimetypeNameType = 'slide';
@@ -40,10 +41,18 @@ export default class Slide extends SlideBase {
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
+    async initSlideItems() {
+        await Promise.all(this.items.map((item) => {
+            return item.init();
+        }));
+    }
     static async readFileToDataNoCache(fileSource: FileSource | null, isOrigin?: boolean) {
         const slide = await super.readFileToDataNoCache(fileSource) as Slide | null | undefined;
         if (!isOrigin && slide) {
             slide.loadEditingCache();
+        }
+        if (slide) {
+            await slide.initSlideItems();
         }
         return slide;
     }
@@ -51,13 +60,14 @@ export default class Slide extends SlideBase {
         const slide = await super.readFileToData(fileSource, isForceCache) as Slide | null | undefined;
         if (slide) {
             slide.loadEditingCache();
+            await slide.initSlideItems();
         }
         return slide;
     }
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();
         if (fileSource !== null) {
-            return Slide.readFileToData(fileSource);
+            return this.readFileToData(fileSource);
         }
         return null;
     }
@@ -66,5 +76,7 @@ export default class Slide extends SlideBase {
             items: [SlideItem.defaultSlideItem()],
         });
     }
-
+    openContextMenu(e: any, slideItem: SlideItem) {
+        openSlideContextMenu(e, this, slideItem);
+    }
 }

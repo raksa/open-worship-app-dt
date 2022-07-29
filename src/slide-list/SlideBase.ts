@@ -3,13 +3,11 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
 import { DisplayType } from '../helper/displayHelper';
-import Canvas from '../slide-editor/canvas/Canvas';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     ChangeHistory,
     MAX_THUMBNAIL_SCALE,
     MIN_THUMBNAIL_SCALE,
-    openSlideContextMenu,
     THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
@@ -254,9 +252,6 @@ export default class SlideBase extends ItemSource<SlideType>{
             title: 'Paste', disabled: SlideItem.copiedItem === null,
             onClick: () => this.pasteItem(),
         }]);
-    }
-    openContextMenu(e: any, slideItem: SlideItem) {
-        openSlideContextMenu(e, this, slideItem);
     }
     static toScaleThumbSize(isUp: boolean, currentScale: number) {
         let newScale = currentScale + (isUp ? -1 : 1) * THUMBNAIL_SCALE_STEP;

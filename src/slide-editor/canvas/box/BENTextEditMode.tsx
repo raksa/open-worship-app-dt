@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { useContextCC } from '../CanvasController';
+import { canvasController } from '../CanvasController';
 import CanvasItemText from '../CanvasItemText';
 import BoxEditorTextArea from './BoxEditorTextArea';
 
@@ -9,11 +9,6 @@ export default function BENTextEditMode({
     canvasItemText: CanvasItemText,
     style: CSSProperties
 }) {
-    const canvasController = useContextCC();
-    if(canvasController === null) {
-        return null;
-    }
-
     return (
         <div className='box-editor pointer editable'
             style={style}
@@ -33,7 +28,7 @@ export default function BENTextEditMode({
                 color={style.color}
                 text={canvasItemText.props.text}
                 setText={(text) => {
-                    canvasItemText.applyProps(canvasController, { text });
+                    canvasItemText.applyProps({ text });
                 }} />
         </div>
     );

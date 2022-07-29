@@ -11,7 +11,7 @@ import { genSlideItemHtmlString } from '../slide-presenting/items/SlideItemRende
 export default function MiniPresentScreen() {
     useSlideItemSelecting(async(slideItem) => {
         if (slideItem !== null) {
-            const htmlString = await genSlideItemHtmlString(slideItem);
+            const htmlString = genSlideItemHtmlString(slideItem);
             renderFG(htmlString);
             presentEventListener.renderFG();
         } else {

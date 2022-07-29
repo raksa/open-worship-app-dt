@@ -21,16 +21,26 @@ export default class CanvasItemBible extends CanvasItemText {
             ...super.toJson(),
         };
     }
-    static fromJson(json: anyObjectType) {
-        return new CanvasItemBible(json.id, {
-            bibleNames: json.bibleNames,
-            bibleItemTarget: json.bibleItemTarget,
-            text: '',
-            color: json.color,
-            fontSize: json.fontSize,
-            fontFamily: json.fontFamily,
-            ...super.propsFromJson(json),
-        });
+    static fromJson({ bibleNames, bibleItemTarget, ...json }: {
+        bibleNames: string[];
+        bibleItemTarget: BibleTargetType;
+    } & anyObjectType) {
+        const newTextItem = super.fromJson(json);
+        const props = {
+            bibleNames,
+            bibleItemTarget,
+            ...newTextItem.props,
+        };
+        return new CanvasItemBible(json.id, props);
+    }
+    static fromBibleItem(bibleItem: BibleItem) {
+        const newTextItem = super.genDefaultItem();
+        const json = {
+            bibleNames: [bibleItem.bibleName],
+            bibleItemTarget: bibleItem.toJson(),
+            ...newTextItem.toJson(),
+        };
+        return CanvasItemBible.fromJson(json);
     }
     static validate(json: anyObjectType) {
         super.validate(json);

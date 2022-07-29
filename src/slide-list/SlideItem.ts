@@ -5,8 +5,9 @@ import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
-import CanvasController from '../slide-editor/canvas/CanvasController';
 import { anyObjectType, cloneObject } from '../helper/helpers';
+import Canvas from '../slide-editor/canvas/Canvas';
+import { canvasController } from '../slide-editor/canvas/CanvasController';
 
 export default class SlideItem extends ItemBase {
     metadata: anyObjectType;
@@ -31,6 +32,20 @@ export default class SlideItem extends ItemBase {
         const key = SlideItem.genKey(this);
         SlideItem._cache.set(key, this);
     }
+    async init() {
+        await canvasController.initCanvasItemsProps(this.canvasItemsJson);
+    }
+    get canvas() {
+        return Canvas.fromJson({
+            metadata: this.metadata,
+            canvasItems: this.canvasItemsJson,
+        });
+    }
+    set canvas(canvas: Canvas) {
+        this.canvasItemsJson = canvas.canvasItems.map(item => {
+            return item.toJson();
+        });
+    }
     get width() {
         return this.metadata.width;
     }
@@ -42,9 +57,6 @@ export default class SlideItem extends ItemBase {
     }
     set height(height: number) {
         this.metadata.height = height;
-    }
-    get canvasController() {
-        return CanvasController.getInstant(this);
     }
     get key() {
         return SlideItem.genKey(this);
@@ -162,7 +174,7 @@ export default class SlideItem extends ItemBase {
             throw new Error('Invalid slide item data');
         }
         json.canvasItems.forEach((item: anyObjectType) => {
-            CanvasController.checkValidCanvasItem(item);
+            canvasController.checkValidCanvasItem(item);
         });
     }
     clone(isDuplicateId?: boolean) {
@@ -192,5 +204,3 @@ export default class SlideItem extends ItemBase {
         return this._cache.get(key) || null;
     }
 }
-
-export const SlideItemContext = React.createContext<SlideItem | null>(null);

@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { useContextCC } from '../CanvasController';
+import { canvasController } from '../CanvasController';
 import {
     showCanvasItemContextMenu,
 } from '../canvasHelpers';
@@ -13,17 +13,12 @@ export default function BENViewBibleMode({
     canvasItemBible: CanvasItemBible,
     style: CSSProperties
 }) {
-    const canvasController = useContextCC();
-    if (canvasController === null) {
-        return null;
-    }
     return (
         <div className='box-editor pointer'
             style={style}
             onContextMenu={async (e) => {
                 e.stopPropagation();
-                showCanvasItemContextMenu(e,
-                    canvasController, canvasItemBible);
+                showCanvasItemContextMenu(e, canvasItemBible);
             }}
             onClick={async (e) => {
                 e.stopPropagation();

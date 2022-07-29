@@ -1,15 +1,14 @@
-import { CanvasItemRenderer } from '../../../slide-presenting/items/SlideItemRenderers';
-import { useContextCC } from '../CanvasController';
-import { showCanvasItemContextMenu, useCCRefresh } from '../canvasHelpers';
+import {
+    CanvasItemRenderer,
+} from '../../../slide-presenting/items/SlideItemRenderers';
+import { canvasController } from '../CanvasController';
+import {
+    showCanvasItemContextMenu, useCCRefresh,
+} from '../canvasHelpers';
 
 export default function ToolCanvasItems() {
-    const canvasController = useContextCC();
-    if(canvasController === null) {
-        return null;
-    }
-
-    const canvasItems = canvasController.canvas.canvasItems;
-    useCCRefresh(canvasController, ['update']);
+    const canvasItems = canvasController.canvas?.canvasItems || [];
+    useCCRefresh(['update']);
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem, i) => {
@@ -24,8 +23,7 @@ export default function ToolCanvasItems() {
                             canvasController.setItemIsSelecting(canvasItem, true);
                         }}
                         onContextMenu={(e) => {
-                            showCanvasItemContextMenu(e,
-                                canvasController, canvasItem);
+                            showCanvasItemContextMenu(e, canvasItem);
                         }}>
                         <div className='card-header'>
                             {canvasItem.id}:

@@ -46,23 +46,12 @@ export function SlideItemIFrame({ slideItem }: {
     );
 }
 
-export async function genSlideItemHtmlString(slideItem: SlideItem) {
-    for (const canvasItem of slideItem.canvasItemsJson) {
-        if (canvasItem.type === 'image' && !canvasItem.props.imageDataUrl) {
-            const imgProps = canvasItem.props as CanvasItemImagePropsType;
-            const fileSource = FileSource.genFileSource(imgProps.filePath);
-            try {
-                imgProps.imageDataUrl = await CanvasItemImage.readImageData(fileSource);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    }
+export function genSlideItemHtmlString(slideItem: SlideItem) {
     return reactDomServer.renderToStaticMarkup(
         <SlideItemRenderer slideItem={slideItem} />);
 }
 export function CanvasItemRenderer({ props }: {
-    props: CanvasItemPropsType,
+    props: CanvasItemPropsType & { src?: string },
 }) {
     if (props.type === 'image') {
         return (

@@ -1,11 +1,11 @@
 import { anyObjectType } from '../../helper/helpers';
-import CanvasController from './CanvasController';
 import FileSource from '../../helper/FileSource';
 import CanvasItem, { CanvasItemPropsType, genTextDefaultBoxStyle } from './CanvasItem';
+import fileHelpers from '../../helper/fileHelper';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType & {
     filePath: string,
-    imageDataUrl?: string,
+    src: string | null;
     imageWidth: number;
     imageHeight: number;
 };
@@ -27,6 +27,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     static fromJson(json: anyObjectType) {
         return new CanvasItemImage(json.id, {
             filePath: json.filePath,
+            src: null,
             imageWidth: json.imageWidth,
             imageHeight: json.imageHeight,
             ...super.propsFromJson(json),
@@ -55,32 +56,19 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             };
         });
     }
-    async loadImageData() {
-        const fileSource = FileSource.genFileSource(this.props.filePath);
-        this.props.imageDataUrl = await CanvasItemImage.readImageData(fileSource);
+    async initProps() {
+        this.props.src = await CanvasItemImage.loadSrc(this.props.filePath);
     }
-    static readImageData(fileSource: FileSource) {
-        return new Promise<string>((resolve, reject) => {
-            const image = document.createElement('img');
-            image.src = fileSource.src;
-            image.onload = () => {
-                const canvas = document.createElement('canvas');
-                const imageWidth = image.clientWidth;
-                const imageHeight = image.clientHeight;
-                const ctx = canvas.getContext('2d');
-                if (ctx === null) {
-                    return reject(new Error('Fail to read image'));
-                }
-                ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
-                const imageData = ctx.getImageData(0, 0,
-                    imageWidth, imageHeight);
-                const dataUrl = `url(data:${fileSource.metadata?.appMimetype.mimetype};${imageData}`;
-                resolve(dataUrl);
-            };
-            image.onerror = () => {
-                reject(new Error('Image load error'));
-            };
-        });
+    static async loadSrc(filePath: string) {
+        const fileSource = FileSource.genFileSource(filePath);
+        try {
+            if (await fileHelpers.checkFileExist(fileSource.filePath)) {
+                return fileSource.src;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        return null;
     }
     static validate(json: anyObjectType) {
         super.validate(json);
