@@ -138,7 +138,7 @@ class CanvasController extends EventHandler {
         });
     }
     async addNewBibleItem(bibleItem: BibleItem) {
-        const newItem = CanvasItemBible.fromBibleItem(bibleItem);
+        const newItem = await CanvasItemBible.fromBibleItem(bibleItem);
         this.addNewItem(newItem);
     }
     applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {

@@ -34,12 +34,18 @@ export default function BENViewBibleMode({
 export function BENBibleRender({ props }: {
     props: CanvasItemBiblePropsType,
 }) {
+    const bibleRenderedList = props.bibleRenderedList;
     return (
         <div className='w-100 h-100'
             style={CanvasItemBible.genStyle(props)}>
-            {props.bibleItemTarget.book}{' '}
-            {props.bibleItemTarget.chapter}:{props.bibleItemTarget.startVerse}
-            {props.bibleItemTarget.endVerse ? `-${props.bibleItemTarget.endVerse}` : ''}
+            {bibleRenderedList.map((bibleRendered, i) => {
+                return (
+                    <div key={i}>
+                        <div>{bibleRendered.title}</div>
+                        <div>{bibleRendered.text}</div>
+                    </div>
+                );
+            })}
         </div>
     );
 }
