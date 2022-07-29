@@ -12,7 +12,7 @@ import { canvasController } from '../CanvasController';
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';
 export default function Tools() {
-    const selectedCanvasItems = canvasController.canvas?.selectedCanvasItems||[];
+    const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
     useCCRefresh(['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
     const scale = useCCScale();

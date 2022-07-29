@@ -142,12 +142,18 @@ export function useReadFileToData<T extends ItemSourceAnyType>(fileSource: FileS
     return data;
 }
 
+let fontListGlobal: string[] | null = null;
 export function useFontList() {
     const [fontListString, setFontListString] = useState<string[] | null>(null);
     useEffect(() => {
         if (fontListString === null) {
+            if (fontListGlobal !== null) {
+                setFontListString(fontListGlobal);
+                return;
+            }
             appProvider.fontList.getFonts().then((fonts) => {
                 const newFontList = fonts.map((fontString) => fontString.replace(/"/g, ''));
+                fontListGlobal = newFontList;
                 setFontListString(newFontList);
             }).catch((error) => {
                 console.log(error);

@@ -70,7 +70,7 @@ const slideEditingCacheManager = {
                     },
                 };
             } catch (error) {
-                console.log(error);
+                console.trace(error);
             }
         }
         this.delete(fileSource);

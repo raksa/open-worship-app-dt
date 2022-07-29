@@ -21,13 +21,10 @@ export default function SlideItemEditorCanvas() {
     });
     const isSupportType = (fileType: string) => {
         return isSupportedMimetype(fileType, 'image') ||
-        isSupportedMimetype(fileType, 'video');
+            isSupportedMimetype(fileType, 'video');
     };
     const canvas = canvasController.canvas;
-    if(canvas == null) {
-        return null;
-    }
-    const canvasItems = canvas.canvasItems || [];
+    const canvasItems = canvas.canvasItems;
     return (
         <div className='editor-container w-100 h-100'>
             <div className='overflow-hidden' style={{
@@ -37,14 +34,16 @@ export default function SlideItemEditorCanvas() {
                 <div className='w-100 h-100' style={{
                     transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
                 }}>
-                    <div className='editor blank-bg border-white-round' style={{
-                        width: `${canvas.width}px`,
-                        height: `${canvas.height}px`,
-                        transform: 'translate(-50%, -50%)',
-                    }}
+                    <div className='editor blank-bg border-white-round'
+                        style={{
+                            width: `${canvas.width}px`,
+                            height: `${canvas.height}px`,
+                            transform: 'translate(-50%, -50%)',
+                        }}
                         onDragOver={(event) => {
                             event.preventDefault();
-                            if (Array.from(event.dataTransfer.items).every((item) => {
+                            const items = event.dataTransfer.items;
+                            if (Array.from(items).every((item) => {
                                 return isSupportType(item.type);
                             })) {
                                 event.currentTarget.style.opacity = '0.5';
@@ -55,7 +54,8 @@ export default function SlideItemEditorCanvas() {
                         }} onDrop={async (event) => {
                             event.preventDefault();
                             event.currentTarget.style.opacity = '1';
-                            for (const file of Array.from(event.dataTransfer.files)) {
+                            const files = event.dataTransfer.files;
+                            for (const file of Array.from(files)) {
                                 if (!isSupportType(file.type)) {
                                     toastEventListener.showSimpleToast({
                                         title: 'Insert Image or Video',

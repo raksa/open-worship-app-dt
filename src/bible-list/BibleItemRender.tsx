@@ -69,7 +69,7 @@ export default function BibleItemRender({
                 }}>
                 <i className='bi bi-bookmark' />
                 {bibleStatus === null ? null : bibleStatus[2]}
-            </span> | {title == null ? 'not found' : title}
+            </span> | {title === null ? 'not found' : title}
             {warningMessage && <span className='float-end'
                 title={warningMessage}>⚠️</span>}
             <ItemColorNote item={bibleItem} />

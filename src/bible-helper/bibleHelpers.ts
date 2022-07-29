@@ -94,7 +94,7 @@ export function genDuplicatedMessage(list: BibleItem[],
         return target.book === target1.book &&
             target.chapter === target1.chapter &&
             target.startVerse === target1.startVerse &&
-            target.endVerse === target1.endVerse && i != i1;
+            target.endVerse === target1.endVerse && i !== i1;
     });
     if (duplicated) {
         warningMessage = `Duplicated with item number ${list.indexOf(duplicated) + 1}`;

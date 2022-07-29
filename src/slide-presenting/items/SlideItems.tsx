@@ -28,6 +28,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     usePresentFGClearing(() => {
         SlideItem.setSelectedItem(null);
     });
+    const slideItems = slide.items;
     if (!isWindowEditingMode()) {
         const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
         const arrowListener = (e: KeyboardEvent) => {
@@ -35,7 +36,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
             if (~selectedIndex) {
                 return;
             }
-            const length = slide.items.length;
+            const length = slideItems.length;
             if (length) {
                 let ind = e.key === KeyEnum.ArrowLeft ?
                     selectedIndex - 1 : selectedIndex + 1;
@@ -57,7 +58,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     }
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {slide.items.map((item, i) => {
+            {slideItems.map((item, i) => {
                 const shouldReceiveAtFirst = draggingIndex !== null &&
                     draggingIndex !== 0 && i === 0;
                 const shouldReceiveAtLast = draggingIndex !== null &&
@@ -94,7 +95,8 @@ export default function SlideItems({ slide }: { slide: Slide }) {
             })}
             {Array.from({ length: 2 }, (_, i) => {
                 return (
-                    <SlideItemGhost key={`${i}`} width={thumbSize} />
+                    <SlideItemGhost key={`${i}`}
+                        width={thumbSize} />
                 );
             })}
         </div>

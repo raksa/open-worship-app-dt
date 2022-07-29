@@ -12,6 +12,7 @@ import {
 } from './slideHelpers';
 import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 import { anyObjectType } from '../helper/helpers';
+import Canvas from '../slide-editor/canvas/Canvas';
 
 export type SlideType = {
     items: SlideItem[],
@@ -241,8 +242,8 @@ export default class SlideBase extends ItemSource<SlideType>{
     showSlideItemContextMenu(e: any) {
         showAppContextMenu(e, [{
             title: 'New Slide Item', onClick: () => {
-                const item = SlideItem.defaultSlideItem();
-                const { width, height } = SlideItem.getDefaultDim();
+                const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
+                const { width, height } = Canvas.getDefaultDim();
                 this.addItem(new SlideItem(item.id, {
                     metadata: { width, height },
                     canvasItems: [], // TODO: add default canvas item

@@ -1,3 +1,4 @@
+import { getAllDisplays } from '../../helper/displayHelper';
 import { anyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import CanvasItem from './CanvasItem';
@@ -14,11 +15,8 @@ type CanvasPropsType = {
     canvasItems: CanvasItem<any>[],
 };
 export default class Canvas {
-    static _objectId = 0;
-    _objectId: number;
     props: CanvasPropsType;
     constructor(props: CanvasPropsType) {
-        this._objectId = CanvasItem._objectId++;
         this.props = props;
     }
     get maxItemId() {
@@ -44,6 +42,19 @@ export default class Canvas {
     }
     set canvasItems(canvasItems: CanvasItem<any>[]) {
         this.props.canvasItems = canvasItems;
+    }
+    static genDefaultCanvas() {
+        const { width, height } = Canvas.getDefaultDim();
+        const canvas = new Canvas({
+            width, height,
+            canvasItems: [],
+        });
+        return canvas;
+    }
+    static getDefaultDim() {
+        const { presentDisplay } = getAllDisplays();
+        const { width, height } = presentDisplay.bounds;
+        return { width, height };
     }
     static fromJson({ metadata, canvasItems: canvasItemsJson }: {
         metadata: anyObjectType,

@@ -41,18 +41,10 @@ export default class Slide extends SlideBase {
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    async initSlideItems() {
-        await Promise.all(this.items.map((item) => {
-            return item.init();
-        }));
-    }
     static async readFileToDataNoCache(fileSource: FileSource | null, isOrigin?: boolean) {
         const slide = await super.readFileToDataNoCache(fileSource) as Slide | null | undefined;
         if (!isOrigin && slide) {
             slide.loadEditingCache();
-        }
-        if (slide) {
-            await slide.initSlideItems();
         }
         return slide;
     }
@@ -60,7 +52,6 @@ export default class Slide extends SlideBase {
         const slide = await super.readFileToData(fileSource, isForceCache) as Slide | null | undefined;
         if (slide) {
             slide.loadEditingCache();
-            await slide.initSlideItems();
         }
         return slide;
     }
@@ -73,7 +64,7 @@ export default class Slide extends SlideBase {
     }
     static async create(dir: string, name: string) {
         return super.create(dir, name, {
-            items: [SlideItem.defaultSlideItem()],
+            items: [SlideItem.defaultSlideItemData(0)],
         });
     }
     openContextMenu(e: any, slideItem: SlideItem) {

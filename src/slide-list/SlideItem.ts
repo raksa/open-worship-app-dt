@@ -1,6 +1,4 @@
-import React from 'react';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import { getAllDisplays } from '../helper/displayHelper';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
@@ -19,21 +17,21 @@ export default class SlideItem extends ItemBase {
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     static _cache = new Map<string, SlideItem>();
+    static _objectId = 0;
+    _objectId: number;
     constructor(id: number, jsonData: {
         metadata: anyObjectType,
         canvasItems: anyObjectType[],
     }, fileSource: FileSource) {
         super();
+        this._objectId = SlideItem._objectId++;
         this.id = id;
         this.metadata = jsonData.metadata;
         this._canvasItemsJson = jsonData.canvasItems;
         this.fileSource = fileSource;
         this.isCopied = false;
-        const key = SlideItem.genKey(this);
+        const key = SlideItem.genKeyByFileSource(fileSource, id);
         SlideItem._cache.set(key, this);
-    }
-    async init() {
-        await canvasController.initCanvasItemsProps(this.canvasItemsJson);
     }
     get canvas() {
         return Canvas.fromJson({
@@ -57,9 +55,6 @@ export default class SlideItem extends ItemBase {
     }
     set height(height: number) {
         this.metadata.height = height;
-    }
-    get key() {
-        return SlideItem.genKey(this);
     }
     get isSelected() {
         const selected = SlideItem.getSelectedResult();
@@ -118,16 +113,10 @@ export default class SlideItem extends ItemBase {
         }
         return null;
     }
-    static getDefaultDim() {
-        const { presentDisplay } = getAllDisplays();
-        const { width, height } = presentDisplay.bounds;
-        return { width, height };
-    }
-    static defaultSlideItem() {
-        const { width, height } = this.getDefaultDim();
-        // TODO: add default canvas item
+    static defaultSlideItemData(id: number) {
+        const { width, height } = Canvas.getDefaultDim();
         return {
-            id: -1,
+            id,
             metadata: {
                 width,
                 height,
@@ -140,6 +129,10 @@ export default class SlideItem extends ItemBase {
         metadata: anyObjectType,
     }, fileSource: FileSource) {
         this.validate(json);
+        const key = SlideItem.genKeyByFileSource(fileSource, json.id);
+        if (SlideItem._cache.has(key)) {
+            return SlideItem._cache.get(key) as SlideItem;
+        }
         return new SlideItem(json.id, json, fileSource);
     }
     static fromJsonError(json: anyObjectType, fileSource: FileSource) {
@@ -186,21 +179,5 @@ export default class SlideItem extends ItemBase {
     }
     static genKeyByFileSource(fileSource: FileSource, id: number) {
         return `${fileSource.filePath}:${id}`;
-    }
-    static genKey(slideItem: SlideItem) {
-        return this.genKeyByFileSource(slideItem.fileSource, slideItem.id);
-    }
-    genKey() {
-        return SlideItem.genKeyByFileSource(this.fileSource, this.id);
-    }
-    static extractKey(key: string) {
-        const arr = key.split(':');
-        return {
-            filePath: arr[0],
-            id: arr[1],
-        };
-    }
-    static getByKey(key: string) {
-        return this._cache.get(key) || null;
     }
 }

@@ -7,7 +7,7 @@ import {
 } from '../canvasHelpers';
 
 export default function ToolCanvasItems() {
-    const canvasItems = canvasController.canvas?.canvasItems || [];
+    const canvasItems = canvasController.canvas.canvasItems;
     useCCRefresh(['update']);
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>

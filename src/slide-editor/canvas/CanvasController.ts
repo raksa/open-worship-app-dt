@@ -14,7 +14,7 @@ import { anyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 
 type ListenerType<T> = (data: T) => void;
-export type CCEventType = 'select' | 'control' | 'edit' | 'update' | 'scale';
+export type CCEventType = 'select' | 'control' | 'text-edit' | 'update' | 'scale';
 export type RegisteredEventType<T> = {
     type: CCEventType,
     listener: ListenerType<T>,
@@ -22,17 +22,26 @@ export type RegisteredEventType<T> = {
 
 class CanvasController extends EventHandler {
     copiedItem: CanvasItem<any> | null = null;
-    canvas: Canvas | null = null;
+    _canvas: Canvas;
+    _slideItem: SlideItem | null = null;
     MAX_SCALE = 3;
     MIN_SCALE = 0.2;
     SCALE_STEP = 0.1;
     _scale: number = 1;
     constructor() {
         super();
+        this._canvas = Canvas.genDefaultCanvas();
         const defaultData = +(getSetting('editor-scale') || NaN);
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }
+    }
+    init(slideItem: SlideItem | null) {
+        this._slideItem = slideItem;
+        this._canvas = slideItem?.canvas || Canvas.genDefaultCanvas();;
+    }
+    get canvas() {
+        return this._canvas;
     }
     get scale() {
         return this._scale;
@@ -43,10 +52,10 @@ class CanvasController extends EventHandler {
         this._addPropEvent('scale');
     }
     get isCopied() {
-        if (this.copiedItem === null || this.canvas === null) {
+        if (this.copiedItem === null) {
             return false;
         }
-        return this.canvas.canvasItems.indexOf(this.copiedItem) > -1;
+        return this._canvas.canvasItems.indexOf(this.copiedItem) > -1;
     }
     fireSelectEvent(canvasItem: CanvasItem<any>) {
         this._addPropEvent('select', canvasItem);
@@ -54,58 +63,43 @@ class CanvasController extends EventHandler {
     fireControlEvent(canvasItem: CanvasItem<any>) {
         this._addPropEvent('control', canvasItem);
     }
-    fireEditEvent(canvasItem: CanvasItem<any>) {
-        this._addPropEvent('edit', canvasItem);
+    fireTextEditEvent(canvasItem: CanvasItem<any>) {
+        this._addPropEvent('text-edit', canvasItem);
     }
     async fireUpdateEvent() {
-        debugger;
-        const slideItem = await SlideItem.getSelectedItem();
-        const canvas = this.canvas;
-        if (slideItem && canvas !== null) {
-            slideItem.canvas = canvas;
+        if (this._slideItem !== null) {
+            this._slideItem.canvas = this._canvas;
         }
         this._addPropEvent('update');
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
-        if (this.canvas === null) {
-            return null;
-        }
         const newCanvasItem = canvasItem.clone();
         newCanvasItem.props.top += 20;
         newCanvasItem.props.left += 20;
-        newCanvasItem.id = this.canvas.maxItemId + 1;
+        newCanvasItem.id = this._canvas.maxItemId + 1;
         return newCanvasItem;
     }
     async duplicate(canvasItem: CanvasItem<any>) {
-        if (this.canvas === null) {
-            return;
-        }
-        const newCanvasItems = this.canvas.newCanvasItems;
+        const newCanvasItems = this._canvas.newCanvasItems;
         const newCanvasItem = await this.cloneItem(canvasItem);
         if (newCanvasItem === null) {
             return;
         }
-        const index = this.canvas.canvasItems.indexOf(canvasItem);
+        const index = this._canvas.canvasItems.indexOf(canvasItem);
         newCanvasItems.splice(index + 1, 0, newCanvasItem);
         this.setCanvasItems(newCanvasItems);
     }
     deleteItem(canvasItem: CanvasItem<any>) {
-        if (this.canvas === null) {
-            return;
-        }
         if (this.copiedItem === canvasItem) {
             this.copiedItem = null;
         }
-        const newCanvasItems = this.canvas.canvasItems.filter((item) => {
+        const newCanvasItems = this._canvas.canvasItems.filter((item) => {
             return item !== canvasItem;
         });
         this.setCanvasItems(newCanvasItems);
     }
     async paste() {
-        if (this.canvas === null) {
-            return;
-        }
-        const newCanvasItems = this.canvas.newCanvasItems;
+        const newCanvasItems = this._canvas.newCanvasItems;
         if (this.copiedItem !== null) {
             const newCanvasItem = await this.cloneItem(this.copiedItem);
             if (newCanvasItem === null) {
@@ -116,11 +110,8 @@ class CanvasController extends EventHandler {
         }
     }
     addNewItem(canvasItem: CanvasItem<any>) {
-        if (this.canvas === null) {
-            return;
-        }
-        const newCanvasItems = this.canvas.newCanvasItems;
-        canvasItem.id = this.canvas.maxItemId + 1;
+        const newCanvasItems = this._canvas.newCanvasItems;
+        canvasItem.id = this._canvas.maxItemId + 1;
         newCanvasItems.push(canvasItem);
         this.setCanvasItems(newCanvasItems);
     }
@@ -151,10 +142,7 @@ class CanvasController extends EventHandler {
         this.addNewItem(newItem);
     }
     applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {
-        if (this.canvas === null) {
-            return;
-        }
-        const newCanvasItems = this.canvas.canvasItems.map((item) => {
+        const newCanvasItems = this._canvas.canvasItems.map((item) => {
             if (item === canvasItem) {
                 item.props.zIndex = isBack ? 1 : 2;
             } else {
@@ -165,10 +153,7 @@ class CanvasController extends EventHandler {
         this.setCanvasItems(newCanvasItems);
     }
     stopAllMods(isSilent?: boolean) {
-        if (this.canvas === null) {
-            return;
-        }
-        this.canvas.canvasItems.forEach((item) => {
+        this._canvas.canvasItems.forEach((item) => {
             if (isSilent) {
                 item.isSelected = false;
                 item.isControlling = false;
@@ -191,15 +176,13 @@ class CanvasController extends EventHandler {
         this.scale = newScale;
     }
     setCanvasItems(canvasItems: CanvasItem<any>[]) {
-        if (this.canvas === null) {
-            return;
-        }
-        this.canvas.canvasItems = canvasItems;
+        this._canvas.canvasItems = canvasItems;
         this.fireUpdateEvent();
     }
     setItemIsSelecting(canvasItem: CanvasItem<any>, b: boolean) {
         canvasItem.isSelected = b;
         this.fireSelectEvent(canvasItem);
+        this.setItemIsControlling(canvasItem, b);
     }
     setItemIsControlling(canvasItem: CanvasItem<any>, b: boolean) {
         canvasItem.isControlling = b;
@@ -207,7 +190,7 @@ class CanvasController extends EventHandler {
     }
     setItemIsEditing(canvasItem: CanvasItem<any>, b: boolean) {
         canvasItem.isEditing = b;
-        this.fireEditEvent(canvasItem);
+        this.fireTextEditEvent(canvasItem);
     }
     checkValidCanvasItem(json: anyObjectType) {
         if (CanvasItem.checkIsTypeText(json.type)) {
@@ -217,26 +200,13 @@ class CanvasController extends EventHandler {
             return CanvasItemBible.validate(json);
         }
         if (CanvasItem.checkIsTypeImage(json.type)) {
-            return CanvasItemBible.validate(json);
+            return CanvasItemImage.validate(json);
         }
         throw new Error('Invalid canvas item type');
     }
     async initCanvasItems(canvasItems: CanvasItem<any>[]) {
         await Promise.all(canvasItems.map((canvasItem) => {
             return canvasItem.initProps();
-        }));
-    }
-    async initCanvasItemsProps(canvasItemJson: anyObjectType[]) {
-        await Promise.all(canvasItemJson.map((json) => {
-            if (CanvasItem.checkIsTypeImage(json.type)) {
-                return new Promise<void>((resolve) => {
-                    CanvasItemImage.loadSrc(json.filePath).then((src) => {
-                        json.src = src;
-                        resolve();
-                    });
-                });
-            }
-            return Promise.resolve();
         }));
     }
     registerEventListener(types: CCEventType[], listener: ListenerType<any>):

@@ -151,7 +151,7 @@ function BibleSearchRender({ bibleItem }: { bibleItem: BibleItem | null }) {
     };
     const handleBibleChange = async (preBible: string) => {
         const bible = await getSelectedEditingBibleItem(null);
-        if (bible == null) {
+        if (bible === null) {
             return;
         }
         setBibleSelected(bible);

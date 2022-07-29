@@ -132,9 +132,6 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     }
     applyBoxData(boxData: ToolingBoxType) {
         const canvas = canvasController.canvas;
-        if (canvas === null) {
-            return;
-        }
         const boxProps = tooling2BoxProps(boxData, {
             width: this.props.width,
             height: this.props.height,

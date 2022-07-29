@@ -8,6 +8,7 @@ import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { goEditSlide } from '../App';
 import { useSlideIsModifying } from './slideHelpers';
+import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 
 export default function SlideFile({
     index, fileSource,
@@ -50,6 +51,7 @@ export default function SlideFile({
             onDelete={() => {
                 if (Slide.getSelectedFileSource()?.filePath === fileSource.filePath) {
                     Slide.setSelectedFileSource(null);
+                    slideEditingCacheManager.delete(fileSource);
                 }
             }}
         />

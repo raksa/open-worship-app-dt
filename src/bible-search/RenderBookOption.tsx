@@ -47,7 +47,7 @@ export default function RenderBookOption({
             <i className='bi bi-bookmark'></i>
         </span>
         <div className='row w-75 align-items-start g-2'>
-            {(matches === null || bookKVList == null) ?
+            {(matches === null || bookKVList === null) ?
                 <div>No matched found</div> :
                 matches.map((k, i) => {
                     const highlight = i === applyAttemptIndex;

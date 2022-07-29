@@ -7,7 +7,6 @@ import { canvasController } from './canvas/CanvasController';
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
 }) {
-    canvasController.canvas = slideItem.canvas;
     if (slideItem.isError) {
         return (
             <div className='alert alert-danger'>Error</div>
