@@ -8,29 +8,28 @@ import CanvasItem from '../CanvasItem';
 export default function ToolsText({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
-    if (!canvasItem.isTypeText) {
+    if (!(canvasItem instanceof CanvasItemText)) {
         return null;
     }
-    const canvasItemText = canvasItem as CanvasItemText;
     return (
         <div className='d-flex'>
             <Tool>
-                <ColorPicker color={canvasItemText.props.color}
+                <ColorPicker color={canvasItem.props.color}
                     onColorChange={(newColor: string) => {
-                        canvasItemText.applyTextData({
+                        canvasItem.applyTextData({
                             color: newColor,
                         });
                     }} />
             </Tool>
             <Tool title='Text Alignment'>
                 <ToolAlign isText onData={(newData) => {
-                    canvasItemText.applyTextData({
+                    canvasItem.applyTextData({
                         textHorizontalAlignment: newData.horizontalAlignment,
                         textVerticalAlignment: newData.verticalAlignment,
                     });
                 }} />
             </Tool>
-            <ToolsTextFontControl canvasItemText={canvasItemText} />
+            <ToolsTextFontControl canvasItemText={canvasItem} />
         </div>
     );
 }
