@@ -1,29 +1,64 @@
 import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
+import { toastEventListener } from '../event/ToastEventListener';
 import { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import LyricItem from './LyricItem';
+import LyricEditingCacheManager from './LyricEditingCacheManager';
+import LyricItem, { LyricItemType } from './LyricItem';
+
+export type LyricEditingHistoryType = {
+    items?: LyricItemType[],
+    metadata?: AnyObjectType,
+};
 
 export type LyricType = {
-    items: LyricItem[],
+    items: LyricItemType[],
+    metadata: AnyObjectType,
 }
 export default class Lyric extends ItemSource<LyricItem>{
+    static mimetype: MimetypeNameType = 'lyric';
     static SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
-    static fromJson(json: AnyObjectType, fileSource: FileSource) {
-        this.validate(json);
-        return new Lyric(fileSource, json.metadata, json.content);
+    editingCacheManager: LyricEditingCacheManager;
+    constructor(fileSource: FileSource, json: LyricType) {
+        super(fileSource);
+        this.editingCacheManager = new LyricEditingCacheManager(
+            this.fileSource, json);
+    }
+    get isChanged() {
+        return this.editingCacheManager.isChanged;
+    }
+    get metadata() {
+        return this.editingCacheManager.latestHistory.metadata;
     }
     get items() {
-        return this.content.items;
+        const latestHistory = this.editingCacheManager.latestHistory;
+        return latestHistory.lyricItems.map((json) => {
+            try {
+                return LyricItem.fromJson(json as any,
+                    this.fileSource, this.editingCacheManager);
+            } catch (error: any) {
+                toastEventListener.showSimpleToast({
+                    title: 'Instantiating Bible Item',
+                    message: error.message,
+                });
+            }
+            return LyricItem.fromJsonError(json, this.fileSource,
+                this.editingCacheManager);
+        });
     }
-    itemFromJson(json: AnyObjectType) {
-        return LyricItem.fromJson(json, this.fileSource);
+    set items(newItems: LyricItem[]) {
+        const slideItems = newItems.map((item) => item.toJson());
+        this.editingCacheManager.pushLyricItems(slideItems);
     }
-    itemFromJsonError(json: AnyObjectType) {
-        return LyricItem.fromJsonError(json, this.fileSource);
+    get maxItemId() {
+        if (this.items.length) {
+            const ids = this.items.map((item) => item.id);
+            return Math.max.apply(Math, ids);
+        }
+        return 0;
     }
     get isSelected() {
         const selectedFS = Lyric.getSelectedFileSource();
@@ -43,7 +78,10 @@ export default class Lyric extends ItemSource<LyricItem>{
         }
         this.fileSource.fireRefreshDirEvent();
     }
-    static mimetype: MimetypeNameType = 'lyric';
+    static fromJson(fileSource: FileSource, json: LyricType) {
+        this.validate(json);
+        return new Lyric(fileSource, json);
+    }
     static async readFileToDataNoCache(fileSource: FileSource | null) {
         return super.readFileToDataNoCache(fileSource) as Promise<Lyric | null | undefined>;
     }
@@ -57,19 +95,9 @@ export default class Lyric extends ItemSource<LyricItem>{
         }
         return null;
     }
-    static toNew(name: string) {
-        return {
-            title: name,
-            text: `Block1
-===
-Block2
-===
-Block3`,
-        };
-    }
     static async create(dir: string, name: string) {
         return super.create(dir, name, {
-            items: [Lyric.toNew(name)],
+            items: [LyricItem.genDefaultLyric(name)],
         });
     }
     static async clearSelection() {
@@ -77,5 +105,21 @@ Block3`,
         if (lyric) {
             lyric.isSelected = false;
         }
+    }
+    addItem(slideItem: LyricItem) {
+        const items = this.items;
+        slideItem.id = this.maxItemId + 1;
+        items.push(slideItem);
+        this.items = items;
+    }
+    deleteItem(slideItem: LyricItem) {
+        const newItems = this.items.filter((item) => {
+            return item !== slideItem;
+        });
+        const result = LyricItem.getSelectedResult();
+        if (result?.id === slideItem.id) {
+            LyricItem.setSelectedItem(null);
+        }
+        this.items = newItems;
     }
 }

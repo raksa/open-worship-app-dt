@@ -39,6 +39,7 @@ export default function Preview({
                     startVerse: sVerse,
                     endVerse: eVerse,
                 },
+                metadata: {},
             }));
             if (newTitle !== null && newText !== null) {
                 setRendered({ title: newTitle, text: newText });

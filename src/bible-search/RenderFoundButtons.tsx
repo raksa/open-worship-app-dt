@@ -49,6 +49,7 @@ export default function RenderFoundButtons({
                 startVerse: await fromLocaleNumber(bibleSelected, found.sVerse),
                 endVerse: await fromLocaleNumber(bibleSelected, found.eVerse),
             },
+            metadata: {},
         });
         if (isWindowEditing) {
             canvasController.addNewBibleItem(bibleItem);

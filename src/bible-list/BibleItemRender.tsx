@@ -8,6 +8,7 @@ import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
+import { AnyObjectType } from '../helper/helpers';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
@@ -35,7 +36,7 @@ export default function BibleItemRender({
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
-                const newBibleItem = bibleItem.toJson();
+                const newBibleItem = bibleItem.toJson() as AnyObjectType;
                 newBibleItem.filePath = bibleItem.fileSource?.filePath;
                 event.dataTransfer.setData('text/plain', JSON.stringify(newBibleItem));
             }}

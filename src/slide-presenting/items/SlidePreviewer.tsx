@@ -15,7 +15,6 @@ import { useSlideSelecting } from '../../event/PreviewingEventListener';
 import { useEffect, useState } from 'react';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
-import SlideItem from '../../slide-list/SlideItem';
 
 export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
@@ -24,13 +23,9 @@ export default function SlidePreviewer() {
     useSlideSelecting(() => {
         setSlide(null);
     });
-    const reloadSlide = async (editingItem?: SlideItem) => {
-        if (editingItem && slide) {
-            slide.updateItem(editingItem);
-        } else {
-            const newSlide = await Slide.getSelected();
-            setSlide(newSlide || undefined);
-        }
+    const reloadSlide = async () => {
+        const newSlide = await Slide.getSelected();
+        setSlide(newSlide || undefined);
     };
     useEffect(() => {
         if (slide === null) {

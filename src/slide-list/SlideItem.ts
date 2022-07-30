@@ -1,4 +1,6 @@
-import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import {
+    slideListEventListenerGlobal,
+} from '../event/SlideListEventListener';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
@@ -50,6 +52,9 @@ export default class SlideItem extends ItemBase {
         const json = this.editingCacheManager.getSlideItemById(this.id);
         return json || this._originalJson.metadata;
     }
+    set metadata(metadata: AnyObjectType) {
+        this.editingCacheManager.pushMetadata(metadata);
+    }
     get canvas() {
         return Canvas.fromJson({
             metadata: this.metadata,
@@ -63,34 +68,38 @@ export default class SlideItem extends ItemBase {
     }
     get canvasItemsJson() {
         const slideItems = this.editingCacheManager.latestHistory.slideItems;
-        const slideItemJson = slideItems.find((item: AnyObjectType) => {
+        const slideItemJson = slideItems.find((item) => {
             return item.id === this.id;
         });
         if (!slideItemJson) {
-            throw new Error('SlideItemJson not found');
+            throw new Error('Slide item not found');
         }
         return slideItemJson.canvasItems;
     }
     set canvasItemsJson(canvasItemsJson: AnyObjectType[]) {
         const slideItems = this.editingCacheManager.latestHistory.slideItems;
-        slideItems.forEach((item: AnyObjectType) => {
+        slideItems.forEach((item) => {
             if (item.id === this.id) {
                 item.canvasItems = canvasItemsJson;
             }
         });
-
+        this.editingCacheManager.pushSlideItems(slideItems);
     }
     get width() {
         return this.metadata.width;
     }
     set width(width: number) {
-        this.metadata.width = width;
+        const metadata = this.metadata;
+        metadata.width = width;
+        this.metadata = metadata;
     }
     get height() {
         return this.metadata.height;
     }
     set height(height: number) {
-        this.metadata.height = height;
+        const metadata = this.metadata;
+        metadata.height = height;
+        this.metadata = metadata;
     }
     get isSelected() {
         const selected = SlideItem.getSelectedResult();
@@ -110,7 +119,7 @@ export default class SlideItem extends ItemBase {
         }
         this.fileSource.fireSelectEvent();
     }
-    get isEditing() {
+    get isChanged() {
         return this.editingCacheManager.checkIsSlideItemChanged(this.id);
     }
     static getSelectedEditingResult() {
@@ -140,11 +149,7 @@ export default class SlideItem extends ItemBase {
             canvasItems: [],
         };
     }
-    static fromJson(json: {
-        id: number,
-        canvasItems: AnyObjectType[],
-        metadata: AnyObjectType,
-    }, fileSource: FileSource,
+    static fromJson(json: SlideItemType, fileSource: FileSource,
         editingCacheManager?: SlideEditingCacheManager) {
         this.validate(json);
         const key = SlideItem.genKeyByFileSource(fileSource, json.id);
@@ -165,11 +170,7 @@ export default class SlideItem extends ItemBase {
         item.jsonError = json;
         return item;
     }
-    toJson(): {
-        id: number,
-        canvasItems: AnyObjectType[],
-        metadata: AnyObjectType,
-    } {
+    toJson(): SlideItemType {
         if (this.isError) {
             return this.jsonError;
         }
@@ -188,7 +189,7 @@ export default class SlideItem extends ItemBase {
             console.log(json);
             throw new Error('Invalid slide item data');
         }
-        json.canvasItems.forEach((item: AnyObjectType) => {
+        json.canvasItems.forEach((item) => {
             canvasController.checkValidCanvasItem(item);
         });
     }

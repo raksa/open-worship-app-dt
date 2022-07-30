@@ -1,4 +1,6 @@
-import { toastEventListener } from '../event/ToastEventListener';
+import {
+    toastEventListener,
+} from '../event/ToastEventListener';
 import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
@@ -11,7 +13,7 @@ import {
 import { setSetting, getSetting } from './settingHelper';
 
 export default abstract class ItemSource<T extends {
-    toJson: () => AnyObjectType,
+    toJson(): AnyObjectType;
 }> implements ColorNoteInf {
     static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
@@ -52,9 +54,7 @@ export default abstract class ItemSource<T extends {
     toJson() {
         const json = {
             metadata: this.metadata,
-            content: {
-                items: this.items.map((item) => item.toJson()),
-            },
+            items: this.items.map((item) => item.toJson()),
         };
         ItemSource.validate(json);
         return json;

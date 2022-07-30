@@ -1,7 +1,6 @@
 import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
-import RenderIsEditing from '../RenderIsEditing';
 import { SlideItemIFrame } from './SlideItemRenderers';
 import SlideItem from '../../slide-list/SlideItem';
 
@@ -49,8 +48,8 @@ export default function SlideItemRender({
                     <small className='pe-2'>
                         {slideItem.width}x{slideItem.height}
                     </small>
-                    <RenderIsEditing index={index}
-                        slideItem={slideItem} />
+                    {slideItem.isChanged && <span
+                        style={{ color: 'red' }}>*</span>}
                 </div>
             </div>
             <div className='card-body overflow-hidden'

@@ -25,6 +25,9 @@ export default class EditingCacheManager<T> {
         this.fileSource = fileSource;
         this.settingName = `${SETTING_NAME}-${settingNameSuffix}`;
     }
+    get isChanged() {
+        return !!this.histories.length;
+    }
     get _changes(): ChangesType<T> {
         const str = getSetting(this.settingName, '{}');
         try {

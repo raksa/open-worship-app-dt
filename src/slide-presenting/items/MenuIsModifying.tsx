@@ -2,14 +2,12 @@ import {
     keyboardEventListener,
 } from '../../event/KeyboardEventListener';
 import Slide from '../../slide-list/Slide';
-import { useSlideIsModifying } from '../../slide-list/slideHelpers';
 
 export default function MenuIsModifying({
     slide, eventMapper, isHavingHistories,
 }: {
     slide: Slide, eventMapper: any, isHavingHistories: boolean,
 }) {
-    const isModifying = useSlideIsModifying(slide);
     const toRollback = () => {
         return (
             <button type='button' className='btn btn-sm btn-info'
@@ -18,7 +16,7 @@ export default function MenuIsModifying({
                 }}>Rollback</button>
         );
     };
-    if (!isModifying) {
+    if (!slide.isChanged) {
         return isHavingHistories ? toRollback() : null;
     }
     return (

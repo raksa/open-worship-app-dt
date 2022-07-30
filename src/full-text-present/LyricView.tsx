@@ -4,9 +4,8 @@ import { cloneObject } from '../helper/helpers';
 import LyricItem from '../lyric-list/LyricItem';
 
 export default function LyricView({
-    i, lyricItem, lyricItems, onLyricChange, onClose,
+    lyricItem, lyricItems, onLyricChange, onClose,
 }: {
-    i: number,
     lyricItem: LyricItem,
     lyricItems: LyricItem[],
     onLyricChange: (lyricPresent: LyricItem) => void,
@@ -29,9 +28,9 @@ export default function LyricView({
             </div>
             <textarea className='w-100 h-100 form-control'
                 placeholder='Lyric, use "===" to break text block'
-                value={lyricItem.text} onChange={(e) => {
+                value={lyricItem.content} onChange={(e) => {
                     const newItem = cloneObject(lyricItem);
-                    newItem.text = e.target.value;
+                    newItem.content = e.target.value;
                     onLyricChange(newItem);
                 }} />
         </div >

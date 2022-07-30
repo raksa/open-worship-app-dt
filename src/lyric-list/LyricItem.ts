@@ -1,25 +1,117 @@
 import FileSource from '../helper/FileSource';
+import { ItemBase } from '../helper/ItemBase';
+import Lyric from './Lyric';
 import { AnyObjectType, cloneObject } from '../helper/helpers';
+import LyricEditingCacheManager from './LyricEditingCacheManager';
 
-export default class LyricItem {
-    title: string;
-    text: string;
+export type LyricItemType = {
+    id: number,
+    title: string,
+    content: string,
+    metadata: AnyObjectType,
+};
+
+export default class LyricItem extends ItemBase {
+    _originalJson: Readonly<LyricItemType>;
+    static SELECT_SETTING_NAME = 'slide-item-selected';
+    id: number;
     fileSource: FileSource;
-    jsonError: any;
-    constructor(title: string, text: string, fileSource: FileSource) {
-        this.title = title;
-        this.text = text;
+    isCopied: boolean;
+    presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
+    static copiedItem: LyricItem | null = null;
+    editingCacheManager: LyricEditingCacheManager;
+    static _cache = new Map<string, LyricItem>();
+    static _objectId = 0;
+    _objectId: number;
+    constructor(id: number, fileSource: FileSource,
+        jsonData: LyricItemType,
+        editingCacheManager?: LyricEditingCacheManager) {
+        super();
+        this._objectId = LyricItem._objectId++;
+        this.id = id;
+        this._originalJson = jsonData;
         this.fileSource = fileSource;
+        if (editingCacheManager !== undefined) {
+            this.editingCacheManager = editingCacheManager;
+        } else {
+            this.editingCacheManager = new LyricEditingCacheManager(this.fileSource, {
+                items: [jsonData],
+                metadata: {},
+            });
+            this.editingCacheManager.isUsingHistory = false;
+        }
+        this.isCopied = false;
+        const key = LyricItem.genKeyByFileSource(fileSource, id);
+        LyricItem._cache.set(key, this);
     }
-    get isError() {
-        return !!this.jsonError;
+    get metadata() {
+        const json = this.editingCacheManager.getLyricItemById(this.id);
+        return json || this._originalJson.metadata;
     }
-    static fromJson(json: AnyObjectType, fileSource: FileSource) {
+    get lyricItemJson() {
+        const lyricItems = this.editingCacheManager.latestHistory.lyricItems;
+        const lyricItemJson = lyricItems.find((item) => {
+            return item.id === this.id;
+        });
+        if (!lyricItemJson) {
+            throw new Error('Lyric item not found');
+        }
+        return lyricItemJson;
+    }
+    get title() {
+        return this.lyricItemJson.title;
+    }
+    set title(title: string) {
+        const lyricItems = this.editingCacheManager.latestHistory.lyricItems;
+        lyricItems.forEach((item) => {
+            if (item.id === this.id) {
+                item.title = title;
+            }
+        });
+        this.editingCacheManager.pushLyricItems(lyricItems);
+    }
+    get content() {
+        return this.lyricItemJson.content;
+    }
+    set content(content: string) {
+        const lyricItems = this.editingCacheManager.latestHistory.lyricItems;
+        lyricItems.forEach((item) => {
+            if (item.id === this.id) {
+                item.content = content;
+            }
+        });
+        this.editingCacheManager.pushLyricItems(lyricItems);
+    }
+    get isChanged() {
+        return this.editingCacheManager.checkIsLyricItemChanged(this.id);
+    }
+    static getSelectedEditingResult() {
+        const selected = this.getSelectedResult();
+        const slideSelected = Lyric.getSelectedFileSource();
+        if (selected?.fileSource.filePath === slideSelected?.filePath) {
+            return selected;
+        }
+        return null;
+    }
+    static fromJson(json: LyricItemType, fileSource: FileSource,
+        editingCacheManager?: LyricEditingCacheManager) {
         this.validate(json);
-        return new LyricItem(json.title, json.text, fileSource);
+        const key = LyricItem.genKeyByFileSource(fileSource, json.id);
+        if (LyricItem._cache.has(key)) {
+            return LyricItem._cache.get(key) as LyricItem;
+        }
+        return new LyricItem(json.id, fileSource, json,
+            editingCacheManager);
     }
-    static fromJsonError(json: AnyObjectType, fileSource: FileSource) {
-        const item = new LyricItem('', '', fileSource);
+    static fromJsonError(json: AnyObjectType,
+        fileSource: FileSource,
+        editingCacheManager?: LyricEditingCacheManager) {
+        const item = new LyricItem(-1, fileSource, {
+            id: -1,
+            metadata: {},
+            title: 'Error',
+            content: 'Error',
+        }, editingCacheManager);
         item.jsonError = json;
         return item;
     }
@@ -27,20 +119,34 @@ export default class LyricItem {
         if (this.isError) {
             return this.jsonError;
         }
-        const json = {
+        return {
+            id: this.id,
             title: this.title,
-            text: this.text,
+            content: this.content,
         };
-        LyricItem.validate(json);
-        return json;
     }
     static validate(json: AnyObjectType) {
-        if (!json.title || !json.text) {
+        if (!json.title || !json.content) {
             console.log(json);
             throw new Error('Invalid lyric item data');
         }
     }
-    clone() {
-        return cloneObject(this);
+    clone(isDuplicateId?: boolean) {
+        const lyricItem = cloneObject(this);
+        if (!isDuplicateId) {
+            lyricItem.id = -1;
+        }
+        return lyricItem;
+    }
+    static genKeyByFileSource(fileSource: FileSource, id: number) {
+        return `${fileSource.filePath}:${id}`;
+    }
+    static genDefaultLyric(name: string): LyricItemType {
+        return {
+            id: -1,
+            title: name,
+            content: 'Block1\n===\nBlock2\n===\nBlock3',
+            metadata: {},
+        };
     }
 }

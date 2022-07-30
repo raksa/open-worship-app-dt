@@ -7,8 +7,6 @@ import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { goEditSlide } from '../App';
-import { useSlideIsModifying } from './slideHelpers';
-import slideEditingCacheManager from '../slide-editor/slideEditingCacheManager';
 
 export default function SlideFile({
     index, fileSource,
@@ -37,7 +35,8 @@ export default function SlideFile({
             child={<>
                 <i className='bi bi-file-earmark-slides' />
                 {fileSource.name}
-                {data && <RenderIsModifying slide={data} />}
+                {data && data.isChanged && <span
+                    style={{ color: 'red' }}>*</span>}
                 <ItemColorNote item={data as ItemSource<any>} />
             </>}
             contextMenu={[{
@@ -52,17 +51,8 @@ export default function SlideFile({
                 if (Slide.getSelectedFileSource()?.filePath === fileSource.filePath) {
                     Slide.setSelectedFileSource(null);
                 }
-                slideEditingCacheManager.delete(fileSource);
+                data?.editingCacheManager.delete();
             }}
         />
-    );
-}
-function RenderIsModifying({ slide }: { slide: Slide }) {
-    const isModifying = useSlideIsModifying(slide);
-    if (!isModifying) {
-        return null;
-    }
-    return (
-        <span style={{ color: 'red' }}>*</span>
     );
 }

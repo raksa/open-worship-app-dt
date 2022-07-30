@@ -17,22 +17,41 @@ export type BibleTargetType = {
     startVerse: number,
     endVerse: number,
 };
+export type BibleItemType = {
+    id: number,
+    bibleName: string,
+    target: BibleTargetType,
+    metadata: AnyObjectType,
+}
 export default class BibleItem extends ItemBase {
     static SELECT_SETTING_NAME = 'bible-item-selected';
+    _originalJson: BibleItemType;
     id: number;
-    bibleName: string;
-    target: BibleTargetType;
-    metadata?: AnyObjectType;
     fileSource?: FileSource;
-    constructor(id: number, bibleName: string,
-        target: BibleTargetType, metadata?: AnyObjectType,
+    constructor(id: number, json: BibleItemType,
         fileSource?: FileSource) {
         super();
         this.id = id;
-        this.bibleName = bibleName;
-        this.target = target;
-        this.metadata = metadata;
         this.fileSource = fileSource;
+        this._originalJson = json;
+    }
+    get bibleName() {
+        return this._originalJson.bibleName;
+    }
+    set bibleName(name: string) {
+        this._originalJson.bibleName = name;
+    }
+    get target() {
+        return this._originalJson.target;
+    }
+    set target(target: BibleTargetType) {
+        this._originalJson.target = target;
+    }
+    get metadata() {
+        return this._originalJson.metadata;
+    }
+    set metadata(metadata: AnyObjectType) {
+        this._originalJson.metadata = metadata;
     }
     get isSelected() {
         const selected = BibleItem.getSelectedResult();
@@ -87,17 +106,26 @@ export default class BibleItem extends ItemBase {
         }
         return null;
     }
-    static fromJson(json: AnyObjectType, fileSource?: FileSource) {
+    static fromJson(json: BibleItemType, fileSource?: FileSource) {
         this.validate(json);
-        return new BibleItem(json.id, json.bibleName, json.target,
-            json.metadata, fileSource);
+        return new BibleItem(json.id, json, fileSource);
     }
-    static fromJsonError(json: AnyObjectType, fileSource?: FileSource) {
-        const item = new BibleItem(-1, '', {} as any, {}, fileSource);
+    static fromJsonError(json: BibleItemType, fileSource?: FileSource) {
+        const item = new BibleItem(-1, {
+            id: -1,
+            bibleName: '',
+            target: {
+                book: '',
+                chapter: 0,
+                startVerse: 0,
+                endVerse: 0,
+            },
+            metadata: {},
+        }, fileSource);
         item.jsonError = json;
         return item;
     }
-    toJson() {
+    toJson(): BibleItemType {
         if (this.isError) {
             return this.jsonError;
         }

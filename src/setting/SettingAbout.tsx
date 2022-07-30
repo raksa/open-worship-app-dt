@@ -7,8 +7,11 @@ export function SettingAbout() {
         id: -1,
         bibleName: 'KJV',
         target: {
-            book: bookKey, chapter: 150, startVerse: 6, endVerse: 6,
+            book: bookKey, chapter: 150,
+            startVerse: 6,
+            endVerse: 6,
         },
+        metadata: {},
     }));
     const title = useBibleItemToInputText('KJV', bookKey, 150, 6, 6);
     return (

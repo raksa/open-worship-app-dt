@@ -30,7 +30,7 @@ export default class SlideBase extends ItemSource<SlideItem>{
         this.editingCacheManager = new SlideEditingCacheManager(
             this.fileSource, json);
     }
-    get isModifying() {
+    get isChanged() {
         return this.editingCacheManager.isChanged;
     }
     get copiedItem() {

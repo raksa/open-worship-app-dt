@@ -1,76 +1,88 @@
 import Bible from '../bible-list/Bible';
+import BibleItem from '../bible-list/BibleItem';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneObject } from '../helper/helpers';
-import { ItemBase } from '../helper/ItemBase';
-import { ItemSourceAnyType } from '../helper/ItemSource';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 
-export type PlaylistItemType = 'slide' | 'bible' | 'lyric';
+type ItemType = 'error' | 'slide' | 'bible-item' | 'lyric';
+export type PlaylistItemType = {
+    type: ItemType;
+    filePath: string,
+    id?: number,
+}
+
 export default class PlaylistItem {
-    type: PlaylistItemType;
-    item: ItemSourceAnyType | ItemBase;
+    _originalJson: Readonly<PlaylistItemType>;
     fileSource: FileSource;
     jsonError: any;
-    constructor(type: PlaylistItemType, item: ItemSourceAnyType | ItemBase,
-        fileSource: FileSource) {
-        this.type = type;
-        this.item = item;
+    constructor(fileSource: FileSource, json: PlaylistItemType) {
         this.fileSource = fileSource;
+        this._originalJson = json;
     }
     get isError() {
-        return !!this.jsonError;
+        return this.type === 'error';
     }
-    get path() {
-        if (!this.item.fileSource) {
-            return null;
-        }
-        return this.item.fileSource.filePath;
+    get type() {
+        return this._originalJson.type;
     }
-    get isSlideItem() {
+    get isSlide() {
         return this.type === 'slide';
     }
-    get isBibleItem() {
-        return this.type === 'bible';
+    async getSlide() {
+        if (!this.isSlide) {
+            return null;
+        }
+        return Slide.readFileToData(this.fileSource);
     }
-    get isLyricItem() {
+    get isBibleItem() {
+        return this.type === 'bible-item';
+    }
+    async getBibleItem() {
+        if (this.isBibleItem) {
+            const bible = await Bible.readFileToData(this.fileSource);
+            if (bible) {
+                return bible.getItemById(this._originalJson.id as number);
+            }
+        }
+        return null;
+    }
+    get isLyric() {
         return this.type === 'lyric';
     }
-    static fromJson(json: AnyObjectType, fileSource: FileSource) {
-        this.validate(json);
-        const itemFS = FileSource.genFileSource(json.path);
-        let item;
-        if (json.type === 'slide') {
-            item = Slide.readFileToData(itemFS);
-        } else if (json.type === 'bible') {
-            item = Bible.readFileToData(itemFS);
-        } else {
-            item = Lyric.readFileToData(itemFS);
+    async getLyric() {
+        if (!this.isLyric) {
+            return null;
         }
-        if (!item) {
-            throw new Error('Fail to instantiate item');
-        }
-        return new PlaylistItem(json.type, item as any, fileSource);
+        return Lyric.readFileToData(this.fileSource);
     }
-    static fromJsonError(json: AnyObjectType, fileSource: FileSource) {
-        const item = new PlaylistItem('' as any, {} as any, fileSource);
+    static fromJson(fileSource: FileSource, json: PlaylistItemType) {
+        this.validate(json);
+        return new PlaylistItem(fileSource, json);
+    }
+    static fromJsonError(fileSource: FileSource, json: AnyObjectType) {
+        const item = new PlaylistItem(fileSource, {
+            type: 'error',
+            filePath: '',
+        });
         item.jsonError = json;
         return item;
     }
-    toJson() {
+    toJson(): PlaylistItemType {
         if (this.isError) {
             return this.jsonError;
         }
-        const json = {
+        return {
             type: this.type,
-            path: this.path,
+            filePath: this._originalJson.filePath,
+            id: this._originalJson.id,
         };
-        PlaylistItem.validate(json);
-        return json;
     }
     static validate(json: AnyObjectType) {
-        if (!['slide', 'bible', 'lyric'].includes(json.type)
-            || json.path && typeof json.path !== 'string') {
+        if (!['slide', 'bible-item', 'lyric'].includes(json.type)
+            || json.path && typeof json.path !== 'string'
+            || (json.type === 'bible-item' && typeof json.id !== 'number')
+        ) {
             console.log(json);
             throw new Error('Invalid playlist item data');
         }

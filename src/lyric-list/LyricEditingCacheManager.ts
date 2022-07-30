@@ -1,20 +1,20 @@
 import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
 import EditingCacheManager from '../others/EditingCacheManager';
-import { SlideEditingHistoryType, SlideType } from './SlideBase';
-import { SlideItemType } from './SlideItem';
+import { LyricEditingHistoryType, LyricType } from './Lyric';
+import { LyricItemType } from './LyricItem';
 
-export default class SlideEditingCacheManager
-    extends EditingCacheManager<SlideEditingHistoryType> {
-    _originalJson: Readonly<SlideType>;
-    constructor(fileSource: FileSource, json: SlideType) {
-        super(fileSource, 'slide');
+export default class LyricEditingCacheManager
+    extends EditingCacheManager<LyricEditingHistoryType> {
+    _originalJson: Readonly<LyricType>;
+    constructor(fileSource: FileSource, json: LyricType) {
+        super(fileSource, 'lyric');
         this._originalJson = json;
     }
     get latestHistory() {
         if (!this.isUsingHistory) {
             return {
-                slideItems: this._originalJson.items,
+                lyricItems: this._originalJson.items,
                 metadata: this._originalJson.metadata,
             };
         }
@@ -27,25 +27,26 @@ export default class SlideEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            slideItems: newItems || this._originalJson.items,
+            lyricItems: newItems || this._originalJson.items,
             metadata: newMetadata || this._originalJson.metadata,
         };
     }
-    getSlideItemById(id: number) {
+    getLyricItemById(id: number) {
         const latestHistory = this.latestHistory;
-        return latestHistory.slideItems.find((item) => {
+        return latestHistory.lyricItems.find((item) => {
             return item.id === id;
         }) || null;
     }
-    checkIsSlideItemChanged(id: number) {
-        const newItem = this.getSlideItemById(id);
-        const slideItems = this._originalJson.items;
-        const originalItem = slideItems.find((item) => {
+    checkIsLyricItemChanged(id: number) {
+        const newItem = this.getLyricItemById(id);
+        const lyricItems = this._originalJson.items;
+        const originalItem = lyricItems.find((item) => {
             return item.id === id;
         });
-        return JSON.stringify(newItem) !== JSON.stringify(originalItem);
+        return newItem?.title !== originalItem?.title || 
+            newItem?.content !== originalItem?.content;
     }
-    pushSlideItems(items: SlideItemType[]) {
+    pushLyricItems(items: LyricItemType[]) {
         const newHistory = {
             items,
         };

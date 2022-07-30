@@ -4,27 +4,50 @@ import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
-import BibleItem from './BibleItem';
+import BibleItem, { BibleItemType } from './BibleItem';
 
 export type BibleType = {
-    items: BibleItem[],
+    items: BibleItemType[],
     metadata: AnyObjectType,
 }
-export default class Bible extends ItemSource<BibleType>{
+export default class Bible extends ItemSource<BibleItem>{
     static SELECT_DIR_SETTING = 'bible-list-selected-dir';
     static DEFAULT_FILE_NAME = 'Default';
-    static fromJson(json: AnyObjectType, fileSource: FileSource) {
+    _originalJson: BibleType;
+    constructor(fileSource: FileSource, json: BibleType) {
+        super(fileSource);
+        this._originalJson = json;
+    }
+    static fromJson(fileSource: FileSource, json: BibleType) {
         this.validate(json);
-        return new Bible(fileSource, json.metadata, json.content);
+        return new Bible(fileSource, json);
     }
-    itemFromJson(json: AnyObjectType) {
-        return BibleItem.fromJson(json, this.fileSource);
-    }
-    itemFromJsonError(json: AnyObjectType) {
-        return BibleItem.fromJsonError(json, this.fileSource);
+    get metadata() {
+        return this._originalJson.metadata;
     }
     get items() {
-        return this.content.items;
+        return this._originalJson.items.map((json) => {
+            try {
+                return BibleItem.fromJson(json, this.fileSource);
+            } catch (error: any) {
+                toastEventListener.showSimpleToast({
+                    title: 'Instantiating Bible Item',
+                    message: error.message,
+                });
+            }
+            return BibleItem.fromJsonError(json, this.fileSource);
+        });
+    }
+    set items(newItems: BibleItem[]) {
+        const items = newItems.map((item) => item.toJson());
+        this._originalJson.items = items;
+    }
+    get maxItemId() {
+        if (this.items.length) {
+            const ids = this.items.map((item) => item.id);
+            return Math.max.apply(Math, ids);
+        }
+        return 0;
     }
     static checkIsDefault(fileSource: FileSource) {
         return fileSource.name === Bible.DEFAULT_FILE_NAME;
@@ -64,14 +87,18 @@ export default class Bible extends ItemSource<BibleType>{
         return null;
     }
     async removeItem(bibleItem: BibleItem) {
-        const index = this.items.indexOf(bibleItem);
-        this.content.items.splice(index, 1);
+        const items = this.items;
+        const index = items.indexOf(bibleItem);
+        items.splice(index, 1);
+        this.items = items;
         return this.save();
     }
     async addItem(item: BibleItem) {
         item.fileSource = this.fileSource;
         item.id = this.maxItemId + 1;
-        this.content.items.push(item);
+        const items = this.items;
+        items.push(item);
+        this.items = items;
         return this.save();
     }
     async moveItemFrom(bibleItem: BibleItem, fileSource: FileSource) {

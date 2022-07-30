@@ -8,7 +8,6 @@ import { getSetting } from '../helper/settingHelper';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
-import SavingRenderer from '../lyric-list/SavingRenderer';
 
 let isMounted = false;
 export default function LyricPreviewer() {
@@ -49,20 +48,28 @@ export default function LyricPreviewer() {
     }
     return (
         <div className='d-flex d-flex-row overflow-hidden w-100 h-100'>
-            <SavingRenderer lyric={lyric} />
+            {lyric.isChanged && <button className='btn btn-success' title='Save'
+                onClick={() => {
+                    lyric.save();
+                }}
+                style={{
+                    width: '20px',
+                    padding: '0px',
+                }}><i className='bi bi-save' />
+            </button>}
             {lyricItems.map((lyricItem, i) => {
                 return (
-                    <LyricView key={i} i={i}
+                    <LyricView key={i}
                         lyricItem={lyricItem}
                         lyricItems={lyricItems}
                         onLyricChange={(newLyricItem) => {
-                            const newLyric = lyric.clone<Lyric>();
-                            newLyric.content.items[i] = newLyricItem;
+                            const newLyric = lyric.clone();
+                            newLyric.items[i] = newLyricItem;
                             setLyric(newLyric);
                         }}
                         onClose={() => {
-                            const newLyric = lyric.clone<Lyric>();
-                            newLyric.content.items = newLyric.content.items.filter((_, i1) => i1 !== i);
+                            const newLyric = lyric.clone();
+                            newLyric.items = newLyric.items.filter((_, i1) => i1 !== i);
                             setLyric(newLyric);
                         }} />
                 );
@@ -73,8 +80,8 @@ export default function LyricPreviewer() {
                     padding: '0px',
                 }}
                 onClick={() => {
-                    const newLyric = lyric.clone<Lyric>();
-                    newLyric.content.items.push(cloneObject(lyricItems[0]));
+                    const newLyric = lyric.clone();
+                    newLyric.items.push(cloneObject(lyricItems[0]));
                     setLyric(newLyric);
                 }}>
                 <i className='bi bi-plus' />

@@ -201,7 +201,7 @@ class FullTextPresentHelper {
     }
     renderLyricsList = (lyric: Lyric) => {
         const newList = lyric.items.map((lyricItem) => {
-            const texts = lyricItem.text.split('===').map((text, i) => {
+            const texts = lyricItem.content.split('===').map((text, i) => {
                 return `<span data-highlight="${i}">${text.trim().replace(/\n/g, '<br/>')}</span>`;
             });
             return { title: lyricItem.title, texts };
