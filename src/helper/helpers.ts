@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { toastEventListener } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from './FileSource';
-import { ItemSourceAnyType } from './ItemSource';
+import ItemSource from './ItemSource';
 
-export type anyObjectType = {
+export type AnyObjectType = {
     [key: string]: any;
 };
 
@@ -130,7 +130,8 @@ export function validateAppMeta(meta: any) {
     }
     return false;
 }
-export function useReadFileToData<T extends ItemSourceAnyType>(fileSource: FileSource | null) {
+export function useReadFileToData<T extends ItemSource<any>>(
+    fileSource: FileSource | null) {
     const [data, setData] = useState<T | null | undefined>(null);
     useEffect(() => {
         if (fileSource !== null) {
@@ -152,7 +153,9 @@ export function useFontList() {
                 return;
             }
             appProvider.fontList.getFonts().then((fonts) => {
-                const newFontList = fonts.map((fontString) => fontString.replace(/"/g, ''));
+                const newFontList = fonts.map((fontString) => {
+                    return fontString.replace(/"/g, '');
+                });
                 fontListGlobal = newFontList;
                 setFontListString(newFontList);
             }).catch((error) => {

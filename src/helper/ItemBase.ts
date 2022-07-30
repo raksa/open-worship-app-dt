@@ -1,12 +1,11 @@
 import FileSource from '../helper/FileSource';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import ColorNoteInf from './ColorNoteInf';
-import { anyObjectType } from './helpers';
+import { AnyObjectType, cloneObject } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
     abstract fileSource?: FileSource | null;
-    abstract metadata?: anyObjectType;
     static SELECT_SETTING_NAME = '';
     jsonError: any;
     static _objectId = 0;
@@ -23,9 +22,12 @@ export abstract class ItemBase implements ColorNoteInf {
         }
         return null;
     }
+    abstract get metadata(): AnyObjectType;
+    abstract set metadata(metadata: AnyObjectType);
     set colorNote(c: string | null) {
-        this.metadata = this.metadata || {};
-        this.metadata['colorNote'] = c;
+        const metadata = cloneObject(this.metadata);
+        metadata['colorNote'] = c;
+        this.metadata = metadata;
         this.save();
     }
     get isSelectedEditing() {
@@ -49,13 +51,13 @@ export abstract class ItemBase implements ColorNoteInf {
     toJson() {
         throw new Error('Method not implemented.');
     }
-    static fromJson(_json: anyObjectType, _fileSource?: FileSource): any {
+    static fromJson(_json: AnyObjectType, _fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
-    static fromJsonError(_json: anyObjectType, _fileSource?: FileSource): any {
+    static fromJsonError(_json: AnyObjectType, _fileSource?: FileSource): any {
         throw new Error('Method not implemented.');
     }
-    static validate(_json: anyObjectType) {
+    static validate(_json: AnyObjectType) {
         throw new Error('Method not implemented.');
     }
     static _toSelectedItemSetting(fileSource: FileSource | null, id: number | string | null) {

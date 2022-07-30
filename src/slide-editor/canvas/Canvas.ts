@@ -1,5 +1,5 @@
 import { getAllDisplays } from '../../helper/displayHelper';
-import { anyObjectType } from '../../helper/helpers';
+import { AnyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import CanvasItem from './CanvasItem';
 import CanvasItemBible from './CanvasItemBible';
@@ -57,10 +57,10 @@ export default class Canvas {
         return { width, height };
     }
     static fromJson({ metadata, canvasItems: canvasItemsJson }: {
-        metadata: anyObjectType,
-        canvasItems: anyObjectType[],
+        metadata: AnyObjectType,
+        canvasItems: AnyObjectType[],
     }) {
-        const canvasItems = canvasItemsJson.map((json: anyObjectType) => {
+        const canvasItems = canvasItemsJson.map((json: AnyObjectType) => {
             if (json.type === 'image') {
                 return CanvasItemImage.fromJson(json);
             } else if (json.type === 'text') {

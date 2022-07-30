@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { anyObjectType, cloneObject } from '../../helper/helpers';
+import { AnyObjectType, cloneObject } from '../../helper/helpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
 import { canvasController } from './CanvasController';
 import {
@@ -149,7 +149,7 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
         }
         this.applyProps(newProps);
     }
-    applyProps(props: anyObjectType) {
+    applyProps(props: AnyObjectType) {
         const propsAny = this.props as any;
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
@@ -164,7 +164,7 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     async initProps() {
         return;
     }
-    static validate(json: anyObjectType) {
+    static validate(json: AnyObjectType) {
         if (typeof json.top !== 'number' ||
             typeof json.left !== 'number' ||
             typeof json.rotate !== 'number' ||

@@ -1,5 +1,5 @@
 import FileSource from '../helper/FileSource';
-import { anyObjectType, cloneObject } from '../helper/helpers';
+import { AnyObjectType, cloneObject } from '../helper/helpers';
 
 export default class LyricItem {
     title: string;
@@ -14,11 +14,11 @@ export default class LyricItem {
     get isError() {
         return !!this.jsonError;
     }
-    static fromJson(json: anyObjectType, fileSource: FileSource) {
+    static fromJson(json: AnyObjectType, fileSource: FileSource) {
         this.validate(json);
         return new LyricItem(json.title, json.text, fileSource);
     }
-    static fromJsonError(json: anyObjectType, fileSource: FileSource) {
+    static fromJsonError(json: AnyObjectType, fileSource: FileSource) {
         const item = new LyricItem('', '', fileSource);
         item.jsonError = json;
         return item;
@@ -34,7 +34,7 @@ export default class LyricItem {
         LyricItem.validate(json);
         return json;
     }
-    static validate(json: anyObjectType) {
+    static validate(json: AnyObjectType) {
         if (!json.title || !json.text) {
             console.log(json);
             throw new Error('Invalid lyric item data');

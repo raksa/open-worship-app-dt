@@ -4,7 +4,7 @@ import CanvasItem, {
 } from './CanvasItem';
 import { CanvasItemType } from './canvasHelpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
-import { anyObjectType, getAppInfo } from '../../helper/helpers';
+import { AnyObjectType, getAppInfo } from '../../helper/helpers';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
@@ -62,7 +62,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             ...super.toJson(),
         };
     }
-    static fromJson(json: anyObjectType) {
+    static fromJson(json: AnyObjectType) {
         return new CanvasItemText(json.id, {
             text: json.text,
             color: json.color,
@@ -82,7 +82,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
     applyTextData(textData: ToolingTextType) {
         this.applyProps(textData);
     }
-    static validate(json: anyObjectType) {
+    static validate(json: AnyObjectType) {
         super.validate(json);
         if (typeof json.text !== 'string' ||
             typeof json.color !== 'string' ||

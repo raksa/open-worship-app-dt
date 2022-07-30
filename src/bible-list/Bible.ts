@@ -1,26 +1,26 @@
 import { toastEventListener } from '../event/ToastEventListener';
 import fileHelpers, { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
-import { anyObjectType } from '../helper/helpers';
+import { AnyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
 
 export type BibleType = {
     items: BibleItem[],
-    metadata: anyObjectType,
+    metadata: AnyObjectType,
 }
 export default class Bible extends ItemSource<BibleType>{
     static SELECT_DIR_SETTING = 'bible-list-selected-dir';
     static DEFAULT_FILE_NAME = 'Default';
-    static fromJson(json: anyObjectType, fileSource: FileSource) {
+    static fromJson(json: AnyObjectType, fileSource: FileSource) {
         this.validate(json);
         return new Bible(fileSource, json.metadata, json.content);
     }
-    itemFromJson(json: anyObjectType) {
+    itemFromJson(json: AnyObjectType) {
         return BibleItem.fromJson(json, this.fileSource);
     }
-    itemFromJsonError(json: anyObjectType) {
+    itemFromJsonError(json: AnyObjectType) {
         return BibleItem.fromJsonError(json, this.fileSource);
     }
     get items() {

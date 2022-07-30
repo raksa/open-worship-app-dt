@@ -14,7 +14,7 @@ export default function MenuIsModifying({
         return (
             <button type='button' className='btn btn-sm btn-info'
                 onClick={() => {
-                    slide.rollBack();
+                    slide.discardChanged();
                 }}>Rollback</button>
         );
     };

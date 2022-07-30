@@ -4,7 +4,7 @@ import SlideItem from '../slide-list/SlideItem';
 import appProvider from './appProvider';
 import DirSource from './DirSource';
 import fileHelpers, { getFileMetaData } from './fileHelper';
-import ItemSource, { ItemSourceAnyType } from './ItemSource';
+import ItemSource from './ItemSource';
 
 type FSListener = (slideItem?: SlideItem) => void;
 export type FSEventType = 'select' | 'update' | 'edit' | 'delete' | 'delete-cache' | 'refresh-dir';
@@ -91,7 +91,7 @@ export default class FileSource {
         }
         return null;
     }
-    async saveData(data: ItemSourceAnyType) {
+    async saveData(data: ItemSource<any>) {
         try {
             const content = JSON.stringify(data.toJson());
             await fileHelpers.createFile(this.filePath, content, true);

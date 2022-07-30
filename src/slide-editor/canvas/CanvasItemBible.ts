@@ -2,7 +2,7 @@ import BibleItem, { BibleTargetType } from '../../bible-list/BibleItem';
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from './CanvasItemText';
-import { anyObjectType } from '../../helper/helpers';
+import { AnyObjectType } from '../../helper/helpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleNames: string[];
@@ -35,7 +35,7 @@ export default class CanvasItemBible extends CanvasItemText {
         bibleRenderedList: {
             title: string, text: string,
         }[]
-    } & anyObjectType) {
+    } & AnyObjectType) {
         const newTextItem = super.fromJson(json);
         const props = {
             bibleNames,
@@ -62,7 +62,7 @@ export default class CanvasItemBible extends CanvasItemText {
         };
         return CanvasItemBible.fromJson(json);
     }
-    static validate(json: anyObjectType) {
+    static validate(json: AnyObjectType) {
         super.validate(json);
         BibleItem.validate({
             id: -1,

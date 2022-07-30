@@ -2,23 +2,16 @@ import SlideItem from './SlideItem';
 import { MimetypeNameType } from '../helper/fileHelper';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
-import SlideBase from './SlideBase';
-import { anyObjectType } from '../helper/helpers';
+import SlideBase, { SlideType } from './SlideBase';
 import { openSlideContextMenu } from './slideHelpers';
 
 export default class Slide extends SlideBase {
     static mimetype: MimetypeNameType = 'slide';
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
-    static fromJson(json: anyObjectType, fileSource: FileSource) {
+    static fromJson(fileSource: FileSource, json: SlideType) {
         this.validate(json);
-        return new Slide(fileSource, json.metadata, json.content);
-    }
-    itemFromJson(json: anyObjectType) {
-        return SlideItem.fromJson(json as any, this.fileSource);
-    }
-    itemFromJsonError(json: anyObjectType) {
-        return SlideItem.fromJsonError(json, this.fileSource);
+        return new Slide(fileSource, json);
     }
     get isSelected() {
         const selectedFS = Slide.getSelectedFileSource();
@@ -43,17 +36,14 @@ export default class Slide extends SlideBase {
     }
     static async readFileToDataNoCache(fileSource: FileSource | null, isOrigin?: boolean) {
         const slide = await super.readFileToDataNoCache(fileSource) as Slide | null | undefined;
-        if (!isOrigin && slide) {
-            slide.loadEditingCache();
+        if (isOrigin && slide) {
+            slide.editingCacheManager.isUsingHistory = false;
         }
         return slide;
     }
     static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        const slide = await super.readFileToData(fileSource, isForceCache) as Slide | null | undefined;
-        if (slide) {
-            slide.loadEditingCache();
-        }
-        return slide;
+        const slide = super.readFileToData(fileSource, isForceCache);
+        return slide as Promise<Slide | undefined | null>;
     }
     static async getSelected() {
         const fileSource = this.getSelectedFileSource();

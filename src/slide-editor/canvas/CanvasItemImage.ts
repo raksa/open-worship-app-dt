@@ -1,4 +1,4 @@
-import { anyObjectType } from '../../helper/helpers';
+import { AnyObjectType } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
 import CanvasItem, { CanvasItemPropsType, genTextDefaultBoxStyle } from './CanvasItem';
 
@@ -22,7 +22,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             ...super.toJson(),
         };
     }
-    static fromJson(json: anyObjectType) {
+    static fromJson(json: AnyObjectType) {
         return new CanvasItemImage(json.id, {
             src: json.src,
             imageWidth: json.imageWidth,
@@ -54,7 +54,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             };
         });
     }
-    static validate(json: anyObjectType) {
+    static validate(json: AnyObjectType) {
         super.validate(json);
         if (typeof json.src !== 'string' ||
             typeof json.imageWidth !== 'number' ||

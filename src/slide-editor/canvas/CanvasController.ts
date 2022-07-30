@@ -10,7 +10,7 @@ import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import BibleItem from '../../bible-list/BibleItem';
 import CanvasItemBible from './CanvasItemBible';
-import { anyObjectType } from '../../helper/helpers';
+import { AnyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 
 type ListenerType<T> = (data: T) => void;
@@ -192,7 +192,7 @@ class CanvasController extends EventHandler {
         canvasItem.isEditing = b;
         this.fireTextEditEvent(canvasItem);
     }
-    checkValidCanvasItem(json: anyObjectType) {
+    checkValidCanvasItem(json: AnyObjectType) {
         if (CanvasItem.checkIsTypeText(json.type)) {
             return CanvasItemText.validate(json);
         }

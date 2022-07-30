@@ -1,7 +1,7 @@
 import { toastEventListener } from '../event/ToastEventListener';
 import { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';
-import { anyObjectType } from '../helper/helpers';
+import { AnyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem from './PlaylistItem';
 
@@ -11,17 +11,17 @@ export type PlaylistType = {
 export default class Playlist extends ItemSource<PlaylistType>{
     static SELECT_DIR_SETTING = 'playlist-list-selected-dir';
     static mimetype: MimetypeNameType = 'playlist';
-    static fromJson(json: anyObjectType, fileSource: FileSource) {
+    static fromJson(json: AnyObjectType, fileSource: FileSource) {
         this.validate(json);
         return new Playlist(fileSource, json.metadata, json.content);
     }
     get items() {
         return this.content.items;
     }
-    itemFromJson(json: anyObjectType) {
+    itemFromJson(json: AnyObjectType) {
         return PlaylistItem.fromJson(json, this.fileSource);
     }
-    itemFromJsonError(json: anyObjectType) {
+    itemFromJsonError(json: AnyObjectType) {
         return PlaylistItem.fromJsonError(json, this.fileSource);
     }
     static async readFileToDataNoCache(fileSource: FileSource | null) {

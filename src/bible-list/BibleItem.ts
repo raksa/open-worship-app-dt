@@ -5,7 +5,7 @@ import { toLocaleNumber, toInputText } from '../bible-helper/helpers2';
 import { openBibleSearch } from '../bible-search/BibleSearchPopup';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
-import { anyObjectType, cloneObject } from '../helper/helpers';
+import { AnyObjectType, cloneObject } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -22,10 +22,10 @@ export default class BibleItem extends ItemBase {
     id: number;
     bibleName: string;
     target: BibleTargetType;
-    metadata?: anyObjectType;
+    metadata?: AnyObjectType;
     fileSource?: FileSource;
     constructor(id: number, bibleName: string,
-        target: BibleTargetType, metadata?: anyObjectType,
+        target: BibleTargetType, metadata?: AnyObjectType,
         fileSource?: FileSource) {
         super();
         this.id = id;
@@ -87,12 +87,12 @@ export default class BibleItem extends ItemBase {
         }
         return null;
     }
-    static fromJson(json: anyObjectType, fileSource?: FileSource) {
+    static fromJson(json: AnyObjectType, fileSource?: FileSource) {
         this.validate(json);
         return new BibleItem(json.id, json.bibleName, json.target,
             json.metadata, fileSource);
     }
-    static fromJsonError(json: anyObjectType, fileSource?: FileSource) {
+    static fromJsonError(json: AnyObjectType, fileSource?: FileSource) {
         const item = new BibleItem(-1, '', {} as any, {}, fileSource);
         item.jsonError = json;
         return item;
@@ -108,7 +108,7 @@ export default class BibleItem extends ItemBase {
             metadata: this.metadata,
         };
     }
-    static validate(json: anyObjectType) {
+    static validate(json: AnyObjectType) {
         if (!json.bibleName ||
             typeof json.id !== 'number' ||
             (json.metadata && typeof json.metadata !== 'object') ||

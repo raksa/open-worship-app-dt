@@ -3,7 +3,6 @@ import {
 } from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from './FileSource';
-import { anyObjectType } from './helpers';
 
 export type AppMimetypeType = {
     type: string,
@@ -18,12 +17,6 @@ export type FileMetadataType = {
     appMimetype: AppMimetypeType,
 };
 
-export interface ItemSourceInf<T> {
-    fileSource: FileSource;
-    metadata: anyObjectType,
-    content: T;
-    toJson: () => Object;
-}
 export const createNewItem = async (dir: string, name: string,
     content: string, mimetype: MimetypeNameType) => {
     // TODO: verify file name before create

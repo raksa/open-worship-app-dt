@@ -51,8 +51,8 @@ export default function SlideFile({
             onDelete={() => {
                 if (Slide.getSelectedFileSource()?.filePath === fileSource.filePath) {
                     Slide.setSelectedFileSource(null);
-                    slideEditingCacheManager.delete(fileSource);
                 }
+                slideEditingCacheManager.delete(fileSource);
             }}
         />
     );
