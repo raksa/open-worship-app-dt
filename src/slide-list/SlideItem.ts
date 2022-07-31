@@ -24,22 +24,26 @@ export default class SlideItem extends ItemBase {
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     editingCacheManager: SlideEditingCacheManager;
+    _width: number;
+    _height: number;
     static _cache = new Map<string, SlideItem>();
     static _objectId = 0;
     _objectId: number;
     constructor(id: number, fileSource: FileSource,
-        jsonData: SlideItemType,
+        json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager) {
         super();
         this._objectId = SlideItem._objectId++;
         this.id = id;
-        this._originalJson = jsonData;
+        this._width = json.metadata.width;
+        this._height = json.metadata.height;
+        this._originalJson = Object.freeze(json);
         this.fileSource = fileSource;
         if (editingCacheManager !== undefined) {
             this.editingCacheManager = editingCacheManager;
         } else {
             this.editingCacheManager = new SlideEditingCacheManager(this.fileSource, {
-                items: [jsonData],
+                items: [json],
                 metadata: {},
             });
             this.editingCacheManager.isUsingHistory = false;
@@ -67,7 +71,7 @@ export default class SlideItem extends ItemBase {
         });
     }
     get canvasItemsJson() {
-        const items = this.editingCacheManager.latestHistory.items;
+        const items = this.editingCacheManager.presentJson.items;
         const slideItemJson = items.find((item) => {
             return item.id === this.id;
         });
@@ -77,7 +81,7 @@ export default class SlideItem extends ItemBase {
         return slideItemJson.canvasItems;
     }
     set canvasItemsJson(canvasItemsJson: AnyObjectType[]) {
-        const items = this.editingCacheManager.latestHistory.items;
+        const items = this.editingCacheManager.presentJson.items;
         items.forEach((item) => {
             if (item.id === this.id) {
                 item.canvasItems = canvasItemsJson;
@@ -86,17 +90,19 @@ export default class SlideItem extends ItemBase {
         this.editingCacheManager.pushSlideItems(items);
     }
     get width() {
-        return this.metadata.width;
+        return this._width;
     }
     set width(width: number) {
+        this._width = width;
         const metadata = this.metadata;
         metadata.width = width;
         this.metadata = metadata;
     }
     get height() {
-        return this.metadata.height;
+        return this._height;
     }
     set height(height: number) {
+        this._height = height;
         const metadata = this.metadata;
         metadata.height = height;
         this.metadata = metadata;
@@ -202,5 +208,8 @@ export default class SlideItem extends ItemBase {
     }
     static genKeyByFileSource(fileSource: FileSource, id: number) {
         return `${fileSource.filePath}:${id}`;
+    }
+    static clearCache() {
+        this._cache = new Map();
     }
 }

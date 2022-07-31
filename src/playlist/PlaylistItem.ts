@@ -18,7 +18,7 @@ export default class PlaylistItem {
     jsonError: any;
     constructor(fileSource: FileSource, json: PlaylistItemType) {
         this.fileSource = fileSource;
-        this._originalJson = json;
+        this._originalJson = Object.freeze(json);
     }
     get isError() {
         return this.type === 'error';

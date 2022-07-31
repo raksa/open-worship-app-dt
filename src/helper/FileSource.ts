@@ -8,7 +8,7 @@ import { AnyObjectType } from './helpers';
 import ItemSource from './ItemSource';
 
 type FSListener = (slideItem?: SlideItem) => void;
-export type FSEventType = 'select' | 'update' | 'edit' | 'delete' | 'delete-cache' | 'refresh-dir';
+export type FSEventType = 'select' | 'update' | 'history-update' | 'edit' | 'delete' | 'delete-cache' | 'refresh-dir';
 export type RegisteredEventType = {
     key: string,
     listener: FSListener,
@@ -62,6 +62,9 @@ export default class FileSource {
     }
     fireSelectEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('select'));
+    }
+    fireHistoryUpdateEvent() {
+        globalEventHandler._addPropEvent(this.toEventKey('history-update'));
     }
     fireUpdateEvent() {
         globalEventHandler._addPropEvent(this.toEventKey('update'));

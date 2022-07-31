@@ -1,7 +1,7 @@
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import EditingCacheManager from '../others/EditingCacheManager';
-import { SlideEditingHistoryType, SlideType } from './SlideBase';
+import { SlideEditingHistoryType, SlideType } from './Slide';
 import { SlideItemType } from './SlideItem';
 
 export default class SlideEditingCacheManager
@@ -9,13 +9,19 @@ export default class SlideEditingCacheManager
     _originalJson: Readonly<SlideType>;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource, 'slide');
-        this._originalJson = json;
+        this._originalJson = Object.freeze(json);
     }
-    get latestHistory() {
+    get cloneItems() {
+        return cloneJson(this._originalJson.items);
+    }
+    get cloneMetadata() {
+        return cloneJson(this._originalJson.metadata);
+    }
+    get presentJson() {
         if (!this.isUsingHistory) {
             return {
-                items: this._originalJson.items,
-                metadata: this._originalJson.metadata,
+                items: this.cloneItems,
+                metadata: this.cloneMetadata,
             };
         }
         const undoQueue = this.undoQueue;
@@ -27,12 +33,12 @@ export default class SlideEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            items: newItems || this._originalJson.items,
-            metadata: newMetadata || this._originalJson.metadata,
+            items: newItems || this.cloneItems,
+            metadata: newMetadata || this.cloneMetadata,
         };
     }
     getSlideItemById(id: number) {
-        const latestHistory = this.latestHistory;
+        const latestHistory = this.presentJson;
         return latestHistory.items.find((item) => {
             return item.id === id;
         }) || null;
@@ -56,5 +62,9 @@ export default class SlideEditingCacheManager
             metadata,
         };
         this.pushUndo(newHistory);
+    }
+    save() {
+        this._originalJson = Object.freeze(this.presentJson);
+        this.delete();
     }
 }

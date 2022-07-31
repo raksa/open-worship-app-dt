@@ -19,7 +19,7 @@ export default function SlideItemEditorGround() {
             reloadSlide();
         }
     }, [slideItem]);
-    useFSRefresh(['select', 'delete'], slideItem?.fileSource || null, () => {
+    useFSRefresh(['select', 'history-update', 'delete'], slideItem?.fileSource || null, () => {
         setSlideItem(null);
     });
     useSlideSelecting(() => setSlideItem(null));

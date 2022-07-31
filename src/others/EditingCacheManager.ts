@@ -67,7 +67,7 @@ export default abstract class EditingCacheManager<T1, T2> {
         const changedObject = this._changedObject;
         return changedObject.redoQueue;
     }
-    abstract get latestHistory(): T2;
+    abstract get presentJson(): T2;
     pushUndo(history: T1) {
         const changedObject = this._changedObject;
         changedObject.undoQueue.push(history);
@@ -84,6 +84,7 @@ export default abstract class EditingCacheManager<T1, T2> {
         changedObject.redoQueue.push(history);
         this._changedObject = changedObject;
         this.fileSource.fireUpdateEvent();
+        this.fileSource.fireHistoryUpdateEvent();
     }
     popRedo() {
         const changedObject = this._changedObject;
@@ -94,10 +95,13 @@ export default abstract class EditingCacheManager<T1, T2> {
         changedObject.undoQueue.push(history);
         this._changedObject = changedObject;
         this.fileSource.fireUpdateEvent();
+        this.fileSource.fireHistoryUpdateEvent();
     }
     delete() {
         const data = this._changes;
         delete data[this.fileSource.filePath];
         this._changes = data;
+        this.fileSource.fireUpdateEvent();
+        this.fileSource.fireHistoryUpdateEvent();
     }
 }

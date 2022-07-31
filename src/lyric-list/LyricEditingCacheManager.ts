@@ -1,5 +1,5 @@
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import EditingCacheManager from '../others/EditingCacheManager';
 import { LyricEditingHistoryType, LyricType } from './Lyric';
 import { LyricItemType } from './LyricItem';
@@ -9,13 +9,19 @@ export default class LyricEditingCacheManager
     _originalJson: Readonly<LyricType>;
     constructor(fileSource: FileSource, json: LyricType) {
         super(fileSource, 'lyric');
-        this._originalJson = json;
+        this._originalJson = Object.freeze(json);
     }
-    get latestHistory() {
-        if (!this.isUsingHistory) {
+    get cloneItems() {
+        return cloneJson(this._originalJson.items);
+    }
+    get cloneMetadata() {
+        return cloneJson(this._originalJson.metadata);
+    }
+    get presentJson() {
+        if (this.isUsingHistory) {
             return {
-                items: this._originalJson.items,
-                metadata: this._originalJson.metadata,
+                items: this.cloneItems,
+                metadata: this.cloneMetadata,
             };
         }
         const undoQueue = this.undoQueue;
@@ -27,12 +33,12 @@ export default class LyricEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            items: newItems || this._originalJson.items,
-            metadata: newMetadata || this._originalJson.metadata,
+            items: newItems || this.cloneItems,
+            metadata: newMetadata || this.cloneMetadata,
         };
     }
     getLyricItemById(id: number) {
-        const latestHistory = this.latestHistory;
+        const latestHistory = this.presentJson;
         return latestHistory.items.find((item) => {
             return item.id === id;
         }) || null;
@@ -43,7 +49,7 @@ export default class LyricEditingCacheManager
         const originalItem = lyricItems.find((item) => {
             return item.id === id;
         });
-        return newItem?.title !== originalItem?.title || 
+        return newItem?.title !== originalItem?.title ||
             newItem?.content !== originalItem?.content;
     }
     pushLyricItems(items: LyricItemType[]) {
@@ -57,5 +63,9 @@ export default class LyricEditingCacheManager
             metadata,
         };
         this.pushUndo(newHistory);
+    }
+    save() {
+        this._originalJson = Object.freeze(this.presentJson);
+        this.delete();
     }
 }

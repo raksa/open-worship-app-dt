@@ -38,7 +38,7 @@ class CanvasController extends EventHandler {
     }
     init(slideItem: SlideItem | null) {
         this._slideItem = slideItem;
-        this._canvas = slideItem?.canvas || Canvas.genDefaultCanvas();;
+        this._canvas = slideItem?.canvas || Canvas.genDefaultCanvas();
     }
     get canvas() {
         return this._canvas;

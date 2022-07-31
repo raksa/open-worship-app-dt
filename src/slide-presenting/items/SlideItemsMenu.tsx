@@ -31,24 +31,20 @@ export default function SlideItemsMenu({ slide }: { slide: Slide }) {
             minHeight: (isHavingHistories || slide.isChanged) ? '35px' : '0px',
         }}>
             <div className='btn-group control d-flex justify-content-center'>
-                {!!undo.length &&
-                    <button type='button' className='btn btn-sm btn-info'
-                        title='clear all'
-                        onClick={() => {
-                            editCacheManager.popUndo();
-                        }}>
-                        undo
-                        <i className='bi bi-arrow-90deg-left'></i></button>
-                }
-                {!!redo.length &&
-                    <button type='button' className='btn btn-sm btn-info'
-                        title='clear background'
-                        onClick={() => {
-                            editCacheManager.popRedo();
-                        }}>
-                        redo
-                        <i className='bi bi-arrow-90deg-right'></i></button>
-                }
+                <button type='button' className='btn btn-sm btn-info'
+                    title='clear all' disabled={!undo.length}
+                    onClick={() => {
+                        editCacheManager.popUndo();
+                    }}>
+                    undo <i className='bi bi-arrow-90deg-left'></i>
+                </button>
+                <button type='button' className='btn btn-sm btn-info'
+                    title='clear background' disabled={redo.length === 0}
+                    onClick={() => {
+                        editCacheManager.popRedo();
+                    }}>
+                    redo <i className='bi bi-arrow-90deg-right'></i>
+                </button>
                 <MenuIsModifying slide={slide}
                     isHavingHistories={isHavingHistories}
                     eventMapper={eventMapper} />

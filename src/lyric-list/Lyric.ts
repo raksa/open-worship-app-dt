@@ -31,10 +31,10 @@ export default class Lyric extends ItemSource<LyricItem>{
         return this.editingCacheManager.isChanged;
     }
     get metadata() {
-        return this.editingCacheManager.latestHistory.metadata;
+        return this.editingCacheManager.presentJson.metadata;
     }
     get items() {
-        const latestHistory = this.editingCacheManager.latestHistory;
+        const latestHistory = this.editingCacheManager.presentJson;
         return latestHistory.items.map((json) => {
             try {
                 return LyricItem.fromJson(json as any,
@@ -120,5 +120,13 @@ export default class Lyric extends ItemSource<LyricItem>{
             LyricItem.setSelectedItem(null);
         }
         this.items = newItems;
+    }
+    async save(): Promise<boolean> {
+        const isSuccess = await super.save();
+        if (isSuccess) {
+            LyricItem.clearCache();
+            this.editingCacheManager.save();
+        }
+        return isSuccess;
     }
 }

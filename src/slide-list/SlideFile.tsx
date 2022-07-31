@@ -7,6 +7,7 @@ import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { goEditSlide } from '../App';
+import { useFSRefresh } from './slideHelpers';
 
 export default function SlideFile({
     index, fileSource,
@@ -15,6 +16,7 @@ export default function SlideFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Slide | null | undefined>(null);
+    useFSRefresh(['update', 'history-update', 'edit'], fileSource);
     return (
         <FileItemHandler
             index={index}

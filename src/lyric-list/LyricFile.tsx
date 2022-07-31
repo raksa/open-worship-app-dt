@@ -6,6 +6,7 @@ import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
+import { useFSRefresh } from '../slide-list/slideHelpers';
 
 export default function LyricFile({
     index, fileSource,
@@ -14,6 +15,7 @@ export default function LyricFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
+    useFSRefresh(['update', 'history-update', 'edit'], fileSource);
     return (
         <FileItemHandler
             index={index}
@@ -34,6 +36,8 @@ export default function LyricFile({
             child={<>
                 <i className='bi bi-music-note' />
                 {fileSource.name}
+                {data && data.isChanged && <span
+                    style={{ color: 'red' }}>*</span>}
                 <ItemColorNote item={data as ItemSource<any>} />
             </>}
         />

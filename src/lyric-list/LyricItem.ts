@@ -24,18 +24,18 @@ export default class LyricItem extends ItemBase {
     static _objectId = 0;
     _objectId: number;
     constructor(id: number, fileSource: FileSource,
-        jsonData: LyricItemType,
+        json: LyricItemType,
         editingCacheManager?: LyricEditingCacheManager) {
         super();
         this._objectId = LyricItem._objectId++;
         this.id = id;
-        this._originalJson = jsonData;
+        this._originalJson = Object.freeze(json);
         this.fileSource = fileSource;
         if (editingCacheManager !== undefined) {
             this.editingCacheManager = editingCacheManager;
         } else {
             this.editingCacheManager = new LyricEditingCacheManager(this.fileSource, {
-                items: [jsonData],
+                items: [json],
                 metadata: {},
             });
             this.editingCacheManager.isUsingHistory = false;
@@ -49,7 +49,7 @@ export default class LyricItem extends ItemBase {
         return json?.metadata || this._originalJson.metadata;
     }
     get lyricItemJson() {
-        const items = this.editingCacheManager.latestHistory.items;
+        const items = this.editingCacheManager.presentJson.items;
         const lyricItemJson = items.find((item) => {
             return item.id === this.id;
         });
@@ -62,7 +62,7 @@ export default class LyricItem extends ItemBase {
         return this.lyricItemJson.title;
     }
     set title(title: string) {
-        const items = this.editingCacheManager.latestHistory.items;
+        const items = this.editingCacheManager.presentJson.items;
         items.forEach((item) => {
             if (item.id === this.id) {
                 item.title = title;
@@ -74,7 +74,7 @@ export default class LyricItem extends ItemBase {
         return this.lyricItemJson.content;
     }
     set content(content: string) {
-        const items = this.editingCacheManager.latestHistory.items;
+        const items = this.editingCacheManager.presentJson.items;
         items.forEach((item) => {
             if (item.id === this.id) {
                 item.content = content;
@@ -148,5 +148,8 @@ export default class LyricItem extends ItemBase {
             content: 'Block1\n===\nBlock2\n===\nBlock3',
             metadata: {},
         };
+    }
+    static clearCache() {
+        this._cache = new Map();
     }
 }

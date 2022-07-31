@@ -3,26 +3,19 @@ import {
 } from '../../event/KeyboardEventListener';
 import Slide from '../../slide-list/Slide';
 
-export default function MenuIsModifying({
-    slide, eventMapper, isHavingHistories,
-}: {
+export default function MenuIsModifying({ slide, eventMapper }: {
     slide: Slide, eventMapper: any, isHavingHistories: boolean,
 }) {
-    const discardChanged = () => {
-        return (
+    return (
+        <>
             <button type='button' className='btn btn-sm btn-info'
+                disabled={!slide.isChanged}
                 onClick={() => {
                     slide.discardChanged();
                 }}>Discard Changed</button>
-        );
-    };
-    if (!slide.isChanged) {
-        return isHavingHistories ? discardChanged() : null;
-    }
-    return (
-        <>
-            {discardChanged()}
-            <button type='button' className='btn btn-sm btn-success tool-tip tool-tip-fade'
+            <button type='button'
+                className='btn btn-sm btn-success tool-tip tool-tip-fade'
+                disabled={!slide.isChanged}
                 data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
                 title='save slide thumbs'
                 onClick={() => {
