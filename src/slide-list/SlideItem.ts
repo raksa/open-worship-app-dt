@@ -8,10 +8,11 @@ import { AnyObjectType, cloneObject } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import { canvasController } from '../slide-editor/canvas/CanvasController';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
+import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 
 export type SlideItemType = {
     id: number,
-    canvasItems: AnyObjectType[],
+    canvasItems: CanvasItemPropsType[],
     metadata: AnyObjectType,
 };
 
@@ -75,12 +76,10 @@ export default class SlideItem extends ItemBase {
         const slideItemJson = items.find((item) => {
             return item.id === this.id;
         });
-        if (!slideItemJson) {
-            throw new Error('Slide item not found');
-        }
-        return slideItemJson.canvasItems;
+        return slideItemJson?.canvasItems ||
+            this._originalJson.canvasItems;
     }
-    set canvasItemsJson(canvasItemsJson: AnyObjectType[]) {
+    set canvasItemsJson(canvasItemsJson: CanvasItemPropsType[]) {
         const items = this.editingCacheManager.presentJson.items;
         items.forEach((item) => {
             if (item.id === this.id) {

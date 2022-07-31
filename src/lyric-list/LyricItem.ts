@@ -53,10 +53,7 @@ export default class LyricItem extends ItemBase {
         const lyricItemJson = items.find((item) => {
             return item.id === this.id;
         });
-        if (!lyricItemJson) {
-            throw new Error('Lyric item not found');
-        }
-        return lyricItemJson;
+        return lyricItemJson || this._originalJson;
     }
     get title() {
         return this.lyricItemJson.title;
