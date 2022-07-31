@@ -45,11 +45,10 @@ export default class Canvas {
     }
     static genDefaultCanvas() {
         const { width, height } = Canvas.getDefaultDim();
-        const canvas = new Canvas({
+        return new Canvas({
             width, height,
             canvasItems: [],
         });
-        return canvas;
     }
     static getDefaultDim() {
         const { presentDisplay } = getAllDisplays();
@@ -60,7 +59,7 @@ export default class Canvas {
         metadata: AnyObjectType,
         canvasItems: AnyObjectType[],
     }) {
-        const canvasItems = canvasItemsJson.map((json: AnyObjectType) => {
+        const canvasItems = canvasItemsJson.map((json: any) => {
             if (json.type === 'image') {
                 return CanvasItemImage.fromJson(json);
             } else if (json.type === 'text') {

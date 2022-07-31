@@ -5,8 +5,8 @@ import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
-import { useFSRefresh } from '../slide-list/slideHelpers';
 import { canvasController } from './canvas/CanvasController';
+import { useFSRefresh } from '../helper/FileSource';
 
 export default function SlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
@@ -19,9 +19,10 @@ export default function SlideItemEditorGround() {
             reloadSlide();
         }
     }, [slideItem]);
-    useFSRefresh(['select', 'history-update', 'delete'], slideItem?.fileSource || null, () => {
-        setSlideItem(null);
-    });
+    useFSRefresh(['select', 'history-update', 'delete'],
+        slideItem?.fileSource || null, () => {
+            setSlideItem(null);
+        });
     useSlideSelecting(() => setSlideItem(null));
     useSlideItemSelecting(setSlideItem);
     canvasController.init(slideItem || null);

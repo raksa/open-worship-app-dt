@@ -5,8 +5,8 @@ import {
     WindowsControlEnum,
 } from '../../event/KeyboardEventListener';
 import { useDisplay } from '../../event/PresentEventListener';
+import { useFSRefresh } from '../../helper/FileSource';
 import Slide from '../../slide-list/Slide';
-import { useFSRefresh } from '../../slide-list/slideHelpers';
 import MenuIsModifying from './MenuIsModifying';
 
 export default function SlideItemsMenu({ slide }: { slide: Slide }) {

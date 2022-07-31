@@ -50,8 +50,8 @@ export default class Lyric extends ItemSource<LyricItem>{
         });
     }
     set items(newItems: LyricItem[]) {
-        const slideItems = newItems.map((item) => item.toJson());
-        this.editingCacheManager.pushLyricItems(slideItems);
+        const lyricItems = newItems.map((item) => item.toJson());
+        this.editingCacheManager.pushLyricItems(lyricItems);
     }
     get maxItemId() {
         if (this.items.length) {
@@ -105,18 +105,18 @@ export default class Lyric extends ItemSource<LyricItem>{
             lyric.isSelected = false;
         }
     }
-    addItem(slideItem: LyricItem) {
+    addItem(lyricItem: LyricItem) {
         const items = this.items;
-        slideItem.id = this.maxItemId + 1;
-        items.push(slideItem);
+        lyricItem.id = this.maxItemId + 1;
+        items.push(lyricItem);
         this.items = items;
     }
-    deleteItem(slideItem: LyricItem) {
+    deleteItem(lyricItem: LyricItem) {
         const newItems = this.items.filter((item) => {
-            return item !== slideItem;
+            return item.id !== lyricItem.id;
         });
         const result = LyricItem.getSelectedResult();
-        if (result?.id === slideItem.id) {
+        if (result?.id === lyricItem.id) {
             LyricItem.setSelectedItem(null);
         }
         this.items = newItems;

@@ -12,13 +12,13 @@ import SlideItemRender from './SlideItemRender';
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
-    useFSRefresh,
 } from '../../slide-list/slideHelpers';
 import { usePresentFGClearing } from '../../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import SlideItem from '../../slide-list/SlideItem';
 import Slide from '../../slide-list/Slide';
+import { useFSRefresh } from '../../helper/FileSource';
 
 export default function SlideItems({ slide }: { slide: Slide }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { globalEventHandler } from '../event/EventHandler';
 import { toastEventListener } from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
@@ -148,4 +149,24 @@ export default class FileSource {
         this._fileCache.set(fileSource.filePath, fileSource);
         return fileSource;
     }
+}
+
+export function useFSRefresh(events: FSEventType[], fileSource: FileSource | null,
+    callback?: () => void) {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+        if (fileSource === null) {
+            return;
+        }
+        const registerEvent = fileSource.registerEventListener(
+            events, () => {
+                setN(n + 1);
+                if (callback) {
+                    callback();
+                }
+            });
+        return () => {
+            fileSource.unregisterEventListener(registerEvent);
+        };
+    }, [fileSource, n]);
 }

@@ -14,50 +14,34 @@ export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
 };
 export default class CanvasItemBible extends CanvasItemText {
     props: CanvasItemBiblePropsType;
-    constructor(id: number, props: CanvasItemBiblePropsType) {
-        super(id, props);
+    constructor(props: CanvasItemBiblePropsType) {
+        super(props);
         this.props = props;
     }
-    toJson() {
-        return {
-            bibleNames: this.props.bibleNames,
-            bibleItemTarget: this.props.bibleItemTarget,
-            bibleRenderedList: this.props.bibleRenderedList,
-            ...super.toJson(),
-        };
+    toJson(): CanvasItemBiblePropsType {
+        return this.props;
     }
-    static fromJson({
-        bibleNames, bibleItemTarget, bibleRenderedList,
-        ...json
-    }: {
-        bibleNames: string[];
-        bibleItemTarget: BibleTargetType;
-        bibleRenderedList: {
-            title: string, text: string,
-        }[]
-    } & AnyObjectType) {
-        const newTextItem = super.fromJson(json);
-        const props = {
-            bibleNames,
-            bibleItemTarget,
-            bibleRenderedList,
-            ...newTextItem.props,
-        };
-        return new CanvasItemBible(json.id, props);
+    static fromJson(json: CanvasItemBiblePropsType) {
+        this.validate(json);
+        return new CanvasItemBible(json);
     }
-    static async fromBibleItem(bibleItem: BibleItem) {
+    static async fromBibleItem(id: number, bibleItem: BibleItem) {
         const title = await BibleItem.itemToTitle(bibleItem);
         const text = await BibleItem.itemToText(bibleItem);
         const newTextItem = super.genDefaultItem();
-        const json = {
+        const props = newTextItem.toJson();
+        props.id = id;
+        const json: CanvasItemBiblePropsType = {
+            ...props,
             bibleNames: [bibleItem.bibleName],
             bibleItemTarget: bibleItem.toJson().target,
             bibleRenderedList: [{
                 title, text,
             }],
-            ...newTextItem.toJson(),
-            texHorizontalAlign: 'left',
-            texVerticalAlign: 'top',
+            horizontalAlignment: 'left',
+            verticalAlignment: 'top',
+            textHorizontalAlignment: 'left',
+            textVerticalAlignment: 'top',
             type: 'bible',
         };
         return CanvasItemBible.fromJson(json);

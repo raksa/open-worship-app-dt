@@ -14,23 +14,6 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     getStyle() {
         return CanvasItemImage.gegStyle(this.props);
     }
-    toJson() {
-        return {
-            src: this.props.src,
-            imageWidth: this.props.imageWidth,
-            imageHeight: this.props.imageHeight,
-            ...super.toJson(),
-        };
-    }
-    static fromJson(json: AnyObjectType) {
-        return new CanvasItemImage(json.id, {
-            src: json.src,
-            imageWidth: json.imageWidth,
-            imageHeight: json.imageHeight,
-            ...super.propsFromJson(json),
-            type: 'image',
-        });
-    }
     static genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
         return new Promise<CanvasItemImage>((resolve, reject) => {
@@ -53,6 +36,18 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
                 reject(new Error('Image load error'));
             };
         });
+    }
+    toJson(): CanvasItemImagePropsType {
+        return {
+            src: this.props.src,
+            imageWidth: this.props.imageWidth,
+            imageHeight: this.props.imageHeight,
+            ...super.toJson(),
+        };
+    }
+    static fromJson(json: CanvasItemImagePropsType) {
+        this.validate(json);
+        return new CanvasItemImage(json);
     }
     static validate(json: AnyObjectType) {
         super.validate(json);

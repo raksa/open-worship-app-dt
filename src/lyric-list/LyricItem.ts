@@ -13,7 +13,7 @@ export type LyricItemType = {
 
 export default class LyricItem extends ItemBase {
     _originalJson: Readonly<LyricItemType>;
-    static SELECT_SETTING_NAME = 'slide-item-selected';
+    static SELECT_SETTING_NAME = 'lyric-item-selected';
     id: number;
     fileSource: FileSource;
     isCopied: boolean;
@@ -87,8 +87,8 @@ export default class LyricItem extends ItemBase {
     }
     static getSelectedEditingResult() {
         const selected = this.getSelectedResult();
-        const slideSelected = Lyric.getSelectedFileSource();
-        if (selected?.fileSource.filePath === slideSelected?.filePath) {
+        const lyricSelected = Lyric.getSelectedFileSource();
+        if (selected?.fileSource.filePath === lyricSelected?.filePath) {
             return selected;
         }
         return null;

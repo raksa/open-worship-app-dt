@@ -52,28 +52,6 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
     getStyle() {
         return CanvasItemText.genStyle(this.props);
     }
-    toJson() {
-        return {
-            text: this.props.text,
-            color: this.props.color,
-            fontSize: this.props.fontSize,
-            fontFamily: this.props.fontFamily,
-            textHorizontalAlignment: this.props.textHorizontalAlignment as string,
-            textVerticalAlignment: this.props.textHorizontalAlignment as string,
-            ...super.toJson(),
-        };
-    }
-    static fromJson(json: AnyObjectType) {
-        return new CanvasItemText(json.id, {
-            text: json.text,
-            color: json.color,
-            fontSize: json.fontSize,
-            fontFamily: json.fontFamily,
-            textHorizontalAlignment: json.textHorizontalAlignment as HAlignmentType,
-            textVerticalAlignment: json.textVerticalAlignment as VAlignmentType,
-            ...super.propsFromJson(json),
-        });
-    }
     static genDefaultItem() {
         return CanvasItemText.fromJson({
             ...genTextDefaultProps(),
@@ -82,6 +60,13 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
     }
     applyTextData(textData: ToolingTextType) {
         this.applyProps(textData);
+    }
+    toJson(): CanvasItemTextPropsType {
+        return this.props;
+    }
+    static fromJson(json: CanvasItemTextPropsType) {
+        this.validate(json);
+        return new CanvasItemText(json);
     }
     static validate(json: AnyObjectType) {
         super.validate(json);

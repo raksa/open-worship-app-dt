@@ -54,23 +54,3 @@ export function openSlideContextMenu(e: any,
         },
     ]);
 }
-
-export function useFSRefresh(events: FSEventType[], fileSource: FileSource | null,
-    callback?: () => void) {
-    const [n, setN] = useState(0);
-    useEffect(() => {
-        if (fileSource === null) {
-            return;
-        }
-        const registerEvent = fileSource.registerEventListener(
-            events, () => {
-                setN(n + 1);
-                if (callback) {
-                    callback();
-                }
-            });
-        return () => {
-            fileSource.unregisterEventListener(registerEvent);
-        };
-    }, [fileSource, n]);
-}

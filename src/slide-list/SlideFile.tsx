@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
-import FileSource from '../helper/FileSource';
+import FileSource, { useFSRefresh } from '../helper/FileSource';
 import Slide from './Slide';
 import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { goEditSlide } from '../App';
-import { useFSRefresh } from './slideHelpers';
 
 export default function SlideFile({
     index, fileSource,

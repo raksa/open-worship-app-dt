@@ -144,7 +144,7 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     deleteItem(slideItem: SlideItem) {
         const newItems = this.items.filter((item) => {
-            return item !== slideItem;
+            return item.id !== slideItem.id;
         });
         const result = SlideItem.getSelectedResult();
         if (result?.id === slideItem.id) {

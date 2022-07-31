@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
-import FileSource from '../helper/FileSource';
+import FileSource, { useFSRefresh } from '../helper/FileSource';
 import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { useFSRefresh } from '../slide-list/slideHelpers';
 
 export default function LyricFile({
     index, fileSource,

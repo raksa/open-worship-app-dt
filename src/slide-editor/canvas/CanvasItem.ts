@@ -10,6 +10,7 @@ import {
 export function genTextDefaultBoxStyle(width: number = 700,
     height: number = 400): CanvasItemPropsType {
     return {
+        id: -1,
         top: 279,
         left: 356,
         backgroundColor: 'rgba(255, 0, 255, 0.39)',
@@ -23,6 +24,7 @@ export function genTextDefaultBoxStyle(width: number = 700,
 }
 
 export type CanvasItemPropsType = {
+    id: number,
     top: number,
     left: number,
     rotate: number,
@@ -33,21 +35,22 @@ export type CanvasItemPropsType = {
     backgroundColor: string,
     type: CanvasItemType,
 };
-export default class CanvasItem<T extends CanvasItemPropsType> {
+export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     static _objectId = 0;
     _objectId: number;
     props: T;
     isSelected: boolean;
     isControlling: boolean;
     isEditing: boolean;
-    id: number;
-    constructor(id: number, props: T) {
+    constructor(props: T) {
         this._objectId = CanvasItem._objectId++;
-        this.id = id;
         this.props = props;
         this.isSelected = false;
         this.isControlling = false;
         this.isEditing = false;
+    }
+    get id() {
+        return this.props.id;
     }
     static checkIsTypeAudio(type: string) {
         return type === 'audio';
@@ -84,9 +87,7 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     static genStyle(_props: CanvasItemPropsType) {
         throw new Error('Method not implemented.');
     }
-    getStyle(): CSSProperties {
-        throw new Error('Method not implemented.');
-    }
+    abstract getStyle(): CSSProperties;
     static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
         const style: CSSProperties = {
             display: 'flex',
@@ -102,32 +103,6 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     }
     getBoxStyle(): CSSProperties {
         return CanvasItem.genBoxStyle(this.props);
-    }
-    toJson() {
-        return {
-            top: this.props.top,
-            left: this.props.left,
-            rotate: this.props.rotate,
-            width: this.props.width,
-            height: this.props.height,
-            horizontalAlignment: this.props.horizontalAlignment as string,
-            verticalAlignment: this.props.verticalAlignment as string,
-            backgroundColor: this.props.backgroundColor,
-            type: this.props.type,
-        };
-    }
-    static propsFromJson(json: { [key: string]: any }): CanvasItemPropsType {
-        return {
-            top: json['top'],
-            left: json['left'],
-            rotate: json['rotate'],
-            width: json['width'],
-            height: json['height'],
-            horizontalAlignment: json['horizontalAlignment'],
-            verticalAlignment: json['verticalAlignment'],
-            backgroundColor: json['backgroundColor'],
-            type: json['type'],
-        };
     }
     static fromJson(_json: object): CanvasItem<any> {
         throw new Error('Method not implemented.');
@@ -160,21 +135,23 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     }
     clone() {
         const newItem = cloneObject(this);
-        newItem.id = -1;
+        newItem.props.id = -1;
         return newItem;
     }
-    async initProps() {
-        return;
+    toJson(): CanvasItemPropsType {
+        return this.props;
     }
     static validate(json: AnyObjectType) {
-        if (typeof json.top !== 'number' ||
+        if (typeof json.id !== 'number' ||
+            typeof json.top !== 'number' ||
             typeof json.left !== 'number' ||
             typeof json.rotate !== 'number' ||
             typeof json.width !== 'number' ||
             typeof json.height !== 'number' ||
             !['left', 'center', 'right'].includes(json.horizontalAlignment) ||
-            !['start', 'center', 'end'].includes(json.verticalAlignment) ||
-            typeof json.backgroundColor !== 'string'
+            !['top', 'center', 'bottom'].includes(json.verticalAlignment) ||
+            typeof json.backgroundColor !== 'string' ||
+            typeof json.type !== 'string'
         ) {
             console.log(json);
             throw new Error('Invalid canvas item data');
