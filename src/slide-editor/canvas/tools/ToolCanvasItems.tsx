@@ -1,4 +1,4 @@
-import CanvasItemRenderer from '../../../slide-presenting/items/SlideItemRenderer';
+import CanvasItemRenderer from '../../../slide-presenting/items/CanvasItemRenderer';
 import { canvasController } from '../CanvasController';
 import {
     showCanvasItemContextMenu, useCCRefresh,
@@ -28,7 +28,8 @@ export default function ToolCanvasItems() {
                             {canvasItem.props.width}x{canvasItem.props.height}
                         </div>
                         <div className='card-body'>
-                            <CanvasItemRenderer props={canvasItem.props} />
+                            <CanvasItemRenderer
+                                props={canvasItem.props} />
                         </div>
                     </div>
                 );

@@ -11,10 +11,6 @@ type ChangeObjectType<T> = {
 type ChangesType<T> = {
     [key: string]: ChangeObjectType<T> | undefined
 };
-const emptyHistory: ChangeObjectType<any> = {
-    undoQueue: [],
-    redoQueue: [],
-};
 
 const SETTING_NAME = 'editing-cache';
 export default abstract class EditingCacheManager<T1, T2> {
@@ -46,8 +42,10 @@ export default abstract class EditingCacheManager<T1, T2> {
     }
     get _changedObject(): ChangeObjectType<T1> {
         const changes = this._changes;
-        const changedObject = changes[this.fileSource.filePath] ||
-            cloneObject(emptyHistory);
+        const changedObject = changes[this.fileSource.filePath] || {
+            undoQueue: [],
+            redoQueue: [],
+        };
         changedObject.undoQueue = changedObject.undoQueue || [];
         changedObject.redoQueue = changedObject.redoQueue || [];
         return changedObject;

@@ -99,6 +99,7 @@ export default class SlideBase extends ItemSource<SlideItem>{
         const isSuccess = await super.save();
         if (isSuccess) {
             this.editingCacheManager.delete();
+            this.fileSource.fireUpdateEvent();
         }
         return isSuccess;
     }

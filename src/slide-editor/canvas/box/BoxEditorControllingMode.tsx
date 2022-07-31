@@ -57,6 +57,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     transform: 'translate(-50%, -50%)',
                     width: `${canvasItem.props.width}px`,
                     height: `${canvasItem.props.height}px`,
+                    backgroundColor: canvasItem.props.backgroundColor,
                 }}>
                 <BECRender canvasItem={canvasItem} />
                 <div className='tools'>

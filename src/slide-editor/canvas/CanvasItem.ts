@@ -89,12 +89,14 @@ export default class CanvasItem<T extends CanvasItemPropsType> {
     }
     static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
         const style: CSSProperties = {
+            display: 'flex',
             top: `${props.top}px`,
             left: `${props.left}px`,
             transform: `rotate(${props.rotate}deg)`,
             width: `${props.width}px`,
             height: `${props.height}px`,
             position: 'absolute',
+            backgroundColor: props.backgroundColor,
         };
         return style;
     }

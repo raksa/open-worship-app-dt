@@ -39,12 +39,13 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
     static genStyle(props: CanvasItemTextPropsType) {
         const style: CSSProperties = {
             display: 'flex',
+            width: '100%',
+            height: '100%',
             fontSize: `${props.fontSize}px`,
             fontFamily: props.fontFamily,
             color: props.color,
-            alignItems: props.verticalAlignment,
-            justifyContent: props.horizontalAlignment,
-            backgroundColor: props.backgroundColor,
+            alignItems: props.textVerticalAlignment,
+            justifyContent: props.textHorizontalAlignment,
         };
         return style;
     }
