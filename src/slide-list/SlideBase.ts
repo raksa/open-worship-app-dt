@@ -64,7 +64,7 @@ export default class SlideBase extends ItemSource<SlideItem>{
     }
     get items() {
         const latestHistory = this.editingCacheManager.latestHistory;
-        return latestHistory.slideItems.map((json) => {
+        return latestHistory.items.map((json) => {
             try {
                 return SlideItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);

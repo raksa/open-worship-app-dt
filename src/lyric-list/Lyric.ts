@@ -35,7 +35,7 @@ export default class Lyric extends ItemSource<LyricItem>{
     }
     get items() {
         const latestHistory = this.editingCacheManager.latestHistory;
-        return latestHistory.lyricItems.map((json) => {
+        return latestHistory.items.map((json) => {
             try {
                 return LyricItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);
@@ -96,9 +96,8 @@ export default class Lyric extends ItemSource<LyricItem>{
         return null;
     }
     static async create(dir: string, name: string) {
-        return super.create(dir, name, {
-            items: [LyricItem.genDefaultLyric(name)],
-        });
+        return super.create(dir, name,
+            [LyricItem.genDefaultLyric(name)]);
     }
     static async clearSelection() {
         const lyric = await this.getSelected();

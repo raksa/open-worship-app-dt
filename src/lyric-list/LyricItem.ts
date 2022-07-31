@@ -46,11 +46,11 @@ export default class LyricItem extends ItemBase {
     }
     get metadata() {
         const json = this.editingCacheManager.getLyricItemById(this.id);
-        return json || this._originalJson.metadata;
+        return json?.metadata || this._originalJson.metadata;
     }
     get lyricItemJson() {
-        const lyricItems = this.editingCacheManager.latestHistory.lyricItems;
-        const lyricItemJson = lyricItems.find((item) => {
+        const items = this.editingCacheManager.latestHistory.items;
+        const lyricItemJson = items.find((item) => {
             return item.id === this.id;
         });
         if (!lyricItemJson) {
@@ -62,25 +62,25 @@ export default class LyricItem extends ItemBase {
         return this.lyricItemJson.title;
     }
     set title(title: string) {
-        const lyricItems = this.editingCacheManager.latestHistory.lyricItems;
-        lyricItems.forEach((item) => {
+        const items = this.editingCacheManager.latestHistory.items;
+        items.forEach((item) => {
             if (item.id === this.id) {
                 item.title = title;
             }
         });
-        this.editingCacheManager.pushLyricItems(lyricItems);
+        this.editingCacheManager.pushLyricItems(items);
     }
     get content() {
         return this.lyricItemJson.content;
     }
     set content(content: string) {
-        const lyricItems = this.editingCacheManager.latestHistory.lyricItems;
-        lyricItems.forEach((item) => {
+        const items = this.editingCacheManager.latestHistory.items;
+        items.forEach((item) => {
             if (item.id === this.id) {
                 item.content = content;
             }
         });
-        this.editingCacheManager.pushLyricItems(lyricItems);
+        this.editingCacheManager.pushLyricItems(items);
     }
     get isChanged() {
         return this.editingCacheManager.checkIsLyricItemChanged(this.id);

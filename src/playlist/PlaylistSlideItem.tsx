@@ -5,8 +5,8 @@ import Slide from '../slide-list/Slide';
 import SlideItem from '../slide-list/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
 import FileReadError from '../others/FileReadError';
-import { SlideItemIFrame } from '../slide-presenting/items/SlideItemRenderers';
 import PlaylistItem from './PlaylistItem';
+import SlideItemRendererIFrame from '../slide-presenting/items/SlideItemRendererIFrame';
 
 export default function PlaylistSlideItem({ playlistItem }: {
     playlistItem: PlaylistItem,
@@ -34,7 +34,7 @@ export default function PlaylistSlideItem({ playlistItem }: {
             onClick={() => {
                 slideListEventListenerGlobal.selectSlideItem(item);
             }}>
-            <SlideItemIFrame slideItem={item} />
+            <SlideItemRendererIFrame slideItem={item} />
         </div>
     );
 }

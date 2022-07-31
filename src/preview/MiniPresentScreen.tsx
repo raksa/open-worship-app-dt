@@ -6,7 +6,7 @@ import ClearControl from './ClearControl';
 import { presentEventListener } from '../event/PresentEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import { renderFG } from '../helper/presentingHelpers';
-import { genSlideItemHtmlString } from '../slide-presenting/items/SlideItemRenderers';
+import { genSlideItemHtmlString } from '../slide-presenting/items/SlideItemRenderer';
 
 export default function MiniPresentScreen() {
     useSlideItemSelecting(async(slideItem) => {

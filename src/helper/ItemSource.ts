@@ -60,8 +60,7 @@ export default abstract class ItemSource<T extends {
         return json;
     }
     static validate(json: AnyObjectType) {
-        if (!json.content || typeof json.content !== 'object'
-            || !json.content.items || !(json.content.items instanceof Array)
+        if (!json.items || !(json.items instanceof Array)
             || !validateAppMeta(json.metadata)) {
             throw new Error('Invalid item source data');
         }
@@ -95,17 +94,14 @@ export default abstract class ItemSource<T extends {
         this.fileSource.fireReloadDirEvent();
         return isSuccess;
     }
-    static async create(dir: string, name: string, content?: Object) {
-        if (!content) {
-            return null;
-        }
+    static async create(dir: string, name: string, items: AnyObjectType[]) {
         const data = JSON.stringify({
             metadata: {
                 fileVersion: 1,
                 app: 'OpenWorship',
                 initDate: (new Date()).toJSON(),
             },
-            content,
+            items,
         });
         const filePath = await createNewItem(dir, name, data, this.mimetype);
         if (filePath !== null) {
@@ -120,7 +116,7 @@ export default abstract class ItemSource<T extends {
         const json = await fileSource.readFileToData();
         if (json !== null) {
             try {
-                return this.fromJson(json, fileSource);
+                return this.fromJson(fileSource, json);
             } catch (error: any) {
                 toastEventListener.showSimpleToast({
                     title: 'Instantiating Data',

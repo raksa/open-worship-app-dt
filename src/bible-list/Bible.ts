@@ -154,8 +154,6 @@ export default class Bible extends ItemSource<BibleItem>{
         return defaultBible;
     }
     static async create(dir: string, name: string) {
-        return super.create(dir, name, {
-            items: [],
-        });
+        return super.create(dir, name, []);
     }
 }

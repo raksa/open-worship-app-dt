@@ -50,7 +50,7 @@ export default class SlideItem extends ItemBase {
     }
     get metadata() {
         const json = this.editingCacheManager.getSlideItemById(this.id);
-        return json || this._originalJson.metadata;
+        return json?.metadata || this._originalJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
         this.editingCacheManager.pushMetadata(metadata);
@@ -67,8 +67,8 @@ export default class SlideItem extends ItemBase {
         });
     }
     get canvasItemsJson() {
-        const slideItems = this.editingCacheManager.latestHistory.slideItems;
-        const slideItemJson = slideItems.find((item) => {
+        const items = this.editingCacheManager.latestHistory.items;
+        const slideItemJson = items.find((item) => {
             return item.id === this.id;
         });
         if (!slideItemJson) {
@@ -77,13 +77,13 @@ export default class SlideItem extends ItemBase {
         return slideItemJson.canvasItems;
     }
     set canvasItemsJson(canvasItemsJson: AnyObjectType[]) {
-        const slideItems = this.editingCacheManager.latestHistory.slideItems;
-        slideItems.forEach((item) => {
+        const items = this.editingCacheManager.latestHistory.items;
+        items.forEach((item) => {
             if (item.id === this.id) {
                 item.canvasItems = canvasItemsJson;
             }
         });
-        this.editingCacheManager.pushSlideItems(slideItems);
+        this.editingCacheManager.pushSlideItems(items);
     }
     get width() {
         return this.metadata.width;

@@ -5,7 +5,7 @@ import { SlideEditingHistoryType, SlideType } from './SlideBase';
 import { SlideItemType } from './SlideItem';
 
 export default class SlideEditingCacheManager
-    extends EditingCacheManager<SlideEditingHistoryType> {
+    extends EditingCacheManager<SlideEditingHistoryType, SlideType> {
     _originalJson: Readonly<SlideType>;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource, 'slide');
@@ -14,7 +14,7 @@ export default class SlideEditingCacheManager
     get latestHistory() {
         if (!this.isUsingHistory) {
             return {
-                slideItems: this._originalJson.items,
+                items: this._originalJson.items,
                 metadata: this._originalJson.metadata,
             };
         }
@@ -27,13 +27,13 @@ export default class SlideEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            slideItems: newItems || this._originalJson.items,
+            items: newItems || this._originalJson.items,
             metadata: newMetadata || this._originalJson.metadata,
         };
     }
     getSlideItemById(id: number) {
         const latestHistory = this.latestHistory;
-        return latestHistory.slideItems.find((item) => {
+        return latestHistory.items.find((item) => {
             return item.id === id;
         }) || null;
     }

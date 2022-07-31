@@ -53,9 +53,8 @@ export default class Slide extends SlideBase {
         return null;
     }
     static async create(dir: string, name: string) {
-        return super.create(dir, name, {
-            items: [SlideItem.defaultSlideItemData(0)],
-        });
+        return super.create(dir, name,
+            [SlideItem.defaultSlideItemData(0)]);
     }
     openContextMenu(e: any, slideItem: SlideItem) {
         openSlideContextMenu(e, this, slideItem);

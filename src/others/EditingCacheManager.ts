@@ -17,7 +17,7 @@ const emptyHistory: ChangeObjectType<any> = {
 };
 
 const SETTING_NAME = 'editing-cache';
-export default class EditingCacheManager<T> {
+export default abstract class EditingCacheManager<T1, T2> {
     isUsingHistory = true;
     fileSource: FileSource;
     settingName: string;
@@ -28,7 +28,7 @@ export default class EditingCacheManager<T> {
     get isChanged() {
         return !!this.histories.length;
     }
-    get _changes(): ChangesType<T> {
+    get _changes(): ChangesType<T1> {
         const str = getSetting(this.settingName, '{}');
         try {
             return JSON.parse(str);
@@ -37,14 +37,14 @@ export default class EditingCacheManager<T> {
             return {};
         }
     }
-    set _changes(changes: ChangesType<T>) {
+    set _changes(changes: ChangesType<T1>) {
         if (!this.isUsingHistory) {
             console.log('Saving is disabled');
             return;
         }
         setSetting(this.settingName, JSON.stringify(changes));
     }
-    get _changedObject(): ChangeObjectType<T> {
+    get _changedObject(): ChangeObjectType<T1> {
         const changes = this._changes;
         const changedObject = changes[this.fileSource.filePath] ||
             cloneObject(emptyHistory);
@@ -52,24 +52,25 @@ export default class EditingCacheManager<T> {
         changedObject.redoQueue = changedObject.redoQueue || [];
         return changedObject;
     }
-    set _changedObject(changedObject: ChangeObjectType<T>) {
+    set _changedObject(changedObject: ChangeObjectType<T1>) {
         const changesObject = this._changes;
         changesObject[this.fileSource.filePath] = changedObject;
         this._changes = changesObject;
     }
-    get histories(): T[] {
+    get histories(): T1[] {
         const changedObject = this._changedObject;
         return changedObject.undoQueue.concat(changedObject.redoQueue);
     }
-    get undoQueue(): T[] {
+    get undoQueue(): T1[] {
         const changedObject = this._changedObject;
         return changedObject.undoQueue;
     }
-    get redoQueue(): T[] {
+    get redoQueue(): T1[] {
         const changedObject = this._changedObject;
         return changedObject.redoQueue;
     }
-    pushUndo(history: T) {
+    abstract get latestHistory(): T2;
+    pushUndo(history: T1) {
         const changedObject = this._changedObject;
         changedObject.undoQueue.push(history);
         changedObject.redoQueue = [];
@@ -81,7 +82,7 @@ export default class EditingCacheManager<T> {
         if (changedObject.undoQueue.length === 0) {
             return null;
         }
-        const history = changedObject.undoQueue.pop() as T;
+        const history = changedObject.undoQueue.pop() as T1;
         changedObject.redoQueue.push(history);
         this._changedObject = changedObject;
         this.fileSource.fireUpdateEvent();
@@ -91,7 +92,7 @@ export default class EditingCacheManager<T> {
         if (changedObject.redoQueue.length === 0) {
             return null;
         }
-        const history = changedObject.redoQueue.pop() as T;
+        const history = changedObject.redoQueue.pop() as T1;
         changedObject.undoQueue.push(history);
         this._changedObject = changedObject;
         this.fileSource.fireUpdateEvent();

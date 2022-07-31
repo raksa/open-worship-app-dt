@@ -50,9 +50,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
             Promise<Playlist | null | undefined>;
     }
     static async create(dir: string, name: string) {
-        return super.create(dir, name, {
-            items: [],
-        });
+        return super.create(dir, name, []);
     }
     addFromData(dataStr: string) {
         try {

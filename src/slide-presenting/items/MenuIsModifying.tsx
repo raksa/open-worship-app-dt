@@ -8,20 +8,20 @@ export default function MenuIsModifying({
 }: {
     slide: Slide, eventMapper: any, isHavingHistories: boolean,
 }) {
-    const toRollback = () => {
+    const discardChanged = () => {
         return (
             <button type='button' className='btn btn-sm btn-info'
                 onClick={() => {
                     slide.discardChanged();
-                }}>Rollback</button>
+                }}>Discard Changed</button>
         );
     };
     if (!slide.isChanged) {
-        return isHavingHistories ? toRollback() : null;
+        return isHavingHistories ? discardChanged() : null;
     }
     return (
         <>
-            {toRollback()}
+            {discardChanged()}
             <button type='button' className='btn btn-sm btn-success tool-tip tool-tip-fade'
                 data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
                 title='save slide thumbs'

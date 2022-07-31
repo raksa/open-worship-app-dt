@@ -5,7 +5,7 @@ import { LyricEditingHistoryType, LyricType } from './Lyric';
 import { LyricItemType } from './LyricItem';
 
 export default class LyricEditingCacheManager
-    extends EditingCacheManager<LyricEditingHistoryType> {
+    extends EditingCacheManager<LyricEditingHistoryType, LyricType> {
     _originalJson: Readonly<LyricType>;
     constructor(fileSource: FileSource, json: LyricType) {
         super(fileSource, 'lyric');
@@ -14,7 +14,7 @@ export default class LyricEditingCacheManager
     get latestHistory() {
         if (!this.isUsingHistory) {
             return {
-                lyricItems: this._originalJson.items,
+                items: this._originalJson.items,
                 metadata: this._originalJson.metadata,
             };
         }
@@ -27,13 +27,13 @@ export default class LyricEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            lyricItems: newItems || this._originalJson.items,
+            items: newItems || this._originalJson.items,
             metadata: newMetadata || this._originalJson.metadata,
         };
     }
     getLyricItemById(id: number) {
         const latestHistory = this.latestHistory;
-        return latestHistory.lyricItems.find((item) => {
+        return latestHistory.items.find((item) => {
             return item.id === id;
         }) || null;
     }

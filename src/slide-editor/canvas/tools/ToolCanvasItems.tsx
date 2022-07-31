@@ -1,6 +1,4 @@
-import {
-    CanvasItemRenderer,
-} from '../../../slide-presenting/items/SlideItemRenderers';
+import CanvasItemRenderer from '../../../slide-presenting/items/SlideItemRenderer';
 import { canvasController } from '../CanvasController';
 import {
     showCanvasItemContextMenu, useCCRefresh,

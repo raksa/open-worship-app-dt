@@ -4,6 +4,7 @@ import SlideItem from '../slide-list/SlideItem';
 import appProvider from './appProvider';
 import DirSource from './DirSource';
 import fileHelpers, { getFileMetaData } from './fileHelper';
+import { AnyObjectType } from './helpers';
 import ItemSource from './ItemSource';
 
 type FSListener = (slideItem?: SlideItem) => void;
@@ -82,7 +83,7 @@ export default class FileSource {
     async readFileToData() {
         try {
             const str = await fileHelpers.readFile(this.filePath);
-            return JSON.parse(str);
+            return JSON.parse(str) as AnyObjectType;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
                 title: 'Reading File Data',
