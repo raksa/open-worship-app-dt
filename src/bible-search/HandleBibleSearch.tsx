@@ -1,9 +1,16 @@
+import React from 'react';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import BibleItem from '../bible-list/BibleItem';
-import { StateEnum, useWindowEvent, WindowEnum, windowEventListener } from '../event/WindowEventListener';
+import {
+    StateEnum,
+    useWindowEvent,
+    WindowEnum,
+    windowEventListener,
+} from '../event/WindowEventListener';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import { openSetting } from '../setting/SettingPopup';
-import BibleSearchPopup from './BibleSearchPopup';
+
+const BibleSearchPopup = React.lazy(() => import('./BibleSearchPopup'));
 
 export const openBibleSearchEvent = {
     window: WindowEnum.BibleSearch,
@@ -33,5 +40,12 @@ export default function HandleBibleSearch() {
     };
     useWindowEvent(openBibleSearchEvent, openBibleSearchPopup);
     useWindowEvent(closeBibleSearchEvent, () => setIsShowing(false));
-    return isShowing ? <BibleSearchPopup /> : null;
+    if (!isShowing) {
+        return null;
+    }
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+            <BibleSearchPopup />
+        </React.Suspense>
+    );
 }
