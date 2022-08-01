@@ -5,12 +5,15 @@ import CanvasItemText, {
     ToolingTextType,
 } from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
-import CanvasItem from '../CanvasItem';
+import { CanvasItemContext } from '../CanvasItem';
 import CanvasController from '../CanvasController';
+import { useContext } from 'react';
 
-export default function ToolsText({ canvasItem }: {
-    canvasItem: CanvasItem<any>,
-}) {
+export default function ToolsText() {
+    const canvasItem = useContext(CanvasItemContext);
+    if (canvasItem === null) {
+        return null;
+    }
     if (!(canvasItem instanceof CanvasItemText)) {
         return null;
     }

@@ -1,9 +1,11 @@
 import './CustomStyle.scss';
 
-import TextShadow from './TextShadow';
 import { useStateSettingString } from '../helper/settingHelper';
-import Appearance from './Appearance';
-import TabRender from '../others/TabRender';
+import React from 'react';
+import TabRender, { genTabBody } from '../others/TabRender';
+
+const Appearance = React.lazy(() => import('./Appearance'));
+const TextShadow = React.lazy(() => import('./TextShadow'));
 
 export default function CustomStyle() {
     return (
@@ -33,8 +35,8 @@ function Body() {
                     className='flex-fill' />
             </div>
             <div className='custom-style-body p-2'>
-                {tabType === 'a' && <Appearance />}
-                {tabType === 's' && <TextShadow />}
+                {genTabBody(tabType, ['a', Appearance])}
+                {genTabBody(tabType, ['s', TextShadow])}
             </div>
         </div>
     );

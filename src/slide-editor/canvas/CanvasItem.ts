@@ -1,3 +1,4 @@
+import React from 'react';
 import { CSSProperties } from 'react';
 import { AnyObjectType, cloneObject } from '../../helper/helpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
@@ -186,3 +187,5 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         }
     }
 }
+
+export const CanvasItemContext = React.createContext<CanvasItem<any> | null>(null);

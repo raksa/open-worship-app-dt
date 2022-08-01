@@ -2,11 +2,13 @@ import './SettingPopup.scss';
 
 import HeaderEditorPopup from './HeaderSettingPopup';
 import Modal from '../others/Modal';
-import { SettingGeneral } from './SettingGeneral';
-import { SettingBible } from './SettingBible';
-import { SettingAbout } from './SettingAbout';
 import { useStateSettingString } from '../helper/settingHelper';
-import TabRender from '../others/TabRender';
+import TabRender, { genTabBody } from '../others/TabRender';
+import React from 'react';
+
+const SettingGeneral = React.lazy(() => import('./SettingGeneral'));
+const SettingBible = React.lazy(() => import('./SettingBible'));
+const SettingAbout = React.lazy(() => import('./SettingAbout'));
 
 export default function SettingPopup() {
     return (
@@ -35,9 +37,9 @@ function Setting() {
                     setActiveTab={setTabType} />
             </div>
             <div className='setting-body flex-fill flex h'>
-                {tabType === 'g' && <SettingGeneral />}
-                {tabType === 'b' && <SettingBible />}
-                {tabType === 'a' && <SettingAbout />}
+                {genTabBody(tabType, ['g', SettingGeneral])}
+                {genTabBody(tabType, ['b', SettingBible])}
+                {genTabBody(tabType, ['a', SettingAbout])}
             </div>
         </div>
     );

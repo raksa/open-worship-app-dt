@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import { toastEventListener } from '../event/ToastEventListener';
 
-export function SettingBible() {
+export default function SettingBible() {
     const [bbList, setBbList] = useState(bibleHelper.getBibleList());
     const [isRefreshing, setIsRefreshing] = useState(false);
     return (

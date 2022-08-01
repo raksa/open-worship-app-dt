@@ -1,13 +1,15 @@
 import './Tools.scss';
 
+import React, { Fragment } from 'react';
 import { useStateSettingString } from '../../../helper/settingHelper';
-import ToolsBox from './ToolsBox';
-import ToolsText from './ToolsText';
-import TabRender from '../../../others/TabRender';
-import { Fragment } from 'react';
-import ToolCanvasItems from './ToolCanvasItems';
+import TabRender, { genTabBody } from '../../../others/TabRender';
 import { useCCScale, useCCRefresh } from '../canvasHelpers';
 import CanvasController from '../CanvasController';
+import { CanvasItemContext } from '../CanvasItem';
+
+const ToolsBox = React.lazy(() => import('./ToolsBox'));
+const ToolsText = React.lazy(() => import('./ToolsText'));
+const ToolCanvasItems = React.lazy(() => import('./ToolCanvasItems'));
 
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';
@@ -48,15 +50,15 @@ export default function Tools() {
                 {selectedCanvasItems?.map((canvasItem, i) => {
                     return (
                         <Fragment key={i}>
-                            {tabType === 't' && <ToolsText
-                                canvasItem={canvasItem} />}
-                            {tabType === 'b' && <ToolsBox
-                                canvasItem={canvasItem} />}
+                            <CanvasItemContext.Provider value={canvasItem}>
+                                {genTabBody(tabType, ['t', ToolsText])}
+                                {genTabBody(tabType, ['b', ToolsBox])}
+                            </CanvasItemContext.Provider>
                             <hr />
                         </Fragment>
                     );
                 })}
-                {tabType === 'c' && <ToolCanvasItems />}
+                {genTabBody(tabType, ['c', ToolCanvasItems])}
             </div>
         </div>
     );

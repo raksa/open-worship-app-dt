@@ -1,13 +1,15 @@
+import React from 'react';
 import {
     useBibleItemSelecting, useLyricSelecting,
 } from '../event/PreviewingEventListener';
 import {
     getSetting, setSetting, useStateSettingString,
 } from '../helper/settingHelper';
-import TabRender from '../others/TabRender';
+import TabRender, { genTabBody } from '../others/TabRender';
 import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
-import BiblePreviewer from './BiblePreviewer';
-import LyricPreviewer from './LyricPreviewer';
+
+const BiblePreviewer = React.lazy(() => import('./BiblePreviewer'));
+const LyricPreviewer = React.lazy(() => import('./LyricPreviewer'));
 
 export const previewer: { show: Function } = {
     show: () => false,
@@ -52,8 +54,8 @@ export default function FullTextPreviewer() {
                     setActiveTab={setTabType} />
             </div>
             <div className='previewer-header p-2 flex-fill overflow-hidden'>
-                {tabType === 'b' && <BiblePreviewer />}
-                {tabType === 'l' && <LyricPreviewer />}
+                {genTabBody(tabType, ['b', BiblePreviewer])}
+                {genTabBody(tabType, ['l', LyricPreviewer])}
             </div>
         </div>
     );

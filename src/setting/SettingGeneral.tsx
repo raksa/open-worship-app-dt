@@ -9,7 +9,7 @@ export function getSelectedLangLocale() {
     const lc = getSetting('language', languages.en.locale);
     return Object.values(languages).find((l) => l.locale === lc) || languages.en;
 }
-export function SettingGeneral() {
+export default function SettingGeneral() {
     return (
         <div>
             <Language />

@@ -1,10 +1,14 @@
 import './Background.scss';
 
-import Colors from './Colors';
-import Images from './Images';
-import Videos from './Videos';
+import React from 'react';
 import { useStateSettingString } from '../helper/settingHelper';
-import TabRender from '../others/TabRender';
+import TabRender, {
+    genTabBody,
+} from '../others/TabRender';
+
+const Colors = React.lazy(() => import('./Colors'));
+const Images = React.lazy(() => import('./Images'));
+const Videos = React.lazy(() => import('./Videos'));
 
 // c: color, i: image, v: video
 type TabType = 'c' | 'i' | 'v';
@@ -22,9 +26,9 @@ export default function Background() {
                     setActiveTab={setTabType} />
             </div>
             <div className='background-body w-100 flex-fill'>
-                {tabType === 'c' && <Colors />}
-                {tabType === 'i' && <Images />}
-                {tabType === 'v' && <Videos />}
+                {genTabBody(tabType, ['c', Colors])}
+                {genTabBody(tabType, ['i', Images])}
+                {genTabBody(tabType, ['v', Videos])}
             </div>
         </div>
     );

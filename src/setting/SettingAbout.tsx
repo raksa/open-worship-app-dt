@@ -1,7 +1,7 @@
 import BibleItem, { useBibleItemRenderText, useBibleItemToInputText } from '../bible-list/BibleItem';
 import appProvider from '../helper/appProvider';
 
-export function SettingAbout() {
+export default function SettingAbout() {
     const bookKey = 'PSA';
     const text = useBibleItemRenderText(BibleItem.fromJson({
         id: -1,

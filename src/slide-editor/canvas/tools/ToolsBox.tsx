@@ -1,18 +1,23 @@
 import ColorPicker from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
-import CanvasItem, { ToolingBoxType } from '../CanvasItem';
+import {
+    CanvasItemContext, ToolingBoxType,
+} from '../CanvasItem';
 import CanvasController from '../CanvasController';
+import { useContext } from 'react';
 
-export default function ToolsBox({ canvasItem }: {
-    canvasItem: CanvasItem<any>,
-}) {
+export default function ToolsBox() {
+    const canvasItem = useContext(CanvasItemContext);
+    if (canvasItem === null) {
+        return null;
+    }
     const canvasController = CanvasController.getInstance();
     const parentDimension = {
         parentWidth: canvasController.canvas.width,
         parentHeight: canvasController.canvas.height,
     };
-    const applyBoxData = (newData:ToolingBoxType) => {
+    const applyBoxData = (newData: ToolingBoxType) => {
         canvasItem.applyBoxData(parentDimension, newData);
         canvasController.fireUpdateEvent();
     };
