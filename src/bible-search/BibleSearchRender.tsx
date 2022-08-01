@@ -3,20 +3,15 @@ import {
     KeyEnum, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import InputHandler from './InputHandler';
-import RenderBookOption from './RenderBookOption';
-import RenderChapterOption from './RenderChapterOption';
 import Header from './Header';
-import RenderFound from './RenderFound';
 import {
     ExtractedBibleResult,
     defaultExtractedBible,
     extractBible,
     toInputText,
 } from '../bible-helper/helpers2';
-import Preview from './Preview';
 import {
     getChapterCount,
-    getBookKVList,
 } from '../bible-helper/helpers1';
 import BibleItem from '../bible-list/BibleItem';
 import { closeBibleSearch } from './HandleBibleSearch';
@@ -24,32 +19,11 @@ import {
     useGetDefaultInputText,
     useGetSelectedBibleItem,
     getSelectedEditingBibleItem,
+    genInputText,
 } from './bibleHelpers';
-
-async function genInputText(preBible: string,
-    bibleName: string, inputText: string) {
-    const result = await extractBible(preBible, inputText);
-    const {
-        book: newBook,
-        chapter: newChapter,
-        startVerse: newStartVerse,
-        endVerse: newEndVerse,
-    } = result;
-    if (newBook !== null) {
-        const bookObj = await getBookKVList(preBible);
-        const key = bookObj === null ? null : Object.keys(bookObj).find((k) => {
-            return bookObj[k] === newBook;
-        });
-        if (key) {
-            const newBookObj = await getBookKVList(bibleName);
-            if (newBookObj !== null) {
-                return toInputText(bibleName, newBookObj[key],
-                    newChapter, newStartVerse, newEndVerse);
-            }
-        }
-    }
-    return '';
-}
+import RenderSearchSuggestion, {
+    BibleNotAvailable,
+} from './RenderSearchSuggestion';
 
 export default function BibleSearchRender({ bibleItem }: {
     bibleItem: BibleItem | null,
@@ -73,10 +47,6 @@ export default function BibleSearchRender({ bibleItem }: {
             <BibleNotAvailable />
         );
     }
-    const {
-        book, chapter,
-        startVerse, endVerse,
-    } = bibleResult;
     const applyBookSelection = async (newBook: string) => {
         const count = await getChapterCount(bibleSelected, newBook);
         if (count !== null) {
@@ -86,11 +56,13 @@ export default function BibleSearchRender({ bibleItem }: {
         alert('Fail to generate input text');
     };
     const applyChapterSelection = async (newChapter: number) => {
-        setInputText(`${await toInputText(bibleSelected, book, newChapter)}:`);
+        const newText = await toInputText(bibleSelected,
+            bibleResult.book, newChapter);
+        setInputText(`${newText}:`);
     };
     const applyVerseSelection = async (newStartVerse?: number, newEndVerse?: number) => {
-        const txt = await toInputText(bibleSelected, book, chapter,
-            newStartVerse, newEndVerse);
+        const txt = await toInputText(bibleSelected, bibleResult.book,
+            bibleResult.chapter, newStartVerse, newEndVerse);
         setInputText(txt);
     };
     const handleBibleChange = async (preBible: string) => {
@@ -120,48 +92,13 @@ export default function BibleSearchRender({ bibleItem }: {
                         bibleSelected={bibleSelected}
                         onBibleChange={handleBibleChange} />
                 </div>
-                <div className='found'>
-                    {!book && <RenderBookOption
-                        bibleSelected={bibleSelected}
-                        inputText={inputText}
-                        onSelect={applyBookSelection}
-                    />}
-                    {book && chapter === null && <RenderChapterOption
-                        bibleSelected={bibleSelected}
-                        bookSelected={book}
-                        inputText={inputText}
-                        onSelect={applyChapterSelection}
-                    />}
-                    {book && chapter !== null && <RenderFound
-                        bibleSelected={bibleSelected}
-                        book={book}
-                        chapter={chapter}
-                        startVerse={startVerse}
-                        endVerse={endVerse}
-                        applyChapterSelection={applyChapterSelection}
-                        onVerseChange={(newStartVerse, newEndVerse) => {
-                            applyVerseSelection(newStartVerse, newEndVerse);
-                        }}
-                    />}
-                    {book && chapter !== null && <Preview
-                        bibleSelected={bibleSelected}
-                        book={book}
-                        chapter={chapter}
-                        startVerse={startVerse}
-                        endVerse={endVerse}
-                    />}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function BibleNotAvailable() {
-    return (
-        <div id='bible-search-popup' className='app-modal shadow card'>
-            <Header />
-            <div className='body card-body w-100'>
-                Bible not available!
+                <RenderSearchSuggestion
+                    inputText={inputText}
+                    bibleSelected={bibleSelected}
+                    bibleResult={bibleResult}
+                    applyChapterSelection={applyChapterSelection}
+                    applyVerseSelection={applyVerseSelection}
+                    applyBookSelection={applyBookSelection} />
             </div>
         </div>
     );

@@ -3,6 +3,8 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import { toastEventListener } from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
+import { getBookKVList } from '../bible-helper/helpers1';
+import { extractBible, toInputText } from '../bible-helper/helpers2';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {
@@ -44,4 +46,29 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
         }
     }, [bibleItem]);
     return [inputText, setInputText] as [string, (s: string) => void];
+}
+
+export async function genInputText(preBible: string,
+    bibleName: string, inputText: string) {
+    const result = await extractBible(preBible, inputText);
+    const {
+        book: newBook,
+        chapter: newChapter,
+        startVerse: newStartVerse,
+        endVerse: newEndVerse,
+    } = result;
+    if (newBook !== null) {
+        const bookObj = await getBookKVList(preBible);
+        const key = bookObj === null ? null : Object.keys(bookObj).find((k) => {
+            return bookObj[k] === newBook;
+        });
+        if (key) {
+            const newBookObj = await getBookKVList(bibleName);
+            if (newBookObj !== null) {
+                return toInputText(bibleName, newBookObj[key],
+                    newChapter, newStartVerse, newEndVerse);
+            }
+        }
+    }
+    return '';
 }
