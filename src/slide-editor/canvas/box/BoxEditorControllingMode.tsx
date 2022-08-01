@@ -8,13 +8,14 @@ import {
 import { BENImageRender } from './BENViewImageMode';
 import { BENTextRender } from './BENViewTextMode';
 import { BENBibleRender } from './BENViewBibleMode';
-import { canvasController } from '../CanvasController';
+import CanvasController from '../CanvasController';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
     // TODO: move box by left right up down key, shift&ctl
     useCCRefresh(['update']);
+    const canvasController = CanvasController.getInstance();
     return (
         <div className='editor-controller-box-wrapper'
             ref={(div) => {
@@ -25,6 +26,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
                             canvasItem.applyProps(info);
+                            canvasController.fireUpdateEvent();
                         }
                     };
                 }

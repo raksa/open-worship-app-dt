@@ -2,7 +2,7 @@ import Tools from './canvas/tools/Tools';
 import SlideItemEditorCanvas from './canvas/SlideItemEditorCanvas';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
-import { canvasController } from './canvas/CanvasController';
+import CanvasController from './canvas/CanvasController';
 
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
@@ -21,7 +21,8 @@ export default function SlideItemEditor({ slideItem }: {
         <div className='slide-item-editor flex v w-100 h-100'
             onWheel={(e) => {
                 if (e.ctrlKey) {
-                    canvasController.applyScale(e.deltaY > 0);
+                    CanvasController.getInstance()
+                        .applyScale(e.deltaY > 0);
                 }
             }}>
             <ResizeActor settingName={resizeSettingName}

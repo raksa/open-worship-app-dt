@@ -3,44 +3,11 @@ import { selectFiles } from '../../helper/appHelper';
 import { getMimetypeExtensions } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { VAlignmentType, HAlignmentType } from './Canvas';
-import { canvasController, CCEventType } from './CanvasController';
+import CanvasController, { CCEventType } from './CanvasController';
 import CanvasItem from './CanvasItem';
 
-export function tooling2BoxProps(boxData: ToolingBoxType, state: {
-    parentWidth: number, parentHeight: number,
-    width: number, height: number,
-}) {
-    const boxProps: { top?: number, left?: number } = {};
-    if (boxData) {
-        if (boxData.verticalAlignment === 'top') {
-            boxProps.top = 0;
-        } else if (boxData.verticalAlignment === 'center') {
-            boxProps.top = (state.parentHeight - state.height) / 2;
-        } else if (boxData.verticalAlignment === 'bottom') {
-            boxProps.top = state.parentHeight - state.height;
-        }
-        if (boxData.horizontalAlignment === 'left') {
-            boxProps.left = 0;
-        } else if (boxData.horizontalAlignment === 'center') {
-            boxProps.left = (state.parentWidth - state.width) / 2;
-        } else if (boxData.horizontalAlignment === 'right') {
-            boxProps.left = state.parentWidth - state.width;
-        }
-    }
-    return boxProps;
-}
-
-export type CanvasItemType = 'text' | 'image' | 'video' | 'audio' | 'bible';
-
-export type ToolingBoxType = {
-    backgroundColor?: string,
-    rotate?: number,
-    horizontalAlignment?: HAlignmentType,
-    verticalAlignment?: VAlignmentType,
-};
-
 export function showCanvasContextMenu(e: any) {
+    const canvasController = CanvasController.getInstance();
     showAppContextMenu(e, [
         {
             title: 'New',
@@ -72,6 +39,7 @@ export function showCanvasContextMenu(e: any) {
 export function showCanvasItemContextMenu(e: any,
     canvasItem: CanvasItem<any>,
 ) {
+    const canvasController = CanvasController.getInstance();
     showAppContextMenu(e, [
         {
             title: 'Copy', onClick: () => {
@@ -99,6 +67,7 @@ export function showCanvasItemContextMenu(e: any,
 
 export function useCCRefresh(eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
+    const canvasController = CanvasController.getInstance();
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(
             eventTypes, () => {
@@ -111,6 +80,7 @@ export function useCCRefresh(eventTypes: CCEventType[]) {
 }
 
 export function useCCScale() {
+    const canvasController = CanvasController.getInstance();
     const [scale, setScale] = useState(canvasController.scale);
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(['scale'], () => {
@@ -125,6 +95,7 @@ export function useCCScale() {
 
 export function useCIControl(canvasItem: CanvasItem<any>) {
     const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
+    const canvasController = CanvasController.getInstance();
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(
             ['control'], (item: CanvasItem<any>) => {

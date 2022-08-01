@@ -8,9 +8,8 @@ import FileSource from '../../helper/FileSource';
 import { toastEventListener } from '../../event/ToastEventListener';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
-import BibleItem from '../../bible-list/BibleItem';
 import CanvasItemBible from './CanvasItemBible';
-import { AnyObjectType } from '../../helper/helpers';
+import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 
 type ListenerType<T> = (data: T) => void;
@@ -20,7 +19,8 @@ export type RegisteredEventType<T> = {
     listener: ListenerType<T>,
 };
 
-class CanvasController extends EventHandler {
+export default class CanvasController extends EventHandler {
+    static _instance: CanvasController | null = null;
     copiedItem: CanvasItem<any> | null = null;
     _canvas: Canvas;
     _slideItem: SlideItem | null = null;
@@ -193,18 +193,6 @@ class CanvasController extends EventHandler {
         canvasItem.isEditing = b;
         this.fireTextEditEvent(canvasItem);
     }
-    checkValidCanvasItem(json: AnyObjectType) {
-        if (CanvasItem.checkIsTypeText(json.type)) {
-            return CanvasItemText.validate(json);
-        }
-        if (CanvasItem.checkIsTypeBible(json.type)) {
-            return CanvasItemBible.validate(json);
-        }
-        if (CanvasItem.checkIsTypeImage(json.type)) {
-            return CanvasItemImage.validate(json);
-        }
-        throw new Error('Invalid canvas item type');
-    }
     registerEventListener(types: CCEventType[], listener: ListenerType<any>):
         RegisteredEventType<any>[] {
         return types.map((type) => {
@@ -217,6 +205,10 @@ class CanvasController extends EventHandler {
             this._removeOnEventListener(type, listener);
         });
     }
+    static getInstance() {
+        if (this._instance === null) {
+            this._instance = new this();
+        }
+        return this._instance;
+    }
 }
-
-export const canvasController = new CanvasController();

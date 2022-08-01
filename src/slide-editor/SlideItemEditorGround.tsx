@@ -5,8 +5,8 @@ import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
-import { canvasController } from './canvas/CanvasController';
 import { useFSRefresh } from '../helper/FileSource';
+import CanvasController from './canvas/CanvasController';
 
 export default function SlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
@@ -25,7 +25,7 @@ export default function SlideItemEditorGround() {
         });
     useSlideSelecting(() => setSlideItem(null));
     useSlideItemSelecting(setSlideItem);
-    canvasController.init(slideItem || null);
+    CanvasController.getInstance().init(slideItem || null);
     if (!slideItem) {
         return (
             <div className='slide-item-editor empty'

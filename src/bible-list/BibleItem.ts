@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import { keyToBook, getVerses } from '../bible-helper/helpers1';
 import { toLocaleNumber, toInputText } from '../bible-helper/helpers2';
-import { openBibleSearch } from '../bible-search/BibleSearchPopup';
+import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneObject } from '../helper/helpers';

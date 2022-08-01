@@ -6,7 +6,7 @@ import {
     useKeyboardRegistering,
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
-import { closeItemSlideEdit } from './SlideItemEditorPopup';
+import { closeItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 
 export default function SlideItemEditorPopupHeader() {
     const { t } = useTranslation();

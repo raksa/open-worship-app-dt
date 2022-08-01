@@ -1,8 +1,8 @@
 import { CSSProperties } from 'react';
 import CanvasItem, {
+    CanvasItemKindType,
     CanvasItemPropsType, genTextDefaultBoxStyle,
 } from './CanvasItem';
-import { CanvasItemType } from './canvasHelpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
 import { AnyObjectType, getAppInfo } from '../../helper/helpers';
 
@@ -33,7 +33,7 @@ export type ToolingTextType = {
     textVerticalAlignment?: VAlignmentType,
 };
 export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
-    get type(): CanvasItemType {
+    get type(): CanvasItemKindType {
         return 'text';
     }
     static genStyle(props: CanvasItemTextPropsType) {

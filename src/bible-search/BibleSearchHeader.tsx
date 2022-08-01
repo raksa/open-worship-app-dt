@@ -6,7 +6,7 @@ import {
     useKeyboardRegistering,
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
-import { openBibleSearch } from './BibleSearchPopup';
+import { openBibleSearch } from './HandleBibleSearch';
 
 export default function BibleSearchHeader() {
     const { t } = useTranslation();

@@ -1,10 +1,11 @@
 import CanvasItemRenderer from '../../../slide-presenting/items/CanvasItemRenderer';
-import { canvasController } from '../CanvasController';
+import CanvasController from '../CanvasController';
 import {
     showCanvasItemContextMenu, useCCRefresh,
 } from '../canvasHelpers';
 
 export default function ToolCanvasItems() {
+    const canvasController = CanvasController.getInstance();
     const canvasItems = canvasController.canvas.canvasItems;
     useCCRefresh(['update']);
     return (

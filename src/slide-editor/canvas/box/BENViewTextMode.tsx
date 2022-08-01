@@ -1,5 +1,5 @@
 import { CSSProperties } from 'react';
-import { canvasController } from '../CanvasController';
+import CanvasController from '../CanvasController';
 import {
     showCanvasItemContextMenu,
 } from '../canvasHelpers';
@@ -22,6 +22,7 @@ export default function BENViewTextMode({
             }}
             onClick={async (e) => {
                 e.stopPropagation();
+                const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemText, true);
             }}>

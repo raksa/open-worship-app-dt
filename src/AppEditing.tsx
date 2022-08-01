@@ -1,9 +1,12 @@
 import SlideList from './slide-list/SlideList';
-import SlideItemEditorGround from './slide-editor/SlideItemEditorGround';
 import { getWindowMode } from './App';
 import ResizeActor from './resize-actor/ResizeActor';
 import SlidePreviewer from './slide-presenting/items/SlidePreviewer';
+import React, { Suspense } from 'react';
 
+const SlideItemEditorGround = React.lazy(() => {
+    return import('./slide-editor/SlideItemEditorGround');
+});
 export default function AppEditing() {
     const resizeSettingName = `${getWindowMode()}-window-size`;
     const flexSizeDefault = {
@@ -28,7 +31,9 @@ export default function AppEditing() {
                 <SlideList />
                 <SlidePreviewer />
             </ResizeActor>
-            <SlideItemEditorGround />
+            <Suspense fallback={<div>Loading...</div>}>
+                <SlideItemEditorGround />
+            </Suspense>
         </ResizeActor>
     );
 }

@@ -1,6 +1,9 @@
 import { AnyObjectType } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
-import CanvasItem, { CanvasItemPropsType, genTextDefaultBoxStyle } from './CanvasItem';
+import CanvasItem, {
+    CanvasItemPropsType,
+    genTextDefaultBoxStyle,
+} from './CanvasItem';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType & {
     src: string,

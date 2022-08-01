@@ -11,9 +11,10 @@ import {
 import { toastEventListener } from '../../event/ToastEventListener';
 import { isSupportedMimetype } from '../../helper/fileHelper';
 import FileSource from '../../helper/FileSource';
-import { canvasController } from './CanvasController';
+import CanvasController from './CanvasController';
 
 export default function SlideItemEditorCanvas() {
+    const canvasController = CanvasController.getInstance();
     const scale = useCCScale();
     useCCRefresh(['update']);
     useKeyboardRegistering({ key: KeyEnum.Escape }, () => {

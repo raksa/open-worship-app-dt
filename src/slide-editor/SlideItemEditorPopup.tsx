@@ -4,28 +4,14 @@ import {
     KeyEnum, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import SlideItemEditorPopupHeader from './SlideItemEditorPopupHeader';
-import {
-    StateEnum, WindowEnum, windowEventListener,
-} from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
-import { canvasController } from './canvas/CanvasController';
+import { closeItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
+import CanvasController from './canvas/CanvasController';
 
-export const openItemSlideEditEvent = {
-    window: WindowEnum.ItemSlideEdit,
-    state: StateEnum.Open,
-};
-export const closeItemSlideEditEvent = {
-    window: WindowEnum.ItemSlideEdit,
-    state: StateEnum.Close,
-};
-export function openItemSlideEdit(slideItem: SlideItem) {
-    windowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
-}
-export function closeItemSlideEdit() {
-    windowEventListener.fireEvent(closeItemSlideEditEvent);
-}
+console.log('SlideItemEditorPopup');
+
 
 export default function SlideItemEditorPopup({ slideItem }: {
     slideItem: SlideItem
@@ -33,7 +19,7 @@ export default function SlideItemEditorPopup({ slideItem }: {
     useKeyboardRegistering({
         key: KeyEnum.Escape,
     }, closeItemSlideEdit);
-    canvasController.init(slideItem);
+    CanvasController.getInstance().init(slideItem);
     return (
         <Modal>
             <div id='slide-item-editor-popup'

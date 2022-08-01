@@ -1,25 +1,34 @@
 import ColorPicker from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
-import CanvasItem from '../CanvasItem';
-import { canvasController } from '../CanvasController';
+import CanvasItem, { ToolingBoxType } from '../CanvasItem';
+import CanvasController from '../CanvasController';
 
 export default function ToolsBox({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
+    const canvasController = CanvasController.getInstance();
+    const parentDimension = {
+        parentWidth: canvasController.canvas.width,
+        parentHeight: canvasController.canvas.height,
+    };
+    const applyBoxData = (newData:ToolingBoxType) => {
+        canvasItem.applyBoxData(parentDimension, newData);
+        canvasController.fireUpdateEvent();
+    };
     return (
         <>
             <Tool title='Background Color'>
                 <ColorPicker color={canvasItem.props.backgroundColor}
                     onColorChange={(newColor: string) => {
-                        canvasItem.applyBoxData({
+                        applyBoxData({
                             backgroundColor: newColor,
                         });
                     }} />
             </Tool>
             <Tool title='Box Alignment'>
                 <ToolAlign onData={(newData) => {
-                    canvasItem.applyBoxData(newData);
+                    applyBoxData(newData);
                 }} />
             </Tool>
             <Tool title='Box Layer'>
@@ -34,7 +43,7 @@ export default function ToolsBox({ canvasItem }: {
             </Tool>
             <Tool title='Rotate'>
                 <button className='btn btn-info' onClick={() => {
-                    canvasItem.applyBoxData({
+                    applyBoxData({
                         rotate: 0,
                     });
                 }}

@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
 import { isWindowEditingMode } from '../App';
 import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
-import FileSource, { FSEventType } from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { openItemSlideEdit } from '../slide-editor/SlideItemEditorPopup';
+import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
 

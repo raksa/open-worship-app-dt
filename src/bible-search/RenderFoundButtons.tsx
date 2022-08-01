@@ -6,7 +6,6 @@ import {
     useKeyboardRegistering,
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
-import { closeBibleSearch } from './BibleSearchPopup';
 import { fromLocaleNumber } from '../bible-helper/helpers2';
 import { isWindowEditingMode } from '../App';
 import { bookToKey } from '../bible-helper/helpers1';
@@ -15,7 +14,7 @@ import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';
 import { ConsumeVerseType } from './RenderFound';
 import SlideItem from '../slide-list/SlideItem';
-import { canvasController } from '../slide-editor/canvas/CanvasController';
+import { closeBibleSearch } from './HandleBibleSearch';
 
 export default function RenderFoundButtons({
     found, book, chapter,
@@ -52,7 +51,8 @@ export default function RenderFoundButtons({
             metadata: {},
         });
         if (isWindowEditing) {
-            canvasController.addNewBibleItem(bibleItem);
+            const canvasController = await import('../slide-editor/canvas/CanvasController') as any;
+            canvasController?.addNewBibleItem(bibleItem);
             closeBibleSearch();
             return null;
         }

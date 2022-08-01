@@ -6,7 +6,6 @@ import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import { AnyObjectType, cloneObject } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import { canvasController } from '../slide-editor/canvas/CanvasController';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 
@@ -156,7 +155,6 @@ export default class SlideItem extends ItemBase {
     }
     static fromJson(json: SlideItemType, fileSource: FileSource,
         editingCacheManager?: SlideEditingCacheManager) {
-        this.validate(json);
         const key = SlideItem.genKeyByFileSource(fileSource, json.id);
         if (SlideItem._cache.has(key)) {
             return SlideItem._cache.get(key) as SlideItem;
@@ -194,9 +192,6 @@ export default class SlideItem extends ItemBase {
             console.log(json);
             throw new Error('Invalid slide item data');
         }
-        json.canvasItems.forEach((item) => {
-            canvasController.checkValidCanvasItem(item);
-        });
     }
     clone(isDuplicateId?: boolean) {
         const slideItem = cloneObject(this);

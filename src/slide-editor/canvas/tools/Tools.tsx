@@ -7,11 +7,12 @@ import TabRender from '../../../others/TabRender';
 import { Fragment } from 'react';
 import ToolCanvasItems from './ToolCanvasItems';
 import { useCCScale, useCCRefresh } from '../canvasHelpers';
-import { canvasController } from '../CanvasController';
+import CanvasController from '../CanvasController';
 
 // t: text, b: box
 type TabType = 't' | 'b' | 'c';
 export default function Tools() {
+    const canvasController = CanvasController.getInstance();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
     useCCRefresh(['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');

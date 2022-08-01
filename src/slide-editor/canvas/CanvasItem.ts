@@ -1,11 +1,38 @@
 import { CSSProperties } from 'react';
 import { AnyObjectType, cloneObject } from '../../helper/helpers';
 import { HAlignmentType, VAlignmentType } from './Canvas';
-import { canvasController } from './CanvasController';
-import {
-    CanvasItemType,
-    tooling2BoxProps, ToolingBoxType,
-} from './canvasHelpers';
+
+export function tooling2BoxProps(boxData: ToolingBoxType, state: {
+    parentWidth: number, parentHeight: number,
+    width: number, height: number,
+}) {
+    const boxProps: { top?: number, left?: number } = {};
+    if (boxData) {
+        if (boxData.verticalAlignment === 'top') {
+            boxProps.top = 0;
+        } else if (boxData.verticalAlignment === 'center') {
+            boxProps.top = (state.parentHeight - state.height) / 2;
+        } else if (boxData.verticalAlignment === 'bottom') {
+            boxProps.top = state.parentHeight - state.height;
+        }
+        if (boxData.horizontalAlignment === 'left') {
+            boxProps.left = 0;
+        } else if (boxData.horizontalAlignment === 'center') {
+            boxProps.left = (state.parentWidth - state.width) / 2;
+        } else if (boxData.horizontalAlignment === 'right') {
+            boxProps.left = state.parentWidth - state.width;
+        }
+    }
+    return boxProps;
+}
+
+export type ToolingBoxType = {
+    backgroundColor?: string,
+    rotate?: number,
+    horizontalAlignment?: HAlignmentType,
+    verticalAlignment?: VAlignmentType,
+};
+export type CanvasItemKindType = 'text' | 'image' | 'video' | 'audio' | 'bible';
 
 export function genTextDefaultBoxStyle(width: number = 700,
     height: number = 400): CanvasItemPropsType {
@@ -33,7 +60,7 @@ export type CanvasItemPropsType = {
     horizontalAlignment: HAlignmentType,
     verticalAlignment: VAlignmentType,
     backgroundColor: string,
-    type: CanvasItemType,
+    type: CanvasItemKindType,
 };
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     static _objectId = 0;
@@ -107,13 +134,15 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     static fromJson(_json: object): CanvasItem<any> {
         throw new Error('Method not implemented.');
     }
-    applyBoxData(boxData: ToolingBoxType) {
-        const canvas = canvasController.canvas;
+    applyBoxData(parentDim: {
+        parentWidth: number,
+        parentHeight: number,
+    }, boxData: ToolingBoxType) {
         const boxProps = tooling2BoxProps(boxData, {
             width: this.props.width,
             height: this.props.height,
-            parentWidth: canvas.width,
-            parentHeight: canvas.height,
+            parentWidth: parentDim.parentWidth,
+            parentHeight: parentDim.parentHeight,
         });
         const newProps = {
             ...boxData, ...boxProps,
@@ -131,7 +160,6 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
-        canvasController.fireUpdateEvent();
     }
     clone() {
         const newItem = cloneObject(this);

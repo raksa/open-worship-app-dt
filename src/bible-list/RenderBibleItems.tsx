@@ -3,11 +3,9 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import { genDuplicatedMessage } from '../bible-helper/bibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
-import { openBibleSearch } from '../bible-search/BibleSearchPopup';
+import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 
-export default function RenderBibleItems({
-    bible,
-}: {
+export default function RenderBibleItems({ bible }: {
     bible: Bible,
 }) {
     const items = bible.items;

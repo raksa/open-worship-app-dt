@@ -6,7 +6,7 @@ import CanvasItemImage, {
     CanvasItemImagePropsType,
 } from '../CanvasItemImage';
 import img404 from '../404.png';
-import { canvasController } from '../CanvasController';
+import CanvasController from '../CanvasController';
 
 export default function BENViewImageMode({
     canvasItemImage, style,
@@ -23,6 +23,7 @@ export default function BENViewImageMode({
             }}
             onClick={async (e) => {
                 e.stopPropagation();
+                const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemImage, true);
             }}>

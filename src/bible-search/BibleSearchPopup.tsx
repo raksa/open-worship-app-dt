@@ -16,11 +16,6 @@ import {
     extractBible,
     toInputText,
 } from '../bible-helper/helpers2';
-import {
-    StateEnum,
-    WindowEnum,
-    windowEventListener,
-} from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import Preview from './Preview';
 import bibleHelper from '../bible-helper/bibleHelpers';
@@ -30,22 +25,7 @@ import {
 } from '../bible-helper/helpers1';
 import { toastEventListener } from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
-
-export const openBibleSearchEvent = {
-    window: WindowEnum.BibleSearch,
-    state: StateEnum.Open,
-};
-export const closeBibleSearchEvent = {
-    window: WindowEnum.BibleSearch,
-    state: StateEnum.Close,
-};
-export function openBibleSearch() {
-    windowEventListener.fireEvent(openBibleSearchEvent);
-}
-export function closeBibleSearch() {
-    windowEventListener.fireEvent(closeBibleSearchEvent);
-    BibleItem.setSelectedEditingItem(null);
-}
+import { closeBibleSearch } from './HandleBibleSearch';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {
