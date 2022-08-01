@@ -3,18 +3,23 @@ import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 import './others/tool-tip.scss';
 
+import React, { useEffect } from 'react';
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
 import HandleBibleSearch from './bible-search/HandleBibleSearch';
 import Toast from './others/Toast';
 import HandleItemSlideEdit from './slide-presenting/HandleItemSlideEdit';
 import { getSetting, useStateSettingString } from './helper/settingHelper';
-import AppPresenting from './AppPresenting';
-import AppEditing from './AppEditing';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
-import TabRender from './others/TabRender';
-import { useEffect } from 'react';
+import TabRender, { genTabBody } from './others/TabRender';
+
+const AppEditing = React.lazy(() => {
+    return import('./AppEditing');
+});
+const AppPresenting = React.lazy(() => {
+    return import('./AppPresenting');
+});
 
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
@@ -62,8 +67,8 @@ export default function App() {
                 </div>
             </div>
             <div className='app-body flex-fill flex h border-white-round'>
-                {tabType === 'e' && <AppEditing />}
-                {tabType === 'p' && <AppPresenting />}
+                {genTabBody(tabType, ['e', AppEditing])}
+                {genTabBody(tabType, ['p', AppPresenting])}
             </div>
             <div id='pseudo-windows'>
                 <HandleBibleSearch />

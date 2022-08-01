@@ -1,30 +1,12 @@
 import './SettingPopup.scss';
 
 import HeaderEditorPopup from './HeaderSettingPopup';
-import {
-    StateEnum, WindowEnum, windowEventListener,
-} from '../event/WindowEventListener';
 import Modal from '../others/Modal';
 import { SettingGeneral } from './SettingGeneral';
 import { SettingBible } from './SettingBible';
 import { SettingAbout } from './SettingAbout';
 import { useStateSettingString } from '../helper/settingHelper';
 import TabRender from '../others/TabRender';
-
-export const openSettingEvent = {
-    window: WindowEnum.Setting,
-    state: StateEnum.Open,
-};
-export const closeSettingEvent = {
-    window: WindowEnum.Setting,
-    state: StateEnum.Close,
-};
-export function openSetting() {
-    windowEventListener.fireEvent(openSettingEvent);
-}
-export function closeSetting() {
-    windowEventListener.fireEvent(closeSettingEvent);
-}
 
 export default function SettingPopup() {
     return (

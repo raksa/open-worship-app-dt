@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function TabRender<T extends string>({
@@ -25,5 +26,15 @@ export default function TabRender<T extends string>({
                 </li>);
             })}
         </ul>
+    );
+}
+
+export function genTabBody<T>(tabTab: T,
+    data: [T, React.LazyExoticComponent<() => JSX.Element>]) {
+    const Element = data[1];
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+            {tabTab === data[0] && <Element />}
+        </React.Suspense>
     );
 }

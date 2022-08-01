@@ -8,7 +8,7 @@ import {
     windowEventListener,
 } from '../event/WindowEventListener';
 import { useStateSettingBoolean } from '../helper/settingHelper';
-import { openSetting } from '../setting/SettingPopup';
+import { openSetting } from '../setting/HandleSetting';
 
 const BibleSearchPopup = React.lazy(() => import('./BibleSearchPopup'));
 

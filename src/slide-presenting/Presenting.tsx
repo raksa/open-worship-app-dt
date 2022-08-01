@@ -1,11 +1,25 @@
 import './Presenting.scss';
 
-import SlidePreviewer from './items/SlidePreviewer';
-import FullTextPresentController from '../full-text-present/FullTextPresentController';
-import { useFullTextOpening, useSlideSelecting } from '../event/PreviewingEventListener';
+import React from 'react';
+import {
+    useFullTextOpening,
+    useSlideSelecting,
+} from '../event/PreviewingEventListener';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
-import { getSetting, useStateSettingString } from '../helper/settingHelper';
-import TabRender from '../others/TabRender';
+import {
+    getSetting,
+    useStateSettingString,
+} from '../helper/settingHelper';
+import TabRender, {
+    genTabBody,
+} from '../others/TabRender';
+
+const SlidePreviewer = React.lazy(() => {
+    return import('./items/SlidePreviewer');
+});
+const FullTextPresentController = React.lazy(() => {
+    return import('../full-text-present/FullTextPresentController');
+});
 
 const PRESENT_TAB_SETTING_NAME = 'presenting-tab';
 export function getIsShowingSlidePreviewer() {
@@ -35,8 +49,8 @@ export default function Presenting() {
                 setActiveTab={setTabType}
                 className='header' />
             <div className='body w-100 p-10'>
-                {tabType === 's' && <SlidePreviewer />}
-                {tabType === 'f' && <FullTextPresentController />}
+                {genTabBody(tabType, ['s', SlidePreviewer])}
+                {genTabBody(tabType, ['f', FullTextPresentController])}
             </div>
         </div>
     );

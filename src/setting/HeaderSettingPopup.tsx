@@ -5,7 +5,7 @@ import {
     useKeyboardRegistering,
     WindowsControlEnum,
 } from '../event/KeyboardEventListener';
-import { closeSetting } from './SettingPopup';
+import { closeSetting } from './HandleSetting';
 
 export default function HeaderSettingPopup() {
     const eventMapper = {
