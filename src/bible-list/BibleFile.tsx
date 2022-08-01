@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
-import RenderBibleItems from './RenderBibleItems';
 import BibleItem from './BibleItem';
 import { toastEventListener } from '../event/ToastEventListener';
+import AppSuspense from '../others/AppSuspense';
+
+const RenderBibleItems = React.lazy(() => {
+    return import('./RenderBibleItems');
+});
 
 export default function BibleFile({
     index, fileSource,
@@ -53,11 +57,13 @@ export default function BibleFile({
                         {fileSource.name}
                     </span>
                 </div>
-                {<div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}>
-                    <div className='accordion-body'>
-                        <RenderBibleItems bible={data} />
-                    </div>
-                </div>}
+                <div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}>
+                    {data.isOpened && <div className='accordion-body'>
+                        <AppSuspense>
+                            <RenderBibleItems bible={data} />
+                        </AppSuspense>
+                    </div>}
+                </div>
             </div>}
         />
     );

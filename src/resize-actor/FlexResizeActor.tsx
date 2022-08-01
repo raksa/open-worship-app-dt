@@ -138,12 +138,6 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         const target = this.myRef.current;
         if (target) {
             target.addEventListener('mousedown', (md) => this.onMouseDown(md));
-            target.addEventListener('mouseover', (e) => {
-                if (e.currentTarget === e.target) {
-                    target.classList.add('active');
-                }
-            });
-            target.addEventListener('mouseout', () => target.classList.remove('active'));
         }
     }
     render() {

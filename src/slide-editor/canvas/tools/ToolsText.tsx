@@ -40,7 +40,8 @@ export default function ToolsText() {
                     });
                 }} />
             </Tool>
-            <ToolsTextFontControl canvasItemText={canvasItem} />
+            <ToolsTextFontControl
+                canvasItemText={canvasItem} />
         </div>
     );
 }

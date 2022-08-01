@@ -8,6 +8,7 @@ import {
     windowEventListener,
 } from '../event/WindowEventListener';
 import { useStateSettingBoolean } from '../helper/settingHelper';
+import AppSuspense from '../others/AppSuspense';
 import { openSetting } from '../setting/HandleSetting';
 
 const BibleSearchPopup = React.lazy(() => import('./BibleSearchPopup'));
@@ -44,8 +45,8 @@ export default function HandleBibleSearch() {
         return null;
     }
     return (
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <AppSuspense>
             <BibleSearchPopup />
-        </React.Suspense>
+        </AppSuspense>
     );
 }

@@ -10,9 +10,6 @@ import SlideItemEditor from './SlideItemEditor';
 import { closeItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 import CanvasController from './canvas/CanvasController';
 
-console.log('SlideItemEditorPopup');
-
-
 export default function SlideItemEditorPopup({ slideItem }: {
     slideItem: SlideItem
 }) {

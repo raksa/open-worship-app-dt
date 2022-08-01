@@ -1,14 +1,15 @@
 import './PathSelector.scss';
 
 import {
-    copyToClipboard,
-    isMac,
-    openExplorer,
-    selectDirs,
+    copyToClipboard, isMac, openExplorer,
 } from '../helper/appHelper';
 import { showAppContextMenu } from './AppContextMenu';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import DirSource from '../helper/DirSource';
+import React from 'react';
+import AppSuspense from './AppSuspense';
+
+const PathPreviewer = React.lazy(() => import('./PathPreviewer'));
 
 export default function PathSelector({
     dirSource, prefix,
@@ -53,30 +54,10 @@ export default function PathSelector({
                     </div>
                 }
             </div>
-            {isShowing &&
-                <div className='input-group mb-3'>
-                    {dirSource.dirPath &&
-                        <button className={`btn btn-secondary ${dirSource.fileSources === null ? 'rotating' : ''}`}
-                            type='button'
-                            onClick={() => dirSource.fireReloadEvent()}>
-                            <i className='bi bi-arrow-clockwise' />
-                        </button>
-                    }
-                    <input type='text' className='form-control' value={dirSource.dirPath}
-                        onChange={(e) => {
-                            dirSource.dirPath = e.target.value;
-                        }} />
-                    <button className='btn btn-secondary' type='button'
-                        onClick={() => {
-                            const dirs = selectDirs();
-                            if (dirs.length) {
-                                dirSource.dirPath = dirs[0];
-                            }
-                        }}>
-                        <i className='bi bi-folder2-open' />
-                    </button>
-                </div>
-            }
+            {isShowing && <AppSuspense>
+                <PathPreviewer dirSource={dirSource}
+                    prefix={prefix} />
+            </AppSuspense>}
         </div>
     );
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import { toastEventListener } from '../event/ToastEventListener';
 import fileHelpers, { MimetypeNameType } from '../helper/fileHelper';
 import FileSource from '../helper/FileSource';

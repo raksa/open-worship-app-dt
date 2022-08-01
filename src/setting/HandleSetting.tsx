@@ -5,6 +5,7 @@ import {
     WindowEnum,
     windowEventListener,
 } from '../event/WindowEventListener';
+import AppSuspense from '../others/AppSuspense';
 
 const SettingPopup = React.lazy(() => import('./SettingPopup'));
 
@@ -32,8 +33,8 @@ export default function HandleSetting() {
         return null;
     }
     return (
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <AppSuspense>
             <SettingPopup />
-        </React.Suspense>
+        </AppSuspense>
     );
 }
