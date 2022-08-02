@@ -1,9 +1,10 @@
-const electron = require('electron');
+import AppManager from './AppManager';
+const electron = require('electron')
 
-function initMenu(appManager) {
+export default function initMenu(appManager: AppManager) {
     const isMac = process.platform === 'darwin';
 
-    const template = [
+    const template: any[] = [
         // { role: 'appMenu' }
         ...(isMac ? [{
             label: electron.app.name,
@@ -108,5 +109,3 @@ function initMenu(appManager) {
     const menu = electron.Menu.buildFromTemplate(template);
     electron.Menu.setApplicationMenu(menu);
 }
-
-module.exports = initMenu;

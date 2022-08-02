@@ -1,16 +1,26 @@
+import AppManager from './AppManager';
 const fs = require('fs');
 const path = require('path');
 const electron = require('electron');
 
 const fileSettingPath = path.join(electron.app.getPath('userData'), 'setting.json');
-class SettingController {
-    _setting = {};
-    constructor(appManager) {
+export default class SettingController {
+    _setting: {
+        mainWinBounds: Electron.Rectangle | null,
+        appPresentDisplayId: number | null,
+    } = {
+            mainWinBounds: null,
+            appPresentDisplayId: null,
+        };
+    appManager: AppManager;
+    constructor(appManager: AppManager) {
         this.appManager = appManager;
         try {
             const str = fs.readFileSync(fileSettingPath, 'utf8');
-            this._setting = JSON.parse(str);
-        } catch (error) {
+            const json = JSON.parse(str);
+            this._setting.mainWinBounds = json.mainWinBounds;
+            this._setting.appPresentDisplayId = json.appPresentDisplayId;
+        } catch (error: any) {
             if (error.code === 'ENOENT') {
                 this.save();
             } else {
@@ -49,7 +59,7 @@ class SettingController {
         }
         return this.getDisplayById(this._setting.appPresentDisplayId) || this.primaryDisplay;
     }
-    set presentDisplayId(id) {
+    set presentDisplayId(id: number) {
         const display = this.getDisplayById(id);
         if (display) {
             this._setting.appPresentDisplayId = display.id;
@@ -58,7 +68,7 @@ class SettingController {
             throw new Error(`Screen with id:${id} is not found`);
         }
     }
-    getDisplayById(id) {
+    getDisplayById(id: number) {
         return this.allDisplays.find((newDisplay) => newDisplay.id == id);
     }
     save() {
@@ -78,6 +88,9 @@ class SettingController {
         });
     }
     syncPresentWindow() {
+        if (this.appManager.presentWin === null) {
+            return;
+        }
         const bounds = this.presentDisplay.bounds;
         this.appManager.presentScreenWidth = bounds.width;
         this.appManager.presentScreenHeight = bounds.height;
@@ -92,5 +105,3 @@ class SettingController {
         }
     }
 }
-
-module.exports = SettingController;

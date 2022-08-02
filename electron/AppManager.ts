@@ -1,26 +1,38 @@
 const isDev = process.env.NODE_ENV === 'development';
 
-const electron = require('electron');
-const SettingController = require('./SettingController');
+import { BrowserWindow } from 'electron';
+import SettingController from './SettingController';
+const electron = require('electron')
 
-class AppManager {
+export default class AppManager {
+    presentScreenWidth: number = 0;
+    presentScreenHeight: number = 0;
+    previewResizeDim: {
+        width: number,
+        height: number,
+    } = {
+            width: 0,
+            height: 0,
+        };
+    mainWin: BrowserWindow;
+    presentWin: BrowserWindow | null = null;
+    settingController: SettingController;
+    _isShowingPS = false;
     constructor() {
-        this.presentScreenWidth = null;
-        this.presentScreenHeight = null;
-        this.previewResizeDim = null;
-        this.mainWin = null;
-        this.presentWin = null;
         this.settingController = new SettingController(this);
+        this.mainWin = this.createMainWindow();
+        this.settingController.syncMainWindow();
+        this.presentWin = null;
         this._isShowingPS = false;
 
         electron.app.on('activate', () => {
             if (electron.BrowserWindow.getAllWindows().length === 0) {
-                this.createMainWindow();
+                this.mainWin = this.createMainWindow();
+                this.settingController.syncMainWindow();
                 this.createPresentWindow();
             }
         });
 
-        this.createMainWindow();
         this.createPresentWindow();
         this.capturePresentScreen();
     }
@@ -30,9 +42,9 @@ class AppManager {
     set isShowingPS(b) {
         this._isShowingPS = b;
         if (b) {
-            this.presentWin.show();
+            this.presentWin?.show();
         } else {
-            this.presentWin.close();
+            this.presentWin?.close();
             this.createPresentWindow();
         }
     }
@@ -48,11 +60,9 @@ class AppManager {
                 preload: `${__dirname}/preload.js`,
             },
         });
-        this.mainWin = mainWin;
-        mainWin.on('closed', _ => {
+        mainWin.on('closed', () => {
             process.exit(0);
         });
-        this.settingController.syncMainWindow();
         if (isDev) {
             mainWin.loadURL('http://localhost:3000');
         } else {
@@ -62,6 +72,7 @@ class AppManager {
         if (isDev) {
             mainWin.webContents.openDevTools();
         }
+        return mainWin;
     }
     createPresentWindow() {
         const isWin32 = process.platform === 'win32';
@@ -95,14 +106,10 @@ class AppManager {
                 });
                 img = img.resize(this.previewResizeDim);
                 const base64 = img.toJPEG(100).toString('base64');
-                const data = base64 ? 'data:image/png;base64,' + base64 : '';
-                return data;
+                return base64 ? 'data:image/png;base64,' + base64 : '';
             }
         } catch (error) {
             console.log(error);
         }
     }
 }
-
-module.exports = AppManager;
-

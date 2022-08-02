@@ -1,10 +1,12 @@
+import AppManager from './AppManager';
+
+import { readValue } from './sqlite3';
 const crypto = require('crypto');
-const electron = require('electron');
-const { dialog, ipcMain, app, screen } = electron;
+const electron = require('electron')
 const appPackage = require('../package.json');
-const { readValue } = require('./sqlite3');
 
 const isDev = process.env.NODE_ENV === 'development';
+const { dialog, ipcMain, app, screen } = electron;
 
 let apiUrl = process.env.API_URL;
 let key = process.env.API_KEY;
@@ -19,7 +21,7 @@ function hasXApiKey() {
     return `${timeStr}.${md5sum.digest('hex')}`;
 }
 
-function initMainScreen(appManager) {
+export function initMainScreen(appManager: AppManager) {
     // TODO: use shareProps.mainWin.on or shareProps.presentWin.on
     ipcMain.on('main:app:show-present', () => {
         appManager.isShowingPS = true;
@@ -27,7 +29,12 @@ function initMainScreen(appManager) {
     ipcMain.on('main:app:hide-present', () => {
         appManager.isShowingPS = false;
     });
-    ipcMain.on('main:app:present-eval-script', (_, args) => {
+    ipcMain.on('main:app:present-eval-script', (event, args) => {
+        if (appManager.presentWin === null) {
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
         appManager.presentWin.webContents.executeJavaScript(`
         (() => {
             ${args.script};
@@ -62,7 +69,12 @@ function initMainScreen(appManager) {
         event.returnValue = appManager.isShowingPS;
     });
 
-    ipcMain.on('main:app:is-rendered', (_, replyEventName) => {
+    ipcMain.on('main:app:is-rendered', (event, replyEventName) => {
+        if (appManager.presentWin === null) {
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
         ipcMain.once(replyEventName, (_, data) => {
             data.show = appManager.isShowingPS;
             appManager.mainWin.webContents.send(replyEventName, data);
@@ -97,7 +109,7 @@ function initMainScreen(appManager) {
         };
     });
 }
-function initDisplayObserver(appManager) {
+export function initDisplayObserver(appManager: AppManager) {
     const sendDisplayChanged = () => {
         appManager.mainWin.webContents.send('app:main:display-changed');
     };
@@ -125,8 +137,3 @@ function initDisplayObserver(appManager) {
         event.returnValue = null;
     });
 }
-
-module.exports = {
-    initMainScreen,
-    initDisplayObserver,
-};

@@ -1,17 +1,18 @@
-'use strict';
-
+import { IncomingMessage } from 'http';
 const https = require('https');
 const crypto = require('crypto');
-const bibleObj = require('./bible.json');
 const fs = require('fs');
 const path = require('path');
 const electron = require('electron');
 const url = require('url');
 const fontList = require('font-list');
+const bibleObj = require('./bible.json');
+
 const ipcRenderer = electron.ipcRenderer;
 
 const httpsProvider = {
-    request(options, callback) {
+    request(options: { [key: string]: any },
+        callback: (res: IncomingMessage) => void) {
         const httpsInfo = ipcRenderer.sendSync('app:app:https-credential');
         options.hostname = httpsInfo.apiUrl.substring(8);
         options.headers = {
@@ -25,14 +26,14 @@ const httpsProvider = {
 const ALGORITHM = 'aes-256-cbc';
 const IV_STRING = '6ce2b3237d3d6690';
 
-function encrypt(text, key) {
+function encrypt(text: string, key: string) {
     const cipher = crypto.createCipheriv(ALGORITHM, key, IV_STRING);
     let encrypted = cipher.update(text);
     encrypted = Buffer.from(new Uint8Array([...encrypted, ...(cipher.final())]));
     return encrypted.toString('base64');
 }
 
-function decrypt(text, key) {
+function decrypt(text: string, key: string) {
     const encryptedText = Buffer.from(text, 'base64');
     const decipher = crypto.createDecipheriv(ALGORITHM, key, IV_STRING);
     let decrypted = decipher.update(encryptedText);
@@ -56,4 +57,4 @@ const provider = {
     fontList,
 };
 
-global.provider = window.provider = provider;
+(global as any).provider = (window as any).provider = provider;

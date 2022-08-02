@@ -9,7 +9,8 @@
         "start": "env-cmd -f .env react-scripts start",
         "build": "env-cmd -f .env react-scripts build",
         "dev": "concurrently -k \"npm start\" \"npm run electron\"",
-        "electron": "wait-on tcp:3000 && env-cmd -f .env electron .",
+        "build:electron": "tsc -p electron.tsconfig.json",
+        "electron": "npm run build:electron && wait-on tcp:3000 && env-cmd -f .env electron .",
         "test": "react-scripts test",
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
@@ -86,13 +87,14 @@
         }
     },
     "devDependencies": {
+        "@types/sqlite3": "^3.1.8",
         "@typescript-eslint/eslint-plugin": "^4.15.1",
         "@typescript-eslint/parser": "^4.15.1",
-        "eslint": "^7.20.0",
         "concurrently": "^6.3.0",
         "electron": "^16.0.6",
         "electron-builder": "^22.14.5",
         "env-cmd": "^10.1.0",
+        "eslint": "^7.20.0",
         "react-scripts": "5.0.1",
         "sass": "^1.42.1",
         "typescript": "^4.6.4",
@@ -109,12 +111,12 @@
         "@types/react-dom": "^18.0.3",
         "bootstrap": "^5.1.3",
         "bootstrap-icons": "^1.6.0",
+        "font-list": "^1.4.5",
         "i18next": "^21.7.1",
         "react": "^18.1.0",
         "react-colorful": "^5.5.1",
         "react-dom": "^18.1.0",
         "react-i18next": "^11.16.9",
-        "font-list": "^1.4.5",
         "sqlite3": "^5.0.2"
     }
 }

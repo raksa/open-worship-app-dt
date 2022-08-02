@@ -1,11 +1,11 @@
-'use strict';
+import { Database } from "sqlite3";
 
 const sqlite3 = require('sqlite3');
 
-const openDB = (dbFilePath) => {
-    return new Promise((resolve, reject) => {
+export function openDB(dbFilePath: string) {
+    return new Promise<Database>((resolve, reject) => {
         const db = new sqlite3.Database(dbFilePath,
-            sqlite3.OPEN_READONLY, (error) => {
+            sqlite3.OPEN_READONLY, (error: any) => {
                 if (error) {
                     console.log(error);
                     reject(new Error('Error during open db'));
@@ -15,13 +15,14 @@ const openDB = (dbFilePath) => {
             });
     });
 };
-const selectFrom = (db, table, key) => {
+
+export function selectFrom(db: Database, table: string, key: string) {
     return new Promise(async (resolve) => {
-        let callback = (value) => {
-            callback = () => { };
+        let callback = (value: string | null) => {
+            callback = () => false;
             resolve(value);
         };
-        if (db.open) {
+        if ((db as any).open) {
             db.serialize(() => {
                 const sql = `SELECT key, value FROM ${table} WHERE key='${key}'`;
                 db.each(sql, (error, row) => {
@@ -43,8 +44,9 @@ const selectFrom = (db, table, key) => {
             callback(null);
         }
     });
-};
-const readValue = (dbFilePath, table, key) => {
+}
+
+export function readValue(dbFilePath: string, table: string, key: string) {
     return new Promise((resolve) => {
         openDB(dbFilePath).then((db) => {
             selectFrom(db, table, key).then(resolve);
@@ -53,10 +55,5 @@ const readValue = (dbFilePath, table, key) => {
             resolve(null);
         });
     });
-};
+}
 
-module.exports = {
-    openDB,
-    selectFrom,
-    readValue,
-};

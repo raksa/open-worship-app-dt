@@ -29,3 +29,4 @@ release/
 .env.prod
 electron/ow.node
 *binding.gyp
+electron/*.js
