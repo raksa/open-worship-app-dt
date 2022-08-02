@@ -7,42 +7,42 @@ import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 import EventHandler from './EventHandler';
 
-export enum PreviewingEnum {
-    SELECT_BIBLE_ITEM = 'present-bible',
-    SELECT_LYRIC = 'present-lyric',
-    UPDATE_LYRIC = 'update-lyric',
-    SELECT_SLIDE = 'update-slide',
-    UPDATE_SLIDE = 'update-slide',
-}
+export type PreviewingType =
+    'select-bible-item'
+    | 'select-lyric'
+    | 'update-lyric'
+    | 'select-slide'
+    | 'update-slide';
+
 type ListenerType<T> = (data: T) => void | (() => void);
 export type RegisteredEventType<T> = {
-    type: PreviewingEnum,
+    type: PreviewingType,
     listener: ListenerType<T>,
 };
 
-export default class PreviewingEventListener extends EventHandler {
+export default class PreviewingEventListener extends EventHandler<PreviewingType> {
     selectBibleItem(bibleItem: BibleItem | null) {
         if (bibleItem !== null) {
             setIsPreviewingBible();
         }
-        this._addPropEvent(PreviewingEnum.SELECT_BIBLE_ITEM, bibleItem);
+        this._addPropEvent('select-bible-item', bibleItem);
     }
     selectLyric(lyric: Lyric | null) {
         if (lyric !== null) {
             setIsPreviewingLyric();
         }
-        this._addPropEvent(PreviewingEnum.SELECT_LYRIC, lyric);
+        this._addPropEvent('select-lyric', lyric);
     }
     updateLyric(lyric: Lyric) {
-        this._addPropEvent(PreviewingEnum.UPDATE_LYRIC, lyric);
+        this._addPropEvent('update-lyric', lyric);
     }
     presentSlide(slide: Slide | null) {
-        this._addPropEvent(PreviewingEnum.SELECT_SLIDE, slide);
+        this._addPropEvent('select-slide', slide);
     }
     updateSlide(slide: Slide) {
-        this._addPropEvent(PreviewingEnum.UPDATE_SLIDE, slide);
+        this._addPropEvent('update-slide', slide);
     }
-    registerEventListener(type: PreviewingEnum, listener: ListenerType<any>):
+    registerEventListener(type: PreviewingType, listener: ListenerType<any>):
         RegisteredEventType<any> {
         this._addOnEventListener(type, listener);
         return {
@@ -60,7 +60,7 @@ export const previewingEventListener = new PreviewingEventListener();
 export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.SELECT_BIBLE_ITEM, listener);
+            'select-bible-item', listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -69,7 +69,7 @@ export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) 
 export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.SELECT_LYRIC, listener);
+            'select-lyric', listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -78,7 +78,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.UPDATE_LYRIC, listener);
+            'update-lyric', listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -87,7 +87,7 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
 export function useSlideSelecting(listener: ListenerType<Slide | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.SELECT_SLIDE, listener);
+            'select-slide', listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -96,7 +96,7 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
 export function useSlideUpdating(listener: ListenerType<Slide>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            PreviewingEnum.UPDATE_SLIDE, listener);
+            'update-slide', listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -105,9 +105,9 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
 export function useFullTextOpening(listener: ListenerType<void>) {
     useEffect(() => {
         const eventLyric = previewingEventListener.registerEventListener(
-            PreviewingEnum.SELECT_LYRIC, listener);
+            'select-lyric', listener);
         const eventBible = previewingEventListener.registerEventListener(
-            PreviewingEnum.SELECT_BIBLE_ITEM, listener);
+            'select-bible-item', listener);
         return () => {
             previewingEventListener.unregisterEventListener(eventLyric);
             previewingEventListener.unregisterEventListener(eventBible);

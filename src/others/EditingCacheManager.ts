@@ -2,7 +2,6 @@ import FileSource from '../helper/FileSource';
 import {
     getSetting, setSetting,
 } from '../helper/settingHelper';
-import { cloneObject } from '../helper/helpers';
 
 type ChangeObjectType<T> = {
     undoQueue: T[],

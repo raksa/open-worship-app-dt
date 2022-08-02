@@ -1,10 +1,7 @@
 import {
+    EventMapper as KBEventMapper,
     keyboardEventListener,
-    KeyEnum,
-    LinuxControlEnum,
-    MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { fromLocaleNumber } from '../bible-helper/helpers2';
 import { isWindowEditingMode } from '../App';
@@ -28,11 +25,11 @@ export default function RenderFoundButtons({
     const isBibleSelectEditing = !!BibleItem.getSelectedEditingResult();
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
     const isWindowEditing = isWindowEditingMode();
-    const addListEventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
-        key: KeyEnum.Enter,
+    const addListEventMapper: KBEventMapper = {
+        wControlKey: ['Ctrl'],
+        mControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
+        key: 'Enter',
     };
     const addBibleItem = async () => {
         const key = await bookToKey(bibleSelected, book);
@@ -74,11 +71,11 @@ export default function RenderFoundButtons({
             bibleItem.isSelected = true;
         }
     };
-    const presentEventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl, WindowsControlEnum.Shift],
-        mControlKey: [MacControlEnum.Ctrl, MacControlEnum.Shift],
-        lControlKey: [LinuxControlEnum.Ctrl, LinuxControlEnum.Shift],
-        key: KeyEnum.Enter,
+    const presentEventMapper: KBEventMapper = {
+        wControlKey: ['Ctrl', 'Shift'],
+        mControlKey: ['Ctrl', 'Shift'],
+        lControlKey: ['Ctrl', 'Shift'],
+        key: 'Enter',
     };
     useKeyboardRegistering(addListEventMapper, addBibleItem);
     useKeyboardRegistering(presentEventMapper, addBibleItemAndPresent);

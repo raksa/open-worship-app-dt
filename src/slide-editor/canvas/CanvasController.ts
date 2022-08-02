@@ -19,7 +19,7 @@ export type RegisteredEventType<T> = {
     listener: ListenerType<T>,
 };
 
-export default class CanvasController extends EventHandler {
+export default class CanvasController extends EventHandler<CCEventType> {
     static _instance: CanvasController | null = null;
     copiedItem: CanvasItem<any> | null = null;
     _canvas: Canvas;

@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import {
-    StateEnum,
     useWindowEvent,
-    WindowEnum,
     windowEventListener,
+    EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import AppSuspense from '../others/AppSuspense';
 
 const SettingPopup = React.lazy(() => import('./SettingPopup'));
 
-export const openSettingEvent = {
-    window: WindowEnum.Setting,
-    state: StateEnum.Open,
+export const openSettingEvent: WEventMapper = {
+    widget: 'setting',
+    state: 'open',
 };
-export const closeSettingEvent = {
-    window: WindowEnum.Setting,
-    state: StateEnum.Close,
+export const closeSettingEvent: WEventMapper = {
+    widget: 'setting',
+    state: 'close',
 };
 export function openSetting() {
     windowEventListener.fireEvent(openSettingEvent);

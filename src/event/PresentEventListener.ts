@@ -7,65 +7,65 @@ import { useStateSettingBoolean } from '../helper/settingHelper';
 import SlideItem from '../slide-list/SlideItem';
 import EventHandler from './EventHandler';
 
-export enum PresentTypeEnum {
-    HIDE = 'hide',
-    RENDER_BG = 'render-bg',
-    CLEAR_BG = 'clear-bg',
-    RENDER_FG = 'render-fg',
-    CLEAR_FG = 'clear-fg',
-    RENDER_FT = 'render-ft',
-    CLEAR_FT = 'clear-ft',
-    CTRL_SCROLLING = 'ctrl-scrolling',
-    CHANGE_BIBLE = 'change-bible',
-    DISPLAY_CHANGED = 'displayed-changed',
-}
+export type PresentEventType =
+    'hide'
+    | 'render-bg'
+    | 'clear-bg'
+    | 'render-fg'
+    | 'clear-fg'
+    | 'render-ft'
+    | 'clear-ft'
+    | 'ctrl-scrolling'
+    | 'change-bible'
+    | 'display-changed';
+
 type AsyncListenerType<T> = ((data: T) => Promise<void>) | (() => Promise<void>);
 type ListenerType<T> = ((data: T) => void) | (() => void);
 export type RegisteredEventType<T> = {
-    type: PresentTypeEnum,
+    type: PresentEventType,
     listener: ListenerType<T>,
 }
 
-export default class PresentEventListener extends EventHandler {
+export default class PresentEventListener extends EventHandler<PresentEventType> {
     fireHideEvent() {
-        this._addPropEvent(PresentTypeEnum.HIDE);
+        this._addPropEvent('hide');
     }
     renderBG() {
-        this._addPropEvent(PresentTypeEnum.RENDER_BG);
+        this._addPropEvent('render-bg');
     }
     clearBG() {
         clearBackground();
-        this._addPropEvent(PresentTypeEnum.CLEAR_BG);
+        this._addPropEvent('clear-bg');
     }
     renderFG() {
-        this._addPropEvent(PresentTypeEnum.RENDER_FG);
+        this._addPropEvent('render-fg');
     }
     clearFG() {
         SlideItem.setSelectedItem(null);
         clearForeground();
-        this._addPropEvent(PresentTypeEnum.CLEAR_FG);
+        this._addPropEvent('clear-fg');
     }
     renderFT() {
-        this._addPropEvent(PresentTypeEnum.RENDER_FT);
+        this._addPropEvent('render-fg');
     }
     clearFT(isEvent?: boolean) {
         if (!isEvent) {
             fullTextPresentHelper.hide();
         }
-        this._addPropEvent(PresentTypeEnum.CLEAR_FT);
+        this._addPropEvent('clear-ft');
     }
     presentCtrlScrolling(isUp: boolean) {
         const fontSize = fullTextPresentHelper.textFontSize + (isUp ? 1 : -1);
         fullTextPresentHelper.setStyle({ fontSize });
-        this._addPropEvent(PresentTypeEnum.CTRL_SCROLLING, isUp);
+        this._addPropEvent('ctrl-scrolling', isUp);
     }
     changeBible(isNext: boolean) {
-        this._addPropEvent(PresentTypeEnum.CHANGE_BIBLE, isNext);
+        this._addPropEvent('change-bible', isNext);
     }
     displayChanged() {
-        this._addPropEvent(PresentTypeEnum.DISPLAY_CHANGED);
+        this._addPropEvent('display-changed');
     }
-    registerPresentEventListener(type: PresentTypeEnum,
+    registerPresentEventListener(type: PresentEventType,
         listener: ListenerType<any>): RegisteredEventType<any> {
         this._addOnEventListener(type, listener);
         return {
@@ -83,7 +83,7 @@ export const presentEventListener = new PresentEventListener();
 export function usePresentHiding(listener: ListenerType<void>) {
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.HIDE, listener);
+            'hide', listener);
         return () => {
             presentEventListener.unregisterPresentEventListener(event);
         };
@@ -96,9 +96,9 @@ export function usePresentBGRendering() {
     });
     useEffect(() => {
         const eventRender = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.RENDER_BG, () => setIsShowing(true));
+            'render-bg', () => setIsShowing(true));
         const eventClear = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CLEAR_BG, () => setIsShowing(false));
+            'clear-bg', () => setIsShowing(false));
         return () => {
             presentEventListener.unregisterPresentEventListener(eventRender);
             presentEventListener.unregisterPresentEventListener(eventClear);
@@ -109,7 +109,7 @@ export function usePresentBGRendering() {
 export function usePresentBGClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
         const eventClear = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CLEAR_BG, listener);
+            'clear-bg', listener);
         return () => {
             presentEventListener.unregisterPresentEventListener(eventClear);
         };
@@ -122,9 +122,9 @@ export function usePresentFGRendering() {
     });
     useEffect(() => {
         const eventRender = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.RENDER_FG, () => setIsShowing(true));
+            'render-fg', () => setIsShowing(true));
         const eventClear = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CLEAR_FG, () => setIsShowing(false));
+            'clear-fg', () => setIsShowing(false));
         return () => {
             presentEventListener.unregisterPresentEventListener(eventRender);
             presentEventListener.unregisterPresentEventListener(eventClear);
@@ -135,7 +135,7 @@ export function usePresentFGRendering() {
 export function usePresentFGClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
         const eventClear = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CLEAR_FG, listener);
+            'clear-fg', listener);
         return () => {
             presentEventListener.unregisterPresentEventListener(eventClear);
         };
@@ -148,9 +148,9 @@ export function usePresentFTRendering() {
     });
     useEffect(() => {
         const eventRender = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.RENDER_FT, () => setIsShowing(true));
+            'render-fg', () => setIsShowing(true));
         const eventClear = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CLEAR_FT, () => setIsShowing(false));
+            'clear-ft', () => setIsShowing(false));
         return () => {
             presentEventListener.unregisterPresentEventListener(eventRender);
             presentEventListener.unregisterPresentEventListener(eventClear);
@@ -161,7 +161,7 @@ export function usePresentFTRendering() {
 export function usePresentFTClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
         const eventClear = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CLEAR_FT, listener);
+            'clear-ft', listener);
         return () => {
             presentEventListener.unregisterPresentEventListener(eventClear);
         };
@@ -170,7 +170,7 @@ export function usePresentFTClearing(listener: ListenerType<boolean>) {
 export function usePresentCtrlScrolling(listener: ListenerType<boolean>) {
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CTRL_SCROLLING, listener);
+            'ctrl-scrolling', listener);
         return () => {
             presentEventListener.unregisterPresentEventListener(event);
         };
@@ -179,7 +179,7 @@ export function usePresentCtrlScrolling(listener: ListenerType<boolean>) {
 export function useChangingBible(listener: AsyncListenerType<boolean>) {
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.CHANGE_BIBLE, listener);
+            'change-bible', listener);
         return () => {
             presentEventListener.unregisterPresentEventListener(event);
         };
@@ -189,7 +189,7 @@ export function useDisplay() {
     const [displays, setDisplays] = useState(getAllDisplays());
     useEffect(() => {
         const event = presentEventListener.registerPresentEventListener(
-            PresentTypeEnum.DISPLAY_CHANGED, () => setDisplays(getAllDisplays()));
+            'display-changed', () => setDisplays(getAllDisplays()));
         return () => {
             presentEventListener.unregisterPresentEventListener(event);
         };

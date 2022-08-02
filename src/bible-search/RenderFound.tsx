@@ -2,7 +2,6 @@ import './RenderFound.scss';
 
 import { useEffect, useState } from 'react';
 import {
-    KeyEnum,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { fromLocaleNumber } from '../bible-helper/helpers2';
@@ -67,12 +66,12 @@ export default function RenderFound({
     bibleSelected: string,
 }) {
     useKeyboardRegistering({
-        key: KeyEnum.Enter,
+        key: 'Enter',
     }, () => {
         onVerseChange(sVerse, eVerse);
     });
     useKeyboardRegistering({
-        key: KeyEnum.Tab,
+        key: 'Tab',
     }, (e: KeyboardEvent) => {
         e.stopPropagation();
         e.preventDefault();

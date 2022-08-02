@@ -1,34 +1,25 @@
-import SlideList from './slide-list/SlideList';
-import { getWindowMode } from './App';
+import React from 'react';
+import { settingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
-import SlidePreviewer from './slide-presenting/items/SlidePreviewer';
-import SlideItemEditorGround from './slide-editor/SlideItemEditorGround';
+
+const SlideItemEditorGround = React.lazy(() => {
+    return import('./slide-editor/SlideItemEditorGround');
+});
+const AppEditingLeft = React.lazy(() => {
+    return import('./AppEditingLeft');
+});
 
 export default function AppEditing() {
-    const resizeSettingName = `${getWindowMode()}-window-size`;
-    const flexSizeDefault = {
-        'h1': '1',
-        'h1-v1': '1',
-        'h1-v2': '2',
-        'h2': '3',
-    };
     return (
-        <ResizeActor settingName={resizeSettingName}
-            flexSizeDefault={flexSizeDefault}
+        <ResizeActor fSizeName={settingNames.appEditing}
+            flexSizeDefault={{
+                'h1': ['1'],
+                'h2': ['3'],
+            }}
             resizeKinds={['h']}
-            sizeKeys={[
-                ['h1', 'flex v'],
-                ['h2', 'flex v']]}>
-            <ResizeActor settingName={resizeSettingName}
-                flexSizeDefault={flexSizeDefault}
-                resizeKinds={['v']}
-                sizeKeys={[
-                    ['h1-v1', 'flex-item'],
-                    ['h1-v2', 'flex-item']]}>
-                <SlideList />
-                <SlidePreviewer />
-            </ResizeActor>
-            <SlideItemEditorGround />
-        </ResizeActor>
+            dataInput={[
+                [AppEditingLeft, 'h1', 'flex v'],
+                [SlideItemEditorGround, 'h2', 'flex v'],
+            ]} />
     );
 }

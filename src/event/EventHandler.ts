@@ -1,6 +1,6 @@
 export type ListenerType<T> = (data: T) => void;
 
-export default class EventHandler {
+export default class EventHandler<T> {
     _onEventListeners: { [key: string]: ListenerType<any>[] };
     _propEvent: any[];
     events: { [key: string]: string };
@@ -31,7 +31,7 @@ export default class EventHandler {
         }
     }
 
-    _addPropEvent(event: string, data?: any) {
+    _addPropEvent(event: T, data?: any) {
         this._propEvent.push({
             name: event,
             data,

@@ -1,19 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import {
     keyboardEventListener,
-    LinuxControlEnum,
-    MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum,
+    EventMapper as KBEventMapper,
 } from '../event/KeyboardEventListener';
 import { closeItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 
 export default function SlideItemEditorPopupHeader() {
     const { t } = useTranslation();
-    const eventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
+    const eventMapper: KBEventMapper = {
+        wControlKey: ['Ctrl'],
+        mControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
         key: 'q',
     };
     useKeyboardRegistering(eventMapper, closeItemSlideEdit);

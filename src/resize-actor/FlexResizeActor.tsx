@@ -1,11 +1,14 @@
 import './FlexResizeActor.scss';
 
 import React from 'react';
+import { DisabledType } from './flexSizeHelpers';
 
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
     type: ResizeKindType,
     checkSize: () => void,
+    disable: (dataFSizeKey: string,
+        target: DisabledType) => void,
 }
 export default class FlexResizeActor extends React.Component<Props, {}> {
     myRef: React.RefObject<HTMLDivElement>;
@@ -106,51 +109,55 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         if (!current) {
             return;
         }
-        current.classList.remove('active');
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
         this.props.checkSize();
-    }
-    resetSize() {
-        this.prev.style.flex = this.prev.dataset['fsDefault'] as string;
-        this.next.style.flex = this.next.dataset['fsDefault'] as string;
+        current.classList.remove('active');
     }
     quicMove(type: string) {
         this.init();
-        if (['left', 'up'].includes(type)) {
-            if (this.nextGrow === 0) {
-                this.resetSize();
-            } else {
-                this.prev.style.flexGrow = '0';
+        const isFirst = ['left', 'up'].includes(type);
+        const dataFSizeKey = isFirst ? this.prev.dataset['fs'] : this.next.dataset['fs'];
+        if (dataFSizeKey !== undefined) {
+            if (isFirst) {
                 this.next.style.flexGrow = `${this.sumGrow}`;
-            }
-        } else {
-            if (this.prevGrow === 0) {
-                this.resetSize();
             } else {
                 this.prev.style.flexGrow = `${this.sumGrow}`;
-                this.next.style.flexGrow = '0';
             }
+            this.props.disable(dataFSizeKey, [
+                isFirst ? 'first' : 'second',
+                isFirst ? this.prevGrow : this.nextGrow,
+            ]);
         }
+        this.myRef.current?.classList.remove('active');
     }
     componentDidMount() {
         const target = this.myRef.current;
         if (target) {
-            target.addEventListener('mousedown', (md) => this.onMouseDown(md));
+            target.addEventListener('mousedown', (md) => {
+                this.onMouseDown(md);
+            });
         }
     }
     render() {
         return (
-            <div className={`flex-resize-actor ${this.props.type}`} ref={this.myRef}>
+            <div className={`flex-resize-actor ${this.props.type}`}
+                ref={this.myRef}>
                 <div className='mover'>
-                    {[['left', 'chevron-left'], ['right', 'chevron-right'],
-                    ['up', 'chevron-up'], ['down', 'chevron-down']].map(([type, icon], i) => {
+                    {[
+                        ['left', 'chevron-left'],
+                        ['right', 'chevron-right'],
+                        ['up', 'chevron-up'],
+                        ['down', 'chevron-down'],
+                    ].map(([type, icon], i) => {
                         return (
-                            <i key={i} className={`${type} bi bi-${icon}`} onClick={(e) => {
-                                e.stopPropagation();
-                                this.quicMove(type);
-                            }} />
+                            <i key={i} title={`Disable ${type}`}
+                                className={`${type} bi bi-${icon}`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    this.quicMove(type);
+                                }} />
                         );
                     })}
                 </div>

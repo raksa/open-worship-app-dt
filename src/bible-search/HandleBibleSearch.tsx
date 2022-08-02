@@ -2,10 +2,9 @@ import React from 'react';
 import bibleHelper from '../bible-helper/bibleHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
-    StateEnum,
     useWindowEvent,
-    WindowEnum,
     windowEventListener,
+    EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import AppSuspense from '../others/AppSuspense';
@@ -13,13 +12,13 @@ import { openSetting } from '../setting/HandleSetting';
 
 const BibleSearchPopup = React.lazy(() => import('./BibleSearchPopup'));
 
-export const openBibleSearchEvent = {
-    window: WindowEnum.BibleSearch,
-    state: StateEnum.Open,
+export const openBibleSearchEvent: WEventMapper = {
+    widget: 'bible-search',
+    state: 'open',
 };
-export const closeBibleSearchEvent = {
-    window: WindowEnum.BibleSearch,
-    state: StateEnum.Close,
+export const closeBibleSearchEvent: WEventMapper = {
+    widget: 'bible-search',
+    state: 'close',
 };
 export function openBibleSearch() {
     windowEventListener.fireEvent(openBibleSearchEvent);

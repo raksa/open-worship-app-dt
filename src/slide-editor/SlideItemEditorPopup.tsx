@@ -1,20 +1,22 @@
 import './SlideItemEditorPopup.scss';
 
 import {
-    KeyEnum, useKeyboardRegistering,
+    useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import SlideItemEditorPopupHeader from './SlideItemEditorPopupHeader';
 import Modal from '../others/Modal';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
-import { closeItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
+import {
+    closeItemSlideEdit,
+} from '../slide-presenting/HandleItemSlideEdit';
 import CanvasController from './canvas/CanvasController';
 
 export default function SlideItemEditorPopup({ slideItem }: {
     slideItem: SlideItem
 }) {
     useKeyboardRegistering({
-        key: KeyEnum.Escape,
+        key: 'Escape',
     }, closeItemSlideEdit);
     CanvasController.getInstance().init(slideItem);
     return (

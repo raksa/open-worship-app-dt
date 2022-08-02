@@ -1,6 +1,5 @@
 import { BoxEditor } from './box/BoxEditor';
 import {
-    KeyEnum,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import {
@@ -17,7 +16,7 @@ export default function SlideItemEditorCanvas() {
     const canvasController = CanvasController.getInstance();
     const scale = useCCScale();
     useCCRefresh(['update']);
-    useKeyboardRegistering({ key: KeyEnum.Escape }, () => {
+    useKeyboardRegistering({ key: 'Escape' }, () => {
         canvasController.stopAllMods();
     });
     const isSupportType = (fileType: string) => {

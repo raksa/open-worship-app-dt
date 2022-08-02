@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
-    KeyEnum, useKeyboardRegistering,
+    allArrows,
+    KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { genInd } from './genInd';
 import {
@@ -41,17 +42,16 @@ export default function RenderChapterOption({
     const arrowListener = async (e: KeyboardEvent) => {
         const newChapterCount = await getChapterCount(bibleSelected, bookSelected);
         if (newChapterCount !== null) {
-            const ind = genInd(attemptChapterIndex, newChapterCount, e.key as KeyEnum, 6);
+            const ind = genInd(attemptChapterIndex, newChapterCount, e.key as KeyboardType, 6);
             setAttemptChapterIndex(ind);
         }
     };
-    const arrows = [KeyEnum.ArrowUp, KeyEnum.ArrowRight, KeyEnum.ArrowDown, KeyEnum.ArrowLeft];
-    const useCallback = (k: KeyEnum) => {
+    const useCallback = (k: KeyboardType) => {
         useKeyboardRegistering({
             key: k,
         }, arrowListener);
     };
-    arrows.forEach(useCallback);
+    allArrows.forEach(useCallback);
     const enterListener = () => {
         if (matches !== null) {
             const chapter = matches[attemptChapterIndex];
@@ -61,7 +61,7 @@ export default function RenderChapterOption({
         }
     };
     useKeyboardRegistering({
-        key: KeyEnum.Enter,
+        key: 'Enter',
     }, enterListener);
     let applyAttemptIndex = attemptChapterIndex;
     if (matches === null || attemptChapterIndex > matches.length - 1) {

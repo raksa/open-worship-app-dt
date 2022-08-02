@@ -3,7 +3,8 @@ import bibleHelper, {
     useGetBookKVList, useMatch,
 } from '../bible-helper/bibleHelpers';
 import {
-    KeyEnum, useKeyboardRegistering,
+    allArrows,
+    KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { isVisible } from '../helper/helpers';
 import { genInd } from './genInd';
@@ -22,17 +23,17 @@ export default function RenderBookOption({
     const [attemptMatchIndex, setAttemptMatchIndex] = useState(0);
     const matches = useMatch(bibleSelected, inputText);
 
-    const useCallback = (key: KeyEnum) => {
+    const useCallback = (key: KeyboardType) => {
         useKeyboardRegistering({ key }, (e: KeyboardEvent) => {
             if (matches !== null && matches.length) {
-                const ind = genInd(attemptMatchIndex, matches.length, e.key as KeyEnum, 2);
+                const ind = genInd(attemptMatchIndex, matches.length,
+                    e.key as KeyboardType, 2);
                 setAttemptMatchIndex(ind);
             }
         });
     };
-    const arrows = [KeyEnum.ArrowUp, KeyEnum.ArrowRight, KeyEnum.ArrowDown, KeyEnum.ArrowLeft];
-    arrows.forEach(useCallback);
-    useKeyboardRegistering({ key: KeyEnum.Enter }, () => {
+    allArrows.forEach(useCallback);
+    useKeyboardRegistering({ key: 'Enter' }, () => {
         if (matches !== null && bookKVList !== null && matches[attemptMatchIndex]) {
             const k = matches[attemptMatchIndex];
             onSelect(bookKVList[k]);

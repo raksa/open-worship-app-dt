@@ -26,13 +26,13 @@ module.exports = {
         "ignoreReadBeforeAssign": false
       }
     ],
-    // "no-unused-vars": [
-    //   "error",
-    //   {
-    //     "vars": "all",
-    //     "args": "none",
-    //     "ignoreRestSiblings": false
-    //   }
-    // ]
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": false
+      }
+    ]
   }
 };

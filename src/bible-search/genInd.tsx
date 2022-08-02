@@ -1,45 +1,63 @@
-import { KeyEnum } from '../event/KeyboardEventListener';
+import { KeyboardType } from '../event/KeyboardEventListener';
 
-export function genInd(index: number, total: number, key: KeyEnum, offset: number) {
+function genLeft(index: number, total: number, offset: number) {
     const preOffset = offset - 1;
     const mod = index % offset;
-    let ind = index;
-    if (key === KeyEnum.ArrowUp) {
-        if (index - offset < 0) {
-            const rowCount = Math.floor(total / offset);
-            ind = rowCount * offset + index;
-            if (ind >= total) {
-                ind -= offset;
-            }
-        } else {
-            ind = index - offset;
+    if (mod === 0) {
+        index = index + preOffset;
+        if (index >= total) {
+            index = total - 1;
         }
-    } else if (key === KeyEnum.ArrowRight) {
-        if (mod === preOffset) {
-            ind = index - preOffset;
-        } else {
-            ind = index + 1;
-            if (ind >= total) {
-                const rowCount = Math.floor(index / offset);
-                ind = rowCount * offset;
-            }
-        }
-    } else if (key === KeyEnum.ArrowDown) {
-        if (index + offset >= total) {
+    } else {
+        index = index - 1;
+    }
+    return index;
+}
+function genRight(index: number, total: number, offset: number) {
+    const preOffset = offset - 1;
+    const mod = index % offset;
+    if (mod === preOffset) {
+        index = index - preOffset;
+    } else {
+        index = index + 1;
+        if (index >= total) {
             const rowCount = Math.floor(index / offset);
-            ind = index - rowCount * offset;
-        } else {
-            ind = index + offset;
-        }
-    } else if (key === KeyEnum.ArrowLeft) {
-        if (mod === 0) {
-            ind = index + preOffset;
-            if (ind >= total) {
-                ind = total - 1;
-            }
-        } else {
-            ind = index - 1;
+            index = rowCount * offset;
         }
     }
-    return ind;
+    return index;
+}
+function genUp(index: number, total: number, offset: number) {
+    if (index - offset < 0) {
+        const rowCount = Math.floor(total / offset);
+        index = rowCount * offset + index;
+        if (index >= total) {
+            index -= offset;
+        }
+    } else {
+        index = index - offset;
+    }
+    return index;
+}
+function genDown(index: number, total: number, offset: number) {
+    if (index + offset >= total) {
+        const rowCount = Math.floor(index / offset);
+        index = index - rowCount * offset;
+    } else {
+        index = index + offset;
+    }
+    return index;
+}
+export function genInd(index: number, total: number,
+    key: KeyboardType, offset: number) {
+    if (key === 'ArrowLeft') {
+        return genLeft(index, total, offset);
+    } else if (key === 'ArrowRight') {
+        return genRight(index, total, offset);
+    } else if (key === 'ArrowUp') {
+        return genUp(index, total, offset);
+    } else if (key === 'ArrowDown') {
+        return genDown(index, total, offset);
+    }
+    return index;
 }

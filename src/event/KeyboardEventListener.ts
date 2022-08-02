@@ -1,47 +1,31 @@
 import { useEffect } from 'react';
 import { isLinux, isMac, isWindows } from '../helper/appHelper';
 import EventHandler from './EventHandler';
-import { WindowEnum } from './WindowEventListener';
+import { AppWidgetType } from './WindowEventListener';
 
-export enum KeyEnum {
-    ArrowUp = 'ArrowUp',
-    ArrowRight = 'ArrowRight',
-    ArrowDown = 'ArrowDown',
-    ArrowLeft = 'ArrowLeft',
-    Enter = 'Enter',
-    Tab = 'Tab',
-    Escape = 'Escape',
-    SpaceBar = ' ',
-}
-export enum WindowsControlEnum {
-    Ctrl = 'Ctrl',
-    Alt = 'Alt',
-    Shift = 'Shift',
-}
-export enum LinuxControlEnum {
-    Ctrl = 'Ctrl',
-    Alt = 'Alt',
-    Shift = 'Shift',
-}
-export enum MacControlEnum {
-    Ctrl = 'Ctrl',
-    Option = 'Option',
-    Shift = 'Shift',
-    Command = 'Command',
-}
+export type KeyboardType = 'ArrowUp' | 'ArrowRight' | 'ArrowDown'
+    | 'ArrowLeft' | 'Enter' | 'Tab' | 'Escape' | ' ';
+export const allArrows: KeyboardType[] = [
+    'ArrowLeft', 'ArrowRight',
+    'ArrowUp', 'ArrowDown',
+];
+export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
+export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
+export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Command';
+
 export interface EventMapper {
-    wControlKey?: WindowsControlEnum[];
-    mControlKey?: MacControlEnum[];
-    lControlKey?: LinuxControlEnum[];
-    key: KeyEnum | string;
-    layer?: WindowEnum;
+    wControlKey?: WindowsControlType[];
+    mControlKey?: MacControlType[];
+    lControlKey?: LinuxControlType[];
+    key: KeyboardType | string;
+    layer?: AppWidgetType;
 }
 export interface RegisteredEventMapper extends EventMapper {
     listener: ListenerType;
 }
 export type ListenerType = ((e: KeyboardEvent) => void) | (() => void);
-export default class KeyboardEventListener extends EventHandler {
-    layers: WindowEnum[] = [WindowEnum.Root];
+export default class KeyboardEventListener extends EventHandler<string> {
+    layers: AppWidgetType[] = ['root'];
     get lastLayer() {
         return this.layers[this.layers.length - 1];
     }
@@ -57,24 +41,23 @@ export default class KeyboardEventListener extends EventHandler {
     addControlKey(option: EventMapper, e: KeyboardEvent) {
         if (isWindows()) {
             option.wControlKey = [];
-            e.ctrlKey && option.wControlKey.push(WindowsControlEnum.Ctrl);
-            e.altKey && option.wControlKey.push(WindowsControlEnum.Alt);
-            e.shiftKey && option.wControlKey.push(WindowsControlEnum.Shift);
+            e.ctrlKey && option.wControlKey.push('Ctrl');
+            e.altKey && option.wControlKey.push('Alt');
+            e.shiftKey && option.wControlKey.push('Shift');
         } else if (isMac()) {
             option.mControlKey = [];
-            e.ctrlKey && option.mControlKey.push(MacControlEnum.Ctrl);
-            e.altKey && option.mControlKey.push(MacControlEnum.Option);
-            e.shiftKey && option.mControlKey.push(MacControlEnum.Shift);
+            e.ctrlKey && option.mControlKey.push('Ctrl');
+            e.altKey && option.mControlKey.push('Option');
+            e.shiftKey && option.mControlKey.push('Shift');
         } else if (isLinux()) {
             option.lControlKey = [];
-            e.ctrlKey && option.lControlKey.push(LinuxControlEnum.Ctrl);
-            e.altKey && option.lControlKey.push(LinuxControlEnum.Alt);
-            e.shiftKey && option.lControlKey.push(LinuxControlEnum.Shift);
+            e.ctrlKey && option.lControlKey.push('Ctrl');
+            e.altKey && option.lControlKey.push('Alt');
+            e.shiftKey && option.lControlKey.push('Shift');
         }
     }
-    toControlKey(c: WindowsControlEnum[] | MacControlEnum[] | LinuxControlEnum[]) {
-        const newC = c as string[];
-        return newC.sort().join(' + ');
+    toControlKey(controlType: WindowsControlType[] | MacControlType[] | LinuxControlType[]) {
+        return controlType.sort().join(' + ');
     }
     toShortcutKey(eventMapper: EventMapper) {
         let k = eventMapper.key;
@@ -113,10 +96,10 @@ export default class KeyboardEventListener extends EventHandler {
         this._removeOnEventListener(key, eventMapper.listener);
         return eventMapper;
     }
-    addLayer(l: WindowEnum) {
+    addLayer(l: AppWidgetType) {
         this.layers.push(l);
     }
-    removeLayer(l: WindowEnum) {
+    removeLayer(l: AppWidgetType) {
         this.layers = this.layers.filter((l1) => l1 !== l);
     }
 }

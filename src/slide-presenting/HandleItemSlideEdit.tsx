@@ -1,9 +1,8 @@
 import React, { Suspense, useState } from 'react';
 import {
-    StateEnum,
     useWindowEvent,
-    WindowEnum,
     windowEventListener,
+    EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import SlideItem from '../slide-list/SlideItem';
 
@@ -11,13 +10,13 @@ const SlideItemEditorPopup = React.lazy(() => {
     return import('../slide-editor/SlideItemEditorPopup');
 });
 
-export const openItemSlideEditEvent = {
-    window: WindowEnum.ItemSlideEdit,
-    state: StateEnum.Open,
+export const openItemSlideEditEvent: WEventMapper = {
+    widget: 'slide-item-edit',
+    state: 'open',
 };
-export const closeItemSlideEditEvent = {
-    window: WindowEnum.ItemSlideEdit,
-    state: StateEnum.Close,
+export const closeItemSlideEditEvent: WEventMapper = {
+    widget: 'slide-item-edit',
+    state: 'close',
 };
 export function openItemSlideEdit(slideItem: SlideItem) {
     windowEventListener.fireEvent(openItemSlideEditEvent, slideItem);

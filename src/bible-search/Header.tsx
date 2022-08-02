@@ -1,19 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import {
+    EventMapper,
     keyboardEventListener,
-    LinuxControlEnum,
-    MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { closeBibleSearch } from './HandleBibleSearch';
 
 export default function Header() {
     const { t } = useTranslation();
-    const eventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
+    const eventMapper: EventMapper = {
+        wControlKey: ['Ctrl'],
+        mControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
         key: 'q',
     };
     useKeyboardRegistering(eventMapper, closeBibleSearch);

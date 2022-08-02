@@ -1,5 +1,4 @@
 import Bible from '../bible-list/Bible';
-import BibleItem from '../bible-list/BibleItem';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneObject } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';

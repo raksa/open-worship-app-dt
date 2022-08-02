@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-    KeyEnum, useKeyboardRegistering,
+    useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import InputHandler from './InputHandler';
 import Header from './Header';
@@ -30,7 +30,7 @@ export default function BibleSearchRender({ bibleItem }: {
 }) {
     const [inputText, setInputText] = useGetDefaultInputText(bibleItem);
     const [bibleSelected, setBibleSelected] = useGetSelectedBibleItem(bibleItem);
-    useKeyboardRegistering({ key: KeyEnum.Escape }, () => {
+    useKeyboardRegistering({ key: 'Escape' }, () => {
         !inputText && closeBibleSearch();
     });
     const [bibleResult, setBibleResult] = useState<ExtractedBibleResult>(

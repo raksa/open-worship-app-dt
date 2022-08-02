@@ -8,7 +8,7 @@ export type RegisteredEventType = {
     type: ToastEventType,
     listener: ListenerType,
 };
-export default class ToastEventListener extends EventHandler {
+export default class ToastEventListener extends EventHandler<ToastEventType> {
     showSimpleToast(toast: SimpleToastType) {
         this._addPropEvent('simple', toast);
     }

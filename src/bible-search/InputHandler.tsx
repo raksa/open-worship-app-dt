@@ -4,7 +4,6 @@ import bibleHelper, {
 } from '../bible-helper/bibleHelpers';
 import { useBibleItemToInputText } from '../bible-list/BibleItem';
 import {
-    KeyEnum,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { setSetting } from '../helper/settingHelper';
@@ -36,7 +35,7 @@ export default function InputHandler({
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemToInputText(bibleSelected, bookKey, 1, 1, 2);
 
-    useKeyboardRegistering({ key: KeyEnum.Escape }, () => onInputChange(''));
+    useKeyboardRegistering({ key: 'Escape' }, () => onInputChange(''));
 
     const bibleList = bibleHelper.getBibleList();
     return (

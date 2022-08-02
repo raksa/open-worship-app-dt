@@ -39,7 +39,7 @@ export function goEditSlide() {
 }
 
 // e: editing, p: presenting
-type TabType = 'e' | 'p';
+type TabType = 'e' | 'p' | 'r';
 export default function App() {
     const [tabType, setTabType] = useStateSettingString<TabType>(WINDOW_TYPE, 'p');
     useEffect(() => {
@@ -56,9 +56,18 @@ export default function App() {
                 <TabRender<TabType> tabs={[
                     ['e', 'Editing'],
                     ['p', 'Presenting'],
+                    ['r', 'Read'],
                 ]}
                     activeTab={tabType}
-                    setActiveTab={setTabType} />
+                    setActiveTab={(newTabType) => {
+                        if (newTabType === 'r') {
+                            // TODO: implement read bible
+                            // should change location to read read-bible.html
+                            console.log('read mode');
+                        } else {
+                            setTabType(newTabType);
+                        }
+                    }} />
                 <div className='highlight-border-bottom d-flex justify-content-center flex-fill'>
                     <BibleSearchHeader />
                 </div>

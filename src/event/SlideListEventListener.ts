@@ -6,22 +6,21 @@ import SlideItem from '../slide-list/SlideItem';
 import EventHandler from './EventHandler';
 
 type ListenerType<T> = (data: T) => void;
-export enum SlideListEnum {
-    SLIDE_ITEM_SELECT = 'slide-item-select',
-    SLIDE_ITEM_SIZING = 'slide-item-sizing',
-}
+export type SlideListEventType = 'slide-item-select' | 'slide-item-sizing';
+
 export type RegisteredEventType<T> = {
-    type: SlideListEnum,
+    type: SlideListEventType,
     listener: ListenerType<T>,
 };
-export default class SlideListEventListener extends EventHandler {
+export default class SlideListEventListener extends EventHandler<SlideListEventType> {
     selectSlideItem(slideItem: SlideItem | null) {
-        this._addPropEvent(SlideListEnum.SLIDE_ITEM_SELECT, slideItem);
+        this._addPropEvent('slide-item-select', slideItem);
     }
     slideItemSizing() {
-        this._addPropEvent(SlideListEnum.SLIDE_ITEM_SIZING);
+        this._addPropEvent('slide-item-sizing');
     }
-    registerSlideListEventListener(type: SlideListEnum, listener: ListenerType<any>):
+    registerSlideListEventListener(type: SlideListEventType,
+        listener: ListenerType<any>):
         RegisteredEventType<any> {
         this._addOnEventListener(type, listener);
         return { type, listener };
@@ -35,18 +34,19 @@ export const slideListEventListenerGlobal = new SlideListEventListener();
 export function useSlideItemSelecting(listener: ListenerType<SlideItem | null>) {
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
-            SlideListEnum.SLIDE_ITEM_SELECT, listener);
+            'slide-item-select', listener);
         return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };
     });
 }
-export function useSlideItemSizing(settingName: string, defaultSize: number): [number, (s: number) => void] {
+export function useSlideItemSizing(settingName: string, defaultSize: number)
+    : [number, (s: number) => void] {
     const getDefaultSize = () => +getSetting(settingName, defaultSize + '');
     const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(settingName, getDefaultSize());
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(
-            SlideListEnum.SLIDE_ITEM_SIZING, () => setThumbnailSize(getDefaultSize()));
+            'slide-item-sizing', () => setThumbnailSize(getDefaultSize()));
         return () => {
             slideListEventListenerGlobal.unregisterSlideListEventListener(event);
         };

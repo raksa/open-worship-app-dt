@@ -1,8 +1,7 @@
 import {
-    KeyEnum,
+    KeyboardType,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { WindowEnum } from '../../event/WindowEventListener';
 import {
     useSlideItemSizing,
 } from '../../event/SlideListEventListener';
@@ -30,7 +29,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     });
     const slideItems = slide.items;
     if (!isWindowEditingMode()) {
-        const arrows = [KeyEnum.ArrowRight, KeyEnum.ArrowLeft];
+        const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
         const arrowListener = (e: KeyboardEvent) => {
             const selectedIndex = slide.selectedIndex;
             if (~selectedIndex) {
@@ -38,7 +37,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
             }
             const length = slideItems.length;
             if (length) {
-                let ind = e.key === KeyEnum.ArrowLeft ?
+                let ind = e.key === 'ArrowLeft' ?
                     selectedIndex - 1 : selectedIndex + 1;
                 if (ind >= length) {
                     ind = 0;
@@ -48,10 +47,10 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                 slide.selectedIndex = ind;
             }
         };
-        const useCallback = (key: KeyEnum) => {
+        const useCallback = (key: KeyboardType) => {
             useKeyboardRegistering({
                 key,
-                layer: WindowEnum.Root,
+                layer: 'root',
             }, arrowListener);
         };
         arrows.forEach(useCallback);

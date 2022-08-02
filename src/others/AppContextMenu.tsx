@@ -1,6 +1,6 @@
 import './AppContextMenu.scss';
 
-import { keyboardEventListener, KeyEnum } from '../event/KeyboardEventListener';
+import { keyboardEventListener } from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import { ReactElement, useEffect, useState } from 'react';
 
@@ -63,7 +63,7 @@ export function showAppContextMenu(
     };
     document.body.addEventListener('click', listener);
     const escEvent = keyboardEventListener.registerShortcutEventListener({
-        key: KeyEnum.Escape,
+        key: 'Escape',
     }, () => {
         setDataDelegator && setDataDelegator(null);
         keyboardEventListener.unregisterShortcutEventListener(escEvent);

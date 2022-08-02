@@ -1,17 +1,15 @@
 import {
+    EventMapper as KBEventMapper,
     keyboardEventListener,
-    LinuxControlEnum,
-    MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
 import { closeSetting } from './HandleSetting';
 
 export default function HeaderSettingPopup() {
-    const eventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
+    const eventMapper: KBEventMapper = {
+        wControlKey: ['Ctrl'],
+        mControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
         key: 'q',
     };
     useKeyboardRegistering(eventMapper, closeSetting);

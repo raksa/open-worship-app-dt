@@ -1,8 +1,6 @@
 import {
-    LinuxControlEnum,
-    MacControlEnum,
+    EventMapper as KBEventMapper,
     useKeyboardRegistering,
-    WindowsControlEnum,
 } from '../../event/KeyboardEventListener';
 import { useDisplay } from '../../event/PresentEventListener';
 import { useFSRefresh } from '../../helper/FileSource';
@@ -12,10 +10,10 @@ import MenuIsModifying from './MenuIsModifying';
 export default function SlideItemsMenu({ slide }: { slide: Slide }) {
     const { presentDisplay } = useDisplay();
     useFSRefresh(['update'], slide.fileSource);
-    const eventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
+    const eventMapper: KBEventMapper = {
+        wControlKey: ['Ctrl'],
+        mControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
         key: 's',
     };
     useKeyboardRegistering(eventMapper, () => slide.save());

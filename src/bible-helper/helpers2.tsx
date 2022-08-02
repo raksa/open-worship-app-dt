@@ -7,7 +7,6 @@ import {
 } from './helpers1';
 import { cloneObject } from '../helper/helpers';
 import { useEffect, useState } from 'react';
-import BibleItem from '../bible-list/BibleItem';
 
 export async function toInputText(bibleName: string, book?: string | null, chapter?: number | null,
     startVerse?: number | null, endVerse?: number | null) {

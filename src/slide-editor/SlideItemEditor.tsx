@@ -1,8 +1,15 @@
-import Tools from './canvas/tools/Tools';
-import SlideItemEditorCanvas from './canvas/SlideItemEditorCanvas';
+import React from 'react';
+import { settingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
+
+const SlideItemEditorCanvas = React.lazy(() => {
+    return import('./canvas/SlideItemEditorCanvas');
+});
+const Tools = React.lazy(() => {
+    return import('./canvas/tools/Tools');
+});
 
 export default function SlideItemEditor({ slideItem }: {
     slideItem: SlideItem
@@ -12,11 +19,6 @@ export default function SlideItemEditor({ slideItem }: {
             <div className='alert alert-danger'>Error</div>
         );
     }
-    const resizeSettingName = 'editor-window-size';
-    const flexSizeDefault = {
-        'editor-v1': '3',
-        'editor-v2': '1',
-    };
     return (
         <div className='slide-item-editor flex v w-100 h-100'
             onWheel={(e) => {
@@ -25,15 +27,16 @@ export default function SlideItemEditor({ slideItem }: {
                         .applyScale(e.deltaY > 0);
                 }
             }}>
-            <ResizeActor settingName={resizeSettingName}
-                flexSizeDefault={flexSizeDefault}
+            <ResizeActor fSizeName={settingNames.slideItemEditor}
+                flexSizeDefault={{
+                    'v1': ['3'],
+                    'v2': ['1'],
+                }}
                 resizeKinds={['v']}
-                sizeKeys={[
-                    ['editor-v1', 'flex-item'],
-                    ['editor-v2', 'flex-item']]}>
-                <SlideItemEditorCanvas />
-                <Tools />
-            </ResizeActor>
+                dataInput={[
+                    [SlideItemEditorCanvas, 'v1', 'flex-item'],
+                    [Tools, 'v2', 'flex-item'],
+                ]} />
         </div>
     );
 }
