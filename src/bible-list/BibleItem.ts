@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import bibleHelper from '../bible-helper/bibleHelpers';
-import { keyToBook, getVerses } from '../bible-helper/helpers1';
-import { toLocaleNumber, toInputText } from '../bible-helper/helpers2';
+import bibleHelper from '../server/bible-helpers/bibleHelpers';
+import { keyToBook, getVerses } from '../server/bible-helpers/helpers1';
+import { toLocaleNumber, toInputText } from '../server/bible-helpers/helpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';

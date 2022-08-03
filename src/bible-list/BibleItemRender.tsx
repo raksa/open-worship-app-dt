@@ -1,7 +1,7 @@
 import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper, {
     useGetBibleWithStatus,
-} from '../bible-helper/bibleHelpers';
+} from '../server/bible-helpers/bibleHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import Bible from './Bible';
 import BibleItem, { useBibleItemRenderTitle } from './BibleItem';

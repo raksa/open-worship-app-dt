@@ -1,9 +1,13 @@
 import fullTextPresentHelper, {
-} from '../full-text-present/previewingHelper';
-import { sqlite3ReadValue } from '../helper/appHelper';
-import appProvider from '../helper/appProvider';
+} from '../../full-text-present/previewingHelper';
+import { sqlite3ReadValue } from '../appHelper';
+import appProvider from '../appProvider';
 import bibleHelper from './bibleHelpers';
-import fileHelpers from '../helper/fileHelper';
+import {
+    fsCreateWriteStream,
+    fsDeleteFile,
+    pathJoin,
+} from '../fileHelper';
 
 export async function sqlite3Read(bibleName: string, key: string, cipherKey: string) {
     const dbFilePath = await bibleHelper.toDbPath(bibleName);
@@ -15,11 +19,11 @@ export async function sqlite3Read(bibleName: string, key: string, cipherKey: str
             callback = () => false;
             resolve(data);
         };
-        const encryptKey = appProvider.cipher.encrypt(key, cipherKey);
+        const encryptKey = appProvider.cryptoUtils.encrypt(key, cipherKey);
         const value = await sqlite3ReadValue(dbFilePath, 'bibles', encryptKey);
         if (value !== null) {
             try {
-                const decrypted = appProvider.cipher.decrypt(value, cipherKey);
+                const decrypted = appProvider.cryptoUtils.decrypt(value, cipherKey);
                 const json = JSON.parse(decrypted);
                 callback(json);
                 return;
@@ -31,8 +35,9 @@ export async function sqlite3Read(bibleName: string, key: string, cipherKey: str
     });
 }
 
-export function httpsRequest(pathName: string, callback: (error: Error | null, response?: any) => void) {
-    const request = appProvider.https.request({
+export function httpsRequest(pathName: string,
+    callback: (error: Error | null, response?: any) => void) {
+    const request = appProvider.httpUtils.request({
         port: 443,
         path: pathName,
         method: 'GET',
@@ -50,7 +55,8 @@ export function fetch(pathName: string) {
             if (error) {
                 return reject(error);
             } else if (response.statusCode !== 200) {
-                return reject(new Error(`Fail to request with status ${response.statusCode}`));
+                const errorMessage = `Fail to request with status ${response.statusCode}`;
+                return reject(new Error(errorMessage));
             }
             const chunks: Buffer[] = [];
             response.on('data', (chunk: Buffer) => {
@@ -81,16 +87,16 @@ export type DownloadOptionsType = {
 
 export async function startDownloading(url: string, downloadPath: string, fileName: string,
     { onStart, onProgress, onDone }: DownloadOptionsType) {
-    const filePath = appProvider.path.join(downloadPath, fileName);
-    await fileHelpers.deleteFile(filePath);
+    const filePath = pathJoin(downloadPath, fileName);
+    await fsDeleteFile(filePath);
     httpsRequest(url, async (error, response: any) => {
-        const writeStream = fileHelpers.createWriteStream(filePath);
+        const writeStream = fsCreateWriteStream(filePath);
         try {
             if (error || response.statusCode !== 200) {
                 console.log(error);
                 console.log(response);
                 writeStream.close();
-                await fileHelpers.deleteFile(filePath);
+                await fsDeleteFile(filePath);
                 bibleHelper.setBibleCipherKey(fileName, '');
                 onDone(new Error('Error during download'));
                 return;
@@ -118,7 +124,7 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
             });
         } catch (error2) {
             writeStream.close();
-            await fileHelpers.deleteFile(filePath);
+            await fsDeleteFile(filePath);
             onDone(error2 as Error);
         }
     });

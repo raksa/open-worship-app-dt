@@ -1,5 +1,8 @@
 import { toastEventListener } from '../event/ToastEventListener';
-import fileHelpers, { MimetypeNameType } from '../helper/fileHelper';
+import {
+    fsListFilesWithMimetype,
+    MimetypeNameType,
+} from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
@@ -132,7 +135,7 @@ export default class Bible extends ItemSource<BibleItem>{
     }
     static async getDefault() {
         const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
-        const fileSources = await fileHelpers.listFilesWithMimetype(dir, 'bible') || [];
+        const fileSources = await fsListFilesWithMimetype(dir, 'bible') || [];
         if (fileSources === null) {
             return null;
         }

@@ -1,4 +1,4 @@
-import { getAllDisplays } from '../../helper/displayHelper';
+import { getAllDisplays } from '../../server/displayHelper';
 import { AnyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import CanvasItem from './CanvasItem';

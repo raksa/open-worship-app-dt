@@ -6,15 +6,24 @@ import {
     getBookKVList,
     getChapterCount,
 } from './helpers1';
-import { getUserWritablePath } from '../helper/appHelper';
-import { toBase64, fromBase64 } from '../helper/helpers';
-import appProvider from '../helper/appProvider';
-import { setSetting, getSetting } from '../helper/settingHelper';
-import fileHelpers from '../helper/fileHelper';
+import { getUserWritablePath } from '../appHelper';
+import { setSetting, getSetting } from '../../helper/settingHelper';
+import {
+    fsCheckFileExist,
+    fsCreateDir,
+    fsDeleteFile,
+    pathJoin,
+} from '../fileHelper';
 import { useState, useEffect } from 'react';
-import BibleItem from '../bible-list/BibleItem';
+import BibleItem from '../../bible-list/BibleItem';
+import { toBase64, fromBase64 } from '../helpers';
 
-const bibleObj = appProvider.bibleObj;
+import bibleJson from './bible.json';
+export const bibleObj = bibleJson as {
+    booksOrder: string[],
+    books: { [key: string]: BookType },
+    kjvKeyValue: { [key: string]: string },
+};
 
 export type BookType = {
     key: string,
@@ -120,7 +129,8 @@ const bibleHelper = {
             if (this.getBibleCipherKey(bibleName) !== data.cipherKey) {
                 return options.onDone(new Error('Fail to save!'));
             }
-            await startDownloading(`/${encodeURI(data.key)}`, downloadPath, data.name, options);
+            await startDownloading(`/${encodeURI(data.key)}`,
+                downloadPath, data.name, options);
         } catch (error: any) {
             options.onDone(error);
         }
@@ -177,21 +187,21 @@ const bibleHelper = {
         return list;
     },
     async getWritablePath() {
-        const dirPath = appProvider.path.join(getUserWritablePath(), 'bibles');
+        const dirPath = pathJoin(getUserWritablePath(), 'bibles');
         try {
-            await fileHelpers.createDir(dirPath);
+            await fsCreateDir(dirPath);
         } catch (error: any) {
             console.log(error);
             return null;
         }
-        return appProvider.path.join(getUserWritablePath(), 'bibles');
+        return pathJoin(getUserWritablePath(), 'bibles');
     },
     async toDbPath(bibleName: string) {
         const dirPath = await this.getWritablePath();
         if (dirPath === null) {
             return null;
         }
-        return appProvider.path.join(dirPath, bibleName);
+        return pathJoin(dirPath, bibleName);
 
     },
     async checkExist(bibleName: string) {
@@ -202,13 +212,13 @@ const bibleHelper = {
         if (this.getBibleCipherKey(bibleName) === null) {
             return false;
         }
-        return !!await fileHelpers.checkFileExist(biblePath);
+        return !!await fsCheckFileExist(biblePath);
 
     },
     async delete(bibleName: string) {
         const basePath = await this.getWritablePath() as string;
-        const filePath = appProvider.path.join(basePath, bibleName);
-        await fileHelpers.deleteFile(filePath);
+        const filePath = pathJoin(basePath, bibleName);
+        await fsDeleteFile(filePath);
         this.setBibleCipherKey(bibleName, null);
     },
     setBibleCipherKey(bibleName: string, key: string | null) {
@@ -218,14 +228,16 @@ const bibleHelper = {
         const saved = getSetting(toBase64(`ck-${bibleName}`));
         return saved ? fromBase64(saved) : null;
     },
-    async toChapter(bibleName: string, bookKey: string, chapterNum: number) {
+    async toChapter(bibleName: string, bookKey: string,
+        chapterNum: number) {
         // KJV, GEN, 1
         const info = await getInfo(bibleName);
         if (info === null) {
             return null;
         }
         const book = info.books[bookKey];
-        return `${book} ${info.numList === undefined ? chapterNum : toLocaleNum(chapterNum, info.numList)}`;
+        return `${book} ${info.numList === undefined ? chapterNum :
+            toLocaleNum(chapterNum, info.numList)}`;
     },
     getKJVChapterCount(bookKey: string) {
         // KJV, GEN
@@ -244,7 +256,8 @@ const bibleHelper = {
         let bIndex = 0;
         while (bibleObj.booksOrder[bIndex]) {
             const bookKey1 = bibleObj.booksOrder[bIndex];
-            const chapterCount = bibleObj.books[bookKey1].chapterCount;
+            const chapterCount = bibleObj
+                .books[bookKey1].chapterCount;
             if (bookKey1 === bookKey) {
                 if (chapterNum > chapterCount) {
                     return -1;

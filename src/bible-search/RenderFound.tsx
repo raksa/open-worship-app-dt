@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { fromLocaleNumber } from '../bible-helper/helpers2';
+import { fromLocaleNumber } from '../server/bible-helpers/helpers2';
 import {
     bookToKey, getVerses, VerseList,
-} from '../bible-helper/helpers1';
+} from '../server/bible-helpers/helpers1';
 import RendLocalNumberAsync from './RendLocalNumberAsync';
 import RenderFoundButtons from './RenderFoundButtons';
 

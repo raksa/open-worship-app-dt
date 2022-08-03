@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import bibleHelper from '../bible-helper/bibleHelpers';
+import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { toastEventListener } from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
-import { getBookKVList } from '../bible-helper/helpers1';
-import { extractBible, toInputText } from '../bible-helper/helpers2';
+import { getBookKVList } from '../server/bible-helpers/helpers1';
+import { extractBible, toInputText } from '../server/bible-helpers/helpers2';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {

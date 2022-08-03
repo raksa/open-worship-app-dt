@@ -2,7 +2,7 @@ import RenderBookOption from './RenderBookOption';
 import RenderChapterOption from './RenderChapterOption';
 import Header from './Header';
 import RenderFound from './RenderFound';
-import { ExtractedBibleResult } from '../bible-helper/helpers2';
+import { ExtractedBibleResult } from '../server/bible-helpers/helpers2';
 import Preview from './Preview';
 
 export default function RenderSearchSuggestion({

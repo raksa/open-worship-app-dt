@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import fullTextPresentHelper from '../full-text-present/previewingHelper';
-import { getPresentRendered } from '../helper/appHelper';
-import { getAllDisplays } from '../helper/displayHelper';
+import { getPresentRendered } from '../server/appHelper';
+import { getAllDisplays } from '../server/displayHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import SlideItem from '../slide-list/SlideItem';

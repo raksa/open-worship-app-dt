@@ -1,12 +1,13 @@
 import { globalEventHandler } from '../event/EventHandler';
 import { toastEventListener } from '../event/ToastEventListener';
 import { FileListType } from '../others/FileListHandler';
-import fileHelpers, {
+import {
     FileMetadataType,
     getFileMetaData,
-    AppMimetypeType,
     MimetypeNameType,
-} from './fileHelper';
+    getAppMimetype,
+    fsListFiles,
+} from '../server/fileHelper';
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
@@ -84,8 +85,8 @@ export default class DirSource {
             return;
         }
         try {
-            const mimetypeList = require(`./mime/${mimetype}-types.json`) as AppMimetypeType[];
-            const files = await fileHelpers.listFiles(this.dirPath);
+            const mimetypeList = getAppMimetype(mimetype);
+            const files = await fsListFiles(this.dirPath);
             const matchedFiles = files.map((fileName) => {
                 return getFileMetaData(fileName, mimetypeList);
             }).filter((d) => {

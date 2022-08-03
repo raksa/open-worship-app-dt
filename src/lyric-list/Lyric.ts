@@ -1,7 +1,7 @@
 import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
-import { MimetypeNameType } from '../helper/fileHelper';
+import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';

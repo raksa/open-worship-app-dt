@@ -6,7 +6,7 @@ import App from './App';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import languages from './lang';
-import { initApp } from './bible-helper/helpers1';
+import { initApp } from './server/bible-helpers/helpers1';
 import { getSelectedLangLocale } from './setting/SettingGeneral';
 
 const resources = Object.fromEntries(Object.keys(languages).map((k) => {

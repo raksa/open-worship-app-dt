@@ -2,7 +2,7 @@ import './PathSelector.scss';
 
 import {
     copyToClipboard, isMac, openExplorer,
-} from '../helper/appHelper';
+} from '../server/appHelper';
 import { showAppContextMenu } from './AppContextMenu';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import DirSource from '../helper/DirSource';

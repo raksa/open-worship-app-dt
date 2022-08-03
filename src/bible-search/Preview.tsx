@@ -1,8 +1,8 @@
-import { copyToClipboard } from '../helper/appHelper';
-import { toInputText } from '../bible-helper/helpers2';
+import { copyToClipboard } from '../server/appHelper';
+import { toInputText } from '../server/bible-helpers/helpers2';
 import { consumeStartVerseEndVerse } from './RenderFound';
 import { useEffect, useState } from 'react';
-import { bookToKey } from '../bible-helper/helpers1';
+import { bookToKey } from '../server/bible-helpers/helpers1';
 import BibleItem from '../bible-list/BibleItem';
 
 export default function Preview({

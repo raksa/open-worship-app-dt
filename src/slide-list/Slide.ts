@@ -1,7 +1,7 @@
 import SlideItem, { SlideItemType } from './SlideItem';
 import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
-import { DisplayType } from '../helper/displayHelper';
+import { DisplayType } from '../server/displayHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     MAX_THUMBNAIL_SCALE,
@@ -14,7 +14,7 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import { toastEventListener } from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../helper/fileHelper';
+import { MimetypeNameType } from '../server/fileHelper';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],

@@ -4,4 +4,3 @@ node_modules/
 .vscode/
 webpack.config.*
 .eslintrc.js
-electron/*.js

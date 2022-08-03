@@ -1,4 +1,4 @@
-import { selectDirs } from '../helper/appHelper';
+import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
 
 export default function PathPreviewer({ dirSource }: {

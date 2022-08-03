@@ -1,11 +1,11 @@
 {
     "main": {
-        "maroon": "#800000",
-        "red": "#FF0000",
-        "purple": "#800080",
         "fuchsia": "#FF00FF",
         "green": "#008000",
         "lime": "#00FF00",
+        "red": "#FF0000",
+        "maroon": "#800000",
+        "purple": "#800080",
         "olive": "#808000",
         "yellow": "#FFFF00",
         "navy": "#000080",

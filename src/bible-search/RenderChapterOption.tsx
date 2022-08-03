@@ -6,9 +6,9 @@ import {
 import { genInd } from './genInd';
 import {
     useFromLocaleNumber, useToLocaleNumber,
-} from '../bible-helper/helpers2';
-import { getChapterCount } from '../bible-helper/helpers1';
-import { useGetChapterCount } from '../bible-helper/bibleHelpers';
+} from '../server/bible-helpers/helpers2';
+import { getChapterCount } from '../server/bible-helpers/helpers1';
+import { useGetChapterCount } from '../server/bible-helpers/bibleHelpers';
 
 export default function RenderChapterOption({
     bookSelected,

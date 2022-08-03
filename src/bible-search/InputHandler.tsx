@@ -1,7 +1,7 @@
 import bibleHelper, {
     useGetBibleWithStatus,
     useGetBookKVList,
-} from '../bible-helper/bibleHelpers';
+} from '../server/bible-helpers/bibleHelpers';
 import { useBibleItemToInputText } from '../bible-list/BibleItem';
 import {
     useKeyboardRegistering,

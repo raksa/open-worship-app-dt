@@ -6,7 +6,7 @@ import { usePresentHiding } from '../event/PresentEventListener';
 import {
     getIsShowing,
     showWindow,
-} from '../helper/appHelper';
+} from '../server/appHelper';
 
 export default function ShowHidePresent() {
     const [isShowing, setIsShowing] = useState(getIsShowing());

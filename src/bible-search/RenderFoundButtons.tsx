@@ -3,9 +3,9 @@ import {
     keyboardEventListener,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { fromLocaleNumber } from '../bible-helper/helpers2';
+import { fromLocaleNumber } from '../server/bible-helpers/helpers2';
 import { isWindowEditingMode } from '../App';
-import { bookToKey } from '../bible-helper/helpers1';
+import { bookToKey } from '../server/bible-helpers/helpers1';
 import { toastEventListener } from '../event/ToastEventListener';
 import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';

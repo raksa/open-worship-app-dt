@@ -3,7 +3,7 @@ import { useBibleItemSelecting } from '../event/PreviewingEventListener';
 import BibleView from './BibleView';
 import { previewer } from './FullTextPreviewer';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
-import bibleHelper from '../bible-helper/bibleHelpers';
+import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { useChangingBible } from '../event/PresentEventListener';
 import ButtonAddMoreBible from './ButtonAddMoreBible';
 import { getSetting } from '../helper/settingHelper';

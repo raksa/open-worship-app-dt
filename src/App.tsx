@@ -13,6 +13,7 @@ import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
 import TabRender, { genTabBody } from './others/TabRender';
+import HandleAlert, { openConfirm } from './alert/HandleAlert';
 
 const AppEditing = React.lazy(() => {
     return import('./AppEditing');
@@ -63,7 +64,10 @@ export default function App() {
                         if (newTabType === 'r') {
                             // TODO: implement read bible
                             // should change location to read read-bible.html
-                            console.log('read mode');
+                            openConfirm('Not implemented',
+                                'Read mode is not implemented yet.').then((isOk) => {
+                                    console.log(isOk);
+                                });
                         } else {
                             setTabType(newTabType);
                         }
@@ -86,6 +90,7 @@ export default function App() {
             </div>
             <Toast />
             <AppContextMenu />
+            <HandleAlert />
         </div>
     );
 }

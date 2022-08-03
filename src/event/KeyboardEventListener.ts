@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { isLinux, isMac, isWindows } from '../helper/appHelper';
+import { isLinux, isMac, isWindows } from '../server/appHelper';
 import EventHandler from './EventHandler';
 import { AppWidgetType } from './WindowEventListener';
 

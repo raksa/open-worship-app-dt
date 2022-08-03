@@ -1,5 +1,5 @@
 import React from 'react';
-import bibleHelper from '../bible-helper/bibleHelpers';
+import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     useWindowEvent,

@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const electron = require('electron');
 
-const fileSettingPath = path.join(electron.app.getPath('userData'), 'setting.json');
 export default class SettingController {
     _setting: {
         mainWinBounds: Electron.Rectangle | null,
@@ -16,7 +15,7 @@ export default class SettingController {
     constructor(appManager: AppManager) {
         this.appManager = appManager;
         try {
-            const str = fs.readFileSync(fileSettingPath, 'utf8');
+            const str = fs.readFileSync(this.fileSettingPath, 'utf8');
             const json = JSON.parse(str);
             this._setting.mainWinBounds = json.mainWinBounds;
             this._setting.appPresentDisplayId = json.appPresentDisplayId;
@@ -27,6 +26,10 @@ export default class SettingController {
                 console.log(error);
             }
         }
+    }
+    get fileSettingPath() {
+        const useDataPath = electron.app.getPath('userData');
+        return path.join(useDataPath, 'setting.json');
     }
     get presentWidth() {
         return this.presentDisplay.bounds.width;
@@ -72,7 +75,7 @@ export default class SettingController {
         return this.allDisplays.find((newDisplay) => newDisplay.id == id);
     }
     save() {
-        fs.writeFileSync(fileSettingPath, JSON.stringify(this._setting), 'utf8');
+        fs.writeFileSync(this.fileSettingPath, JSON.stringify(this._setting), 'utf8');
     }
     syncMainWindow() {
         this.appManager.mainWin.setBounds(this.mainWinBounds);

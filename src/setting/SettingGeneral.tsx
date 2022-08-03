@@ -3,7 +3,7 @@ import languages from '../lang';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { useTranslation } from 'react-i18next';
 import { useDisplay } from '../event/PresentEventListener';
-import { saveDisplaySetting } from '../helper/displayHelper';
+import { saveDisplaySetting } from '../server/displayHelper';
 import { clearWidgetSizeSetting } from '../resize-actor/flexSizeHelpers';
 
 export function getSelectedLangLocale() {

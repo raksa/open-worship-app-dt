@@ -8,7 +8,7 @@ import {
     useCCScale,
 } from './canvasHelpers';
 import { toastEventListener } from '../../event/ToastEventListener';
-import { isSupportedMimetype } from '../../helper/fileHelper';
+import { isSupportedMimetype } from '../../server/fileHelper';
 import FileSource from '../../helper/FileSource';
 import CanvasController from './CanvasController';
 
@@ -62,7 +62,8 @@ export default function SlideItemEditorCanvas() {
                                         message: 'Unsupported file type!',
                                     });
                                 } else {
-                                    const fileSource = FileSource.genFileSource(file.path, file.name);
+                                    debugger;
+                                    const fileSource = FileSource.genFileSource((file as any).path, file.name);
                                     canvasController.addNewMedia(fileSource, event);
                                 }
                             }

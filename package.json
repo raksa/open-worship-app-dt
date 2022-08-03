@@ -4,14 +4,17 @@
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "./",
     "version": "0.0.1",
-    "main": "./electron/main.js",
+    "main": "./electron-build/main.js",
     "scripts": {
-        "start": "env-cmd -f .env react-scripts start",
-        "build": "env-cmd -f .env react-scripts build",
-        "dev": "concurrently -k \"npm start\" \"npm run electron\"",
-        "build:electron": "tsc -p electron.tsconfig.json",
-        "electron": "npm run build:electron && wait-on tcp:3000 && env-cmd -f .env electron .",
-        "test": "react-scripts test",
+        "react:watch": "env-cmd -f .env react-scripts start",
+        "react:build": "env-cmd -f .env react-scripts build",
+        "dev": "concurrently -k \"npm run react:watch\" \"npm run electron:build && npm run electron\"",
+        "electron:build": "tsc -p electron.tsconfig.json",
+        "electron:build:watch": "tsc -p electron.tsconfig.json -w",
+        "electron": "wait-on tcp:3000 && env-cmd -f .env electron .",
+        "electron:watch": "nodemon --exec \"npm run electron\" --watch electron-build",
+        "electron:dev": "concurrently -k \"npm run electron:build:watch\" \"npm run electron:watch\"",
+        "build": "npm run react:build && npm run electron:build",
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
         "pack:mac": "npm run build && electron-builder build --mac",
@@ -19,12 +22,6 @@
         "pack:win": "npm run build && electron-builder build --win --x64",
         "pack:win32": "electron-builder build --win --ia32 && npm i --build-from-source --target_arch=x64 sqlite3",
         "postinstall": "install-app-deps"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
     },
     "browserslist": {
         "production": [
@@ -95,28 +92,27 @@
         "electron-builder": "^22.14.5",
         "env-cmd": "^10.1.0",
         "eslint": "^7.20.0",
+        "nodemon": "^2.0.19",
         "react-scripts": "5.0.1",
-        "sass": "^1.42.1",
+        "sass": "^1.54.1",
         "typescript": "^4.6.4",
         "wait-on": "^6.0.0"
     },
     "dependencies": {
-        "@testing-library/jest-dom": "^5.16.4",
-        "@testing-library/react": "^13.2.0",
+        "@testing-library/react": "^13.3.0",
         "@testing-library/user-event": "^13.5.0",
-        "@types/jest": "^27.5.0",
         "@types/node": "^16.11.33",
-        "@types/react": "^18.0.9",
+        "@types/react": "^18.0.15",
         "@types/react-color": "^3.0.6",
-        "@types/react-dom": "^18.0.3",
-        "bootstrap": "^5.1.3",
-        "bootstrap-icons": "^1.6.0",
+        "@types/react-dom": "^18.0.6",
+        "bootstrap": "^5.2.0",
+        "bootstrap-icons": "^1.9.1",
         "font-list": "^1.4.5",
         "i18next": "^21.7.1",
-        "react": "^18.1.0",
+        "react": "^18.2.0",
         "react-colorful": "^5.5.1",
-        "react-dom": "^18.1.0",
-        "react-i18next": "^11.16.9",
+        "react-dom": "^18.2.0",
+        "react-i18next": "^11.18.3",
         "sqlite3": "^5.0.2"
     }
 }

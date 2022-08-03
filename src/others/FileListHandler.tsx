@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import { toastEventListener } from '../event/ToastEventListener';
-import fileHelpers, {
-    isSupportedMimetype,
+import {
+    fsCopyFileToPath,
+    isSupportedExt,
     MimetypeNameType,
-} from '../helper/fileHelper';
+} from '../server/fileHelper';
 import { AskingNewName } from './AskingNewName';
 import {
     ContextMenuItemType, showAppContextMenu,
@@ -12,6 +13,7 @@ import {
 import FileSource from '../helper/FileSource';
 import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
+import { openConfirm } from '../alert/HandleAlert';
 
 export type FileListType = FileSource[] | null | undefined
 
@@ -59,8 +61,8 @@ export default function FileListHandler({
                     return;
                 }
                 event.preventDefault();
-                if (Array.from(event.dataTransfer.items).every((item) => {
-                    return isSupportedMimetype(item.type, mimetype);
+                if (Array.from(event.dataTransfer.files).every((item) => {
+                    return isSupportedExt(item.name, mimetype);
                 })) {
                     event.currentTarget.style.opacity = '0.5';
                 }
@@ -76,16 +78,17 @@ export default function FileListHandler({
                 }
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
-                for (const file of Array.from(event.dataTransfer.files)) {
+                Array.from(event.dataTransfer.files).forEach(async (file) => {
                     const title = 'Copying File';
-                    if (!isSupportedMimetype(file.type, mimetype)) {
+                    if (!isSupportedExt(file.name, mimetype)) {
                         toastEventListener.showSimpleToast({
                             title,
                             message: 'Unsupported file type!',
                         });
                     } else {
                         try {
-                            await fileHelpers.copyFileToPath(file.path, file.name, dirSource.dirPath);
+                            await fsCopyFileToPath((file as any).path,
+                                file.name, dirSource.dirPath);
                             toastEventListener.showSimpleToast({
                                 title,
                                 message: 'File has been copied',
@@ -98,7 +101,7 @@ export default function FileListHandler({
                             });
                         }
                     }
-                }
+                });
             }}>
             {header && <div className='card-header'>{header}
                 {onNewFile && dirSource.dirPath &&
@@ -112,15 +115,13 @@ export default function FileListHandler({
             <div className='card-body pb-5' onContextMenu={(e: any) => {
                 showAppContextMenu(e, [
                     {
-                        title: 'Delete All', onClick: () => {
-                            // TODO: create prompt
-                            const input = window.prompt('Type: delete');
-                            if (input === 'delete') {
-                                console.log('Delete All');
-                            } else {
+                        title: 'Delete All', onClick: async () => {
+                            const isOk = await openConfirm('Not implemented',
+                                'Read mode is not implemented yet.');
+                            if (isOk) {
                                 toastEventListener.showSimpleToast({
                                     title: 'Deleting All',
-                                    message: 'You can\'t delete all',
+                                    message: 'Not implemented, need input "delete all"',
                                 });
                             }
                         },

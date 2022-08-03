@@ -1,7 +1,7 @@
-import { getVerses } from '../bible-helper/helpers1';
-import { toLocaleNumber } from '../bible-helper/helpers2';
+import { getVerses } from '../server/bible-helpers/helpers1';
+import { toLocaleNumber } from '../server/bible-helpers/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
-import { renderPresent } from '../helper/appHelper';
+import { renderPresent } from '../server/appHelper';
 import { removePX } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';

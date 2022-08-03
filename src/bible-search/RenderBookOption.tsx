@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import bibleHelper, {
     useGetBookKVList, useMatch,
-} from '../bible-helper/bibleHelpers';
+} from '../server/bible-helpers/bibleHelpers';
 import {
     allArrows,
     KeyboardType, useKeyboardRegistering,

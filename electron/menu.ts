@@ -1,7 +1,7 @@
 import AppManager from './AppManager';
-const electron = require('electron')
+const electron = require('electron');
 
-export default function initMenu(appManager: AppManager) {
+export function initMenu(appManager: AppManager) {
     const isMac = process.platform === 'darwin';
 
     const template: any[] = [

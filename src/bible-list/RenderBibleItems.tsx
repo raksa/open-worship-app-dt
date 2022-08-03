@@ -1,6 +1,6 @@
 import { setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { genDuplicatedMessage } from '../bible-helper/bibleHelpers';
+import { genDuplicatedMessage } from '../server/bible-helpers/bibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';

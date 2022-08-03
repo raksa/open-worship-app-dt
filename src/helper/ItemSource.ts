@@ -5,7 +5,7 @@ import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
     createNewItem,
-} from './fileHelper';
+} from '../server/fileHelper';
 import FileSource from './FileSource';
 import {
     AnyObjectType, validateAppMeta,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { selectFiles } from '../../helper/appHelper';
-import { getMimetypeExtensions } from '../../helper/fileHelper';
+import { selectFiles } from '../../server/appHelper';
+import { getMimetypeExtensions } from '../../server/fileHelper';
 import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import CanvasController, { CCEventType } from './CanvasController';

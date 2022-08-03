@@ -1,7 +1,7 @@
 import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
 import { useEffect, useState } from 'react';
-import { useFontList } from '../../../helper/helpers';
+import { useFontList } from '../../../server/fontHelpers';
 
 export default function ToolsTextFontControl({ canvasItemText }: {
     canvasItemText: CanvasItemText,

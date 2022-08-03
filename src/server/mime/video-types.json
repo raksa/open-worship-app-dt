@@ -3,7 +3,7 @@
         "type": "MPEG-4",
         "title": "",
         "mimetype": "video/mp4",
-        "extension": [
+        "extensions": [
             ".mp4"
         ]
     },
@@ -11,7 +11,7 @@
         "type": "WebM",
         "title": "",
         "mimetype": "video/webm",
-        "extension": [
+        "extensions": [
             ".webm"
         ]
     },
@@ -19,7 +19,7 @@
         "type": "MOV",
         "title": "Apple QuickTime Movie",
         "mimetype": "video/quicktime",
-        "extension": [
+        "extensions": [
             ".mov"
         ]
     }

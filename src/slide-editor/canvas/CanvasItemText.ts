@@ -4,7 +4,8 @@ import CanvasItem, {
     CanvasItemPropsType, genTextDefaultBoxStyle,
 } from './CanvasItem';
 import { HAlignmentType, VAlignmentType } from './Canvas';
-import { AnyObjectType, getAppInfo } from '../../helper/helpers';
+import { AnyObjectType } from '../../helper/helpers';
+import { getAppInfo } from '../../server/helpers';
 
 export function genTextDefaultProps(): TextPropsType {
     return {

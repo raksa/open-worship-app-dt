@@ -2,14 +2,24 @@ import { useState, useEffect } from 'react';
 import { globalEventHandler } from '../event/EventHandler';
 import { toastEventListener } from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
-import appProvider from './appProvider';
 import DirSource from './DirSource';
-import fileHelpers, { getFileMetaData } from './fileHelper';
+import {
+    fsCreateFile,
+    fsDeleteFile,
+    fsReadFile,
+    getFileMetaData,
+    pathBasename,
+    pathJoin,
+    pathSeparator,
+} from '../server/fileHelper';
 import { AnyObjectType } from './helpers';
 import ItemSource from './ItemSource';
+import { urlPathToFileURL } from '../server/helpers';
 
 type FSListener = (slideItem?: SlideItem) => void;
-export type FSEventType = 'select' | 'update' | 'history-update' | 'edit' | 'delete' | 'delete-cache' | 'refresh-dir';
+export type FSEventType = 'select' | 'update'
+    | 'history-update' | 'edit' | 'delete'
+    | 'delete-cache' | 'refresh-dir';
 export type RegisteredEventType = {
     key: string,
     listener: FSListener,
@@ -86,7 +96,7 @@ export default class FileSource {
     }
     async readFileToData() {
         try {
-            const str = await fileHelpers.readFile(this.filePath);
+            const str = await fsReadFile(this.filePath);
             return JSON.parse(str) as AnyObjectType;
         } catch (error: any) {
             toastEventListener.showSimpleToast({
@@ -99,7 +109,7 @@ export default class FileSource {
     async saveData(data: ItemSource<any>) {
         try {
             const content = JSON.stringify(data.toJson());
-            await fileHelpers.createFile(this.filePath, content, true);
+            await fsCreateFile(this.filePath, content, true);
             this.fireUpdateEvent();
             return true;
         } catch (error: any) {
@@ -112,7 +122,7 @@ export default class FileSource {
     }
     async delete() {
         try {
-            await fileHelpers.deleteFile(this.filePath);
+            await fsDeleteFile(this.filePath);
             this.fireDeleteEvent();
             this.deleteCache();
             this.fireReloadDirEvent();
@@ -129,14 +139,14 @@ export default class FileSource {
         let basePath;
         if (fileName) {
             basePath = filePath;
-            filePath = appProvider.path.join(filePath, fileName);
+            filePath = pathJoin(filePath, fileName);
         } else {
-            const index = filePath.lastIndexOf(appProvider.path.sep);
+            const index = filePath.lastIndexOf(pathSeparator);
             basePath = filePath.substring(0, index);
-            fileName = appProvider.path.basename(filePath);
+            fileName = pathBasename(filePath);
         }
         return new FileSource(basePath, fileName, filePath,
-            appProvider.url.pathToFileURL(filePath).toString());
+            urlPathToFileURL(filePath).toString());
     }
     static genFileSource(filePath: string, fileName?: string, refreshCache?: boolean) {
         const fileSource = this.genFileSourceNoCache(filePath, fileName);

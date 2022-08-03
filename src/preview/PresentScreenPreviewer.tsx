@@ -1,5 +1,5 @@
 import PresentScrollCont from '../full-text-present/PresentScrollCont';
-import { capturePresentScreen } from '../helper/appHelper';
+import { capturePresentScreen } from '../server/appHelper';
 
 let domImg: HTMLImageElement | null = null;
 async function renderCapture() {

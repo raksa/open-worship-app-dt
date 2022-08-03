@@ -1,10 +1,11 @@
-const electron = require('electron')
 import AppManager from './AppManager';
 import {
-    initMainScreen, initDisplayObserver,
+    initMainScreen,
+    initDisplayObserver,
 } from './eventListener';
-import initMenu from './initMenu';
+import { initMenu } from './menu';
 
+const electron = require('electron');
 
 electron.app.whenReady().then(() => {
     const appManager = new AppManager();

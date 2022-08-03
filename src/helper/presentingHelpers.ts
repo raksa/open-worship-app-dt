@@ -1,4 +1,4 @@
-import { renderPresent } from './appHelper';
+import { renderPresent } from '../server/appHelper';
 
 export function renderFG(htmlString: string) {
     renderPresent({

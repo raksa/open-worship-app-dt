@@ -1,10 +1,14 @@
-const isDev = process.env.NODE_ENV === 'development';
-
 import { BrowserWindow } from 'electron';
 import SettingController from './SettingController';
-const electron = require('electron')
+const electron = require('electron');
+
+export const isDev = process.env.NODE_ENV === 'development';
 
 export default class AppManager {
+    mainUrl = 'http://localhost:3000';
+    mainHtmlFile = `${__dirname}/../dist/index.html`;
+    presentHtmlFile = `${__dirname}/${isDev ? '../public' : '../dist'}/present.html`;
+    preloadFile = `${__dirname}/preload.js`;
     presentScreenWidth: number = 0;
     presentScreenHeight: number = 0;
     previewResizeDim: {
@@ -57,16 +61,16 @@ export default class AppManager {
                 webSecurity: !isDev,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: `${__dirname}/preload.js`,
+                preload: this.preloadFile,
             },
         });
         mainWin.on('closed', () => {
             process.exit(0);
         });
         if (isDev) {
-            mainWin.loadURL('http://localhost:3000');
+            mainWin.loadURL(this.mainUrl);
         } else {
-            mainWin.loadFile(`${__dirname}/../dist/index.html`);
+            mainWin.loadFile(this.mainHtmlFile);
         }
         // Open the DevTools.
         if (isDev) {
@@ -93,8 +97,8 @@ export default class AppManager {
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
         }
-        const presentUrl = `${__dirname}/${isDev ? '../public' : '../dist'}/present.html`;
-        presentWin.loadFile(presentUrl);
+
+        presentWin.loadFile(this.presentHtmlFile);
     }
     async capturePresentScreen() {
         try {

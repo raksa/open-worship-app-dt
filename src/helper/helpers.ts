@@ -1,20 +1,10 @@
 import { useState, useEffect } from 'react';
-import { toastEventListener } from '../event/ToastEventListener';
-import appProvider from './appProvider';
 import FileSource from './FileSource';
 import ItemSource from './ItemSource';
 
 export type AnyObjectType = {
     [key: string]: any;
 };
-
-export function getAppInfo() {
-    return appProvider.ipcRenderer.sendSync('main:app:info') as {
-        name: string,
-        version: string,
-        description: string,
-    };
-}
 
 export function getRandomColor() {
     const letters = '0123456789ABCDEF';
@@ -67,36 +57,6 @@ export function isVisible(elem: any) {
     return false;
 }
 
-
-export function getFontData(fontName: string) {
-    const fontBR = require('../fonts/Battambang/Battambang-Regular.ttf') as { default: string };
-    const fontBB = require('../fonts/Battambang/Battambang-Bold.ttf') as { default: string };
-    const font = {
-        'Battambang-Regular': fontBR.default,
-        'Battambang-Bold': fontBB.default,
-    }[fontName];
-    return `${window.location.origin}${font}`;
-}
-export function getInnerHTML(div: HTMLDivElement) {
-    const html = div.outerHTML;
-    const parentDiv = document.createElement('div');
-    parentDiv.innerHTML = html;
-    cleanDiv(parentDiv.children);
-    return parentDiv.innerHTML;
-}
-function cleanDiv(children: HTMLCollection) {
-    for (const child of Array.from(children)) {
-        if (child instanceof HTMLElement) {
-            child.className = '';
-            child.id = '';
-            child.contentEditable = 'inherit';
-            cleanDiv(child.children);
-        }
-    }
-}
-
-// remove unused methods
-
 export function getRotationDeg(str: string) {
     const match = str.match(/rotate\((.+)deg\)/);
     return match ? +match[1] : 0;
@@ -113,8 +73,6 @@ export function genRandomString(length: number = 5) {
     }
     return result;
 }
-export const toBase64 = (str: string) => Buffer.from(str, 'utf-8').toString('base64');
-export const fromBase64 = (str: string) => Buffer.from(str, 'base64').toString('utf-8');
 
 export function getWindowDim() {
     const width = window.innerWidth || document.documentElement.clientWidth ||
@@ -144,31 +102,4 @@ export function useReadFileToData<T extends ItemSource<any>>(
         }
     }, [fileSource]);
     return data;
-}
-
-let fontListGlobal: string[] | null = null;
-export function useFontList() {
-    const [fontListString, setFontListString] = useState<string[] | null>(null);
-    useEffect(() => {
-        if (fontListString === null) {
-            if (fontListGlobal !== null) {
-                setFontListString(fontListGlobal);
-                return;
-            }
-            appProvider.fontList.getFonts().then((fonts) => {
-                const newFontList = fonts.map((fontString) => {
-                    return fontString.replace(/"/g, '');
-                });
-                fontListGlobal = newFontList;
-                setFontListString(newFontList);
-            }).catch((error) => {
-                console.log(error);
-                toastEventListener.showSimpleToast({
-                    title: 'Loading Fonts',
-                    message: 'Fail to load font list',
-                });
-            });
-        }
-    });
-    return fontListString;
 }

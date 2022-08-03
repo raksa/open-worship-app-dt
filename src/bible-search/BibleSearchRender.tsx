@@ -9,10 +9,10 @@ import {
     defaultExtractedBible,
     extractBible,
     toInputText,
-} from '../bible-helper/helpers2';
+} from '../server/bible-helpers/helpers2';
 import {
     getChapterCount,
-} from '../bible-helper/helpers1';
+} from '../server/bible-helpers/helpers1';
 import BibleItem from '../bible-list/BibleItem';
 import { closeBibleSearch } from './HandleBibleSearch';
 import {

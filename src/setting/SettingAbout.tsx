@@ -1,5 +1,8 @@
-import BibleItem, { useBibleItemRenderText, useBibleItemToInputText } from '../bible-list/BibleItem';
-import appProvider from '../helper/appProvider';
+import BibleItem, {
+    useBibleItemRenderText,
+    useBibleItemToInputText,
+} from '../bible-list/BibleItem';
+import { openLink } from '../server/appHelper';
 
 export default function SettingAbout() {
     const bookKey = 'PSA';
@@ -33,7 +36,7 @@ export default function SettingAbout() {
                 Official Github repo here: <button className='btn btn-success'
                     onClick={() => {
                         const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
-                        appProvider.electron.shell.openExternal(url);
+                        openLink(url);
                     }}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>
             </div>

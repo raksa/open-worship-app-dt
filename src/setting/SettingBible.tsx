@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import bibleHelper from '../bible-helper/bibleHelpers';
+import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { toastEventListener } from '../event/ToastEventListener';
 
 export default function SettingBible() {

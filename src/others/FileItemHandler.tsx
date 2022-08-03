@@ -5,14 +5,15 @@ import {
 } from '../others/AppContextMenu';
 import {
     copyToClipboard, isMac, openExplorer,
-} from '../helper/appHelper';
+} from '../server/appHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
-import { MimetypeNameType } from '../helper/fileHelper';
+import { MimetypeNameType } from '../server/fileHelper';
 import Lyric from '../lyric-list/Lyric';
 import Playlist from '../playlist/Playlist';
 import Slide from '../slide-list/Slide';
 import Bible from '../bible-list/Bible';
+import { openConfirm } from '../alert/HandleAlert';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -80,8 +81,12 @@ export default function FileItemHandler({
             title: 'Reload', onClick: () => setData(null),
         }, {
             title: 'Delete', onClick: async () => {
-                await fileSource.delete();
-                onDelete && onDelete();
+                const isOk = await openConfirm(`Deleting "${fileSource.fileName}"`,
+                    'Are you sure to delete this file?');
+                if (isOk) {
+                    await fileSource.delete();
+                    onDelete && onDelete();
+                }
             },
         }];
     if (data === null) {

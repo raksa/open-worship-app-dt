@@ -5,7 +5,7 @@ import {
     getChapterCount,
     getVerses,
 } from './helpers1';
-import { cloneObject } from '../helper/helpers';
+import { cloneObject } from '../../helper/helpers';
 import { useEffect, useState } from 'react';
 
 export async function toInputText(bibleName: string, book?: string | null, chapter?: number | null,
