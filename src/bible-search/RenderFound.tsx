@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { fromLocaleNumber } from '../server/bible-helpers/helpers2';
 import {
     bookToKey, getVerses, VerseList,
 } from '../server/bible-helpers/helpers1';
@@ -32,8 +31,7 @@ export async function consumeStartVerseEndVerse(
     if (bookKey === null) {
         return null;
     }
-    const verses = await getVerses(bibleSelected, bookKey,
-        await fromLocaleNumber(bibleSelected, chapter));
+    const verses = await getVerses(bibleSelected, bookKey, chapter);
     if (verses === null) {
         return null;
     }

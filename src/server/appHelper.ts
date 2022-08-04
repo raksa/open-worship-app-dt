@@ -2,9 +2,12 @@ import { presentEventListener } from '../event/PresentEventListener';
 import { toastEventListener } from '../event/ToastEventListener';
 import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
-import fullTextPresentHelper from '../full-text-present/previewingHelper';
+import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { pathJoin } from './fileHelper';
 import { listenForData, listenOnceForData, sendData, sendSyncData } from './messagingHelpers';
+import bibleHelper from './bible-helpers/bibleHelpers';
+import { initBibleInfo } from './bible-helpers/helpers1';
+import { defaultLocal, getCurrentLangAsync, getLangAsync, LocalType } from '../lang';
 
 export const isWindows = () => window.process.platform === 'win32';
 export const isMac = () => window.process.platform === 'darwin';
@@ -109,4 +112,27 @@ export function sqlite3ReadValue(dbFilePath: string, table: string, key: string)
             waitingEventName,
         });
     });
+}
+
+export async function initApp() {
+    await getCurrentLangAsync();
+    await getLangAsync(defaultLocal);
+    // Showing
+    fullTextPresentHelper.loadSetting();
+    // Bibles
+    if (!bibleHelper.getBibleList().length) {
+        await bibleHelper.getBibleListOnline();
+    }
+    const list = await bibleHelper.getDownloadedBibleList();
+    for (const bibleName of list) {
+        const info = await initBibleInfo(bibleName);
+        if (info !== null) {
+            const isExist = await bibleHelper.checkExist(bibleName);
+            if (isExist) {
+                await getLangAsync(info.locale as LocalType);
+            }
+        }
+    }
+
+
 }

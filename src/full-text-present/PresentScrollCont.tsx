@@ -1,7 +1,7 @@
 import './PresentScrollCont.scss';
 
 import { useState } from 'react';
-import fullTextPresentHelper from './previewingHelper';
+import fullTextPresentHelper from './fullTextPresentHelper';
 
 export default function PresentScrollCont() {
     const [moveUp, setMoveUp] = useState(0);

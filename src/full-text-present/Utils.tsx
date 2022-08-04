@@ -1,5 +1,5 @@
 import { useStateSettingBoolean } from '../helper/settingHelper';
-import fullTextPresentHelper from './previewingHelper';
+import fullTextPresentHelper from './fullTextPresentHelper';
 
 export const FULL_TEXT_AUTO_SAVE_SETTING = 'full-text-present-auto-show';
 export const HIGHLIGHT_HOVER_SETTING = 'full-text-present-highlight';

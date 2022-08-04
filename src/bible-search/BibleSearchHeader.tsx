@@ -1,13 +1,12 @@
-import { useTranslation } from 'react-i18next';
 import {
     EventMapper as KBEventMapper,
     keyboardEventListener,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
+import { tran } from '../lang';
 import { openBibleSearch } from './HandleBibleSearch';
 
 export default function BibleSearchHeader() {
-    const { t } = useTranslation();
     const eventMapper: KBEventMapper = {
         wControlKey: ['Ctrl'],
         mControlKey: ['Ctrl'],
@@ -26,7 +25,7 @@ export default function BibleSearchHeader() {
             <span className='btn-label'>
                 <i className='bi bi-book'></i>
             </span>
-            {t('bible-search')}
+            {tran('bible-search')}
         </button>
     );
 }

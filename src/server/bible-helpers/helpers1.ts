@@ -1,5 +1,3 @@
-import fullTextPresentHelper, {
-} from '../../full-text-present/previewingHelper';
 import { sqlite3ReadValue } from '../appHelper';
 import appProvider from '../appProvider';
 import bibleHelper from './bibleHelpers';
@@ -119,7 +117,7 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
             });
             response.on('end', async () => {
                 writeStream.close();
-                await initInfo(fileName);
+                await initBibleInfo(fileName);
                 onDone();
             });
         } catch (error2) {
@@ -158,7 +156,7 @@ export const bibleStorage: {
 };
 
 export async function getBookKVList(bibleName: string) {
-    const info = await getInfo(bibleName);
+    const info = await getBibleInfo(bibleName);
     if (info === null) {
         return null;
     }
@@ -198,7 +196,8 @@ export async function getChapterCount(bibleName: string, book: string) {
     }
     return bibleStorage.chapterCountMapper[book];
 }
-export async function getBookChapterData(bibleName: string, bookKey: string, chapterNumber: number) {
+export async function getBookChapterData(bibleName: string,
+    bookKey: string, chapterNumber: number) {
     const fileName = bibleHelper.toFileName(bookKey, chapterNumber);
     const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
     if (cipherKey === null) {
@@ -222,14 +221,16 @@ export async function getVerses(bibleName: string, bookKey: string, chapter: num
     return chapterObj.verses;
 }
 
-export async function initInfo(bibleName: string) {
+export async function initBibleInfo(bibleName: string) {
     const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
     if (cipherKey !== null) {
-        const info = await sqlite3Read(bibleName, '_info.js', cipherKey);
-        bibleStorage.infoMapper[bibleName] = info as BibleInfoType | null;
+        const info = await sqlite3Read(bibleName, '_info.js', cipherKey) as BibleInfoType | null;
+        bibleStorage.infoMapper[bibleName] = info;
+        return info;
     }
+    return null;
 }
-export async function getInfo(bibleName: string) {
+export async function getBibleInfo(bibleName: string) {
     if (!bibleStorage.infoMapper[bibleName]) {
         const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
         if (cipherKey !== null) {
@@ -239,22 +240,4 @@ export async function getInfo(bibleName: string) {
     }
     return bibleStorage.infoMapper[bibleName] || null;
 }
-export async function getBibleNumList(bibleName: string) {
-    const info = await getInfo(bibleName);
-    if (info === null) {
-        return null;
-    }
-    return info.numList || null;
-}
-export async function initApp() {
-    // Showing
-    fullTextPresentHelper.loadSetting();
-    // Bibles
-    if (!bibleHelper.getBibleList().length) {
-        await bibleHelper.getBibleListOnline();
-    }
-    const list = await bibleHelper.getDownloadedBibleList();
-    for (const dbName of list) {
-        await initInfo(dbName);
-    }
-}
+

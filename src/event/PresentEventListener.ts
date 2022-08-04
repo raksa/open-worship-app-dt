@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import fullTextPresentHelper from '../full-text-present/previewingHelper';
+import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { getPresentRendered } from '../server/appHelper';
 import { getAllDisplays } from '../server/displayHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';

@@ -6,11 +6,12 @@ import CanvasItem, {
 import { HAlignmentType, VAlignmentType } from './Canvas';
 import { AnyObjectType } from '../../helper/helpers';
 import { getAppInfo } from '../../server/helpers';
+import { AppColorType } from '../../others/ColorPicker';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
         text: getAppInfo().name,
-        color: 'white',
+        color: '#ffffff',
         fontSize: 60,
         fontFamily: '',
         textHorizontalAlignment: 'center',
@@ -19,7 +20,7 @@ export function genTextDefaultProps(): TextPropsType {
 }
 export type TextPropsType = {
     text: string,
-    color: string,
+    color: AppColorType,
     fontSize: number,
     fontFamily: string,
     textHorizontalAlignment: HAlignmentType,
@@ -27,7 +28,7 @@ export type TextPropsType = {
 };
 export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
 export type ToolingTextType = {
-    color?: string,
+    color?: AppColorType,
     fontSize?: number,
     fontFamily?: string,
     textHorizontalAlignment?: HAlignmentType,

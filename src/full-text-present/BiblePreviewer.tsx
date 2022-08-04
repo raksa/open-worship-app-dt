@@ -7,7 +7,7 @@ import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { useChangingBible } from '../event/PresentEventListener';
 import ButtonAddMoreBible from './ButtonAddMoreBible';
 import { getSetting } from '../helper/settingHelper';
-import fullTextPresentHelper from './previewingHelper';
+import fullTextPresentHelper from './fullTextPresentHelper';
 import BibleItem from '../bible-list/BibleItem';
 import BibleList from '../bible-list/BibleList';
 

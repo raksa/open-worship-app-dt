@@ -1,7 +1,8 @@
 import './TextShadow.scss';
 
 import { useEffect } from 'react';
-import fullTextPresentHelper from './previewingHelper';
+import fullTextPresentHelper from './fullTextPresentHelper';
+import { AppColorType } from '../others/ColorPicker';
 
 
 export default function TextShadow() {
@@ -11,7 +12,7 @@ export default function TextShadow() {
             const listener = () => {
                 fullTextPresentHelper.setStyle({
                     textShadow: d.style.textShadow,
-                    color: d.style.color,
+                    color: d.style.color as AppColorType,
                 });
             };
             d.addEventListener('click', listener);

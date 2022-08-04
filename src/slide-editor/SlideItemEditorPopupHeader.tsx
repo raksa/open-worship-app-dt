@@ -1,13 +1,14 @@
-import { useTranslation } from 'react-i18next';
 import {
     keyboardEventListener,
     useKeyboardRegistering,
     EventMapper as KBEventMapper,
 } from '../event/KeyboardEventListener';
-import { closeItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
+import { tran } from '../lang';
+import {
+    closeItemSlideEdit,
+} from '../slide-presenting/HandleItemSlideEdit';
 
 export default function SlideItemEditorPopupHeader() {
-    const { t } = useTranslation();
     const eventMapper: KBEventMapper = {
         wControlKey: ['Ctrl'],
         mControlKey: ['Ctrl'],
@@ -19,7 +20,7 @@ export default function SlideItemEditorPopupHeader() {
         <div className='card-header text-center w-100'>
             <span>
                 <i className='bi bi-pencil-square'></i>
-                {t('edit-item-thumb')}
+                {tran('edit-item-thumb')}
             </span>
             <button type='button' onClick={closeItemSlideEdit}
                 data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}

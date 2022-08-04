@@ -1,4 +1,8 @@
-const tran = {
+import { LanguageType } from '..';
+
+const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+
+const dictionary = {
   'bible-search': 'ស្វែងរកខគម្ពីរ',
   'bible-present': 'បទបង្ហាញ​ព្រះ​គម្ពីរ',
   'General': 'ទូទៅ',
@@ -17,7 +21,9 @@ const tran = {
   'Slide': 'ស្លាយ',
   'Full Text': 'បង្ហាញពេញ',
 };
-const data = {
+const km: LanguageType = {
+  numList,
+  dictionary,
   name: 'Khmer',
   locale: 'km',
   flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
@@ -81,7 +87,6 @@ const data = {
       <path fill="none" d="M99 664.2h193M115.8 713h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m65.8 37.5h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m-8.6-6.3h8.6m-8.6-6.2h8.6m66.2 37.5h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2m-9.2-6.3h9.2m-9.2-6.2h9.2"/>
     </g>
   </svg>`,
-  tran,
 };
 
-export default data;
+export default km;

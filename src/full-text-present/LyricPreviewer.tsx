@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
-import fullTextPresentHelper from './previewingHelper';
+import fullTextPresentHelper from './fullTextPresentHelper';
 import { cloneObject } from '../helper/helpers';
 import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import { getSetting } from '../helper/settingHelper';

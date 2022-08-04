@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { keyToBook, getVerses } from '../server/bible-helpers/helpers1';
-import { toLocaleNumber, toInputText } from '../server/bible-helpers/helpers2';
+import { toLocaleNumBB, toInputText } from '../server/bible-helpers/helpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
@@ -208,9 +208,9 @@ export default class BibleItem extends ItemBase {
     static async itemToTitle(item: BibleItem) {
         const { bibleName: bible, target } = item;
         const { book, chapter, startVerse, endVerse } = target;
-        const chapterLocale = await toLocaleNumber(bible, chapter);
-        const startVerseLocale = await toLocaleNumber(bible, startVerse);
-        const endVerseLocale = await toLocaleNumber(bible, endVerse);
+        const chapterLocale = await toLocaleNumBB(bible, chapter);
+        const startVerseLocale = await toLocaleNumBB(bible, startVerse);
+        const endVerseLocale = await toLocaleNumBB(bible, endVerse);
         const txtV = `${startVerseLocale}${startVerse !== endVerse ? ('-' + endVerseLocale) : ''}`;
         let bookKey = await keyToBook(bible, book);
         if (bookKey === null) {
@@ -230,7 +230,7 @@ export default class BibleItem extends ItemBase {
         }
         txt = '';
         for (let i = target.startVerse; i <= target.endVerse; i++) {
-            txt += ` (${await toLocaleNumber(bible, i)}): ${verses[i + '']}`;
+            txt += ` (${await toLocaleNumBB(bible, i)}): ${verses[i + '']}`;
         }
         return txt;
     }

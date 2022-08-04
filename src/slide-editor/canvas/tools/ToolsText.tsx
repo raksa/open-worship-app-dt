@@ -26,9 +26,9 @@ export default function ToolsText() {
         <div className='d-flex'>
             <Tool>
                 <ColorPicker color={canvasItem.props.color}
-                    onColorChange={(newColor: string) => {
+                    onColorChange={(newColor) => {
                         applyTextData({
-                            color: newColor,
+                            color: newColor || '#ffffff',
                         });
                     }} />
             </Tool>

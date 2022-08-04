@@ -1,3 +1,4 @@
+import { AppColorType } from '../others/ColorPicker';
 import { renderPresent } from '../server/appHelper';
 
 export function renderFG(htmlString: string) {
@@ -36,7 +37,7 @@ clearOldBackground();
 ` });
 }
 
-export function renderBGColor(color: string) {
+export function renderBGColor(color: AppColorType) {
     renderPresent({
         script: `
 const shadow = getShadow('background');

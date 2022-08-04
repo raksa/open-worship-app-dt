@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
-import fullTextPresentHelper from './previewingHelper';
+import fullTextPresentHelper from './fullTextPresentHelper';
 import { usePresentCtrlScrolling } from '../event/PresentEventListener';
+import { AppColorType } from '../others/ColorPicker';
 
 export default function Appearance() {
     const [color, setColor] = useState(fullTextPresentHelper.textColor);
     const [fontSize, setFontSize] = useState(fullTextPresentHelper.textFontSize);
-    const setColorToStyle = (newColor: string) => {
+    const setColorToStyle = (newColor: AppColorType) => {
         setColor(newColor);
         fullTextPresentHelper.setStyle({ color: newColor });
     };
@@ -31,8 +32,7 @@ export default function Appearance() {
                     }}>{'>'}</button>
             </div>
             <input className='float-end' type='color' onChange={(e) => {
-                const newColor = e.target.value;
-                setColorToStyle(newColor);
+                setColorToStyle(e.target.value as AppColorType);
             }} value={color} />
             <div>
                 <input type='range' className='form-range' min='1' max='200'

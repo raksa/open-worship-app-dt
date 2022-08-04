@@ -3,7 +3,6 @@ import {
     keyboardEventListener,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { fromLocaleNumber } from '../server/bible-helpers/helpers2';
 import { isWindowEditingMode } from '../App';
 import { bookToKey } from '../server/bible-helpers/helpers1';
 import { toastEventListener } from '../event/ToastEventListener';
@@ -41,9 +40,9 @@ export default function RenderFoundButtons({
             bibleName: bibleSelected,
             target: {
                 book: key,
-                chapter: await fromLocaleNumber(bibleSelected, chapter),
-                startVerse: await fromLocaleNumber(bibleSelected, found.sVerse),
-                endVerse: await fromLocaleNumber(bibleSelected, found.eVerse),
+                chapter,
+                startVerse: found.sVerse,
+                endVerse: found.eVerse,
             },
             metadata: {},
         });

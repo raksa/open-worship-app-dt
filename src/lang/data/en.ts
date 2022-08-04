@@ -1,11 +1,17 @@
-const tran = {
+import { LanguageType } from '..';
+
+const numList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+const dictionary = {
   'bible-search': 'Bible Search',
   'bible-present': 'Bible Present',
   'general': 'General',
   'bible': 'Bible',
   'about': 'About',
 };
-const data = {
+const en: LanguageType = {
+  numList,
+  dictionary,
   name: 'English',
   locale: 'en',
   flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-gb" viewBox="0 0 640 480">
@@ -16,7 +22,6 @@ const data = {
     <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
   </svg>
   `,
-  tran,
 };
 
-export default data;
+export default en;

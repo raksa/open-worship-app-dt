@@ -1,6 +1,7 @@
 import React from 'react';
 import { CSSProperties } from 'react';
 import { AnyObjectType, cloneObject } from '../../helper/helpers';
+import { AppColorType } from '../../others/ColorPicker';
 import { HAlignmentType, VAlignmentType } from './Canvas';
 
 export function tooling2BoxProps(boxData: ToolingBoxType, state: {
@@ -28,7 +29,7 @@ export function tooling2BoxProps(boxData: ToolingBoxType, state: {
 }
 
 export type ToolingBoxType = {
-    backgroundColor?: string,
+    backgroundColor?: AppColorType | null,
     rotate?: number,
     horizontalAlignment?: HAlignmentType,
     verticalAlignment?: VAlignmentType,
@@ -41,7 +42,7 @@ export function genTextDefaultBoxStyle(width: number = 700,
         id: -1,
         top: 279,
         left: 356,
-        backgroundColor: 'rgba(255, 0, 255, 0.39)',
+        backgroundColor: '#FF00FF8b',
         width,
         height,
         rotate: 0,
@@ -60,7 +61,7 @@ export type CanvasItemPropsType = {
     height: number,
     horizontalAlignment: HAlignmentType,
     verticalAlignment: VAlignmentType,
-    backgroundColor: string,
+    backgroundColor: AppColorType | null,
     type: CanvasItemKindType,
 };
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
@@ -125,7 +126,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             width: `${props.width}px`,
             height: `${props.height}px`,
             position: 'absolute',
-            backgroundColor: props.backgroundColor,
+            backgroundColor: props.backgroundColor || 'transparent',
         };
         return style;
     }

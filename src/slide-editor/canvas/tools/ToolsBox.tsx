@@ -1,4 +1,4 @@
-import ColorPicker from '../../../others/ColorPicker';
+import ColorPicker, { AppColorType } from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
 import {
@@ -25,7 +25,7 @@ export default function ToolsBox() {
         <>
             <Tool title='Background Color'>
                 <ColorPicker color={canvasItem.props.backgroundColor}
-                    onColorChange={(newColor: string) => {
+                    onColorChange={(newColor: AppColorType | null) => {
                         applyBoxData({
                             backgroundColor: newColor,
                         });

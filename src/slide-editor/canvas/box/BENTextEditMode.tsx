@@ -27,7 +27,7 @@ export default function BENTextEditMode({
                 }
             }}>
             <BoxEditorTextArea
-                color={style.color}
+                color={canvasItemText.props.color}
                 text={canvasItemText.props.text}
                 setText={(text) => {
                     canvasItemText.applyProps({ text });

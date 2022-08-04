@@ -1,16 +1,16 @@
 import { getVerses } from '../server/bible-helpers/helpers1';
-import { toLocaleNumber } from '../server/bible-helpers/helpers2';
+import { toLocaleNumBB } from '../server/bible-helpers/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
 import { renderPresent } from '../server/appHelper';
 import { removePX } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import { BLACK_COLOR } from '../others/ColorPicker';
+import { AppColorType, BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
 import BibleItem from '../bible-list/BibleItem';
 
 type StylingType = {
-    color?: string;
+    color?: AppColorType;
     fontSize?: number;
     textShadow?: string;
 };
@@ -189,7 +189,7 @@ class FullTextPresentHelper {
                 let text = '';
                 if (verses !== null) {
                     for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
-                        const verseNumb = await toLocaleNumber(bibleItem.bibleName, i);
+                        const verseNumb = await toLocaleNumBB(bibleItem.bibleName, i);
                         text += `<span data-highlight="${i}"><span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}</span>`;
                     }
                 }

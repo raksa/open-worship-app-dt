@@ -1,6 +1,6 @@
 import {
     DownloadOptionsType,
-    getInfo,
+    getBibleInfo,
     startDownloading,
     fetch,
     getBookKVList,
@@ -231,7 +231,7 @@ const bibleHelper = {
     async toChapter(bibleName: string, bookKey: string,
         chapterNum: number) {
         // KJV, GEN, 1
-        const info = await getInfo(bibleName);
+        const info = await getBibleInfo(bibleName);
         if (info === null) {
             return null;
         }
@@ -280,7 +280,7 @@ const bibleHelper = {
         return `${indexStr}-${bookKey}.${chapterNum}.json`;
     },
     async toBookKey(bibleName: string, book: string) {
-        const info = await getInfo(bibleName);
+        const info = await getBibleInfo(bibleName);
         if (info !== null) {
             for (const k in info.books) {
                 if (info.books[k] === book) {

@@ -1,5 +1,4 @@
 import { showAppContextMenu } from './AppContextMenu';
-import { useTranslation } from 'react-i18next';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
 
@@ -8,7 +7,6 @@ import ColorNoteInf from '../helper/ColorNoteInf';
 export default function ItemColorNote({ item }: {
     item: ColorNoteInf,
 }) {
-    const { t } = useTranslation();
     return (
         <span className={`color-note ${item.colorNote ? 'active' : ''}`} onClick={(e) => {
             e.stopPropagation();
@@ -17,7 +15,7 @@ export default function ItemColorNote({ item }: {
                 ...Object.entries(colorList.extension),
             ];
             showAppContextMenu(e, [{
-                title: t('no color'),
+                title: 'no color',
                 onClick: () => {
                     item.colorNote = null;
                 },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { tran } from '../lang';
 import AppSuspense from './AppSuspense';
 
 export default function TabRender<T extends string>({
@@ -10,7 +10,6 @@ export default function TabRender<T extends string>({
     setActiveTab?: (t: T) => void,
     className?: string,
 }) {
-    const { t } = useTranslation();
     return (
         <ul className={`nav nav-tabs ${className}`}>
             {tabs.map(([tab, title], i) => {
@@ -22,7 +21,7 @@ export default function TabRender<T extends string>({
                                 setActiveTab && setActiveTab(tab);
                             }
                         }}>
-                        {t(title)}
+                        {tran(title)}
                     </button>
                 </li>);
             })}
