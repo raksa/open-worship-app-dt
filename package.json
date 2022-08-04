@@ -84,7 +84,6 @@
         }
     },
     "devDependencies": {
-        "@types/sqlite3": "^3.1.8",
         "@typescript-eslint/eslint-plugin": "^4.15.1",
         "@typescript-eslint/parser": "^4.15.1",
         "concurrently": "^6.3.0",
@@ -99,6 +98,7 @@
         "wait-on": "^6.0.0"
     },
     "dependencies": {
+        "@types/sqlite3": "^3.1.8",
         "@types/node": "^16.11.33",
         "@types/react": "^18.0.15",
         "@types/react-dom": "^18.0.6",

@@ -5,10 +5,10 @@ const electron = require('electron');
 export const isDev = process.env.NODE_ENV === 'development';
 
 export default class AppManager {
-    mainUrl = 'http://localhost:3000';
-    mainHtmlFile = `${__dirname}/../dist/index.html`;
-    presentHtmlFile = `${__dirname}/${isDev ? '../public' : '../dist'}/present.html`;
-    preloadFile = `${__dirname}/preload.js`;
+    url = 'http://localhost:3000';
+    htmlFile = `${__dirname}/../dist/index.html`;
+    mainPreloadFile = `${__dirname}/mainPreload.js`;
+    presentPreloadFile = `${__dirname}/presentPreload.js`;
     presentScreenWidth: number = 0;
     presentScreenHeight: number = 0;
     previewResizeDim: {
@@ -52,6 +52,13 @@ export default class AppManager {
             this.createPresentWindow();
         }
     }
+    loadSrc(win: BrowserWindow) {
+        if (isDev) {
+            win.loadURL(this.url);
+        } else {
+            win.loadFile(this.htmlFile);
+        }
+    }
     createMainWindow() {
         const bounds = this.settingController.mainWinBounds;
         const mainWin = new electron.BrowserWindow({
@@ -61,17 +68,13 @@ export default class AppManager {
                 webSecurity: !isDev,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: this.preloadFile,
+                preload: this.mainPreloadFile,
             },
         });
         mainWin.on('closed', () => {
             process.exit(0);
         });
-        if (isDev) {
-            mainWin.loadURL(this.mainUrl);
-        } else {
-            mainWin.loadFile(this.mainHtmlFile);
-        }
+        this.loadSrc(mainWin);
         // Open the DevTools.
         if (isDev) {
             mainWin.webContents.openDevTools();
@@ -82,23 +85,20 @@ export default class AppManager {
         const isWin32 = process.platform === 'win32';
         const isPresentCanFullScreen = isWin32;
         const presentWin = new electron.BrowserWindow({
-            transparent: true,
-            show: false,
-            x: 0,
-            y: 0,
-            frame: false,
+            transparent: true, show: false,
+            x: 0, y: 0, frame: false,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
+                preload: this.presentPreloadFile,
             },
         });
+        this.loadSrc(presentWin);
         this.presentWin = presentWin;
         this.settingController.syncPresentWindow();
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
         }
-
-        presentWin.loadFile(this.presentHtmlFile);
     }
     async capturePresentScreen() {
         try {

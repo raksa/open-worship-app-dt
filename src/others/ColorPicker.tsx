@@ -130,13 +130,11 @@ function RenderColor({
             onContextMenu={(e) => {
                 showContextMenu(e, color);
             }}
-            className='m-1 color-item pointer'
+            className={'m-1 color-item pointer' + (isSelected ? ' highlight-selected' : '')}
             style={{
                 width: '20px',
                 height: '15px',
                 backgroundColor: color,
-                border: isSelected ?
-                    '1px dashed #fff' : '',
             }}
             onClick={() => {
                 onClick && onClick();
