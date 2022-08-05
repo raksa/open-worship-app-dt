@@ -19,7 +19,7 @@ export default function AppPresenting() {
             dataInput={[
                 [AppPresentingLeft, 'h1', 'flex v'],
                 [AppPresentingMiddle, 'h2', 'flex v'],
-                [AppPresentingRight, 'h3', 'right d-flex flex-column'],
+                [AppPresentingRight, 'h3', 'flex v'],
             ]}
             checkSize={() => {
                 CustomHTMLPresentPreviewer.checkSize();
