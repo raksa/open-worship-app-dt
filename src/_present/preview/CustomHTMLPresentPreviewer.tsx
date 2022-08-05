@@ -44,7 +44,7 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
                 previewer.resize();
             });
     }
-    connectedCallback() {   
+    connectedCallback() {
         this.resize();
         this.attachShadow({
             mode: 'open',

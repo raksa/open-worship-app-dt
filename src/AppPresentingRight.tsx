@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MiniPresentScreen from './_present/preview/MiniPresentScreen';
 import { settingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
@@ -8,6 +8,9 @@ const BibleList = React.lazy(() => import('./bible-list/BibleList'));
 const LyricList = React.lazy(() => import('./lyric-list/LyricList'));
 
 export default function AppPresentingRight() {
+    useEffect(() => {
+        CustomHTMLPresentPreviewer.checkSize();
+    });
     return (
         <>
             <div className='flex-fill flex v h-100'>
@@ -20,10 +23,7 @@ export default function AppPresentingRight() {
                     dataInput={[
                         [BibleList, 'v1', 'flex-item'],
                         [LyricList, 'v2', 'flex-item'],
-                    ]}
-                    checkSize={()=>{
-                        CustomHTMLPresentPreviewer.checkSize();
-                    }} />
+                    ]} />
             </div>
             <div>
                 <MiniPresentScreen />

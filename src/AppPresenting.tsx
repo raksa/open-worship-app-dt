@@ -1,7 +1,6 @@
 import React from 'react';
 import { settingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
-import CustomHTMLPresentPreviewer from './_present/preview/CustomHTMLPresentPreviewer';
 
 const AppPresentingLeft = React.lazy(() => import('./AppPresentingLeft'));
 const AppPresentingMiddle = React.lazy(() => import('./AppPresentingMiddle'));
@@ -20,9 +19,6 @@ export default function AppPresenting() {
                 [AppPresentingLeft, 'h1', 'flex v'],
                 [AppPresentingMiddle, 'h2', 'flex v'],
                 [AppPresentingRight, 'h3', 'flex v'],
-            ]}
-            checkSize={() => {
-                CustomHTMLPresentPreviewer.checkSize();
-            }} />
+            ]} />
     );
 }
