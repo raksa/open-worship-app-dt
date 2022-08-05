@@ -1,14 +1,13 @@
 import { BrowserWindow } from 'electron';
+import { isDev } from './helpers';
 import SettingController from './SettingController';
 const electron = require('electron');
-
-export const isDev = process.env.NODE_ENV === 'development';
 
 export default class AppManager {
     url = 'http://localhost:3000';
     htmlFile = `${__dirname}/../dist/index.html`;
-    mainPreloadFile = `${__dirname}/mainPreload.js`;
-    presentPreloadFile = `${__dirname}/presentPreload.js`;
+    mainPreloadFile = `${__dirname}/client/mainPreload.js`;
+    presentPreloadFile = `${__dirname}/client/presentPreload.js`;
     presentScreenWidth: number = 0;
     presentScreenHeight: number = 0;
     previewResizeDim: {

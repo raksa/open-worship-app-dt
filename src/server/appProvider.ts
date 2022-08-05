@@ -6,6 +6,40 @@ export type MessageEventType = {
     returnValue: any,
 };
 
+export type MessageUtilsType = {
+    sendData: (channel: string, ...args: any[]) => void,
+    sendSyncData: (channel: string, ...args: any[]) => any,
+    listenForData: (channel: string,
+        callback: (event: MessageEventType, ...args: any[]) => void) => void,
+    listenOnceForData: (channel: string,
+        callback: (event: MessageEventType, ...args: any[]) => void) => void,
+};
+
+export type FileUtilsType = {
+    createWriteStream: typeof fs.createWriteStream,
+    readdir: typeof fs.readdir,
+    stat: typeof fs.stat,
+    mkdirSync: typeof fs.mkdirSync,
+    writeFileSync: typeof fs.writeFileSync,
+    renameSync: typeof fs.renameSync,
+    unlinkSync: typeof fs.unlinkSync,
+    readFileSync: typeof fs.readFileSync,
+    copyFileSync: typeof fs.copyFileSync,
+};
+
+export type PathUtilsType = {
+    sep: typeof path.sep,
+    basename: typeof path.basename,
+    join: typeof path.join,
+};
+
+export type SystemUtilsType = {
+    isDev: boolean,
+    isWindows: boolean,
+    isMac: boolean,
+    isLinux: boolean,
+};
+
 const appProvider = (window as any).provider as {
     fontList: {
         getFonts: () => Promise<string[]>,
@@ -20,33 +54,13 @@ const appProvider = (window as any).provider as {
         copyToClipboard: (str: string) => void,
         urlPathToFileURL: (urlPath: string) => string,
     };
-    messageUtils: {
-        sendData: (channel: string, ...args: any[]) => void,
-        sendSyncData: (channel: string, ...args: any[]) => any,
-        listenForData: (channel: string,
-            callback: (event: MessageEventType, ...args: any[]) => void) => void,
-        listenOnceForData: (channel: string,
-            callback: (event: MessageEventType, ...args: any[]) => void) => void,
-    };
+    messageUtils: MessageUtilsType;
     httpUtils: {
         request: typeof http.request,
     };
-    fileUtils: {
-        createWriteStream: typeof fs.createWriteStream,
-        readdir: typeof fs.readdir,
-        stat: typeof fs.stat,
-        mkdirSync: typeof fs.mkdirSync,
-        writeFileSync: typeof fs.writeFileSync,
-        renameSync: typeof fs.renameSync,
-        unlinkSync: typeof fs.unlinkSync,
-        readFileSync: typeof fs.readFileSync,
-        copyFileSync: typeof fs.copyFileSync,
-    },
-    pathUtils: {
-        sep: typeof path.sep,
-        basename: typeof path.basename,
-        join: typeof path.join,
-    },
+    fileUtils: FileUtilsType,
+    pathUtils: PathUtilsType,
+    systemUtils: SystemUtilsType,
 };
 
 export default appProvider;

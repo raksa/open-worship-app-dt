@@ -1,13 +1,15 @@
 import './PathSelector.scss';
 
 import {
-    copyToClipboard, isMac, openExplorer,
+    copyToClipboard,
+    openExplorer,
 } from '../server/appHelper';
 import { showAppContextMenu } from './AppContextMenu';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import DirSource from '../helper/DirSource';
 import React from 'react';
 import AppSuspense from './AppSuspense';
+import appProvider from '../server/appProvider';
 
 const PathPreviewer = React.lazy(() => import('./PathPreviewer'));
 
@@ -17,7 +19,8 @@ export default function PathSelector({
     dirSource: DirSource,
     prefix: string
 }) {
-    const [showing, setShowing] = useStateSettingBoolean(`${prefix}-selector-opened`, false);
+    const [showing, setShowing] = useStateSettingBoolean(
+        `${prefix}-selector-opened`, false);
     const isShowing = !dirSource.dirPath || showing;
     return (
         <div className='path-selector w-100'
@@ -30,7 +33,8 @@ export default function PathSelector({
                         },
                     },
                     {
-                        title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
+                        title: `Reveal in ${appProvider.systemUtils.isMac ?
+                            'Finder' : 'File Explorer'}`,
                         onClick: () => {
                             openExplorer(dirSource.dirPath);
                         },
@@ -41,7 +45,8 @@ export default function PathSelector({
                 setShowing(!showing);
             }}>
                 <i className={`bi ${isShowing ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {dirSource.dirPath && <div className='ellipsis-left border-white-round px-1 flex-fill'
+                {dirSource.dirPath && <div
+                    className='ellipsis-left border-white-round px-1 flex-fill'
                     title={dirSource.dirPath}>
                     {dirSource.dirPath}</div>}
                 {dirSource.dirPath &&

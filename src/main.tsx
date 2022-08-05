@@ -4,6 +4,8 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { initApp } from './server/appHelper';
+import appProvider from './server/appProvider';
+import { openConfirm } from './alert/HandleAlert';
 
 initApp().then(() => {
   const container = document.getElementById('root');
@@ -18,15 +20,16 @@ initApp().then(() => {
 });
 
 const confirmEraseLocalStorage = () => {
-  const message = 'We were sorry, Internal process error, do you want to clear all session?';
-  const isYes = window.confirm(message);
-  if (isYes) {
-    window.localStorage.clear();
-  }
-  window.location.reload();
+  openConfirm('Reload is needed',
+    'We were sorry, Internal process error, you to refresh the app'
+  ).then((isOk) => {
+    if (isOk) {
+      location.reload();
+    }
+  });
 };
 
-if (window.process.env.NODE_ENV !== 'development') {
+if (appProvider.systemUtils.isDev) {
   window.onunhandledrejection = () => {
     confirmEraseLocalStorage();
   };

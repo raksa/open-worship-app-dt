@@ -3,15 +3,12 @@ import cryptoUtils from './cryptoUtils';
 import fileUtils from './fileUtils';
 import httpUtils from './httpUtils';
 import messageUtils from './messageUtils';
+import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
 
-const fs = require('fs');
-const path = require('path');
 const fontList = require('font-list');
 
 const provider = {
-    fs,
-    path,
     fontList,
     cryptoUtils,
     browserUtils,
@@ -19,6 +16,7 @@ const provider = {
     httpUtils,
     pathUtils,
     fileUtils,
+    systemUtils,
 };
 
 export default provider;

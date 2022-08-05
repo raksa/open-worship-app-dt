@@ -4,7 +4,7 @@ import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
-    copyToClipboard, isMac, openExplorer,
+    copyToClipboard, openExplorer,
 } from '../server/appHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
@@ -14,6 +14,7 @@ import Playlist from '../playlist/Playlist';
 import Slide from '../slide-list/Slide';
 import Bible from '../bible-list/Bible';
 import { openConfirm } from '../alert/HandleAlert';
+import appProvider from '../server/appProvider';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -23,7 +24,8 @@ export const genCommonMenu = (fileSource: FileSource) => {
             },
         },
         {
-            title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
+            title: `Reveal in ${appProvider.systemUtils.isMac ?
+                'Finder' : 'File Explorer'}`,
             onClick: () => {
                 openExplorer(fileSource.filePath);
             },

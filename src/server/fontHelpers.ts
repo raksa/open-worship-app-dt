@@ -36,5 +36,5 @@ export function getFontData(fontName: string) {
         'Battambang-Regular': fontBR.default,
         'Battambang-Bold': fontBB.default,
     }[fontName];
-    return `${window.location.origin}${font}`;
+    return `${location.origin}${font}`;
 }

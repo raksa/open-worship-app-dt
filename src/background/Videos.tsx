@@ -1,12 +1,11 @@
 import './Videos.scss';
 
 import { createRef, useState } from 'react';
-import { presentEventListener } from '../event/PresentEventListener';
-import { renderBGVideo } from '../helper/presentingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
+import PresentManager from '../_present/PresentManager';
 
 export default function Videos() {
     const [dirSource, setDirSource] = useState(DirSource.genDirSource('video-list-selected-dir'));
@@ -34,8 +33,10 @@ export default function Videos() {
                                 }
                             }}
                             onClick={() => {
-                                renderBGVideo(fileSource.src);
-                                presentEventListener.renderBG();
+                                PresentManager.getInstance(0).presentBGManager.bgSrc = {
+                                    type: 'video',
+                                    src: fileSource.src,
+                                };
                             }}>
                             <div className='card-body'>
                                 <video ref={vRef} loop

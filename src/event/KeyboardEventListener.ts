@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { isLinux, isMac, isWindows } from '../server/appHelper';
+import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
 import { AppWidgetType } from './WindowEventListener';
 
@@ -39,17 +39,17 @@ export default class KeyboardEventListener extends EventHandler<string> {
         this._addPropEvent(k, event);
     }
     addControlKey(option: EventMapper, e: KeyboardEvent) {
-        if (isWindows()) {
+        if (appProvider.systemUtils.isWindows) {
             option.wControlKey = [];
             e.ctrlKey && option.wControlKey.push('Ctrl');
             e.altKey && option.wControlKey.push('Alt');
             e.shiftKey && option.wControlKey.push('Shift');
-        } else if (isMac()) {
+        } else if (appProvider.systemUtils.isMac) {
             option.mControlKey = [];
             e.ctrlKey && option.mControlKey.push('Ctrl');
             e.altKey && option.mControlKey.push('Option');
             e.shiftKey && option.mControlKey.push('Shift');
-        } else if (isLinux()) {
+        } else if (appProvider.systemUtils.isLinux) {
             option.lControlKey = [];
             e.ctrlKey && option.lControlKey.push('Ctrl');
             e.altKey && option.lControlKey.push('Alt');
@@ -67,12 +67,18 @@ export default class KeyboardEventListener extends EventHandler<string> {
         if (k.length === 1) {
             k = k.toUpperCase();
         }
-        if (isWindows() && eventMapper.wControlKey && eventMapper.wControlKey.length) {
-            k = this.toControlKey(eventMapper.wControlKey) + ' + ' + k;
-        } else if (isMac() && eventMapper.mControlKey && eventMapper.mControlKey.length) {
-            k = this.toControlKey(eventMapper.mControlKey) + ' + ' + k;
-        } else if (isLinux() && eventMapper.lControlKey && eventMapper.lControlKey.length) {
-            k = this.toControlKey(eventMapper.lControlKey) + ' + ' + k;
+        if (appProvider.systemUtils.isWindows &&
+            eventMapper.wControlKey &&
+            eventMapper.wControlKey.length) {
+            k = `${this.toControlKey(eventMapper.wControlKey)} + ${k}`;
+        } else if (appProvider.systemUtils.isMac &&
+            eventMapper.mControlKey &&
+            eventMapper.mControlKey.length) {
+            k = `${this.toControlKey(eventMapper.mControlKey)} + ${k}`;
+        } else if (appProvider.systemUtils.isLinux &&
+            eventMapper.lControlKey &&
+            eventMapper.lControlKey.length) {
+            k = `${this.toControlKey(eventMapper.lControlKey)} + ${k}`;
         }
         return k;
     }

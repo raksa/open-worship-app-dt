@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import {
     keyboardEventListener, useKeyboardRegistering,
-} from '../event/KeyboardEventListener';
-import { usePresentHiding } from '../event/PresentEventListener';
+} from '../../event/KeyboardEventListener';
+import { usePresentHiding } from '../../event/PresentEventListener';
 import {
     getIsShowing,
     showWindow,
-} from '../server/appHelper';
+} from '../../server/appHelper';
 
 export default function ShowHidePresent() {
     const [isShowing, setIsShowing] = useState(getIsShowing());

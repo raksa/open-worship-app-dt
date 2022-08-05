@@ -62,7 +62,6 @@ export default function SlideItemEditorCanvas() {
                                         message: 'Unsupported file type!',
                                     });
                                 } else {
-                                    debugger;
                                     const fileSource = FileSource.genFileSource((file as any).path, file.name);
                                     canvasController.addNewMedia(fileSource, event);
                                 }

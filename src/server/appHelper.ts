@@ -9,10 +9,6 @@ import bibleHelper from './bible-helpers/bibleHelpers';
 import { initBibleInfo } from './bible-helpers/helpers1';
 import { defaultLocal, getCurrentLangAsync, getLangAsync, LocalType } from '../lang';
 
-export const isWindows = () => window.process.platform === 'win32';
-export const isMac = () => window.process.platform === 'darwin';
-export const isLinux = () => window.process.platform === 'linux';
-
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
 }

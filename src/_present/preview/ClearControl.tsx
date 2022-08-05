@@ -1,13 +1,13 @@
 import {
     keyboardEventListener,
     useKeyboardRegistering,
-} from '../event/KeyboardEventListener';
+} from '../../event/KeyboardEventListener';
 import {
     presentEventListener,
     usePresentBGRendering,
     usePresentFGRendering,
     usePresentFTRendering,
-} from '../event/PresentEventListener';
+} from '../../event/PresentEventListener';
 
 export default function ClearControl() {
     const isPresentingBG = usePresentBGRendering();

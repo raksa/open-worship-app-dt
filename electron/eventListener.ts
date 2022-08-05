@@ -1,4 +1,5 @@
-import AppManager, { isDev } from './AppManager';
+import AppManager from './AppManager';
+import { isDev } from './helpers';
 
 import { readValue } from './sqlite3';
 const crypto = require('crypto');

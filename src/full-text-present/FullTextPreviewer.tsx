@@ -44,7 +44,10 @@ export default function FullTextPreviewer() {
         }
     });
     return (
-        <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'>
+        <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'
+        style={{
+            minWidth: '300px',
+        }}>
             <div className='previewer-header d-flex'>
                 <TabRender<'b' | 'l'> tabs={[
                     ['b', 'Bible'],

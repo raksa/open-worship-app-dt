@@ -25,18 +25,22 @@ export type DataInputType = [
     CSSProperties?,
 ];
 export default function ResizeActor({
-    fSizeName,
-    flexSizeDefault,
-    resizeKinds,
-    dataInput,
+    fSizeName, flexSizeDefault,
+    resizeKinds, dataInput,
+    checkSize,
 }: {
     fSizeName: string,
     flexSizeDefault: FlexSizeType,
     resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
+    checkSize?: () => void,
 }) {
     const defaultFlexSize = getFlexSizeSetting(fSizeName, flexSizeDefault);
-    const [flexSize, setFlexSize] = useState(defaultFlexSize);
+    const [flexSize, _setFlexSize] = useState(defaultFlexSize);
+    const setFlexSize = (newFlexSize: FlexSizeType) => {
+        _setFlexSize(newFlexSize);
+        checkSize?.();
+    };
     return (
         <>
             {dataInput.map((data, i) => {
