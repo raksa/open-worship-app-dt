@@ -86,10 +86,18 @@ export default class PresentManager extends EventHandler<PMEventType> {
     }
     set bgSrc(bgSrc: BackgroundSrcType | null) {
         this.presentBGManager.bgSrc = bgSrc;
+        this.sendMessage('background', bgSrc);
         this.fireUpdateEvent();
     }
     close() {
         messageUtils.sendData('app:hide-present', this.presentId);
+    }
+    sendMessage(type: PresentType, data: AnyObjectType | null) {
+        const channel1 = messageUtils.channels.presentMessageChannel;
+        messageUtils.sendData(channel1, {
+            presentId: this.presentId,
+            type, data,
+        });
     }
     static fireUpdateEvent() {
         this.eventHandler._addPropEvent('update');
@@ -163,18 +171,20 @@ export default class PresentManager extends EventHandler<PMEventType> {
     }
 }
 
+type PresentType = 'background' | 'display-change' | 'visible';
 export type PresentMessageType = {
     presentId: number,
-    type: 'background' | 'display-change' | 'visible',
-    data: AnyObjectType,
+    type: PresentType,
+    data: AnyObjectType | null,
 };
-appProvider.messageUtils.listenForData('app:present:message', (_,
-    message: PresentMessageType) => {
-    const { presentId, type, data } = message;
-    const presentManager = PresentManager.getInstance(presentId);
-    if (type === 'background') {
-        presentManager.bgSrc = data as any;
-    } else if (type === 'visible') {
-        presentManager.isShowing = data.isShowing;
-    }
-});
+const channel = messageUtils.channels.presentMessageChannel;
+appProvider.messageUtils.listenForData(channel,
+    (_, message: PresentMessageType) => {
+        const { presentId, type, data } = message;
+        const presentManager = PresentManager.getInstance(presentId);
+        if (type === 'background') {
+            presentManager.bgSrc = data as any;
+        } else if (type === 'visible' && data !== null) {
+            presentManager.isShowing = data.isShowing;
+        }
+    });

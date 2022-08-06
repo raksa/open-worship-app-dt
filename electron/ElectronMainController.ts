@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron';
-import { presentMessageChannel, PresentMessageType } from './eventListener';
+import { channels, PresentMessageType } from './eventListener';
 import { isDev } from './helpers';
 
 const url = 'http://localhost:3000';
@@ -44,7 +44,8 @@ export default class ElectronMainController {
         this.win.webContents.send(channel, data);
     }
     sendMessage(message: PresentMessageType) {
-        this.win.webContents.send(presentMessageChannel, message);
+        this.win.webContents.send(
+            channels.presentMessageChannel, message);
     }
     changeBible(isNext: boolean) {
         this.sendData('app:main:change-bible', isNext);

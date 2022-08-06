@@ -25,13 +25,16 @@ export type AnyObjectType = {
     [key: string]: any;
 };
 
+export type PresentType = 'background' | 'display-change' | 'visible';
 export type PresentMessageType = {
     presentId: number,
-    type: 'background' | 'display-change' | 'visible',
+    type: PresentType,
     data: AnyObjectType,
 };
 
-export const presentMessageChannel = 'app:present:message';
+export const channels = {
+    presentMessageChannel: 'app:present:message',
+};
 
 export function initApp(appController: ElectronAppController) {
     ipcMain.on('main:app:get-data-path', (event) => {
@@ -116,17 +119,13 @@ export function initPresent(appController: ElectronAppController) {
             event.returnValue = null;
         }
     });
-    ipcMain.on('main-app-present:message', async (_, data: {
-        presentId: number,
-        message: any,
-        replyEventName: string,
-    }) => {
-        const presentController = ElectronPresentController.getInstance(data.presentId);
-        if (presentController !== null) {
-            const result = presentController.sendMessage(data.message);
-            appController.mainWin.webContents.send(data.replyEventName, result);
-        }
-    });
+    ipcMain.on(channels.presentMessageChannel,
+        async (_, message: PresentMessageType) => {
+            const presentController = ElectronPresentController.getInstance(message.presentId);
+            if (presentController !== null) {
+                presentController.sendMessage(message.type, message.data);
+            }
+        });
     ipcMain.on('present:app:change-bible', (_, isNext) => {
         appController.mainController.changeBible(isNext);
     });

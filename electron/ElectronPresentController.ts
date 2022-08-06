@@ -1,5 +1,9 @@
 import { BrowserWindow } from 'electron';
-import { PresentMessageType, presentMessageChannel } from './eventListener';
+import {
+    PresentType,
+    AnyObjectType,
+    channels,
+} from './eventListener';
 import { isDev } from './helpers';
 
 const url = 'http://localhost:3000';
@@ -21,6 +25,7 @@ export default class ElectronPresentController {
             x: 0, y: 0,
             frame: false,
             webPreferences: {
+                webSecurity: !isDev,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: presentPreloadFile,
@@ -49,8 +54,13 @@ export default class ElectronPresentController {
     sendData(channel: string, data: any) {
         this.win.webContents.send(channel, data);
     }
-    sendMessage(message: PresentMessageType) {
-        this.win.webContents.send(presentMessageChannel, message);
+    sendMessage(type: PresentType, data: AnyObjectType) {
+        this.win.webContents.send(
+            channels.presentMessageChannel, {
+            presentId: this.presentId,
+            type,
+            data,
+        });
     }
     static getAllIds(): number[] {
         return Array.from(this._cache.keys()).map(key => {

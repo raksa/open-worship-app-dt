@@ -1,9 +1,11 @@
 import {
     IpcRendererEvent,
 } from 'electron';
+import { channels } from '../eventListener';
 const electron = require('electron');
 
 const messageUtils = {
+    channels,
     sendData(channel: string, ...args: any[]) {
         electron.ipcRenderer.send(channel, ...args);
     },
