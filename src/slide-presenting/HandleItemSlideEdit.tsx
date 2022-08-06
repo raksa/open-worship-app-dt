@@ -1,7 +1,6 @@
 import React, { Suspense, useState } from 'react';
-import {
+import WindowEventListener, {
     useWindowEvent,
-    windowEventListener,
     EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import SlideItem from '../slide-list/SlideItem';
@@ -19,10 +18,10 @@ export const closeItemSlideEditEvent: WEventMapper = {
     state: 'close',
 };
 export function openItemSlideEdit(slideItem: SlideItem) {
-    windowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
+    WindowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
 }
 export function closeItemSlideEdit() {
-    windowEventListener.fireEvent(closeItemSlideEditEvent);
+    WindowEventListener.fireEvent(closeItemSlideEditEvent);
 }
 
 export default function HandleItemSlideEdit() {

@@ -29,7 +29,7 @@ export default function ButtonAddMoreBible({
                     return bibleName;
                 });
                 const bibleListFiltered = bibleList.filter(([bible]) => {
-                    return !~bibleItemingList.indexOf(bible);
+                    return !bibleItemingList.includes(bible);
                 });
                 showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {
                     return {

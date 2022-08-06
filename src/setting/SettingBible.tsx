@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 
 export default function SettingBible() {
     const [bbList, setBbList] = useState(bibleHelper.getBibleList());
@@ -15,7 +15,7 @@ export default function SettingBible() {
                         setBbList([]);
                         bibleHelper.getBibleListOnline().then((isSuccess) => {
                             if (!isSuccess) {
-                                toastEventListener.showSimpleToast({
+                                ToastEventListener.showSimpleToast({
                                     title: 'Refreshing bible list',
                                     message: 'Unable to get bible list, please check your internet connection and try again!',
                                 });
@@ -56,7 +56,7 @@ function BibleItem({ bibleName }: { bibleName: string }) {
                                 setDProgress(0);
                                 bibleHelper.download(bibleName, {
                                     onStart: (totalSize) => {
-                                        toastEventListener.showSimpleToast({
+                                        ToastEventListener.showSimpleToast({
                                             title: `Start downloading ${bibleName}`,
                                             message: `Total size${totalSize}mb`,
                                         });
@@ -80,7 +80,7 @@ function BibleItem({ bibleName }: { bibleName: string }) {
                                     await bibleHelper.delete(bibleName);
                                     setIsDownloaded(false);
                                 } catch (error: any) {
-                                    toastEventListener.showSimpleToast({
+                                    ToastEventListener.showSimpleToast({
                                         title: 'Deleting',
                                         message: error.message,
                                     });

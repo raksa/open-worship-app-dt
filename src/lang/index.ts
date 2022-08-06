@@ -25,7 +25,7 @@ export function getCurrentLocale() {
   return currentLocal;
 }
 
-const cache: Map<string, LanguageType> = new Map();
+const cache = new Map<string, LanguageType>();
 export function getLang(lang: string) {
   return cache.get(lang) || null;
 }
@@ -80,7 +80,7 @@ export function fromLocaleNum(local: LocalType, localeNum: string) {
   const numList = langData.numList;
   const nString = `${localeNum}`.split('').map(n => {
     const ind = numList.indexOf(n);
-    if (~ind) {
+    if (ind > -1) {
       return ind;
     }
     return n;

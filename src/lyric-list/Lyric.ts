@@ -1,6 +1,6 @@
 import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
@@ -40,7 +40,7 @@ export default class Lyric extends ItemSource<LyricItem>{
                 return LyricItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);
             } catch (error: any) {
-                toastEventListener.showSimpleToast({
+                ToastEventListener.showSimpleToast({
                     title: 'Instantiating Bible Item',
                     message: error.message,
                 });

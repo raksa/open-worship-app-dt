@@ -12,7 +12,7 @@ const presentPreloadFile = `${__dirname}/client/presentPreload.js`;
 export default class ElectronPresentController {
     win: BrowserWindow;
     presentId: number;
-    static _cache: Map<string, ElectronPresentController> = new Map();
+    static _cache = new Map<string, ElectronPresentController>();
     constructor(presentId: number) {
         this.presentId = presentId;
         this.win = this.createPresentWindow();

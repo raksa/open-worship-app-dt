@@ -18,6 +18,7 @@ export type PresentEventType =
     | 'display-changed';
 
 export default class PresentEventListener extends EventHandler<PresentEventType> {
+    static eventNamePrefix: string = 'present';
     renderBG() {
         this.addPropEvent('render-bg');
     }

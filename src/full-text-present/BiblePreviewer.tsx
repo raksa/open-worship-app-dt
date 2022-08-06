@@ -71,7 +71,7 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
         if (bibleItems.length === 1 && bibleList.length > 1) {
             const currentBible = bibleItems[0].bibleName;
             let currentIndex = bibleList.indexOf(currentBible);
-            if (~currentIndex) {
+            if (currentIndex > -1) {
                 currentIndex = (bibleList.length + currentIndex + (isNext ? 1 : -1))
                     % bibleList.length;
                 const newPresents = [...bibleItems];

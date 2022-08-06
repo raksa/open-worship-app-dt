@@ -8,11 +8,12 @@ export type PresentManagerEventType = 'update' | 'visible' | 'display-id';
 const messageUtils = appProvider.messageUtils;
 const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
+    static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
     _isSelected: boolean = false;
     private _isShowing: boolean;
-    static readonly _cache: Map<string, PresentManager> = new Map();
+    static readonly _cache=new Map<string, PresentManager>();
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
@@ -49,7 +50,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             displayId: id,
         };
         this.addPropEvent('display-id', data);
-        PresentManager.eventHandler.addPropEvent('display-id', data);
+        PresentManager.addPropEvent('display-id', data);
     }
     get isSelected() {
         return this._isSelected;
@@ -76,7 +77,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         messageUtils.sendData('app:hide-present', this.presentId);
     }
     static fireUpdateEvent() {
-        this.eventHandler.addPropEvent('update');
+        this.addPropEvent('update');
     }
     static getAllShowingPresentIds(): number[] {
         return messageUtils.sendSyncData('main:app:get-presents');
@@ -95,7 +96,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         PresentManager.fireUpdateEvent();
     }
     static fireVisibleEvent() {
-        this.eventHandler.addPropEvent('visible');
+        this.addPropEvent('visible');
     }
     fireVisibleEvent() {
         this.addPropEvent('visible');

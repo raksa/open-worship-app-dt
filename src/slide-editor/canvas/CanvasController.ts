@@ -5,21 +5,18 @@ import {
     getSetting, setSetting,
 } from '../../helper/settingHelper';
 import FileSource from '../../helper/FileSource';
-import { toastEventListener } from '../../event/ToastEventListener';
+import ToastEventListener from '../../event/ToastEventListener';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBible from './CanvasItemBible';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 
-type ListenerType<T> = (data: T) => void;
-export type CCEventType = 'select' | 'control' | 'text-edit' | 'update' | 'scale';
-export type RegisteredEventType<T> = {
-    type: CCEventType,
-    listener: ListenerType<T>,
-};
+export type CCEventType = 'select' | 'control' |
+    'text-edit' | 'update' | 'scale';
 
 export default class CanvasController extends EventHandler<CCEventType> {
+    static eventNamePrefix: string = 'canvas-c';
     static _instance: CanvasController | null = null;
     copiedItem: CanvasItem<any> | null = null;
     _canvas: Canvas;
@@ -132,7 +129,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
         } catch (error) {
             console.log(error);
         }
-        toastEventListener.showSimpleToast({
+        ToastEventListener.showSimpleToast({
             title: 'Insert Image or Video',
             message: 'Fail to insert medias',
         });
@@ -192,18 +189,6 @@ export default class CanvasController extends EventHandler<CCEventType> {
     setItemIsEditing(canvasItem: CanvasItem<any>, b: boolean) {
         canvasItem.isEditing = b;
         this.fireTextEditEvent(canvasItem);
-    }
-    registerEventListener(types: CCEventType[], listener: ListenerType<any>):
-        RegisteredEventType<any>[] {
-        return types.map((type) => {
-            this._addOnEventListener(type, listener);
-            return { type, listener };
-        });
-    }
-    unregisterEventListener(regEvents: RegisteredEventType<any>[]) {
-        regEvents.forEach(({ type, listener }) => {
-            this._removeOnEventListener(type, listener);
-        });
     }
     static getInstance() {
         if (this._instance === null) {

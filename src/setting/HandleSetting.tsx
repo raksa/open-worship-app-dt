@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import {
+import WindowEventListener, {
     useWindowEvent,
-    windowEventListener,
     EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import AppSuspense from '../others/AppSuspense';
@@ -17,10 +16,10 @@ export const closeSettingEvent: WEventMapper = {
     state: 'close',
 };
 export function openSetting() {
-    windowEventListener.fireEvent(openSettingEvent);
+    WindowEventListener.fireEvent(openSettingEvent);
 }
 export function closeSetting() {
-    windowEventListener.fireEvent(closeSettingEvent);
+    WindowEventListener.fireEvent(closeSettingEvent);
 }
 
 

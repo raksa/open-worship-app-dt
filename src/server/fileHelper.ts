@@ -1,6 +1,4 @@
-import {
-    toastEventListener,
-} from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from '../helper/FileSource';
 
@@ -35,7 +33,7 @@ export const createNewItem = async (dir: string, name: string,
         return await fsCreateFile(filePath,
             content);
     } catch (error: any) {
-        toastEventListener.showSimpleToast({
+        ToastEventListener.showSimpleToast({
             title: 'Creating Playlist',
             message: error.message,
         });
@@ -51,7 +49,7 @@ export function getFileMetaData(fileName: string,
     mimetypeList = mimetypeList || getAllAppMimetype();
     const ext = fileName.substring(fileName.lastIndexOf('.'));
     const foundMT = mimetypeList.find((mt) => {
-        return ~mt.extensions.indexOf(ext);
+        return mt.extensions.includes(ext);
     });
     if (foundMT) {
         return { fileName, appMimetype: foundMT };
@@ -145,7 +143,7 @@ export async function fsListFilesWithMimetype(dir: string, mimetype: MimetypeNam
         });
     } catch (error) {
         console.log(error);
-        toastEventListener.showSimpleToast({
+        ToastEventListener.showSimpleToast({
             title: 'Getting File List',
             message: 'Error occurred during listing file',
         });
@@ -174,7 +172,7 @@ export async function fsCreateDir(dirPath: string) {
     try {
         appProvider.fileUtils.mkdirSync(dirPath);
     } catch (error: any) {
-        if (!~error.message.indexOf('file already exists')) {
+        if (!error.message.includes('file already exists')) {
             return error;
         }
     }

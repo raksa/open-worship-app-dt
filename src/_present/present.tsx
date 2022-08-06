@@ -23,7 +23,7 @@ document.addEventListener('wheel', function (e) {
 });
 document.addEventListener('keyup', function (e) {
   if ((e.ctrlKey || e.altKey)
-    && ~['ArrowLeft', 'ArrowRight'].indexOf(e.key)) {
+    && ['ArrowLeft', 'ArrowRight'].includes(e.key)) {
     const isNext = e.key === 'ArrowRight';
     appProvider.messageUtils.sendData('present:app:change-bible', isNext);
   }

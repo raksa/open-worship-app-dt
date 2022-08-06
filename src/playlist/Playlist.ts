@@ -1,4 +1,4 @@
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType } from '../helper/helpers';
@@ -30,7 +30,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
             try {
                 return PlaylistItem.fromJson(this.fileSource, json);
             } catch (error: any) {
-                toastEventListener.showSimpleToast({
+                ToastEventListener.showSimpleToast({
                     title: 'Instantiating Playlist Item',
                     message: error.message,
                 });
@@ -59,7 +59,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
             this._originalJson.items.push(item.toJson());
             return true;
         } catch (error: any) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Adding Playlist Item',
                 message: error.message,
             });

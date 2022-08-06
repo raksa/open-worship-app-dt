@@ -25,7 +25,7 @@ const AppPresenting = React.lazy(() => {
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode() {
     const windowType = getSetting(WINDOW_TYPE);
-    return ~['e', 'p'].indexOf(windowType) ? windowType as any : 'p';
+    return ['e', 'p'].includes(windowType) ? windowType as any : 'p';
 }
 export function isWindowEditingMode() {
     const windowType = getWindowMode();

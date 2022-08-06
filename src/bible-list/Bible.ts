@@ -1,4 +1,4 @@
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import {
     fsListFilesWithMimetype,
     MimetypeNameType,
@@ -33,7 +33,7 @@ export default class Bible extends ItemSource<BibleItem>{
             try {
                 return BibleItem.fromJson(json, this.fileSource);
             } catch (error: any) {
-                toastEventListener.showSimpleToast({
+                ToastEventListener.showSimpleToast({
                     title: 'Instantiating Bible Item',
                     message: error.message,
                 });
@@ -120,7 +120,7 @@ export default class Bible extends ItemSource<BibleItem>{
                 bibleItem.isSelected = true;
             }
         } catch (error: any) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Moving Bible Item',
                 message: error.message,
             });
@@ -147,7 +147,7 @@ export default class Bible extends ItemSource<BibleItem>{
         const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
         const defaultBible = await Bible.readFileToData(defaultFS);
         if (!defaultBible) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Getting Default Bible File',
                 message: 'Fail to get default bible file',
             });

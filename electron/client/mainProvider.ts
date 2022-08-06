@@ -26,6 +26,9 @@ const provider = {
         homepage: appInfo.homepage,
         version: appInfo.version,
     },
+    reload: () => {
+        window.location.reload();
+    },
 };
 
 export default provider;

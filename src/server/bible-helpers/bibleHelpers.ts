@@ -44,7 +44,7 @@ export async function genMatches(bibleName: string, inputText: string) {
         return null;
     }
     const check = (v1: string, v2: string) => {
-        if (~v1.toLowerCase().indexOf(v2.toLowerCase())) {
+        if (v1.toLowerCase().includes(v2.toLowerCase())) {
             return true;
         }
     };

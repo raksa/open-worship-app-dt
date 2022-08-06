@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
 import { getBookKVList } from '../server/bible-helpers/helpers1';
 import { extractBible, toInputText } from '../server/bible-helpers/helpers2';
@@ -14,7 +14,7 @@ export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleName === null) {
         const bibleNames = await bibleHelper.getDownloadedBibleList();
         if (!bibleNames || !bibleNames.length) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Getting Selected Bible',
                 message: 'Unable to get selected bible',
             });

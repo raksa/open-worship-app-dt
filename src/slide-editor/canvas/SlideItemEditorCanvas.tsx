@@ -7,7 +7,7 @@ import {
     useCCEvents,
     useCCScale,
 } from './canvasHelpers';
-import { toastEventListener } from '../../event/ToastEventListener';
+import ToastEventListener from '../../event/ToastEventListener';
 import { isSupportedMimetype } from '../../server/fileHelper';
 import FileSource from '../../helper/FileSource';
 import CanvasController from './CanvasController';
@@ -57,7 +57,7 @@ export default function SlideItemEditorCanvas() {
                             const files = event.dataTransfer.files;
                             for (const file of Array.from(files)) {
                                 if (!isSupportType(file.type)) {
-                                    toastEventListener.showSimpleToast({
+                                    ToastEventListener.showSimpleToast({
                                         title: 'Insert Image or Video',
                                         message: 'Unsupported file type!',
                                     });

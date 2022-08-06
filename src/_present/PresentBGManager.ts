@@ -16,6 +16,7 @@ export type PresentBGManagerEventType = 'update';
 
 const settingName = 'present-bg-';
 export default class PresentBGManager extends EventHandler<PresentBGManagerEventType> {
+    static eventNamePrefix: string = 'present-bg-m';
     readonly presentId: number;
     _bgSrc: BackgroundSrcType | null = null;
     constructor(presentId: number) {
@@ -49,7 +50,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         PresentManager.getInstance(this.presentId).fireUpdateEvent();
     }
     static fireUpdateEvent() {
-        this.eventHandler.addPropEvent('update');
+        this.addPropEvent('update');
         PresentManager.fireUpdateEvent();
     }
     static getBGSrcList(): BGSrcListType {
@@ -68,3 +69,5 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         setSetting(settingName, str);
     }
 }
+
+(window as any).PresentBGManager = PresentBGManager;

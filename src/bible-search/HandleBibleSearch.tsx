@@ -1,9 +1,8 @@
 import React from 'react';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import BibleItem from '../bible-list/BibleItem';
-import {
+import WindowEventListener, {
     useWindowEvent,
-    windowEventListener,
     EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import { useStateSettingBoolean } from '../helper/settingHelper';
@@ -21,10 +20,10 @@ export const closeBibleSearchEvent: WEventMapper = {
     state: 'close',
 };
 export function openBibleSearch() {
-    windowEventListener.fireEvent(openBibleSearchEvent);
+    WindowEventListener.fireEvent(openBibleSearchEvent);
 }
 export function closeBibleSearch() {
-    windowEventListener.fireEvent(closeBibleSearchEvent);
+    WindowEventListener.fireEvent(closeBibleSearchEvent);
     BibleItem.setSelectedEditingItem(null);
 }
 

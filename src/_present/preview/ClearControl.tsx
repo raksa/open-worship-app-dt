@@ -1,5 +1,4 @@
-import {
-    keyboardEventListener,
+import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import {
@@ -30,19 +29,19 @@ export default function ClearControl() {
         <div className='btn-group control'>
             <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresenting ? '' : 'outline-'}danger`}
                 disabled={!isPresenting}
-                data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F6' })}
+                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F6' })}
                 title='clear all' onClick={clearAll}>All</button>
             <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingBG ? '' : 'outline-'}secondary`}
                 disabled={!isPresentingBG} title='clear background'
-                data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F7' })}
+                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F7' })}
                 onClick={clearBG}>BG</button>
             <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFG ? '' : 'outline-'}info`}
                 disabled={!isPresentingFG} title='clear foreground'
-                data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F8' })}
+                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F8' })}
                 onClick={clearFG}>FG</button>
             <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFT ? '' : 'outline-'}primary`}
                 disabled={!isPresentingFT} title='clear full text'
-                data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F9' })}
+                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F9' })}
                 onClick={clearFT}>FT</button>
         </div>
     );

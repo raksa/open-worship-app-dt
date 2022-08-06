@@ -1,6 +1,5 @@
-import {
+import KeyboardEventListener, {
     EventMapper,
-    keyboardEventListener,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { tran } from '../lang';
@@ -18,7 +17,7 @@ export default function Header() {
         <div className='card-header text-center w-100'>
             <span>📖 {tran('bible-search')}</span>
             <button type='button' onClick={closeBibleSearch}
-                data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+                data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
                 className='tool-tip tool-tip-fade tool-tip-left btn-close float-end'></button>
         </div>
     );

@@ -10,7 +10,7 @@ import {
 } from './slideHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
@@ -75,7 +75,7 @@ export default class Slide extends ItemSource<SlideItem>{
                 return SlideItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);
             } catch (error: any) {
-                toastEventListener.showSimpleToast({
+                ToastEventListener.showSimpleToast({
                     title: 'Instantiating Bible Item',
                     message: error.message,
                 });

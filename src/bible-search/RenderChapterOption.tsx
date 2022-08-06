@@ -17,10 +17,10 @@ function genMatchedChapters(currentIndexing: number,
             length: chapterCount,
         }, (_, i) => i + 1);
         return currentIndexing ? chapterList.filter((c) => {
-            if (~`${c}`.indexOf(`${currentIndexing}`)) {
+            if (`${c}`.includes(`${currentIndexing}`)) {
                 return true;
             }
-            if (~`${currentIndexing}`.indexOf(`${c}`)) {
+            if (`${currentIndexing}`.includes(`${c}`)) {
                 return true;
             }
             return false;

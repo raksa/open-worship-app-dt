@@ -1,5 +1,5 @@
 import { presentEventListener } from '../event/PresentEventListener';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
@@ -21,7 +21,7 @@ export function openLink(link: string) {
 }
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
-    toastEventListener.showSimpleToast({
+    ToastEventListener.showSimpleToast({
         title: 'Copy',
         message: 'Text has been copied to clip',
     });

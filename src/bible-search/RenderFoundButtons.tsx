@@ -1,11 +1,10 @@
-import {
+import KeyboardEventListener, {
     EventMapper as KBEventMapper,
-    keyboardEventListener,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { isWindowEditingMode } from '../App';
 import { bookToKey } from '../server/bible-helpers/helpers1';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';
 import { ConsumeVerseType } from './RenderFound';
@@ -57,7 +56,7 @@ export default function RenderFoundButtons({
             closeBibleSearch();
             return savedBibleItem;
         } else {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Adding bible',
                 message: 'Fail to add bible to list',
             });
@@ -90,14 +89,14 @@ export default function RenderFoundButtons({
                 <button type='button'
                     className='tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5'
                     onClick={addBibleItem}
-                    data-tool-tip={keyboardEventListener
+                    data-tool-tip={KeyboardEventListener
                         .toShortcutKey(addListEventMapper)}>
                     {getAddingTitle()}
                 </button>}
             {!isWindowEditing && <button type='button'
                 className='tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5'
                 onClick={addBibleItemAndPresent}
-                data-tool-tip={keyboardEventListener
+                data-tool-tip={KeyboardEventListener
                     .toShortcutKey(presentEventMapper)}>
                 {isBibleSelectEditing ? 'Save and Present' : 'Present'}
             </button>}

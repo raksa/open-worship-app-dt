@@ -1,5 +1,4 @@
-import {
-    keyboardEventListener,
+import KeyboardEventListener, {
     useKeyboardRegistering,
     EventMapper as KBEventMapper,
 } from '../event/KeyboardEventListener';
@@ -23,7 +22,7 @@ export default function SlideItemEditorPopupHeader() {
                 {tran('edit-item-thumb')}
             </span>
             <button type='button' onClick={closeItemSlideEdit}
-                data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+                data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
                 className='tool-tip tool-tip-fade tool-tip-left btn-close float-end'></button>
         </div>
     );

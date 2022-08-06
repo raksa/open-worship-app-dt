@@ -66,13 +66,11 @@ export type CanvasItemPropsType = {
 };
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     static _objectId = 0;
-    _objectId: number;
     props: T;
     isSelected: boolean;
     isControlling: boolean;
     isEditing: boolean;
     constructor(props: T) {
-        this._objectId = CanvasItem._objectId++;
         this.props = props;
         this.isSelected = false;
         this.isControlling = false;

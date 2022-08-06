@@ -15,6 +15,7 @@ export type PreviewingType =
     | 'update-slide';
 
 export default class PreviewingEventListener extends EventHandler<PreviewingType> {
+    static eventNamePrefix: string = 'previewing';
     selectBibleItem(bibleItem: BibleItem | null) {
         if (bibleItem !== null) {
             setIsPreviewingBible();

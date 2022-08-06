@@ -25,20 +25,21 @@ export interface RegisteredEventMapper extends EventMapper {
 }
 export type ListenerType = ((e: KeyboardEvent) => void) | (() => void);
 export default class KeyboardEventListener extends EventHandler<string> {
-    layers: AppWidgetType[] = ['root'];
-    get lastLayer() {
+    static eventNamePrefix: string = 'keyboard';
+    static layers: AppWidgetType[] = ['root'];
+    static getLastLayer() {
         return this.layers[this.layers.length - 1];
     }
-    fireEvent(event: KeyboardEvent) {
+    static fireEvent(event: KeyboardEvent) {
         const option = {
             key: event.key,
             layer: this.layers[this.layers.length - 1],
         };
         this.addControlKey(option, event);
-        const k = this.toEventMapperKey(option);
+        const k = KeyboardEventListener.toEventMapperKey(option);
         this.addPropEvent(k, event);
     }
-    addControlKey(option: EventMapper, e: KeyboardEvent) {
+    static addControlKey(option: EventMapper, e: KeyboardEvent) {
         if (appProvider.systemUtils.isWindows) {
             option.wControlKey = [];
             e.ctrlKey && option.wControlKey.push('Ctrl');
@@ -56,10 +57,10 @@ export default class KeyboardEventListener extends EventHandler<string> {
             e.shiftKey && option.lControlKey.push('Shift');
         }
     }
-    toControlKey(controlType: WindowsControlType[] | MacControlType[] | LinuxControlType[]) {
+    static toControlKey(controlType: WindowsControlType[] | MacControlType[] | LinuxControlType[]) {
         return controlType.sort().join(' + ');
     }
-    toShortcutKey(eventMapper: EventMapper) {
+    static toShortcutKey(eventMapper: EventMapper) {
         let k = eventMapper.key;
         if (!k) {
             return '';
@@ -82,47 +83,30 @@ export default class KeyboardEventListener extends EventHandler<string> {
         }
         return k;
     }
-    toEventMapperKey(eventMapper: EventMapper) {
+    static toEventMapperKey(eventMapper: EventMapper) {
         const k = this.toShortcutKey(eventMapper);
         return eventMapper.layer ? `${eventMapper.layer}:${k}` : k;
     }
-    registerShortcutEventListener(eventMapper: EventMapper,
-        listener: ListenerType): RegisteredEventMapper {
-        eventMapper.layer = eventMapper.layer || this.lastLayer;
-        const key = this.toEventMapperKey(eventMapper);
-        this._addOnEventListener(key, listener);
-        return {
-            ...eventMapper,
-            listener,
-        };
-    }
-    unregisterShortcutEventListener(eventMapper: RegisteredEventMapper) {
-        eventMapper.layer = eventMapper.layer || this.lastLayer;
-        const key = this.toEventMapperKey(eventMapper);
-        this._removeOnEventListener(key, eventMapper.listener);
-        return eventMapper;
-    }
-    addLayer(l: AppWidgetType) {
+    static addLayer(l: AppWidgetType) {
         this.layers.push(l);
     }
-    removeLayer(l: AppWidgetType) {
+    static removeLayer(l: AppWidgetType) {
         this.layers = this.layers.filter((l1) => l1 !== l);
     }
 }
 
-export const keyboardEventListener = new KeyboardEventListener();
-
 export function useKeyboardRegistering(eventMapper: EventMapper, listener: ListenerType) {
     useEffect(() => {
-        const event = keyboardEventListener.registerShortcutEventListener(
-            eventMapper, listener);
+        const eventName = KeyboardEventListener.toEventMapperKey(eventMapper);
+        const registeredEvent = KeyboardEventListener.registerEventListener(
+            [eventName], listener);
         return () => {
-            keyboardEventListener.unregisterShortcutEventListener(event);
+            KeyboardEventListener.unregisterEventListener(registeredEvent);
         };
     });
 }
 
 
 document.onkeydown = function (e) {
-    keyboardEventListener.fireEvent(e);
+    KeyboardEventListener.fireEvent(e);
 };

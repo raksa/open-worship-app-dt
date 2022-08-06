@@ -8,11 +8,6 @@ export abstract class ItemBase implements ColorNoteInf {
     abstract fileSource?: FileSource | null;
     static SELECT_SETTING_NAME = '';
     jsonError: any;
-    static _objectId = 0;
-    _objectId: number;
-    constructor() {
-        this._objectId = ItemBase._objectId++;
-    }
     get isError() {
         return !!this.jsonError;
     }

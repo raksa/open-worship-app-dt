@@ -21,13 +21,10 @@ export default class LyricItem extends ItemBase {
     static copiedItem: LyricItem | null = null;
     editingCacheManager: LyricEditingCacheManager;
     static _cache = new Map<string, LyricItem>();
-    static _objectId = 0;
-    _objectId: number;
     constructor(id: number, fileSource: FileSource,
         json: LyricItemType,
         editingCacheManager?: LyricEditingCacheManager) {
         super();
-        this._objectId = LyricItem._objectId++;
         this.id = id;
         this._originalJson = Object.freeze(json);
         this.fileSource = fileSource;

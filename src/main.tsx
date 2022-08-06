@@ -24,7 +24,7 @@ const confirmEraseLocalStorage = () => {
     'We were sorry, Internal process error, you to refresh the app'
   ).then((isOk) => {
     if (isOk) {
-      location.reload();
+      appProvider.reload();
     }
   });
 };

@@ -1,6 +1,4 @@
-import {
-    toastEventListener,
-} from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
@@ -19,11 +17,8 @@ export default abstract class ItemSource<T extends {
     SELECT_SETTING_NAME: string = '';
     static mimetype: MimetypeNameType;
     fileSource: FileSource;
-    static _cache: Map<string, ItemSource<any>> = new Map();
-    static _objectId = 0;
-    _objectId: number;
+    static _cache = new Map<string, ItemSource<any>>();
     constructor(fileSource: FileSource) {
-        this._objectId = ItemSource._objectId++;
         this.fileSource = fileSource;
     }
     get isSelected() {
@@ -118,7 +113,7 @@ export default abstract class ItemSource<T extends {
             try {
                 return this.fromJson(fileSource, json);
             } catch (error: any) {
-                toastEventListener.showSimpleToast({
+                ToastEventListener.showSimpleToast({
                     title: 'Instantiating Data',
                     message: error.message,
                 });

@@ -4,6 +4,7 @@ import {
     getCurrentLocale,
     getLang, LanguageType, setCurrentLocale,
 } from '../lang';
+import appProvider from '../server/appProvider';
 
 export default function SettingGeneralLanguage() {
     const [isSelecting, setIsSelecting] = useState(false);
@@ -42,7 +43,7 @@ export default function SettingGeneralLanguage() {
                                 <button key={`${i}`}
                                     onClick={() => {
                                         setCurrentLocale(lang.locale);
-                                        location.reload();
+                                        appProvider.reload();
                                     }} className={`item btn ${btnType}`}>
                                     {lang.name} <div className='icon'
                                         dangerouslySetInnerHTML={{

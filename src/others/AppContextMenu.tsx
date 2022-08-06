@@ -1,6 +1,6 @@
 import './AppContextMenu.scss';
 
-import { keyboardEventListener } from '../event/KeyboardEventListener';
+import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import { ReactElement, useEffect, useState } from 'react';
 
@@ -56,18 +56,20 @@ export function showAppContextMenu(
     items: ContextMenuItemType[]) {
     event.stopPropagation();
     setDataDelegator && setDataDelegator({ event, items });
+    const eventName = KeyboardEventListener.toEventMapperKey({
+        key: 'Escape',
+    });
+    const escEvent = KeyboardEventListener.registerEventListener([eventName], () => {
+        setDataDelegator && setDataDelegator(null);
+        KeyboardEventListener.unregisterEventListener(escEvent);
+    });
     const listener = (e: MouseEvent) => {
         e.stopPropagation();
         setDataDelegator && setDataDelegator(null);
         document.body.removeEventListener('click', listener);
+        KeyboardEventListener.unregisterEventListener(escEvent);
     };
     document.body.addEventListener('click', listener);
-    const escEvent = keyboardEventListener.registerShortcutEventListener({
-        key: 'Escape',
-    }, () => {
-        setDataDelegator && setDataDelegator(null);
-        keyboardEventListener.unregisterShortcutEventListener(escEvent);
-    });
 }
 
 export default function AppContextMenu() {

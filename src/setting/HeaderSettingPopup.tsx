@@ -1,6 +1,5 @@
-import {
+import KeyboardEventListener, {
     EventMapper as KBEventMapper,
-    keyboardEventListener,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { closeSetting } from './HandleSetting';
@@ -19,7 +18,7 @@ export default function HeaderSettingPopup() {
                 <i className='bi bi-gear-wide-connected' />Setting
             </span>
             <button type='button' onClick={closeSetting}
-                data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
+                data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
                 className='tool-tip tool-tip-fade tool-tip-left btn-close float-end'></button>
         </div>
     );

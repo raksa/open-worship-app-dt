@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { globalEventHandler } from '../event/EventHandler';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import DirSource from './DirSource';
 import {
@@ -15,23 +14,22 @@ import {
 import { AnyObjectType } from './helpers';
 import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
+import EventHandler from '../event/EventHandler';
 
-type FSListener = (slideItem?: SlideItem) => void;
 export type FSEventType = 'select' | 'update'
     | 'history-update' | 'edit' | 'delete'
     | 'delete-cache' | 'refresh-dir';
-export type RegisteredEventType = {
-    key: string,
-    listener: FSListener,
-}
-export default class FileSource {
+
+export default class FileSource extends EventHandler<FSEventType> {
+    static eventNamePrefix: string = 'file-source';
     basePath: string;
     fileName: string;
     filePath: string;
     src: string;
-    static _fileCache = new Map<string, FileSource>();
+    static _cache = new Map<string, FileSource>();
     constructor(basePath: string, fileName: string,
         filePath: string, src: string) {
+        super();
         this.basePath = basePath;
         this.fileName = fileName;
         this.filePath = filePath;
@@ -40,27 +38,9 @@ export default class FileSource {
     get metadata() {
         return getFileMetaData(this.fileName);
     }
-    toEventKey(fsType: FSEventType) {
-        return `${fsType}-${this.filePath}`;
-    }
-    registerEventListener(fsTypes: FSEventType[],
-        listener: FSListener): RegisteredEventType[] {
-        return fsTypes.map((fsType) => {
-            const key = this.toEventKey(fsType);
-            globalEventHandler._addOnEventListener(key, listener);
-            return {
-                key,
-                listener,
-            };
-        });
-    }
-    unregisterEventListener(events: RegisteredEventType[]) {
-        events.forEach(({ key: key, listener }) => {
-            globalEventHandler._removeOnEventListener(key, listener);
-        });
-    }
     get name() {
-        return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
+        return this.fileName.substring(0,
+            this.fileName.lastIndexOf('.'));
     }
     get dirSource() {
         return DirSource.getDirSourceByDirPath(this.basePath);
@@ -72,25 +52,25 @@ export default class FileSource {
         this.dirSource?.fireReloadEvent();
     }
     fireSelectEvent() {
-        globalEventHandler.addPropEvent(this.toEventKey('select'));
+        this.addPropEvent('select');
     }
     fireHistoryUpdateEvent() {
-        globalEventHandler.addPropEvent(this.toEventKey('history-update'));
+        this.addPropEvent('history-update');
     }
     fireUpdateEvent() {
-        globalEventHandler.addPropEvent(this.toEventKey('update'));
+        this.addPropEvent('update');
     }
     fireEditEvent(slideItem: SlideItem) {
-        globalEventHandler.addPropEvent(this.toEventKey('edit'), slideItem);
+        this.addPropEvent('edit', slideItem);
     }
     fireDeleteEvent() {
-        globalEventHandler.addPropEvent(this.toEventKey('delete'));
+        this.addPropEvent('delete');
     }
     fireDeleteCacheEvent() {
-        globalEventHandler.addPropEvent(this.toEventKey('delete-cache'));
+        this.addPropEvent('delete-cache');
     }
     deleteCache() {
-        FileSource._fileCache.delete(this.filePath);
+        FileSource._cache.delete(this.filePath);
         ItemSource.deleteCache(this.filePath);
         this.fireDeleteCacheEvent();
     }
@@ -99,7 +79,7 @@ export default class FileSource {
             const str = await fsReadFile(this.filePath);
             return JSON.parse(str) as AnyObjectType;
         } catch (error: any) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Reading File Data',
                 message: error.message,
             });
@@ -113,7 +93,7 @@ export default class FileSource {
             this.fireUpdateEvent();
             return true;
         } catch (error: any) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Saving File',
                 message: error.message,
             });
@@ -128,7 +108,7 @@ export default class FileSource {
             this.fireReloadDirEvent();
             return true;
         } catch (error: any) {
-            toastEventListener.showSimpleToast({
+            ToastEventListener.showSimpleToast({
                 title: 'Saving File',
                 message: error.message,
             });
@@ -151,12 +131,12 @@ export default class FileSource {
     static genFileSource(filePath: string, fileName?: string, refreshCache?: boolean) {
         const fileSource = this.genFileSourceNoCache(filePath, fileName);
         if (refreshCache) {
-            this._fileCache.delete(fileSource.filePath);
+            this._cache.delete(fileSource.filePath);
         }
-        if (this._fileCache.has(fileSource.filePath)) {
-            return this._fileCache.get(fileSource.filePath) as FileSource;
+        if (this._cache.has(fileSource.filePath)) {
+            return this._cache.get(fileSource.filePath) as FileSource;
         }
-        this._fileCache.set(fileSource.filePath, fileSource);
+        this._cache.set(fileSource.filePath, fileSource);
         return fileSource;
     }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import PathSelector from '../others/PathSelector';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import {
     fsCopyFileToPath,
     isSupportedExt,
@@ -81,7 +81,7 @@ export default function FileListHandler({
                 Array.from(event.dataTransfer.files).forEach(async (file) => {
                     const title = 'Copying File';
                     if (!isSupportedExt(file.name, mimetype)) {
-                        toastEventListener.showSimpleToast({
+                        ToastEventListener.showSimpleToast({
                             title,
                             message: 'Unsupported file type!',
                         });
@@ -89,13 +89,13 @@ export default function FileListHandler({
                         try {
                             await fsCopyFileToPath((file as any).path,
                                 file.name, dirSource.dirPath);
-                            toastEventListener.showSimpleToast({
+                            ToastEventListener.showSimpleToast({
                                 title,
                                 message: 'File has been copied',
                             });
                             dirSource.fireReloadEvent();
                         } catch (error: any) {
-                            toastEventListener.showSimpleToast({
+                            ToastEventListener.showSimpleToast({
                                 title,
                                 message: error.message,
                             });
@@ -119,7 +119,7 @@ export default function FileListHandler({
                             const isOk = await openConfirm('Not implemented',
                                 'Read mode is not implemented yet.');
                             if (isOk) {
-                                toastEventListener.showSimpleToast({
+                                ToastEventListener.showSimpleToast({
                                     title: 'Deleting All',
                                     message: 'Not implemented, need input "delete all"',
                                 });

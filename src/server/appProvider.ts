@@ -75,6 +75,7 @@ const appProvider = (window as any).provider as {
     pathUtils: PathUtilsType,
     systemUtils: SystemUtilsType,
     appInfo: AppInfoType,
+    reload: () => void,
 };
 
 export default appProvider;

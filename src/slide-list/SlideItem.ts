@@ -25,13 +25,10 @@ export default class SlideItem extends ItemBase {
     _width: number;
     _height: number;
     static _cache = new Map<string, SlideItem>();
-    static _objectId = 0;
-    _objectId: number;
     constructor(id: number, fileSource: FileSource,
         json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager) {
         super();
-        this._objectId = SlideItem._objectId++;
         this.id = id;
         this._width = json.metadata.width;
         this._height = json.metadata.height;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 
 let fontListGlobal: string[] | null = null;
@@ -19,7 +19,7 @@ export function useFontList() {
                 setFontListString(newFontList);
             }).catch((error) => {
                 console.log(error);
-                toastEventListener.showSimpleToast({
+                ToastEventListener.showSimpleToast({
                     title: 'Loading Fonts',
                     message: 'Fail to load font list',
                 });

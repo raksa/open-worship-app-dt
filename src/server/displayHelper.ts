@@ -1,4 +1,4 @@
-import { toastEventListener } from '../event/ToastEventListener';
+import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 
 export type BoundsType = {
@@ -23,7 +23,7 @@ export function saveDisplaySetting(data: {
 }) {
     const success = !!appProvider.messageUtils.
         sendSyncData('main:app:set-present-display', data);
-    toastEventListener.showSimpleToast({
+    ToastEventListener.showSimpleToast({
         title: 'Save Display',
         message: success ? 'Display setting have been saved' :
             'Fail to save display setting',
