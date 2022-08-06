@@ -16,7 +16,6 @@ export type PresentBGManagerEventType = 'update';
 
 const settingName = 'present-bg-';
 export default class PresentBGManager extends EventHandler<PresentBGManagerEventType> {
-    static readonly eventHandler = new EventHandler<PresentBGManagerEventType>();
     readonly presentId: number;
     _bgSrc: BackgroundSrcType | null = null;
     constructor(presentId: number) {

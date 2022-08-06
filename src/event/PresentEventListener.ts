@@ -4,7 +4,7 @@ import { getPresentRendered } from '../server/appHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import SlideItem from '../slide-list/SlideItem';
-import EventHandler from './EventHandler';
+import EventHandler, { ListenerType } from './EventHandler';
 
 export type PresentEventType =
     | 'render-bg'
@@ -16,13 +16,6 @@ export type PresentEventType =
     | 'ctrl-scrolling'
     | 'change-bible'
     | 'display-changed';
-
-type AsyncListenerType<T> = ((data: T) => Promise<void>) | (() => Promise<void>);
-type ListenerType<T> = ((data: T) => void) | (() => void);
-export type RegisteredEventType<T> = {
-    type: PresentEventType,
-    listener: ListenerType<T>,
-}
 
 export default class PresentEventListener extends EventHandler<PresentEventType> {
     renderBG() {
@@ -60,17 +53,6 @@ export default class PresentEventListener extends EventHandler<PresentEventType>
     displayChanged() {
         this.addPropEvent('display-changed');
     }
-    registerPresentEventListener(type: PresentEventType,
-        listener: ListenerType<any>): RegisteredEventType<any> {
-        this._addOnEventListener(type, listener);
-        return {
-            type,
-            listener,
-        };
-    }
-    unregisterPresentEventListener({ type, listener }: RegisteredEventType<any>) {
-        this._removeOnEventListener(type, listener);
-    }
 }
 
 export const presentEventListener = new PresentEventListener();
@@ -81,23 +63,23 @@ export function usePresentBGRendering() {
         setIsShowing(!!rendered.background);
     });
     useEffect(() => {
-        const eventRender = presentEventListener.registerPresentEventListener(
-            'render-bg', () => setIsShowing(true));
-        const eventClear = presentEventListener.registerPresentEventListener(
-            'clear-bg', () => setIsShowing(false));
+        const eventRender = presentEventListener.registerEventListener(
+            ['render-bg'], () => setIsShowing(true));
+        const eventClear = presentEventListener.registerEventListener(
+            ['clear-bg'], () => setIsShowing(false));
         return () => {
-            presentEventListener.unregisterPresentEventListener(eventRender);
-            presentEventListener.unregisterPresentEventListener(eventClear);
+            presentEventListener.unregisterEventListener(eventRender);
+            presentEventListener.unregisterEventListener(eventClear);
         };
     });
     return isPresenting;
 }
 export function usePresentBGClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const eventClear = presentEventListener.registerPresentEventListener(
-            'clear-bg', listener);
+        const eventClear = presentEventListener.registerEventListener(
+            ['clear-bg'], listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(eventClear);
+            presentEventListener.unregisterEventListener(eventClear);
         };
     });
 }
@@ -107,23 +89,23 @@ export function usePresentFGRendering() {
         setIsShowing(!!rendered.foreground);
     });
     useEffect(() => {
-        const eventRender = presentEventListener.registerPresentEventListener(
-            'render-fg', () => setIsShowing(true));
-        const eventClear = presentEventListener.registerPresentEventListener(
-            'clear-fg', () => setIsShowing(false));
+        const eventRender = presentEventListener.registerEventListener(
+            ['render-fg'], () => setIsShowing(true));
+        const eventClear = presentEventListener.registerEventListener(
+            ['clear-fg'], () => setIsShowing(false));
         return () => {
-            presentEventListener.unregisterPresentEventListener(eventRender);
-            presentEventListener.unregisterPresentEventListener(eventClear);
+            presentEventListener.unregisterEventListener(eventRender);
+            presentEventListener.unregisterEventListener(eventClear);
         };
     });
     return isPresenting;
 }
 export function usePresentFGClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const eventClear = presentEventListener.registerPresentEventListener(
-            'clear-fg', listener);
+        const eventClear = presentEventListener.registerEventListener(
+            ['clear-fg'], listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(eventClear);
+            presentEventListener.unregisterEventListener(eventClear);
         };
     });
 }
@@ -133,41 +115,41 @@ export function usePresentFTRendering() {
         setIsShowing(!!rendered.fullText);
     });
     useEffect(() => {
-        const eventRender = presentEventListener.registerPresentEventListener(
-            'render-fg', () => setIsShowing(true));
-        const eventClear = presentEventListener.registerPresentEventListener(
-            'clear-ft', () => setIsShowing(false));
+        const eventRender = presentEventListener.registerEventListener(
+            ['render-fg'], () => setIsShowing(true));
+        const eventClear = presentEventListener.registerEventListener(
+            ['clear-ft'], () => setIsShowing(false));
         return () => {
-            presentEventListener.unregisterPresentEventListener(eventRender);
-            presentEventListener.unregisterPresentEventListener(eventClear);
+            presentEventListener.unregisterEventListener(eventRender);
+            presentEventListener.unregisterEventListener(eventClear);
         };
     });
     return isPresenting;
 }
 export function usePresentFTClearing(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const eventClear = presentEventListener.registerPresentEventListener(
-            'clear-ft', listener);
+        const eventClear = presentEventListener.registerEventListener(
+            ['clear-ft'], listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(eventClear);
+            presentEventListener.unregisterEventListener(eventClear);
         };
     });
 }
 export function usePresentCtrlScrolling(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            'ctrl-scrolling', listener);
+        const event = presentEventListener.registerEventListener(
+            ['ctrl-scrolling'], listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(event);
+            presentEventListener.unregisterEventListener(event);
         };
     });
 }
-export function useChangingBible(listener: AsyncListenerType<boolean>) {
+export function useChangingBible(listener: ListenerType<boolean>) {
     useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            'change-bible', listener);
+        const event = presentEventListener.registerEventListener(
+            ['change-bible'], listener);
         return () => {
-            presentEventListener.unregisterPresentEventListener(event);
+            presentEventListener.unregisterEventListener(event);
         };
     });
 }

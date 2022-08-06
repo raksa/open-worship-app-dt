@@ -1,36 +1,22 @@
 import { useEffect } from 'react';
 import { SimpleToastType } from '../others/Toast';
-import EventHandler from './EventHandler';
+import EventHandler, { ListenerType } from './EventHandler';
 
-type ListenerType = (toast: SimpleToastType) => void;
 export type ToastEventType = 'simple';
-export type RegisteredEventType = {
-    type: ToastEventType,
-    listener: ListenerType,
-};
+
 export default class ToastEventListener extends EventHandler<ToastEventType> {
     showSimpleToast(toast: SimpleToastType) {
         this.addPropEvent('simple', toast);
-    }
-    registerToastEventListener(type: ToastEventType, listener: ListenerType): RegisteredEventType {
-        this._addOnEventListener(type, listener);
-        return {
-            type,
-            listener,
-        };
-    }
-    unregisterToastEventListener({ type, listener }: RegisteredEventType) {
-        this._removeOnEventListener(type, listener);
     }
 }
 
 export const toastEventListener = new ToastEventListener();
 
-export function useToastSimpleShowing(listener: ListenerType) {
+export function useToastSimpleShowing(listener: ListenerType<SimpleToastType>) {
     useEffect(() => {
-        const event = toastEventListener.registerToastEventListener('simple', listener);
+        const event = toastEventListener.registerEventListener(['simple'], listener);
         return () => {
-            toastEventListener.unregisterToastEventListener(event);
+            toastEventListener.unregisterEventListener(event);
         };
     });
 }

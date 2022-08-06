@@ -5,7 +5,7 @@ import {
 } from '../full-text-present/FullTextPreviewer';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
-import EventHandler from './EventHandler';
+import EventHandler, { ListenerType } from './EventHandler';
 
 export type PreviewingType =
     'select-bible-item'
@@ -13,12 +13,6 @@ export type PreviewingType =
     | 'update-lyric'
     | 'select-slide'
     | 'update-slide';
-
-type ListenerType<T> = (data: T) => void | (() => void);
-export type RegisteredEventType<T> = {
-    type: PreviewingType,
-    listener: ListenerType<T>,
-};
 
 export default class PreviewingEventListener extends EventHandler<PreviewingType> {
     selectBibleItem(bibleItem: BibleItem | null) {
@@ -42,17 +36,6 @@ export default class PreviewingEventListener extends EventHandler<PreviewingType
     updateSlide(slide: Slide) {
         this.addPropEvent('update-slide', slide);
     }
-    registerEventListener(type: PreviewingType, listener: ListenerType<any>):
-        RegisteredEventType<any> {
-        this._addOnEventListener(type, listener);
-        return {
-            type,
-            listener,
-        };
-    }
-    unregisterEventListener({ type, listener }: RegisteredEventType<any>) {
-        this._removeOnEventListener(type, listener);
-    }
 }
 
 export const previewingEventListener = new PreviewingEventListener();
@@ -60,7 +43,7 @@ export const previewingEventListener = new PreviewingEventListener();
 export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            'select-bible-item', listener);
+            ['select-bible-item'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -69,7 +52,7 @@ export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) 
 export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            'select-lyric', listener);
+            ['select-lyric'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -78,7 +61,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            'update-lyric', listener);
+            ['update-lyric'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -87,7 +70,7 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
 export function useSlideSelecting(listener: ListenerType<Slide | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            'select-slide', listener);
+            ['select-slide'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -96,7 +79,7 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
 export function useSlideUpdating(listener: ListenerType<Slide>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            'update-slide', listener);
+            ['update-slide'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
@@ -105,9 +88,9 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
 export function useFullTextOpening(listener: ListenerType<void>) {
     useEffect(() => {
         const eventLyric = previewingEventListener.registerEventListener(
-            'select-lyric', listener);
+            ['select-lyric'], listener);
         const eventBible = previewingEventListener.registerEventListener(
-            'select-bible-item', listener);
+            ['select-bible-item'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(eventLyric);
             previewingEventListener.unregisterEventListener(eventBible);

@@ -22,17 +22,17 @@ export function usePMEvents(events: PresentManagerEventType[],
         };
         let registerEvent: RegisteredEventType<PresentManagerEventType, void>[] = [];
         if (presentManager !== undefined) {
-            registerEvent = presentManager.registerEventListener1(
+            registerEvent = presentManager.registerEventListener(
                 events, update);
         } else {
-            registerEvent = PresentManager.registerEventListener1(
+            registerEvent = PresentManager.registerEventListener(
                 events, update);
         }
         return () => {
             if (presentManager !== undefined) {
-                presentManager.unregisterEventListener1(registerEvent);
+                presentManager.unregisterEventListener(registerEvent);
             } else {
-                PresentManager.unregisterEventListener1(registerEvent);
+                PresentManager.unregisterEventListener(registerEvent);
             }
         };
     }, [presentManager, n]);
@@ -51,17 +51,17 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
         };
         let registerEvent: RegisteredEventType<PresentBGManagerEventType, void>[] = [];
         if (presentBGManager !== undefined) {
-            registerEvent = presentBGManager.registerEventListener1(
+            registerEvent = presentBGManager.registerEventListener(
                 events, update);
         } else {
-            registerEvent = PresentBGManager.registerEventListener1(
+            registerEvent = PresentBGManager.registerEventListener(
                 events, update);
         }
         return () => {
             if (presentBGManager !== undefined) {
-                presentBGManager.unregisterEventListener1(registerEvent);
+                presentBGManager.unregisterEventListener(registerEvent);
             } else {
-                PresentBGManager.unregisterEventListener1(registerEvent);
+                PresentBGManager.unregisterEventListener(registerEvent);
             }
         };
     }, [presentBGManager, n]);

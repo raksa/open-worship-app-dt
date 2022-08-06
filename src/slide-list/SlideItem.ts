@@ -1,6 +1,3 @@
-import {
-    slideListEventListenerGlobal,
-} from '../event/SlideListEventListener';
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
@@ -8,6 +5,7 @@ import { AnyObjectType, cloneObject } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
+import SlideListEventListener from '../event/SlideListEventListener';
 
 export type SlideItemType = {
     id: number,
@@ -116,10 +114,10 @@ export default class SlideItem extends ItemBase {
         }
         if (b) {
             SlideItem.setSelectedItem(this);
-            slideListEventListenerGlobal.selectSlideItem(this);
+            SlideListEventListener.selectSlideItem(this);
         } else {
             SlideItem.setSelectedItem(null);
-            slideListEventListenerGlobal.selectSlideItem(null);
+            SlideListEventListener.selectSlideItem(null);
         }
         this.fileSource.fireSelectEvent();
     }

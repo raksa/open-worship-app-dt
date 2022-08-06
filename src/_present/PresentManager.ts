@@ -8,7 +8,6 @@ export type PresentManagerEventType = 'update' | 'visible' | 'display-id';
 const messageUtils = appProvider.messageUtils;
 const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
-    static readonly eventHandler = new EventHandler<PresentManagerEventType>();
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
     _isSelected: boolean = false;

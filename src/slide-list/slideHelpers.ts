@@ -1,5 +1,5 @@
 import { isWindowEditingMode } from '../App';
-import { slideListEventListenerGlobal } from '../event/SlideListEventListener';
+import SlideListEventListener from '../event/SlideListEventListener';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 import Slide from './Slide';
@@ -39,7 +39,7 @@ export function openSlideContextMenu(e: any,
             title: 'Quick Edit', onClick: () => {
                 const isEditing = isWindowEditingMode();
                 if (isEditing) {
-                    slideListEventListenerGlobal.selectSlideItem(slideItem);
+                    SlideListEventListener.selectSlideItem(slideItem);
                 } else {
                     openItemSlideEdit(slideItem);
                 }

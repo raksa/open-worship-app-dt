@@ -1,12 +1,10 @@
-import {
-    slideListEventListenerGlobal,
-} from '../event/SlideListEventListener';
 import Slide from '../slide-list/Slide';
 import SlideItem from '../slide-list/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
 import FileReadError from '../others/FileReadError';
 import PlaylistItem from './PlaylistItem';
 import SlideItemRendererIFrame from '../slide-presenting/items/SlideItemRendererIFrame';
+import SlideListEventListener from '../event/SlideListEventListener';
 
 export default function PlaylistSlideItem({ playlistItem }: {
     playlistItem: PlaylistItem,
@@ -32,7 +30,7 @@ export default function PlaylistSlideItem({ playlistItem }: {
     return (
         <div className='card overflow-hidden'
             onClick={() => {
-                slideListEventListenerGlobal.selectSlideItem(item);
+                SlideListEventListener.selectSlideItem(item);
             }}>
             <SlideItemRendererIFrame slideItem={item} />
         </div>
