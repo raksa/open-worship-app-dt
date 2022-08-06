@@ -4,6 +4,8 @@ import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
 
 const provider = {
+    isMain: false,
+    isPresent: true,
     messageUtils,
     fileUtils,
     pathUtils,

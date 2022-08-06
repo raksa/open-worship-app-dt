@@ -1,32 +1,22 @@
 import EventHandler from '../event/EventHandler';
-import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { AllDisplayType } from '../server/displayHelper';
 import appProvider from './appProvider';
-import PresentBGManager, {
-    BackgroundSrcType,
-} from './PresentBGManager';
+import PresentBGManager from './PresentBGManager';
 
-export type PMEventType = 'update' | 'visible' | 'display-id';
-type ListenerType<T> = (data: T) => void;
-export type RegisteredEventType<T> = {
-    type: PMEventType,
-    listener: ListenerType<T>,
-};
+export type PresentManagerEventType = 'update' | 'visible' | 'display-id';
 const messageUtils = appProvider.messageUtils;
 const settingName = 'present-display-';
-export default class PresentManager extends EventHandler<PMEventType> {
-    static readonly eventHandler = new EventHandler<PMEventType>();
+export default class PresentManager extends EventHandler<PresentManagerEventType> {
+    static readonly eventHandler = new EventHandler<PresentManagerEventType>();
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
-    readonly isMain: boolean = true;
     _isSelected: boolean = false;
     private _isShowing: boolean;
     static readonly _cache: Map<string, PresentManager> = new Map();
-    constructor(presentId: number, isPresent?: boolean) {
+    constructor(presentId: number) {
         super();
         this.presentId = presentId;
-        this.isMain = !isPresent;
         this.presentBGManager = new PresentBGManager(presentId);
         const ids = PresentManager.getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
@@ -59,8 +49,8 @@ export default class PresentManager extends EventHandler<PMEventType> {
             presentId: this.presentId,
             displayId: id,
         };
-        this._addPropEvent('display-id', data);
-        PresentManager.eventHandler._addPropEvent('display-id', data);
+        this.addPropEvent('display-id', data);
+        PresentManager.eventHandler.addPropEvent('display-id', data);
     }
     get isSelected() {
         return this._isSelected;
@@ -83,29 +73,11 @@ export default class PresentManager extends EventHandler<PMEventType> {
         }
         this.fireVisibleEvent();
     }
-    get bgSrc() {
-        return this.presentBGManager.bgSrc;
-    }
-    set bgSrc(bgSrc: BackgroundSrcType | null) {
-        this.presentBGManager.bgSrc = bgSrc;
-        this.sendMessage('background', bgSrc);
-        this.fireUpdateEvent();
-    }
-    close() {
+    hide() {
         messageUtils.sendData('app:hide-present', this.presentId);
     }
-    sendMessage(type: PresentType, data: AnyObjectType | null) {
-        if (!this.isMain) {
-            return;
-        }
-        const channel1 = messageUtils.channels.presentMessageChannel;
-        messageUtils.sendData(channel1, {
-            presentId: this.presentId,
-            type, data,
-        });
-    }
     static fireUpdateEvent() {
-        this.eventHandler._addPropEvent('update');
+        this.eventHandler.addPropEvent('update');
     }
     static getAllShowingPresentIds(): number[] {
         return messageUtils.sendSyncData('main:app:get-presents');
@@ -120,50 +92,23 @@ export default class PresentManager extends EventHandler<PMEventType> {
         }) || primaryDisplay;
     }
     fireUpdateEvent() {
-        this._addPropEvent('update');
+        this.addPropEvent('update');
         PresentManager.fireUpdateEvent();
     }
     static fireVisibleEvent() {
-        this.eventHandler._addPropEvent('visible');
+        this.eventHandler.addPropEvent('visible');
     }
     fireVisibleEvent() {
-        this._addPropEvent('visible');
+        this.addPropEvent('visible');
         PresentManager.fireUpdateEvent();
     }
-    registerEventListener(types: PMEventType[], listener: ListenerType<any>):
-        RegisteredEventType<any>[] {
-        return types.map((type) => {
-            this._addOnEventListener(type, listener);
-            return { type, listener };
-        });
+    static getInstanceByKey(key: string) {
+        return this.getInstance(+key);
     }
-    unregisterEventListener(regEvents: RegisteredEventType<any>[]) {
-        regEvents.forEach(({ type, listener }) => {
-            this._removeOnEventListener(type, listener);
-        });
-    }
-    static registerEventListener(types: PMEventType[], listener: ListenerType<any>):
-        RegisteredEventType<any>[] {
-        return types.map((type) => {
-            this.eventHandler._addOnEventListener(type, listener);
-            return { type, listener };
-        });
-    }
-    static unregisterEventListener(regEvents: RegisteredEventType<any>[]) {
-        regEvents.forEach(({ type, listener }) => {
-            this.eventHandler._removeOnEventListener(type, listener);
-        });
-    }
-    static getAllKeys() {
-        return Array.from(this._cache.keys());
-    }
-    static getInstanceByKey(key: string, isPresent?: boolean) {
-        return this.getInstance(+key, isPresent);
-    }
-    static getInstance(presentId: number, isPresent?: boolean) {
+    static getInstance(presentId: number) {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
-            const presentManager = new PresentManager(presentId, isPresent);
+            const presentManager = new PresentManager(presentId);
             this._cache.set(key, presentManager);
         }
         return this._cache.get(key) as PresentManager;
@@ -175,21 +120,3 @@ export default class PresentManager extends EventHandler<PMEventType> {
             });
     }
 }
-
-type PresentType = 'background' | 'display-change' | 'visible';
-export type PresentMessageType = {
-    presentId: number,
-    type: PresentType,
-    data: AnyObjectType | null,
-};
-const channel = messageUtils.channels.presentMessageChannel;
-appProvider.messageUtils.listenForData(channel,
-    (_, message: PresentMessageType) => {
-        const { presentId, type, data } = message;
-        const presentManager = PresentManager.getInstance(presentId);
-        if (type === 'background') {
-            presentManager.bgSrc = data as any;
-        } else if (type === 'visible' && data !== null) {
-            presentManager.isShowing = data.isShowing;
-        }
-    });

@@ -21,7 +21,7 @@ export default class WindowEventListener extends EventHandler<string> {
             keyboardEventListener.removeLayer(event.widget);
         }
         const k = this.toEventMapperKey(event);
-        this._addPropEvent(k, data);
+        this.addPropEvent(k, data);
     }
     toEventMapperKey(event: EventMapper) {
         return `${event.widget}-${event.state}`;

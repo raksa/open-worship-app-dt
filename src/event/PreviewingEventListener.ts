@@ -25,22 +25,22 @@ export default class PreviewingEventListener extends EventHandler<PreviewingType
         if (bibleItem !== null) {
             setIsPreviewingBible();
         }
-        this._addPropEvent('select-bible-item', bibleItem);
+        this.addPropEvent('select-bible-item', bibleItem);
     }
     selectLyric(lyric: Lyric | null) {
         if (lyric !== null) {
             setIsPreviewingLyric();
         }
-        this._addPropEvent('select-lyric', lyric);
+        this.addPropEvent('select-lyric', lyric);
     }
     updateLyric(lyric: Lyric) {
-        this._addPropEvent('update-lyric', lyric);
+        this.addPropEvent('update-lyric', lyric);
     }
     presentSlide(slide: Slide | null) {
-        this._addPropEvent('select-slide', slide);
+        this.addPropEvent('select-slide', slide);
     }
     updateSlide(slide: Slide) {
-        this._addPropEvent('update-slide', slide);
+        this.addPropEvent('update-slide', slide);
     }
     registerEventListener(type: PreviewingType, listener: ListenerType<any>):
         RegisteredEventType<any> {

@@ -11,7 +11,7 @@ export function useFontList() {
                 setFontListString(fontListGlobal);
                 return;
             }
-            appProvider.fontList.getFonts().then((fonts) => {
+            appProvider.fontUtils.getFonts().then((fonts) => {
                 const newFontList = fonts.map((fontString) => {
                     return fontString.replace(/'/g, '');
                 });

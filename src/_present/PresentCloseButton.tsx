@@ -8,7 +8,7 @@ export default function PresentCloseButton({
 }) {
     return (
         <button id="close" onClick={() => {
-            presentManager.close();
+            presentManager.hide();
         }}>x</button>
     );
 }

@@ -72,22 +72,22 @@ export default class FileSource {
         this.dirSource?.fireReloadEvent();
     }
     fireSelectEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('select'));
+        globalEventHandler.addPropEvent(this.toEventKey('select'));
     }
     fireHistoryUpdateEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('history-update'));
+        globalEventHandler.addPropEvent(this.toEventKey('history-update'));
     }
     fireUpdateEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('update'));
+        globalEventHandler.addPropEvent(this.toEventKey('update'));
     }
     fireEditEvent(slideItem: SlideItem) {
-        globalEventHandler._addPropEvent(this.toEventKey('edit'), slideItem);
+        globalEventHandler.addPropEvent(this.toEventKey('edit'), slideItem);
     }
     fireDeleteEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('delete'));
+        globalEventHandler.addPropEvent(this.toEventKey('delete'));
     }
     fireDeleteCacheEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('delete-cache'));
+        globalEventHandler.addPropEvent(this.toEventKey('delete-cache'));
     }
     deleteCache() {
         FileSource._fileCache.delete(this.filePath);

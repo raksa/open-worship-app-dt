@@ -1,4 +1,7 @@
+import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
+import appProvider from './appProvider';
+import PresentManager from './PresentManager';
 
 export type BackgroundType = 'color' | 'image' | 'video';
 export type BackgroundSrcType = {
@@ -9,22 +12,29 @@ export type BGSrcListType = {
     [key: string]: BackgroundSrcType;
 };
 
+export type PresentBGManagerEventType = 'update';
+
 const settingName = 'present-bg-';
-export default class PresentBGManager {
+export default class PresentBGManager extends EventHandler<PresentBGManagerEventType> {
+    static readonly eventHandler = new EventHandler<PresentBGManagerEventType>();
     readonly presentId: number;
-    readonly isMain: boolean = true;
-    constructor(presentId: number, isPresent?: boolean) {
+    _bgSrc: BackgroundSrcType | null = null;
+    constructor(presentId: number) {
+        super();
         this.presentId = presentId;
-        this.isMain = !isPresent;
+        if (appProvider.isMain) {
+            const allBGSrcList = PresentBGManager.getBGSrcList();
+            this._bgSrc = allBGSrcList[this.key] || null;
+        }
     }
     get key() {
         return this.presentId.toString();
     }
     get bgSrc() {
-        const allBGSrcList = PresentBGManager.getBGSrcList();
-        return allBGSrcList[this.key] || null;
+        return this._bgSrc;
     }
     set bgSrc(bgSrc: BackgroundSrcType | null) {
+        this._bgSrc = bgSrc;
         const allBGSrcList = PresentBGManager.getBGSrcList();
         if (bgSrc === null) {
             delete allBGSrcList[this.key];
@@ -34,7 +44,15 @@ export default class PresentBGManager {
         PresentBGManager.setBGSrcList(allBGSrcList);
         this.fireUpdate();
     }
-    fireUpdate: () => void = () => void 0;
+    fireUpdate() {
+        this.addPropEvent('update');
+        PresentBGManager.fireUpdateEvent();
+        PresentManager.getInstance(this.presentId).fireUpdateEvent();
+    }
+    static fireUpdateEvent() {
+        this.eventHandler.addPropEvent('update');
+        PresentManager.fireUpdateEvent();
+    }
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');
         if (str !== '') {

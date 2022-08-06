@@ -14,10 +14,10 @@ export type RegisteredEventType<T> = {
 };
 export default class SlideListEventListener extends EventHandler<SlideListEventType> {
     selectSlideItem(slideItem: SlideItem | null) {
-        this._addPropEvent('slide-item-select', slideItem);
+        this.addPropEvent('slide-item-select', slideItem);
     }
     slideItemSizing() {
-        this._addPropEvent('slide-item-sizing');
+        this.addPropEvent('slide-item-sizing');
     }
     registerSlideListEventListener(type: SlideListEventType,
         listener: ListenerType<any>):

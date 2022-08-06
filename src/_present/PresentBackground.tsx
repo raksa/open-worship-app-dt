@@ -1,25 +1,15 @@
-import { useEffect, useState } from 'react';
 import { AppColorType } from '../others/ColorPicker';
 import PresentBackgroundColor from './PresentBackgroundColor';
 import PresentBackgroundImage from './PresentBackgroundImage';
 import PresentBackgroundVideo from './PresentBackgroundVideo';
-import PresentBGManager, {
-    BackgroundSrcType,
-} from './PresentBGManager';
+import PresentBGManager from './PresentBGManager';
+import { usePBGMEvents } from './presentHelpers';
 
 export default function PresentBackground({ bgManager }: {
     bgManager: PresentBGManager;
 }) {
-    const [bgSrc, setBgSrc] = useState<BackgroundSrcType | null>(bgManager.bgSrc);
-    useEffect(() => {
-        bgManager.fireUpdate = () => {
-            setBgSrc(bgManager.bgSrc);
-        };
-        return () => {
-            bgManager.fireUpdate = () => void 0;
-        };
-    });
-    console.log('PresentBackground');
+    usePBGMEvents(['update']);
+    const bgSrc = bgManager.bgSrc;
     if (bgSrc === null) {
         return null;
     }

@@ -36,7 +36,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
         };
         this.addControlKey(option, event);
         const k = this.toEventMapperKey(option);
-        this._addPropEvent(k, event);
+        this.addPropEvent(k, event);
     }
     addControlKey(option: EventMapper, e: KeyboardEvent) {
         if (appProvider.systemUtils.isWindows) {

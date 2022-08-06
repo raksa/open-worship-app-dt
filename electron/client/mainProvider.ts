@@ -6,11 +6,12 @@ import messageUtils from './messageUtils';
 import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
 import appInfo from '../../package.json';
-
-const fontList = require('font-list');
+import fontUtils from './fontUtils';
 
 const provider = {
-    fontList,
+    isMain: true,
+    isPresent: false,
+    fontUtils,
     cryptoUtils,
     browserUtils,
     messageUtils,

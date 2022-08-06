@@ -2,21 +2,18 @@ import './present.scss';
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { initApp } from '../server/appHelper';
 import appProvider from './appProvider';
 import PresentApp from './PresentApp';
 
-initApp().then(() => {
-  const container = document.getElementById('root');
-  if (container !== null) {
-    const root = createRoot(container);
-    root.render(
-      <React.StrictMode>
-        <PresentApp />
-      </React.StrictMode>
-    );
-  }
-});
+const container = document.getElementById('root');
+if (container !== null) {
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <PresentApp />
+    </React.StrictMode>
+  );
+}
 
 document.addEventListener('wheel', function (e) {
   if (e.ctrlKey) {

@@ -26,39 +26,39 @@ export type RegisteredEventType<T> = {
 
 export default class PresentEventListener extends EventHandler<PresentEventType> {
     renderBG() {
-        this._addPropEvent('render-bg');
+        this.addPropEvent('render-bg');
     }
     clearBG() {
         clearBackground();
-        this._addPropEvent('clear-bg');
+        this.addPropEvent('clear-bg');
     }
     renderFG() {
-        this._addPropEvent('render-fg');
+        this.addPropEvent('render-fg');
     }
     clearFG() {
         SlideItem.setSelectedItem(null);
         clearForeground();
-        this._addPropEvent('clear-fg');
+        this.addPropEvent('clear-fg');
     }
     renderFT() {
-        this._addPropEvent('render-fg');
+        this.addPropEvent('render-fg');
     }
     clearFT(isEvent?: boolean) {
         if (!isEvent) {
             fullTextPresentHelper.hide();
         }
-        this._addPropEvent('clear-ft');
+        this.addPropEvent('clear-ft');
     }
     presentCtrlScrolling(isUp: boolean) {
         const fontSize = fullTextPresentHelper.textFontSize + (isUp ? 1 : -1);
         fullTextPresentHelper.setStyle({ fontSize });
-        this._addPropEvent('ctrl-scrolling', isUp);
+        this.addPropEvent('ctrl-scrolling', isUp);
     }
     changeBible(isNext: boolean) {
-        this._addPropEvent('change-bible', isNext);
+        this.addPropEvent('change-bible', isNext);
     }
     displayChanged() {
-        this._addPropEvent('display-changed');
+        this.addPropEvent('display-changed');
     }
     registerPresentEventListener(type: PresentEventType,
         listener: ListenerType<any>): RegisteredEventType<any> {

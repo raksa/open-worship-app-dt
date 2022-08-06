@@ -49,7 +49,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     set scale(n: number) {
         this._scale = n;
         setSetting('editor-scale', n.toString());
-        this._addPropEvent('scale');
+        this.addPropEvent('scale');
     }
     get isCopied() {
         if (this.copiedItem === null) {
@@ -58,19 +58,19 @@ export default class CanvasController extends EventHandler<CCEventType> {
         return this.canvas.canvasItems.indexOf(this.copiedItem) > -1;
     }
     fireSelectEvent(canvasItem: CanvasItem<any>) {
-        this._addPropEvent('select', canvasItem);
+        this.addPropEvent('select', canvasItem);
     }
     fireControlEvent(canvasItem: CanvasItem<any>) {
-        this._addPropEvent('control', canvasItem);
+        this.addPropEvent('control', canvasItem);
     }
     fireTextEditEvent(canvasItem: CanvasItem<any>) {
-        this._addPropEvent('text-edit', canvasItem);
+        this.addPropEvent('text-edit', canvasItem);
     }
     async fireUpdateEvent() {
         if (this._slideItem !== null) {
             this._slideItem.canvas = this.canvas;
         }
-        this._addPropEvent('update');
+        this.addPropEvent('update');
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
         const newCanvasItem = canvasItem.clone();

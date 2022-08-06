@@ -52,7 +52,9 @@ export type AppInfoType = {
 };
 
 const appProvider = (window as any).provider as {
-    fontList: {
+    isMain: boolean,
+    isPresent: boolean,
+    fontUtils: {
         getFonts: () => Promise<string[]>,
     };
     cryptoUtils: {

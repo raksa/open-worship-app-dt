@@ -10,7 +10,7 @@ export type RegisteredEventType = {
 };
 export default class ToastEventListener extends EventHandler<ToastEventType> {
     showSimpleToast(toast: SimpleToastType) {
-        this._addPropEvent('simple', toast);
+        this.addPropEvent('simple', toast);
     }
     registerToastEventListener(type: ToastEventType, listener: ListenerType): RegisteredEventType {
         this._addOnEventListener(type, listener);

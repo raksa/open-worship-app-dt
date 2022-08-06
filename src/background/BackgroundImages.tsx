@@ -35,12 +35,13 @@ export default function BackgroundImages() {
                             onClick={() => {
                                 if (selectedBGSrcList.length) {
                                     selectedBGSrcList.forEach(([key]) => {
-                                        PresentManager.getInstanceByKey(key).bgSrc = null;
+                                        PresentManager.getInstanceByKey(key)
+                                            .presentBGManager.bgSrc = null;
                                     });
                                 } else {
                                     PresentManager.getSelectedInstances()
                                         .forEach((presentManager) => {
-                                            presentManager.bgSrc = {
+                                            presentManager.presentBGManager.bgSrc = {
                                                 type: 'image',
                                                 src: fileSource.src,
                                             };

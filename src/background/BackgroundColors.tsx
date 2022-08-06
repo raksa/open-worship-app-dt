@@ -18,7 +18,7 @@ export default function BackgroundColors() {
                             src: newColor as string,
                         } as BackgroundSrcType) : null;
                         const presentManager = PresentManager.getInstanceByKey(key);
-                        presentManager.bgSrc = newBGSrc;
+                        presentManager.presentBGManager.bgSrc = newBGSrc;
                     };
                     return (
                         <ColorPicker key={i}
@@ -35,7 +35,7 @@ export default function BackgroundColors() {
                 if (newColor !== null) {
                     PresentManager.getSelectedInstances()
                         .forEach((presentManager) => {
-                            presentManager.bgSrc = {
+                            presentManager.presentBGManager.bgSrc = {
                                 type: 'color',
                                 src: newColor,
                             };

@@ -66,10 +66,10 @@ export default class DirSource {
         });
     }
     fireRefreshEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('refresh'));
+        globalEventHandler.addPropEvent(this.toEventKey('refresh'));
     }
     fireReloadEvent() {
-        globalEventHandler._addPropEvent(this.toEventKey('reload'));
+        globalEventHandler.addPropEvent(this.toEventKey('reload'));
     }
     deleteCache() {
         if (this.fileSources) {

@@ -1,6 +1,12 @@
 export type ListenerType<T> = (data: T) => void;
 
-export default class EventHandler<T> {
+export type RegisteredEventType<T, F> = {
+    type: T,
+    listener: ListenerType<F>,
+};
+
+export default class EventHandler<T extends string> {
+    static readonly eventHandler = new EventHandler<any>();
     _onEventListeners: { [key: string]: ListenerType<any>[] };
     _propEvent: any[];
     events: { [key: string]: string };
@@ -31,7 +37,7 @@ export default class EventHandler<T> {
         }
     }
 
-    _addPropEvent(event: T, data?: any) {
+    addPropEvent(event: T, data?: any) {
         this._propEvent.push({
             name: event,
             data,
@@ -45,7 +51,7 @@ export default class EventHandler<T> {
         }
     }
 
-    _checkOnEvent(eventName: string, data?: any) {
+    _checkOnEvent(eventName: T, data?: any) {
         this._guardEventName(eventName);
         this._onEventListeners[eventName] = this._onEventListeners[eventName] || [];
         this._onEventListeners[eventName].forEach((listener: ListenerType<any>) => {
@@ -53,17 +59,41 @@ export default class EventHandler<T> {
         });
     }
 
-    _addOnEventListener(eventName: string, listener: ListenerType<any>) {
+    _addOnEventListener(eventName: T, listener: ListenerType<any>) {
         this._guardEventName(eventName);
         this._onEventListeners[eventName] = this._onEventListeners[eventName] || [];
         this._onEventListeners[eventName].push(listener);
     }
 
-    _removeOnEventListener(eventName: string, listener: ListenerType<any>) {
+    _removeOnEventListener(eventName: T, listener: ListenerType<any>) {
         this._guardEventName(eventName);
         this._onEventListeners[eventName] = this._onEventListeners[eventName] || [];
         const index = this._onEventListeners[eventName].indexOf(listener);
         ~index && this._onEventListeners[eventName].splice(index, 1);
+    }
+    registerEventListener1<F>(types: T[], listener: ListenerType<F>):
+        RegisteredEventType<T, F>[] {
+        return types.map((type) => {
+            this._addOnEventListener(type, listener);
+            return { type, listener };
+        });
+    }
+    static registerEventListener1<T, F>(types: T[], listener: ListenerType<F>):
+        RegisteredEventType<T, F>[] {
+        return types.map((type) => {
+            this.eventHandler._addOnEventListener(type, listener);
+            return { type, listener };
+        });
+    }
+    static unregisterEventListener1<T, F>(regEvents: RegisteredEventType<T, F>[]) {
+        regEvents.forEach(({ type, listener }) => {
+            this.eventHandler._removeOnEventListener(type, listener);
+        });
+    }
+    unregisterEventListener1<F>(regEvents: RegisteredEventType<T, F>[]) {
+        regEvents.forEach(({ type, listener }) => {
+            this._removeOnEventListener(type, listener);
+        });
     }
 }
 
