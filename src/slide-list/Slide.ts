@@ -1,7 +1,6 @@
 import SlideItem, { SlideItemType } from './SlideItem';
 import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
-import { DisplayType } from '../server/displayHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     MAX_THUMBNAIL_SCALE,
@@ -15,6 +14,7 @@ import { toastEventListener } from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
+import { DisplayType } from '../server/displayHelper';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],
@@ -165,7 +165,10 @@ export default class Slide extends ItemSource<SlideItem>{
                 width: item.width,
                 height: item.height,
             };
-        }).find(({ width, height }: { width: number, height: number }) => {
+        }).find(({ width, height }: {
+            width: number,
+            height: number,
+        }) => {
             return bounds.width !== width || bounds.height !== height;
         });
         if (found) {

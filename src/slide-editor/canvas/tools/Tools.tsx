@@ -3,7 +3,7 @@ import './Tools.scss';
 import React, { Fragment } from 'react';
 import { useStateSettingString } from '../../../helper/settingHelper';
 import TabRender, { genTabBody } from '../../../others/TabRender';
-import { useCCScale, useCCRefresh } from '../canvasHelpers';
+import { useCCScale, useCCEvents } from '../canvasHelpers';
 import CanvasController from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
 
@@ -16,7 +16,7 @@ type TabType = 't' | 'b' | 'c';
 export default function Tools() {
     const canvasController = CanvasController.getInstance();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
-    useCCRefresh(['select']);
+    useCCEvents(['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
     const scale = useCCScale();
     return (

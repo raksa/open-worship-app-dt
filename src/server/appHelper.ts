@@ -4,10 +4,14 @@ import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { pathJoin } from './fileHelper';
-import { listenForData, listenOnceForData, sendData, sendSyncData } from './messagingHelpers';
 import bibleHelper from './bible-helpers/bibleHelpers';
 import { initBibleInfo } from './bible-helpers/helpers1';
-import { defaultLocal, getCurrentLangAsync, getLangAsync, LocalType } from '../lang';
+import {
+    defaultLocal,
+    getCurrentLangAsync,
+    getLangAsync,
+    LocalType,
+} from '../lang';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -24,47 +28,25 @@ export function copyToClipboard(str: string) {
     return true;
 }
 
-export function showWindow(b: boolean) {
-    sendData(b ? 'main:app:show-present' : 'main:app:hide-present');
-}
-export function renderPresent(data: any) {
-    sendData('main:app:present-eval-script', data);
-}
-
-listenForData('app:main:present-change-bible',
+appProvider.messageUtils.listenForData('app:main:change-bible',
     (_event, isNext: boolean) => {
         presentEventListener.changeBible(isNext);
     });
-listenForData('app:main:present-ctrl-scrolling',
+appProvider.messageUtils.listenForData('app:main:ctrl-scrolling',
     (_event, isUp: boolean) => {
         presentEventListener.presentCtrlScrolling(isUp);
     });
-listenForData('app:main:hiding-present',
-    (_event, _data: string) => {
-        presentEventListener.fireHideEvent();
-    });
-listenForData('app:main:display-changed',
-    (_event, _data: string) => {
-        presentEventListener.displayChanged();
-    });
-
-export function capturePresentScreen() {
-    return new Promise<string | null>((resolve) => {
-        const replyEventName = `cps-${Date.now()}`;
-        listenOnceForData(replyEventName, (_, data) => {
-            resolve(data || null);
-        });
-        sendData('app:main:captured-preview', replyEventName);
-    });
-}
 
 export function selectDirs() {
-    return sendSyncData('main:app:select-dirs') as string[];
+    return appProvider.messageUtils.
+        sendSyncData('main:app:select-dirs') as string[];
 }
 export function selectFiles(filters: {
     name: string, extensions: string[],
 }[]) {
-    return sendSyncData('main:app:select-files', filters) as string[];
+    return appProvider.messageUtils.
+        sendSyncData('main:app:select-files',
+            filters) as string[];
 }
 
 export type RenderedType = {
@@ -78,35 +60,37 @@ export function getPresentRendered() {
     return new Promise<RenderedType>((resolve) => {
         const newDate = (new Date()).getTime();
         const returningEvent = `main:app:is-rendered-return-${newDate}`;
-        listenOnceForData(returningEvent,
-            (_event, data: RenderedType) => {
-                resolve(data);
-            });
-        sendData('main:app:is-rendered', returningEvent);
+        appProvider.messageUtils.
+            listenOnceForData(returningEvent,
+                (_event, data: RenderedType) => {
+                    resolve(data);
+                });
+        appProvider.messageUtils.
+            sendData('main:app:is-rendered', returningEvent);
     });
 }
 getPresentRendered().then((rendered) => {
     fullTextPresentHelper.isShowing = !!rendered.fullText;
 });
-export function getIsShowing() {
-    return !!sendSyncData('main:app:is-presenting');
-}
 export function getUserWritablePath() {
-    return sendSyncData('main:app:get-data-path');
+    return appProvider.messageUtils.
+        sendSyncData('main:app:get-data-path');
 }
 export function sqlite3ReadValue(dbFilePath: string, table: string, key: string) {
     return new Promise<string | null>((resolve) => {
         const waitingEventName = `main:app:db-read-reply-${genRandomString(5)}`;
-        listenOnceForData(waitingEventName,
-            (_event, data: string | null) => {
-                resolve(data);
+        appProvider.messageUtils.
+            listenOnceForData(waitingEventName,
+                (_event, data: string | null) => {
+                    resolve(data);
+                });
+        appProvider.messageUtils.
+            sendData('main:app:db-read', {
+                dbFilePath,
+                table,
+                key,
+                waitingEventName,
             });
-        sendData('main:app:db-read', {
-            dbFilePath,
-            table,
-            key,
-            waitingEventName,
-        });
     });
 }
 

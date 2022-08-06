@@ -31,12 +31,6 @@ export default class SettingController {
         const useDataPath = electron.app.getPath('userData');
         return path.join(useDataPath, 'setting.json');
     }
-    get presentWidth() {
-        return this.presentDisplay.bounds.width;
-    }
-    get presentHeight() {
-        return this.presentDisplay.bounds.height;
-    }
     get mainWinBounds() {
         return this._setting.mainWinBounds || this.primaryDisplay.bounds;
     }
@@ -53,23 +47,6 @@ export default class SettingController {
     }
     get primaryDisplay() {
         return electron.screen.getPrimaryDisplay();
-    }
-    get presentDisplay() {
-        if (!this._setting.appPresentDisplayId) {
-            return this.allDisplays.find((display) => {
-                return display.bounds.x !== 0 || display.bounds.y !== 0;
-            }) || this.allDisplays[0];
-        }
-        return this.getDisplayById(this._setting.appPresentDisplayId) || this.primaryDisplay;
-    }
-    set presentDisplayId(id: number) {
-        const display = this.getDisplayById(id);
-        if (display) {
-            this._setting.appPresentDisplayId = display.id;
-            this.save();
-        } else {
-            throw new Error(`Screen with id:${id} is not found`);
-        }
     }
     getDisplayById(id: number) {
         return this.allDisplays.find((newDisplay) => newDisplay.id == id);
@@ -89,22 +66,5 @@ export default class SettingController {
             this.mainWinBounds = { ...this.mainWinBounds, x, y };
             this.save();
         });
-    }
-    syncPresentWindow() {
-        if (this.appManager.presentWin === null) {
-            return;
-        }
-        const bounds = this.presentDisplay.bounds;
-        this.appManager.presentScreenWidth = bounds.width;
-        this.appManager.presentScreenHeight = bounds.height;
-        this.appManager.previewResizeDim = {
-            width: this.appManager.presentScreenWidth / 3,
-            height: this.appManager.presentScreenHeight / 3,
-        };
-        bounds.height -= bounds.y;
-        this.appManager.presentWin.setBounds(bounds);
-        if (this.appManager.isShowingPS) {
-            this.appManager.presentWin.show();
-        }
     }
 }

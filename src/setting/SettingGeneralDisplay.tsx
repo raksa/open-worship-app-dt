@@ -1,8 +1,8 @@
-import { useDisplay } from '../event/PresentEventListener';
-import { saveDisplaySetting } from '../server/displayHelper';
+import { DisplayType, saveDisplaySetting } from '../server/displayHelper';
 
 export default function SettingGeneralDisplay() {
-    const { displays, presentDisplay } = useDisplay();
+    const displays: DisplayType[] = [];
+    const presentDisplay = displays[0];
     return (
         <div className='card'>
             <div className='card-header'>Display</div>
@@ -13,6 +13,7 @@ export default function SettingGeneralDisplay() {
                         aria-label='Default select example'
                         value={presentDisplay.id} onChange={(e) => {
                             saveDisplaySetting({
+                                presentId: 0,
                                 presentDisplayId: e.target.value,
                             });
                         }}>

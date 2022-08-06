@@ -5,7 +5,7 @@ import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
-import { useFSRefresh } from '../helper/FileSource';
+import { useFSEvents } from '../helper/FileSource';
 import CanvasController from './canvas/CanvasController';
 
 export default function SlideItemEditorGround() {
@@ -19,7 +19,7 @@ export default function SlideItemEditorGround() {
             reloadSlide();
         }
     }, [slideItem]);
-    useFSRefresh(['select', 'history-update', 'delete'],
+    useFSEvents(['select', 'history-update', 'delete'],
         slideItem?.fileSource || null, () => {
             setSlideItem(null);
         });

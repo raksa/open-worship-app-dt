@@ -7,7 +7,7 @@ import BENTextEditMode from './BENTextEditMode';
 import BENViewTextMode from './BENViewTextMode';
 import BENViewBibleMode from './BENViewBibleMode';
 import CanvasItemBible from '../CanvasItemBible';
-import { useCCRefresh } from '../canvasHelpers';
+import { useCCEvents } from '../canvasHelpers';
 
 export default function BoxEditorNormalMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
@@ -16,7 +16,7 @@ export default function BoxEditorNormalMode({ canvasItem }: {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
     };
-    useCCRefresh(['text-edit', 'update']);
+    useCCEvents(['text-edit', 'update']);
     if (canvasItem.isTypeImage) {
         return (
             <BENViewImageMode

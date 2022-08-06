@@ -5,12 +5,12 @@ import CanvasItem, {
 } from './CanvasItem';
 import { HAlignmentType, VAlignmentType } from './Canvas';
 import { AnyObjectType } from '../../helper/helpers';
-import { getAppInfo } from '../../server/helpers';
 import { AppColorType } from '../../others/ColorPicker';
+import appProvider from '../../server/appProvider';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
-        text: getAppInfo().name,
+        text: appProvider.appInfo.name,
         color: '#ffffff',
         fontSize: 60,
         fontFamily: '',

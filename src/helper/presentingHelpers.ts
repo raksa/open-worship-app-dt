@@ -1,6 +1,8 @@
 import { AppColorType } from '../others/ColorPicker';
-import { renderPresent } from '../server/appHelper';
 
+export function renderPresent(_: any) {
+    return false;
+}
 export function renderFG(htmlString: string) {
     renderPresent({
         script: `

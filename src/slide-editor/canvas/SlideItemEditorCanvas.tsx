@@ -4,7 +4,7 @@ import {
 } from '../../event/KeyboardEventListener';
 import {
     showCanvasContextMenu,
-    useCCRefresh,
+    useCCEvents,
     useCCScale,
 } from './canvasHelpers';
 import { toastEventListener } from '../../event/ToastEventListener';
@@ -15,7 +15,7 @@ import CanvasController from './CanvasController';
 export default function SlideItemEditorCanvas() {
     const canvasController = CanvasController.getInstance();
     const scale = useCCScale();
-    useCCRefresh(['update']);
+    useCCEvents(['update']);
     useKeyboardRegistering({ key: 'Escape' }, () => {
         canvasController.stopAllMods();
     });

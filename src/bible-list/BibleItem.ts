@@ -230,7 +230,7 @@ export default class BibleItem extends ItemBase {
         }
         txt = '';
         for (let i = target.startVerse; i <= target.endVerse; i++) {
-            txt += ` (${await toLocaleNumBB(bible, i)}): ${verses[i + '']}`;
+            txt += ` (${await toLocaleNumBB(bible, i)}): ${verses[i.toString()]}`;
         }
         return txt;
     }

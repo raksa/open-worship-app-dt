@@ -40,6 +40,14 @@ export type SystemUtilsType = {
     isLinux: boolean,
 };
 
+export type AppInfoType = {
+    name: string;
+    description: string;
+    author: string;
+    homepage: string;
+    version: string;
+};
+
 const appProvider = (window as any).provider as {
     fontList: {
         getFonts: () => Promise<string[]>,
@@ -61,6 +69,7 @@ const appProvider = (window as any).provider as {
     fileUtils: FileUtilsType,
     pathUtils: PathUtilsType,
     systemUtils: SystemUtilsType,
+    appInfo: AppInfoType,
 };
 
 export default appProvider;

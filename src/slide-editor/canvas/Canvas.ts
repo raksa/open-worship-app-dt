@@ -1,6 +1,6 @@
-import { getAllDisplays } from '../../server/displayHelper';
 import { AnyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
+import PresentManager from '../../_present/PresentManager';
 import CanvasItem from './CanvasItem';
 import CanvasItemBible from './CanvasItemBible';
 import CanvasItemImage from './CanvasItemImage';
@@ -51,8 +51,8 @@ export default class Canvas {
         });
     }
     static getDefaultDim() {
-        const { presentDisplay } = getAllDisplays();
-        const { width, height } = presentDisplay.bounds;
+        const display = PresentManager.getDefaultPresentDisplay();
+        const { width, height } = display.bounds;
         return { width, height };
     }
     static fromJson({ metadata, canvasItems: canvasItemsJson }: {

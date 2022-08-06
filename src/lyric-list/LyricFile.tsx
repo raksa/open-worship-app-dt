@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
-import FileSource, { useFSRefresh } from '../helper/FileSource';
+import FileSource, { useFSEvents } from '../helper/FileSource';
 import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
@@ -14,7 +14,7 @@ export default function LyricFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
-    useFSRefresh(['update', 'history-update', 'edit'], fileSource);
+    useFSEvents(['update', 'history-update', 'edit'], fileSource);
     return (
         <FileItemHandler
             index={index}

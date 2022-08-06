@@ -2,19 +2,20 @@ import React from 'react';
 import { tran } from '../lang';
 import AppSuspense from './AppSuspense';
 
+export type TabHeaderPropsType<T> = [T, string, string?];
 export default function TabRender<T extends string>({
     tabs, activeTab, setActiveTab, className,
 }: {
-    tabs: [T, string][],
+    tabs: TabHeaderPropsType<T>[],
     activeTab: T,
     setActiveTab?: (t: T) => void,
     className?: string,
 }) {
     return (
         <ul className={`nav nav-tabs ${className}`}>
-            {tabs.map(([tab, title], i) => {
+            {tabs.map(([tab, title, tabClassName], i) => {
                 const activeClass = activeTab === tab ? 'active' : '';
-                return (<li key={i} className='nav-item'>
+                return (<li key={i} className={'nav-item ' + (tabClassName || '')}>
                     <button className={`btn btn-link nav-link ${activeClass}`}
                         onClick={() => {
                             if (tab !== activeTab) {

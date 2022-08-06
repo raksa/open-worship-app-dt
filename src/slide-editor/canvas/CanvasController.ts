@@ -48,7 +48,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     set scale(n: number) {
         this._scale = n;
-        setSetting('editor-scale', n + '');
+        setSetting('editor-scale', n.toString());
         this._addPropEvent('scale');
     }
     get isCopied() {

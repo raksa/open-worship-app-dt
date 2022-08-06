@@ -42,7 +42,7 @@ export function useSlideItemSelecting(listener: ListenerType<SlideItem | null>) 
 }
 export function useSlideItemSizing(settingName: string, defaultSize: number)
     : [number, (s: number) => void] {
-    const getDefaultSize = () => +getSetting(settingName, defaultSize + '');
+    const getDefaultSize = () => +getSetting(settingName, defaultSize.toString());
     const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(settingName, getDefaultSize());
     useEffect(() => {
         const event = slideListEventListenerGlobal.registerSlideListEventListener(

@@ -3,7 +3,7 @@ import './BoxEditorControllingMode.scss';
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import {
-    showCanvasItemContextMenu, useCCRefresh,
+    showCanvasItemContextMenu, useCCEvents,
 } from '../canvasHelpers';
 import { BENImageRender } from './BENViewImageMode';
 import { BENTextRender } from './BENViewTextMode';
@@ -14,7 +14,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
     // TODO: move box by left right up down key, shift&ctl
-    useCCRefresh(['update']);
+    useCCEvents(['update']);
     const canvasController = CanvasController.getInstance();
     return (
         <div className='editor-controller-box-wrapper'

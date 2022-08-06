@@ -4,7 +4,7 @@
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "./",
     "version": "0.0.1",
-    "main": "./electron-build/index.js",
+    "main": "./electron-build/electron/index.js",
     "scripts": {
         "react:watch": "env-cmd -f .env react-scripts start",
         "react:build": "env-cmd -f .env react-scripts build",

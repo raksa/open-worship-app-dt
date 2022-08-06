@@ -5,6 +5,7 @@ import httpUtils from './httpUtils';
 import messageUtils from './messageUtils';
 import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
+import appInfo from '../../package.json';
 
 const fontList = require('font-list');
 
@@ -17,6 +18,13 @@ const provider = {
     pathUtils,
     fileUtils,
     systemUtils,
+    appInfo: {
+        name: appInfo.name,
+        description: appInfo.description,
+        author: appInfo.author,
+        homepage: appInfo.homepage,
+        version: appInfo.version,
+    },
 };
 
 export default provider;

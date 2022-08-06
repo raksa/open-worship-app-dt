@@ -1,23 +1,28 @@
 import { toastEventListener } from '../event/ToastEventListener';
-import { sendSyncData } from './messagingHelpers';
+import appProvider from './appProvider';
 
-export type DisplayType = {
-    id: string,
-    bounds: {
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-    };
+export type BoundsType = {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
 };
-export function getAllDisplays() {
-    return sendSyncData('main:app:get-displays') as {
-        presentDisplay: DisplayType,
-        displays: DisplayType[],
-    };
+export type DisplayType = {
+    id: number,
+    bounds: BoundsType,
+};
+export type AllDisplayType = {
+    primaryDisplay: DisplayType,
+    displays: DisplayType[],
 }
-export function saveDisplaySetting(data: { presentDisplayId: string }) {
-    const success = !!sendSyncData('main:app:set-displays', data);
+
+// TODO: remove this
+export function saveDisplaySetting(data: {
+    presentId: number,
+    presentDisplayId: string,
+}) {
+    const success = !!appProvider.messageUtils.
+        sendSyncData('main:app:set-present-display', data);
     toastEventListener.showSimpleToast({
         title: 'Save Display',
         message: success ? 'Display setting have been saved' :

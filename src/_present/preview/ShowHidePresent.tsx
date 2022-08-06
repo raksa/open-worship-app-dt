@@ -1,35 +1,32 @@
-import { useState } from 'react';
 import {
-    keyboardEventListener, useKeyboardRegistering,
+    keyboardEventListener,
+    useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { usePresentHiding } from '../../event/PresentEventListener';
-import {
-    getIsShowing,
-    showWindow,
-} from '../../server/appHelper';
+import { usePMEvents } from '../presentHelpers';
+import PresentManager from '../PresentManager';
 
-export default function ShowHidePresent() {
-    const [isShowing, setIsShowing] = useState(getIsShowing());
-    const onShow = () => {
-        setIsShowing(true);
-        showWindow(true);
-    };
-    const onHide = () => {
-        setIsShowing(false);
-        showWindow(false);
-    };
+export default function ShowHidePresent({
+    presentManager,
+}: {
+    presentManager: PresentManager,
+}) {
     useKeyboardRegistering({
         key: 'F5',
     }, () => {
-        isShowing ? onHide() : onShow();
+        presentManager.isShowing = !isShowing;
     });
-    usePresentHiding(() => setIsShowing(false));
+    usePMEvents(['visible'], presentManager);
+    const isShowing = presentManager.isShowing;
     return (
-        <div className={`show-hide tool-tip tool-tip-fade form-check form-switch pointer ${isShowing ? 'show' : ''}`}
-            onClick={() => isShowing ? onHide() : onShow()}
+        <div className={'show-hide tool-tip tool-tip-fade '
+            + `form-check form-switch pointer ${isShowing ? 'show' : ''}`}
+            onClick={() => {
+                presentManager.isShowing = !isShowing;
+            }}
             data-tool-tip={keyboardEventListener.toShortcutKey({ key: 'F5' })}>
             <input className='form-check-input pointer' type='checkbox'
-                checked={isShowing} onChange={() => false} />
+                checked={isShowing}
+                onChange={() => false} />
             <i className='bi bi-file-slides-fill' />
         </div>
     );

@@ -1,6 +1,6 @@
 import { DOMAttributes } from 'react';
 import { createRoot } from 'react-dom/client';
-import { getAllDisplays } from '../../server/displayHelper';
+import PresentManager from '../PresentManager';
 import MiniPresentApp from './MiniPresentApp';
 
 type CustomEvents<K extends string> = {
@@ -31,11 +31,12 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
     }
     resize() {
         if (this.parentElement) {
-            const appInfo = getAllDisplays();
-            const bounds = appInfo.presentDisplay.bounds;
+            const display = PresentManager.getDefaultPresentDisplay();
+            const bounds = display.bounds;
             const scale = this.parentElement.clientWidth / bounds.width;
             this.mountPoint.style.maxWidth = (scale * bounds.width) + 'px';
             this.mountPoint.style.height = (scale * bounds.height) + 'px';
+            this.mountPoint.style.overflow = 'hidden';
         }
     }
     static checkSize() {

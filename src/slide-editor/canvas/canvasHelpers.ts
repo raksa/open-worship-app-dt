@@ -65,7 +65,7 @@ export function showCanvasItemContextMenu(e: any,
     ]);
 }
 
-export function useCCRefresh(eventTypes: CCEventType[]) {
+export function useCCEvents(eventTypes: CCEventType[]) {
     const [n, setN] = useState(0);
     const canvasController = CanvasController.getInstance();
     useEffect(() => {

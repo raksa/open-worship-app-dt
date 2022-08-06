@@ -1,13 +1,13 @@
 import { getVerses } from '../server/bible-helpers/helpers1';
 import { toLocaleNumBB } from '../server/bible-helpers/helpers2';
 import { presentEventListener } from '../event/PresentEventListener';
-import { renderPresent } from '../server/appHelper';
 import { removePX } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { AppColorType, BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from './Utils';
 import BibleItem from '../bible-list/BibleItem';
+import { renderPresent } from '../helper/presentingHelpers';
 
 type StylingType = {
     color?: AppColorType;

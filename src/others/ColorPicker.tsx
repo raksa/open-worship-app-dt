@@ -31,9 +31,10 @@ export default function ColorPicker({
     useEffect(() => {
         setLocalColor(color);
     }, [color]);
-    const applyNewColor = (newColor: AppColorType) => {
-        onColorChange(newColor);
-        setLocalColor(newColor);
+    const applyNewColor = (newColor: string) => {
+        const upperColor = newColor.toUpperCase() as AppColorType;
+        onColorChange(upperColor);
+        setLocalColor(upperColor);
     };
     return (
         <div className='color-picker border-white-round'>
@@ -47,7 +48,7 @@ export default function ColorPicker({
                         const hex = localColor === null ? 'ff' :
                             transparentColor(colorToTransparent(localColor));
                         const newColorStr = newColor + hex;
-                        applyNewColor(newColorStr as any);
+                        applyNewColor(newColorStr);
                     }} />
                 {localColor !== null && <OpacitySlider
                     value={colorToTransparent(localColor)}
@@ -56,7 +57,7 @@ export default function ColorPicker({
                         const newColor = localColor.split('');
                         newColor[7] = hex[0];
                         newColor[8] = hex[1];
-                        applyNewColor(newColor.join('') as any);
+                        applyNewColor(newColor.join(''));
                     }} />}
             </div>
         </div>

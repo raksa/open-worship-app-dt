@@ -161,7 +161,7 @@ export default class FileSource {
     }
 }
 
-export function useFSRefresh(events: FSEventType[], fileSource: FileSource | null,
+export function useFSEvents(events: FSEventType[], fileSource: FileSource | null,
     callback?: () => void) {
     const [n, setN] = useState(0);
     useEffect(() => {

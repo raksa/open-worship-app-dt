@@ -2,14 +2,14 @@ import {
     EventMapper as KBEventMapper,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { useDisplay } from '../../event/PresentEventListener';
-import { useFSRefresh } from '../../helper/FileSource';
+import { useFSEvents } from '../../helper/FileSource';
 import Slide from '../../slide-list/Slide';
+import PresentManager from '../../_present/PresentManager';
 import MenuIsModifying from './MenuIsModifying';
 
 export default function SlideItemsMenu({ slide }: { slide: Slide }) {
-    const { presentDisplay } = useDisplay();
-    useFSRefresh(['update'], slide.fileSource);
+    const presentDisplay = PresentManager.getDefaultPresentDisplay();
+    useFSEvents(['update'], slide.fileSource);
     const eventMapper: KBEventMapper = {
         wControlKey: ['Ctrl'],
         mControlKey: ['Ctrl'],
@@ -49,7 +49,9 @@ export default function SlideItemsMenu({ slide }: { slide: Slide }) {
                 {foundWrongDimension !== null &&
                     <button type='button' className='btn btn-sm btn-warning'
                         title={Slide.toWrongDimensionString(foundWrongDimension)}
-                        onClick={() => slide.fixSlideDimension(presentDisplay)}>
+                        onClick={() => {
+                            slide.fixSlideDimension(presentDisplay);
+                        }}>
                         Fix Slide Dimension</button>
                 }
             </div>

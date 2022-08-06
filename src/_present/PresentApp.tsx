@@ -1,5 +1,3 @@
-import './PresentApp.scss';
-
 import CloseButton from './PresentCloseButton';
 import PresentBackground from './PresentBackground';
 import PresentForeground from './PresentForeground';

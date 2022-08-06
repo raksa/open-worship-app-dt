@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
 import { getPresentRendered } from '../server/appHelper';
-import { getAllDisplays } from '../server/displayHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import SlideItem from '../slide-list/SlideItem';
 import EventHandler from './EventHandler';
 
 export type PresentEventType =
-    'hide'
     | 'render-bg'
     | 'clear-bg'
     | 'render-fg'
@@ -27,9 +25,6 @@ export type RegisteredEventType<T> = {
 }
 
 export default class PresentEventListener extends EventHandler<PresentEventType> {
-    fireHideEvent() {
-        this._addPropEvent('hide');
-    }
     renderBG() {
         this._addPropEvent('render-bg');
     }
@@ -80,15 +75,6 @@ export default class PresentEventListener extends EventHandler<PresentEventType>
 
 export const presentEventListener = new PresentEventListener();
 
-export function usePresentHiding(listener: ListenerType<void>) {
-    useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            'hide', listener);
-        return () => {
-            presentEventListener.unregisterPresentEventListener(event);
-        };
-    });
-}
 export function usePresentBGRendering() {
     const [isPresenting, setIsShowing] = useStateSettingBoolean('bgfg-control-bg');
     getPresentRendered().then((rendered) => {
@@ -184,15 +170,4 @@ export function useChangingBible(listener: AsyncListenerType<boolean>) {
             presentEventListener.unregisterPresentEventListener(event);
         };
     });
-}
-export function useDisplay() {
-    const [displays, setDisplays] = useState(getAllDisplays());
-    useEffect(() => {
-        const event = presentEventListener.registerPresentEventListener(
-            'display-changed', () => setDisplays(getAllDisplays()));
-        return () => {
-            presentEventListener.unregisterPresentEventListener(event);
-        };
-    });
-    return displays;
 }

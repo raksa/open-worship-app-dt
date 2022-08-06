@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
-import FileSource, { useFSRefresh } from '../helper/FileSource';
+import FileSource, { useFSEvents } from '../helper/FileSource';
 import Slide from './Slide';
 import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
@@ -15,7 +15,7 @@ export default function SlideFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Slide | null | undefined>(null);
-    useFSRefresh(['update', 'history-update', 'edit'], fileSource);
+    useFSEvents(['update', 'history-update', 'edit'], fileSource);
     return (
         <FileItemHandler
             index={index}

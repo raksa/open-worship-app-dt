@@ -1,16 +1,7 @@
 import appProvider from './appProvider';
-import { sendSyncData } from './messagingHelpers';
 
 export function urlPathToFileURL(urlPath: string) {
     return appProvider.browserUtils.urlPathToFileURL(urlPath);
-}
-
-export function getAppInfo() {
-    return sendSyncData('main:app:info') as {
-        name: string,
-        version: string,
-        description: string,
-    };
 }
 
 export function toBase64(str: string) {
