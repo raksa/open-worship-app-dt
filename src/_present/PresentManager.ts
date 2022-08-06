@@ -19,12 +19,14 @@ export default class PresentManager extends EventHandler<PMEventType> {
     static readonly eventHandler = new EventHandler<PMEventType>();
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
+    readonly isMain: boolean = true;
     _isSelected: boolean = false;
     private _isShowing: boolean;
     static readonly _cache: Map<string, PresentManager> = new Map();
-    constructor(presentId: number) {
+    constructor(presentId: number, isPresent?: boolean) {
         super();
         this.presentId = presentId;
+        this.isMain = !isPresent;
         this.presentBGManager = new PresentBGManager(presentId);
         const ids = PresentManager.getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
@@ -93,6 +95,9 @@ export default class PresentManager extends EventHandler<PMEventType> {
         messageUtils.sendData('app:hide-present', this.presentId);
     }
     sendMessage(type: PresentType, data: AnyObjectType | null) {
+        if (!this.isMain) {
+            return;
+        }
         const channel1 = messageUtils.channels.presentMessageChannel;
         messageUtils.sendData(channel1, {
             presentId: this.presentId,
@@ -152,13 +157,13 @@ export default class PresentManager extends EventHandler<PMEventType> {
     static getAllKeys() {
         return Array.from(this._cache.keys());
     }
-    static getInstanceByKey(key: string) {
-        return this.getInstance(+key);
+    static getInstanceByKey(key: string, isPresent?: boolean) {
+        return this.getInstance(+key, isPresent);
     }
-    static getInstance(presentId: number) {
+    static getInstance(presentId: number, isPresent?: boolean) {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
-            const presentManager = new PresentManager(presentId);
+            const presentManager = new PresentManager(presentId, isPresent);
             this._cache.set(key, presentManager);
         }
         return this._cache.get(key) as PresentManager;

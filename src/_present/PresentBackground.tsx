@@ -19,6 +19,7 @@ export default function PresentBackground({ bgManager }: {
             bgManager.fireUpdate = () => void 0;
         };
     });
+    console.log('PresentBackground');
     if (bgSrc === null) {
         return null;
     }

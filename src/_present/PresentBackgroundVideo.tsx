@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 function getVideoDim(src: string) {
     return new Promise<[number, number]>((resolve, reject) => {
         const video = document.createElement('video');
@@ -13,7 +15,7 @@ function getVideoDim(src: string) {
 async function initVideoPosition(video: HTMLVideoElement) {
     const parentElement = video.parentElement;
     if (parentElement === null) {
-        return;
+        return null;
     }
     try {
         const parentWidth = parentElement.clientWidth;
@@ -25,20 +27,34 @@ async function initVideoPosition(video: HTMLVideoElement) {
         const newVideoHeight = videoHeight * scale;
         const offsetH = (newVideoWidth - parentWidth) / 2;
         const offsetV = (newVideoHeight - parentHeight) / 2;
-        video.style.transform = `translate(-${offsetH}px, -${offsetV}px)`;
-        video.style.width = `${newVideoWidth}px`;
+        return {
+            transform: `translate(-${offsetH}px, -${offsetV}px)`,
+            width: `${newVideoWidth}px`,
+        };
     } catch (error) {
         console.log(error);
     }
+    return null;
 }
 export default function PresentBackgroundVideo({ src }: {
     src: string,
 }) {
+    const [transform, setTransform] = useState<string>('');
+    const [width, setWidth] = useState<string>('');
     return (
         <video src={src}
+            style={{
+                transform,
+                width,
+            }}
             ref={(video) => {
-                if (video !== null) {
-                    initVideoPosition(video);
+                if (video !== null && transform === '' && width === '') {
+                    initVideoPosition(video).then((result) => {
+                        if (result !== null) {
+                            setTransform(result.transform);
+                            setWidth(result.width);
+                        }
+                    });
                 }
             }}
             autoPlay loop muted playsInline />

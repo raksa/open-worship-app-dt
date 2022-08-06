@@ -8,7 +8,7 @@ import PresentManager from './PresentManager';
 export default function PresentApp() {
     const urlParams = new URLSearchParams(window.location.search);
     const presentId = +(urlParams.get('presentId') || '') || 0;
-    const presentManager = PresentManager.getInstance(presentId);
+    const presentManager = PresentManager.getInstance(presentId, true);
     return (
         <>
             <PresentBackground

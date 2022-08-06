@@ -12,8 +12,10 @@ export type BGSrcListType = {
 const settingName = 'present-bg-';
 export default class PresentBGManager {
     readonly presentId: number;
-    constructor(presentId: number) {
+    readonly isMain: boolean = true;
+    constructor(presentId: number, isPresent?: boolean) {
         this.presentId = presentId;
+        this.isMain = !isPresent;
     }
     get key() {
         return this.presentId.toString();
