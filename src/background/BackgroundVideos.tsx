@@ -45,13 +45,18 @@ export default function BackgroundVideos() {
                             }}
                             onClick={() => {
                                 if (selectedBGSrcList.length) {
-                                    const keys = selectedBGSrcList.map(([key]) => key);
-                                    PresentManager.setBGSrcByKeys(keys, null);
-                                } else {
-                                    PresentManager.setBGSrc({
-                                        type: 'video',
-                                        src: fileSource.src,
+                                    selectedBGSrcList.forEach(([key]) => {
+                                        PresentManager.getInstanceByKey(key).bgSrc = null;
                                     });
+                                } else {
+                                    PresentManager.getSelectedInstances()
+                                        .forEach((presentManager) => {
+                                            presentManager.bgSrc = {
+                                                type: 'video',
+                                                src: fileSource.src,
+                                            };
+
+                                        });
                                 }
                             }}>
                             <div className='card-body'>

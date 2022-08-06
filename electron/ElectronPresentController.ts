@@ -1,15 +1,16 @@
 import { BrowserWindow } from 'electron';
+import { PresentMessageType, presentMessageChannel } from './eventListener';
 import { isDev } from './helpers';
 
 const url = 'http://localhost:3000';
 const htmlFile = `${__dirname}/../dist/index.html`;
 const presentPreloadFile = `${__dirname}/client/presentPreload.js`;
-export default class PresentManager {
+export default class ElectronPresentController {
     win: BrowserWindow;
-    id: number;
-    static _cache: Map<string, PresentManager> = new Map();
-    constructor(id: number) {
-        this.id = id;
+    presentId: number;
+    static _cache: Map<string, ElectronPresentController> = new Map();
+    constructor(presentId: number) {
+        this.presentId = presentId;
         this.win = this.createPresentWindow();
     }
     createPresentWindow() {
@@ -25,10 +26,11 @@ export default class PresentManager {
                 preload: presentPreloadFile,
             },
         });
+        const query = `?presentId=${this.presentId}`;
         if (isDev) {
-            presentWin.loadURL(url);
+            presentWin.loadURL(url + query);
         } else {
-            presentWin.loadFile(htmlFile);
+            presentWin.loadFile(htmlFile + query);
         }
         this.win = presentWin;
         if (isPresentCanFullScreen) {
@@ -38,18 +40,17 @@ export default class PresentManager {
     }
     hide() {
         this.win.close();
-        PresentManager._cache.delete(this.win.id.toString());
+        ElectronPresentController._cache.delete(this.presentId.toString());
     }
     setDisplay(display: Electron.Display) {
         const bounds = display.bounds;
-        bounds.height -= bounds.y;
         this.win.setBounds(bounds);
     }
     sendData(channel: string, data: any) {
         this.win.webContents.send(channel, data);
     }
-    sendMessage(data: any) {
-        this.sendData('app:present:message', data);
+    sendMessage(message: PresentMessageType) {
+        this.win.webContents.send(presentMessageChannel, message);
     }
     static getAllIds(): number[] {
         return Array.from(this._cache.keys()).map(key => {
@@ -59,16 +60,16 @@ export default class PresentManager {
     static createInstance(presentId: number) {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
-            const presentManager = new PresentManager(presentId);
-            this._cache.set(key, presentManager);
+            const presentController = new ElectronPresentController(presentId);
+            this._cache.set(key, presentController);
         }
-        return this._cache.get(key) as PresentManager;
+        return this._cache.get(key) as ElectronPresentController;
     }
-    static getInstance(presentId: number): PresentManager | null {
+    static getInstance(presentId: number): ElectronPresentController | null {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
             return null;
         }
-        return this._cache.get(key) as PresentManager;
+        return this._cache.get(key) as ElectronPresentController;
     }
 }

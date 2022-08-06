@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PresentBGManager from './PresentBGManager';
 import PresentManager, {
     PMEventType,
     RegisteredEventType,
@@ -36,5 +37,5 @@ export function usePMEvents(events: PMEventType[],
 export function useBGSrcList(events: PMEventType[],
     presentManager?: PresentManager) {
     usePMEvents(events, presentManager);
-    return PresentManager.getBGSrcList();
+    return PresentBGManager.getBGSrcList();
 }

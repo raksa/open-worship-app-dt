@@ -9,19 +9,32 @@ export type BGSrcListType = {
     [key: string]: BackgroundSrcType;
 };
 
-const setting = 'present-bg';
+const settingName = 'present-bg-';
 export default class PresentBGManager {
-    _bgSrc: BackgroundSrcType | null = null;
+    readonly presentId: number;
+    constructor(presentId: number) {
+        this.presentId = presentId;
+    }
+    get key() {
+        return this.presentId.toString();
+    }
     get bgSrc() {
-        return this._bgSrc;
+        const allBGSrcList = PresentBGManager.getBGSrcList();
+        return allBGSrcList[this.key] || null;
     }
     set bgSrc(bgSrc: BackgroundSrcType | null) {
-        this._bgSrc = bgSrc;
+        const allBGSrcList = PresentBGManager.getBGSrcList();
+        if (bgSrc === null) {
+            delete allBGSrcList[this.key];
+        } else {
+            allBGSrcList[this.key] = bgSrc;
+        }
+        PresentBGManager.setBGSrcList(allBGSrcList);
         this.fireUpdate();
     }
     fireUpdate: () => void = () => void 0;
     static getBGSrcList(): BGSrcListType {
-        const str = getSetting(setting, '');
+        const str = getSetting(settingName, '');
         if (str !== '') {
             try {
                 return JSON.parse(str);
@@ -33,19 +46,6 @@ export default class PresentBGManager {
     }
     static setBGSrcList(bgSrcList: BGSrcListType) {
         const str = JSON.stringify(bgSrcList);
-        setSetting(setting, str);
-    }
-    static getBGSrcByKey(key: string): BackgroundSrcType | null {
-        const allBGSrcList = this.getBGSrcList();
-        return allBGSrcList[key] || null;
-    }
-    static setBGSrcByKey(key: string, bgSrc: BackgroundSrcType | null) {
-        const allBGSrcList = this.getBGSrcList();
-        if (bgSrc === null) {
-            delete allBGSrcList[key];
-        } else {
-            allBGSrcList[key] = bgSrc;
-        }
-        this.setBGSrcList(allBGSrcList);
+        setSetting(settingName, str);
     }
 }

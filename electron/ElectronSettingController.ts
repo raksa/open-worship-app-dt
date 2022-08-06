@@ -1,9 +1,9 @@
-import AppManager from './AppManager';
+import ElectronAppController from './ElectronAppController';
 const fs = require('fs');
 const path = require('path');
 const electron = require('electron');
 
-export default class SettingController {
+export default class ElectronSettingController {
     _setting: {
         mainWinBounds: Electron.Rectangle | null,
         appPresentDisplayId: number | null,
@@ -11,9 +11,9 @@ export default class SettingController {
             mainWinBounds: null,
             appPresentDisplayId: null,
         };
-    appManager: AppManager;
-    constructor(appManager: AppManager) {
-        this.appManager = appManager;
+    appController: ElectronAppController;
+    constructor(appController: ElectronAppController) {
+        this.appController = appController;
         try {
             const str = fs.readFileSync(this.fileSettingPath, 'utf8');
             const json = JSON.parse(str);
@@ -40,7 +40,7 @@ export default class SettingController {
     }
     resetMainBounds() {
         this.mainWinBounds = this.primaryDisplay.bounds;
-        this.appManager.mainWin.setBounds(this.mainWinBounds);
+        this.appController.mainWin.setBounds(this.mainWinBounds);
     }
     get allDisplays() {
         return electron.screen.getAllDisplays();
@@ -55,14 +55,14 @@ export default class SettingController {
         fs.writeFileSync(this.fileSettingPath, JSON.stringify(this._setting), 'utf8');
     }
     syncMainWindow() {
-        this.appManager.mainWin.setBounds(this.mainWinBounds);
-        this.appManager.mainWin.on('resize', () => {
-            const [width, height] = this.appManager.mainWin.getSize();
+        this.appController.mainWin.setBounds(this.mainWinBounds);
+        this.appController.mainWin.on('resize', () => {
+            const [width, height] = this.appController.mainWin.getSize();
             this.mainWinBounds = { ...this.mainWinBounds, width, height };
             this.save();
         });
-        this.appManager.mainWin.on('move', () => {
-            const [x, y] = this.appManager.mainWin.getPosition();
+        this.appController.mainWin.on('move', () => {
+            const [x, y] = this.appController.mainWin.getPosition();
             this.mainWinBounds = { ...this.mainWinBounds, x, y };
             this.save();
         });

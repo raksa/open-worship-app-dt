@@ -1,29 +1,64 @@
 import EventHandler from '../event/EventHandler';
+import { AnyObjectType } from '../helper/helpers';
+import { getSetting, setSetting } from '../helper/settingHelper';
 import { AllDisplayType } from '../server/displayHelper';
 import appProvider from './appProvider';
 import PresentBGManager, {
     BackgroundSrcType,
-    BGSrcListType,
 } from './PresentBGManager';
 
-export type PMEventType = 'update' | 'visible';
+export type PMEventType = 'update' | 'visible' | 'display-id';
 type ListenerType<T> = (data: T) => void;
 export type RegisteredEventType<T> = {
     type: PMEventType,
     listener: ListenerType<T>,
 };
 const messageUtils = appProvider.messageUtils;
+const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PMEventType> {
     static readonly eventHandler = new EventHandler<PMEventType>();
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
     _isSelected: boolean = false;
-    private _isShowing: boolean = false;
+    private _isShowing: boolean;
     static readonly _cache: Map<string, PresentManager> = new Map();
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
-        this.presentBGManager = new PresentBGManager();
+        this.presentBGManager = new PresentBGManager(presentId);
+        const ids = PresentManager.getAllShowingPresentIds();
+        this._isShowing = ids.some((id) => id === presentId);
+    }
+    get key() {
+        return this.presentId.toString();
+    }
+    get displayId() {
+        const defaultDisplay = PresentManager.getDefaultPresentDisplay();
+        const str = getSetting(`${settingName}-pid-${this.presentId}`,
+            defaultDisplay.id.toString());
+        if (isNaN(+str)) {
+            return defaultDisplay.id;
+        }
+        const id = +str;
+        const { displays } = PresentManager.getAllDisplays();
+        return displays.find((display) => {
+            return display.id === id;
+        })?.id || defaultDisplay.id;
+    }
+    set displayId(id: number) {
+        setSetting(`${settingName}-pid-${this.presentId}`, id.toString());
+        if (this.isShowing) {
+            messageUtils.sendData('main:app:set-present-display', {
+                presentId: this.presentId,
+                displayId: id,
+            });
+        }
+        const data = {
+            presentId: this.presentId,
+            displayId: id,
+        };
+        this._addPropEvent('display-id', data);
+        PresentManager.eventHandler._addPropEvent('display-id', data);
     }
     get isSelected() {
         return this._isSelected;
@@ -36,16 +71,31 @@ export default class PresentManager extends EventHandler<PMEventType> {
     }
     set isShowing(isShowing: boolean) {
         this._isShowing = isShowing;
-        const allDisplays = PresentManager.getAllDisplays();
-        debugger;
-        console.log(allDisplays);
-        messageUtils.sendData(this._isShowing ?
-            'main:app:show-present' :
-            'main:app:hide-present', this.presentId);
+        if (isShowing) {
+            messageUtils.sendData('main:app:show-present', {
+                presentId: this.presentId,
+                displayId: this.displayId,
+            });
+        } else {
+            messageUtils.sendData('app:hide-present', this.presentId);
+        }
         this.fireVisibleEvent();
+    }
+    get bgSrc() {
+        return this.presentBGManager.bgSrc;
+    }
+    set bgSrc(bgSrc: BackgroundSrcType | null) {
+        this.presentBGManager.bgSrc = bgSrc;
+        this.fireUpdateEvent();
+    }
+    close() {
+        messageUtils.sendData('app:hide-present', this.presentId);
     }
     static fireUpdateEvent() {
         this.eventHandler._addPropEvent('update');
+    }
+    static getAllShowingPresentIds(): number[] {
+        return messageUtils.sendSyncData('main:app:get-presents');
     }
     static getAllDisplays(): AllDisplayType {
         return messageUtils.sendSyncData('main:app:get-displays');
@@ -94,72 +144,37 @@ export default class PresentManager extends EventHandler<PMEventType> {
     static getAllKeys() {
         return Array.from(this._cache.keys());
     }
+    static getInstanceByKey(key: string) {
+        return this.getInstance(+key);
+    }
     static getInstance(presentId: number) {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
             const presentManager = new PresentManager(presentId);
             this._cache.set(key, presentManager);
-            presentManager.presentBGManager.bgSrc = this.getBGSrcById(key);
         }
         return this._cache.get(key) as PresentManager;
     }
-    static getSelectedInstances(): [string, PresentManager][] {
-        return Array.from(this._cache.keys())
-            .filter((key) => {
-                return this._cache.get(key)?.isSelected;
-            }).map((key) => {
-                return [key, this._cache.get(key) as PresentManager];
+    static getSelectedInstances() {
+        return Array.from(this._cache.values())
+            .filter((presentManager) => {
+                return presentManager.isSelected;
             });
-    }
-    static getBGSrcList() {
-        return PresentBGManager.getBGSrcList();
-    }
-    static setBGSrcList(bgSrcList: BGSrcListType) {
-        Array.from(this._cache.keys()).forEach((key) => {
-            this.setBGSrcByKey(key, null);
-        });
-        Object.keys(bgSrcList).forEach((key) => {
-            this.setBGSrcByKey(key, bgSrcList[key]);
-        });
-        this.fireUpdateEvent();
-    }
-    static getBGSrcById(key: string) {
-        return PresentBGManager.getBGSrcByKey(key);
-    }
-    static setBGSrcByKey(key: string, bgSrc: BackgroundSrcType | null) {
-        PresentBGManager.setBGSrcByKey(key, bgSrc);
-        const presentManager = this.getInstance(+key);
-        presentManager.presentBGManager.bgSrc = bgSrc;
-        this.fireUpdateEvent();
-    }
-    static setBGSrcByKeys(keys: string[], bgSrc: BackgroundSrcType | null) {
-        keys.forEach((key) => {
-            this.setBGSrcByKey(key, bgSrc);
-        });
-        this.fireUpdateEvent();
-    }
-    static setBGSrc(bgSrc: BackgroundSrcType) {
-        this.getSelectedInstances().forEach(([key, presentManager]) => {
-            presentManager.presentBGManager.bgSrc = bgSrc;
-            this.setBGSrcByKey(key, bgSrc);
-        });
     }
 }
 
 export type PresentMessageType = {
-    presentId?: number,
-    type: 'background',
-    data: any,
+    presentId: number,
+    type: 'background' | 'display-change' | 'visible',
+    data: AnyObjectType,
 };
 appProvider.messageUtils.listenForData('app:present:message', (_,
     message: PresentMessageType) => {
     const { presentId, type, data } = message;
+    const presentManager = PresentManager.getInstance(presentId);
     if (type === 'background') {
-        if (presentId !== undefined) {
-            PresentManager.setBGSrcByKey(presentId.toString(), data);
-        } else {
-            const keys = PresentManager.getAllKeys();
-            PresentManager.setBGSrcByKeys(keys, data || null);
-        }
-    };
+        presentManager.bgSrc = data as any;
+    } else if (type === 'visible') {
+        presentManager.isShowing = data.isShowing;
+    }
 });

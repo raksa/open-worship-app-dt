@@ -6,7 +6,9 @@ import PresentFullText from './PresentFullText';
 import PresentManager from './PresentManager';
 
 export default function PresentApp() {
-    const presentManager = PresentManager.getInstance(0);
+    const urlParams = new URLSearchParams(window.location.search);
+    const presentId = +(urlParams.get('presentId') || '') || 0;
+    const presentManager = PresentManager.getInstance(presentId);
     return (
         <>
             <PresentBackground
@@ -14,7 +16,8 @@ export default function PresentApp() {
             <PresentForeground />
             <PresentFullText />
             <PresentAlert />
-            <CloseButton />
+            <CloseButton
+                presentManager={presentManager} />
         </>
     );
 }

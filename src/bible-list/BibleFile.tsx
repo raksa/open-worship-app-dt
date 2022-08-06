@@ -57,7 +57,10 @@ export default function BibleFile({
                         {fileSource.name}
                     </span>
                 </div>
-                <div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}>
+                <div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}
+                    style={{
+                        overflow: 'auto',
+                    }}>
                     {data.isOpened && <div className='accordion-body'>
                         <AppSuspense>
                             <RenderBibleItems bible={data} />

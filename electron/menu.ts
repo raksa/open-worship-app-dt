@@ -1,7 +1,7 @@
 import AppManager from './AppManager';
 const electron = require('electron');
 
-export function initMenu(appManager: AppManager) {
+export function initMenu(appController: AppManager) {
     const isMac = process.platform === 'darwin';
 
     const template: any[] = [
@@ -88,7 +88,7 @@ export function initMenu(appManager: AppManager) {
                 {
                     label: 'Reset Position and Size',
                     click: () => {
-                        appManager.settingController.resetMainBounds();
+                        appController.settingController.resetMainBounds();
                     },
                 },
             ],

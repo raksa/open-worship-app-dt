@@ -1,12 +1,13 @@
 import { BrowserWindow } from 'electron';
+import { presentMessageChannel, PresentMessageType } from './eventListener';
 import { isDev } from './helpers';
 
 const url = 'http://localhost:3000';
 const htmlFile = `${__dirname}/../dist/index.html`;
 const mainPreloadFile = `${__dirname}/client/mainPreload.js`;
-export default class MainManager {
+export default class ElectronMainController {
     win: BrowserWindow;
-    static _instance: MainManager | null = null;
+    static _instance: ElectronMainController | null = null;
     constructor() {
         this.win = this.createMainWindow();
     }
@@ -42,6 +43,9 @@ export default class MainManager {
     sendData(channel: string, data: any) {
         this.win.webContents.send(channel, data);
     }
+    sendMessage(message: PresentMessageType) {
+        this.win.webContents.send(presentMessageChannel, message);
+    }
     changeBible(isNext: boolean) {
         this.sendData('app:main:change-bible', isNext);
     }
@@ -50,7 +54,7 @@ export default class MainManager {
     }
     static getInstance() {
         if (this._instance === null) {
-            this._instance = new MainManager();
+            this._instance = new ElectronMainController();
         }
         return this._instance;
     }

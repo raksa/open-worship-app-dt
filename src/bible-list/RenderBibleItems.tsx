@@ -10,7 +10,10 @@ export default function RenderBibleItems({ bible }: {
 }) {
     const items = bible.items;
     return (
-        <ul className='list-group'>
+        <ul className='list-group' style={{
+            minWidth: '220px',
+            maxWidth: '380px',
+        }}>
             {items.map((bibleItem, i1) => {
                 return <BibleItemRender key={i1} index={i1}
                     warningMessage={genDuplicatedMessage(items, bibleItem, i1)}

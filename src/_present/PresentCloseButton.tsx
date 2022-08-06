@@ -1,15 +1,14 @@
 import './PresentCloseButton.scss';
+import PresentManager from './PresentManager';
 
-import appProvider from '../server/appProvider';
-
-function closeWin() {
-    appProvider.messageUtils.sendData('present:app:hide-present');
-}
-
-export default function PresentCloseButton() {
+export default function PresentCloseButton({
+    presentManager,
+}: {
+    presentManager: PresentManager,
+}) {
     return (
         <button id="close" onClick={() => {
-            closeWin();
+            presentManager.close();
         }}>x</button>
     );
 }
