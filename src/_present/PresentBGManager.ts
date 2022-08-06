@@ -1,6 +1,7 @@
 import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProvider from './appProvider';
+import { sendPresentMessage } from './presentHelpers';
 import PresentManager from './PresentManager';
 
 export type BackgroundType = 'color' | 'image' | 'video';
@@ -42,6 +43,11 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             allBGSrcList[this.key] = bgSrc;
         }
         PresentBGManager.setBGSrcList(allBGSrcList);
+        sendPresentMessage({
+            presentId: this.presentId,
+            type: 'background',
+            data: bgSrc,
+        });
         this.fireUpdate();
     }
     fireUpdate() {
@@ -69,5 +75,3 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         setSetting(settingName, str);
     }
 }
-
-(window as any).PresentBGManager = PresentBGManager;

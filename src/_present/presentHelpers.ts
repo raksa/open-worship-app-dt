@@ -81,7 +81,7 @@ export type PresentMessageType = {
     data: AnyObjectType | null,
 };
 
-export function sendMessage(message: PresentMessageType, isForce?: boolean) {
+export function sendPresentMessage(message: PresentMessageType, isForce?: boolean) {
     if (appProvider.isPresent && !isForce) {
         return;
     }
