@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { RegisteredEventType } from '../event/EventHandler';
 import { AnyObjectType } from '../helper/helpers';
 import appProvider from './appProvider';
 import PresentBGManager, {
@@ -16,24 +15,13 @@ export function usePMEvents(events: PresentManagerEventType[],
     useEffect(() => {
         const update = () => {
             setN(n + 1);
-            if (callback) {
-                callback();
-            }
+            callback?.();
         };
-        let registerEvent: RegisteredEventType<PresentManagerEventType, void>[] = [];
-        if (presentManager !== undefined) {
-            registerEvent = presentManager.registerEventListener(
-                events, update);
-        } else {
-            registerEvent = PresentManager.registerEventListener(
-                events, update);
-        }
+        const instanceEvents = presentManager?.registerEventListener(events, update) || [];
+        const staticEvents = PresentManager.registerEventListener(events, update);
         return () => {
-            if (presentManager !== undefined) {
-                presentManager.unregisterEventListener(registerEvent);
-            } else {
-                PresentManager.unregisterEventListener(registerEvent);
-            }
+            presentManager?.unregisterEventListener(instanceEvents);
+            PresentManager.unregisterEventListener(staticEvents);
         };
     }, [presentManager, n]);
 }
@@ -45,24 +33,13 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
     useEffect(() => {
         const update = () => {
             setN(n + 1);
-            if (callback) {
-                callback();
-            }
+            callback?.();
         };
-        let registerEvent: RegisteredEventType<PresentBGManagerEventType, void>[] = [];
-        if (presentBGManager !== undefined) {
-            registerEvent = presentBGManager.registerEventListener(
-                events, update);
-        } else {
-            registerEvent = PresentBGManager.registerEventListener(
-                events, update);
-        }
+        const instanceEvents = presentBGManager?.registerEventListener(events, update) || [];
+        const staticEvents = PresentBGManager.registerEventListener(events, update);
         return () => {
-            if (presentBGManager !== undefined) {
-                presentBGManager.unregisterEventListener(registerEvent);
-            } else {
-                PresentBGManager.unregisterEventListener(registerEvent);
-            }
+            presentBGManager?.unregisterEventListener(instanceEvents);
+            PresentBGManager.unregisterEventListener(staticEvents);
         };
     }, [presentBGManager, n]);
 }

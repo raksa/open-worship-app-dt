@@ -56,8 +56,8 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     }
     fireUpdate() {
         this.addPropEvent('update');
-        PresentBGManager.fireUpdateEvent();
         PresentManager.getInstance(this.presentId).fireUpdateEvent();
+        PresentBGManager.fireUpdateEvent();
     }
     static fireUpdateEvent() {
         this.addPropEvent('update');

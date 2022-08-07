@@ -5,7 +5,8 @@ import { AllDisplayType } from '../server/displayHelper';
 import appProvider from './appProvider';
 import PresentBGManager from './PresentBGManager';
 
-export type PresentManagerEventType = 'select' | 'update' | 'visible' | 'display-id';
+export type PresentManagerEventType = 'instance' | 'update'
+    | 'visible' | 'display-id' | 'resize';
 const messageUtils = appProvider.messageUtils;
 const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
@@ -60,8 +61,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     }
     set isSelected(isSelected: boolean) {
         this._isSelected = isSelected;
-        this.addPropEvent('select');
-        PresentManager.addPropEvent('select');
+        this.fireInstanceEvent();
     }
     get isShowing() {
         return this._isShowing;
@@ -93,9 +93,6 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     hide() {
         messageUtils.sendData('app:hide-present', this.presentId);
     }
-    static fireUpdateEvent() {
-        this.addPropEvent('update');
-    }
     static getAllShowingPresentIds(): number[] {
         return messageUtils.sendSyncData('main:app:get-presents');
     }
@@ -112,12 +109,35 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.addPropEvent('update');
         PresentManager.fireUpdateEvent();
     }
-    static fireVisibleEvent() {
-        this.addPropEvent('visible');
+    static fireUpdateEvent() {
+        this.addPropEvent('update');
+    }
+    fireInstanceEvent() {
+        this.addPropEvent('instance');
+        PresentManager.fireInstanceEvent();
+    }
+    static fireInstanceEvent() {
+        this.addPropEvent('instance');
     }
     fireVisibleEvent() {
         this.addPropEvent('visible');
-        PresentManager.fireUpdateEvent();
+        PresentManager.fireVisibleEvent();
+    }
+    static fireVisibleEvent() {
+        this.addPropEvent('visible');
+    }
+    fireResizeEvent() {
+        this.addPropEvent('resize');
+        PresentManager.fireVisibleEvent();
+    }
+    static fireResizeEvent() {
+        this.addPropEvent('resize');
+    }
+    delete() {
+        this.hide();
+        this.presentBGManager.bgSrc = null;
+        PresentManager._cache.delete(this.key);
+        this.fireInstanceEvent();
     }
     static getInstanceByKey(key: string) {
         return this.getInstance(+key);

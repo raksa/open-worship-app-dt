@@ -151,9 +151,7 @@ export function useFSEvents(events: FSEventType[], fileSource: FileSource | null
         const registerEvent = fileSource.registerEventListener(
             events, () => {
                 setN(n + 1);
-                if (callback) {
-                    callback();
-                }
+                callback?.();
             });
         return () => {
             fileSource.unregisterEventListener(registerEvent);

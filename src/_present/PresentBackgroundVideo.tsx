@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { usePMEvents } from './presentHelpers';
 
 function getVideoDim(src: string) {
     return new Promise<[number, number]>((resolve, reject) => {
@@ -12,51 +13,40 @@ function getVideoDim(src: string) {
         video.src = src;
     });
 }
-async function initVideoPosition(video: HTMLVideoElement) {
-    const parentElement = video.parentElement;
-    if (parentElement === null) {
-        return null;
+async function initPosition(element: HTMLVideoElement | null) {
+    if (element === null || element.parentElement === null) {
+        return;
     }
+    const parentElement = element.parentElement;
     try {
         const parentWidth = parentElement.clientWidth;
         const parentHeight = parentElement.clientHeight;
-        const [videoWidth, videoHeight] = await getVideoDim(video.src);
+        const [videoWidth, videoHeight] = await getVideoDim(element.src);
         const scale = Math.max(parentWidth / videoWidth,
             parentHeight / videoHeight);
         const newVideoWidth = videoWidth * scale;
         const newVideoHeight = videoHeight * scale;
         const offsetH = (newVideoWidth - parentWidth) / 2;
         const offsetV = (newVideoHeight - parentHeight) / 2;
-        return {
-            transform: `translate(-${offsetH}px, -${offsetV}px)`,
-            width: `${newVideoWidth}px`,
-        };
+        element.style.transform = `translate(-${offsetH}px, -${offsetV}px)`;
+        element.width = newVideoWidth;
     } catch (error) {
         console.log(error);
     }
-    return null;
 }
 export default function PresentBackgroundVideo({ src }: {
     src: string,
 }) {
-    const [transform, setTransform] = useState<string>('');
-    const [width, setWidth] = useState<string>('');
+    const myRef = useRef<HTMLVideoElement>(null);
+    useEffect(() => {
+        initPosition(myRef.current);
+    });
+    usePMEvents(['resize'], undefined, () => {
+        initPosition(myRef.current);
+    });
     return (
         <video src={src}
-            style={{
-                transform,
-                width,
-            }}
-            ref={(video) => {
-                if (video !== null && transform === '' && width === '') {
-                    initVideoPosition(video).then((result) => {
-                        if (result !== null) {
-                            setTransform(result.transform);
-                            setWidth(result.width);
-                        }
-                    });
-                }
-            }}
+            ref={myRef}
             autoPlay loop muted playsInline />
     );
 }

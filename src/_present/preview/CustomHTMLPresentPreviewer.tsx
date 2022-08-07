@@ -28,6 +28,7 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
         super();
         this.presentId = Number(this.getAttribute('presentId') || 0);
         this.mountPoint = document.createElement('div');
+        this.mountPoint.style.overflow = 'hidden';
     }
     resize() {
         if (this.parentElement) {
@@ -36,7 +37,7 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             const scale = this.parentElement.clientWidth / bounds.width;
             this.mountPoint.style.maxWidth = (scale * bounds.width) + 'px';
             this.mountPoint.style.height = (scale * bounds.height) + 'px';
-            this.mountPoint.style.overflow = 'hidden';
+            PresentManager.fireResizeEvent();
         }
     }
     static checkSize() {

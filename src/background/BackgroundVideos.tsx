@@ -15,7 +15,6 @@ export default function BackgroundVideos() {
         <FileListHandler id='background-video' mimetype='video'
             dirSource={dirSource}
             setDirSource={setDirSource}
-            header={undefined}
             body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
                     const vRef = createRef<HTMLVideoElement>();
