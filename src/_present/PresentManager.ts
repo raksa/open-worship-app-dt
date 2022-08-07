@@ -102,7 +102,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     static getDefaultPresentDisplay() {
         const { primaryDisplay, displays } = this.getAllDisplays();
         return displays.find((display) => {
-            return display.id === primaryDisplay.id;
+            return display.id !== primaryDisplay.id;
         }) || primaryDisplay;
     }
     fireUpdateEvent() {
@@ -143,7 +143,13 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         return this.getInstance(+key);
     }
     static getAllInstances() {
-        return Array.from(this._cache.values());
+        const cachedInstances = Array.from(this._cache.values());
+        if (cachedInstances.length > 0) {
+            return cachedInstances;
+        }
+        return this.getAllShowingPresentIds().map((presentId) => {
+            return this.getInstance(presentId);
+        });
     }
     static getInstance(presentId: number) {
         const key = presentId.toString();
