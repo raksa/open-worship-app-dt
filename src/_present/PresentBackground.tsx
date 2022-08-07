@@ -8,7 +8,7 @@ import { usePBGMEvents } from './presentHelpers';
 export default function PresentBackground({ bgManager }: {
     bgManager: PresentBGManager;
 }) {
-    usePBGMEvents(['update']);
+    usePBGMEvents(['update'], bgManager);
     const bgSrc = bgManager.bgSrc;
     if (bgSrc === null) {
         return null;

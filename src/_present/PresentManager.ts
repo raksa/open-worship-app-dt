@@ -173,7 +173,9 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                         resolve([presentManager]);
                     },
                 };
-            }));
+            })).then(() => resolve([]));
         });
     }
 }
+
+(window as any).PresentManager = PresentManager;

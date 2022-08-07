@@ -22,11 +22,11 @@ declare global {
 }
 
 export default class CustomHTMLPresentPreviewer extends HTMLElement {
-    presentId: number;
     mountPoint: HTMLDivElement;
+    presentId: number;
     constructor() {
         super();
-        this.presentId = Number(this.getAttribute('presentId') || 0);
+        this.presentId = -1;
         this.mountPoint = document.createElement('div');
         this.mountPoint.style.overflow = 'hidden';
     }
@@ -52,7 +52,13 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             mode: 'open',
         }).appendChild(this.mountPoint);
         const root = createRoot(this.mountPoint);
-        root.render(<MiniPresentApp id={this.presentId} />);
+        const idStr = this.getAttribute('presentid');
+        if (idStr !== null) {
+            this.presentId = +idStr;
+            root.render(<MiniPresentApp id={this.presentId} />);
+        } else {
+            root.render(<div>Error during rendering</div>);
+        }
     }
 }
 

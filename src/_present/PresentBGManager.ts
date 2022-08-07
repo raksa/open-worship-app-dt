@@ -1,5 +1,4 @@
 import EventHandler from '../event/EventHandler';
-import FileSource from '../helper/FileSource';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProvider from './appProvider';
 import { sendPresentMessage } from './presentHelpers';
@@ -84,16 +83,16 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             return bgSrc.type === bgType;
         });
     }
-    static getSelectBGSrcList(fileSource: FileSource, bgType: BackgroundType) {
+    static getSelectBGSrcList(src: string, bgType: BackgroundType) {
         const keyBGSrcList = this.getBGSrcListByType(bgType);
         return keyBGSrcList.filter(([_, bgSrc]) => {
-            return bgSrc.src === fileSource.src;
+            return bgSrc.src === src;
         });
     }
-    static async bgSrcSelect(fileSource: FileSource,
+    static async bgSrcSelect(src: string,
         e: React.MouseEvent<HTMLElement, MouseEvent>,
         bgType: BackgroundType) {
-        const selectedBGSrcList = this.getSelectBGSrcList(fileSource, bgType);
+        const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
         if (selectedBGSrcList.length > 0) {
             selectedBGSrcList.forEach(([key]) => {
                 PresentManager.getInstanceByKey(key)
@@ -105,8 +104,9 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         chosenPresentManagers.forEach((presentManager) => {
             presentManager.presentBGManager.bgSrc = {
                 type: bgType,
-                src: fileSource.src,
+                src,
             };
         });
+        PresentBGManager.fireUpdateEvent();
     }
 }

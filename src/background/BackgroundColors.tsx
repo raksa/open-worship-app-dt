@@ -1,24 +1,35 @@
 import ColorPicker, { AppColorType } from '../others/ColorPicker';
 import { usePBGMEvents } from '../_present/presentHelpers';
-import PresentManager from '../_present/PresentManager';
-import PresentBGManager, {
-    BackgroundSrcType,
-} from '../_present/PresentBGManager';
+import PresentBGManager, { BackgroundSrcType } from '../_present/PresentBGManager';
+import { RenderPresentIds } from './Background';
+import { useEffect, useState } from 'react';
 
 export default function BackgroundColors() {
-    usePBGMEvents(['update']);
-    const keyBGSrcList = PresentBGManager.getBGSrcListByType('color');
-    if (keyBGSrcList.length) {
+    const [selectedBGSrcList, setSelectedBGSrcList] = useState<
+        [string, BackgroundSrcType][] | null>(null);
+    useEffect(() => {
+        if (selectedBGSrcList === null) {
+            setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
+        }
+    }, [selectedBGSrcList]);
+    usePBGMEvents(['update'], undefined, () => {
+        setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
+    });
+    if (selectedBGSrcList === null) {
+        return null;
+    }
+    if (selectedBGSrcList.length) {
         return (
             <>
-                {keyBGSrcList.map(([key, bgSrc], i) => {
-                    const onColorChange = (newColor: AppColorType | null) => {
-                        const newBGSrc = newColor !== null ? ({
-                            type: 'color',
-                            src: newColor as string,
-                        } as BackgroundSrcType) : null;
-                        const presentManager = PresentManager.getInstanceByKey(key);
-                        presentManager.presentBGManager.bgSrc = newBGSrc;
+                <div title={'Show in presents:'
+                    + selectedBGSrcList.map(([key]) => key).join(',')}>
+                    <RenderPresentIds
+                        ids={selectedBGSrcList.map(([key]) => +key)} />
+                </div>
+                {selectedBGSrcList.map(([_, bgSrc], i) => {
+                    const onColorChange = async (newColor: AppColorType | null, e: any) => {
+                        setSelectedBGSrcList(null);
+                        PresentBGManager.bgSrcSelect(newColor || bgSrc.src, e, 'color');
                     };
                     return (
                         <ColorPicker key={i}
@@ -31,15 +42,10 @@ export default function BackgroundColors() {
     }
     return (
         <ColorPicker color={null}
-            onColorChange={(newColor) => {
+            onColorChange={(newColor, e) => {
                 if (newColor !== null) {
-                    PresentManager.getSelectedInstances()
-                        .forEach((presentManager) => {
-                            presentManager.presentBGManager.bgSrc = {
-                                type: 'color',
-                                src: newColor,
-                            };
-                        });
+                    setSelectedBGSrcList(null);
+                    PresentBGManager.bgSrcSelect(newColor, e as any, 'color');
                 }
             }} />
     );

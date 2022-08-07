@@ -7,6 +7,7 @@ import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
 import { usePBGMEvents } from '../_present/presentHelpers';
 import PresentBGManager from '../_present/PresentBGManager';
+import { RenderPresentIds } from './Background';
 
 export default function BackgroundVideos() {
     const [dirSource, setDirSource] = useState(DirSource.genDirSource('video-list-selected-dir'));
@@ -18,7 +19,8 @@ export default function BackgroundVideos() {
             body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
                     const vRef = createRef<HTMLVideoElement>();
-                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(fileSource, 'video');
+                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
+                        fileSource.src, 'video');
                     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
                     return (
                         <div key={`${i}`}
@@ -26,7 +28,7 @@ export default function BackgroundVideos() {
                             title={fileSource.filePath + '\n Show in presents:'
                                 + selectedBGSrcList.map(([key]) => key).join(',')}
                             onContextMenu={(e) => {
-                                showAppContextMenu(e, genCommonMenu(fileSource),);
+                                showAppContextMenu(e, genCommonMenu(fileSource));
                             }}
                             onMouseEnter={() => {
                                 vRef.current?.play();
@@ -38,15 +40,11 @@ export default function BackgroundVideos() {
                                 }
                             }}
                             onClick={(e) => {
-                                PresentBGManager.bgSrcSelect(fileSource, e, 'video');
+                                PresentBGManager.bgSrcSelect(fileSource.src, e, 'video');
                             }}>
                             <div className='card-body'>
-                                <div style={{
-                                    position: 'absolute',
-                                    textShadow: '1px 1px 5px #000',
-                                }}>
-                                    {selectedBGSrcList.map(([key]) => key).join(',')}
-                                </div>
+                                <RenderPresentIds
+                                    ids={selectedBGSrcList.map(([key]) => +key)} />
                                 <video ref={vRef} loop
                                     muted src={fileSource.src}></video>
                             </div>

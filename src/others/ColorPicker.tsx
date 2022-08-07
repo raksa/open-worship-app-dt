@@ -1,8 +1,8 @@
 import './ColorPicker.scss';
 
-import { showAppContextMenu } from './AppContextMenu';
+import { createMouseEvent, showAppContextMenu } from './AppContextMenu';
 import { copyToClipboard } from '../server/appHelper';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import colorList from './color-list.json';
 import { AnyObjectType } from '../helper/helpers';
 
@@ -25,15 +25,15 @@ export default function ColorPicker({
     color, onColorChange,
 }: {
     color: AppColorType | null,
-    onColorChange: (color: AppColorType | null) => void
+    onColorChange: (color: AppColorType | null, e: MouseEvent) => void
 }) {
     const [localColor, setLocalColor] = useState(color);
     useEffect(() => {
         setLocalColor(color);
     }, [color]);
-    const applyNewColor = (newColor: string) => {
+    const applyNewColor = (newColor: string, e: MouseEvent) => {
         const upperColor = newColor.toUpperCase() as AppColorType;
-        onColorChange(upperColor);
+        onColorChange(upperColor, e);
         setLocalColor(upperColor);
     };
     return (
@@ -41,23 +41,23 @@ export default function ColorPicker({
             <div className='p-3 overflow-hidden'>
                 <RenderColors colors={colorList.main}
                     selectedColor={localColor}
-                    onColorChange={(newColor: AppColorType | null) => {
+                    onColorChange={(newColor: AppColorType | null, e) => {
                         if (newColor === null) {
-                            return onColorChange(null);
+                            return onColorChange(null, e);
                         }
                         const hex = localColor === null ? 'ff' :
                             transparentColor(colorToTransparent(localColor));
                         const newColorStr = newColor + hex;
-                        applyNewColor(newColorStr);
+                        applyNewColor(newColorStr, e);
                     }} />
                 {localColor !== null && <OpacitySlider
                     value={colorToTransparent(localColor)}
-                    onOpacityChanged={(value: number) => {
+                    onOpacityChanged={(value: number, e) => {
                         const hex = transparentColor(value);
                         const newColor = localColor.split('');
                         newColor[7] = hex[0];
                         newColor[8] = hex[1];
-                        applyNewColor(newColor.join(''));
+                        applyNewColor(newColor.join(''), e);
                     }} />}
             </div>
         </div>
@@ -70,7 +70,7 @@ function RenderColors({
 }: {
     colors: AnyObjectType,
     selectedColor: AppColorType | null,
-    onColorChange: (color: AppColorType | null) => void,
+    onColorChange: (color: AppColorType | null, e: MouseEvent) => void,
 }) {
     return (
         <div>
@@ -86,8 +86,8 @@ function RenderColors({
             </div>
             <div className='d-flex flex-wrap border-white-round'>
                 <RenderNoColor isSelected={!selectedColor}
-                    onClick={() => {
-                        onColorChange(null);
+                    onClick={(e) => {
+                        onColorChange(null, e);
                     }} />
                 {Object.entries(colors).map(([name, color]: [string, AppColorType], i) => {
                     return (
@@ -95,16 +95,16 @@ function RenderColors({
                             color={color}
                             isSelected={selectedColor !== null &&
                                 compareColor(selectedColor, color)}
-                            onClick={() => {
-                                onColorChange(color);
+                            onClick={(e) => {
+                                onColorChange(color, e);
                             }} />
                     );
                 })}
             </div>
             <div className='m-2'>
                 <SelectCustomColor color={selectedColor}
-                    onColorSelected={(color: AppColorType) => {
-                        onColorChange(color);
+                    onColorSelected={(color: AppColorType, e) => {
+                        onColorChange(color, e);
                     }} />
             </div>
         </div>
@@ -124,27 +124,28 @@ function RenderColor({
 }: {
     name: string, color: AppColorType,
     isSelected?: boolean,
-    onClick?: () => void,
+    onClick?: (e: MouseEvent) => void,
 }) {
     return (
         <div title={name}
             onContextMenu={(e) => {
                 showContextMenu(e, color);
             }}
-            className={'m-1 color-item pointer' + (isSelected ? ' highlight-selected' : '')}
+            className={'m-1 color-item pointer' +
+                (isSelected ? ' highlight-selected' : '')}
             style={{
                 width: '20px',
                 height: '15px',
                 backgroundColor: color,
             }}
-            onClick={() => {
-                onClick && onClick();
+            onClick={(e) => {
+                onClick?.(e as any);
             }} />
     );
 }
 function RenderNoColor({ isSelected, onClick }: {
     isSelected: boolean,
-    onClick?: () => void,
+    onClick?: (e: MouseEvent) => void,
 }) {
     return (
         <div title='no color'
@@ -157,27 +158,37 @@ function RenderNoColor({ isSelected, onClick }: {
                 border: isSelected ?
                     '3px dashed #fff' : '',
             }}
-            onClick={() => {
-                onClick && onClick();
+            onClick={(e) => {
+                onClick?.(e as any);
             }}>x</div>
     );
 }
 function SelectCustomColor({ color, onColorSelected }: {
     color: AppColorType | null,
-    onColorSelected: (color: AppColorType) => void,
+    onColorSelected: (color: AppColorType, e: MouseEvent) => void,
 }) {
+    const inputRef = useRef<HTMLInputElement>(null);
     const [localColor, setLocalColor] = useState<AppColorType>(color || '#ffffff');
+    const applyColor = (newColor: AppColorType) => {
+        setLocalColor(newColor);
+        let e = createMouseEvent(0, 0);
+        if (inputRef.current !== null) {
+            e = createMouseEvent(inputRef.current.offsetLeft,
+                inputRef.current.offsetLeft);
+        }
+        onColorSelected(newColor, e);
+    };
     return (
-        <input title='Select custom color'
+        <input ref={inputRef} title='Select custom color'
             className='pointer'
             type='color' value={localColor}
             onKeyUp={(e) => {
                 if (e.key === 'Enter') {
-                    onColorSelected(localColor);
+                    applyColor(localColor);
                 }
             }}
             onBlur={() => {
-                onColorSelected(localColor);
+                applyColor(localColor);
             }}
             onChange={(e) => {
                 setLocalColor(e.target.value as any);
@@ -187,7 +198,7 @@ function SelectCustomColor({ color, onColorSelected }: {
 
 function OpacitySlider({ value, onOpacityChanged }: {
     value: number,
-    onOpacityChanged: (value: number) => void,
+    onOpacityChanged: (value: number, e: MouseEvent) => void,
 }) {
     const [localValue, setLocalValue] = useState(value || 1);
     return (
@@ -197,8 +208,8 @@ function OpacitySlider({ value, onOpacityChanged }: {
             min='0' max='255' onChange={(event) => {
                 setLocalValue(+event.target.value);
             }}
-            onMouseUp={() => {
-                onOpacityChanged(localValue);
+            onMouseUp={(e) => {
+                onOpacityChanged(localValue, e as any);
             }} />
     );
 }

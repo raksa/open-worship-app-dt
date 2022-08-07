@@ -11,7 +11,19 @@ export type ContextMenuItemType = {
     disabled?: boolean,
     otherChild?: ReactElement,
 };
-const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+
+export function createMouseEvent(clientX: number, clientY: number) {
+    return new MouseEvent('click', {
+        clientX,
+        clientY,
+        bubbles: true,
+        cancelable: true,
+        view: window,
+    });
+}
+
+const setPositionMenu = (menu: HTMLElement,
+    event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     if (menu !== null) {
         menu.style.display = 'block';
         menu.style.left = '';
@@ -55,21 +67,26 @@ export function showAppContextMenu(
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     items: ContextMenuItemType[]) {
     event.stopPropagation();
-    setDataDelegator && setDataDelegator({ event, items });
-    const eventName = KeyboardEventListener.toEventMapperKey({
-        key: 'Escape',
+    return new Promise<void>((resolve) => {
+        setDataDelegator?.({ event, items });
+        const eventName = KeyboardEventListener.toEventMapperKey({
+            key: 'Escape',
+        });
+        const escEvent = KeyboardEventListener.registerEventListener(
+            [eventName], () => {
+                setDataDelegator?.(null);
+                KeyboardEventListener.unregisterEventListener(escEvent);
+                resolve();
+            });
+        const listener = (e: MouseEvent) => {
+            e.stopPropagation();
+            setDataDelegator?.(null);
+            document.body.removeEventListener('click', listener);
+            KeyboardEventListener.unregisterEventListener(escEvent);
+            resolve();
+        };
+        document.body.addEventListener('click', listener);
     });
-    const escEvent = KeyboardEventListener.registerEventListener([eventName], () => {
-        setDataDelegator && setDataDelegator(null);
-        KeyboardEventListener.unregisterEventListener(escEvent);
-    });
-    const listener = (e: MouseEvent) => {
-        e.stopPropagation();
-        setDataDelegator && setDataDelegator(null);
-        document.body.removeEventListener('click', listener);
-        KeyboardEventListener.unregisterEventListener(escEvent);
-    };
-    document.body.addEventListener('click', listener);
 }
 
 export default function AppContextMenu() {
@@ -96,12 +113,14 @@ export default function AppContextMenu() {
         }} className='app-context-menu'>
             {data.items.map((item, i) => {
                 return (
-                    <div key={`${i}`} className={`app-context-menu-item ${item.disabled ? 'disabled' : ''}`}
+                    <div key={`${i}`}
+                        className={'app-context-menu-item'
+                            + ` ${item.disabled ? 'disabled' : ''}`}
                         onClick={(e) => {
                             if (item.disabled) {
                                 return;
                             }
-                            item.onClick && item.onClick(e);
+                            item.onClick?.(e);
                         }}>
                         {item.title}
                         {item.otherChild || null}

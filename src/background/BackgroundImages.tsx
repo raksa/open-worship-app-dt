@@ -7,6 +7,7 @@ import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
 import { usePBGMEvents } from '../_present/presentHelpers';
 import PresentBGManager from '../_present/PresentBGManager';
+import { RenderPresentIds } from './Background';
 
 export default function BackgroundImages() {
     const [dirSource, setDirSource] = useState(DirSource.genDirSource('image-list-selected-dir'));
@@ -17,7 +18,8 @@ export default function BackgroundImages() {
             setDirSource={setDirSource}
             body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
-                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(fileSource, 'image');
+                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
+                        fileSource.src, 'image');
                     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
                     return (
                         <div key={`${i}`}
@@ -28,9 +30,11 @@ export default function BackgroundImages() {
                                 showAppContextMenu(e, genCommonMenu(fileSource),);
                             }}
                             onClick={(e) => {
-                                PresentBGManager.bgSrcSelect(fileSource, e, 'image');
+                                PresentBGManager.bgSrcSelect(fileSource.src, e, 'image');
                             }}>
                             <div className='card-body'>
+                                <RenderPresentIds
+                                    ids={selectedBGSrcList.map(([key]) => +key)} />
                                 <img src={fileSource.src}
                                     className='card-img-top' alt='...' />
                             </div>
