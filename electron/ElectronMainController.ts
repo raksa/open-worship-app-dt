@@ -40,7 +40,7 @@ export default class ElectronMainController {
         this.win.close();
         process.exit(0);
     }
-    sendData(channel: string, data: any) {
+    sendData(channel: string, data?: any) {
         this.win.webContents.send(channel, data);
     }
     sendMessage(message: PresentMessageType) {

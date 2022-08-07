@@ -43,12 +43,15 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             allBGSrcList[this.key] = bgSrc;
         }
         PresentBGManager.setBGSrcList(allBGSrcList);
+        this.syncPresent();
+        this.fireUpdate();
+    }
+    syncPresent() {
         sendPresentMessage({
             presentId: this.presentId,
             type: 'background',
-            data: bgSrc,
+            data: this.bgSrc,
         });
-        this.fireUpdate();
     }
     fireUpdate() {
         this.addPropEvent('update');

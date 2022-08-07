@@ -37,11 +37,17 @@ export default class ElectronPresentController {
         } else {
             presentWin.loadFile(htmlFile + query);
         }
-        this.win = presentWin;
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
         }
         return presentWin;
+    }
+    listenLoading() {
+        return new Promise<void>((resolve) => {
+            this.win.webContents.once('did-finish-load', () => {
+                resolve();
+            });
+        });
     }
     hide() {
         this.win.close();

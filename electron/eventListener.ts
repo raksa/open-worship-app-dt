@@ -80,17 +80,21 @@ export function initPresent(appController: ElectronAppController) {
     ipcMain.on('main:app:show-present', (event, data: {
         presentId: number,
         displayId: number,
+        replyEventName: string,
     }) => {
         const presentController = ElectronPresentController.createInstance(data.presentId);
         const display = appController.settingController.
             getDisplayById(data.displayId);
         if (display !== undefined) {
+            presentController.listenLoading().then(() => {
+                appController.mainController.sendData(data.replyEventName);
+            });
             presentController.setDisplay(display);
-            event.returnValue = true;
-        } else {
-            event.returnValue = true;
+            appController.mainWin.focus();
         }
-        appController.mainWin.focus();
+        event.returnValue = new Promise((resolve) => {
+            resolve('hello');
+        });
     });
     ipcMain.on('app:hide-present', (_, presentId: number) => {
         const presentController = ElectronPresentController.getInstance(presentId);

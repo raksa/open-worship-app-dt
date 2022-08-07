@@ -74,7 +74,7 @@ export function useBGSrcList(events: PresentManagerEventType[],
 }
 
 
-export type PresentType = 'background' | 'display-change' | 'visible';
+export type PresentType = 'background' | 'display-change' | 'visible' | 'init';
 export type PresentMessageType = {
     presentId: number,
     type: PresentType,
@@ -101,3 +101,11 @@ messageUtils.listenForData(channel,
             presentManager.isShowing = data.isShowing;
         }
     });
+if (appProvider.isPresent) {
+    const presentId = PresentManager.getAllInstances()[0]?.presentId || 0;
+    sendPresentMessage({
+        presentId,
+        type: 'init',
+        data: null,
+    });
+}

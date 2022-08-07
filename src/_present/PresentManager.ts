@@ -13,7 +13,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     readonly presentId: number;
     _isSelected: boolean = false;
     private _isShowing: boolean;
-    static readonly _cache=new Map<string, PresentManager>();
+    static readonly _cache = new Map<string, PresentManager>();
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
@@ -64,14 +64,26 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     set isShowing(isShowing: boolean) {
         this._isShowing = isShowing;
         if (isShowing) {
+            this.show().then(() => {
+                this.presentBGManager.syncPresent();
+            });
+        } else {
+            this.hide();
+        }
+        this.fireVisibleEvent();
+    }
+    show() {
+        return new Promise<void>((resolve) => {
+            const replyEventName = 'app:main-' + Date.now();
+            messageUtils.listenOnceForData(replyEventName, () => {
+                resolve();
+            });
             messageUtils.sendData('main:app:show-present', {
                 presentId: this.presentId,
                 displayId: this.displayId,
+                replyEventName,
             });
-        } else {
-            messageUtils.sendData('app:hide-present', this.presentId);
-        }
-        this.fireVisibleEvent();
+        });
     }
     hide() {
         messageUtils.sendData('app:hide-present', this.presentId);
@@ -104,6 +116,9 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     }
     static getInstanceByKey(key: string) {
         return this.getInstance(+key);
+    }
+    static getAllInstances() {
+        return Array.from(this._cache.values());
     }
     static getInstance(presentId: number) {
         const key = presentId.toString();
