@@ -29,12 +29,14 @@ const confirmEraseLocalStorage = () => {
   });
 };
 
-if (appProvider.systemUtils.isDev) {
-  window.onunhandledrejection = () => {
-    confirmEraseLocalStorage();
-  };
+window.onunhandledrejection = () => {
+  confirmEraseLocalStorage();
+};
 
-  window.onerror = function () {
+window.onerror = function (error: any) {
+  if (error.message.includes('The play() request was interrupted by a call to pause().')) {
+    console.log(error);
+  } else {
     confirmEraseLocalStorage();
-  };
-}
+  }
+};
