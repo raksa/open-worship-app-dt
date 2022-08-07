@@ -3,7 +3,7 @@ import {
     isWindows,
     isMac,
     isLinux,
-} from '../helpers';
+} from '../electronHelpers';
 
 const systemUtils = {
     isDev,

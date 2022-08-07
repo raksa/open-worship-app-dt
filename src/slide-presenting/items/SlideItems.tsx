@@ -48,10 +48,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
             }
         };
         const useCallback = (key: KeyboardType) => {
-            useKeyboardRegistering({
-                key,
-                layer: 'root',
-            }, arrowListener);
+            useKeyboardRegistering({ key }, arrowListener);
         };
         arrows.forEach(useCallback);
     }

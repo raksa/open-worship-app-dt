@@ -18,7 +18,6 @@ export interface EventMapper {
     mControlKey?: MacControlType[];
     lControlKey?: LinuxControlType[];
     key: KeyboardType | string;
-    layer?: AppWidgetType;
 }
 export interface RegisteredEventMapper extends EventMapper {
     listener: ListenerType;
@@ -26,18 +25,23 @@ export interface RegisteredEventMapper extends EventMapper {
 export type ListenerType = ((e: KeyboardEvent) => void) | (() => void);
 export default class KeyboardEventListener extends EventHandler<string> {
     static eventNamePrefix: string = 'keyboard';
-    static layers: AppWidgetType[] = ['root'];
+    static _layers: AppWidgetType[] = ['root'];
     static getLastLayer() {
-        return this.layers[this.layers.length - 1];
+        return this._layers[this._layers.length - 1];
+    }
+    static addLayer(l: AppWidgetType) {
+        this._layers.push(l);
+    }
+    static removeLayer(l: AppWidgetType) {
+        this._layers = this._layers.filter((l1) => l1 !== l);
     }
     static fireEvent(event: KeyboardEvent) {
         const option = {
             key: event.key,
-            layer: this.layers[this.layers.length - 1],
         };
         this.addControlKey(option, event);
-        const k = KeyboardEventListener.toEventMapperKey(option);
-        this.addPropEvent(k, event);
+        const eventName = KeyboardEventListener.toEventMapperKey(option);
+        this.addPropEvent(eventName, event);
     }
     static addControlKey(option: EventMapper, e: KeyboardEvent) {
         if (appProvider.systemUtils.isWindows) {
@@ -85,13 +89,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
     }
     static toEventMapperKey(eventMapper: EventMapper) {
         const k = this.toShortcutKey(eventMapper);
-        return eventMapper.layer ? `${eventMapper.layer}:${k}` : k;
-    }
-    static addLayer(l: AppWidgetType) {
-        this.layers.push(l);
-    }
-    static removeLayer(l: AppWidgetType) {
-        this.layers = this.layers.filter((l1) => l1 !== l);
+        return `${this.getLastLayer()}:${k}`;
     }
 }
 

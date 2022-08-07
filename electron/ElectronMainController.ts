@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron';
 import { channels, PresentMessageType } from './eventListener';
-import { isDev } from './helpers';
+import { isDev } from './electronHelpers';
 
 const url = 'http://localhost:3000';
 const htmlFile = `${__dirname}/../dist/index.html`;

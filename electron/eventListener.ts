@@ -1,5 +1,5 @@
 import ElectronAppController from './ElectronAppController';
-import { isDev } from './helpers';
+import { isDev } from './electronHelpers';
 import ElectronPresentController from './ElectronPresentController';
 
 import { readValue } from './sqlite3';

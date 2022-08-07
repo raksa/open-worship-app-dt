@@ -2,7 +2,7 @@ import ElectronAppController from './ElectronAppController';
 import {
     initApp, initPresent,
 } from './eventListener';
-import { initMenu } from './menu';
+import { initMenu } from './electronMenu';
 
 const electron = require('electron');
 

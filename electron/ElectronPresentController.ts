@@ -4,7 +4,7 @@ import {
     AnyObjectType,
     channels,
 } from './eventListener';
-import { isDev } from './helpers';
+import { isDev } from './electronHelpers';
 
 const url = 'http://localhost:3000';
 const htmlFile = `${__dirname}/../dist/index.html`;
