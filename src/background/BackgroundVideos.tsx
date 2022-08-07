@@ -5,15 +5,12 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
-import PresentManager from '../_present/PresentManager';
-import { useBGSrcList } from '../_present/presentHelpers';
+import { usePBGMEvents } from '../_present/presentHelpers';
+import PresentBGManager from '../_present/PresentBGManager';
 
 export default function BackgroundVideos() {
     const [dirSource, setDirSource] = useState(DirSource.genDirSource('video-list-selected-dir'));
-    const bgSrcList = useBGSrcList(['update']);
-    const keyBGSrcList = Object.entries(bgSrcList).filter(([_, bgSrc]) => {
-        return bgSrc.type === 'video';
-    });
+    usePBGMEvents(['update']);
     return (
         <FileListHandler id='background-video' mimetype='video'
             dirSource={dirSource}
@@ -22,9 +19,7 @@ export default function BackgroundVideos() {
             body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
                     const vRef = createRef<HTMLVideoElement>();
-                    const selectedBGSrcList = keyBGSrcList.filter(([_, bgSrc]) => {
-                        return bgSrc.src === fileSource.src;
-                    });
+                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(fileSource, 'video');
                     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
                     return (
                         <div key={`${i}`}
@@ -43,22 +38,8 @@ export default function BackgroundVideos() {
                                     vRef.current.currentTime = 0;
                                 }
                             }}
-                            onClick={() => {
-                                if (selectedBGSrcList.length) {
-                                    selectedBGSrcList.forEach(([key]) => {
-                                        PresentManager.getInstanceByKey(key)
-                                            .presentBGManager.bgSrc = null;
-                                    });
-                                } else {
-                                    PresentManager.getSelectedInstances()
-                                        .forEach((presentManager) => {
-                                            presentManager.presentBGManager.bgSrc = {
-                                                type: 'video',
-                                                src: fileSource.src,
-                                            };
-
-                                        });
-                                }
+                            onClick={(e) => {
+                                PresentBGManager.bgSrcSelect(fileSource, e, 'video');
                             }}>
                             <div className='card-body'>
                                 <div style={{

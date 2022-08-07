@@ -10,7 +10,8 @@ export default function DisplayControl({ presentManager }: {
     const displayId = presentManager.displayId;
     return (
         <div className='d-flex justify-content-center align-items-center'
-            title={'Present id:' + presentManager.presentId +
+            title={'Present:' + presentManager.name + ', id:' +
+                presentManager.presentId +
                 ', display id:' + displayId}>
             <button className='btn btn-sm btn-outline-secondary'
                 onClick={(e) => {
@@ -34,7 +35,7 @@ export default function DisplayControl({ presentManager }: {
                     }));
                 }}>
                 <i className='bi bi-display' />
-                {presentManager.presentId}:{displayId}
+                {presentManager.name}({presentManager.presentId}):{displayId}
             </button>
         </div >
     );

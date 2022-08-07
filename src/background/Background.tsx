@@ -5,8 +5,10 @@ import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
-import { useBGSrcList } from '../_present/presentHelpers';
-import { BackgroundType } from '../_present/PresentBGManager';
+import { usePBGMEvents } from '../_present/presentHelpers';
+import PresentBGManager, {
+    BackgroundType,
+} from '../_present/PresentBGManager';
 
 const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
 const BackgroundImages = React.lazy(() => import('./BackgroundImages'));
@@ -16,7 +18,8 @@ const BackgroundVideos = React.lazy(() => import('./BackgroundVideos'));
 type TabType = 'c' | 'i' | 'v';
 export default function Background() {
     const [tabType, setTabType] = useStateSettingString<TabType>('background-tab', 'i');
-    const bgSrcList = useBGSrcList(['update']);
+    usePBGMEvents(['update']);
+    const bgSrcList = PresentBGManager.getBGSrcList();
     const toHLS = (type: BackgroundType) => {
         const b = Object.values(bgSrcList).some(src => {
             return src.type === type;

@@ -1,22 +1,25 @@
 import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import { AllDisplayType } from '../server/displayHelper';
 import appProvider from './appProvider';
 import PresentBGManager from './PresentBGManager';
 
-export type PresentManagerEventType = 'update' | 'visible' | 'display-id';
+export type PresentManagerEventType = 'select' | 'update' | 'visible' | 'display-id';
 const messageUtils = appProvider.messageUtils;
 const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
+    name: string;
     _isSelected: boolean = false;
     private _isShowing: boolean;
     static readonly _cache = new Map<string, PresentManager>();
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
+        this.name = `present-${presentId}`;
         this.presentBGManager = new PresentBGManager(presentId);
         const ids = PresentManager.getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
@@ -57,6 +60,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     }
     set isSelected(isSelected: boolean) {
         this._isSelected = isSelected;
+        this.addPropEvent('select');
+        PresentManager.addPropEvent('select');
     }
     get isShowing() {
         return this._isShowing;
@@ -133,5 +138,22 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             .filter((presentManager) => {
                 return presentManager.isSelected;
             });
+    }
+    static contextChooseInstances(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+        return new Promise<PresentManager[]>((resolve) => {
+            const selectedPresentManagers = this.getSelectedInstances();
+            if (selectedPresentManagers.length > 0) {
+                return resolve(selectedPresentManagers);
+            }
+            const allPresentManagers = PresentManager.getAllInstances();
+            showAppContextMenu(e, allPresentManagers.map((presentManager) => {
+                return {
+                    title: presentManager.name,
+                    onClick: () => {
+                        resolve([presentManager]);
+                    },
+                };
+            }));
+        });
     }
 }

@@ -67,13 +67,6 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
     }, [presentBGManager, n]);
 }
 
-export function useBGSrcList(events: PresentManagerEventType[],
-    presentManager?: PresentManager) {
-    usePMEvents(events, presentManager);
-    return PresentBGManager.getBGSrcList();
-}
-
-
 export type PresentType = 'background' | 'display-change' | 'visible' | 'init';
 export type PresentMessageType = {
     presentId: number,

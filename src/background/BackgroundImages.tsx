@@ -5,24 +5,19 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
-import { useBGSrcList } from '../_present/presentHelpers';
-import PresentManager from '../_present/PresentManager';
+import { usePBGMEvents } from '../_present/presentHelpers';
+import PresentBGManager from '../_present/PresentBGManager';
 
 export default function BackgroundImages() {
     const [dirSource, setDirSource] = useState(DirSource.genDirSource('image-list-selected-dir'));
-    const bgSrcList = useBGSrcList(['update']);
-    const keyBGSrcList = Object.entries(bgSrcList).filter(([_, bgSrc]) => {
-        return bgSrc.type === 'image';
-    });
+    usePBGMEvents(['update']);
     return (
         <FileListHandler id='background-image' mimetype='image'
             dirSource={dirSource}
             setDirSource={setDirSource}
             body={<div className='d-flex justify-content-start flex-wrap'>
                 {(dirSource.fileSources || []).map((fileSource, i) => {
-                    const selectedBGSrcList = keyBGSrcList.filter(([_, bgSrc]) => {
-                        return bgSrc.src === fileSource.src;
-                    });
+                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(fileSource, 'image');
                     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
                     return (
                         <div key={`${i}`}
@@ -32,22 +27,8 @@ export default function BackgroundImages() {
                             onContextMenu={(e) => {
                                 showAppContextMenu(e, genCommonMenu(fileSource),);
                             }}
-                            onClick={() => {
-                                if (selectedBGSrcList.length) {
-                                    selectedBGSrcList.forEach(([key]) => {
-                                        PresentManager.getInstanceByKey(key)
-                                            .presentBGManager.bgSrc = null;
-                                    });
-                                } else {
-                                    PresentManager.getSelectedInstances()
-                                        .forEach((presentManager) => {
-                                            presentManager.presentBGManager.bgSrc = {
-                                                type: 'image',
-                                                src: fileSource.src,
-                                            };
-
-                                        });
-                                }
+                            onClick={(e) => {
+                                PresentBGManager.bgSrcSelect(fileSource, e, 'image');
                             }}>
                             <div className='card-body'>
                                 <img src={fileSource.src}

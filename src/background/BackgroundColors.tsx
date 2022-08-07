@@ -1,13 +1,13 @@
 import ColorPicker, { AppColorType } from '../others/ColorPicker';
-import { useBGSrcList } from '../_present/presentHelpers';
+import { usePBGMEvents } from '../_present/presentHelpers';
 import PresentManager from '../_present/PresentManager';
-import { BackgroundSrcType } from '../_present/PresentBGManager';
+import PresentBGManager, {
+    BackgroundSrcType,
+} from '../_present/PresentBGManager';
 
 export default function BackgroundColors() {
-    const bgSrcList = useBGSrcList(['update']);
-    const keyBGSrcList = Object.entries(bgSrcList).filter(([_, bgSrc]) => {
-        return bgSrc.type === 'color';
-    });
+    usePBGMEvents(['update']);
+    const keyBGSrcList = PresentBGManager.getBGSrcListByType('color');
     if (keyBGSrcList.length) {
         return (
             <>
