@@ -1,20 +1,21 @@
 import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import {
-    presentEventListener,
-    usePresentBGRendering,
-    usePresentFGRendering,
-    usePresentFTRendering,
-} from '../../event/PresentEventListener';
+import { usePMEvents } from '../presentHelpers';
+import PresentManager from '../PresentManager';
 
-export default function ClearControl() {
-    const isPresentingBG = usePresentBGRendering();
-    const isPresentingFG = usePresentFGRendering();
-    const isPresentingFT = usePresentFTRendering();
-    const clearBG = () => presentEventListener.clearBG();
-    const clearFG = () => presentEventListener.clearFG();
-    const clearFT = () => presentEventListener.clearFT();
+export default function ClearControl({ presentManager }: {
+    presentManager: PresentManager;
+}) {
+    usePMEvents(['update']);
+    const isPresentingBG = !!presentManager.presentBGManager.bgSrc;
+    const isPresentingFG = false;
+    const isPresentingFT = false;
+    const clearBG = () => {
+        presentManager.presentBGManager.bgSrc = null;
+    };
+    const clearFG = () => false;
+    const clearFT = () => false;
     const clearAll = () => {
         clearBG();
         clearFG();
@@ -27,21 +28,42 @@ export default function ClearControl() {
     const isPresenting = isPresentingBG || isPresentingFG || isPresentingFT;
     return (
         <div className='btn-group control'>
-            <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresenting ? '' : 'outline-'}danger`}
+            <button type='button'
+                className={'tool-tip tool-tip-fade btn btn-sm '
+                    + `btn-${isPresenting ? '' : 'outline-'}danger`}
                 disabled={!isPresenting}
-                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F6' })}
-                title='clear all' onClick={clearAll}>All</button>
-            <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingBG ? '' : 'outline-'}secondary`}
-                disabled={!isPresentingBG} title='clear background'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F7' })}
+                title='clear all'
+                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                    key: 'F6',
+                })}
+                onClick={clearAll}>All</button>
+
+            <button type='button'
+                className={'tool-tip tool-tip-fade btn btn-sm '
+                    + `btn-${isPresentingBG ? '' : 'outline-'}secondary`}
+                disabled={!isPresentingBG}
+                title='clear background'
+                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                    key: 'F7',
+                })}
                 onClick={clearBG}>BG</button>
-            <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFG ? '' : 'outline-'}info`}
-                disabled={!isPresentingFG} title='clear foreground'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F8' })}
+
+            <button type='button' className={'tool-tip tool-tip-fade btn btn-sm '
+                + `btn-${isPresentingFG ? '' : 'outline-'}info`}
+                disabled={!isPresentingFG}
+                title='clear foreground'
+                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                    key: 'F8',
+                })}
                 onClick={clearFG}>FG</button>
-            <button type='button' className={`tool-tip tool-tip-fade btn btn-sm btn-${isPresentingFT ? '' : 'outline-'}primary`}
-                disabled={!isPresentingFT} title='clear full text'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F9' })}
+
+            <button type='button' className={'tool-tip tool-tip-fade btn btn-sm '
+                + `btn-${isPresentingFT ? '' : 'outline-'}primary`}
+                disabled={!isPresentingFT}
+                title='clear full text'
+                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                    key: 'F9',
+                })}
                 onClick={clearFT}>FT</button>
         </div>
     );

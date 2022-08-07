@@ -24,7 +24,8 @@ export default function MiniPresentScreen() {
                         }}>
                         <ShowHidePresent
                             presentManager={presentManager} />
-                        <ClearControl />
+                        <ClearControl
+                            presentManager={presentManager} />
                         <DisplayControl
                             presentManager={presentManager} />
                     </div>

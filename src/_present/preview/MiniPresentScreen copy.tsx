@@ -1,6 +1,5 @@
 import './MiniPresentScreen.scss';
 
-import ClearControl from './ClearControl';
 import { presentEventListener } from '../../event/PresentEventListener';
 import { useSlideItemSelecting } from '../../event/SlideListEventListener';
 import { renderFG } from '../../helper/presentingHelpers';
@@ -20,7 +19,6 @@ export default function MiniPresentScreen() {
         <div id='mini-present-screen'
             className='card w-100 h-100'>
             <div className='card-header d-flex justify-content-around'>
-                <ClearControl />
             </div>
             <div className='card-body'>
             </div>
