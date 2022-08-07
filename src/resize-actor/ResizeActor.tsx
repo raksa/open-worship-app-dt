@@ -82,6 +82,7 @@ export default function ResizeActor({
                             type={resizeKinds[i - 1]} />}
                         <div data-fs={keyToDataFSizeKey(fSizeName, key)}
                             data-fs-default={flexSizeValue[0]}
+                            data-min-size={160}
                             className={classList}
                             style={{
                                 flex: flexSizeValue[0] || 1,

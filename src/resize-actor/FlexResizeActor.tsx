@@ -12,10 +12,12 @@ export interface Props {
 }
 export default class FlexResizeActor extends React.Component<Props, {}> {
     myRef: React.RefObject<HTMLDivElement>;
-    prevSize: number = 0;
-    nextSize: number = 0;
     lastPos: number = 0;
-    prevGrow: number = 0;
+    previousMinSize: number = 0;
+    nextMinSize: number = 0;
+    previousSize: number = 0;
+    nextSize: number = 0;
+    previousGrow: number = 0;
     nextGrow: number = 0;
     sumGrow: number = 0;
     sumSize: number = 0;
@@ -27,7 +29,7 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         this.mouseMoveListener = (mm: MouseEvent) => this.onMouseMove(mm);
         this.mouseUpListener = (e) => this.onMouseUp(e);
     }
-    get prev() {
+    get previous() {
         return this.myRef.current?.previousElementSibling as HTMLDivElement;
     }
     get next() {
@@ -54,12 +56,14 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         }
         current.classList.add('active');
 
-        this.prevSize = this.getOffsetSize(prev);
+        this.previousMinSize = +(this.previous.dataset['minSize'] || '');
+        this.nextMinSize = +(this.next.dataset['minSize'] || '');
+        this.previousSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
-        this.sumSize = this.prevSize + this.nextSize;
-        this.prevGrow = Number(prev.style.flexGrow);
+        this.sumSize = this.previousSize + this.nextSize;
+        this.previousGrow = Number(prev.style.flexGrow);
         this.nextGrow = Number(next.style.flexGrow);
-        this.sumGrow = this.prevGrow + this.nextGrow;
+        this.sumGrow = this.previousGrow + this.nextGrow;
     }
     isShouldIgnore(md: MouseEvent) {
         return (md.target as any).tagName === 'I';
@@ -80,23 +84,33 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         }
         let pos = this.getMousePagePos(e);
         const d = pos - this.lastPos;
-        this.prevSize += d;
+        this.previousSize += d;
         this.nextSize -= d;
-        if (this.prevSize < 0) {
-            this.nextSize += this.prevSize;
-            pos -= this.prevSize;
-            this.prevSize = 0;
+        if (this.previousSize < 0) {
+            this.nextSize += this.previousSize;
+            pos -= this.previousSize;
+            this.previousSize = 0;
         }
         if (this.nextSize < 0) {
-            this.prevSize += this.nextSize;
+            this.previousSize += this.nextSize;
             pos += this.nextSize;
             this.nextSize = 0;
         }
 
-        const prevGrowNew = this.sumGrow * (this.prevSize / this.sumSize);
+        if (this.previousSize < this.previousMinSize) {
+            this.previous.classList.add('sizing-hide');
+        } else {
+            this.previous.classList.remove('sizing-hide');
+        }
+        if (this.nextSize < this.nextMinSize) {
+            this.next.classList.add('sizing-hide');
+        } else {
+            this.next.classList.remove('sizing-hide');
+        }
+        const prevGrowNew = this.sumGrow * (this.previousSize / this.sumSize);
         const nextGrowNew = this.sumGrow * (this.nextSize / this.sumSize);
 
-        this.prev.style.flexGrow = `${prevGrowNew}`;
+        this.previous.style.flexGrow = `${prevGrowNew}`;
         this.next.style.flexGrow = `${nextGrowNew}`;
 
         this.lastPos = pos;
@@ -112,22 +126,30 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
-        this.props.checkSize();
         current.classList.remove('active');
+        if (this.previous.classList.contains('sizing-hide')) {
+            this.quicMove('left');
+            return;
+        }
+        if (this.next.classList.contains('sizing-hide')) {
+            this.quicMove('right');
+            return;
+        }
+        this.props.checkSize();
     }
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = isFirst ? this.prev.dataset['fs'] : this.next.dataset['fs'];
+        const dataFSizeKey = isFirst ? this.previous.dataset['fs'] : this.next.dataset['fs'];
         if (dataFSizeKey !== undefined) {
             if (isFirst) {
                 this.next.style.flexGrow = `${this.sumGrow}`;
             } else {
-                this.prev.style.flexGrow = `${this.sumGrow}`;
+                this.previous.style.flexGrow = `${this.sumGrow}`;
             }
             this.props.disable(dataFSizeKey, [
                 isFirst ? 'first' : 'second',
-                isFirst ? this.prevGrow : this.nextGrow,
+                isFirst ? this.previousGrow : this.nextGrow,
             ]);
         }
         this.myRef.current?.classList.remove('active');

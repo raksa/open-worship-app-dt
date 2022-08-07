@@ -157,4 +157,10 @@
   .highlight-selected {
     border: 2px ridge palevioletred;
   }
+
+  .sizing-hide {
+    * {
+      display: none;
+    }
+  }
 }
