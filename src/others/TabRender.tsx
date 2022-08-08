@@ -34,7 +34,7 @@ export function genTabBody<T>(tabTab: T,
     data: [T, React.LazyExoticComponent<() => JSX.Element | null>]) {
     const Element = data[1];
     return (
-        <AppSuspense>
+        <AppSuspense key={data[0] as any}>
             {tabTab === data[0] && <Element />}
         </AppSuspense>
     );

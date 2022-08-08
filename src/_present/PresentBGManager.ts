@@ -4,7 +4,8 @@ import appProvider from './appProvider';
 import { sendPresentMessage } from './presentHelpers';
 import PresentManager from './PresentManager';
 
-export type BackgroundType = 'color' | 'image' | 'video';
+const backgroundTypeList = ['color', 'image', 'video'] as const;
+export type BackgroundType = typeof backgroundTypeList[number];
 export type BackgroundSrcType = {
     type: BackgroundType;
     src: string;

@@ -14,10 +14,15 @@ const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
 const BackgroundImages = React.lazy(() => import('./BackgroundImages'));
 const BackgroundVideos = React.lazy(() => import('./BackgroundVideos'));
 
-// c: color, i: image, v: video
-type TabType = 'c' | 'i' | 'v';
+
+const tabTypeList = [
+    ['color', 'Colors', BackgroundColors],
+    ['image', 'Images', BackgroundImages],
+    ['video', 'Videos', BackgroundVideos],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 export default function Background() {
-    const [tabType, setTabType] = useStateSettingString<TabType>('background-tab', 'i');
+    const [tabType, setTabType] = useStateSettingString<TabType>('background-tab', 'image');
     usePBGMEvents(['update']);
     const bgSrcList = PresentBGManager.getBGSrcList();
     const toHLS = (type: BackgroundType) => {
@@ -29,18 +34,17 @@ export default function Background() {
     return (
         <div className='background w-100 d-flex flex-column'>
             <div className='background-header'>
-                <TabRender<TabType> tabs={[
-                    ['c', 'Colors', toHLS('color')],
-                    ['i', 'Images', toHLS('image')],
-                    ['v', 'Videos', toHLS('video')],
-                ]}
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name, toHLS(type)];
+                    })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
             <div className='background-body w-100 flex-fill'>
-                {genTabBody(tabType, ['c', BackgroundColors])}
-                {genTabBody(tabType, ['i', BackgroundImages])}
-                {genTabBody(tabType, ['v', BackgroundVideos])}
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
         </div>
     );

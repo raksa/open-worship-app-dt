@@ -20,17 +20,20 @@ export function getIsPreviewingBible() {
         getSetting(FT_TAB_SETTING_NAME) === 'b';
 }
 export function setIsPreviewingBible() {
-    return setSetting(FT_TAB_SETTING_NAME, 'b');
+    setSetting(FT_TAB_SETTING_NAME, 'b');
 }
 export function getIsPreviewingLyric() {
     return getIsShowingFTPreviewer() &&
         getSetting(FT_TAB_SETTING_NAME) === 'l';
 }
 export function setIsPreviewingLyric() {
-    return setSetting(FT_TAB_SETTING_NAME, 'l');
+    setSetting(FT_TAB_SETTING_NAME, 'l');
 }
-export type TabType = 'b' | 'l';
-// b: bible, l: lyric
+const tabTypeList = [
+    ['b', 'Bible', BiblePreviewer],
+    ['l', 'Lyric', LyricPreviewer],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 export default function FullTextPreviewer() {
     const [tabType, setTabType] = useStateSettingString<TabType>(FT_TAB_SETTING_NAME, 'b');
     useBibleItemSelecting((item) => {
@@ -45,20 +48,21 @@ export default function FullTextPreviewer() {
     });
     return (
         <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'
-        style={{
-            minWidth: '300px',
-        }}>
+            style={{
+                minWidth: '300px',
+            }}>
             <div className='previewer-header d-flex'>
-                <TabRender<'b' | 'l'> tabs={[
-                    ['b', 'Bible'],
-                    ['l', 'Lyric'],
-                ]}
+                <TabRender<'b' | 'l'>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
+                    })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
             <div className='previewer-header p-2 flex-fill overflow-hidden'>
-                {genTabBody(tabType, ['b', BiblePreviewer])}
-                {genTabBody(tabType, ['l', LyricPreviewer])}
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
         </div>
     );

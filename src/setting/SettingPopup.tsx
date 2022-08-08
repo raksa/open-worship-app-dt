@@ -21,25 +21,28 @@ export default function SettingPopup() {
         </Modal>
     );
 }
-// g: general, b: bible, a: about
-type TabType = 'g' | 'b' | 'a';
+const tabTypeList = [
+    ['g', 'General', SettingGeneral],
+    ['b', 'Bible', SettingBible],
+    ['a', 'About', SettingAbout],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 function Setting() {
     const [tabType, setTabType] = useStateSettingString<TabType>('popup-setting-tab', 'b');
     return (
         <div className='card-body d-flex flex-column'>
             <div className='setting-header d-flex'>
-                <TabRender<TabType> tabs={[
-                    ['g', 'General'],
-                    ['b', 'Bible'],
-                    ['a', 'About'],
-                ]}
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
+                    })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
             <div className='setting-body flex-fill flex h'>
-                {genTabBody(tabType, ['g', SettingGeneral])}
-                {genTabBody(tabType, ['b', SettingBible])}
-                {genTabBody(tabType, ['a', SettingAbout])}
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
         </div>
     );

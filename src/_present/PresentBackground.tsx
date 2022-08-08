@@ -1,4 +1,5 @@
 import React from 'react';
+import { getLastItem } from '../helper/helpers';
 import AppSuspense from '../others/AppSuspense';
 import { AppColorType } from '../others/ColorPicker';
 import PresentBGManager, {
@@ -15,9 +16,6 @@ export default function PresentBackground({ bgManager }: {
 }) {
     usePBGMEvents(['update'], bgManager);
     const bgSrc = bgManager.bgSrc;
-    if (bgSrc === null) {
-        return null;
-    }
     return (
         <div style={{
             pointerEvents: 'none',
@@ -32,41 +30,55 @@ export default function PresentBackground({ bgManager }: {
 }
 
 type PropsType = {
-    bgSrc: BackgroundSrcType;
+    bgSrc: BackgroundSrcType | null;
 };
 type StateType = {
-    bgSrc: BackgroundSrcType;
+    bgSrcQueue: (BackgroundSrcType | null)[];
 };
 class RenderPresentBackground extends React.Component<PropsType, StateType> {
     constructor(props: PropsType) {
         super(props);
         this.state = {
-            bgSrc: props.bgSrc,
+            bgSrcQueue: [props.bgSrc],
         };
     }
+    get lastBgSrc() {
+        return getLastItem(this.state.bgSrcQueue) || null;
+    }
+    static getDerivedStateFromProps(props: PropsType, state: StateType) {
+        const newBgSrc = props.bgSrc;
+        const lastBgSrc = getLastItem(state.bgSrcQueue);
+        if (lastBgSrc !== newBgSrc && lastBgSrc?.src !== newBgSrc?.src) {
+            state.bgSrcQueue.push(newBgSrc);
+        }
+        return state;
+    }
     render() {
-        const { bgSrc } = this.state;
-        if (bgSrc.type === 'image') {
+        const lastBgSrc = this.lastBgSrc;
+        if (lastBgSrc === null) {
+            return null;
+        }
+        if (lastBgSrc.type === 'image') {
             return (
                 <AppSuspense>
                     <PresentBackgroundImage
-                        src={bgSrc.src} />
+                        src={lastBgSrc.src} />
                 </AppSuspense>
             );
         }
-        if (bgSrc.type === 'video') {
+        if (lastBgSrc.type === 'video') {
             return (
                 <AppSuspense>
                     <PresentBackgroundVideo
-                        src={bgSrc.src} />;
+                        src={lastBgSrc.src} />;
                 </AppSuspense>
             );
         }
-        if (bgSrc.type === 'color') {
+        if (lastBgSrc.type === 'color') {
             return (
                 <AppSuspense>
                     <PresentBackgroundColor
-                        color={bgSrc.src as AppColorType} />
+                        color={lastBgSrc.src as AppColorType} />
                 </AppSuspense>
             );
         }

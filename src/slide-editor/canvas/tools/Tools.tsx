@@ -11,8 +11,12 @@ const ToolsBox = React.lazy(() => import('./ToolsBox'));
 const ToolsText = React.lazy(() => import('./ToolsText'));
 const ToolCanvasItems = React.lazy(() => import('./ToolCanvasItems'));
 
-// t: text, b: box
-type TabType = 't' | 'b' | 'c';
+const tabTypeList = [
+    ['t', 'Text'],
+    ['b', 'Box'],
+    ['c', 'Canvas Items'],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 export default function Tools() {
     const canvasController = CanvasController.getInstance();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
@@ -22,11 +26,10 @@ export default function Tools() {
     return (
         <div className='tools d-flex flex-column w-100 h-100'>
             <div className='tools-header d-flex'>
-                <TabRender<TabType> tabs={[
-                    ['t', 'Text'],
-                    ['b', 'Box'],
-                    ['c', 'Items'],
-                ]}
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
+                    })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
                 <div className='align-self-end flex-fill d-flex justify-content-end'>
@@ -51,14 +54,14 @@ export default function Tools() {
                     return (
                         <Fragment key={i}>
                             <CanvasItemContext.Provider value={canvasItem}>
-                                {genTabBody(tabType, ['t', ToolsText])}
-                                {genTabBody(tabType, ['b', ToolsBox])}
+                                {genTabBody<TabType>(tabType, ['t', ToolsText])}
+                                {genTabBody<TabType>(tabType, ['b', ToolsBox])}
                             </CanvasItemContext.Provider>
                             <hr />
                         </Fragment>
                     );
                 })}
-                {genTabBody(tabType, ['c', ToolCanvasItems])}
+                {genTabBody<TabType>(tabType, ['c', ToolCanvasItems])}
             </div>
         </div>
     );

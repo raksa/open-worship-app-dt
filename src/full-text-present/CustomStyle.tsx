@@ -18,25 +18,29 @@ export default function CustomStyle() {
     );
 }
 
-// a: appearance, s: shadow
-type TabType = 'a' | 's';
+const tabTypeList = [
+    ['a', 'Appearance', Appearance],
+    ['s', 'Shadow', TextShadow],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 function Body() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'tull-text-present-custom-style-tab', 'a');
     return (
         <div className='card-body'>
             <div className='d-flex'>
-                <TabRender<TabType> tabs={[
-                    ['a', 'Appearance'],
-                    ['s', 'Shadow'],
-                ]}
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
+                    })}
                     activeTab={tabType}
                     setActiveTab={setTabType}
                     className='flex-fill' />
             </div>
             <div className='custom-style-body p-2'>
-                {genTabBody(tabType, ['a', Appearance])}
-                {genTabBody(tabType, ['s', TextShadow])}
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
         </div>
     );

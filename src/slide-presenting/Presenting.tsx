@@ -29,8 +29,11 @@ export function getIsShowingFTPreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 'f';
 }
 
-// s: slides, f: full text
-type TabType = 's' | 'f';
+const tabTypeList = [
+    ['s', 'Slides', SlidePreviewer],
+    ['f', 'Full Text', FullTextPresentController],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 export default function Presenting() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         PRESENT_TAB_SETTING_NAME, 's');
@@ -41,16 +44,17 @@ export default function Presenting() {
     useSlideItemSelecting(() => setTabType('s'));
     return (
         <div id='presenting' className='w-100 h-100'>
-            <TabRender<TabType> tabs={[
-                ['s', 'Slide'],
-                ['f', 'Full Text'],
-            ]}
+            <TabRender<TabType>
+                tabs={tabTypeList.map(([type, name]) => {
+                    return [type, name];
+                })}
                 activeTab={tabType}
                 setActiveTab={setTabType}
                 className='header' />
             <div className='body w-100 p-10'>
-                {genTabBody(tabType, ['s', SlidePreviewer])}
-                {genTabBody(tabType, ['f', FullTextPresentController])}
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
         </div>
     );

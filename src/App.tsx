@@ -23,9 +23,14 @@ const AppPresenting = React.lazy(() => {
 });
 
 const WINDOW_TYPE = 'window-type';
-export function getWindowMode() {
-    const windowType = getSetting(WINDOW_TYPE);
-    return ['e', 'p'].includes(windowType) ? windowType as any : 'p';
+export function getWindowMode(): TabType {
+    const windowType = getSetting(WINDOW_TYPE) as any;
+    if (tabTypeList.map((item) => {
+        return item[0];
+    }).includes(windowType)) {
+        return windowType;
+    }
+    return 'p';
 }
 export function isWindowEditingMode() {
     const windowType = getWindowMode();
@@ -39,8 +44,12 @@ export function goEditSlide() {
     }
 }
 
-// e: editing, p: presenting
-type TabType = 'e' | 'p' | 'r';
+const tabTypeList = [
+    ['e', 'Editing', AppEditing],
+    ['p', 'Presenting', AppPresenting],
+    ['r', 'Read'],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 export default function App() {
     const [tabType, setTabType] = useStateSettingString<TabType>(WINDOW_TYPE, 'p');
     useEffect(() => {
@@ -54,11 +63,10 @@ export default function App() {
     return (
         <div id='app' className='dark d-flex flex-column'>
             <div className='app-header d-flex'>
-                <TabRender<TabType> tabs={[
-                    ['e', 'Editing'],
-                    ['p', 'Presenting'],
-                    ['r', 'Read'],
-                ]}
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
+                    })}
                     activeTab={tabType}
                     setActiveTab={(newTabType) => {
                         if (newTabType === 'r') {
@@ -80,8 +88,12 @@ export default function App() {
                 </div>
             </div>
             <div className='app-body flex-fill flex h border-white-round'>
-                {genTabBody(tabType, ['e', AppEditing])}
-                {genTabBody(tabType, ['p', AppPresenting])}
+                {tabTypeList.map(([type, _, target]) => {
+                    if (target === undefined) {
+                        return null;
+                    }
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
             <div id='pseudo-windows'>
                 <HandleBibleSearch />
