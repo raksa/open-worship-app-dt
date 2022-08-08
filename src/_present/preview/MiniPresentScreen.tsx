@@ -70,7 +70,7 @@ export default function MiniPresentScreen() {
                         }}>
                             <div className='d-flex justify-content-around'
                                 style={{
-                                    minWidth: '280px',
+                                    minWidth: '340px',
                                     maxWidth: '380px',
                                 }}>
                                 <ShowHidePresent

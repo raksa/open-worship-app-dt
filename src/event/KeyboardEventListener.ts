@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getLastItem } from '../helper/helpers';
 import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
 import { AppWidgetType } from './WindowEventListener';
@@ -27,7 +28,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
     static eventNamePrefix: string = 'keyboard';
     static _layers: AppWidgetType[] = ['root'];
     static getLastLayer() {
-        return this._layers[this._layers.length - 1];
+        return getLastItem(this._layers);
     }
     static addLayer(l: AppWidgetType) {
         this._layers.push(l);

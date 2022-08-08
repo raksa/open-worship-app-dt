@@ -158,7 +158,28 @@
     border: 2px ridge palevioletred;
   }
 
-  .sizing-hide {
+  .hidden-widget {
+    $bg-color: var(--bs-gray-700);
+    $bg-color-hover: var(--bs-gray-600);
+    $color: var(--bs-gray-800);
+
+    padding: 3px;
+    border-radius: 5px;
+    background-color: $bg-color;
+    background: repeating-linear-gradient(45deg,
+        $color,
+        $color 4px,
+        $bg-color 2px,
+        $bg-color 8px);
+
+    &:hover {
+      background: repeating-linear-gradient(45deg,
+          $color,
+          $color 4px,
+          $bg-color-hover 2px,
+          $bg-color-hover 8px);
+    }
+
     * {
       display: none;
     }

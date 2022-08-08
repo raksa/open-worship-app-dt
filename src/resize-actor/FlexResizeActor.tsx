@@ -98,14 +98,14 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         }
 
         if (this.previousSize < this.previousMinSize) {
-            this.previous.classList.add('sizing-hide');
+            this.previous.classList.add('hidden-widget');
         } else {
-            this.previous.classList.remove('sizing-hide');
+            this.previous.classList.remove('hidden-widget');
         }
         if (this.nextSize < this.nextMinSize) {
-            this.next.classList.add('sizing-hide');
+            this.next.classList.add('hidden-widget');
         } else {
-            this.next.classList.remove('sizing-hide');
+            this.next.classList.remove('hidden-widget');
         }
         const prevGrowNew = this.sumGrow * (this.previousSize / this.sumSize);
         const nextGrowNew = this.sumGrow * (this.nextSize / this.sumSize);
@@ -127,11 +127,11 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         window.removeEventListener('mouseup', this.mouseUpListener);
 
         current.classList.remove('active');
-        if (this.previous.classList.contains('sizing-hide')) {
+        if (this.previous.classList.contains('hidden-widget')) {
             this.quicMove('left');
             return;
         }
-        if (this.next.classList.contains('sizing-hide')) {
+        if (this.next.classList.contains('hidden-widget')) {
             this.quicMove('right');
             return;
         }

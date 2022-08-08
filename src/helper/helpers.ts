@@ -103,3 +103,7 @@ export function useReadFileToData<T extends ItemSource<any>>(
     }, [fileSource]);
     return data;
 }
+
+export function getLastItem<T>(arr: T[]) {
+    return arr[arr.length - 1] || null;
+}

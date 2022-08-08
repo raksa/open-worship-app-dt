@@ -29,12 +29,19 @@ const confirmEraseLocalStorage = () => {
   });
 };
 
-window.onunhandledrejection = () => {
-  confirmEraseLocalStorage();
+window.onunhandledrejection = (promiseError) => {
+  promiseError.reason.then((error: any) => {
+    console.log(error);
+    if (error.message.includes('DomException')) {
+      console.log(error);
+    } else {
+      confirmEraseLocalStorage();
+    }
+  });
 };
 
 window.onerror = function (error: any) {
-  if (error.message.includes('The play() request was interrupted by a call to pause().')) {
+  if (error.message.includes('DomException')) {
     console.log(error);
   } else {
     confirmEraseLocalStorage();

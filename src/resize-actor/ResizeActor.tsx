@@ -1,5 +1,3 @@
-import './ResizeActor.scss';
-
 import React, {
     CSSProperties, Fragment, useState,
 } from 'react';
