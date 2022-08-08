@@ -1,9 +1,14 @@
+import React from 'react';
+import AppSuspense from '../others/AppSuspense';
 import { AppColorType } from '../others/ColorPicker';
-import PresentBackgroundColor from './PresentBackgroundColor';
-import PresentBackgroundImage from './PresentBackgroundImage';
-import PresentBackgroundVideo from './PresentBackgroundVideo';
-import PresentBGManager from './PresentBGManager';
+import PresentBGManager, {
+    BackgroundSrcType,
+} from './PresentBGManager';
 import { usePBGMEvents } from './presentHelpers';
+
+const PresentBackgroundColor = React.lazy(() => import('./PresentBackgroundColor'));
+const PresentBackgroundImage = React.lazy(() => import('./PresentBackgroundImage'));
+const PresentBackgroundVideo = React.lazy(() => import('./PresentBackgroundVideo'));
 
 export default function PresentBackground({ bgManager }: {
     bgManager: PresentBGManager;
@@ -21,12 +26,51 @@ export default function PresentBackground({ bgManager }: {
             height: '100%',
             overflow: 'hidden',
         }}>
-            {bgSrc.type === 'image' && <PresentBackgroundImage
-                src={bgSrc.src} />}
-            {bgSrc.type === 'video' && <PresentBackgroundVideo
-                src={bgSrc.src} />}
-            {bgSrc.type === 'color' && <PresentBackgroundColor
-                color={bgSrc.src as AppColorType} />}
+            <RenderPresentBackground bgSrc={bgSrc} />
         </div>
     );
+}
+
+type PropsType = {
+    bgSrc: BackgroundSrcType;
+};
+type StateType = {
+    bgSrc: BackgroundSrcType;
+};
+class RenderPresentBackground extends React.Component<PropsType, StateType> {
+    constructor(props: PropsType) {
+        super(props);
+        this.state = {
+            bgSrc: props.bgSrc,
+        };
+    }
+    render() {
+        const { bgSrc } = this.state;
+        if (bgSrc.type === 'image') {
+            return (
+                <AppSuspense>
+                    <PresentBackgroundImage
+                        src={bgSrc.src} />
+                </AppSuspense>
+            );
+        }
+        if (bgSrc.type === 'video') {
+            return (
+                <AppSuspense>
+                    <PresentBackgroundVideo
+                        src={bgSrc.src} />;
+                </AppSuspense>
+            );
+        }
+        if (bgSrc.type === 'color') {
+            return (
+                <AppSuspense>
+                    <PresentBackgroundColor
+                        color={bgSrc.src as AppColorType} />
+                </AppSuspense>
+            );
+        }
+        return null;
+    }
+
 }
