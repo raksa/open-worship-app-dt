@@ -4,6 +4,7 @@ import PresentForeground from './PresentForeground';
 import PresentAlert from './PresentAlert';
 import PresentFullText from './PresentFullText';
 import PresentManager from './PresentManager';
+import PresentTransitionEffect from './PresentTransitionEffect';
 
 export default function PresentApp() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -11,6 +12,9 @@ export default function PresentApp() {
     const presentManager = PresentManager.getInstance(presentId);
     return (
         <>
+            <style>
+                {PresentTransitionEffect.getInstance('background').style}
+            </style>
             <PresentBackground
                 presentManager={presentManager} />
             <PresentForeground />

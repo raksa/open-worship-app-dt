@@ -129,12 +129,8 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             };
             const [width, height] = await PresentBGManager.extractDim(bgSrc);
             if (width !== undefined && height !== undefined) {
-                const parentWidth = presentManager.width;
-                const parentHeight = presentManager.height;
-                const scale = Math.max(parentWidth / width,
-                    parentHeight / height);
-                bgSrc.width = width * scale;
-                bgSrc.height = height * scale;
+                bgSrc.width = width;
+                bgSrc.height = height;
             }
             presentManager.presentBGManager.bgSrc = bgSrc;
         });
@@ -158,8 +154,8 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         return [undefined, undefined];
     }
     calMediaSizes(bgSrc: BackgroundSrcType) {
-        if (bgSrc.width === undefined
-            || bgSrc.height === undefined) {
+        const { width, height } = bgSrc;
+        if (width === undefined || height === undefined) {
             return {
                 width: this.presentManager.width,
                 height: this.presentManager.height,
@@ -167,11 +163,17 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
                 offsetV: 0,
             };
         }
-        const offsetH = (bgSrc.width - this.presentManager.width) / 2;
-        const offsetV = (bgSrc.height - this.presentManager.height) / 2;
+        const parentWidth = this.presentManager.width;
+        const parentHeight = this.presentManager.height;
+        const scale = Math.max(parentWidth / width,
+            parentHeight / height);
+        const newWidth = width * scale;
+        const newHeight = height * scale;
+        const offsetH = (newWidth - parentWidth) / 2;
+        const offsetV = (newHeight - parentHeight) / 2;
         return {
-            width: bgSrc.width,
-            height: bgSrc.height,
+            width: newWidth,
+            height: newHeight,
             offsetH,
             offsetV,
         };

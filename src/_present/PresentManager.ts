@@ -25,6 +25,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         const dim = getWindowDim();
         this.width = dim.width;
         this.height = dim.height;
+        console.log(this.width, this.height);
+        
         this.presentId = presentId;
         this.name = `present-${presentId}`;
         this.presentBGManager = new PresentBGManager(presentId);
