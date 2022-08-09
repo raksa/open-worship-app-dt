@@ -5,7 +5,7 @@ import appProvider from './appProvider';
 import { genHtmlBG } from './PresentBackground';
 import { sendPresentMessage } from './presentHelpers';
 import PresentManager from './PresentManager';
-import PresentTransitionEffect from './PresentTransitionEffect';
+import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 
 const backgroundTypeList = ['color', 'image', 'video'] as const;
 export type BackgroundType = typeof backgroundTypeList[number];
@@ -182,24 +182,23 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         if (this.div === null) {
             return;
         }
-        if (this.bgSrc === null) {
-            const lastChild = this.div.lastChild;
-            if (lastChild !== null) {
-                Object.assign((lastChild as HTMLDivElement).style,
-                    this.ptEffect.cssPropsOut);
-                setTimeout(() => {
-                    lastChild.remove();
-                }, this.ptEffect.duration);
-            }
+        const aminData = this.ptEffect.styleAnim;
+        if (this.bgSrc !== null) {
+            const newDiv = genHtmlBG(this.bgSrc, this.presentManager);
+            const childList = Array.from(this.div.children);
+            this.div.appendChild(newDiv);
+            aminData.animIn(newDiv).then(() => {
+                childList.forEach((child) => {
+                    child.remove();
+                });
+            });
         } else {
-            const div = genHtmlBG(this.bgSrc, this.presentManager);
-            this.div.appendChild(div);
-            setTimeout(() => {
-                const childCount = this.div?.childElementCount || 0;
-                if (childCount > 1) {
-                    this.div?.firstChild?.remove();
-                }
-            }, this.ptEffect.duration);
+            if (this.div.lastChild !== null) {
+                const targetDiv = this.div.lastChild as HTMLDivElement;
+                aminData.animOut(targetDiv).then(() => {
+                    targetDiv.remove();
+                });
+            }
         }
     }
     get backgroundStyle(): React.CSSProperties {

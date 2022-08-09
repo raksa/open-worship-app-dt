@@ -9,6 +9,7 @@ import { usePBGMEvents } from '../_present/presentHelpers';
 import PresentBGManager, {
     BackgroundType,
 } from '../_present/PresentBGManager';
+import RenderTransitionEffect from '../_present/transition-effect/RenderTransitionEffect';
 
 const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
 const BackgroundImages = React.lazy(() => import('./BackgroundImages'));
@@ -40,6 +41,13 @@ export default function Background() {
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
+                <div className='float-end pe-2'
+                    style={{
+                        transform: 'translateY(-110%)',
+                    }}>
+                    <RenderTransitionEffect
+                        target={'background'} />
+                </div>
             </div>
             <div className='background-body w-100 flex-fill'>
                 {tabTypeList.map(([type, _, target]) => {

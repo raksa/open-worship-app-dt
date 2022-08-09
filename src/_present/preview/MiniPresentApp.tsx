@@ -3,15 +3,16 @@ import PresentBackground from '../PresentBackground';
 import PresentForeground from '../PresentForeground';
 import PresentFullText from '../PresentFullText';
 import PresentManager from '../PresentManager';
-import PresentTransitionEffect from '../PresentTransitionEffect';
+import { RendStyle } from '../transition-effect/RenderTransitionEffect';
 
 export default function MiniPresentApp({ id }: { id: number }) {
     const presentManager = PresentManager.getInstance(id);
     return (
         <>
-            <style>
-                {PresentTransitionEffect.getInstance('background').style}
-            </style>
+            <RendStyle
+                ptEffectTarget='background' />
+            <RendStyle
+                ptEffectTarget='foreground' />
             <div style={{
                 pointerEvents: 'none',
                 position: 'absolute',

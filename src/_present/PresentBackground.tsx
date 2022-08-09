@@ -3,7 +3,6 @@ import ReactDOMServer from 'react-dom/server';
 import { AppColorType } from '../others/ColorPicker';
 import { BackgroundSrcType } from './PresentBGManager';
 import PresentManager from './PresentManager';
-import PresentTransitionEffect from './PresentTransitionEffect';
 import PresentBackgroundColor from './PresentBackgroundColor';
 import PresentBackgroundImage from './PresentBackgroundImage';
 import PresentBackgroundVideo from './PresentBackgroundVideo';
@@ -40,12 +39,10 @@ export function RenderBG({
     bgSrc: BackgroundSrcType,
     presentManager: PresentManager;
 }) {
-    const ptEffect = PresentTransitionEffect.getInstance('background');
     const { presentBGManager } = presentManager;
     return (
         <div style={{
             ...presentBGManager.backgroundStyle,
-            ...ptEffect.cssPropsIn,
         }}>
             <RenderPresentBackground
                 presentManager={presentManager}
