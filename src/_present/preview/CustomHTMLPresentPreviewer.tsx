@@ -35,8 +35,15 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             const display = PresentManager.getDefaultPresentDisplay();
             const bounds = display.bounds;
             const scale = this.parentElement.clientWidth / bounds.width;
-            this.mountPoint.style.maxWidth = (scale * bounds.width) + 'px';
-            this.mountPoint.style.height = (scale * bounds.height) + 'px';
+            const width = scale * bounds.width;
+            const height = scale * bounds.height;
+            this.mountPoint.style.width = `${width}px`;
+            this.mountPoint.style.height = `${height}px`;
+            if (this.presentId > -1) {
+                const presentManager = PresentManager.getInstance(this.presentId);
+                presentManager.width = width;
+                presentManager.height = height;
+            }
             PresentManager.fireResizeEvent();
         }
     }
@@ -47,7 +54,6 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             });
     }
     connectedCallback() {
-        this.resize();
         this.attachShadow({
             mode: 'open',
         }).appendChild(this.mountPoint);
@@ -55,6 +61,7 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
         const idStr = this.getAttribute('presentid');
         if (idStr !== null) {
             this.presentId = +idStr;
+            this.resize();
             root.render(<MiniPresentApp id={this.presentId} />);
         } else {
             root.render(<div>Error during rendering</div>);

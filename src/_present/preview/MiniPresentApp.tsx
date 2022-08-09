@@ -3,15 +3,18 @@ import PresentBackground from '../PresentBackground';
 import PresentForeground from '../PresentForeground';
 import PresentFullText from '../PresentFullText';
 import PresentManager from '../PresentManager';
+import PresentTransitionEffect from '../PresentTransitionEffect';
 
 export default function MiniPresentApp({ id }: { id: number }) {
     const presentManager = PresentManager.getInstance(id);
-    const { presentBGManager } = presentManager;
     return (
         <>
+            <style>
+                {PresentTransitionEffect.getInstance('background').style}
+            </style>
             <PresentBlankBG />
             <PresentBackground
-                bgManager={presentBGManager} />
+                presentManager={presentManager} />
             <PresentForeground />
             <PresentFullText />
             <PresentAlert />

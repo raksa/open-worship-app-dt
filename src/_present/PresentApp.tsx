@@ -12,7 +12,7 @@ export default function PresentApp() {
     return (
         <>
             <PresentBackground
-                bgManager={presentManager.presentBGManager} />
+                presentManager={presentManager} />
             <PresentForeground />
             <PresentFullText />
             <PresentAlert />

@@ -107,3 +107,29 @@ export function useReadFileToData<T extends ItemSource<any>>(
 export function getLastItem<T>(arr: T[]) {
     return arr[arr.length - 1] || null;
 }
+
+export function getImageDim(src: string) {
+    return new Promise<[number, number]>((resolve, reject) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.onload = () => {
+            resolve([img.naturalWidth, img.naturalHeight]);
+        };
+        img.onerror = () => {
+            reject(new Error('Fail to load image:' + src));
+        };
+    });
+}
+
+export function getVideoDim(src: string) {
+    return new Promise<[number, number]>((resolve, reject) => {
+        const video = document.createElement('video');
+        video.addEventListener('loadedmetadata', () => {
+            resolve([video.videoWidth, video.videoHeight]);
+        }, false);
+        video.onerror = () => {
+            reject(new Error('Fail to load video:' + src));
+        };
+        video.src = src;
+    });
+}

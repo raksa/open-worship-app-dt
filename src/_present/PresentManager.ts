@@ -1,4 +1,5 @@
 import EventHandler from '../event/EventHandler';
+import { getWindowDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { AllDisplayType } from '../server/displayHelper';
@@ -13,12 +14,17 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
     readonly presentId: number;
+    width: number;
+    height: number;
     name: string;
     _isSelected: boolean = false;
     private _isShowing: boolean;
     static readonly _cache = new Map<string, PresentManager>();
     constructor(presentId: number) {
         super();
+        const dim = getWindowDim();
+        this.width = dim.width;
+        this.height = dim.height;
         this.presentId = presentId;
         this.name = `present-${presentId}`;
         this.presentBGManager = new PresentBGManager(presentId);
@@ -183,5 +189,3 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         });
     }
 }
-
-(window as any).PresentManager = PresentManager;
