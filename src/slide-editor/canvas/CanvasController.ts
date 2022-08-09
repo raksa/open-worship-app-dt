@@ -112,17 +112,19 @@ export default class CanvasController extends EventHandler<CCEventType> {
         newCanvasItems.push(canvasItem);
         this.setCanvasItems(newCanvasItems);
     }
-    async addNewTextBox() {
+    async addNewTextItem() {
         const newItem = CanvasItemText.genDefaultItem();
         this.addNewItem(newItem);
     }
-    async addNewMedia(fileSource: FileSource, event: any) {
+    async addNewMediaItem(fileSource: FileSource, event: any) {
         try {
             const rect = (event.target as HTMLDivElement).getBoundingClientRect();
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
             if (fileSource.metadata?.appMimetype.mimetypeName === 'image') {
                 const newItem = await CanvasItemImage.genFromInsertion(x, y, fileSource);
+                console.log(newItem);
+                
                 this.addNewItem(newItem);
                 return;
             }

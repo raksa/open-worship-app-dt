@@ -1,7 +1,7 @@
 import EventHandler from '../event/EventHandler';
 import { getImageDim, getVideoDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import appProvider from './appProvider';
+import appProviderPresent from './appProviderPresent';
 import { genHtmlBG } from './PresentBackground';
 import { sendPresentMessage } from './presentHelpers';
 import PresentManager from './PresentManager';
@@ -30,7 +30,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
-        if (appProvider.isMain) {
+        if (appProviderPresent.isMain) {
             const allBGSrcList = PresentBGManager.getBGSrcList();
             this._bgSrc = allBGSrcList[this.key] || null;
         }

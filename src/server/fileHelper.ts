@@ -41,8 +41,11 @@ export const createNewItem = async (dir: string, name: string,
     return null;
 };
 
-export type MimetypeNameType = 'image' | 'video' | 'slide'
-    | 'playlist' | 'lyric' | 'bible';
+export const mimetypeNameTypeList = [
+    'image', 'video', 'slide',
+    'playlist', 'lyric', 'bible',
+] as const;
+export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 
 export function getFileMetaData(fileName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
@@ -58,9 +61,7 @@ export function getFileMetaData(fileName: string,
 }
 
 export function getAllAppMimetype() {
-    const mimetypeNames: MimetypeNameType[] = ['image', 'video',
-        'slide', 'playlist', 'lyric', 'bible'];
-    return mimetypeNames.map((mimetypeName) => {
+    return mimetypeNameTypeList.map((mimetypeName) => {
         return getAppMimetype(mimetypeName);
     }).reduce((acc, cur) => {
         return acc.concat(cur);

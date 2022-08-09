@@ -6,8 +6,10 @@ import CanvasItemBible from './CanvasItemBible';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 
-export type HAlignmentType = 'left' | 'center' | 'right';
-export type VAlignmentType = 'top' | 'center' | 'bottom';
+export const hAlignmentList = ['left', 'center', 'right'] as const;
+export type HAlignmentType = typeof hAlignmentList[number];
+export const vAlignmentList = ['top', 'center', 'bottom'] as const;
+export type VAlignmentType = typeof vAlignmentList[number];
 
 type CanvasPropsType = {
     width: number,
@@ -65,7 +67,7 @@ export default class Canvas {
             } else if (json.type === 'text') {
                 return CanvasItemText.fromJson(json);
             } else if (json.type === 'bible') {
-                return CanvasItemBible.fromJson(json as any);
+                return CanvasItemBible.fromJson(json);
             }
             // TODO: handle other type of element
             return null;

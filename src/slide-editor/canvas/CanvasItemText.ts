@@ -1,12 +1,19 @@
 import { CSSProperties } from 'react';
-import CanvasItem, {
-    CanvasItemKindType,
-    CanvasItemPropsType, genTextDefaultBoxStyle,
-} from './CanvasItem';
-import { HAlignmentType, VAlignmentType } from './Canvas';
+import {
+    hAlignmentList,
+    HAlignmentType,
+    vAlignmentList,
+    VAlignmentType,
+} from './Canvas';
 import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 import appProvider from '../../server/appProvider';
+import {
+    CanvasItemPropsType,
+    CanvasItemKindType,
+    genTextDefaultBoxStyle,
+} from './canvasHelpers';
+import CanvasItem, { CanvasItemError } from './CanvasItem';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
@@ -58,7 +65,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
         return CanvasItemText.fromJson({
             ...genTextDefaultProps(),
             ...genTextDefaultBoxStyle(),
-        });
+            type: 'text',
+        }) as CanvasItemText;
     }
     applyTextData(textData: ToolingTextType) {
         this.applyProps(textData);
@@ -67,8 +75,13 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
         return this.props;
     }
     static fromJson(json: CanvasItemTextPropsType) {
-        this.validate(json);
-        return new CanvasItemText(json);
+        try {
+            this.validate(json);
+            return new CanvasItemText(json);
+        } catch (error) {
+            console.log(error);
+            return CanvasItemError.fromJsonError(json);
+        }
     }
     static validate(json: AnyObjectType) {
         super.validate(json);
@@ -76,8 +89,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             typeof json.color !== 'string' ||
             typeof json.fontSize !== 'number' ||
             typeof json.fontFamily !== 'string' ||
-            !['left', 'center', 'right'].includes(json.horizontalAlignment) ||
-            !['start', 'center', 'end'].includes(json.verticalAlignment)
+            !hAlignmentList.includes(json.horizontalAlignment) ||
+            !vAlignmentList.includes(json.verticalAlignment)
         ) {
             console.log(json);
             throw new Error('Invalid canvas item text data');

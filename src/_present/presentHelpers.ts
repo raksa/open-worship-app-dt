@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AnyObjectType } from '../helper/helpers';
-import appProvider from './appProvider';
+import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {
     PresentBGManagerEventType,
 } from './PresentBGManager';
@@ -44,7 +44,8 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
     }, [presentBGManager, n]);
 }
 
-export type PresentType = 'background' | 'display-change' | 'visible' | 'init';
+export const presentTypeList = ['background', 'display-change', 'visible', 'init'];
+export type PresentType = typeof presentTypeList[number];
 export type PresentMessageType = {
     presentId: number,
     type: PresentType,
@@ -52,14 +53,14 @@ export type PresentMessageType = {
 };
 
 export function sendPresentMessage(message: PresentMessageType, isForce?: boolean) {
-    if (appProvider.isPresent && !isForce) {
+    if (appProviderPresent.isPresent && !isForce) {
         return;
     }
     const channel1 = messageUtils.channels.presentMessageChannel;
     messageUtils.sendData(channel1, message);
 }
 
-const messageUtils = appProvider.messageUtils;
+const messageUtils = appProviderPresent.messageUtils;
 const channel = messageUtils.channels.presentMessageChannel;
 messageUtils.listenForData(channel,
     (_, message: PresentMessageType) => {
@@ -71,7 +72,7 @@ messageUtils.listenForData(channel,
             presentManager.isShowing = data.isShowing;
         }
     });
-if (appProvider.isPresent) {
+if (appProviderPresent.isPresent) {
     const presentId = PresentManager.getAllInstances()[0]?.presentId || 0;
     sendPresentMessage({
         presentId,

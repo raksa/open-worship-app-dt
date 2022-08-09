@@ -52,7 +52,7 @@ export default function FullTextPreviewer() {
                 minWidth: '300px',
             }}>
             <div className='previewer-header d-flex'>
-                <TabRender<'b' | 'l'>
+                <TabRender<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
                     })}

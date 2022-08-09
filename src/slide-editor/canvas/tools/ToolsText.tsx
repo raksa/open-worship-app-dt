@@ -25,12 +25,16 @@ export default function ToolsText() {
     return (
         <div className='d-flex'>
             <Tool>
-                <ColorPicker color={canvasItem.props.color}
-                    onColorChange={(newColor) => {
-                        applyTextData({
-                            color: newColor || '#ffffff',
-                        });
-                    }} />
+                <div style={{
+                    maxWidth: '300px',
+                }}>
+                    <ColorPicker color={canvasItem.props.color}
+                        onColorChange={(newColor) => {
+                            applyTextData({
+                                color: newColor || '#ffffff',
+                            });
+                        }} />
+                </div>
             </Tool>
             <Tool title='Text Alignment'>
                 <ToolAlign isText onData={(newData) => {

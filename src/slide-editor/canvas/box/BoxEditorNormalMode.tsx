@@ -8,6 +8,7 @@ import BENViewTextMode from './BENViewTextMode';
 import BENViewBibleMode from './BENViewBibleMode';
 import CanvasItemBible from '../CanvasItemBible';
 import { useCCEvents } from '../canvasHelpers';
+import BENViewError from './BENViewError';
 
 export default function BoxEditorNormalMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
@@ -44,5 +45,5 @@ export default function BoxEditorNormalMode({ canvasItem }: {
                 style={style} />
         );
     }
-    return null;
+    return <BENViewError canvasItem={canvasItem}/>;
 }

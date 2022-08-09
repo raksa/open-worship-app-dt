@@ -1,9 +1,10 @@
 import { AnyObjectType } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
-import CanvasItem, {
+import {
     CanvasItemPropsType,
     genTextDefaultBoxStyle,
-} from './CanvasItem';
+} from './canvasHelpers';
+import CanvasItem, { CanvasItemError } from './CanvasItem';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType & {
     src: string,
@@ -19,20 +20,22 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     }
     static genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
-        return new Promise<CanvasItemImage>((resolve, reject) => {
+        return new Promise<CanvasItemImage | CanvasItemError>((resolve, reject) => {
             const image = document.createElement('img');
             image.src = fileSource.src;
             image.onload = () => {
                 const imageWidth = image.naturalWidth;
                 const imageHeight = image.naturalHeight;
-                const newItem = CanvasItemImage.fromJson({
+                const props: CanvasItemImagePropsType = {
                     src: fileSource.src,
                     imageWidth,
                     imageHeight,
                     ...genTextDefaultBoxStyle(),
                     left: x,
                     top: y,
-                });
+                    type: 'image',
+                };
+                const newItem = CanvasItemImage.fromJson(props);
                 resolve(newItem);
             };
             image.onerror = () => {
@@ -49,8 +52,13 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
         };
     }
     static fromJson(json: CanvasItemImagePropsType) {
-        this.validate(json);
-        return new CanvasItemImage(json);
+        try {
+            this.validate(json);
+            return new CanvasItemImage(json);
+        } catch (error) {
+            console.log(error);
+            return CanvasItemError.fromJsonError(json);
+        }
     }
     static validate(json: AnyObjectType) {
         super.validate(json);

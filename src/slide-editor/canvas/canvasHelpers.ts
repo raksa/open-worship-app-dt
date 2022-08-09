@@ -5,13 +5,15 @@ import FileSource from '../../helper/FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import CanvasController, { CCEventType } from './CanvasController';
 import CanvasItem from './CanvasItem';
+import { AppColorType } from '../../others/ColorPicker';
+import { HAlignmentType, VAlignmentType } from './Canvas';
 
 export function showCanvasContextMenu(e: any) {
     const canvasController = CanvasController.getInstance();
     showAppContextMenu(e, [
         {
             title: 'New',
-            onClick: () => canvasController.addNewTextBox(),
+            onClick: () => canvasController.addNewTextItem(),
         },
         {
             title: 'Paste',
@@ -29,7 +31,7 @@ export function showCanvasContextMenu(e: any) {
                 ]);
                 filePaths.forEach((filePath) => {
                     const fileSource = FileSource.genFileSource(filePath);
-                    canvasController.addNewMedia(fileSource, e);
+                    canvasController.addNewMediaItem(fileSource, e);
                 });
             },
         },
@@ -109,3 +111,67 @@ export function useCIControl(canvasItem: CanvasItem<any>) {
     }, [canvasItem]);
     return isControlling;
 }
+
+
+export function tooling2BoxProps(boxData: ToolingBoxType, state: {
+    parentWidth: number, parentHeight: number,
+    width: number, height: number,
+}) {
+    const boxProps: { top?: number, left?: number } = {};
+    if (boxData) {
+        if (boxData.verticalAlignment === 'top') {
+            boxProps.top = 0;
+        } else if (boxData.verticalAlignment === 'center') {
+            boxProps.top = (state.parentHeight - state.height) / 2;
+        } else if (boxData.verticalAlignment === 'bottom') {
+            boxProps.top = state.parentHeight - state.height;
+        }
+        if (boxData.horizontalAlignment === 'left') {
+            boxProps.left = 0;
+        } else if (boxData.horizontalAlignment === 'center') {
+            boxProps.left = (state.parentWidth - state.width) / 2;
+        } else if (boxData.horizontalAlignment === 'right') {
+            boxProps.left = state.parentWidth - state.width;
+        }
+    }
+    return boxProps;
+}
+
+export type ToolingBoxType = {
+    backgroundColor?: AppColorType | null,
+    rotate?: number,
+    horizontalAlignment?: HAlignmentType,
+    verticalAlignment?: VAlignmentType,
+};
+export const canvasItemList = [
+    'text', 'image', 'video', 'audio', 'bible', 'error',
+] as const;
+export type CanvasItemKindType = typeof canvasItemList[number];
+
+export function genTextDefaultBoxStyle(width: number = 700,
+    height: number = 400) {
+    return {
+        id: -1,
+        top: 279,
+        left: 356,
+        backgroundColor: '#FF00FF8b' as AppColorType,
+        width,
+        height,
+        rotate: 0,
+        horizontalAlignment: 'center' as HAlignmentType,
+        verticalAlignment: 'center' as VAlignmentType,
+    };
+}
+
+export type CanvasItemPropsType = {
+    id: number,
+    top: number,
+    left: number,
+    rotate: number,
+    width: number,
+    height: number,
+    horizontalAlignment: HAlignmentType,
+    verticalAlignment: VAlignmentType,
+    backgroundColor: AppColorType | null,
+    type: CanvasItemKindType,
+};

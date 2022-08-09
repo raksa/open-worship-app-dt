@@ -2,7 +2,7 @@ import './present.scss';
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import appProvider from './appProvider';
+import appProviderPresent from './appProviderPresent';
 import PresentApp from './PresentApp';
 
 const container = document.getElementById('root');
@@ -18,14 +18,14 @@ if (container !== null) {
 document.addEventListener('wheel', function (e) {
   if (e.ctrlKey) {
     const isUp = e.deltaY < 0;
-    appProvider.messageUtils.sendData('present:app:ctrl-scrolling', isUp);
+    appProviderPresent.messageUtils.sendData('present:app:ctrl-scrolling', isUp);
   }
 });
 document.addEventListener('keyup', function (e) {
   if ((e.ctrlKey || e.altKey)
     && ['ArrowLeft', 'ArrowRight'].includes(e.key)) {
     const isNext = e.key === 'ArrowRight';
-    appProvider.messageUtils.sendData('present:app:change-bible', isNext);
+    appProviderPresent.messageUtils.sendData('present:app:change-bible', isNext);
   }
 });
 document.body.style.backgroundColor = 'transparent';

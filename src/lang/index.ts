@@ -1,8 +1,8 @@
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 
-export const locales = ['km', 'en'];
-export type LocalType = 'km' | 'en';
+export const locales = ['km', 'en'] as const;
+export type LocalType = typeof locales[number];
 export type LanguageType = {
   numList: string[];
   dictionary: AnyObjectType;
@@ -19,7 +19,7 @@ export function setCurrentLocale(local: LocalType) {
 }
 export function getCurrentLocale() {
   const lc = getSetting('language-local', 'en');
-  if (locales.includes(lc)) {
+  if (locales.includes(lc as any)) {
     currentLocal = lc as LocalType;
   }
   return currentLocal;

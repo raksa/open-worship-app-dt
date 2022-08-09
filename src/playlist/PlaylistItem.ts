@@ -4,7 +4,8 @@ import { AnyObjectType, cloneObject } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 
-type ItemType = 'error' | 'slide' | 'bible-item' | 'lyric';
+const itemTypeList = ['error', 'slide', 'bible-item', 'lyric'] as const;
+type ItemType = typeof itemTypeList[number];
 export type PlaylistItemType = {
     type: ItemType;
     filePath: string,
@@ -78,7 +79,7 @@ export default class PlaylistItem {
         };
     }
     static validate(json: AnyObjectType) {
-        if (!['slide', 'bible-item', 'lyric'].includes(json.type)
+        if (!itemTypeList.includes(json.type)
             || json.path && typeof json.path !== 'string'
             || (json.type === 'bible-item' && typeof json.id !== 'number')
         ) {

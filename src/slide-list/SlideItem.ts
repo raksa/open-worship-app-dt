@@ -4,8 +4,8 @@ import Slide from './Slide';
 import { AnyObjectType, cloneObject } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
-import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import SlideListEventListener from '../event/SlideListEventListener';
+import { CanvasItemPropsType } from '../slide-editor/canvas/canvasHelpers';
 
 export type SlideItemType = {
     id: number,

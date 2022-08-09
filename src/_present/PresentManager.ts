@@ -3,12 +3,12 @@ import { getWindowDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { AllDisplayType } from '../server/displayHelper';
-import appProvider from './appProvider';
+import appProviderPresent from './appProviderPresent';
 import PresentBGManager from './PresentBGManager';
 
 export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
-const messageUtils = appProvider.messageUtils;
+const messageUtils = appProviderPresent.messageUtils;
 const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
     static eventNamePrefix: string = 'present-m';

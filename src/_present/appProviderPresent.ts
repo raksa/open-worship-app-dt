@@ -5,7 +5,7 @@ import {
     SystemUtilsType,
 } from '../server/appProvider';
 
-const appProvider = (window as any).provider as {
+const appProviderPresent = (window as any).provider as {
     isMain: boolean,
     isPresent: boolean,
     messageUtils: MessageUtilsType;
@@ -14,4 +14,4 @@ const appProvider = (window as any).provider as {
     systemUtils: SystemUtilsType,
 };
 
-export default appProvider;
+export default appProviderPresent;

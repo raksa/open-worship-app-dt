@@ -1,11 +1,10 @@
 import ColorPicker, { AppColorType } from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
-import {
-    CanvasItemContext, ToolingBoxType,
-} from '../CanvasItem';
 import CanvasController from '../CanvasController';
 import { useContext } from 'react';
+import { ToolingBoxType } from '../canvasHelpers';
+import { CanvasItemContext } from '../CanvasItem';
 
 export default function ToolsBox() {
     const canvasItem = useContext(CanvasItemContext);
@@ -24,12 +23,16 @@ export default function ToolsBox() {
     return (
         <>
             <Tool title='Background Color'>
-                <ColorPicker color={canvasItem.props.backgroundColor}
-                    onColorChange={(newColor: AppColorType | null) => {
-                        applyBoxData({
-                            backgroundColor: newColor,
-                        });
-                    }} />
+                <div style={{
+                    maxWidth: '300px',
+                }}>
+                    <ColorPicker color={canvasItem.props.backgroundColor}
+                        onColorChange={(newColor: AppColorType | null) => {
+                            applyBoxData({
+                                backgroundColor: newColor,
+                            });
+                        }} />
+                </div>
             </Tool>
             <Tool title='Box Alignment'>
                 <ToolAlign onData={(newData) => {

@@ -2,7 +2,8 @@ import { setSetting, getSetting } from '../helper/settingHelper';
 import { FlexSizeType } from './ResizeActor';
 
 export const settingPrefix = 'widget-size';
-export type DisablingTargetType = 'first' | 'second';
+export const disablingTargetTypeList = ['first', 'second'] as const;
+export type DisablingTargetType = typeof disablingTargetTypeList[number];
 export type DisabledType = [DisablingTargetType, number];
 export const settingNames = {
     appEditing: 'app-editing-main',
@@ -70,7 +71,7 @@ export function getFlexSizeSetting(fSizeName: string,
             const fsValue = size[k];
             if (!fsValue || fsValue.length === 0 ||
                 (fsValue[1] &&
-                    !['first', 'second'].includes(fsValue[1][0]) &&
+                    !disablingTargetTypeList.includes(fsValue[1][0]) &&
                     typeof fsValue[1][1] !== 'number'
                 )) {
                 return false;

@@ -60,23 +60,21 @@ function RenderPresentBackground({
     if (bgSrc === null) {
         return null;
     }
-    if (bgSrc.type === 'image') {
-        return (
-            <PresentBackgroundImage bgSrc={bgSrc}
-                presetManager={presentManager} />
-        );
+    switch (bgSrc.type) {
+        case 'image':
+            return (
+                <PresentBackgroundImage bgSrc={bgSrc}
+                    presetManager={presentManager} />
+            );
+        case 'video':
+            return (
+                <PresentBackgroundVideo bgSrc={bgSrc}
+                    presetManager={presentManager} />
+            );
+        case 'color':
+            return (
+                <PresentBackgroundColor
+                    color={bgSrc.src as AppColorType} />
+            );
     }
-    if (bgSrc.type === 'video') {
-        return (
-            <PresentBackgroundVideo bgSrc={bgSrc}
-                presetManager={presentManager} />
-        );
-    }
-    if (bgSrc.type === 'color') {
-        return (
-            <PresentBackgroundColor
-                color={bgSrc.src as AppColorType} />
-        );
-    }
-    return null;
 }

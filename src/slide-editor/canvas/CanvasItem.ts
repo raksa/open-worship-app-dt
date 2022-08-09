@@ -1,69 +1,14 @@
-import React from 'react';
-import { CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import { AnyObjectType, cloneObject } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
-import { HAlignmentType, VAlignmentType } from './Canvas';
+import { hAlignmentList, vAlignmentList } from './Canvas';
+import {
+    CanvasItemPropsType,
+    ToolingBoxType,
+    tooling2BoxProps,
+    canvasItemList,
+    genTextDefaultBoxStyle,
+} from './canvasHelpers';
 
-export function tooling2BoxProps(boxData: ToolingBoxType, state: {
-    parentWidth: number, parentHeight: number,
-    width: number, height: number,
-}) {
-    const boxProps: { top?: number, left?: number } = {};
-    if (boxData) {
-        if (boxData.verticalAlignment === 'top') {
-            boxProps.top = 0;
-        } else if (boxData.verticalAlignment === 'center') {
-            boxProps.top = (state.parentHeight - state.height) / 2;
-        } else if (boxData.verticalAlignment === 'bottom') {
-            boxProps.top = state.parentHeight - state.height;
-        }
-        if (boxData.horizontalAlignment === 'left') {
-            boxProps.left = 0;
-        } else if (boxData.horizontalAlignment === 'center') {
-            boxProps.left = (state.parentWidth - state.width) / 2;
-        } else if (boxData.horizontalAlignment === 'right') {
-            boxProps.left = state.parentWidth - state.width;
-        }
-    }
-    return boxProps;
-}
-
-export type ToolingBoxType = {
-    backgroundColor?: AppColorType | null,
-    rotate?: number,
-    horizontalAlignment?: HAlignmentType,
-    verticalAlignment?: VAlignmentType,
-};
-export type CanvasItemKindType = 'text' | 'image' | 'video' | 'audio' | 'bible';
-
-export function genTextDefaultBoxStyle(width: number = 700,
-    height: number = 400): CanvasItemPropsType {
-    return {
-        id: -1,
-        top: 279,
-        left: 356,
-        backgroundColor: '#FF00FF8b',
-        width,
-        height,
-        rotate: 0,
-        horizontalAlignment: 'center',
-        verticalAlignment: 'center',
-        type: 'text',
-    };
-}
-
-export type CanvasItemPropsType = {
-    id: number,
-    top: number,
-    left: number,
-    rotate: number,
-    width: number,
-    height: number,
-    horizontalAlignment: HAlignmentType,
-    verticalAlignment: VAlignmentType,
-    backgroundColor: AppColorType | null,
-    type: CanvasItemKindType,
-};
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     static _objectId = 0;
     props: T;
@@ -176,14 +121,38 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             typeof json.rotate !== 'number' ||
             typeof json.width !== 'number' ||
             typeof json.height !== 'number' ||
-            !['left', 'center', 'right'].includes(json.horizontalAlignment) ||
-            !['top', 'center', 'bottom'].includes(json.verticalAlignment) ||
+            !hAlignmentList.includes(json.horizontalAlignment) ||
+            !vAlignmentList.includes(json.verticalAlignment) ||
             typeof json.backgroundColor !== 'string' ||
-            typeof json.type !== 'string'
+            !canvasItemList.includes(json.type)
         ) {
             console.log(json);
             throw new Error('Invalid canvas item data');
         }
+    }
+}
+
+export class CanvasItemError extends CanvasItem<any> {
+    _jsonError: AnyObjectType | null = null;
+    getStyle(): CSSProperties {
+        return {
+            color: 'red',
+            fontSize: '4.5em',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: 'auto',
+        };
+    }
+    static fromJsonError(json: AnyObjectType) {
+        const props = genTextDefaultBoxStyle() as any;
+        props.type = 'error';
+        const item = new CanvasItemError(props);
+        item._jsonError = json;
+        return item;
+    }
+    toJson() {
+        return this._jsonError as any;
     }
 }
 
