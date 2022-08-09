@@ -1,8 +1,7 @@
 import CanvasItemRenderer from '../../../slide-presenting/items/CanvasItemRenderer';
+import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import CanvasController from '../CanvasController';
-import {
-    showCanvasItemContextMenu, useCCEvents,
-} from '../canvasHelpers';
+import { useCCEvents } from '../canvasEventHelpers';
 
 export default function ToolCanvasItems() {
     const canvasController = CanvasController.getInstance();

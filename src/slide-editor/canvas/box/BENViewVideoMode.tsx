@@ -1,15 +1,17 @@
 import { CSSProperties } from 'react';
-import CanvasItemImage, {
-    CanvasItemImagePropsType,
-} from '../CanvasItemImage';
+import {
+    showCanvasItemContextMenu,
+} from '../canvasCMHelpers';
+import CanvasItemVideo, {
+    CanvasItemVideoPropsType,
+} from '../CanvasItemVideo';
 import img404 from '../404.png';
 import CanvasController from '../CanvasController';
-import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 
-export default function BENViewImageMode({
-    canvasItemImage, style,
+export default function BENViewVideoMode({
+    canvasItemVideo, style,
 }: {
-    canvasItemImage: CanvasItemImage,
+    canvasItemVideo: CanvasItemVideo,
     style: CSSProperties
 }) {
     return (
@@ -17,28 +19,28 @@ export default function BENViewImageMode({
             style={style}
             onContextMenu={async (e) => {
                 e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemImage);
+                showCanvasItemContextMenu(e, canvasItemVideo);
             }}
             onClick={async (e) => {
                 e.stopPropagation();
                 const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(canvasItemImage, true);
+                canvasController.setItemIsSelecting(canvasItemVideo, true);
             }}>
-            <BENImageRender props={canvasItemImage.props} />
+            <BENVideoRender props={canvasItemVideo.props} />
         </div>
     );
 }
 
-export function BENImageRender({ props }: {
-    props: CanvasItemImagePropsType,
+export function BENVideoRender({ props }: {
+    props: CanvasItemVideoPropsType,
 }) {
     const pWidth = props.width;
     const pHeight = props.height;
-    const rWidth = pWidth / props.imageWidth;
-    const rHeight = pHeight / props.imageHeight;
+    const rWidth = pWidth / props.videoWidth;
+    const rHeight = pHeight / props.videoHeight;
     const mR = Math.min(rWidth, rHeight);
-    const width = mR * props.imageWidth;
+    const width = mR * props.videoWidth;
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             <img className='align-self-center'

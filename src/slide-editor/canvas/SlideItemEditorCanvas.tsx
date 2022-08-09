@@ -4,13 +4,12 @@ import {
 } from '../../event/KeyboardEventListener';
 import {
     showCanvasContextMenu,
-    useCCEvents,
-    useCCScale,
-} from './canvasHelpers';
+} from './canvasCMHelpers';
 import ToastEventListener from '../../event/ToastEventListener';
 import { isSupportedMimetype } from '../../server/fileHelper';
 import FileSource from '../../helper/FileSource';
 import CanvasController from './CanvasController';
+import { useCCScale, useCCEvents } from './canvasEventHelpers';
 
 export default function SlideItemEditorCanvas() {
     const canvasController = CanvasController.getInstance();
@@ -67,12 +66,15 @@ export default function SlideItemEditorCanvas() {
                                 }
                             }
                         }}
-                        onContextMenu={(e) => showCanvasContextMenu(e)}
+                        onContextMenu={(e) => {
+                            showCanvasContextMenu(e);
+                        }}
                         onClick={() => {
                             canvasController.stopAllMods();
                         }} >
                         {canvasItems.map((canvasItem, i) => {
-                            return <BoxEditor scale={scale} key={`${i}`}
+                            return <BoxEditor key={`${i}`}
+                                scale={scale}
                                 canvasItem={canvasItem} />;
                         })}
                     </div>

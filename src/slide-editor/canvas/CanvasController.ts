@@ -11,9 +11,7 @@ import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBible from './CanvasItemBible';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
-
-export type CCEventType = 'select' | 'control' |
-    'text-edit' | 'update' | 'scale';
+import { CCEventType } from './canvasHelpers';
 
 export default class CanvasController extends EventHandler<CCEventType> {
     static eventNamePrefix: string = 'canvas-c';
@@ -153,7 +151,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
         this.setCanvasItems(newCanvasItems);
     }
     applyItemFully(canvasItem: CanvasItem<any>) {
-        if (canvasItem.isTypeImage) {
+        if (canvasItem.type === 'image') {
             const canvasItemImage = canvasItem as CanvasItemImage;
             const parentWidth = this.canvas.width;
             const parentHeight = this.canvas.height;

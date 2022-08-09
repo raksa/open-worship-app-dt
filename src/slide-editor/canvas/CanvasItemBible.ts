@@ -1,10 +1,15 @@
-import BibleItem, { BibleTargetType } from '../../bible-list/BibleItem';
+import BibleItem, {
+    BibleTargetType,
+} from '../../bible-list/BibleItem';
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from './CanvasItemText';
 import { AnyObjectType } from '../../helper/helpers';
 import { CanvasItemError } from './CanvasItem';
-import { HAlignmentType, VAlignmentType } from './Canvas';
+import {
+    HAlignmentType,
+    VAlignmentType,
+} from './canvasHelpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleNames: string[];

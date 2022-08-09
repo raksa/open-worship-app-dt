@@ -1,6 +1,4 @@
-import {
-    VAlignmentType, HAlignmentType,
-} from '../Canvas';
+import { VAlignmentType, HAlignmentType } from '../canvasHelpers';
 
 export default function ToolAlign({ onData, isText }: {
     onData: (data: {

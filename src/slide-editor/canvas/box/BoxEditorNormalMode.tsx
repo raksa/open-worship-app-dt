@@ -7,10 +7,14 @@ import BENTextEditMode from './BENTextEditMode';
 import BENViewTextMode from './BENViewTextMode';
 import BENViewBibleMode from './BENViewBibleMode';
 import CanvasItemBible from '../CanvasItemBible';
-import { useCCEvents } from '../canvasHelpers';
 import BENViewError from './BENViewError';
+import BENViewVideoMode from './BENViewVideoMode';
+import CanvasItemVideo from '../CanvasItemVideo';
+import { useCCEvents } from '../canvasEventHelpers';
 
-export default function BoxEditorNormalMode({ canvasItem }: {
+export default function BoxEditorNormalMode({
+    canvasItem,
+}: {
     canvasItem: CanvasItem<any>,
 }) {
     const style: CSSProperties = {
@@ -18,32 +22,47 @@ export default function BoxEditorNormalMode({ canvasItem }: {
         ...canvasItem.getBoxStyle(),
     };
     useCCEvents(['text-edit', 'update']);
-    if (canvasItem.isTypeImage) {
-        return (
-            <BENViewImageMode
-                canvasItemImage={canvasItem as CanvasItemImage}
-                style={style} />
-        );
-    }
-    if (canvasItem.isTypeText) {
-        const canvasItemText = canvasItem as CanvasItemText;
-        if (canvasItem.isEditing) {
+    switch (canvasItem.type) {
+        case 'image':
             return (
-                <BENTextEditMode canvasItemText={canvasItemText}
+                <BENViewImageMode
+                    canvasItemImage={
+                        canvasItem as CanvasItemImage
+                    }
                     style={style} />
             );
-        }
-        return (
-            <BENViewTextMode canvasItemText={canvasItemText}
-                style={style} />
-        );
+        case 'video':
+            return (
+                <BENViewVideoMode
+                    canvasItemVideo={
+                        canvasItem as CanvasItemVideo
+                    }
+                    style={style} />
+            );
+        case 'text':
+            const canvasItemText = canvasItem as CanvasItemText;
+            if (canvasItem.isEditing) {
+                return (
+                    <BENTextEditMode
+                        canvasItemText={canvasItemText}
+                        style={style} />
+                );
+            }
+            return (
+                <BENViewTextMode
+                    canvasItemText={canvasItemText}
+                    style={style} />
+            );
+        case 'bible':
+            return (
+                <BENViewBibleMode
+                    canvasItemBible={
+                        canvasItem as CanvasItemBible
+                    }
+                    style={style} />
+            );
+        default:
+            return <BENViewError
+                canvasItem={canvasItem} />;
     }
-    if (canvasItem.isTypeBible) {
-        return (
-            <BENViewBibleMode
-                canvasItemBible={canvasItem as CanvasItemBible}
-                style={style} />
-        );
-    }
-    return <BENViewError canvasItem={canvasItem}/>;
 }

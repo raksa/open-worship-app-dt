@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import CanvasController from '../CanvasController';
 import {
     showCanvasItemContextMenu,
-} from '../canvasHelpers';
+} from '../canvasCMHelpers';
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from '../CanvasItemText';

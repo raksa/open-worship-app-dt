@@ -3,9 +3,9 @@ import './Tools.scss';
 import React, { Fragment } from 'react';
 import { useStateSettingString } from '../../../helper/settingHelper';
 import TabRender, { genTabBody } from '../../../others/TabRender';
-import { useCCScale, useCCEvents } from '../canvasHelpers';
 import CanvasController from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
+import { useCCEvents, useCCScale } from '../canvasEventHelpers';
 
 const ToolsBox = React.lazy(() => import('./ToolsBox'));
 const ToolsText = React.lazy(() => import('./ToolsText'));

@@ -1,15 +1,11 @@
 import { AnyObjectType } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import PresentManager from '../../_present/PresentManager';
-import CanvasItem from './CanvasItem';
+import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBible from './CanvasItemBible';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
-
-export const hAlignmentList = ['left', 'center', 'right'] as const;
-export type HAlignmentType = typeof hAlignmentList[number];
-export const vAlignmentList = ['top', 'center', 'bottom'] as const;
-export type VAlignmentType = typeof vAlignmentList[number];
+import CanvasItemVideo from './CanvasItemVideo';
 
 type CanvasPropsType = {
     width: number,
@@ -62,15 +58,18 @@ export default class Canvas {
         canvasItems: AnyObjectType[],
     }) {
         const canvasItems = canvasItemsJson.map((json: any) => {
-            if (json.type === 'image') {
-                return CanvasItemImage.fromJson(json);
-            } else if (json.type === 'text') {
-                return CanvasItemText.fromJson(json);
-            } else if (json.type === 'bible') {
-                return CanvasItemBible.fromJson(json);
+            switch (json.type) {
+                case 'image':
+                    return CanvasItemImage.fromJson(json);
+                case 'video':
+                    return CanvasItemVideo.fromJson(json);
+                case 'text':
+                    return CanvasItemText.fromJson(json);
+                case 'bible':
+                    return CanvasItemBible.fromJson(json);
+                default:
+                    return CanvasItemError.fromJsonError(json);
             }
-            // TODO: handle other type of element
-            return null;
         }).filter((item) => item !== null) as CanvasItem<any>[];
         return new Canvas({
             width: metadata.width,

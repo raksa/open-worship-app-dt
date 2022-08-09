@@ -1,4 +1,4 @@
-import { AnyObjectType } from '../../helper/helpers';
+import { AnyObjectType, getImageDim } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
 import {
     genTextDefaultBoxStyle,
@@ -26,32 +26,21 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     getStyle() {
         return CanvasItemImage.gegStyle(this.props);
     }
-    static genFromInsertion(x: number, y: number,
+    static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
-        return new Promise<CanvasItemImage | CanvasItemError>((resolve, reject) => {
-            const image = document.createElement('img');
-            image.src = fileSource.src;
-            image.onload = () => {
-                const imageWidth = image.naturalWidth;
-                const imageHeight = image.naturalHeight;
-                const props: CanvasItemImagePropsType = {
-                    src: fileSource.src,
-                    imageWidth,
-                    imageHeight,
-                    ...genTextDefaultBoxStyle(),
-                    left: x,
-                    top: y,
-                    width: imageWidth,
-                    height: imageHeight,
-                    type: 'image',
-                };
-                const newItem = CanvasItemImage.fromJson(props);
-                resolve(newItem);
-            };
-            image.onerror = () => {
-                reject(new Error('Image load error'));
-            };
-        });
+        const [imageWidth, imageHeight] = await getImageDim(fileSource.src);
+        const props: CanvasItemImagePropsType = {
+            src: fileSource.src,
+            imageWidth,
+            imageHeight,
+            ...genTextDefaultBoxStyle(),
+            left: x,
+            top: y,
+            width: imageWidth,
+            height: imageHeight,
+            type: 'image',
+        };
+        return this.fromJson(props);
     }
     toJson(): CanvasItemImagePropsType {
         return {

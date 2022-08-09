@@ -1,8 +1,6 @@
 import { CSSProperties } from 'react';
+import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import CanvasController from '../CanvasController';
-import {
-    showCanvasItemContextMenu,
-} from '../canvasHelpers';
 import CanvasItemBible, {
     CanvasItemBiblePropsType,
 } from '../CanvasItemBible';

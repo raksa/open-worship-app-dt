@@ -5,17 +5,15 @@ import {
 } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 import {
-    hAlignmentList,
-    HAlignmentType,
-    vAlignmentList,
-    VAlignmentType,
-} from './Canvas';
-import {
     ToolingBoxType,
     tooling2BoxProps,
     canvasItemList,
     genTextDefaultBoxStyle,
     CanvasItemKindType,
+    hAlignmentList,
+    HAlignmentType,
+    vAlignmentList,
+    VAlignmentType,
 } from './canvasHelpers';
 
 export type CanvasItemPropsType = {
@@ -47,37 +45,8 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     get id() {
         return this.props.id;
     }
-    static checkIsTypeAudio(type: string) {
-        return type === 'audio';
-    }
-    get isTypeAudio() {
-        // TODO: implement CameraItemAudio
-        return CanvasItem.checkIsTypeAudio(this.props.type);
-    }
-    static checkIsTypeImage(type: string) {
-        return type === 'image';
-    }
-    get isTypeImage() {
-        return CanvasItem.checkIsTypeImage(this.props.type);
-    }
-    static checkIsTypeVideo(type: string) {
-        return type === 'video';
-    }
-    get isTypeVideo() {
-        // TODO: implement CameraItemVideo
-        return CanvasItem.checkIsTypeVideo(this.props.type);
-    }
-    static checkIsTypeText(type: string) {
-        return type === 'text';
-    }
-    get isTypeText() {
-        return CanvasItem.checkIsTypeText(this.props.type);
-    }
-    static checkIsTypeBible(type: string) {
-        return type === 'bible';
-    }
-    get isTypeBible() {
-        return CanvasItem.checkIsTypeBible(this.props.type);
+    get type() {
+        return this.props.type;
     }
     static genStyle(_props: CanvasItemPropsType) {
         throw new Error('Method not implemented.');

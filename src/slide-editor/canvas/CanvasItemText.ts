@@ -1,16 +1,14 @@
 import { CSSProperties } from 'react';
-import {
-    hAlignmentList,
-    HAlignmentType,
-    vAlignmentList,
-    VAlignmentType,
-} from './Canvas';
 import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 import appProvider from '../../server/appProvider';
 import {
     CanvasItemKindType,
     genTextDefaultBoxStyle,
+    hAlignmentList,
+    HAlignmentType,
+    vAlignmentList,
+    VAlignmentType,
 } from './canvasHelpers';
 import CanvasItem, {
     CanvasItemError,

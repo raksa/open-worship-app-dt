@@ -3,12 +3,14 @@ import './BoxEditorControllingMode.scss';
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import {
-    showCanvasItemContextMenu, useCCEvents,
-} from '../canvasHelpers';
+    showCanvasItemContextMenu,
+} from '../canvasCMHelpers';
 import { BENImageRender } from './BENViewImageMode';
 import { BENTextRender } from './BENViewTextMode';
 import { BENBibleRender } from './BENViewBibleMode';
 import CanvasController from '../CanvasController';
+import { BENVideoRender } from './BENViewVideoMode';
+import { useCCEvents } from '../canvasEventHelpers';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
@@ -49,7 +51,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 }}
                 onDoubleClick={(e) => {
                     e.stopPropagation();
-                    if (canvasItem.isTypeText) {
+                    if (canvasItem.type === 'text') {
                         canvasController.stopAllMods();
                         canvasController.setItemIsEditing(canvasItem, true);
                     }
@@ -78,20 +80,24 @@ export default function BoxEditorControllingMode({ canvasItem }: {
 function BECRender({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
-    if (canvasItem.isTypeImage) {
-        return (
-            <BENImageRender props={canvasItem.props} />
-        );
+    switch (canvasItem.type) {
+        case 'image':
+            return (
+                <BENImageRender props={canvasItem.props} />
+            );
+        case 'video':
+            return (
+                <BENVideoRender props={canvasItem.props} />
+            );
+        case 'text':
+            return (
+                <BENTextRender props={canvasItem.props} />
+            );
+        case 'bible':
+            return (
+                <BENBibleRender props={canvasItem.props} />
+            );
+        default:
+            return <div>Error</div>;
     }
-    if (canvasItem.isTypeText) {
-        return (
-            <BENTextRender props={canvasItem.props} />
-        );
-    }
-    if (canvasItem.isTypeBible) {
-        return (
-            <BENBibleRender props={canvasItem.props} />
-        );
-    }
-    return null;
 }

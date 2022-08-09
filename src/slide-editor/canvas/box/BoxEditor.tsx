@@ -5,7 +5,7 @@ import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMode from './BoxEditorControllingMode';
-import { useCIControl } from '../canvasHelpers';
+import { useCIControl } from '../canvasEventHelpers';
 
 export function BoxEditor({
     canvasItem, scale,
