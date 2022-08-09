@@ -109,7 +109,7 @@ function slide(): StyleAnimType {
         callback: (n: number, isDone?: boolean) => void,
     }) => {
         const distDiff = to - from;
-        const easeFn = easingFunctions[easing || 'linear'];
+        const easeFn = easingFunctions[easing || 'ease-in'];
         const startTime = Date.now();
         const step = () => {
             const timeNow = Date.now();

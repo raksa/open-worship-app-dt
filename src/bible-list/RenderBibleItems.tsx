@@ -35,10 +35,14 @@ export default function RenderBibleItems({ bible }: {
                         ]);
                     }} />;
             })}
-            {bible.isDefault && <button className='btn btn-outline-info btn-sm mt-2'
+            {bible.isDefault && <div className='p-2 pointer'
+                style={{
+                    margin: 'auto',
+                    fontSize: '0.8rem',
+                }}
                 onClick={() => openBibleSearch()}>
                 Add Bible Item
-            </button>}
+            </div>}
         </ul>
     );
 }
