@@ -1,10 +1,12 @@
 import { AnyObjectType } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
 import {
-    CanvasItemPropsType,
     genTextDefaultBoxStyle,
 } from './canvasHelpers';
-import CanvasItem, { CanvasItemError } from './CanvasItem';
+import CanvasItem, {
+    CanvasItemError,
+    CanvasItemPropsType,
+} from './CanvasItem';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType & {
     src: string,
@@ -12,6 +14,12 @@ export type CanvasItemImagePropsType = CanvasItemPropsType & {
     imageHeight: number;
 };
 export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
+    get imageWidth() {
+        return this.props.imageWidth;
+    }
+    set imageWidth(width: number) {
+        this.props.imageWidth = width;
+    }
     static gegStyle(_props: CanvasItemImagePropsType) {
         return {};
     }
@@ -33,6 +41,8 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
                     ...genTextDefaultBoxStyle(),
                     left: x,
                     top: y,
+                    width: imageWidth,
+                    height: imageHeight,
                     type: 'image',
                 };
                 const newItem = CanvasItemImage.fromJson(props);

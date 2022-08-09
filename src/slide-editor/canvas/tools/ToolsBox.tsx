@@ -1,4 +1,6 @@
-import ColorPicker, { AppColorType } from '../../../others/ColorPicker';
+import ColorPicker, {
+    AppColorType,
+} from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
 import CanvasController from '../CanvasController';
@@ -40,22 +42,33 @@ export default function ToolsBox() {
                 }} />
             </Tool>
             <Tool title='Box Layer'>
-                <button className='btn btn-info' onClick={() => {
-                    canvasController.applyOrderingData(
-                        canvasItem, true);
-                }}><i className='bi bi-layer-backward' /></button>
-                <button className='btn btn-info' onClick={() => {
-                    canvasController.applyOrderingData(
-                        canvasItem, false);
-                }}><i className='bi bi-layer-forward' /></button>
+                <button className='btn btn-info'
+                    onClick={() => {
+                        canvasController.applyOrderingData(
+                            canvasItem, true);
+                    }}>
+                    <i className='bi bi-layer-backward' />
+                </button>
+                <button className='btn btn-info'
+                    onClick={() => {
+                        canvasController.applyOrderingData(
+                            canvasItem, false);
+                    }}>
+                    <i className='bi bi-layer-forward' />
+                </button>
             </Tool>
             <Tool title='Rotate'>
-                <button className='btn btn-info' onClick={() => {
-                    applyBoxData({
-                        rotate: 0,
-                    });
-                }}
-                >UnRotate</button>
+                <button className='btn btn-info'
+                    onClick={() => {
+                        applyBoxData({
+                            rotate: 0,
+                        });
+                    }}>UnRotate</button>
+                <hr />
+                <button className='btn btn-secondary'
+                    onClick={() => {
+                        canvasController.applyItemFully(canvasItem);
+                    }}>Full</button>
             </Tool>
         </>
     );

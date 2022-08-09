@@ -162,16 +162,3 @@ export function genTextDefaultBoxStyle(width: number = 700,
         verticalAlignment: 'center' as VAlignmentType,
     };
 }
-
-export type CanvasItemPropsType = {
-    id: number,
-    top: number,
-    left: number,
-    rotate: number,
-    width: number,
-    height: number,
-    horizontalAlignment: HAlignmentType,
-    verticalAlignment: VAlignmentType,
-    backgroundColor: AppColorType | null,
-    type: CanvasItemKindType,
-};

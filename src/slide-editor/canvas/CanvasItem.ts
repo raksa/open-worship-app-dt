@@ -1,13 +1,36 @@
 import React, { CSSProperties } from 'react';
-import { AnyObjectType, cloneObject } from '../../helper/helpers';
-import { hAlignmentList, vAlignmentList } from './Canvas';
 import {
-    CanvasItemPropsType,
+    AnyObjectType,
+    cloneObject,
+} from '../../helper/helpers';
+import { AppColorType } from '../../others/ColorPicker';
+import {
+    hAlignmentList,
+    HAlignmentType,
+    vAlignmentList,
+    VAlignmentType,
+} from './Canvas';
+import {
     ToolingBoxType,
     tooling2BoxProps,
     canvasItemList,
     genTextDefaultBoxStyle,
+    CanvasItemKindType,
 } from './canvasHelpers';
+
+export type CanvasItemPropsType = {
+    id: number,
+    top: number,
+    left: number,
+    rotate: number,
+    width: number,
+    height: number,
+    horizontalAlignment: HAlignmentType,
+    verticalAlignment: VAlignmentType,
+    backgroundColor: AppColorType | null,
+    type: CanvasItemKindType,
+};
+
 
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     static _objectId = 0;

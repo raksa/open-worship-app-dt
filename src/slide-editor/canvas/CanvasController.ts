@@ -124,7 +124,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
             if (fileSource.metadata?.appMimetype.mimetypeName === 'image') {
                 const newItem = await CanvasItemImage.genFromInsertion(x, y, fileSource);
                 console.log(newItem);
-                
+
                 this.addNewItem(newItem);
                 return;
             }
@@ -151,6 +151,28 @@ export default class CanvasController extends EventHandler<CCEventType> {
             return item;
         });
         this.setCanvasItems(newCanvasItems);
+    }
+    applyItemFully(canvasItem: CanvasItem<any>) {
+        if (canvasItem.isTypeImage) {
+            const canvasItemImage = canvasItem as CanvasItemImage;
+            const parentWidth = this.canvas.width;
+            const parentHeight = this.canvas.height;
+            const imageWidth = canvasItemImage.props.width;
+            const imageHeight = canvasItemImage.props.height;
+            const scale = Math.min(parentWidth / imageWidth,
+                parentHeight / imageHeight);
+            canvasItemImage.props.width = imageWidth * scale;
+            canvasItemImage.props.height = imageHeight * scale;
+            const parentDimension = {
+                parentWidth: this.canvas.width,
+                parentHeight: this.canvas.height,
+            };
+            canvasItemImage.applyBoxData(parentDimension, {
+                horizontalAlignment: 'center',
+                verticalAlignment: 'center',
+            });
+        }
+        this.setCanvasItems(this.canvas.canvasItems);
     }
     stopAllMods(isSilent?: boolean) {
         this.canvas.canvasItems.forEach((item) => {

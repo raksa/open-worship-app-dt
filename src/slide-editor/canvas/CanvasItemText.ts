@@ -9,11 +9,13 @@ import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 import appProvider from '../../server/appProvider';
 import {
-    CanvasItemPropsType,
     CanvasItemKindType,
     genTextDefaultBoxStyle,
 } from './canvasHelpers';
-import CanvasItem, { CanvasItemError } from './CanvasItem';
+import CanvasItem, {
+    CanvasItemError,
+    CanvasItemPropsType,
+} from './CanvasItem';
 
 export function genTextDefaultProps(): TextPropsType {
     return {

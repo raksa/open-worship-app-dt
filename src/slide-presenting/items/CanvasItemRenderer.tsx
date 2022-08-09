@@ -1,7 +1,7 @@
 import { BENImageRender } from '../../slide-editor/canvas/box/BENViewImageMode';
 import { BENTextRender } from '../../slide-editor/canvas/box/BENViewTextMode';
 import { BENBibleRender } from '../../slide-editor/canvas/box/BENViewBibleMode';
-import { CanvasItemPropsType } from '../../slide-editor/canvas/canvasHelpers';
+import { CanvasItemPropsType } from '../../slide-editor/canvas/CanvasItem';
 
 export default function CanvasItemRenderer({ props }: {
     props: CanvasItemPropsType & { src?: string },
