@@ -115,7 +115,8 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             typeof json.height !== 'number' ||
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment) ||
-            typeof json.backgroundColor !== 'string' ||
+            (json.backgroundColor !== null
+                && typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
         ) {
             console.log(json);
