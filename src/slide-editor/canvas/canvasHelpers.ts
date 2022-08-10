@@ -1,7 +1,23 @@
+import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 
 export type CCEventType = 'select' | 'control' |
     'text-edit' | 'update' | 'scale';
+
+export type CanvasItemMediaPropsType = {
+    src: string,
+    mediaWidth: number;
+    mediaHeight: number;
+};
+
+export function validateMediaProps(props: AnyObjectType) {
+    if (typeof props.src !== 'string' ||
+        typeof props.mediaWidth !== 'number' ||
+        typeof props.mediaHeight !== 'number'
+    ) {
+        throw new Error('Invalid canvas item media data');
+    }
+}
 
 export const hAlignmentList = ['left', 'center', 'right'] as const;
 export type HAlignmentType = typeof hAlignmentList[number];

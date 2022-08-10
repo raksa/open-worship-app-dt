@@ -1,6 +1,6 @@
 import EventHandler from '../../event/EventHandler';
 import Canvas from './Canvas';
-import CanvasItem from './CanvasItem';
+import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
 import {
     getSetting, setSetting,
 } from '../../helper/settingHelper';
@@ -11,7 +11,8 @@ import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBible from './CanvasItemBible';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
-import { CCEventType } from './canvasHelpers';
+import { CanvasItemMediaPropsType, CCEventType } from './canvasHelpers';
+import CanvasItemVideo from './CanvasItemVideo';
 
 export default class CanvasController extends EventHandler<CCEventType> {
     static eventNamePrefix: string = 'canvas-c';
@@ -116,16 +117,22 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     async addNewMediaItem(fileSource: FileSource, event: any) {
         try {
+            const mediaType = fileSource.metadata?.appMimetype.mimetypeName || '';
+            if (!['image', 'video'].includes(mediaType)) {
+                ToastEventListener.showSimpleToast({
+                    title: 'Insert Medias',
+                    message: 'Only image and video files are supported',
+                });
+                return;
+            }
             const rect = (event.target as HTMLDivElement).getBoundingClientRect();
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
-            if (fileSource.metadata?.appMimetype.mimetypeName === 'image') {
-                const newItem = await CanvasItemImage.genFromInsertion(x, y, fileSource);
-                console.log(newItem);
-
-                this.addNewItem(newItem);
-                return;
-            }
+            const newItem = await (mediaType === 'image' ?
+                CanvasItemImage.genFromInsertion(x, y, fileSource) :
+                CanvasItemVideo.genFromInsertion(x, y, fileSource));
+            this.addNewItem(newItem);
+            return;
         } catch (error) {
             console.log(error);
         }
@@ -151,25 +158,29 @@ export default class CanvasController extends EventHandler<CCEventType> {
         this.setCanvasItems(newCanvasItems);
     }
     applyItemFully(canvasItem: CanvasItem<any>) {
-        if (canvasItem.type === 'image') {
-            const canvasItemImage = canvasItem as CanvasItemImage;
-            const parentWidth = this.canvas.width;
-            const parentHeight = this.canvas.height;
-            const imageWidth = canvasItemImage.props.width;
-            const imageHeight = canvasItemImage.props.height;
-            const scale = Math.min(parentWidth / imageWidth,
-                parentHeight / imageHeight);
-            canvasItemImage.props.width = imageWidth * scale;
-            canvasItemImage.props.height = imageHeight * scale;
-            const parentDimension = {
-                parentWidth: this.canvas.width,
-                parentHeight: this.canvas.height,
-            };
-            canvasItemImage.applyBoxData(parentDimension, {
-                horizontalAlignment: 'center',
-                verticalAlignment: 'center',
-            });
+        const isMedia = ['image', 'video'].includes(canvasItem.type);
+        const props = canvasItem.props as CanvasItemPropsType;
+        const parentWidth = this.canvas.width;
+        const parentHeight = this.canvas.height;
+        let width = props.width;
+        let height = props.height;
+        if (isMedia) {
+            const mediaProps = canvasItem.props as CanvasItemMediaPropsType;
+            width = mediaProps.mediaWidth;
+            height = mediaProps.mediaHeight;
         }
+        const scale = Math.min(parentWidth / width,
+            parentHeight / height);
+        props.width = width * scale;
+        props.height = height * scale;
+        const parentDimension = {
+            parentWidth: this.canvas.width,
+            parentHeight: this.canvas.height,
+        };
+        canvasItem.applyBoxData(parentDimension, {
+            horizontalAlignment: 'center',
+            verticalAlignment: 'center',
+        });
         this.setCanvasItems(this.canvas.canvasItems);
     }
     stopAllMods(isSilent?: boolean) {

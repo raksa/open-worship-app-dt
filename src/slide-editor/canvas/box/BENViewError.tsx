@@ -36,8 +36,24 @@ export default function BENViewError({
             <div style={{
                 ...canvasItem.getStyle(),
             }}>
-            Error
+                Error
             </div>
+        </div>
+    );
+}
+
+export function BENViewErrorRender() {
+    return (
+        <div style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontSize: '5.5rem',
+            color: 'red',
+        }}>
+            Error
         </div>
     );
 }

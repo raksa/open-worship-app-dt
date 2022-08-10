@@ -42,7 +42,8 @@ export function selectDirs() {
         sendSyncData('main:app:select-dirs') as string[];
 }
 export function selectFiles(filters: {
-    name: string, extensions: string[],
+    name: string,
+    extensions: string[],
 }[]) {
     return appProvider.messageUtils.
         sendSyncData('main:app:select-files',

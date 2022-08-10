@@ -41,7 +41,7 @@ window.onunhandledrejection = (promiseError) => {
 };
 
 window.onerror = function (error: any) {
-  if (error.message.includes('DomException')) {
+  if (typeof error === 'string' && error.includes('DomException')) {
     console.log(error);
   } else {
     confirmEraseLocalStorage();

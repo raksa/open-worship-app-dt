@@ -8,6 +8,7 @@ const electron = require('electron');
 
 const { dialog, ipcMain, app } = electron;
 
+
 let apiUrl = process.env.API_URL;
 let key = process.env.API_KEY;
 if (!isDev) {

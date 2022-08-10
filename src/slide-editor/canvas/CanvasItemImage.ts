@@ -1,25 +1,17 @@
 import { AnyObjectType, getImageDim } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
 import {
+    CanvasItemMediaPropsType,
     genTextDefaultBoxStyle,
+    validateMediaProps,
 } from './canvasHelpers';
 import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
 
-export type CanvasItemImagePropsType = CanvasItemPropsType & {
-    src: string,
-    imageWidth: number;
-    imageHeight: number;
-};
+export type CanvasItemImagePropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
 export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
-    get imageWidth() {
-        return this.props.imageWidth;
-    }
-    set imageWidth(width: number) {
-        this.props.imageWidth = width;
-    }
     static gegStyle(_props: CanvasItemImagePropsType) {
         return {};
     }
@@ -28,16 +20,16 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     }
     static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
-        const [imageWidth, imageHeight] = await getImageDim(fileSource.src);
+        const [mediaWidth, mediaHeight] = await getImageDim(fileSource.src);
         const props: CanvasItemImagePropsType = {
             src: fileSource.src,
-            imageWidth,
-            imageHeight,
+            mediaWidth,
+            mediaHeight,
             ...genTextDefaultBoxStyle(),
             left: x,
             top: y,
-            width: imageWidth,
-            height: imageHeight,
+            width: mediaWidth,
+            height: mediaHeight,
             type: 'image',
         };
         return this.fromJson(props);
@@ -45,8 +37,8 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     toJson(): CanvasItemImagePropsType {
         return {
             src: this.props.src,
-            imageWidth: this.props.imageWidth,
-            imageHeight: this.props.imageHeight,
+            mediaWidth: this.props.mediaWidth,
+            mediaHeight: this.props.mediaHeight,
             ...super.toJson(),
         };
     }
@@ -61,12 +53,6 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     }
     static validate(json: AnyObjectType) {
         super.validate(json);
-        if (typeof json.src !== 'string' ||
-            typeof json.imageWidth !== 'number' ||
-            typeof json.imageHeight !== 'number'
-        ) {
-            console.log(json);
-            throw new Error('Invalid canvas item image data');
-        }
+        validateMediaProps(json);
     }
 }

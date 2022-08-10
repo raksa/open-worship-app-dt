@@ -1,25 +1,17 @@
 import { AnyObjectType, getVideoDim } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
 import {
+    CanvasItemMediaPropsType,
     genTextDefaultBoxStyle,
+    validateMediaProps,
 } from './canvasHelpers';
 import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
 
-export type CanvasItemVideoPropsType = CanvasItemPropsType & {
-    src: string,
-    videoWidth: number;
-    videoHeight: number;
-};
+export type CanvasItemVideoPropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
 export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType> {
-    get videoWidth() {
-        return this.props.videoWidth;
-    }
-    set videoWidth(width: number) {
-        this.props.videoWidth = width;
-    }
     static gegStyle(_props: CanvasItemVideoPropsType) {
         return {};
     }
@@ -28,16 +20,16 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     }
     static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
-        const [videoWidth, videoHeight] = await getVideoDim(fileSource.src);
+        const [mediaWidth, mediaHeight] = await getVideoDim(fileSource.src);
         const props: CanvasItemVideoPropsType = {
             src: fileSource.src,
-            videoWidth: videoWidth,
-            videoHeight: videoHeight,
+            mediaWidth: mediaWidth,
+            mediaHeight: mediaHeight,
             ...genTextDefaultBoxStyle(),
             left: x,
             top: y,
-            width: videoWidth,
-            height: videoHeight,
+            width: mediaWidth,
+            height: mediaHeight,
             type: 'video',
         };
         return this.fromJson(props);
@@ -45,8 +37,8 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     toJson(): CanvasItemVideoPropsType {
         return {
             src: this.props.src,
-            videoWidth: this.props.videoWidth,
-            videoHeight: this.props.videoHeight,
+            mediaWidth: this.props.mediaWidth,
+            mediaHeight: this.props.mediaHeight,
             ...super.toJson(),
         };
     }
@@ -61,12 +53,6 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     }
     static validate(json: AnyObjectType) {
         super.validate(json);
-        if (typeof json.src !== 'string' ||
-            typeof json.videoWidth !== 'number' ||
-            typeof json.videoHeight !== 'number'
-        ) {
-            console.log(json);
-            throw new Error('Invalid canvas item video data');
-        }
+        validateMediaProps(json);
     }
 }

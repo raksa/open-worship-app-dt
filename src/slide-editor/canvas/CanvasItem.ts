@@ -45,7 +45,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     get id() {
         return this.props.id;
     }
-    get type() {
+    get type(): CanvasItemKindType {
         return this.props.type;
     }
     static genStyle(_props: CanvasItemPropsType) {
@@ -126,6 +126,9 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
 
 export class CanvasItemError extends CanvasItem<any> {
     _jsonError: AnyObjectType | null = null;
+    get type(): CanvasItemKindType {
+        return 'error';
+    }
     getStyle(): CSSProperties {
         return {
             color: 'red',

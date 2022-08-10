@@ -6,6 +6,7 @@ import {
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from '../CanvasItemText';
+import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewTextMode({
     canvasItemText, style,
@@ -34,6 +35,13 @@ export default function BENViewTextMode({
 export function BENTextRender({ props }: {
     props: CanvasItemTextPropsType,
 }) {
+    try {
+        CanvasItemText.validate(props);
+    } catch (error) {
+        return (
+            <BENViewErrorRender />
+        );
+    }
     return (
         <div className='w-100 h-100'
             style={CanvasItemText.genStyle(props)}>

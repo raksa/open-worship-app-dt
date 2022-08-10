@@ -23,8 +23,13 @@ export function showCanvasContextMenu(e: any) {
                 const imageExts = getMimetypeExtensions('image');
                 const videoExts = getMimetypeExtensions('video');
                 const filePaths = selectFiles([
-                    { name: 'Images', extensions: imageExts },
-                    { name: 'Movies', extensions: videoExts },
+                    {
+                        name: 'All Files',
+                        extensions: [
+                            ...imageExts,
+                            ...videoExts,
+                        ],
+                    },
                 ]);
                 filePaths.forEach((filePath) => {
                     const fileSource = FileSource.genFileSource(filePath);

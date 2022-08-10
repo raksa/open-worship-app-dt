@@ -4,6 +4,7 @@ import CanvasController from '../CanvasController';
 import CanvasItemBible, {
     CanvasItemBiblePropsType,
 } from '../CanvasItemBible';
+import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewBibleMode({
     canvasItemBible, style,
@@ -33,6 +34,13 @@ export default function BENViewBibleMode({
 export function BENBibleRender({ props }: {
     props: CanvasItemBiblePropsType,
 }) {
+    try {
+        CanvasItemBible.validate(props);
+    } catch (error) {
+        return (
+            <BENViewErrorRender />
+        );
+    }
     const bibleRenderedList = props.bibleRenderedList;
     return (
         <div className='w-100 h-100'

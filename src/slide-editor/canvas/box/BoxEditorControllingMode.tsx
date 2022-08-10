@@ -11,6 +11,7 @@ import { BENBibleRender } from './BENViewBibleMode';
 import CanvasController from '../CanvasController';
 import { BENVideoRender } from './BENViewVideoMode';
 import { useCCEvents } from '../canvasEventHelpers';
+import { BENViewErrorRender } from './BENViewError';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
@@ -98,6 +99,8 @@ function BECRender({ canvasItem }: {
                 <BENBibleRender props={canvasItem.props} />
             );
         default:
-            return <div>Error</div>;
+            return (
+                <BENViewErrorRender />
+            );
     }
 }

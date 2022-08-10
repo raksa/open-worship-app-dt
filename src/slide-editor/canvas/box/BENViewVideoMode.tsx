@@ -7,6 +7,7 @@ import CanvasItemVideo, {
 } from '../CanvasItemVideo';
 import img404 from '../404.png';
 import CanvasController from '../CanvasController';
+import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewVideoMode({
     canvasItemVideo, style,
@@ -35,20 +36,32 @@ export default function BENViewVideoMode({
 export function BENVideoRender({ props }: {
     props: CanvasItemVideoPropsType,
 }) {
+    try {
+        CanvasItemVideo.validate(props);
+    } catch (error) {
+        return (
+            <BENViewErrorRender />
+        );
+    }
     const pWidth = props.width;
     const pHeight = props.height;
-    const rWidth = pWidth / props.videoWidth;
-    const rHeight = pHeight / props.videoHeight;
+    const rWidth = pWidth / props.mediaWidth;
+    const rHeight = pHeight / props.mediaHeight;
     const mR = Math.min(rWidth, rHeight);
-    const width = mR * props.videoWidth;
+    const width = mR * props.mediaWidth;
     return (
-        <div className='w-100 h-100 d-flex justify-content-center'>
-            <img className='align-self-center'
+        <div style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
+            <video src={props.src || img404}
                 width={width}
                 style={{
                     pointerEvents: 'none',
-                }}
-                src={props.src || img404} />
+                }} loop muted playsInline />
         </div>
     );
 }

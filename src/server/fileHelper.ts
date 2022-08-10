@@ -50,7 +50,7 @@ export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 export function getFileMetaData(fileName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
     mimetypeList = mimetypeList || getAllAppMimetype();
-    const ext = fileName.substring(fileName.lastIndexOf('.'));
+    const ext = extractExtension(fileName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);
     });
@@ -94,13 +94,13 @@ export function isSupportedMimetype(fileMimetype: string,
         return type === fileMimetype;
     });
 }
-function fileNameToExt(fileName: string) {
+export function extractExtension(fileName: string) {
     return fileName.substring(fileName.lastIndexOf('.'));
 }
 export function isSupportedExt(fileName: string,
     mimetype: MimetypeNameType) {
     const mimetypeList = getAppMimetype(mimetype);
-    const ext = fileNameToExt(fileName);
+    const ext = extractExtension(fileName);
     return mimetypeList.map((newMimetype) => {
         return newMimetype.extensions;
     }).some((extensions) => {

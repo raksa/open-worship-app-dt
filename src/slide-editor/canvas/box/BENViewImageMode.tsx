@@ -5,6 +5,7 @@ import CanvasItemImage, {
 import img404 from '../404.png';
 import CanvasController from '../CanvasController';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
+import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewImageMode({
     canvasItemImage, style,
@@ -33,14 +34,27 @@ export default function BENViewImageMode({
 export function BENImageRender({ props }: {
     props: CanvasItemImagePropsType,
 }) {
+    try {
+        CanvasItemImage.validate(props);
+    } catch (error) {
+        return (
+            <BENViewErrorRender />
+        );
+    }
     const pWidth = props.width;
     const pHeight = props.height;
-    const rWidth = pWidth / props.imageWidth;
-    const rHeight = pHeight / props.imageHeight;
+    const rWidth = pWidth / props.mediaWidth;
+    const rHeight = pHeight / props.mediaHeight;
     const mR = Math.min(rWidth, rHeight);
-    const width = mR * props.imageWidth;
+    const width = mR * props.mediaWidth;
     return (
-        <div className='w-100 h-100 d-flex justify-content-center'>
+        <div style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}>
             <img className='align-self-center'
                 width={width}
                 style={{
