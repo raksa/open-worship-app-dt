@@ -100,6 +100,7 @@ export default function FileItemHandler({
         }} />;
     }
     const droppingClass = isDropOver ? 'receiving-child' : '';
+    
     const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''} ${droppingClass}`;
     return (
         <li className={`list-group-item mx-1 ${moreClassName} ${isPointer ? 'pointer' : ''}`}

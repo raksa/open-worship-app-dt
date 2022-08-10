@@ -11,8 +11,6 @@ import {
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
-type FSEventType = 'refresh' | 'reload';
-
 export default class DirSource extends EventHandler<string> {
     static eventNamePrefix: string = 'dir-source';
     fileSources: FileListType = null;
@@ -26,9 +24,6 @@ export default class DirSource extends EventHandler<string> {
             throw new Error('Invalid setting name');
         }
         this.settingName = settingName;
-    }
-    toEventKey(fsType: FSEventType) {
-        return `${fsType}-${this.settingName}`;
     }
     get dirPath() {
         return getSetting(this.settingName, '');
@@ -46,10 +41,10 @@ export default class DirSource extends EventHandler<string> {
         return this._fileCacheKeys.find((cacheKey) => cacheKey.includes(dirPath)) || null;
     }
     fireRefreshEvent() {
-        this.addPropEvent(this.toEventKey('refresh'));
+        this.addPropEvent('refresh');
     }
     fireReloadEvent() {
-        this.addPropEvent(this.toEventKey('reload'));
+        this.addPropEvent('reload');
     }
     deleteCache() {
         if (this.fileSources) {

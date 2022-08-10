@@ -3,7 +3,6 @@ import ToastEventListener from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import DirSource from './DirSource';
 import {
-    extractExtension,
     fsCreateFile,
     fsDeleteFile,
     fsReadFile,
@@ -40,7 +39,8 @@ export default class FileSource extends EventHandler<FSEventType> {
         return getFileMetaData(this.fileName);
     }
     get name() {
-        return extractExtension(this.fileName);
+        return this.fileName.substring(0,
+            this.fileName.lastIndexOf('.'));
     }
     get dirSource() {
         return DirSource.getDirSourceByDirPath(this.basePath);
