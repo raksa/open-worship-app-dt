@@ -14,7 +14,7 @@ import { useSlideSelecting } from '../../event/PreviewingEventListener';
 import { useEffect, useState } from 'react';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
-import { useFSEvents } from '../../helper/FileSource';
+import { useFSEvents } from '../../helper/dirSourceHelpers';
 
 export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
@@ -33,7 +33,7 @@ export default function SlidePreviewer() {
         }
     }, [slide]);
     useFSEvents(['delete', 'update', 'refresh-dir'],
-        slide?.fileSource || null, () => {
+        slide?.fileSource, () => {
             setSlide(null);
         });
     if (!slide) {

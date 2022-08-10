@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import ToastEventListener from '../event/ToastEventListener';
 import {
@@ -17,92 +17,100 @@ import { openConfirm } from '../alert/HandleAlert';
 
 export type FileListType = FileSource[] | null | undefined
 
+function genOnDrag(dirSource: DirSource, mimetype: MimetypeNameType) {
+    return (event: React.DragEvent<HTMLDivElement>) => {
+        if (!dirSource.dirPath) {
+            return;
+        }
+        event.preventDefault();
+        if (Array.from(event.dataTransfer.files).every((item) => {
+            return isSupportedExt(item.name, mimetype);
+        })) {
+            event.currentTarget.style.opacity = '0.5';
+        }
+    };
+}
+function genOnDragLeave(dirSource: DirSource) {
+    return (event: React.DragEvent<HTMLDivElement>) => {
+        if (!dirSource.dirPath) {
+            return;
+        }
+        event.preventDefault();
+        event.currentTarget.style.opacity = '1';
+    };
+}
+function genOnDrop(dirSource: DirSource, mimetype: MimetypeNameType) {
+    return (event: React.DragEvent<HTMLDivElement>) => {
+        if (!dirSource.dirPath) {
+            return;
+        }
+        event.preventDefault();
+        event.currentTarget.style.opacity = '1';
+        Array.from(event.dataTransfer.files).forEach(async (file) => {
+            const title = 'Copying File';
+            if (!isSupportedExt(file.name, mimetype)) {
+                ToastEventListener.showSimpleToast({
+                    title,
+                    message: 'Unsupported file type!',
+                });
+            } else {
+                try {
+                    await fsCopyFileToPath((file as any).path,
+                        file.name, dirSource.dirPath);
+                    ToastEventListener.showSimpleToast({
+                        title,
+                        message: 'File has been copied',
+                    });
+                    dirSource.fireReloadEvent();
+                } catch (error: any) {
+                    ToastEventListener.showSimpleToast({
+                        title,
+                        message: error.message,
+                    });
+                }
+            }
+        });
+    };
+}
+
+function genOnContextMenu(contextMenu?: ContextMenuItemType[]) {
+    return (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        showAppContextMenu(e, [
+            {
+                title: 'Delete All', onClick: async () => {
+                    const isOk = await openConfirm('Not implemented',
+                        'Read mode is not implemented yet.');
+                    if (isOk) {
+                        ToastEventListener.showSimpleToast({
+                            title: 'Deleting All',
+                            message: 'Not implemented, need input "delete all"',
+                        });
+                    }
+                },
+            },
+            ...(contextMenu || []),
+        ]);
+    };
+}
+
 export default function FileListHandler({
-    id, mimetype, dirSource, setDirSource,
+    id, mimetype, dirSource,
     header, body, contextMenu,
     onNewFile,
 }: {
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
-    setDirSource: (ds: DirSource) => void,
-    header?: any, body: any,
+    header?: any,
+    body: (fileSources: FileSource[]) => any,
     onNewFile?: (n: string) => Promise<boolean>,
     contextMenu?: ContextMenuItemType[]
 }) {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const settingName = dirSource.settingName;
-    const getNewDirSource = () => {
-        return DirSource.genDirSource(settingName, true);
-    };
-    const refresh = async () => {
-        const newDirSource = getNewDirSource();
-        await newDirSource.listFiles(mimetype);
-        setDirSource(newDirSource);
-    };
-
-    useEffect(() => {
-        if (dirSource.fileSources === null) {
-            refresh();
-        }
-        const refreshEvents = dirSource.registerEventListener(['refresh'], refresh);
-        const reloadEvents = dirSource.registerEventListener(['reload'], () => {
-            dirSource.deleteCache();
-            setDirSource(getNewDirSource());
-        });
-        return () => {
-            dirSource.unregisterEventListener(refreshEvents);
-            dirSource.unregisterEventListener(reloadEvents);
-        };
-    }, [dirSource]);
     return (
         <div className={`${id} card w-100 h-100`}
-            onDragOver={(event) => {
-                if (!dirSource.dirPath) {
-                    return;
-                }
-                event.preventDefault();
-                if (Array.from(event.dataTransfer.files).every((item) => {
-                    return isSupportedExt(item.name, mimetype);
-                })) {
-                    event.currentTarget.style.opacity = '0.5';
-                }
-            }} onDragLeave={(event) => {
-                if (!dirSource.dirPath) {
-                    return;
-                }
-                event.preventDefault();
-                event.currentTarget.style.opacity = '1';
-            }} onDrop={async (event) => {
-                if (!dirSource.dirPath) {
-                    return;
-                }
-                event.preventDefault();
-                event.currentTarget.style.opacity = '1';
-                Array.from(event.dataTransfer.files).forEach(async (file) => {
-                    const title = 'Copying File';
-                    if (!isSupportedExt(file.name, mimetype)) {
-                        ToastEventListener.showSimpleToast({
-                            title,
-                            message: 'Unsupported file type!',
-                        });
-                    } else {
-                        try {
-                            await fsCopyFileToPath((file as any).path,
-                                file.name, dirSource.dirPath);
-                            ToastEventListener.showSimpleToast({
-                                title,
-                                message: 'File has been copied',
-                            });
-                            dirSource.fireReloadEvent();
-                        } catch (error: any) {
-                            ToastEventListener.showSimpleToast({
-                                title,
-                                message: error.message,
-                            });
-                        }
-                    }
-                });
-            }}>
+            onDragOver={genOnDrag(dirSource, mimetype)}
+            onDragLeave={genOnDragLeave(dirSource)}
+            onDrop={genOnDrop(dirSource, mimetype)}>
             {header && <div className='card-header'>{header}
                 {onNewFile && dirSource.dirPath &&
                     <button className='btn btn-sm btn-outline-info float-end'
@@ -112,23 +120,8 @@ export default function FileListHandler({
                     </button>
                 }
             </div>}
-            <div className='card-body pb-5' onContextMenu={(e: any) => {
-                showAppContextMenu(e, [
-                    {
-                        title: 'Delete All', onClick: async () => {
-                            const isOk = await openConfirm('Not implemented',
-                                'Read mode is not implemented yet.');
-                            if (isOk) {
-                                ToastEventListener.showSimpleToast({
-                                    title: 'Deleting All',
-                                    message: 'Not implemented, need input "delete all"',
-                                });
-                            }
-                        },
-                    },
-                    ...(contextMenu || []),
-                ]);
-            }}>
+            <div className='card-body pb-5'
+                onContextMenu={genOnContextMenu(contextMenu)}>
                 <PathSelector prefix={`path-${id}`}
                     dirSource={dirSource} />
                 <ul className='list-group'>
@@ -138,9 +131,13 @@ export default function FileListHandler({
                                 setIsCreatingNew(false);
                                 return;
                             }
-                            onNewFile(name).then((b) => setIsCreatingNew(b));
+                            onNewFile(name).then((b) => {
+                                setIsCreatingNew(b);
+                            });
                         }} />}
-                    <RenderList dirSource={dirSource} body={body} />
+                    <RenderList dirSource={dirSource}
+                        body={body}
+                        mimetype={mimetype} />
                 </ul>
             </div>
         </div >

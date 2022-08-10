@@ -76,7 +76,7 @@ export abstract class ItemBase implements ColorNoteInf {
             return null;
         }
         return {
-            fileSource: FileSource.genFileSource(bibleFilePath),
+            fileSource: FileSource.getInstance(bibleFilePath),
             id: Number(id),
         };
     }

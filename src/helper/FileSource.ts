@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import ToastEventListener from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import DirSource from './DirSource';
@@ -43,7 +42,7 @@ export default class FileSource extends EventHandler<FSEventType> {
             this.fileName.lastIndexOf('.'));
     }
     get dirSource() {
-        return DirSource.getDirSourceByDirPath(this.basePath);
+        return DirSource.getInstanceByDirPath(this.basePath);
     }
     fireRefreshDirEvent() {
         this.dirSource?.fireRefreshEvent();
@@ -53,6 +52,7 @@ export default class FileSource extends EventHandler<FSEventType> {
     }
     fireSelectEvent() {
         this.addPropEvent('select');
+        FileSource.addPropEvent('select', this);
     }
     fireHistoryUpdateEvent() {
         this.addPropEvent('history-update');
@@ -115,7 +115,7 @@ export default class FileSource extends EventHandler<FSEventType> {
         }
         return false;
     }
-    static genFileSourceNoCache(filePath: string, fileName?: string) {
+    static getInstanceNoCache(filePath: string, fileName?: string) {
         let basePath;
         if (fileName) {
             basePath = filePath;
@@ -128,8 +128,8 @@ export default class FileSource extends EventHandler<FSEventType> {
         return new FileSource(basePath, fileName, filePath,
             urlPathToFileURL(filePath).toString());
     }
-    static genFileSource(filePath: string, fileName?: string, refreshCache?: boolean) {
-        const fileSource = this.genFileSourceNoCache(filePath, fileName);
+    static getInstance(filePath: string, fileName?: string, refreshCache?: boolean) {
+        const fileSource = this.getInstanceNoCache(filePath, fileName);
         if (refreshCache) {
             this._cache.delete(fileSource.filePath);
         }
@@ -139,22 +139,4 @@ export default class FileSource extends EventHandler<FSEventType> {
         this._cache.set(fileSource.filePath, fileSource);
         return fileSource;
     }
-}
-
-export function useFSEvents(events: FSEventType[], fileSource: FileSource | null,
-    callback?: () => void) {
-    const [n, setN] = useState(0);
-    useEffect(() => {
-        if (fileSource === null) {
-            return;
-        }
-        const registerEvent = fileSource.registerEventListener(
-            events, () => {
-                setN(n + 1);
-                callback?.();
-            });
-        return () => {
-            fileSource.unregisterEventListener(registerEvent);
-        };
-    }, [fileSource, n]);
 }

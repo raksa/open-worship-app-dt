@@ -31,7 +31,7 @@ export default abstract class ItemSource<T extends {
         }
         ItemSource.setSelectedFileSource(b ? this.fileSource : null,
             this.SELECT_SETTING_NAME);
-        this.fileSource?.fireRefreshDirEvent();
+        this.fileSource?.fireSelectEvent();
     }
     get colorNote() {
         return this.metadata['colorNote'] || null;
@@ -74,7 +74,7 @@ export default abstract class ItemSource<T extends {
         }
         const selected = getSetting(settingName, '');
         if (selected) {
-            return FileSource.genFileSource(selected);
+            return FileSource.getInstance(selected);
         }
         return null;
     }
@@ -100,7 +100,7 @@ export default abstract class ItemSource<T extends {
         });
         const filePath = await createNewItem(dir, name, data, this.mimetype);
         if (filePath !== null) {
-            return FileSource.genFileSource(filePath);
+            return FileSource.getInstance(filePath);
         }
         return null;
     }

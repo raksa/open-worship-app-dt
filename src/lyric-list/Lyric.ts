@@ -76,7 +76,7 @@ export default class Lyric extends ItemSource<LyricItem>{
             Lyric.setSelectedFileSource(null);
             previewingEventListener.selectLyric(null);
         }
-        this.fileSource.fireRefreshDirEvent();
+        this.fileSource.fireSelectEvent();
     }
     static fromJson(fileSource: FileSource, json: LyricType) {
         this.validate(json);

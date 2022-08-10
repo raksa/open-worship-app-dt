@@ -1,6 +1,5 @@
 import EventHandler from '../event/EventHandler';
 import ToastEventListener from '../event/ToastEventListener';
-import { FileListType } from '../others/FileListHandler';
 import {
     FileMetadataType,
     getFileMetaData,
@@ -11,9 +10,10 @@ import {
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
-export default class DirSource extends EventHandler<string> {
+export type DirSourceEventType = 'refresh' | 'reload';
+
+export default class DirSource extends EventHandler<DirSourceEventType> {
     static eventNamePrefix: string = 'dir-source';
-    fileSources: FileListType = null;
     settingName: string;
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
@@ -38,7 +38,9 @@ export default class DirSource extends EventHandler<string> {
         return cacheKey;
     }
     static getCacheKeyByDirPath(dirPath: string) {
-        return this._fileCacheKeys.find((cacheKey) => cacheKey.includes(dirPath)) || null;
+        return this._fileCacheKeys.find((cacheKey) => {
+            return cacheKey.includes(dirPath);
+        }) || null;
     }
     fireRefreshEvent() {
         this.addPropEvent('refresh');
@@ -46,18 +48,9 @@ export default class DirSource extends EventHandler<string> {
     fireReloadEvent() {
         this.addPropEvent('reload');
     }
-    deleteCache() {
-        if (this.fileSources) {
-            while (this.fileSources.length) {
-                this.fileSources.pop()?.deleteCache();
-            }
-        }
-        DirSource._cache.delete(this.dirPath);
-    }
-    async listFiles(mimetype: MimetypeNameType) {
+    async getFileSources(mimetype: MimetypeNameType) {
         if (!this.dirPath) {
-            this.fileSources = [];
-            return;
+            return [];
         }
         try {
             const mimetypeList = getAppMimetype(mimetype);
@@ -67,8 +60,9 @@ export default class DirSource extends EventHandler<string> {
             }).filter((d) => {
                 return !!d;
             }) as FileMetadataType[];
-            this.fileSources = matchedFiles.map((fileMetadata) => {
-                return FileSource.genFileSource(this.dirPath, fileMetadata.fileName);
+            return matchedFiles.map((fileMetadata) => {
+                return FileSource.getInstance(
+                    this.dirPath, fileMetadata.fileName);
             });
         } catch (error) {
             console.log(error);
@@ -76,25 +70,18 @@ export default class DirSource extends EventHandler<string> {
                 title: 'Getting File List',
                 message: 'Error occurred during listing file',
             });
-            this.fileSources = undefined;
+            return undefined;
         }
     }
-    static genDirSourceNoCache(settingName: string) {
-        return new DirSource(settingName);
-    }
-    static genDirSource(settingName: string, refreshCache?: boolean) {
+    static getInstance(settingName: string) {
         const cacheKey = this.toCacheKey(settingName);
-        if (refreshCache) {
-            this._cache.delete(cacheKey);
+        if (!this._cache.has(cacheKey)) {
+            const dirSource = new DirSource(settingName);
+            this._cache.set(cacheKey, dirSource);
         }
-        if (this._cache.has(cacheKey)) {
-            return this._cache.get(cacheKey) as DirSource;
-        }
-        const dirSource = this.genDirSourceNoCache(settingName);
-        this._cache.set(cacheKey, dirSource);
-        return dirSource;
+        return this._cache.get(cacheKey) as DirSource;
     }
-    static getDirSourceByDirPath(dirPath: string) {
+    static getInstanceByDirPath(dirPath: string) {
         const cacheKey = this.getCacheKeyByDirPath(dirPath);
         if (cacheKey !== null && this._cache.has(cacheKey)) {
             return this._cache.get(cacheKey) as DirSource;

@@ -15,13 +15,19 @@ export default function PlaylistFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
+    useEffect(() => {
+        if (data === null) {
+            Playlist.readFileToData(fileSource).then(setData);
+        }
+    }, [data]);
     const [isOpened, setIsOpened] = useStateSettingBoolean(`opened-${fileSource.filePath}`);
     return (
         <FileItemHandler
             index={index}
-            mimetype={'playlist'}
             data={data}
-            setData={setData}
+            reload={() => {
+                setData(null);
+            }}
             fileSource={fileSource}
             className={'playlist-file'}
             onClick={() => setIsOpened(!isOpened)}

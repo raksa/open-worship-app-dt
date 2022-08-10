@@ -71,7 +71,7 @@ export default class BibleItem extends ItemBase {
             BibleItem.setSelectedItem(null);
             previewingEventListener.selectBibleItem(null);
         }
-        this.fileSource?.fireRefreshDirEvent();
+        this.fileSource?.fireSelectEvent();
     }
     static async getSelectedItem() {
         const selected = this.getSelectedResult();

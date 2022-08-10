@@ -9,17 +9,21 @@ import ItemReadError from '../others/ItemReadError';
 import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { AnyObjectType } from '../helper/helpers';
+import FileSource from '../helper/FileSource';
+import { useFSEvents } from '../helper/dirSourceHelpers';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
-    onContextMenu,
+    onContextMenu, fileSource,
 }: {
     index: number,
     bibleItem: BibleItem,
     bible?: Bible;
     warningMessage?: string,
     onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+    fileSource?: FileSource,
 }) {
+    useFSEvents(['select'], fileSource);
     const title = useBibleItemRenderTitle(bibleItem);
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleName);
     const changeBible = (newBibleName: string) => {

@@ -2,7 +2,7 @@ import {
     EventMapper as KBEventMapper,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { useFSEvents } from '../../helper/FileSource';
+import { useFSEvents } from '../../helper/dirSourceHelpers';
 import Slide from '../../slide-list/Slide';
 import PresentManager from '../../_present/PresentManager';
 import MenuIsModifying from './MenuIsModifying';

@@ -17,7 +17,7 @@ import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import SlideItem from '../../slide-list/SlideItem';
 import Slide from '../../slide-list/Slide';
-import { useFSEvents } from '../../helper/FileSource';
+import { useFSEvents } from '../../helper/dirSourceHelpers';
 
 export default function SlideItems({ slide }: { slide: Slide }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,

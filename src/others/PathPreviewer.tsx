@@ -5,11 +5,10 @@ export default function PathPreviewer({ dirSource }: {
     dirSource: DirSource,
     prefix: string
 }) {
-    const rotateC = dirSource.fileSources === null ? 'rotating' : '';
     return (
         <div className='input-group mb-3'>
             {dirSource.dirPath &&
-                <button className={`btn btn-secondary ${rotateC}`}
+                <button className='btn btn-secondary'
                     type='button'
                     onClick={() => dirSource.fireReloadEvent()}>
                     <i className='bi bi-arrow-clockwise' />

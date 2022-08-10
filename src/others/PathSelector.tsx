@@ -50,7 +50,7 @@ export default function PathSelector({
                     title={dirSource.dirPath}>
                     {dirSource.dirPath}</div>}
                 {dirSource.dirPath &&
-                    <div className={`px-2 ${dirSource.fileSources === null ? 'rotating' : ''}`}
+                    <div className='px-2'
                         onClick={(e) => {
                             e.stopPropagation();
                             dirSource.fireReloadEvent();

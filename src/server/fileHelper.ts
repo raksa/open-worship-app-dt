@@ -140,7 +140,7 @@ export async function fsListFilesWithMimetype(dir: string, mimetype: MimetypeNam
             return !!d;
         }) as FileMetadataType[];
         return matchedFiles.map((fileMetadata) => {
-            return FileSource.genFileSource(dir, fileMetadata.fileName);
+            return FileSource.getInstance(dir, fileMetadata.fileName);
         });
     } catch (error) {
         console.log(error);
