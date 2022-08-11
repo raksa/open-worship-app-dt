@@ -87,31 +87,31 @@ function FontFamily({ canvasItemText }: {
                     })}
                 </select>
             </div>
-            {!!fontList[localFontFamily]?.length && <FontStyle
-                fontStyle={''} fontFamily={localFontFamily}
+            {!!fontList[localFontFamily]?.length && <FontWeight
+                fontWeight={''} fontFamily={localFontFamily}
                 fontList={fontList}
                 canvasItemText={canvasItemText} />}
         </div>
     );
 }
 
-function FontStyle({
-    fontFamily, fontStyle,
+function FontWeight({
+    fontFamily, fontWeight,
     fontList, canvasItemText,
 }: {
-    fontStyle: string,
+    fontWeight: string,
     fontFamily: string,
     fontList: FontListType,
     canvasItemText: CanvasItemText,
 }) {
-    const [localFontStyle, setLocalFontStyle] = useState(fontStyle);
+    const [localFontWeight, setLocalFontWeight] = useState(fontWeight);
     useEffect(() => {
-        setLocalFontStyle(fontStyle);
-    }, [fontStyle]);
-    const applyFontStyle = (newFontStyle: string) => {
-        setLocalFontStyle(newFontStyle);
+        setLocalFontWeight(fontWeight);
+    }, [fontWeight]);
+    const applyFontWeight = (newFontWeight: string) => {
+        setLocalFontWeight(newFontWeight);
         canvasItemText.applyTextData({
-            fontFamily: newFontStyle || null,
+            fontWeight: newFontWeight || null,
         });
     };
     return (
@@ -119,9 +119,9 @@ function FontStyle({
             <label htmlFor='text-font-style'>Font Style</label>
             <select id='text-font-style'
                 className='form-select form-select-sm'
-                value={localFontStyle}
+                value={localFontWeight}
                 onChange={(e) => {
-                    applyFontStyle(e.target.value);
+                    applyFontWeight(e.target.value);
                 }} >
                 <option>--</option>
                 {fontList[fontFamily].map((fs, i) => {
