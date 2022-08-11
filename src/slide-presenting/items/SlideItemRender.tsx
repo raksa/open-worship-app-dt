@@ -2,7 +2,7 @@ import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
-import SlideItemRendererIFrame from './SlideItemRendererIFrame';
+import SlideItemRendererHtml from './SlideItemRendererHtml';
 
 export default function SlideItemRender({
     slideItem, width, index,
@@ -54,7 +54,7 @@ export default function SlideItemRender({
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >
-                <SlideItemRendererIFrame slideItem={slideItem} />
+                <SlideItemRendererHtml slideItem={slideItem} />
             </div>
         </div>
     );

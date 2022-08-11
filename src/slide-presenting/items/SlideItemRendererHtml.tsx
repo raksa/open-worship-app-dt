@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import SlideItem from '../../slide-list/SlideItem';
-import { genSlideItemHtmlString } from './SlideItemRenderer';
+import SlideItemRenderer from './SlideItemRenderer';
 
-export default function SlideItemRendererIFrame({ slideItem }: {
+export default function SlideItemRendererHtml({ slideItem }: {
     slideItem: SlideItem,
 }) {
     if (slideItem.isError) {
@@ -28,9 +28,10 @@ export default function SlideItemRendererIFrame({ slideItem }: {
                 width: `${slideItem.width}px`,
                 height: `${slideItem.height}px`,
                 transform: 'translate(-50%, -50%)',
-            }} dangerouslySetInnerHTML={{
-                __html: genSlideItemHtmlString(slideItem),
-            }} />
+            }}>
+                <SlideItemRenderer canvasItemsJson={slideItem.canvasItemsJson}
+                    width={slideItem.width} height={slideItem.height} />
+            </div>
         </div>
     );
 }

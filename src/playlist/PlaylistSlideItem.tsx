@@ -3,7 +3,7 @@ import SlideItem from '../slide-list/SlideItem';
 import { useReadFileToData } from '../helper/helpers';
 import FileReadError from '../others/FileReadError';
 import PlaylistItem from './PlaylistItem';
-import SlideItemRendererIFrame from '../slide-presenting/items/SlideItemRendererIFrame';
+import SlideItemRendererHtml from '../slide-presenting/items/SlideItemRendererHtml';
 import SlideListEventListener from '../event/SlideListEventListener';
 
 export default function PlaylistSlideItem({ playlistItem }: {
@@ -32,7 +32,7 @@ export default function PlaylistSlideItem({ playlistItem }: {
             onClick={() => {
                 SlideListEventListener.selectSlideItem(item);
             }}>
-            <SlideItemRendererIFrame slideItem={item} />
+            <SlideItemRendererHtml slideItem={item} />
         </div>
     );
 }

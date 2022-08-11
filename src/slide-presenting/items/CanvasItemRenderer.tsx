@@ -5,7 +5,7 @@ import { CanvasItemPropsType } from '../../slide-editor/canvas/CanvasItem';
 import { BENVideoRender } from '../../slide-editor/canvas/box/BENViewVideoMode';
 
 export default function CanvasItemRenderer({ props }: {
-    props: CanvasItemPropsType & { src?: string },
+    props: CanvasItemPropsType,
 }) {
     switch (props.type) {
         case 'image':
