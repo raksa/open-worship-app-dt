@@ -6,10 +6,14 @@ import PresentManager from './PresentManager';
 import PresentBackgroundColor from './PresentBackgroundColor';
 import PresentBackgroundImage from './PresentBackgroundImage';
 import PresentBackgroundVideo from './PresentBackgroundVideo';
+import { usePMEvents } from './presentHelpers';
 
 export default function PresentBackground({ presentManager }: {
     presentManager: PresentManager;
 }) {
+    usePMEvents(['resize'], presentManager, () => {
+        presentManager.presentBGManager.render();
+    });
     const div = useRef<HTMLDivElement>(null);
     const { presentBGManager } = presentManager;
     useEffect(() => {

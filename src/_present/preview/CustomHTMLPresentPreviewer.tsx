@@ -47,12 +47,6 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             PresentManager.fireResizeEvent();
         }
     }
-    static checkSize() {
-        document.querySelectorAll<CustomHTMLPresentPreviewer>('mini-present-previewer')
-            .forEach((previewer) => {
-                previewer.resize();
-            });
-    }
     connectedCallback() {
         this.attachShadow({
             mode: 'open',
@@ -61,6 +55,10 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
         const idStr = this.getAttribute('presentid');
         if (idStr !== null) {
             this.presentId = +idStr;
+            const presentManager = PresentManager.getInstance(this.presentId);
+            presentManager.registerEventListener(['resize'], () => {
+                this.resize();
+            });
             this.resize();
             root.render(<MiniPresentApp id={this.presentId} />);
         } else {

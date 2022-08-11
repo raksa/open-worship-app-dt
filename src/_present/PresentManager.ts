@@ -10,6 +10,7 @@ export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
 const messageUtils = appProviderPresent.messageUtils;
 const settingName = 'present-display-';
+
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
