@@ -6,7 +6,6 @@ import CanvasItemText, {
 } from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
-import CanvasController from '../CanvasController';
 import { useContext } from 'react';
 
 export default function ToolsText() {
@@ -17,10 +16,8 @@ export default function ToolsText() {
     if (!(canvasItem instanceof CanvasItemText)) {
         return null;
     }
-    const canvasController = CanvasController.getInstance();
     const applyTextData = (newData: ToolingTextType) => {
         canvasItem.applyTextData(newData);
-        canvasController.fireUpdateEvent();
     };
     return (
         <div className='d-flex'>

@@ -181,7 +181,6 @@ export default class CanvasController extends EventHandler<CCEventType> {
             horizontalAlignment: 'center',
             verticalAlignment: 'center',
         });
-        this.setCanvasItems(this.canvas.canvasItems);
     }
     stopAllMods(isSilent?: boolean) {
         this.canvas.canvasItems.forEach((item) => {

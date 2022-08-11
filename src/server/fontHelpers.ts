@@ -1,22 +1,15 @@
 import { useState, useEffect } from 'react';
 import ToastEventListener from '../event/ToastEventListener';
-import appProvider from './appProvider';
+import appProvider, {
+    FontListType,
+} from './appProvider';
 
-let fontListGlobal: string[] | null = null;
 export function useFontList() {
-    const [fontListString, setFontListString] = useState<string[] | null>(null);
+    const [fontList, setFontList] = useState<FontListType | null>(null);
     useEffect(() => {
-        if (fontListString === null) {
-            if (fontListGlobal !== null) {
-                setFontListString(fontListGlobal);
-                return;
-            }
+        if (fontList === null) {
             appProvider.fontUtils.getFonts().then((fonts) => {
-                const newFontList = fonts.map((fontString) => {
-                    return fontString.replace(/'/g, '');
-                });
-                fontListGlobal = newFontList;
-                setFontListString(newFontList);
+                setFontList(fonts);
             }).catch((error) => {
                 console.log(error);
                 ToastEventListener.showSimpleToast({
@@ -26,7 +19,7 @@ export function useFontList() {
             });
         }
     });
-    return fontListString;
+    return fontList;
 }
 
 export function getFontData(fontName: string) {

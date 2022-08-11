@@ -50,12 +50,15 @@ export type AppInfoType = {
     homepage: string;
     version: string;
 };
+export type FontListType = {
+    [key: string]: string[],
+};
 
 const appProvider = (window as any).provider as {
     isMain: boolean,
     isPresent: boolean,
     fontUtils: {
-        getFonts: () => Promise<string[]>,
+        getFonts: () => Promise<FontListType>,
     };
     cryptoUtils: {
         encrypt: (text: string, key: string) => string,

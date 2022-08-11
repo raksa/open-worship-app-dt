@@ -97,6 +97,11 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
+        import('./CanvasController').then(({
+            default: CanvasController,
+        }: any) => {
+            CanvasController.getInstance().fireUpdateEvent();
+        });
     }
     clone() {
         const newItem = cloneObject(this);

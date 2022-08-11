@@ -20,7 +20,6 @@ export default function ToolsBox() {
     };
     const applyBoxData = (newData: ToolingBoxType) => {
         canvasItem.applyBoxData(parentDimension, newData);
-        canvasController.fireUpdateEvent();
     };
     return (
         <>

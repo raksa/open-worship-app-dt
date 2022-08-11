@@ -20,7 +20,8 @@ export function genTextDefaultProps(): TextPropsType {
         text: appProvider.appInfo.name,
         color: '#ffffff',
         fontSize: 60,
-        fontFamily: '',
+        fontFamily: null,
+        fontWeight: null,
         textHorizontalAlignment: 'center',
         textVerticalAlignment: 'center',
     };
@@ -29,7 +30,8 @@ export type TextPropsType = {
     text: string,
     color: AppColorType,
     fontSize: number,
-    fontFamily: string,
+    fontFamily: string | null,
+    fontWeight: string | null,
     textHorizontalAlignment: HAlignmentType,
     textVerticalAlignment: VAlignmentType,
 };
@@ -37,7 +39,8 @@ export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
 export type ToolingTextType = {
     color?: AppColorType,
     fontSize?: number,
-    fontFamily?: string,
+    fontFamily?: string | null,
+    fontWeight?: string | null,
     textHorizontalAlignment?: HAlignmentType,
     textVerticalAlignment?: VAlignmentType,
 };
@@ -51,7 +54,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             width: '100%',
             height: '100%',
             fontSize: `${props.fontSize}px`,
-            fontFamily: props.fontFamily,
+            fontFamily: props.fontFamily || '',
+            fontWeight: props.fontWeight || '',
             color: props.color,
             alignItems: props.textVerticalAlignment,
             justifyContent: props.textHorizontalAlignment,
@@ -88,7 +92,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
         if (typeof json.text !== 'string' ||
             typeof json.color !== 'string' ||
             typeof json.fontSize !== 'number' ||
-            typeof json.fontFamily !== 'string' ||
+            (json.fontFamily !== null && typeof json.fontFamily !== 'string') ||
+            (json.fontWeight !== null && typeof json.fontWeight !== 'string') ||
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment)
         ) {
