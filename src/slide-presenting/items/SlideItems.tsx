@@ -32,7 +32,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
         const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
         const arrowListener = (e: KeyboardEvent) => {
             const selectedIndex = slide.selectedIndex;
-            if (selectedIndex > -1) {
+            if (selectedIndex === -1) {
                 return;
             }
             const length = slideItems.length;

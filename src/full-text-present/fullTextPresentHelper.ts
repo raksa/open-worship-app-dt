@@ -85,7 +85,7 @@ class FullTextPresentHelper {
         const settingStr = getSetting('bible-showing-controller');
         try {
             const { textStyle, html } = JSON.parse(settingStr);
-            if (html && html.indexOf('table') > -1) {
+            if (html && html.include('table')) {
                 this.tableShowing.innerHTML = html;
                 this.textStyle = textStyle;
             }

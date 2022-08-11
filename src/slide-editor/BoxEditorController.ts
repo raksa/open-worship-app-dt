@@ -80,7 +80,7 @@ export default class BoxEditorController {
     event.stopPropagation();
     let isMoving = false;
     const target = event.currentTarget as HTMLDivElement;
-    if (target.className.indexOf('dot') > -1) {
+    if (target.className.includes('dot')) {
       return;
     }
     this.initX = this.editor.offsetLeft;

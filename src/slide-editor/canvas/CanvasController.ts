@@ -51,7 +51,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
         if (this.copiedItem === null) {
             return false;
         }
-        return this.canvas.canvasItems.indexOf(this.copiedItem) > -1;
+        return this.canvas.canvasItems.includes(this.copiedItem);
     }
     fireSelectEvent(canvasItem: CanvasItem<any>) {
         this.addPropEvent('select', canvasItem);
