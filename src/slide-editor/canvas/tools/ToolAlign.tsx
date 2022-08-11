@@ -10,13 +10,13 @@ export default function ToolAlign({ onData, isText }: {
     return (
         <div>
             <button className='btn btn-info' onClick={() => {
-                onData({ verticalAlignment: 'top' });
+                onData({ verticalAlignment: 'start' });
             }}><i className='bi bi-align-top' /></button>
             <button className='btn btn-info' onClick={() => {
                 onData({ verticalAlignment: 'center' });
             }}><i className='bi bi-align-middle' /></button>
             <button className='btn btn-info' onClick={() => {
-                onData({ verticalAlignment: 'bottom' });
+                onData({ verticalAlignment: 'end' });
             }}><i className='bi bi-align-bottom' /></button>
             <hr />
             {isText ? <>

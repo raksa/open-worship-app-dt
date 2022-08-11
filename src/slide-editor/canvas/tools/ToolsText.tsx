@@ -35,10 +35,14 @@ export default function ToolsText() {
             </Tool>
             <Tool title='Text Alignment'>
                 <ToolAlign isText onData={(newData) => {
-                    applyTextData({
-                        textHorizontalAlignment: newData.horizontalAlignment,
-                        textVerticalAlignment: newData.verticalAlignment,
-                    });
+                    const textData: ToolingTextType = {};
+                    if (newData.horizontalAlignment !== undefined) {
+                        textData.textHorizontalAlignment = newData.horizontalAlignment;
+                    }
+                    if (newData.verticalAlignment !== undefined) {
+                        textData.textVerticalAlignment = newData.verticalAlignment;
+                    }
+                    applyTextData(textData);
                 }} />
             </Tool>
             <ToolsTextFontControl

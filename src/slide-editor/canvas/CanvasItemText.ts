@@ -73,6 +73,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
         }) as CanvasItemText;
     }
     applyTextData(textData: ToolingTextType) {
+        console.log(textData);
+        
         this.applyProps(textData);
     }
     toJson(): CanvasItemTextPropsType {

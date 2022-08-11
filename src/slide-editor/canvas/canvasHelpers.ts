@@ -21,7 +21,7 @@ export function validateMediaProps(props: AnyObjectType) {
 
 export const hAlignmentList = ['left', 'center', 'right'] as const;
 export type HAlignmentType = typeof hAlignmentList[number];
-export const vAlignmentList = ['top', 'center', 'bottom'] as const;
+export const vAlignmentList = ['start', 'center', 'end'] as const;
 export type VAlignmentType = typeof vAlignmentList[number];
 
 export function tooling2BoxProps(boxData: ToolingBoxType, state: {
@@ -30,11 +30,11 @@ export function tooling2BoxProps(boxData: ToolingBoxType, state: {
 }) {
     const boxProps: { top?: number, left?: number } = {};
     if (boxData) {
-        if (boxData.verticalAlignment === 'top') {
+        if (boxData.verticalAlignment === 'start') {
             boxProps.top = 0;
         } else if (boxData.verticalAlignment === 'center') {
             boxProps.top = (state.parentHeight - state.height) / 2;
-        } else if (boxData.verticalAlignment === 'bottom') {
+        } else if (boxData.verticalAlignment === 'end') {
             boxProps.top = state.parentHeight - state.height;
         }
         if (boxData.horizontalAlignment === 'left') {
