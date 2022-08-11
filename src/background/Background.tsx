@@ -30,7 +30,7 @@ export default function Background() {
         const b = Object.values(bgSrcList).some(src => {
             return src.type === type;
         });
-        return b ? 'highlight-selected' : undefined;
+        return b ? 'nav-highlight-selected' : undefined;
     };
     return (
         <div className='background w-100 d-flex flex-column'>
