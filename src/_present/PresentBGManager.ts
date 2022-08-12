@@ -25,8 +25,8 @@ const settingName = 'present-bg-';
 export default class PresentBGManager extends EventHandler<PresentBGManagerEventType> {
     static eventNamePrefix: string = 'present-bg-m';
     readonly presentId: number;
-    _bgSrc: BackgroundSrcType | null = null;
-    _div: HTMLDivElement | null = null;
+    private _bgSrc: BackgroundSrcType | null = null;
+    private _div: HTMLDivElement | null = null;
     constructor(presentId: number) {
         super();
         this.presentId = presentId;

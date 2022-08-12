@@ -81,6 +81,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         if (isShowing) {
             this.show().then(() => {
                 this.presentBGManager.syncPresent();
+                this.presentSlideManager.syncPresent();
             });
         } else {
             this.hide();

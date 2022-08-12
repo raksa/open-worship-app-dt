@@ -45,7 +45,7 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
 }
 
 export const presentTypeList = [
-    'background','slide', 'display-change',
+    'background', 'slide', 'display-change',
     'visible', 'init',
 ] as const;
 export type PresentType = typeof presentTypeList[number];
@@ -71,6 +71,8 @@ messageUtils.listenForData(channel,
         const presentManager = PresentManager.getInstance(presentId);
         if (type === 'background') {
             presentManager.presentBGManager.bgSrc = data as any;
+        } else if (type === 'slide') {
+            presentManager.presentSlideManager.slideItemJson = data as any;
         } else if (type === 'visible' && data !== null) {
             presentManager.isShowing = data.isShowing;
         }
