@@ -98,19 +98,19 @@ async function searchBook(bibleName: string, arr: string[]) {
 }
 async function searchChapter(bibleName: string,
     book: string, arr: string[]) {
-    const err = new Error('Invalid chapter');
+    const error = new Error('Invalid chapter');
     if (!arr[0]) {
-        throw err;
+        throw error;
     }
     const chapterCount = await getChapterCount(bibleName, book);
     if (chapterCount === null) {
-        throw err;
+        throw error;
     }
     const arr1 = arr[0].split(':');
     const chapter = await fromLocaleNumBB(bibleName, arr1[0]);
     if (chapter === null || chapter < 1 ||
         chapter > chapterCount) {
-        throw err;
+        throw error;
     }
     arr1.shift();
     const bookKey = await bookToKey(bibleName, book);
@@ -127,29 +127,29 @@ async function searchChapter(bibleName: string,
 }
 async function searchStartVerse(bibleName: string,
     verseCount: number, arr1: string[]) {
-    const err = new Error('Invalid start verse');
+    const error = new Error('Invalid start verse');
     if (!arr1[0]) {
-        throw err;
+        throw error;
     }
     const arr2 = arr1[0].split('-');
     const startVerse = await fromLocaleNumBB(bibleName, arr2[0]);
     if (startVerse === null || startVerse < 0 ||
         startVerse > verseCount) {
-        throw err;
+        throw error;
     }
     arr2.shift();
     return { arr2, startVerse };
 }
 async function searchEndVerse(bibleName: string, verseCount: number,
     startVerse: number, arr2: string[]) {
-    const err = new Error('Invalid end verse');
+    const error = new Error('Invalid end verse');
     if (!arr2[0]) {
-        throw err;
+        throw error;
     }
     const endVerse = await fromLocaleNumBB(bibleName, arr2[0]);
     if (endVerse === null || endVerse < 1 || endVerse > verseCount ||
         endVerse <= startVerse) {
-        throw err;
+        throw error;
     }
     return endVerse;
 }

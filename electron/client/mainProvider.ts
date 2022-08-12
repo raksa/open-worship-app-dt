@@ -7,6 +7,7 @@ import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
 import appInfo from '../../package.json';
 import fontUtils from './fontUtils';
+import appUtils from './appUtils';
 
 const provider = {
     isMain: true,
@@ -29,6 +30,7 @@ const provider = {
     reload: () => {
         window.location.reload();
     },
+    appUtils,
 };
 
 export default provider;

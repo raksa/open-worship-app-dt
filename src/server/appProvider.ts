@@ -53,6 +53,9 @@ export type AppInfoType = {
 export type FontListType = {
     [key: string]: string[],
 };
+export type AppUtilsType = {
+    handleError: (error: any) => void,
+};
 
 const appProvider = (window as any).provider as {
     isMain: boolean,
@@ -79,6 +82,7 @@ const appProvider = (window as any).provider as {
     systemUtils: SystemUtilsType,
     appInfo: AppInfoType,
     reload: () => void,
+    appUtils: AppUtilsType,
 };
 
 export default appProvider;

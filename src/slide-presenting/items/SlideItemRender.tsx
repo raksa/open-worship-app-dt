@@ -4,6 +4,7 @@ import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import PresentSlideManager from '../../_present/PresentSlideManager';
+import { isWindowEditingMode } from '../../App';
 
 export default function SlideItemRender({
     slideItem, width, index,
@@ -18,8 +19,10 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
+    const isEditing = isWindowEditingMode();
+    const activeCN = isEditing && slideItem.isSelected ? 'active' : '';
     return (
-        <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
+        <div className={`slide-item card ${activeCN} pointer`}
             draggable
             onDragStart={(event) => {
                 const path = slideItem.toSelectedItemSetting();
@@ -35,8 +38,8 @@ export default function SlideItemRender({
                 width: `${width}px`,
             }}
             onClick={(event) => {
-                slideItem.isSelected = !slideItem.isSelected;
-                PresentSlideManager.slideSelect(slideItem.toJson(), event);
+                PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
+                    slideItem.toJson(), event);
             }}
             onContextMenu={(event) => {
                 onContextMenu(event);

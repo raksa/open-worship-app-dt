@@ -1,6 +1,6 @@
 import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import { SlideItemType } from '../slide-list/SlideItem';
+import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genHtmlSlideItem } from '../slide-presenting/items/SlideItemRenderer';
 import appProviderPresent from './appProviderPresent';
 import { PresentMessageType, sendPresentMessage } from './presentHelpers';
@@ -8,8 +8,12 @@ import PresentManager from './PresentManager';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
+export type SlideItemDataType = {
+    slideFilePath: string;
+    slideItemJson: SlideItemType
+};
 export type SlideListType = {
-    [key: string]: SlideItemType;
+    [key: string]: SlideItemDataType;
 };
 
 export type PresentSlideManagerEventType = 'update';
@@ -18,7 +22,7 @@ const settingName = 'present-slide-';
 export default class PresentSlideManager extends EventHandler<PresentSlideManagerEventType> {
     static eventNamePrefix: string = 'present-slide-m';
     readonly presentId: number;
-    private _slideItemJson: SlideItemType | null = null;
+    private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'slide';
     constructor(presentId: number) {
@@ -26,7 +30,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         this.presentId = presentId;
         if (appProviderPresent.isMain) {
             const allSlideList = PresentSlideManager.getSlideList();
-            this._slideItemJson = allSlideList[this.key] || null;
+            this._slideItemData = allSlideList[this.key] || null;
         }
     }
     get div() {
@@ -46,17 +50,17 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     get key() {
         return this.presentId.toString();
     }
-    get slideItemJson() {
-        return this._slideItemJson;
+    get slideItemData() {
+        return this._slideItemData;
     }
-    set slideItemJson(slide: SlideItemType | null) {
-        this._slideItemJson = slide;
+    set slideItemData(slideItemData: SlideItemDataType | null) {
+        this._slideItemData = slideItemData;
         this.render();
         const allSlideList = PresentSlideManager.getSlideList();
-        if (slide === null) {
+        if (slideItemData === null) {
             delete allSlideList[this.key];
         } else {
-            allSlideList[this.key] = slide;
+            allSlideList[this.key] = slideItemData;
         }
         PresentSlideManager.setSlideList(allSlideList);
         this.sendSyncPresent();
@@ -66,13 +70,13 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         sendPresentMessage({
             presentId: this.presentId,
             type: 'slide',
-            data: this.slideItemJson,
+            data: this.slideItemData,
         });
     }
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
-        presentManager.presentSlideManager.slideItemJson = data;
+        presentManager.presentSlideManager.slideItemData = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
@@ -87,9 +91,15 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         const str = getSetting(settingName, '');
         if (str !== '') {
             try {
-                return JSON.parse(str);
+                const json = JSON.parse(str);
+                if (typeof json.slideFilePath !== 'string') {
+                    throw new Error('Invalid slide path');
+                }
+                SlideItem.validate(json.slideItemJson);
+                return json;
             } catch (error) {
-                console.error(error);
+                appProviderPresent.appUtils
+                    .handleError(error);
             }
         }
         return {};
@@ -98,14 +108,22 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         const str = JSON.stringify(slideList);
         setSetting(settingName, str);
     }
-    static async slideSelect(slideItemJson: SlideItemType,
+    static async slideSelect(slideFilePath: string,
+        slideItemJson: SlideItemType,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach((presentManager) => {
-            if (presentManager.presentSlideManager.slideItemJson?.id !== slideItemJson.id) {
-                presentManager.presentSlideManager.slideItemJson = slideItemJson;
+            const { presentSlideManager } = presentManager;
+            const { slideItemData } = presentSlideManager;
+            const willSelected = `${slideFilePath}:${slideItemJson.id}`;
+            const selected = `${slideItemData?.slideFilePath}:${slideItemData?.slideItemJson.id}`;
+            if (selected !== willSelected) {
+                presentSlideManager.slideItemData = {
+                    slideFilePath,
+                    slideItemJson,
+                };
             } else {
-                presentManager.presentSlideManager.slideItemJson = null;
+                presentSlideManager.slideItemData = null;
             }
         });
         PresentSlideManager.fireUpdateEvent();
@@ -115,14 +133,16 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
             return;
         }
         const aminData = this.ptEffect.styleAnim;
-        if (this.slideItemJson !== null) {
-            const newDiv = genHtmlSlideItem(this.slideItemJson.canvasItems);
+        const slideItemData = this.slideItemData;
+        if (slideItemData !== null) {
+            const { slideItemJson } = slideItemData;
+            const newDiv = genHtmlSlideItem(slideItemJson.canvasItems);
             const divHaftScale = document.createElement('div');
             divHaftScale.appendChild(newDiv);
             const parentWidth = this.presentManager.width;
             const parentHeight = this.presentManager.height;
-            const width = this.slideItemJson.metadata.width;
-            const height = this.slideItemJson.metadata.height;
+            const width = slideItemJson.metadata.width;
+            const height = slideItemJson.metadata.height;
             Object.assign(divHaftScale.style, {
                 width: `${width}px`,
                 height: `${height}px`,

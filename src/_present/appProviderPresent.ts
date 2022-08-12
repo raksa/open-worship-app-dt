@@ -1,4 +1,5 @@
 import {
+    AppUtilsType,
     FileUtilsType,
     MessageUtilsType,
     PathUtilsType,
@@ -12,6 +13,7 @@ const appProviderPresent = (window as any).provider as {
     fileUtils: FileUtilsType,
     pathUtils: PathUtilsType,
     systemUtils: SystemUtilsType,
+    appUtils: AppUtilsType,
 };
 
 export default appProviderPresent;
