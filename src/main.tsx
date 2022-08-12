@@ -30,17 +30,11 @@ const confirmEraseLocalStorage = () => {
 };
 
 window.onunhandledrejection = (promiseError) => {
-  if (promiseError.reason.includes('DomException')) {
-    console.log(promiseError.reason);
-  } else {
-    confirmEraseLocalStorage();
-  }
+  console.log(promiseError);
+  confirmEraseLocalStorage();
 };
 
 window.onerror = function (error: any) {
-  if (typeof error === 'string' && error.includes('DomException')) {
-    console.log(error);
-  } else {
-    confirmEraseLocalStorage();
-  }
+  console.log(error);
+  confirmEraseLocalStorage();
 };

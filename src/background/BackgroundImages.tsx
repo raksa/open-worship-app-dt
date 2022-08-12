@@ -26,6 +26,10 @@ export default function BackgroundImages() {
                                     className={`image-thumbnail card ${selectedCN}`}
                                     title={fileSource.filePath + '\n Show in presents:'
                                         + selectedBGSrcList.map(([key]) => key).join(',')}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        PresentBGManager.startPresentDrag(event, fileSource.src, 'image');
+                                    }}
                                     onContextMenu={(e) => {
                                         showAppContextMenu(e, genCommonMenu(fileSource),);
                                     }}
@@ -36,7 +40,10 @@ export default function BackgroundImages() {
                                         <RenderPresentIds
                                             ids={selectedBGSrcList.map(([key]) => +key)} />
                                         <img src={fileSource.src}
-                                            className='card-img-top' alt='...' />
+                                            className='card-img-top' alt='...'
+                                            style={{
+                                                pointerEvents: 'none',
+                                            }} />
                                     </div>
                                     <div className='card-footer'>
                                         <p className='ellipsis-left card-text'>

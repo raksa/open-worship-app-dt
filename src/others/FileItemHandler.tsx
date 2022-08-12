@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import FileReadError from './FileReadError';
 import {
     ContextMenuItemType, showAppContextMenu,
@@ -46,7 +45,6 @@ export default function FileItemHandler({
     onDelete?: () => void,
 }) {
     useFSEvents(['select'], fileSource);
-    const [isDropOver, setIsReceivingChild] = useState(false);
     const applyClick = () => {
         fileSource.fireSelectEvent();
         onClick && onClick();
@@ -70,19 +68,18 @@ export default function FileItemHandler({
         return null;
     }
     if (data === undefined) {
-        return <FileReadError onContextMenu={(e) => {
-            showAppContextMenu(e, selfContextMenu);
+        return <FileReadError onContextMenu={(event) => {
+            showAppContextMenu(event, selfContextMenu);
         }} />;
     }
-    const droppingClass = isDropOver ? 'receiving-child' : '';
-    const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''} ${droppingClass}`;
+    const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''}`;
     return (
         <li className={`list-group-item mx-1 ${moreClassName} ${isPointer ? 'pointer' : ''}`}
             onClick={applyClick}
             data-index={index + 1}
             title={fileSource.filePath}
-            onContextMenu={(e) => {
-                showAppContextMenu(e, [
+            onContextMenu={(event) => {
+                showAppContextMenu(event, [
                     ...(contextMenu || []),
                     ...genCommonMenu(fileSource),
                     ...selfContextMenu,
@@ -91,18 +88,21 @@ export default function FileItemHandler({
             onDragOver={(event) => {
                 if (onDrop) {
                     event.preventDefault();
-                    setIsReceivingChild(true);
+                    event.currentTarget.classList
+                        .add('receiving-child');
                 }
             }}
             onDragLeave={(event) => {
                 if (onDrop) {
                     event.preventDefault();
-                    setIsReceivingChild(false);
+                    event.currentTarget.classList
+                        .remove('receiving-child');
                 }
             }}
             onDrop={(event) => {
                 if (onDrop) {
-                    setIsReceivingChild(false);
+                    event.currentTarget.classList
+                        .remove('receiving-child');
                     onDrop(event);
                 }
             }}>

@@ -1,5 +1,5 @@
 import EventHandler from '../event/EventHandler';
-import { getImageDim, getVideoDim } from '../helper/helpers';
+import { AnyObjectType, getImageDim, getVideoDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import { genHtmlBG } from './PresentBackground';
@@ -118,6 +118,18 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             return bgSrc.src === src;
         });
     }
+    static async initBGSrcDim(src: string, bgType: BackgroundType) {
+        const bgSrc: BackgroundSrcType = {
+            type: bgType,
+            src,
+        };
+        const [width, height] = await PresentBGManager.extractDim(bgSrc);
+        if (width !== undefined && height !== undefined) {
+            bgSrc.width = width;
+            bgSrc.height = height;
+        }
+        return bgSrc;
+    }
     static async bgSrcSelect(src: string,
         e: React.MouseEvent<HTMLElement, MouseEvent>,
         bgType: BackgroundType) {
@@ -131,15 +143,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         }
         const chosenPresentManagers = await PresentManager.contextChooseInstances(e);
         chosenPresentManagers.forEach(async (presentManager) => {
-            const bgSrc: BackgroundSrcType = {
-                type: bgType,
-                src,
-            };
-            const [width, height] = await PresentBGManager.extractDim(bgSrc);
-            if (width !== undefined && height !== undefined) {
-                bgSrc.width = width;
-                bgSrc.height = height;
-            }
+            const bgSrc = await this.initBGSrcDim(src, bgType);
             presentManager.presentBGManager.bgSrc = bgSrc;
         });
         PresentBGManager.fireUpdateEvent();
@@ -192,5 +196,25 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             height: `${this.presentManager.height}px`,
             overflow: 'hidden',
         };
+    }
+    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
+        src: string, type: string) {
+        const data = {
+            present: {
+                target: 'background',
+                type,
+                src,
+            },
+        };
+        event.dataTransfer.setData('text/plain',
+            JSON.stringify(data));
+    }
+    async receivePresentDrag(presentData: AnyObjectType) {
+        if (['image', 'video'].includes(presentData.type)
+            && presentData.src !== '') {
+            const bgSrc = await PresentBGManager.initBGSrcDim(
+                presentData.src, presentData.type);
+            this.bgSrc = bgSrc;
+        }
     }
 }

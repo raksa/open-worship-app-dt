@@ -28,6 +28,11 @@ export default function BackgroundVideos() {
                                     className={`video-thumbnail card ${selectedCN}`}
                                     title={fileSource.filePath + '\n Show in presents:'
                                         + selectedBGSrcList.map(([key]) => key).join(',')}
+                                    draggable
+                                    onDragStart={(event) => {
+                                        PresentBGManager.startPresentDrag(
+                                            event, fileSource.src, 'video');
+                                    }}
                                     onContextMenu={(e) => {
                                         showAppContextMenu(e, genCommonMenu(fileSource));
                                     }}

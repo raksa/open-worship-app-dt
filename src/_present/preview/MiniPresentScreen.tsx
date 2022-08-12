@@ -60,8 +60,33 @@ export default function MiniPresentScreen() {
                         style={{
                             overflow: 'hidden',
                         }}
-                        onContextMenu={(e) => {
-                            openContextMenu(e, presentManager);
+                        onContextMenu={(event) => {
+                            openContextMenu(event, presentManager);
+                        }}
+                        onDragOver={(event) => {
+                            event.preventDefault();
+                            event.currentTarget.classList
+                                .add('receiving-child');
+                        }}
+                        onDragLeave={(event) => {
+                            event.preventDefault();
+                            event.currentTarget.classList
+                                .remove('receiving-child');
+                        }}
+                        onDrop={(event) => {
+                            event.preventDefault();
+                            event.currentTarget.classList
+                                .remove('receiving-child');
+                            const receivedData = event.dataTransfer.getData('text');
+                            try {
+                                const data = JSON.parse(receivedData);
+                                if (data.present && typeof data.present === 'object') {
+                                    presentManager.receivePresentDrag(data.present);
+                                }
+                            } catch (error) {
+                                console.log(error);
+                            }
+
                         }}>
                         <div className='card-header pb-2' style={{
                             overflowX: 'auto',
