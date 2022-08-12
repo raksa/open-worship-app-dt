@@ -183,7 +183,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             }
         }
     }
-    get backgroundStyle(): React.CSSProperties {
+    get containerStyle(): React.CSSProperties {
         return {
             pointerEvents: 'none',
             position: 'absolute',

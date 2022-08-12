@@ -16,6 +16,7 @@ export default function PresentSlide({ presentManager }: {
         }
     });
     return (
-        <div ref={div} />
+        <div id='slide' ref={div}
+            style={presentSlideManager.containerStyle} />
     );
 }

@@ -152,4 +152,13 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
             }
         }
     }
+    get containerStyle(): React.CSSProperties {
+        return {
+            pointerEvents: 'none',
+            position: 'absolute',
+            width: `${this.presentManager.width}px`,
+            height: `${this.presentManager.height}px`,
+            overflow: 'hidden',
+        };
+    }
 }

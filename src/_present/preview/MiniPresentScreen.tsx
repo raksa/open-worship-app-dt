@@ -50,6 +50,8 @@ export default function MiniPresentScreen() {
     if (presentManagers.length === 0) {
         const presentManager = PresentManager.getInstance(0);
         presentManager.isSelected = true;
+    } else if (presentManagers.length === 1) {
+        presentManagers[0].isSelected = true;
     }
     return (
         <>

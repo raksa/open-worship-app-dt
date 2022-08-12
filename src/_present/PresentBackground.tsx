@@ -22,8 +22,8 @@ export default function PresentBackground({ presentManager }: {
         }
     });
     return (
-        <div ref={div}
-            style={presentBGManager.backgroundStyle} />
+        <div id='background' ref={div}
+            style={presentBGManager.containerStyle} />
     );
 }
 
@@ -46,7 +46,7 @@ export function RenderBG({
     const { presentBGManager } = presentManager;
     return (
         <div style={{
-            ...presentBGManager.backgroundStyle,
+            ...presentBGManager.containerStyle,
         }}>
             <RenderPresentBackground
                 presentManager={presentManager}
