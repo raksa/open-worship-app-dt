@@ -1,7 +1,7 @@
 import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { usePMEvents } from '../presentHelpers';
+import { usePMEvents } from '../presentEventHelpers';
 import PresentManager from '../PresentManager';
 
 export default function ClearControl({ presentManager }: {

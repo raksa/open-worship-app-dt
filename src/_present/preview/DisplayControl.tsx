@@ -1,7 +1,8 @@
 import './CustomHTMLPresentPreviewer';
 import PresentManager from '../PresentManager';
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { usePMEvents } from '../presentHelpers';
+import { usePMEvents } from '../presentEventHelpers';
+import { getAllDisplays } from '../presentHelpers';
 
 export default function DisplayControl({ presentManager }: {
     presentManager: PresentManager,
@@ -18,7 +19,7 @@ export default function DisplayControl({ presentManager }: {
                     const {
                         primaryDisplay,
                         displays,
-                    } = PresentManager.getAllDisplays();
+                    } = getAllDisplays();
                     showAppContextMenu(e, displays.map((display) => {
                         const bounds = display.bounds;
                         const isPrimary = display.id === primaryDisplay.id;

@@ -5,11 +5,11 @@ import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
-import { usePBGMEvents } from '../_present/presentHelpers';
 import PresentBGManager, {
     BackgroundType,
 } from '../_present/PresentBGManager';
 import RenderTransitionEffect from '../_present/transition-effect/RenderTransitionEffect';
+import { usePBGMEvents } from '../_present/presentEventHelpers';
 
 const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
 const BackgroundImages = React.lazy(() => import('./BackgroundImages'));

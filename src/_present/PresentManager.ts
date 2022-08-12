@@ -2,14 +2,13 @@ import EventHandler from '../event/EventHandler';
 import { getWindowDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { AllDisplayType } from '../server/displayHelper';
-import appProviderPresent from './appProviderPresent';
 import PresentBGManager from './PresentBGManager';
+import { getAllDisplays, getAllShowingPresentIds, hidePresent, PresentMessageType, setDisplay, showPresent } from './presentHelpers';
 import PresentSlideManager from './PresentSlideManager';
+import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 
 export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
-const messageUtils = appProviderPresent.messageUtils;
 const settingName = 'present-display-';
 
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
@@ -32,7 +31,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.name = `present-${presentId}`;
         this.presentBGManager = new PresentBGManager(presentId);
         this.presentSlideManager = new PresentSlideManager(presentId);
-        const ids = PresentManager.getAllShowingPresentIds();
+        const ids = getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
     }
     get key() {
@@ -46,7 +45,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             return defaultDisplay.id;
         }
         const id = +str;
-        const { displays } = PresentManager.getAllDisplays();
+        const { displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id === id;
         })?.id || defaultDisplay.id;
@@ -54,7 +53,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     set displayId(id: number) {
         setSetting(`${settingName}-pid-${this.presentId}`, id.toString());
         if (this.isShowing) {
-            messageUtils.sendData('main:app:set-present-display', {
+            setDisplay({
                 presentId: this.presentId,
                 displayId: id,
             });
@@ -80,8 +79,9 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this._isShowing = isShowing;
         if (isShowing) {
             this.show().then(() => {
-                this.presentBGManager.syncPresent();
-                this.presentSlideManager.syncPresent();
+                PresentTransitionEffect.sendSyncPresent();
+                this.presentBGManager.sendSyncPresent();
+                this.presentSlideManager.sendSyncPresent();
             });
         } else {
             this.hide();
@@ -89,29 +89,16 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.fireVisibleEvent();
     }
     show() {
-        return new Promise<void>((resolve) => {
-            const replyEventName = 'app:main-' + Date.now();
-            messageUtils.listenOnceForData(replyEventName, () => {
-                resolve();
-            });
-            messageUtils.sendData('main:app:show-present', {
-                presentId: this.presentId,
-                displayId: this.displayId,
-                replyEventName,
-            });
+        return showPresent({
+            presentId: this.presentId,
+            displayId: this.displayId,
         });
     }
     hide() {
-        messageUtils.sendData('app:hide-present', this.presentId);
-    }
-    static getAllShowingPresentIds(): number[] {
-        return messageUtils.sendSyncData('main:app:get-presents');
-    }
-    static getAllDisplays(): AllDisplayType {
-        return messageUtils.sendSyncData('main:app:get-displays');
+        hidePresent(this.presentId);
     }
     static getDefaultPresentDisplay() {
-        const { primaryDisplay, displays } = this.getAllDisplays();
+        const { primaryDisplay, displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id !== primaryDisplay.id;
         }) || primaryDisplay;
@@ -158,7 +145,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         if (cachedInstances.length > 0) {
             return cachedInstances;
         }
-        return this.getAllShowingPresentIds().map((presentId) => {
+        return getAllShowingPresentIds().map((presentId) => {
             return this.getInstance(presentId);
         });
     }
@@ -192,5 +179,18 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 };
             })).then(() => resolve([]));
         });
+    }
+    static receiveSyncPresent(message: PresentMessageType) {
+        const { type, data, presentId } = message;
+        const presentManager = PresentManager.getInstance(presentId);
+        if (type === 'background') {
+            PresentBGManager.receiveSyncPresent(message);
+        } else if (type === 'slide') {
+            PresentSlideManager.receiveSyncPresent(message);
+        } else if (type === 'visible') {
+            presentManager.isShowing = data?.isShowing;
+        } else {
+            console.log(message);
+        }
     }
 }

@@ -5,8 +5,8 @@ import ShowHidePresent from './ShowHidePresent';
 import ClearControl from './ClearControl';
 import PresentManager from '../PresentManager';
 import DisplayControl from './DisplayControl';
-import { usePMEvents } from '../presentHelpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
+import { usePMEvents } from '../presentEventHelpers';
 
 function openContextMenu(e: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;

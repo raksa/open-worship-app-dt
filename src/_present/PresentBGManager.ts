@@ -3,9 +3,10 @@ import { getImageDim, getVideoDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import { genHtmlBG } from './PresentBackground';
-import { sendPresentMessage } from './presentHelpers';
+import { PresentMessageType, sendPresentMessage } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 const backgroundTypeList = ['color', 'image', 'video'] as const;
 export type BackgroundType = typeof backgroundTypeList[number];
@@ -27,6 +28,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     readonly presentId: number;
     private _bgSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
+    ptEffectTarget: TargetType = 'background';
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
@@ -43,7 +45,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         this.render();
     }
     get ptEffect() {
-        return PresentTransitionEffect.getInstance('background');
+        return PresentTransitionEffect.getInstance(this.ptEffectTarget);
     }
     get presentManager() {
         return PresentManager.getInstance(this.presentId);
@@ -64,15 +66,20 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             allBGSrcList[this.key] = bgSrc;
         }
         PresentBGManager.setBGSrcList(allBGSrcList);
-        this.syncPresent();
+        this.sendSyncPresent();
         this.fireUpdate();
     }
-    syncPresent() {
+    sendSyncPresent() {
         sendPresentMessage({
             presentId: this.presentId,
             type: 'background',
             data: this.bgSrc,
         });
+    }
+    static receiveSyncPresent(message: PresentMessageType) {
+        const { data, presentId } = message;
+        const presentManager = PresentManager.getInstance(presentId);
+        presentManager.presentBGManager.bgSrc = data as any;
     }
     fireUpdate() {
         this.addPropEvent('update');

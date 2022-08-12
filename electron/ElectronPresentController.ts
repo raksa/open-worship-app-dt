@@ -3,7 +3,7 @@ import {
     PresentType,
     AnyObjectType,
     channels,
-} from './eventListener';
+} from './electronEventListener';
 import { isDev } from './electronHelpers';
 
 const url = 'http://localhost:3000';

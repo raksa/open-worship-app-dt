@@ -1,8 +1,12 @@
-import ColorPicker, { AppColorType } from '../others/ColorPicker';
-import { usePBGMEvents } from '../_present/presentHelpers';
-import PresentBGManager, { BackgroundSrcType } from '../_present/PresentBGManager';
-import { RenderPresentIds } from './Background';
 import { useEffect, useState } from 'react';
+import ColorPicker, {
+    AppColorType,
+} from '../others/ColorPicker';
+import PresentBGManager, {
+    BackgroundSrcType,
+} from '../_present/PresentBGManager';
+import { usePBGMEvents } from '../_present/presentEventHelpers';
+import { RenderPresentIds } from './Background';
 
 export default function BackgroundColors() {
     const [selectedBGSrcList, setSelectedBGSrcList] = useState<

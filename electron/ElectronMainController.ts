@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron';
-import { channels, PresentMessageType } from './eventListener';
+import { channels, PresentMessageType } from './electronEventListener';
 import { isDev } from './electronHelpers';
 
 const url = 'http://localhost:3000';

@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { usePMEvents } from './presentHelpers';
+import { usePMEvents } from './presentEventHelpers';
 import PresentManager from './PresentManager';
 
 export default function PresentSlide({ presentManager }: {

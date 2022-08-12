@@ -5,9 +5,9 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
 import DirSource from '../helper/DirSource';
-import { usePBGMEvents } from '../_present/presentHelpers';
 import PresentBGManager from '../_present/PresentBGManager';
 import { RenderPresentIds } from './Background';
+import { usePBGMEvents } from '../_present/presentEventHelpers';
 
 export default function BackgroundVideos() {
     const dirSource = DirSource.getInstance('video-list-selected-dir');

@@ -1,61 +1,25 @@
-import { useState, useEffect } from 'react';
-import { AnyObjectType } from '../helper/helpers';
+import { AllDisplayType } from '../server/displayHelper';
 import appProviderPresent from './appProviderPresent';
-import PresentBGManager, {
-    PresentBGManagerEventType,
-} from './PresentBGManager';
-import PresentManager, {
-    PresentManagerEventType,
-} from './PresentManager';
+import {
+    PresentTransitionEffectType,
+    TargetType,
+} from './transition-effect/transitionEffectHelpers';
 
-export function usePMEvents(events: PresentManagerEventType[],
-    presentManager?: PresentManager,
-    callback?: () => void) {
-    const [n, setN] = useState(0);
-    useEffect(() => {
-        const update = () => {
-            setN(n + 1);
-            callback?.();
-        };
-        const instanceEvents = presentManager?.registerEventListener(events, update) || [];
-        const staticEvents = PresentManager.registerEventListener(events, update);
-        return () => {
-            presentManager?.unregisterEventListener(instanceEvents);
-            PresentManager.unregisterEventListener(staticEvents);
-        };
-    }, [presentManager, n]);
-}
-
-export function usePBGMEvents(events: PresentBGManagerEventType[],
-    presentBGManager?: PresentBGManager,
-    callback?: () => void) {
-    const [n, setN] = useState(0);
-    useEffect(() => {
-        const update = () => {
-            setN(n + 1);
-            callback?.();
-        };
-        const instanceEvents = presentBGManager?.registerEventListener(events, update) || [];
-        const staticEvents = PresentBGManager.registerEventListener(events, update);
-        return () => {
-            presentBGManager?.unregisterEventListener(instanceEvents);
-            PresentBGManager.unregisterEventListener(staticEvents);
-        };
-    }, [presentBGManager, n]);
-}
+const messageUtils = appProviderPresent.messageUtils;
 
 export const presentTypeList = [
     'background', 'slide', 'display-change',
-    'visible', 'init',
+    'visible', 'init', 'effect',
 ] as const;
 export type PresentType = typeof presentTypeList[number];
 export type PresentMessageType = {
     presentId: number,
     type: PresentType,
-    data: AnyObjectType | null,
+    data: any,
 };
 
-export function sendPresentMessage(message: PresentMessageType, isForce?: boolean) {
+export function sendPresentMessage(message: PresentMessageType,
+    isForce?: boolean) {
     if (appProviderPresent.isPresent && !isForce) {
         return;
     }
@@ -63,44 +27,23 @@ export function sendPresentMessage(message: PresentMessageType, isForce?: boolea
     messageUtils.sendData(channel1, message);
 }
 
-const messageUtils = appProviderPresent.messageUtils;
-const channel = messageUtils.channels.presentMessageChannel;
-messageUtils.listenForData(channel,
-    (_, message: PresentMessageType) => {
-        const { presentId, type, data } = message;
-        const presentManager = PresentManager.getInstance(presentId);
-        if (type === 'background') {
-            presentManager.presentBGManager.bgSrc = data as any;
-        } else if (type === 'slide') {
-            presentManager.presentSlideManager.slideItemJson = data as any;
-        } else if (type === 'visible' && data !== null) {
-            presentManager.isShowing = data.isShowing;
-        }
-    });
-if (appProviderPresent.isPresent) {
-    const presentId = PresentManager.getAllInstances()[0]?.presentId || 0;
-    sendPresentMessage({
-        presentId,
-        type: 'init',
-        data: null,
-    });
-}
-
-export function calMediaSizes(presentManager: PresentManager,
-    { width, height }: {
-        width?: number,
-        height?: number,
-    }) {
+export function calMediaSizes({
+    parentWidth, parentHeight,
+}: {
+    parentWidth: number,
+    parentHeight: number,
+}, { width, height }: {
+    width?: number,
+    height?: number,
+}) {
     if (width === undefined || height === undefined) {
         return {
-            width: presentManager.width,
-            height: presentManager.height,
+            width: parentWidth,
+            height: parentHeight,
             offsetH: 0,
             offsetV: 0,
         };
     }
-    const parentWidth = presentManager.width;
-    const parentHeight = presentManager.height;
     const scale = Math.max(parentWidth / width,
         parentHeight / height);
     const newWidth = width * scale;
@@ -114,3 +57,53 @@ export function calMediaSizes(presentManager: PresentManager,
         offsetV,
     };
 }
+
+type SetDisplayType = {
+    presentId: number,
+    displayId: number,
+}
+export function setDisplay({
+    presentId, displayId,
+}: SetDisplayType) {
+    messageUtils.sendData('main:app:set-present-display', {
+        presentId,
+        displayId,
+    });
+}
+
+export function getAllShowingPresentIds(): number[] {
+    return messageUtils.sendSyncData('main:app:get-presents');
+}
+export function getAllDisplays(): AllDisplayType {
+    return messageUtils.sendSyncData('main:app:get-displays');
+}
+
+type ShowPresentDataType = {
+    presentId: number,
+    displayId: number,
+    replyEventName: string,
+};
+export function showPresent({
+    presentId, displayId,
+}: SetDisplayType) {
+    return new Promise<void>((resolve) => {
+        const replyEventName = 'app:main-' + Date.now();
+        messageUtils.listenOnceForData(replyEventName, () => {
+            resolve();
+        });
+        const data: ShowPresentDataType = {
+            presentId,
+            displayId,
+            replyEventName,
+        };
+        messageUtils.sendData('main:app:show-present', data);
+    });
+}
+export function hidePresent(presentId: number) {
+    messageUtils.sendData('app:hide-present', presentId);
+}
+
+export type PTEffectDataType = {
+    target: TargetType,
+    effect: PresentTransitionEffectType,
+};

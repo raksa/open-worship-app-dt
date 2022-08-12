@@ -33,6 +33,11 @@ export type PresentMessageType = {
     type: PresentType,
     data: AnyObjectType,
 };
+type ShowPresentDataType = {
+    presentId: number,
+    displayId: number,
+    replyEventName: string,
+};
 
 export const channels = {
     presentMessageChannel: 'app:present:message',
@@ -79,11 +84,7 @@ export function initPresent(appController: ElectronAppController) {
         event.returnValue = ElectronPresentController.getAllIds();
     });
     // TODO: use shareProps.mainWin.on or shareProps.presentWin.on
-    ipcMain.on('main:app:show-present', (event, data: {
-        presentId: number,
-        displayId: number,
-        replyEventName: string,
-    }) => {
+    ipcMain.on('main:app:show-present', (event, data: ShowPresentDataType) => {
         const presentController = ElectronPresentController.createInstance(data.presentId);
         const display = appController.settingController.
             getDisplayById(data.displayId);

@@ -3,9 +3,10 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import { SlideItemType } from '../slide-list/SlideItem';
 import { genHtmlSlideItem } from '../slide-presenting/items/SlideItemRenderer';
 import appProviderPresent from './appProviderPresent';
-import { sendPresentMessage } from './presentHelpers';
+import { PresentMessageType, sendPresentMessage } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 export type SlideListType = {
     [key: string]: SlideItemType;
@@ -19,6 +20,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     readonly presentId: number;
     private _slideItemJson: SlideItemType | null = null;
     private _div: HTMLDivElement | null = null;
+    ptEffectTarget: TargetType = 'slide';
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
@@ -35,7 +37,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         this.render();
     }
     get ptEffect() {
-        return PresentTransitionEffect.getInstance('slide');
+        return PresentTransitionEffect.getInstance(this.ptEffectTarget);
     }
     get presentManager() {
         return PresentManager.getInstance(this.presentId);
@@ -56,15 +58,20 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
             allSlideList[this.key] = slide;
         }
         PresentSlideManager.setSlideList(allSlideList);
-        this.syncPresent();
+        this.sendSyncPresent();
         this.fireUpdate();
     }
-    syncPresent() {
+    sendSyncPresent() {
         sendPresentMessage({
             presentId: this.presentId,
             type: 'slide',
             data: this.slideItemJson,
         });
+    }
+    static receiveSyncPresent(message: PresentMessageType) {
+        const { data, presentId } = message;
+        const presentManager = PresentManager.getInstance(presentId);
+        presentManager.presentSlideManager.slideItemJson = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
