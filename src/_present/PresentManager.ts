@@ -187,6 +187,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             PresentBGManager.receiveSyncPresent(message);
         } else if (type === 'slide') {
             PresentSlideManager.receiveSyncPresent(message);
+        } else if (type === 'effect') {
+            PresentTransitionEffect.receiveSyncPresent(message);
         } else if (type === 'visible') {
             presentManager.isShowing = data?.isShowing;
         } else {

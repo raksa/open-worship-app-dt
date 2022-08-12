@@ -7,6 +7,7 @@ import PresentManager from '../PresentManager';
 import DisplayControl from './DisplayControl';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { usePMEvents } from '../presentEventHelpers';
+import PTEffectControl from './PTEffectControl';
 
 function openContextMenu(e: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
@@ -66,20 +67,22 @@ export default function MiniPresentScreen() {
                         onContextMenu={(e) => {
                             openContextMenu(e, presentManager);
                         }}>
-                        <div className='card-header' style={{
+                        <div className='card-header pb-2' style={{
                             overflowX: 'auto',
                             overflowY: 'hidden',
+                            height: '52px',
                         }}>
-                            <div className='d-flex justify-content-around'
+                            <div className={'d-flex justify-content-around align-content-start'}
                                 style={{
-                                    minWidth: '340px',
-                                    maxWidth: '380px',
+                                    minWidth: '500px',
                                 }}>
                                 <ShowHidePresent
                                     presentManager={presentManager} />
                                 <ClearControl
                                     presentManager={presentManager} />
                                 <DisplayControl
+                                    presentManager={presentManager} />
+                                <PTEffectControl
                                     presentManager={presentManager} />
                             </div>
                         </div>

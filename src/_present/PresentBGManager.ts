@@ -45,7 +45,8 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         this.render();
     }
     get ptEffect() {
-        return PresentTransitionEffect.getInstance(this.ptEffectTarget);
+        return PresentTransitionEffect.getInstance(
+            this.presentId, this.ptEffectTarget);
     }
     get presentManager() {
         return PresentManager.getInstance(this.presentId);

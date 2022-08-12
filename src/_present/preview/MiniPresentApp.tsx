@@ -9,10 +9,10 @@ export default function MiniPresentApp({ id }: { id: number }) {
     const presentManager = PresentManager.getInstance(id);
     return (
         <>
-            <RendStyle
-                ptEffectTarget='background' />
-            <RendStyle
-                ptEffectTarget='slide' />
+            <RendStyle ptEffectTarget='background'
+                presentId={presentManager.presentId} />
+            <RendStyle ptEffectTarget='slide'
+                presentId={presentManager.presentId} />
             <div style={{
                 pointerEvents: 'none',
                 position: 'absolute',

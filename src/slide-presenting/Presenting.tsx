@@ -5,7 +5,9 @@ import {
     useFullTextOpening,
     useSlideSelecting,
 } from '../event/PreviewingEventListener';
-import { useSlideItemSelecting } from '../event/SlideListEventListener';
+import {
+    useSlideItemSelecting,
+} from '../event/SlideListEventListener';
 import {
     getSetting,
     useStateSettingString,
@@ -13,7 +15,6 @@ import {
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
-import RenderTransitionEffect from '../_present/transition-effect/RenderTransitionEffect';
 
 const SlidePreviewer = React.lazy(() => {
     return import('./items/SlidePreviewer');
@@ -52,13 +53,6 @@ export default function Presenting() {
                 activeTab={tabType}
                 setActiveTab={setTabType}
                 className='header' />
-            <div className='float-end pe-2'
-                style={{
-                    transform: 'translateY(-110%)',
-                }}>
-                <RenderTransitionEffect
-                    target={'slide'} />
-            </div>
             <div className='body w-100 p-10'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);

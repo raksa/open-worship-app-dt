@@ -1,15 +1,18 @@
 import './Background.scss';
 
 import React from 'react';
-import { useStateSettingString } from '../helper/settingHelper';
+import {
+    useStateSettingString,
+} from '../helper/settingHelper';
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
 import PresentBGManager, {
     BackgroundType,
 } from '../_present/PresentBGManager';
-import RenderTransitionEffect from '../_present/transition-effect/RenderTransitionEffect';
-import { usePBGMEvents } from '../_present/presentEventHelpers';
+import {
+    usePBGMEvents,
+} from '../_present/presentEventHelpers';
 
 const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
 const BackgroundImages = React.lazy(() => import('./BackgroundImages'));
@@ -41,13 +44,6 @@ export default function Background() {
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
-                <div className='float-end pe-2'
-                    style={{
-                        transform: 'translateY(-110%)',
-                    }}>
-                    <RenderTransitionEffect
-                        target={'background'} />
-                </div>
             </div>
             <div className='background-body w-100 flex-fill'>
                 {tabTypeList.map(([type, _, target]) => {

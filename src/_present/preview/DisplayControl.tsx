@@ -1,4 +1,3 @@
-import './CustomHTMLPresentPreviewer';
 import PresentManager from '../PresentManager';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { usePMEvents } from '../presentEventHelpers';

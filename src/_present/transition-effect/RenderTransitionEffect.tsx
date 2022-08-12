@@ -9,7 +9,8 @@ import {
 
 function openContextMenu(e: any,
     ptEffect: PresentTransitionEffect) {
-    showAppContextMenu(e, Object.entries(transitionEffect).map(([effect, [icon]]) => {
+    const ptEffectList = Object.entries(transitionEffect);
+    showAppContextMenu(e, ptEffectList.map(([effect, [icon]]) => {
         const isSelected = effect === ptEffect.effectType;
         return {
             title: effect,
@@ -23,10 +24,14 @@ function openContextMenu(e: any,
     }));
 }
 
-export default function RenderTransitionEffect({ target }: {
+export default function RenderTransitionEffect({
+    title, presentId, target,
+}: {
+    title: string,
+    presentId: number,
     target: TargetType,
 }) {
-    const ptEffect = PresentTransitionEffect.getInstance(target);
+    const ptEffect = PresentTransitionEffect.getInstance(presentId, target);
     usePTEEvents(['update'], ptEffect);
     const selected = transitionEffect[ptEffect.effectType];
     return (
@@ -34,18 +39,20 @@ export default function RenderTransitionEffect({ target }: {
             onClick={(e) => {
                 openContextMenu(e, ptEffect);
             }}>
-            {ptEffect.effectType as string}
+            {title}
             <i className={`${selected[0]} ps-1 'highlight-selected`} />
         </div>
     );
 }
 
 export function RendStyle({
-    ptEffectTarget,
+    presentId, ptEffectTarget,
 }: {
+    presentId: number,
     ptEffectTarget: TargetType,
 }) {
-    const ptEffect = PresentTransitionEffect.getInstance(ptEffectTarget);
+    const ptEffect = PresentTransitionEffect.getInstance(
+        presentId, ptEffectTarget);
     usePTEEvents(['update'], ptEffect);
     return (
         <style>

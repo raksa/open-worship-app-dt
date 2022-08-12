@@ -15,22 +15,27 @@ import {
 } from './transitionEffectHelpers';
 
 class PresentTransitionEffect extends EventHandler<PTFEventType> {
+    readonly presentId: number;
     readonly target: TargetType;
     private _effectType: PresentTransitionEffectType;
     static readonly _cache = new Map<TargetType, PresentTransitionEffect>();
-    constructor(target: TargetType) {
+    constructor(presentId: number, target: TargetType) {
         super();
+        this.presentId = presentId;
         this.target = target;
-        const effectType = getSetting('present-transition-effect-', '');
+        const effectType = getSetting(this.settingName, '');
         this._effectType = Object.keys(transitionEffect).includes(effectType)
             ? effectType as PresentTransitionEffectType : 'none';
+    }
+    get settingName() {
+        return `pt-effect-${this.presentId}-${this.target}`;
     }
     get effectType(): PresentTransitionEffectType {
         return this._effectType;
     }
     set effectType(value: PresentTransitionEffectType) {
         this._effectType = value;
-        setSetting('present-transition-effect-', value);
+        setSetting(this.settingName, value);
         PresentTransitionEffect.sendSyncPresent();
         this.addPropEvent('update');
     }
@@ -70,14 +75,14 @@ class PresentTransitionEffect extends EventHandler<PTFEventType> {
         });
     }
     static receiveSyncPresent(message: PresentMessageType) {
-        const { data } = message;
+        const { data, presentId } = message;
         data.forEach(({ target, effect }: PTEffectDataType) => {
-            this.getInstance(target).effectType = effect;
+            this.getInstance(presentId, target).effectType = effect;
         });
     }
-    static getInstance(target: TargetType) {
+    static getInstance(presentId: number, target: TargetType) {
         if (!this._cache.has(target)) {
-            const presentManager = new PresentTransitionEffect(target);
+            const presentManager = new PresentTransitionEffect(presentId, target);
             this._cache.set(target, presentManager);
         }
         return this._cache.get(target) as PresentTransitionEffect;

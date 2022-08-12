@@ -12,8 +12,10 @@ export default function PresentApp() {
     const presentManager = PresentManager.getInstance(presentId);
     return (
         <>
-            <RendStyle ptEffectTarget='background' />
-            <RendStyle ptEffectTarget='slide' />
+            <RendStyle ptEffectTarget='background'
+                presentId={presentManager.presentId} />
+            <RendStyle ptEffectTarget='slide'
+                presentId={presentManager.presentId} />
             <PresentBackground
                 presentManager={presentManager} />
             <PresentSlide
