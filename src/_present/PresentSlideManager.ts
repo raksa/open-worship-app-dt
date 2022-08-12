@@ -143,6 +143,18 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                 childList.forEach((child) => {
                     child.remove();
                 });
+                if (appProviderPresent.isPresent) {
+                    Array.from(newDiv.children).forEach((child) => {
+                        child.querySelectorAll('svg').forEach((svg) => {
+                            svg.style.display = 'none';
+                        });
+                        child.querySelectorAll('video').forEach((video) => {
+                            video.loop = false;
+                            video.muted = false;
+                            video.play();
+                        });
+                    });
+                }
             });
         } else {
             if (this.div.lastChild !== null) {
