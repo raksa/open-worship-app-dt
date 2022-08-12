@@ -86,7 +86,6 @@ export default function MiniPresentScreen() {
                             } catch (error) {
                                 console.log(error);
                             }
-
                         }}>
                         <div className='card-header pb-2' style={{
                             overflowX: 'auto',

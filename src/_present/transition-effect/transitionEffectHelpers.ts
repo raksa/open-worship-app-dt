@@ -11,7 +11,7 @@ export type StyleAnimType = {
 export const transitionEffect = {
     none: ['bi bi-asterisk'],
     fade: ['bi bi-fullscreen-exit'],
-    slide: ['bi bi-align-end'],
+    move: ['bi bi-align-end'],
     zoom: ['bi bi-arrows-fullscreen'],
 } as const;
 export type PresentTransitionEffectType = keyof typeof transitionEffect;
@@ -97,7 +97,7 @@ function fade(target: TargetType): StyleAnimType {
         duration,
     };
 }
-function slide(): StyleAnimType {
+function move(): StyleAnimType {
     const duration = 500;
     const move = ({
         from, to, durationMil,
@@ -189,7 +189,7 @@ export const styleAnimList: {
 } = {
     none,
     fade,
-    slide,
+    move,
     zoom,
 };
 

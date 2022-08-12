@@ -18,7 +18,7 @@ class PresentTransitionEffect extends EventHandler<PTFEventType> {
     readonly presentId: number;
     readonly target: TargetType;
     private _effectType: PresentTransitionEffectType;
-    static readonly _cache = new Map<TargetType, PresentTransitionEffect>();
+    static readonly _cache = new Map<string, PresentTransitionEffect>();
     constructor(presentId: number, target: TargetType) {
         super();
         this.presentId = presentId;
@@ -81,11 +81,12 @@ class PresentTransitionEffect extends EventHandler<PTFEventType> {
         });
     }
     static getInstance(presentId: number, target: TargetType) {
-        if (!this._cache.has(target)) {
+        const key = `${presentId}-${target}`;
+        if (!this._cache.has(key)) {
             const presentManager = new PresentTransitionEffect(presentId, target);
-            this._cache.set(target, presentManager);
+            this._cache.set(key, presentManager);
         }
-        return this._cache.get(target) as PresentTransitionEffect;
+        return this._cache.get(key) as PresentTransitionEffect;
     }
 }
 

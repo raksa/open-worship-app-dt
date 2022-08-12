@@ -6,14 +6,15 @@ export default function PTEffectControl({
 }: {
     presentManager: PresentManager,
 }) {
+    const presentId = presentManager.presentId;
     return (
         <>
             <RenderTransitionEffect title='bg:'
                 target={'background'}
-                presentId={presentManager.presentId} />
+                presentId={presentId} />
             <RenderTransitionEffect title='slide:'
                 target={'slide'}
-                presentId={presentManager.presentId} />
+                presentId={presentId} />
         </>
     );
 }
