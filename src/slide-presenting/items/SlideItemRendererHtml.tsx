@@ -19,8 +19,8 @@ export default function SlideItemRendererHtml({ slideItem }: {
             }
         }}
             style={{
-                width: parentWidth,
-                height: slideItem.height * scale,
+                width: `${parentWidth}px`,
+                height: `${slideItem.height * scale}px`,
                 transform: `scale(${scale},${scale}) translate(50%, 50%)`,
             }}>
             <div style={{
@@ -30,7 +30,8 @@ export default function SlideItemRendererHtml({ slideItem }: {
                 transform: 'translate(-50%, -50%)',
             }}>
                 <SlideItemRenderer canvasItemsJson={slideItem.canvasItemsJson}
-                    width={slideItem.width} height={slideItem.height} />
+                    width={`${slideItem.width}px`}
+                    height={`${slideItem.height}px`} />
             </div>
         </div>
     );

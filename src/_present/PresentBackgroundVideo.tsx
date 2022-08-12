@@ -1,5 +1,5 @@
 import { BackgroundSrcType } from './PresentBGManager';
-import { usePBGMEvents } from './presentHelpers';
+import { calMediaSizes, usePBGMEvents } from './presentHelpers';
 import PresentManager from './PresentManager';
 
 export default function PresentBackgroundVideo({
@@ -13,7 +13,7 @@ export default function PresentBackgroundVideo({
     const {
         width, height,
         offsetH, offsetV,
-    } = presentBGManager.calMediaSizes(bgSrc);
+    } = calMediaSizes(presetManager, bgSrc);
     return (
         <video src={bgSrc.src}
             style={{

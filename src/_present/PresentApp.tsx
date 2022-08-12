@@ -1,6 +1,6 @@
 import CloseButton from './PresentCloseButton';
 import PresentBackground from './PresentBackground';
-import PresentForeground from './PresentForeground';
+import PresentSlide from './PresentSlide';
 import PresentAlert from './PresentAlert';
 import PresentFullText from './PresentFullText';
 import PresentManager from './PresentManager';
@@ -13,10 +13,11 @@ export default function PresentApp() {
     return (
         <>
             <RendStyle ptEffectTarget='background' />
-            <RendStyle ptEffectTarget='foreground' />
+            <RendStyle ptEffectTarget='slide' />
             <PresentBackground
                 presentManager={presentManager} />
-            <PresentForeground />
+            <PresentSlide
+                presentManager={presentManager} />
             <PresentFullText />
             <PresentAlert />
             <CloseButton

@@ -3,6 +3,7 @@ import './SlideItemRender.scss';
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
+import PresentSlideManager from '../../_present/PresentSlideManager';
 
 export default function SlideItemRender({
     slideItem, width, index,
@@ -33,8 +34,9 @@ export default function SlideItemRender({
             style={{
                 width: `${width}px`,
             }}
-            onClick={() => {
+            onClick={(e) => {
                 slideItem.isSelected = !slideItem.isSelected;
+                PresentSlideManager.slideSelect(slideItem.toJson(), e);
             }}
             onContextMenu={(e) => onContextMenu(e)}
             onCopy={onCopy}>

@@ -5,6 +5,7 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import { AllDisplayType } from '../server/displayHelper';
 import appProviderPresent from './appProviderPresent';
 import PresentBGManager from './PresentBGManager';
+import PresentSlideManager from './PresentSlideManager';
 
 export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
@@ -14,6 +15,7 @@ const settingName = 'present-display-';
 export default class PresentManager extends EventHandler<PresentManagerEventType> {
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
+    readonly presentSlideManager: PresentSlideManager;
     readonly presentId: number;
     width: number;
     height: number;
@@ -29,6 +31,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.presentId = presentId;
         this.name = `present-${presentId}`;
         this.presentBGManager = new PresentBGManager(presentId);
+        this.presentSlideManager = new PresentSlideManager(presentId);
         const ids = PresentManager.getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
     }

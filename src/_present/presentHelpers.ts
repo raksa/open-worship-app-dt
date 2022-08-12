@@ -44,7 +44,10 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
     }, [presentBGManager, n]);
 }
 
-export const presentTypeList = ['background', 'display-change', 'visible', 'init'];
+export const presentTypeList = [
+    'background','slide', 'display-change',
+    'visible', 'init',
+] as const;
 export type PresentType = typeof presentTypeList[number];
 export type PresentMessageType = {
     presentId: number,
@@ -79,4 +82,33 @@ if (appProviderPresent.isPresent) {
         type: 'init',
         data: null,
     });
+}
+
+export function calMediaSizes(presentManager: PresentManager,
+    { width, height }: {
+        width?: number,
+        height?: number,
+    }) {
+    if (width === undefined || height === undefined) {
+        return {
+            width: presentManager.width,
+            height: presentManager.height,
+            offsetH: 0,
+            offsetV: 0,
+        };
+    }
+    const parentWidth = presentManager.width;
+    const parentHeight = presentManager.height;
+    const scale = Math.max(parentWidth / width,
+        parentHeight / height);
+    const newWidth = width * scale;
+    const newHeight = height * scale;
+    const offsetH = (newWidth - parentWidth) / 2;
+    const offsetV = (newHeight - parentHeight) / 2;
+    return {
+        width: newWidth,
+        height: newHeight,
+        offsetH,
+        offsetV,
+    };
 }

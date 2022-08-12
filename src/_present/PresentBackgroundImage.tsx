@@ -1,5 +1,5 @@
 import { BackgroundSrcType } from './PresentBGManager';
-import { usePBGMEvents } from './presentHelpers';
+import { calMediaSizes, usePBGMEvents } from './presentHelpers';
 import PresentManager from './PresentManager';
 
 export default function PresentBackgroundImage({
@@ -13,7 +13,7 @@ export default function PresentBackgroundImage({
     const {
         width, height,
         offsetH, offsetV,
-    } = presentBGManager.calMediaSizes(bgSrc);
+    } = calMediaSizes(presetManager, bgSrc);
     return (
         <img src={bgSrc.src}
             style={{

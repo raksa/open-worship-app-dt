@@ -23,10 +23,9 @@ export default function SlideItemDragReceiver({ width, onDrop }: {
                     const getLeft = (element: Element) => {
                         return element.getBoundingClientRect().left;
                     };
-                    const isV = children.length > 1 &&
+                    const isVertical = children.length > 1 &&
                         getLeft(children[1]) - getLeft(children[0]) < width;
-                    console.log(isV);
-                    setIsVertical(isV);
+                    setIsVertical(isVertical);
                 }
             }}
             onDragOver={(event) => {

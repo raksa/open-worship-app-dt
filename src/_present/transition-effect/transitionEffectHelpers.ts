@@ -16,7 +16,7 @@ export const transitionEffect = {
 } as const;
 export type PresentTransitionEffectType = keyof typeof transitionEffect;
 export type PTFEventType = 'update';
-export const targetList = ['background', 'foreground'] as const;
+export const targetList = ['background', 'slide'] as const;
 export type TargetType = typeof targetList[number];
 
 const easingFunctions = {

@@ -1,6 +1,6 @@
 import PresentAlert from '../PresentAlert';
 import PresentBackground from '../PresentBackground';
-import PresentForeground from '../PresentForeground';
+import PresentSlide from '../PresentSlide';
 import PresentFullText from '../PresentFullText';
 import PresentManager from '../PresentManager';
 import { RendStyle } from '../transition-effect/RenderTransitionEffect';
@@ -12,7 +12,7 @@ export default function MiniPresentApp({ id }: { id: number }) {
             <RendStyle
                 ptEffectTarget='background' />
             <RendStyle
-                ptEffectTarget='foreground' />
+                ptEffectTarget='slide' />
             <div style={{
                 pointerEvents: 'none',
                 position: 'absolute',
@@ -27,7 +27,8 @@ export default function MiniPresentApp({ id }: { id: number }) {
             }} />
             <PresentBackground
                 presentManager={presentManager} />
-            <PresentForeground />
+            <PresentSlide
+                presentManager={presentManager} />
             <PresentFullText />
             <PresentAlert />
         </>

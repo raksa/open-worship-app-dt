@@ -153,31 +153,6 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         }
         return [undefined, undefined];
     }
-    calMediaSizes(bgSrc: BackgroundSrcType) {
-        const { width, height } = bgSrc;
-        if (width === undefined || height === undefined) {
-            return {
-                width: this.presentManager.width,
-                height: this.presentManager.height,
-                offsetH: 0,
-                offsetV: 0,
-            };
-        }
-        const parentWidth = this.presentManager.width;
-        const parentHeight = this.presentManager.height;
-        const scale = Math.max(parentWidth / width,
-            parentHeight / height);
-        const newWidth = width * scale;
-        const newHeight = height * scale;
-        const offsetH = (newWidth - parentWidth) / 2;
-        const offsetV = (newHeight - parentHeight) / 2;
-        return {
-            width: newWidth,
-            height: newHeight,
-            offsetH,
-            offsetV,
-        };
-    }
     render() {
         if (this.div === null) {
             return;

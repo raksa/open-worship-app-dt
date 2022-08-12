@@ -22,7 +22,7 @@ export default function PresentBackground({ presentManager }: {
         }
     });
     return (
-        <div id="background" ref={div}
+        <div ref={div}
             style={presentBGManager.backgroundStyle} />
     );
 }
