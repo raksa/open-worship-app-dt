@@ -92,10 +92,12 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         if (str !== '') {
             try {
                 const json = JSON.parse(str);
-                if (typeof json.slideFilePath !== 'string') {
-                    throw new Error('Invalid slide path');
-                }
-                SlideItem.validate(json.slideItemJson);
+                Object.values(json).forEach((item: any) => {
+                    if (typeof item.slideFilePath !== 'string') {
+                        throw new Error('Invalid slide path');
+                    }
+                    SlideItem.validate(item.slideItemJson);
+                });
                 return json;
             } catch (error) {
                 appProviderPresent.appUtils
