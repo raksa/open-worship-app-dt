@@ -10,6 +10,7 @@ import {
 import PresentManager, {
     PresentManagerEventType,
 } from './PresentManager';
+import PresentSlideManager, { PresentSlideManagerEventType } from './PresentSlideManager';
 
 export function usePMEvents(events: PresentManagerEventType[],
     presentManager?: PresentManager,
@@ -45,6 +46,24 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
             PresentBGManager.unregisterEventListener(staticEvents);
         };
     }, [presentBGManager, n]);
+}
+
+export function usePSlideMEvents(events: PresentSlideManagerEventType[],
+    presentSlideManager?: PresentSlideManager,
+    callback?: () => void) {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+        const update = () => {
+            setN(n + 1);
+            callback?.();
+        };
+        const instanceEvents = presentSlideManager?.registerEventListener(events, update) || [];
+        const staticEvents = PresentSlideManager.registerEventListener(events, update);
+        return () => {
+            presentSlideManager?.unregisterEventListener(instanceEvents);
+            PresentSlideManager.unregisterEventListener(staticEvents);
+        };
+    }, [presentSlideManager, n]);
 }
 
 const messageUtils = appProviderPresent.messageUtils;

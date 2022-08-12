@@ -240,12 +240,12 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         setSetting(`${settingName}instances`, JSON.stringify(json));
     }
     receivePresentDrag(presentData: {
-        type: string,
         target: 'background' | 'slide'
-        data: any
     }) {
         if (presentData.target === 'background') {
             this.presentBGManager.receivePresentDrag(presentData);
+        } else if (presentData.target === 'slide') {
+            this.presentSlideManager.receivePresentDrag(presentData);
         }
     }
 }

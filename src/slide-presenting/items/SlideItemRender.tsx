@@ -3,8 +3,9 @@ import './SlideItemRender.scss';
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
-import PresentSlideManager from '../../_present/PresentSlideManager';
+import PresentSlideManager, { SlideItemDataType } from '../../_present/PresentSlideManager';
 import { isWindowEditingMode } from '../../App';
+import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 
 export default function SlideItemRender({
     slideItem, width, index,
@@ -19,17 +20,25 @@ export default function SlideItemRender({
     onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
 }) {
+    usePSlideMEvents(['update']);
     const isEditing = isWindowEditingMode();
     const activeCN = isEditing && slideItem.isSelected ? 'active' : '';
+    let selectedList: [string, SlideItemDataType][] = [];
+    let presentingCN = '';
+    if (!isEditing) {
+        selectedList = PresentSlideManager.getDataList(
+            slideItem.fileSource.filePath, slideItem.id);
+        presentingCN = selectedList.length > 0 ? 'highlight-selected' : '';
+    }
     return (
-        <div className={`slide-item card ${activeCN} pointer`}
+        <div className={`slide-item card pointer ${activeCN} ${presentingCN}`}
             draggable
             onDragStart={(event) => {
-                const path = slideItem.toSelectedItemSetting();
-                if (path !== null) {
-                    event.dataTransfer.setData('text/plain', path);
-                    onDragStart(event);
-                }
+                PresentSlideManager.startPresentDrag(event, {
+                    slideFilePath: slideItem.fileSource.filePath,
+                    slideItemJson: slideItem.toJson(),
+                });
+                onDragStart(event);
             }}
             onDragEnd={(event) => {
                 onDragEnd(event);
@@ -58,6 +67,9 @@ export default function SlideItemRender({
                     {slideItem.isChanged && <span
                         style={{ color: 'red' }}>*</span>}
                 </div>
+                {!!(!isEditing && selectedList.length) && <span>
+                    ({selectedList.map(([key]) => key).join(', ')})
+                </span>}
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >

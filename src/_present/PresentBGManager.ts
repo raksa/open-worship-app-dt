@@ -107,7 +107,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         setSetting(settingName, str);
     }
     static getBGSrcListByType(bgType: BackgroundType) {
-        const bgSrcList = PresentBGManager.getBGSrcList();
+        const bgSrcList = this.getBGSrcList();
         return Object.entries(bgSrcList).filter(([_, bgSrc]) => {
             return bgSrc.type === bgType;
         });
@@ -123,7 +123,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             type: bgType,
             src,
         };
-        const [width, height] = await PresentBGManager.extractDim(bgSrc);
+        const [width, height] = await this.extractDim(bgSrc);
         if (width !== undefined && height !== undefined) {
             bgSrc.width = width;
             bgSrc.height = height;
@@ -146,7 +146,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             const bgSrc = await this.initBGSrcDim(src, bgType);
             presentManager.presentBGManager.bgSrc = bgSrc;
         });
-        PresentBGManager.fireUpdateEvent();
+        this.fireUpdateEvent();
     }
     static async extractDim(bgSrc: BackgroundSrcType)
         : Promise<[number | undefined, number | undefined]> {

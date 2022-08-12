@@ -1,4 +1,5 @@
 import EventHandler from '../event/EventHandler';
+import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genHtmlSlideItem } from '../slide-presenting/items/SlideItemRenderer';
@@ -110,6 +111,13 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         const str = JSON.stringify(slideList);
         setSetting(settingName, str);
     }
+    static getDataList(slideFilePath: string, slideItemId: number) {
+        const dataList = this.getSlideList();
+        return Object.entries(dataList).filter(([_, data]) => {
+            return data.slideFilePath === slideFilePath &&
+                data.slideItemJson.id === slideItemId;
+        });
+    }
     static async slideSelect(slideFilePath: string,
         slideItemJson: SlideItemType,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
@@ -195,5 +203,19 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
             height: `${this.presentManager.height}px`,
             overflow: 'hidden',
         };
+    }
+    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
+        slideItemData: SlideItemDataType) {
+        const data = {
+            present: {
+                target: 'slide',
+                slideItemData,
+            },
+        };
+        event.dataTransfer.setData('text/plain',
+            JSON.stringify(data));
+    }
+    async receivePresentDrag(presentData: AnyObjectType) {
+        this.slideItemData = presentData.slideItemData;
     }
 }
