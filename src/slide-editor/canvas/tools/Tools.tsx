@@ -36,15 +36,15 @@ export default function Tools() {
                     <span>{scale.toFixed(1)}x</span>
                     <div style={{ maxWidth: '200px' }}>
                         <input type='range' className='form-range'
-                            onChange={(e) => {
-                                canvasController.scale = +e.target.value;
+                            onChange={(event) => {
+                                canvasController.scale = +event.target.value;
                             }}
                             min={canvasController.MIN_SCALE}
                             max={canvasController.MAX_SCALE}
                             step={canvasController.SCALE_STEP}
                             value={scale}
-                            onWheel={(e) => {
-                                canvasController.applyScale(e.deltaY > 0);
+                            onWheel={(event) => {
+                                canvasController.applyScale(event.deltaY > 0);
                             }} />
                     </div>
                 </div>

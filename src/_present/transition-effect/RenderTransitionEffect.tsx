@@ -36,8 +36,8 @@ export default function RenderTransitionEffect({
     const selected = transitionEffect[ptEffect.effectType];
     return (
         <div className={'border-white-round p-1 pointer'}
-            onClick={(e) => {
-                openContextMenu(e, ptEffect);
+            onClick={(event) => {
+                openContextMenu(event, ptEffect);
             }}>
             {title}
             <i className={`${selected[0]} ps-1 'highlight-selected`} />

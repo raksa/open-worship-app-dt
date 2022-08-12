@@ -69,8 +69,8 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                         <SlideItemRender index={i}
                             slideItem={item}
                             width={thumbSize}
-                            onContextMenu={(e) => {
-                                slide.openContextMenu(e, item);
+                            onContextMenu={(event) => {
+                                slide.openContextMenu(event, item);
                             }}
                             onCopy={() => {
                                 slide.copiedItem = item;

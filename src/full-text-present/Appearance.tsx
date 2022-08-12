@@ -31,13 +31,13 @@ export default function Appearance() {
                         setFontSizeToStyle(fontSize + 1);
                     }}>{'>'}</button>
             </div>
-            <input className='float-end' type='color' onChange={(e) => {
-                setColorToStyle(e.target.value as AppColorType);
+            <input className='float-end' type='color' onChange={(event) => {
+                setColorToStyle(event.target.value as AppColorType);
             }} value={color} />
             <div>
                 <input type='range' className='form-range' min='1' max='200'
-                    value={fontSize} onChange={(e) => {
-                        setFontSizeToStyle(+e.target.value);
+                    value={fontSize} onChange={(event) => {
+                        setFontSizeToStyle(+event.target.value);
                     }} />
             </div>
         </div>

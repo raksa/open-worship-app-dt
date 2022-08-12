@@ -131,7 +131,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         return bgSrc;
     }
     static async bgSrcSelect(src: string,
-        e: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
         bgType: BackgroundType) {
         const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
         if (selectedBGSrcList.length > 0) {
@@ -141,7 +141,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             });
             return;
         }
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(e);
+        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
             const bgSrc = await this.initBGSrcDim(src, bgType);
             presentManager.presentBGManager.bgSrc = bgSrc;

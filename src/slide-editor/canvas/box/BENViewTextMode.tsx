@@ -17,12 +17,12 @@ export default function BENViewTextMode({
     return (
         <div className='box-editor pointer'
             style={style}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemText);
+            onContextMenu={async (event) => {
+                event.stopPropagation();
+                showCanvasItemContextMenu(event, canvasItemText);
             }}
-            onClick={async (e) => {
-                e.stopPropagation();
+            onClick={async (event) => {
+                event.stopPropagation();
                 const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemText, true);

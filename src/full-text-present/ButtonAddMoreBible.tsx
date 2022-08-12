@@ -14,7 +14,7 @@ export default function ButtonAddMoreBible({
                 width: '20px',
                 padding: '0px',
             }}
-            onClick={async (e) => {
+            onClick={async (event) => {
                 const addBibleView = (bibleName: string) => {
                     const newBibleItem = bibleItems[0].clone();
                     newBibleItem.bibleName = bibleName;
@@ -31,7 +31,7 @@ export default function ButtonAddMoreBible({
                 const bibleListFiltered = bibleList.filter(([bible]) => {
                     return !bibleItemingList.includes(bible);
                 });
-                showAppContextMenu(e, bibleListFiltered.map(([bible, isAvailable]) => {
+                showAppContextMenu(event, bibleListFiltered.map(([bible, isAvailable]) => {
                     return {
                         title: bible, disabled: !isAvailable, onClick: () => {
                             addBibleView(bible);

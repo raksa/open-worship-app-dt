@@ -15,8 +15,8 @@ export default function PathPreviewer({ dirSource }: {
                 </button>
             }
             <input type='text' className='form-control' value={dirSource.dirPath}
-                onChange={(e) => {
-                    dirSource.dirPath = e.target.value;
+                onChange={(event) => {
+                    dirSource.dirPath = event.target.value;
                 }} />
             <button className='btn btn-secondary' type='button'
                 onClick={() => {

@@ -19,8 +19,8 @@ export default function RenderBibleItems({ bible }: {
                     warningMessage={genDuplicatedMessage(items, bibleItem, i1)}
                     bibleItem={bibleItem}
                     bible={bible}
-                    onContextMenu={(e) => {
-                        showAppContextMenu(e, [
+                    onContextMenu={(event) => {
+                        showAppContextMenu(event, [
                             {
                                 title: 'Quick Edit', onClick: () => {
                                     setSetting('bible-list-editing', `${i1}`);

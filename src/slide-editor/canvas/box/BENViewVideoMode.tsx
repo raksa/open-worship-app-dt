@@ -18,12 +18,12 @@ export default function BENViewVideoMode({
     return (
         <div className='box-editor pointer'
             style={style}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemVideo);
+            onContextMenu={async (event) => {
+                event.stopPropagation();
+                showCanvasItemContextMenu(event, canvasItemVideo);
             }}
-            onClick={async (e) => {
-                e.stopPropagation();
+            onClick={async (event) => {
+                event.stopPropagation();
                 const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemVideo, true);

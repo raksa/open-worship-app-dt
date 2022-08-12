@@ -115,8 +115,8 @@ export default function RenderFound({
                         select += ` ${ended ? 'selected-end' : ''}`;
                         return (
                             <div key={`${ind}`}
-                                onMouseDown={(e) => {
-                                    if (e.shiftKey) {
+                                onMouseDown={(event) => {
+                                    if (event.shiftKey) {
                                         const arr = [ind, sVerse, eVerse].sort((a, b) => a - b);
                                         onVerseChange(arr.shift(), arr.pop());
                                     } else {

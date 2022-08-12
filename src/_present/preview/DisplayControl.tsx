@@ -14,12 +14,12 @@ export default function DisplayControl({ presentManager }: {
                 presentManager.presentId +
                 ', display id:' + displayId}>
             <button className='btn btn-sm btn-outline-secondary'
-                onClick={(e) => {
+                onClick={(event) => {
                     const {
                         primaryDisplay,
                         displays,
                     } = getAllDisplays();
-                    showAppContextMenu(e, displays.map((display) => {
+                    showAppContextMenu(event, displays.map((display) => {
                         const bounds = display.bounds;
                         const isPrimary = display.id === primaryDisplay.id;
                         const isSelected = display.id === displayId;

@@ -21,24 +21,26 @@ export default function SlideItemRender({
     return (
         <div className={`slide-item card ${slideItem.isSelected ? 'active' : ''} pointer`}
             draggable
-            onDragStart={(e) => {
+            onDragStart={(event) => {
                 const path = slideItem.toSelectedItemSetting();
                 if (path !== null) {
-                    e.dataTransfer.setData('text/plain', path);
-                    onDragStart(e);
+                    event.dataTransfer.setData('text/plain', path);
+                    onDragStart(event);
                 }
             }}
-            onDragEnd={(e) => {
-                onDragEnd(e);
+            onDragEnd={(event) => {
+                onDragEnd(event);
             }}
             style={{
                 width: `${width}px`,
             }}
-            onClick={(e) => {
+            onClick={(event) => {
                 slideItem.isSelected = !slideItem.isSelected;
-                PresentSlideManager.slideSelect(slideItem.toJson(), e);
+                PresentSlideManager.slideSelect(slideItem.toJson(), event);
             }}
-            onContextMenu={(e) => onContextMenu(e)}
+            onContextMenu={(event) => {
+                onContextMenu(event);
+            }}
             onCopy={onCopy}>
             <div className='card-header d-flex'>
                 <div>

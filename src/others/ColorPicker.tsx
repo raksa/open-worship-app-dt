@@ -86,8 +86,8 @@ function RenderColors({
             </div>
             <div className='d-flex flex-wrap border-white-round'>
                 <RenderNoColor isSelected={!selectedColor}
-                    onClick={(e) => {
-                        onColorChange(null, e);
+                    onClick={(event) => {
+                        onColorChange(null, event);
                     }} />
                 {Object.entries(colors).map(([name, color]: [string, AppColorType], i) => {
                     return (
@@ -95,8 +95,8 @@ function RenderColors({
                             color={color}
                             isSelected={selectedColor !== null &&
                                 compareColor(selectedColor, color)}
-                            onClick={(e) => {
-                                onColorChange(color, e);
+                            onClick={(event) => {
+                                onColorChange(color, event);
                             }} />
                     );
                 })}
@@ -128,8 +128,8 @@ function RenderColor({
 }) {
     return (
         <div title={name}
-            onContextMenu={(e) => {
-                showContextMenu(e, color);
+            onContextMenu={(event) => {
+                showContextMenu(event, color);
             }}
             className={'m-1 color-item pointer' +
                 (isSelected ? ' highlight-selected' : '')}
@@ -138,8 +138,8 @@ function RenderColor({
                 height: '15px',
                 backgroundColor: color,
             }}
-            onClick={(e) => {
-                onClick?.(e as any);
+            onClick={(event) => {
+                onClick?.(event as any);
             }} />
     );
 }
@@ -158,8 +158,8 @@ function RenderNoColor({ isSelected, onClick }: {
                 border: isSelected ?
                     '3px dashed #fff' : '',
             }}
-            onClick={(e) => {
-                onClick?.(e as any);
+            onClick={(event) => {
+                onClick?.(event as any);
             }}>x</div>
     );
 }
@@ -182,16 +182,16 @@ function SelectCustomColor({ color, onColorSelected }: {
         <input ref={inputRef} title='Select custom color'
             className='pointer'
             type='color' value={localColor}
-            onKeyUp={(e) => {
-                if (e.key === 'Enter') {
+            onKeyUp={(event) => {
+                if (event.key === 'Enter') {
                     applyColor(localColor);
                 }
             }}
             onBlur={() => {
                 applyColor(localColor);
             }}
-            onChange={(e) => {
-                setLocalColor(e.target.value as any);
+            onChange={(event) => {
+                setLocalColor(event.target.value as any);
             }} />
     );
 }
@@ -208,8 +208,8 @@ function OpacitySlider({ value, onOpacityChanged }: {
             min='0' max='255' onChange={(event) => {
                 setLocalValue(+event.target.value);
             }}
-            onMouseUp={(e) => {
-                onOpacityChanged(localValue, e as any);
+            onMouseUp={(event) => {
+                onOpacityChanged(localValue, event as any);
             }} />
     );
 }

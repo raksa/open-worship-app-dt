@@ -15,16 +15,16 @@ if (container !== null) {
   );
 }
 
-document.addEventListener('wheel', function (e) {
-  if (e.ctrlKey) {
-    const isUp = e.deltaY < 0;
+document.addEventListener('wheel', function (event) {
+  if (event.ctrlKey) {
+    const isUp = event.deltaY < 0;
     appProviderPresent.messageUtils.sendData('present:app:ctrl-scrolling', isUp);
   }
 });
-document.addEventListener('keyup', function (e) {
-  if ((e.ctrlKey || e.altKey)
-    && ['ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    const isNext = e.key === 'ArrowRight';
+document.addEventListener('keyup', function (event) {
+  if ((event.ctrlKey || event.altKey)
+    && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    const isNext = event.key === 'ArrowRight';
     appProviderPresent.messageUtils.sendData('present:app:change-bible', isNext);
   }
 });

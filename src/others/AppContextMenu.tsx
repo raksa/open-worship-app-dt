@@ -116,11 +116,11 @@ export default function AppContextMenu() {
                     <div key={`${i}`}
                         className={'app-context-menu-item'
                             + ` ${item.disabled ? 'disabled' : ''}`}
-                        onClick={(e) => {
+                        onClick={(event) => {
                             if (item.disabled) {
                                 return;
                             }
-                            item.onClick?.(e);
+                            item.onClick?.(event);
                         }}>
                         {item.title}
                         {item.otherChild || null}

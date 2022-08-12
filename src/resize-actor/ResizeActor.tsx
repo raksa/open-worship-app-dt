@@ -45,9 +45,9 @@ export default function ResizeActor({
                             title='Enable'
                             className='hidden-widget pointer'
                             style={{ color: 'green' }}
-                            onClick={(e) => {
+                            onClick={(event) => {
                                 setDisablingSetting(fSizeName, defaultFlexSize, dataFSizeKey);
-                                const current = e.currentTarget;
+                                const current = event.currentTarget;
                                 const flexSizeDisabled = flexSizeValue[1] as DisabledType;
                                 const target = (flexSizeDisabled[0] === 'first' ?
                                     current.nextElementSibling : current.previousElementSibling) as HTMLDivElement;

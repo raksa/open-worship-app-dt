@@ -20,10 +20,11 @@ export default function SlidePreviewerFooter({ thumbnailSize, setThumbnailSize }
                         min={MIN_THUMBNAIL_SCALE} max={MAX_THUMBNAIL_SCALE}
                         step={THUMBNAIL_SCALE_STEP}
                         value={currentScale.toFixed(1)}
-                        onChange={(e) => {
-                            setThumbnailSize((+e.target.value) * DEFAULT_THUMBNAIL_SIZE);
-                        }} onWheel={(e) => {
-                            const newScale = Slide.toScaleThumbSize(e.deltaY > 0,
+                        onChange={(event) => {
+                            setThumbnailSize((+event.target.value) * DEFAULT_THUMBNAIL_SIZE);
+                        }}
+                        onWheel={(event) => {
+                            const newScale = Slide.toScaleThumbSize(event.deltaY > 0,
                                 currentScale);
                             setThumbnailSize(newScale * DEFAULT_THUMBNAIL_SIZE);
                         }} />

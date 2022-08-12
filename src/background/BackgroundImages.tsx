@@ -30,11 +30,11 @@ export default function BackgroundImages() {
                                     onDragStart={(event) => {
                                         PresentBGManager.startPresentDrag(event, fileSource.src, 'image');
                                     }}
-                                    onContextMenu={(e) => {
-                                        showAppContextMenu(e, genCommonMenu(fileSource),);
+                                    onContextMenu={(event) => {
+                                        showAppContextMenu(event, genCommonMenu(fileSource),);
                                     }}
-                                    onClick={(e) => {
-                                        PresentBGManager.bgSrcSelect(fileSource.src, e, 'image');
+                                    onClick={(event) => {
+                                        PresentBGManager.bgSrcSelect(fileSource.src, event, 'image');
                                     }}>
                                     <div className='card-body'>
                                         <RenderPresentIds

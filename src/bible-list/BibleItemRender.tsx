@@ -45,8 +45,8 @@ export default function BibleItemRender({
                 event.dataTransfer.setData('text/plain', JSON.stringify(newBibleItem));
             }}
             onContextMenu={onContextMenu || (() => false)}
-            onClick={(e) => {
-                e.stopPropagation();
+            onClick={(event) => {
+                event.stopPropagation();
                 if (bibleItem.isSelected && !getIsPreviewingBible()) {
                     previewingEventListener.selectBibleItem(bibleItem);
                     return;
@@ -54,17 +54,17 @@ export default function BibleItemRender({
                 bibleItem.isSelected = !bibleItem.isSelected;
             }}>
             <span className={'bible'}
-                onClick={async (e) => {
+                onClick={async (event) => {
                     if (!changeBible) {
                         return;
                     }
-                    e.stopPropagation();
+                    event.stopPropagation();
                     const bibleList = await bibleHelper.getBibleListWithStatus();
                     const currentBible = bibleItem.bibleName;
                     const bibleListFiltered = bibleList.filter(([bibleName]) => {
                         return currentBible !== bibleName;
                     });
-                    showAppContextMenu(e, bibleListFiltered.map(([bibleName, isAvailable]) => {
+                    showAppContextMenu(event, bibleListFiltered.map(([bibleName, isAvailable]) => {
                         return {
                             title: bibleName, disabled: !isAvailable, onClick: () => {
                                 changeBible(bibleName);

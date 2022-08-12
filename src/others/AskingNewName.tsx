@@ -10,16 +10,16 @@ export function AskingNewName({ applyName }: {
                 <input type='text' className='form-control' placeholder='title'
                     value={creatingNewName}
                     aria-label='file name' aria-describedby='button-addon2' autoFocus
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && creatingNewName) {
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter' && creatingNewName) {
                             applyName(creatingNewName);
-                        } else if (e.key === 'Escape') {
+                        } else if (event.key === 'Escape') {
                             applyName(null);
                         }
                     }}
-                    onChange={(e) => {
+                    onChange={(event) => {
                         // TODO: validate name
-                        setCreatingNewName(e.target.value);
+                        setCreatingNewName(event.target.value);
                     }} />
                 <button className='btn btn-outline-success' type='button' id='button-addon2'
                     onClick={() => applyName(creatingNewName || null)}>

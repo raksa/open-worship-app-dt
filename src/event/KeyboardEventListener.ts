@@ -106,6 +106,6 @@ export function useKeyboardRegistering(eventMapper: EventMapper, listener: Liste
 }
 
 
-document.onkeydown = function (e) {
-    KeyboardEventListener.fireEvent(e);
+document.onkeydown = function (event) {
+    KeyboardEventListener.fireEvent(event);
 };

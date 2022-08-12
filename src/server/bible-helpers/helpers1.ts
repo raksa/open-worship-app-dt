@@ -42,8 +42,8 @@ export function httpsRequest(pathName: string,
     }, (response) => {
         callback(null, response);
     });
-    request.on('error', (e: Error) => {
-        callback(e);
+    request.on('error', (event: Error) => {
+        callback(event);
     });
     request.end();
 }

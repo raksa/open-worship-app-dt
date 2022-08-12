@@ -13,16 +13,16 @@ export default function BENTextEditMode({
     return (
         <div className='box-editor pointer editable'
             style={style}
-            onClick={(e) => {
-                e.stopPropagation();
+            onClick={(event) => {
+                event.stopPropagation();
             }}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
+            onContextMenu={async (event) => {
+                event.stopPropagation();
                 canvasController.setItemIsEditing(canvasItemText, false);
             }}
-            onKeyUp={(e) => {
-                if (e.key === 'Escape' || (e.key === 'Enter'
-                    && e.ctrlKey)) {
+            onKeyUp={(event) => {
+                if (event.key === 'Escape' || (event.key === 'Enter'
+                    && event.ctrlKey)) {
                     canvasController.setItemIsEditing(canvasItemText, false);
                 }
             }}>

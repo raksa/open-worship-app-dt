@@ -33,8 +33,8 @@ export default function BackgroundVideos() {
                                         PresentBGManager.startPresentDrag(
                                             event, fileSource.src, 'video');
                                     }}
-                                    onContextMenu={(e) => {
-                                        showAppContextMenu(e, genCommonMenu(fileSource));
+                                    onContextMenu={(event) => {
+                                        showAppContextMenu(event, genCommonMenu(fileSource));
                                     }}
                                     onMouseEnter={() => {
                                         vRef.current?.play();
@@ -45,8 +45,8 @@ export default function BackgroundVideos() {
                                             vRef.current.currentTime = 0;
                                         }
                                     }}
-                                    onClick={(e) => {
-                                        PresentBGManager.bgSrcSelect(fileSource.src, e, 'video');
+                                    onClick={(event) => {
+                                        PresentBGManager.bgSrcSelect(fileSource.src, event, 'video');
                                     }}>
                                     <div className='card-body'>
                                         <RenderPresentIds

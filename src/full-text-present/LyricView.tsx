@@ -15,9 +15,9 @@ export default function LyricView({
         <div className='lyric-view flex-fill'>
             <div className='input-group'>
                 <input className='form-control' type='text' placeholder='title'
-                    value={lyricItem.title} onChange={(e) => {
+                    value={lyricItem.title} onChange={(event) => {
                         const newItem = cloneObject(lyricItem);
-                        newItem.title = e.target.value;
+                        newItem.title = event.target.value;
                         onLyricChange(newItem);
                     }} />
                 {lyricItems.length > 1 &&
@@ -28,9 +28,9 @@ export default function LyricView({
             </div>
             <textarea className='w-100 h-100 form-control'
                 placeholder='Lyric, use "===" to break text block'
-                value={lyricItem.content} onChange={(e) => {
+                value={lyricItem.content} onChange={(event) => {
                     const newItem = cloneObject(lyricItem);
-                    newItem.content = e.target.value;
+                    newItem.content = event.target.value;
                     onLyricChange(newItem);
                 }} />
         </div >

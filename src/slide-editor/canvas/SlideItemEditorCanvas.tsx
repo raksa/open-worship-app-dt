@@ -66,8 +66,8 @@ export default function SlideItemEditorCanvas() {
                                 }
                             }
                         }}
-                        onContextMenu={(e) => {
-                            showCanvasContextMenu(e);
+                        onContextMenu={(event) => {
+                            showCanvasContextMenu(event);
                         }}
                         onClick={() => {
                             canvasController.stopAllMods();

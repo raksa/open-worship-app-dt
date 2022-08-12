@@ -8,13 +8,13 @@ export default function ItemColorNote({ item }: {
     item: ColorNoteInf,
 }) {
     return (
-        <span className={`color-note ${item.colorNote ? 'active' : ''}`} onClick={(e) => {
-            e.stopPropagation();
+        <span className={`color-note ${item.colorNote ? 'active' : ''}`} onClick={(event) => {
+            event.stopPropagation();
             const colors = [
                 ...Object.entries(colorList.main),
                 ...Object.entries(colorList.extension),
             ];
-            showAppContextMenu(e, [{
+            showAppContextMenu(event, [{
                 title: 'no color',
                 onClick: () => {
                     item.colorNote = null;

@@ -16,15 +16,17 @@ export default function SlideItemsPreviewer({ slide }: {
     return (
         <div className='w-100 h-100 pb-5'
             style={{ overflow: 'auto' }}
-            onWheel={(e) => {
-                if (!e.ctrlKey) {
+            onWheel={(event) => {
+                if (!event.ctrlKey) {
                     return;
                 }
                 const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE);
-                const newScale = Slide.toScaleThumbSize(e.deltaY > 0, currentScale);
+                const newScale = Slide.toScaleThumbSize(event.deltaY > 0, currentScale);
                 setThumbSize(newScale * DEFAULT_THUMBNAIL_SIZE);
             }}
-            onContextMenu={(e) => slide.showSlideItemContextMenu(e)}
+            onContextMenu={(event) => {
+                slide.showSlideItemContextMenu(event);
+            }}
             onPaste={() => slide.pasteItem()}>
             <SlideItems slide={slide} />
         </div>

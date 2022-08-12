@@ -24,8 +24,8 @@ export default function PathSelector({
     const isShowing = !dirSource.dirPath || showing;
     return (
         <div className='path-selector w-100'
-            onContextMenu={(e) => {
-                showAppContextMenu(e, [
+            onContextMenu={(event) => {
+                showAppContextMenu(event, [
                     {
                         title: 'Copy to Clipboard',
                         onClick: () => {
@@ -51,8 +51,8 @@ export default function PathSelector({
                     {dirSource.dirPath}</div>}
                 {dirSource.dirPath &&
                     <div className='px-2'
-                        onClick={(e) => {
-                            e.stopPropagation();
+                        onClick={(event) => {
+                            event.stopPropagation();
                             dirSource.fireReloadEvent();
                         }}>
                         <i className='bi bi-arrow-clockwise' />

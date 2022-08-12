@@ -42,15 +42,15 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 zIndex: canvasItem.props.zIndex,
             }}>
             <div className={'box-editor controllable'}
-                onClick={(e) => {
-                    e.stopPropagation();
+                onClick={(event) => {
+                    event.stopPropagation();
                 }}
-                onContextMenu={(e) => {
-                    e.stopPropagation();
-                    showCanvasItemContextMenu(e, canvasItem);
+                onContextMenu={(event) => {
+                    event.stopPropagation();
+                    showCanvasItemContextMenu(event, canvasItem);
                 }}
-                onDoubleClick={(e) => {
-                    e.stopPropagation();
+                onDoubleClick={(event) => {
+                    event.stopPropagation();
                     if (canvasItem.type === 'text') {
                         canvasController.stopAllMods();
                         canvasController.setItemIsEditing(canvasItem, true);

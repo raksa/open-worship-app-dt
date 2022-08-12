@@ -11,9 +11,9 @@ export default function BENViewError({
     return (
         <div className='box-editor pointer'
             style={canvasItem.getBoxStyle()}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                showAppContextMenu(e, [{
+            onContextMenu={async (event) => {
+                event.stopPropagation();
+                showAppContextMenu(event, [{
                     title: 'Delete',
                     onClick: () => {
                         const canvasController = CanvasController.getInstance();
@@ -27,8 +27,8 @@ export default function BENViewError({
                     },
                 }]);
             }}
-            onClick={async (e) => {
-                e.stopPropagation();
+            onClick={async (event) => {
+                event.stopPropagation();
                 const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItem, true);

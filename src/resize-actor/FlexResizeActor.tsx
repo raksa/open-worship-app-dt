@@ -27,7 +27,9 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         super(props);
         this.myRef = React.createRef();
         this.mouseMoveListener = (mm: MouseEvent) => this.onMouseMove(mm);
-        this.mouseUpListener = (e) => this.onMouseUp(e);
+        this.mouseUpListener = (event) => {
+            this.onMouseUp(event);
+        };
     }
     get previous() {
         return this.myRef.current?.previousElementSibling as HTMLDivElement;
@@ -68,21 +70,21 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
     isShouldIgnore(md: MouseEvent) {
         return (md.target as any).tagName === 'I';
     }
-    onMouseDown(e: MouseEvent) {
-        if (this.isShouldIgnore(e)) {
+    onMouseDown(event: MouseEvent) {
+        if (this.isShouldIgnore(event)) {
             return;
         }
-        e.preventDefault();
+        event.preventDefault();
         this.init();
-        this.lastPos = this.getMousePagePos(e);
+        this.lastPos = this.getMousePagePos(event);
         window.addEventListener('mousemove', this.mouseMoveListener);
         window.addEventListener('mouseup', this.mouseUpListener);
     }
-    onMouseMove(e: MouseEvent) {
-        if (this.isShouldIgnore(e)) {
+    onMouseMove(event: MouseEvent) {
+        if (this.isShouldIgnore(event)) {
             return;
         }
-        let pos = this.getMousePagePos(e);
+        let pos = this.getMousePagePos(event);
         const d = pos - this.lastPos;
         this.previousSize += d;
         this.nextSize -= d;
@@ -115,8 +117,8 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
 
         this.lastPos = pos;
     }
-    onMouseUp(e: MouseEvent) {
-        if (this.isShouldIgnore(e)) {
+    onMouseUp(event: MouseEvent) {
+        if (this.isShouldIgnore(event)) {
             return;
         }
         const current = this.myRef.current;
@@ -176,8 +178,8 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
                         return (
                             <i key={i} title={`Disable ${type}`}
                                 className={`${type} bi bi-${icon}`}
-                                onClick={(e) => {
-                                    e.stopPropagation();
+                                onClick={(event) => {
+                                    event.stopPropagation();
                                     this.quicMove(type);
                                 }} />
                         );

@@ -21,10 +21,10 @@ export default function SlideItemEditor({ slideItem }: {
     }
     return (
         <div className='slide-item-editor flex v w-100 h-100'
-            onWheel={(e) => {
-                if (e.ctrlKey) {
+            onWheel={(event) => {
+                if (event.ctrlKey) {
                     CanvasController.getInstance()
-                        .applyScale(e.deltaY > 0);
+                        .applyScale(event.deltaY > 0);
                 }
             }}>
             <ResizeActor fSizeName={settingNames.slideItemEditor}

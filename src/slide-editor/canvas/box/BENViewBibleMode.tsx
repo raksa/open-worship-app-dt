@@ -15,12 +15,12 @@ export default function BENViewBibleMode({
     return (
         <div className='box-editor pointer'
             style={style}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemBible);
+            onContextMenu={async (event) => {
+                event.stopPropagation();
+                showCanvasItemContextMenu(event, canvasItemBible);
             }}
-            onClick={async (e) => {
-                e.stopPropagation();
+            onClick={async (event) => {
+                event.stopPropagation();
                 const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(

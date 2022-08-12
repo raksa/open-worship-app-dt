@@ -20,8 +20,8 @@ export default function ToolCanvasItems() {
                             canvasController.stopAllMods();
                             canvasController.setItemIsSelecting(canvasItem, true);
                         }}
-                        onContextMenu={(e) => {
-                            showCanvasItemContextMenu(e, canvasItem);
+                        onContextMenu={(event) => {
+                            showCanvasItemContextMenu(event, canvasItem);
                         }}>
                         <div className='card-header'>
                             {canvasItem.id}:

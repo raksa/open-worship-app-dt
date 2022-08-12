@@ -71,7 +71,7 @@ function addHighlightEvent() {
         span.addEventListener('mouseout', function () {
             resetClassName(this.dataset.highlight, 'hover', false);
         });
-        span.addEventListener('click', function (e) {
+        span.addEventListener('click', function () {
             const arrChildren = removeClassName('selected');
             if (!~arrChildren.indexOf(this)) {
                 resetClassName(this.dataset.highlight, 'selected', true);

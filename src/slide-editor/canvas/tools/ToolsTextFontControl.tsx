@@ -32,13 +32,13 @@ function FontSize({ canvasItemText }: {
             <input className='form-control' type='number'
                 style={{ maxWidth: '100px' }}
                 value={localFontSize}
-                onChange={(e) => {
-                    applyFontSize(+e.target.value);
+                onChange={(event) => {
+                    applyFontSize(+event.target.value);
                 }} />
             <select className='form-select form-select-sm'
                 value={localFontSize}
-                onChange={(e) => {
-                    applyFontSize(+e.target.value);
+                onChange={(event) => {
+                    applyFontSize(+event.target.value);
                 }} >
                 <option>--</option>
                 {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
@@ -74,11 +74,11 @@ function FontFamily({ canvasItemText }: {
                 <select id='text-font-family'
                     className='form-select form-select-sm'
                     value={localFontFamily}
-                    onChange={(e) => {
-                        if (e.target.value === '--') {
+                    onChange={(event) => {
+                        if (event.target.value === '--') {
                             return;
                         }
-                        applyFontFamily(e.target.value);
+                        applyFontFamily(event.target.value);
                     }} >
                     <option>--</option>
                     {Object.keys(fontList).map((ff, i) => {
@@ -120,8 +120,8 @@ function FontWeight({
             <select id='text-font-style'
                 className='form-select form-select-sm'
                 value={localFontWeight}
-                onChange={(e) => {
-                    applyFontWeight(e.target.value);
+                onChange={(event) => {
+                    applyFontWeight(event.target.value);
                 }} >
                 <option>--</option>
                 {fontList[fontFamily].map((fs, i) => {

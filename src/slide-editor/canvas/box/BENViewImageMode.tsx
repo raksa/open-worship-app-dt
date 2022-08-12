@@ -16,12 +16,12 @@ export default function BENViewImageMode({
     return (
         <div className='box-editor pointer'
             style={style}
-            onContextMenu={async (e) => {
-                e.stopPropagation();
-                showCanvasItemContextMenu(e, canvasItemImage);
+            onContextMenu={async (event) => {
+                event.stopPropagation();
+                showCanvasItemContextMenu(event, canvasItemImage);
             }}
-            onClick={async (e) => {
-                e.stopPropagation();
+            onClick={async (event) => {
+                event.stopPropagation();
                 const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemImage, true);

@@ -99,8 +99,8 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         setSetting(settingName, str);
     }
     static async slideSelect(slideItemJson: SlideItemType,
-        e: React.MouseEvent<HTMLElement, MouseEvent>) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(e);
+        event: React.MouseEvent<HTMLElement, MouseEvent>) {
+        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach((presentManager) => {
             if (presentManager.presentSlideManager.slideItemJson?.id !== slideItemJson.id) {
                 presentManager.presentSlideManager.slideItemJson = slideItemJson;
