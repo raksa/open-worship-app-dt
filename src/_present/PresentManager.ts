@@ -3,7 +3,14 @@ import { getWindowDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import PresentBGManager from './PresentBGManager';
-import { getAllDisplays, getAllShowingPresentIds, hidePresent, PresentMessageType, setDisplay, showPresent } from './presentHelpers';
+import {
+    getAllDisplays,
+    getAllShowingPresentIds,
+    hidePresent,
+    PresentMessageType,
+    setDisplay,
+    showPresent,
+} from './presentHelpers';
 import PresentSlideManager from './PresentSlideManager';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 
@@ -70,6 +77,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     }
     set isSelected(isSelected: boolean) {
         this._isSelected = isSelected;
+        PresentManager.savePresentManagersSetting();
         this.fireInstanceEvent();
     }
     get isShowing() {
@@ -137,6 +145,21 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         PresentManager._cache.delete(this.key);
         this.fireInstanceEvent();
     }
+    static receiveSyncPresent(message: PresentMessageType) {
+        const { type, data, presentId } = message;
+        const presentManager = PresentManager.getInstance(presentId);
+        if (type === 'background') {
+            PresentBGManager.receiveSyncPresent(message);
+        } else if (type === 'slide') {
+            PresentSlideManager.receiveSyncPresent(message);
+        } else if (type === 'effect') {
+            PresentTransitionEffect.receiveSyncPresent(message);
+        } else if (type === 'visible') {
+            presentManager.isShowing = data?.isShowing;
+        } else {
+            console.log(message);
+        }
+    }
     static getInstanceByKey(key: string) {
         return this.getInstance(+key);
     }
@@ -180,19 +203,39 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             })).then(() => resolve([]));
         });
     }
-    static receiveSyncPresent(message: PresentMessageType) {
-        const { type, data, presentId } = message;
-        const presentManager = PresentManager.getInstance(presentId);
-        if (type === 'background') {
-            PresentBGManager.receiveSyncPresent(message);
-        } else if (type === 'slide') {
-            PresentSlideManager.receiveSyncPresent(message);
-        } else if (type === 'effect') {
-            PresentTransitionEffect.receiveSyncPresent(message);
-        } else if (type === 'visible') {
-            presentManager.isShowing = data?.isShowing;
-        } else {
-            console.log(message);
+    static getPresentManagersSetting() {
+        let presentManagers = this.getAllInstances();
+        const str = getSetting(`${settingName}instances`, '[]');
+        try {
+            const json = JSON.parse(str);
+            json.forEach(({ presentId, isSelected }: any) => {
+                if (typeof presentId === 'number') {
+                    const presentManager = this.getInstance(presentId);
+                    presentManager._isSelected = !!isSelected;
+                    if (presentManagers.every((pm) => {
+                        return pm.presentId !== presentId;
+                    })) {
+                        presentManagers.push(presentManager);
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            presentManagers = [this.getInstance(0)];
         }
+        if (presentManagers.length === 1) {
+            presentManagers[0].isSelected = true;
+        }
+        return presentManagers;
+    }
+    static savePresentManagersSetting() {
+        const presentManagers = this.getAllInstances();
+        const json = presentManagers.map((presentManager) => {
+            return {
+                presentId: presentManager.presentId,
+                isSelected: presentManager.isSelected,
+            };
+        });
+        setSetting(`${settingName}instances`, JSON.stringify(json));
     }
 }

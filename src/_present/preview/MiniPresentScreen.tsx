@@ -32,6 +32,7 @@ function openContextMenu(e: any, presentManager: PresentManager) {
             title: 'Delete',
             onClick() {
                 presentManager.delete();
+                PresentManager.savePresentManagersSetting();
             },
         }],
         ...[{
@@ -39,6 +40,7 @@ function openContextMenu(e: any, presentManager: PresentManager) {
             onClick() {
                 const nextId = PresentManager.getAllInstances().length;
                 PresentManager.getInstance(nextId);
+                PresentManager.savePresentManagersSetting();
                 PresentManager.fireInstanceEvent();
             },
         },
@@ -47,13 +49,7 @@ function openContextMenu(e: any, presentManager: PresentManager) {
 
 export default function MiniPresentScreen() {
     usePMEvents(['instance']);
-    const presentManagers = PresentManager.getAllInstances();
-    if (presentManagers.length === 0) {
-        const presentManager = PresentManager.getInstance(0);
-        presentManager.isSelected = true;
-    } else if (presentManagers.length === 1) {
-        presentManagers[0].isSelected = true;
-    }
+    const presentManagers = PresentManager.getPresentManagersSetting();
     return (
         <>
             {presentManagers.map((presentManager, i) => {
