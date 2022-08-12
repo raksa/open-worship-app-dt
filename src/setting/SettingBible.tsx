@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import ToastEventListener from '../event/ToastEventListener';
+import appProvider from '../server/appProvider';
 
 export default function SettingBible() {
     const [bbList, setBbList] = useState(bibleHelper.getBibleList());
@@ -66,7 +67,7 @@ function BibleItem({ bibleName }: { bibleName: string }) {
                                     },
                                     onDone: (error) => {
                                         if (error) {
-                                            console.log(error);
+                                            appProvider.appUtils.handleError(error);
                                             setIsDownloaded(false);
                                         } else {
                                             setIsDownloaded(true);

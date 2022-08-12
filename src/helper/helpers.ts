@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import appProvider from '../server/appProvider';
 import FileSource from './FileSource';
 import ItemSource from './ItemSource';
 
@@ -87,7 +88,7 @@ export function validateAppMeta(meta: any) {
             return true;
         }
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
     }
     return false;
 }

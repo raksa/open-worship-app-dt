@@ -35,6 +35,6 @@ window.onunhandledrejection = (promiseError) => {
 };
 
 window.onerror = function (error: any) {
-  console.log(error);
+  appProvider.appUtils.handleError(error);
   confirmEraseLocalStorage();
 };

@@ -9,6 +9,7 @@ import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
+import appProvider from '../../server/appProvider';
 
 export type CanvasItemVideoPropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
 export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType> {
@@ -47,7 +48,7 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
             this.validate(json);
             return new CanvasItemVideo(json);
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

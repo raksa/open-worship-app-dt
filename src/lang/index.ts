@@ -1,5 +1,6 @@
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
+import appProvider from '../server/appProvider';
 
 export const locales = ['km', 'en'] as const;
 export type LocalType = typeof locales[number];
@@ -39,7 +40,7 @@ export async function getLangAsync(local: LocalType) {
       const langData = await importLang(local);
       cache.set(local, langData);
     } catch (error) {
-      console.log(error);
+      appProvider.appUtils.handleError(error);
     }
   }
   return getLang(local);

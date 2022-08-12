@@ -154,13 +154,13 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             try {
                 return await getImageDim(bgSrc.src);
             } catch (error) {
-                console.log(error);
+                appProviderPresent.appUtils.handleError(error);
             }
         } else if (bgSrc.type === 'video') {
             try {
                 return await getVideoDim(bgSrc.src);
             } catch (error) {
-                console.log(error);
+                appProviderPresent.appUtils.handleError(error);
             }
         }
         return [undefined, undefined];

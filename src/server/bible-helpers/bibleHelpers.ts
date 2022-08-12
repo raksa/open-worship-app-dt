@@ -19,6 +19,7 @@ import BibleItem from '../../bible-list/BibleItem';
 import { toBase64, fromBase64 } from '../helpers';
 
 import bibleJson from './bible.json';
+import appProvider from '../appProvider';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -146,7 +147,7 @@ const bibleHelper = {
                 this.setBibleList(data.bibleList);
                 resolve(true);
             }).catch((error) => {
-                console.log(error);
+                appProvider.appUtils.handleError(error);
                 resolve(false);
             });
         });
@@ -159,7 +160,7 @@ const bibleHelper = {
                 return list;
             }
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
         }
         return [];
     },
@@ -191,7 +192,7 @@ const bibleHelper = {
         try {
             await fsCreateDir(dirPath);
         } catch (error: any) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
             return null;
         }
         return pathJoin(getUserWritablePath(), 'bibles');

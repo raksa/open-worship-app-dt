@@ -119,7 +119,7 @@ export function fsListFiles(dir: string) {
         }
         appProvider.fileUtils.readdir(dir, (error, list) => {
             if (error) {
-                console.log(error);
+                appProvider.appUtils.handleError(error);
                 return reject(new Error('Error occurred during listing file'));
             }
             resolve(list);
@@ -143,7 +143,7 @@ export async function fsListFilesWithMimetype(dir: string, mimetype: MimetypeNam
             return FileSource.getInstance(dir, fileMetadata.fileName);
         });
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         ToastEventListener.showSimpleToast({
             title: 'Getting File List',
             message: 'Error occurred during listing file',
@@ -163,7 +163,7 @@ export function fsCheckFileExist(filePath: string, fileName?: string) {
             } else if (error.code === 'ENOENT') {
                 resolve(false);
             } else {
-                console.log(error);
+                appProvider.appUtils.handleError(error);
                 reject(new Error('Error during checking file exist'));
             }
         });
@@ -189,7 +189,7 @@ export async function fsWhiteFile(filePath: string, txt: string) {
             throw new Error('File exist');
         }
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during creating file');
     }
 }
@@ -206,7 +206,7 @@ export async function fsCreateFile(filePath: string,
         appProvider.fileUtils.writeFileSync(filePath, txt);
         return filePath;
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during creating file');
     }
 }
@@ -217,7 +217,7 @@ export async function fsRenameFile(basePath: string,
         const newFilePath = pathJoin(basePath, newFileName);
         appProvider.fileUtils.renameSync(oldFilePath, newFilePath);
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during renaming file');
     }
 }
@@ -227,7 +227,7 @@ export async function fsDeleteFile(filePath: string) {
             appProvider.fileUtils.unlinkSync(filePath);
         }
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during deleting file');
     }
 }
@@ -235,7 +235,7 @@ export async function fsReadFile(filePath: string) {
     try {
         return appProvider.fileUtils.readFileSync(filePath, 'utf8');
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during reading file');
     }
 }
@@ -245,7 +245,7 @@ export async function fsCopyFileToPath(filePath: string,
         const targetPath = pathJoin(destinationPath, fileName);
         appProvider.fileUtils.copyFileSync(filePath, targetPath);
     } catch (error) {
-        console.log(error);
+        appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during copying file');
     }
 }

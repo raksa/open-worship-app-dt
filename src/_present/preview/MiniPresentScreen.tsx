@@ -8,6 +8,7 @@ import DisplayControl from './DisplayControl';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { usePMEvents } from '../presentEventHelpers';
 import PTEffectControl from './PTEffectControl';
+import appProviderPresent from '../appProviderPresent';
 
 function openContextMenu(e: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
@@ -84,7 +85,7 @@ export default function MiniPresentScreen() {
                                     presentManager.receivePresentDrag(data.present);
                                 }
                             } catch (error) {
-                                console.log(error);
+                                appProviderPresent.appUtils.handleError(error);
                             }
                         }}>
                         <div className='card-header pb-2' style={{

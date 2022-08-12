@@ -2,6 +2,7 @@ import FileSource from '../helper/FileSource';
 import {
     getSetting, setSetting,
 } from '../helper/settingHelper';
+import appProvider from '../server/appProvider';
 
 type ChangeObjectType<T> = {
     undoQueue: T[],
@@ -28,7 +29,7 @@ export default abstract class EditingCacheManager<T1, T2> {
         try {
             return JSON.parse(str);
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
             return {};
         }
     }

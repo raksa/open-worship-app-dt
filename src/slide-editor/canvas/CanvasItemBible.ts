@@ -10,6 +10,7 @@ import {
     HAlignmentType,
     VAlignmentType,
 } from './canvasHelpers';
+import appProvider from '../../server/appProvider';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleNames: string[];
@@ -33,7 +34,7 @@ export default class CanvasItemBible extends CanvasItemText {
             this.validate(json);
             return new CanvasItemBible(json);
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

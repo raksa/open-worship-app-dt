@@ -85,7 +85,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             this.validate(json);
             return new CanvasItemText(json);
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

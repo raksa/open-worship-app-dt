@@ -1,5 +1,6 @@
 import EventHandler from '../event/EventHandler';
 import ToastEventListener from '../event/ToastEventListener';
+import appProvider from '../server/appProvider';
 import {
     FileMetadataType,
     getFileMetaData,
@@ -65,7 +66,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
                     this.dirPath, fileMetadata.fileName);
             });
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
             ToastEventListener.showSimpleToast({
                 title: 'Getting File List',
                 message: 'Error occurred during listing file',

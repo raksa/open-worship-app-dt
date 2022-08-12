@@ -11,7 +11,7 @@ export function useFontList() {
             appProvider.fontUtils.getFonts().then((fonts) => {
                 setFontList(fonts);
             }).catch((error) => {
-                console.log(error);
+                appProvider.appUtils.handleError(error);
                 ToastEventListener.showSimpleToast({
                     title: 'Loading Fonts',
                     message: 'Fail to load font list',

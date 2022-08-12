@@ -10,6 +10,7 @@ import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
+import appProvider from '../server/appProvider';
 
 export type BibleTargetType = {
     book: string,
@@ -201,7 +202,7 @@ export default class BibleItem extends ItemBase {
                 return BibleItem.fromJson(item);
             }) as BibleItem[];
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
         }
         return [];
     }

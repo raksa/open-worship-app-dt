@@ -26,7 +26,7 @@ export async function sqlite3Read(bibleName: string, key: string, cipherKey: str
                 callback(json);
                 return;
             } catch (error) {
-                console.log(error);
+                appProvider.appUtils.handleError(error);
             }
         }
         callback(null);
@@ -91,7 +91,7 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
         const writeStream = fsCreateWriteStream(filePath);
         try {
             if (error || response.statusCode !== 200) {
-                console.log(error);
+                appProvider.appUtils.handleError(error);
                 console.log(response);
                 writeStream.close();
                 await fsDeleteFile(filePath);

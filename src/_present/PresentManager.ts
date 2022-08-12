@@ -2,6 +2,7 @@ import EventHandler from '../event/EventHandler';
 import { getWindowDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
+import appProviderPresent from './appProviderPresent';
 import PresentBGManager from './PresentBGManager';
 import {
     getAllDisplays,
@@ -220,7 +221,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 }
             });
         } catch (error) {
-            console.log(error);
+            appProviderPresent.appUtils.handleError(error);
             presentManagers = [this.getInstance(0)];
         }
         if (presentManagers.length === 1) {

@@ -13,6 +13,7 @@ import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 import { CanvasItemMediaPropsType, CCEventType } from './canvasHelpers';
 import CanvasItemVideo from './CanvasItemVideo';
+import appProvider from '../../server/appProvider';
 
 export default class CanvasController extends EventHandler<CCEventType> {
     static eventNamePrefix: string = 'canvas-c';
@@ -134,7 +135,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
             this.addNewItem(newItem);
             return;
         } catch (error) {
-            console.log(error);
+            appProvider.appUtils.handleError(error);
         }
         ToastEventListener.showSimpleToast({
             title: 'Insert Image or Video',
