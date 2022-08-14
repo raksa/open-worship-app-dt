@@ -5,7 +5,10 @@ import Utils from './Utils';
 export default function FullTextTools() {
     return (
         <>
-            <Utils onShow={() => previewer.show()} />
+            <Utils
+                onShow={(event) => {
+                    previewer.show(event);
+                }} />
             <CustomStyle />
         </>
     );

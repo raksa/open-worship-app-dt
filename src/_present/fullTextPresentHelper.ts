@@ -1,40 +1,43 @@
 import { getVerses } from '../server/bible-helpers/helpers1';
 import { toLocaleNumBB } from '../server/bible-helpers/helpers2';
-import { presentEventListener } from '../event/PresentEventListener';
 import { removePX } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { AppColorType, BLACK_COLOR } from '../others/ColorPicker';
-import { HIGHLIGHT_HOVER_SETTING } from './Utils';
+import { HIGHLIGHT_HOVER_SETTING } from '../full-text-present/Utils';
 import BibleItem from '../bible-list/BibleItem';
 import { renderPresent } from '../helper/presentingHelpers';
+import { presentEventListener } from '../event/PresentEventListener';
 
 type StylingType = {
     color?: AppColorType;
     fontSize?: number;
     textShadow?: string;
 };
-class FullTextPresentHelper {
-    tableShowing = document.createElement('table');
-    textStyle: { [key: string]: string } = {};
-    isShowing = false;
-    constructor() {
-        this.tableShowing.innerHTML = `
-        <thead><tr></tr></thead>
-        <tbody><tr></tr></tbody>
-        `;
-    }
-    get textColor() {
+export type RenderedType = {
+    title: string;
+    texts: string[];
+};
+const tableShowing = document.createElement('table');
+tableShowing.innerHTML = `
+<thead><tr></tr></thead>
+<tbody><tr></tr></tbody>
+`;
+const textStyle: { [key: string]: string } = {};
+const fullTextPresentHelper = {
+    tableShowing,
+    textStyle,
+    getTextColor() {
         return this.textStyle.color || BLACK_COLOR;
-    }
-    get textFontSize() {
+    },
+    getTextFontSize() {
         const fontSize = this.textStyle.fontSize || '111px';
         return removePX(fontSize);
-    }
+    },
     _clearChildren() {
         (this.tableShowing.tHead?.firstChild as HTMLTableRowElement).innerHTML = '';
         this.tableShowing.tBodies[0].innerHTML = '';
-    }
+    },
     setList(data: { title: string, texts: string[] }[]) {
         this._clearChildren();
         if (data.length) {
@@ -57,12 +60,12 @@ class FullTextPresentHelper {
             }
         }
         this.applyStyle();
-    }
+    },
     _forceSetStyle(style: CSSStyleDeclaration, prop: string, value?: string) {
         if (value) {
             (style as any)[prop] = value;
         }
-    }
+    },
     applyStyle() {
         const { color, fontSize, textShadow } = this.textStyle;
         const thOrTd = this.tableShowing.querySelectorAll('th, td');
@@ -74,13 +77,13 @@ class FullTextPresentHelper {
         });
         this.render();
         this.saveSetting();
-    }
+    },
     setStyle({ color, fontSize, textShadow }: StylingType) {
         color && (this.textStyle['color'] = color);
         fontSize && (this.textStyle['fontSize'] = `${fontSize}px`);
         textShadow && (this.textStyle['textShadow'] = textShadow);
         this.applyStyle();
-    }
+    },
     loadSetting() {
         const settingStr = getSetting('bible-showing-controller');
         try {
@@ -92,68 +95,37 @@ class FullTextPresentHelper {
         } catch (error) {
 
         }
-    }
+    },
     saveSetting() {
         setSetting('bible-showing-controller', JSON.stringify({
             textStyle: this.textStyle,
             html: this.tableShowing.outerHTML,
         }));
-    }
-    show() {
-        this.isShowing = true;
-        this.render();
-    }
-    hide() {
-        this.isShowing = false;
-        presentEventListener.clearFT(true);
+    },
+    setRenderScroll(amount: number, isScrollUp: boolean) {
         renderPresent({
             script: `
             const ftViewer = getFullText();
-            ftViewer.innerHTML = '';
+            ftViewer.scrollTop += ${(isScrollUp ? 1 : -1) * amount};
         `});
-    }
-    render() {
-        if (this.isShowing) {
-            presentEventListener.renderFT();
-            this.resetHighlight();
-            this.setScrollTop();
-            renderPresent({
-                script: `
-                const ftViewer = getFullText();
-                ftViewer.innerHTML = \`${this.tableShowing.outerHTML}\`;
-            `});
-        }
-    }
-    setRenderScroll(amount: number, isScrollUp: boolean) {
-        if (this.isShowing) {
-            renderPresent({
-                script: `
-                const ftViewer = getFullText();
-                ftViewer.scrollTop += ${(isScrollUp ? 1 : -1) * amount};
-            `});
-        }
-    }
+    },
     setScrollTop() {
-        if (this.isShowing) {
-            renderPresent({
-                script: `
-                const ftViewer = getFullText();
-                ftViewer.scrollTop = 0;
-            `});
-        }
-    }
+        renderPresent({
+            script: `
+            const ftViewer = getFullText();
+            ftViewer.scrollTop = 0;
+        `});
+    },
     setScrollBottom() {
-        if (this.isShowing) {
-            renderPresent({
-                script: `
-                const ftViewer = getFullText();
-                const table = ftViewer.querySelector('table');
-                const bibleBC = ftViewer.getBoundingClientRect();
-                const tableBC = table.getBoundingClientRect();
-                ftViewer.scrollTop = tableBC.height - bibleBC.height;
-            `});
-        }
-    }
+        renderPresent({
+            script: `
+            const ftViewer = getFullText();
+            const table = ftViewer.querySelector('table');
+            const bibleBC = ftViewer.getBoundingClientRect();
+            const tableBC = table.getBoundingClientRect();
+            ftViewer.scrollTop = tableBC.height - bibleBC.height;
+        `});
+    },
     resetHighlight() {
         const isShouldHighlight = getSetting(HIGHLIGHT_HOVER_SETTING) === 'true';
         const tds = this.tableShowing.querySelectorAll('td');
@@ -166,20 +138,44 @@ class FullTextPresentHelper {
                 }
             });
         });
-    }
+    },
     renderFromData(data: {
         title: string, texts: string[],
     }[] | null) {
         if (data === null) {
-            fullTextPresentHelper.setList([]);
-            fullTextPresentHelper.hide();
+            this.setList([]);
+            this.hide();
         } else {
-            fullTextPresentHelper.setList(data);
-            fullTextPresentHelper.show();
+            this.setList(data);
+            this.show();
         }
-    }
-    renderBibleItems = (bibleItems: BibleItem[]) => {
-        Promise.all(bibleItems.map((bibleItem) => {
+    },
+    genHtmlFTItem(renderedList: RenderedType[]) {
+        const tableShowing = document.createElement('table');
+        tableShowing.innerHTML = '<thead><tr></tr></thead><tbody><tr></tr></tbody>';
+        if (renderedList.length) {
+            renderedList.forEach(({ title }) => {
+                const trHead = tableShowing.tHead?.firstChild as HTMLTableRowElement;
+                const th = document.createElement('th');
+                th.innerHTML = title;
+                trHead.appendChild(th);
+            });
+            const textsLength = renderedList[0].texts.length;
+            for (let i = 0; i < textsLength; i++) {
+                const tr = document.createElement('tr');
+                renderedList.forEach((d) => {
+                    const td = document.createElement('td');
+                    td.innerHTML = d.texts[i];
+                    tr.appendChild(td);
+                });
+                const tBody = tableShowing.tBodies[0];
+                tBody.appendChild(tr);
+            }
+        }
+        return tableShowing;
+    },
+    genRenderList(bibleItems: BibleItem[]) {
+        return Promise.all(bibleItems.map((bibleItem) => {
             return new Promise<{
                 title: string, texts: string[]
             }>(async (resolve, _) => {
@@ -190,16 +186,16 @@ class FullTextPresentHelper {
                 if (verses !== null) {
                     for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
                         const verseNumb = await toLocaleNumBB(bibleItem.bibleName, i);
-                        text += `<span data-highlight="${i}"><span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}</span>`;
+                        text += `<span data-highlight="${i}">
+                            <span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}
+                        </span>`;
                     }
                 }
                 resolve({ title, texts: [text] });
             });
-        })).then((renderedList) => {
-            this.renderFromData(renderedList);
-        });
-    }
-    renderLyricsList = (lyric: Lyric) => {
+        }));
+    },
+    renderLyricsList(lyric: Lyric) {
         const newList = lyric.items.map((lyricItem) => {
             const texts = lyricItem.content.split('===').map((text, i) => {
                 return `<span data-highlight="${i}">${text.trim().replace(/\n/g, '<br/>')}</span>`;
@@ -207,8 +203,28 @@ class FullTextPresentHelper {
             return { title: lyricItem.title, texts };
         });
         this.renderFromData(newList);
-    };
-}
+    },
+    show() {
+        this.render();
+    },
+    hide() {
+        presentEventListener.clearFT(true);
+        renderPresent({
+            script: `
+            const ftViewer = getFullText();
+            ftViewer.innerHTML = '';
+        `});
+    },
+    render() {
+        presentEventListener.renderFT();
+        this.resetHighlight();
+        this.setScrollTop();
+        renderPresent({
+            script: `
+            const ftViewer = getFullText();
+            ftViewer.innerHTML = \`${this.tableShowing.outerHTML}\`;
+        `});
+    },
+};
 
-const fullTextPresentHelper = new FullTextPresentHelper();
 export default fullTextPresentHelper;

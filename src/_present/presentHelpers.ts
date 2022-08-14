@@ -8,7 +8,7 @@ import {
 const messageUtils = appProviderPresent.messageUtils;
 
 export const presentTypeList = [
-    'background', 'slide', 'display-change',
+    'background', 'slide', 'full-text', 'display-change',
     'visible', 'init', 'effect',
 ] as const;
 export type PresentType = typeof presentTypeList[number];

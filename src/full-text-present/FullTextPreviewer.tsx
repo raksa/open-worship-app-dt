@@ -11,8 +11,10 @@ import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
 const BiblePreviewer = React.lazy(() => import('./BiblePreviewer'));
 const LyricPreviewer = React.lazy(() => import('./LyricPreviewer'));
 
-export const previewer: { show: Function } = {
-    show: () => false,
+export const previewer: {
+    show: (_: React.MouseEvent) => void;
+} = {
+    show: () => void 0,
 };
 const FT_TAB_SETTING_NAME = 'full-text-previewer';
 export function getIsPreviewingBible() {

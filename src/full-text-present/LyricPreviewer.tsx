@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { cloneObject } from '../helper/helpers';
-import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
-import { getSetting } from '../helper/settingHelper';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
@@ -28,9 +26,6 @@ export default function LyricPreviewer() {
             }
             fullTextPresentHelper.renderLyricsList(lyric);
         };
-        if (getSetting(FULL_TEXT_AUTO_SAVE_SETTING) === 'true') {
-            previewer.show();
-        }
         return () => {
             isMounted = false;
         };

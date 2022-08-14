@@ -29,7 +29,8 @@ export default function MiniPresentApp({ id }: { id: number }) {
                 presentManager={presentManager} />
             <PresentSlide
                 presentManager={presentManager} />
-            <PresentFullText />
+            <PresentFullText
+                presentManager={presentManager} />
             <PresentAlert />
         </>
     );

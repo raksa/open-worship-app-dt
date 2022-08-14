@@ -1,12 +1,12 @@
 
 import { useState } from 'react';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { usePresentCtrlScrolling } from '../event/PresentEventListener';
 import { AppColorType } from '../others/ColorPicker';
 
 export default function Appearance() {
-    const [color, setColor] = useState(fullTextPresentHelper.textColor);
-    const [fontSize, setFontSize] = useState(fullTextPresentHelper.textFontSize);
+    const [color, setColor] = useState(fullTextPresentHelper.getTextColor());
+    const [fontSize, setFontSize] = useState(fullTextPresentHelper.getTextFontSize());
     const setColorToStyle = (newColor: AppColorType) => {
         setColor(newColor);
         fullTextPresentHelper.setStyle({ color: newColor });
@@ -16,7 +16,7 @@ export default function Appearance() {
         fullTextPresentHelper.setStyle({ fontSize: newFontSize });
     };
     usePresentCtrlScrolling(() => {
-        setFontSize(fullTextPresentHelper.textFontSize);
+        setFontSize(fullTextPresentHelper.getTextFontSize());
     });
     return (
         <div>

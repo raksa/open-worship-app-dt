@@ -2,16 +2,13 @@ import { useEffect, useState } from 'react';
 import { useBibleItemSelecting } from '../event/PreviewingEventListener';
 import BibleView from './BibleView';
 import { previewer } from './FullTextPreviewer';
-import { FULL_TEXT_AUTO_SAVE_SETTING } from './Utils';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { useChangingBible } from '../event/PresentEventListener';
 import ButtonAddMoreBible from './ButtonAddMoreBible';
-import { getSetting } from '../helper/settingHelper';
-import fullTextPresentHelper from './fullTextPresentHelper';
 import BibleItem from '../bible-list/BibleItem';
 import BibleList from '../bible-list/BibleList';
+import PresentFTManager from '../_present/PresentFTManager';
 
-let isMounted = false;
 export default function BiblePreviewer() {
     const [bibleItem, setBibleItem] = useState<BibleItem | null | undefined>(null);
     useBibleItemSelecting(setBibleItem);
@@ -47,19 +44,11 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
     useEffect(() => {
         setBibleItems(BibleItem.convertPresent(bibleItem,
             BibleItem.getBiblePresentingSetting()));
-        isMounted = true;
-        previewer.show = () => {
-            if (!isMounted) {
-                return;
-            }
-            fullTextPresentHelper.renderBibleItems(BibleItem.convertPresent(bibleItem,
-                BibleItem.getBiblePresentingSetting()));
+        previewer.show = (event: React.MouseEvent) => {
+            PresentFTManager.bibleItemSelect(bibleItem, event);
         };
-        if (getSetting(FULL_TEXT_AUTO_SAVE_SETTING) === 'true') {
-            previewer.show();
-        }
         return () => {
-            isMounted = false;
+            previewer.show = () => void 0;
         };
     }, [bibleItem]);
     useChangingBible(async (isNext) => {

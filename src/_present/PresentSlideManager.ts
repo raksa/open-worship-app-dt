@@ -81,12 +81,10 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     }
     fireUpdate() {
         this.addPropEvent('update');
-        PresentManager.getInstance(this.presentId).fireUpdateEvent();
         PresentSlideManager.fireUpdateEvent();
     }
     static fireUpdateEvent() {
         this.addPropEvent('update');
-        PresentManager.fireUpdateEvent();
     }
     static getSlideList(): SlideListType {
         const str = getSetting(settingName, '');

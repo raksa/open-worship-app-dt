@@ -1,7 +1,7 @@
 import './TextShadow.scss';
 
 import { useEffect } from 'react';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { AppColorType } from '../others/ColorPicker';
 
 

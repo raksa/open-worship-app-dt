@@ -2,7 +2,7 @@ import { presentEventListener } from '../event/PresentEventListener';
 import ToastEventListener from '../event/ToastEventListener';
 import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
-import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
+import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { pathJoin } from './fileHelper';
 import bibleHelper from './bible-helpers/bibleHelpers';
 import { initBibleInfo } from './bible-helpers/helpers1';
@@ -70,9 +70,6 @@ export function getPresentRendered() {
             sendData('main:app:is-rendered', returningEvent);
     });
 }
-getPresentRendered().then((rendered) => {
-    fullTextPresentHelper.isShowing = !!rendered.fullText;
-});
 export function getUserWritablePath() {
     return appProvider.messageUtils.
         sendSyncData('main:app:get-data-path');

@@ -10,8 +10,8 @@
     background-color: rgba(128, 128, 128, 0.219);
     opacity: 0;
     cursor: pointer;
+}
 
-    &:hover {
-        opacity: 1;
-    }
+body:hover #close {
+    opacity: 1;
 }

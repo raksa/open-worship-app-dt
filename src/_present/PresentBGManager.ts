@@ -84,12 +84,10 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     }
     fireUpdate() {
         this.addPropEvent('update');
-        PresentManager.getInstance(this.presentId).fireUpdateEvent();
         PresentBGManager.fireUpdateEvent();
     }
     static fireUpdateEvent() {
         this.addPropEvent('update');
-        PresentManager.fireUpdateEvent();
     }
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');

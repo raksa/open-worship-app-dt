@@ -20,7 +20,8 @@ export default function PresentApp() {
                 presentManager={presentManager} />
             <PresentSlide
                 presentManager={presentManager} />
-            <PresentFullText />
+            <PresentFullText
+                presentManager={presentManager} />
             <PresentAlert />
             <CloseButton
                 presentManager={presentManager} />

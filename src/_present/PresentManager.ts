@@ -4,6 +4,7 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import appProviderPresent from './appProviderPresent';
 import PresentBGManager from './PresentBGManager';
+import PresentFTManager from './PresentFTManager';
 import {
     getAllDisplays,
     getAllShowingPresentIds,
@@ -23,6 +24,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
     readonly presentSlideManager: PresentSlideManager;
+    readonly presentFTManager: PresentFTManager;
     readonly presentId: number;
     width: number;
     height: number;
@@ -39,15 +41,29 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.name = `present-${presentId}`;
         this.presentBGManager = new PresentBGManager(presentId);
         this.presentSlideManager = new PresentSlideManager(presentId);
+        this.presentFTManager = new PresentFTManager(presentId);
         const ids = getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
     }
     get key() {
         return this.presentId.toString();
     }
-    get displayId() {
+    static getDisplayById(displayId: number) {
+        const { displays } = getAllDisplays();
+        return displays.find((display) => {
+            return display.id === displayId;
+        })?.id || 0;
+    }
+    static getDisplayByPresentId(presentId: number) {
+        const displayId = this.getDisplayIdByPresentId(presentId);
+        const { displays } = getAllDisplays();
+        return displays.find((display) => {
+            return display.id === displayId;
+        }) || this.getDefaultPresentDisplay();
+    }
+    static getDisplayIdByPresentId(presentId: number) {
         const defaultDisplay = PresentManager.getDefaultPresentDisplay();
-        const str = getSetting(`${settingName}-pid-${this.presentId}`,
+        const str = getSetting(`${settingName}-pid-${presentId}`,
             defaultDisplay.id.toString());
         if (isNaN(+str)) {
             return defaultDisplay.id;
@@ -57,6 +73,9 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         return displays.find((display) => {
             return display.id === id;
         })?.id || defaultDisplay.id;
+    }
+    get displayId() {
+        return PresentManager.getDisplayIdByPresentId(this.presentId);
     }
     set displayId(id: number) {
         setSetting(`${settingName}-pid-${this.presentId}`, id.toString());
@@ -91,6 +110,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 PresentTransitionEffect.sendSyncPresent();
                 this.presentBGManager.sendSyncPresent();
                 this.presentSlideManager.sendSyncPresent();
+                this.presentFTManager.sendSyncPresent();
             });
         } else {
             this.hide();
@@ -153,6 +173,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             PresentBGManager.receiveSyncPresent(message);
         } else if (type === 'slide') {
             PresentSlideManager.receiveSyncPresent(message);
+        } else if (type === 'full-text') {
+            PresentFTManager.receiveSyncPresent(message);
         } else if (type === 'effect') {
             PresentTransitionEffect.receiveSyncPresent(message);
         } else if (type === 'visible') {
@@ -187,14 +209,14 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 return presentManager.isSelected;
             });
     }
-    static contextChooseInstances(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+    static contextChooseInstances(e: React.MouseEvent) {
         return new Promise<PresentManager[]>((resolve) => {
             const selectedPresentManagers = this.getSelectedInstances();
             if (selectedPresentManagers.length > 0) {
                 return resolve(selectedPresentManagers);
             }
             const allPresentManagers = PresentManager.getAllInstances();
-            showAppContextMenu(e, allPresentManagers.map((presentManager) => {
+            showAppContextMenu(e as any, allPresentManagers.map((presentManager) => {
                 return {
                     title: presentManager.name,
                     onClick: () => {

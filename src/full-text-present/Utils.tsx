@@ -1,10 +1,13 @@
+import React from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelper';
-import fullTextPresentHelper from './fullTextPresentHelper';
+import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 
 export const FULL_TEXT_AUTO_SAVE_SETTING = 'full-text-present-auto-show';
 export const HIGHLIGHT_HOVER_SETTING = 'full-text-present-highlight';
 
-export default function Utils({ onShow }: { onShow: () => void }) {
+export default function Utils({ onShow }: {
+    onShow: (event: React.MouseEvent) => void,
+}) {
     const [isAutoShow, setIsAutoShow] = useStateSettingBoolean(FULL_TEXT_AUTO_SAVE_SETTING);
     const [isHighlightPresent, setIsHighlightPresent] = useStateSettingBoolean(HIGHLIGHT_HOVER_SETTING);
     return (
@@ -13,10 +16,6 @@ export default function Utils({ onShow }: { onShow: () => void }) {
                 <div className='input-group flex-fill   '>
                     <button className='btn btn-sm btn-info'
                         onClick={onShow}>Show</button>
-                    <button className='btn btn-sm btn-danger'
-                        onClick={() => {
-                            fullTextPresentHelper.hide();
-                        }}>Hide</button>
                 </div>
                 <div className='d-flex flex-row'>
                     <div className={'form-check form-switch pointer'}

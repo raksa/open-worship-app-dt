@@ -2,7 +2,7 @@ import './MiniPresentScreen.scss';
 
 import './CustomHTMLPresentPreviewer';
 import ShowHidePresent from './ShowHidePresent';
-import ClearControl from './ClearControl';
+import MiniScreenClearControl from './MiniScreenClearControl';
 import PresentManager from '../PresentManager';
 import DisplayControl from './DisplayControl';
 import { showAppContextMenu } from '../../others/AppContextMenu';
@@ -99,7 +99,7 @@ export default function MiniPresentScreen() {
                                 }}>
                                 <ShowHidePresent
                                     presentManager={presentManager} />
-                                <ClearControl
+                                <MiniScreenClearControl
                                     presentManager={presentManager} />
                                 <DisplayControl
                                     presentManager={presentManager} />

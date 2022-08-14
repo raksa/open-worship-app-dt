@@ -1,24 +1,32 @@
 import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { usePMEvents, usePSlideMEvents } from '../presentEventHelpers';
+import { usePBGMEvents, usePFTMEvents, usePSlideMEvents } from '../presentEventHelpers';
 import PresentManager from '../PresentManager';
 
-export default function ClearControl({ presentManager }: {
+export default function MiniScreenClearControl({ presentManager }: {
     presentManager: PresentManager;
 }) {
-    usePMEvents(['update']);
+    usePBGMEvents(['update']);
     usePSlideMEvents(['update']);
-    const isPresentingBG = !!presentManager.presentBGManager.bgSrc;
-    const isPresentingFG = !!presentManager.presentSlideManager.slideItemData;
-    const isPresentingFT = false;
+    usePFTMEvents(['update']);
+    const {
+        presentBGManager,
+        presentSlideManager,
+        presentFTManager,
+    } = presentManager;
+    const isPresentingBG = !!presentBGManager.bgSrc;
+    const isPresentingFG = !!presentSlideManager.slideItemData;
+    const isPresentingFT = !!presentFTManager.ftItemData;
     const clearBG = () => {
-        presentManager.presentBGManager.bgSrc = null;
+        presentBGManager.bgSrc = null;
     };
     const clearFG = () => {
-        presentManager.presentSlideManager.slideItemData = null;
+        presentSlideManager.slideItemData = null;
     };
-    const clearFT = () => false;
+    const clearFT = () => {
+        presentFTManager.ftItemData = null;
+    };
     const clearAll = () => {
         clearBG();
         clearFG();

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import fullTextPresentHelper from '../full-text-present/fullTextPresentHelper';
+import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { getPresentRendered } from '../server/appHelper';
 import { clearBackground, clearForeground } from '../helper/presentingHelpers';
 import { useStateSettingBoolean } from '../helper/settingHelper';
@@ -44,7 +44,7 @@ export default class PresentEventListener extends EventHandler<PresentEventType>
         this.addPropEvent('clear-ft');
     }
     presentCtrlScrolling(isUp: boolean) {
-        const fontSize = fullTextPresentHelper.textFontSize + (isUp ? 1 : -1);
+        const fontSize = fullTextPresentHelper.getTextFontSize() + (isUp ? 1 : -1);
         fullTextPresentHelper.setStyle({ fontSize });
         this.addPropEvent('ctrl-scrolling', isUp);
     }

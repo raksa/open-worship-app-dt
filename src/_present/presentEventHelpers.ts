@@ -3,6 +3,7 @@ import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {
     PresentBGManagerEventType,
 } from './PresentBGManager';
+import PresentFTManager, { PresentFTManagerEventType } from './PresentFTManager';
 import {
     PresentMessageType,
     sendPresentMessage,
@@ -10,7 +11,9 @@ import {
 import PresentManager, {
     PresentManagerEventType,
 } from './PresentManager';
-import PresentSlideManager, { PresentSlideManagerEventType } from './PresentSlideManager';
+import PresentSlideManager, {
+    PresentSlideManagerEventType,
+} from './PresentSlideManager';
 
 export function usePMEvents(events: PresentManagerEventType[],
     presentManager?: PresentManager,
@@ -64,6 +67,24 @@ export function usePSlideMEvents(events: PresentSlideManagerEventType[],
             PresentSlideManager.unregisterEventListener(staticEvents);
         };
     }, [presentSlideManager, n]);
+}
+
+export function usePFTMEvents(events: PresentFTManagerEventType[],
+    presentFTManager?: PresentFTManager,
+    callback?: () => void) {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+        const update = () => {
+            setN(n + 1);
+            callback?.();
+        };
+        const instanceEvents = presentFTManager?.registerEventListener(events, update) || [];
+        const staticEvents = PresentFTManager.registerEventListener(events, update);
+        return () => {
+            presentFTManager?.unregisterEventListener(instanceEvents);
+            PresentFTManager.unregisterEventListener(staticEvents);
+        };
+    }, [presentFTManager, n]);
 }
 
 const messageUtils = appProviderPresent.messageUtils;
