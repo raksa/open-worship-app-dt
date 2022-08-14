@@ -37,6 +37,11 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
+        if (div !== null) {
+            div.addEventListener('scroll', () => {
+                this.sendSyncScroll();
+            });
+        }
         this.render();
     }
     get presentManager() {
@@ -60,6 +65,27 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         PresentFTManager.setFTList(allFTList);
         this.sendSyncPresent();
         this.fireUpdate();
+    }
+    sendSyncScroll() {
+        if (this.div === null) {
+            return;
+        }
+        // FIXME: scrollTop is not sync from present to main
+        sendPresentMessage({
+            presentId: this.presentId,
+            type: 'full-text-scroll',
+            data: {
+                scroll: this.div.scrollTop / this.div.scrollHeight,
+            },
+        }, true);
+    }
+    static receiveSyncScroll(message: PresentMessageType) {
+        const { data, presentId } = message;
+        const presentManager = PresentManager.getInstance(presentId);
+        const div = presentManager.presentFTManager.div;
+        if (div !== null) {
+            div.scrollTop = data.scroll * div.scrollHeight;
+        }
     }
     sendSyncPresent() {
         sendPresentMessage({

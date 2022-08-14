@@ -175,6 +175,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             PresentSlideManager.receiveSyncPresent(message);
         } else if (type === 'full-text') {
             PresentFTManager.receiveSyncPresent(message);
+        } else if (type === 'full-text-scroll') {
+            PresentFTManager.receiveSyncScroll(message);
         } else if (type === 'effect') {
             PresentTransitionEffect.receiveSyncPresent(message);
         } else if (type === 'visible') {
