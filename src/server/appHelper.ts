@@ -5,12 +5,12 @@ import appProvider from './appProvider';
 import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { pathJoin } from './fileHelper';
 import bibleHelper from './bible-helpers/bibleHelpers';
-import { initBibleInfo } from './bible-helpers/helpers1';
+import { initBibleInfo } from './bible-helpers/bibleHelpers1';
 import {
     defaultLocal,
     getCurrentLangAsync,
     getLangAsync,
-    LocalType,
+    LocaleType,
 } from '../lang';
 
 export function openExplorer(dir: string) {
@@ -107,7 +107,7 @@ export async function initApp() {
         if (info !== null) {
             const isExist = await bibleHelper.checkExist(bibleName);
             if (isExist) {
-                await getLangAsync(info.locale as LocalType);
+                await getLangAsync(info.locale as LocaleType);
             }
         }
     }

@@ -3,7 +3,7 @@ import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { isWindowEditingMode } from '../App';
-import { bookToKey } from '../server/bible-helpers/helpers1';
+import { bookToKey } from '../server/bible-helpers/bibleHelpers1';
 import ToastEventListener from '../event/ToastEventListener';
 import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';

@@ -3,8 +3,8 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import ToastEventListener from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
-import { getBookKVList } from '../server/bible-helpers/helpers1';
-import { extractBible, toInputText } from '../server/bible-helpers/helpers2';
+import { getBookKVList } from '../server/bible-helpers/bibleHelpers1';
+import { extractBible, toInputText } from '../server/bible-helpers/bibleHelpers2';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {

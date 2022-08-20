@@ -5,7 +5,7 @@ import {
     fetch,
     getBookKVList,
     getChapterCount,
-} from './helpers1';
+} from './bibleHelpers1';
 import { getUserWritablePath } from '../appHelper';
 import { setSetting, getSetting } from '../../helper/settingHelper';
 import {

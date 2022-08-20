@@ -4,10 +4,10 @@ import {
     getBookVKList,
     getChapterCount,
     getVerses,
-} from './helpers1';
+} from './bibleHelpers1';
 import { cloneJson } from '../../helper/helpers';
 import { useEffect, useState } from 'react';
-import { fromLocaleNum, LocalType, toLocaleNum } from '../../lang';
+import { fromLocaleNum, LocaleType, toLocaleNum } from '../../lang';
 
 export async function toInputText(bibleName: string,
     book?: string | null, chapter?: number | null,
@@ -28,16 +28,19 @@ export async function toInputText(bibleName: string,
     }
     return txt;
 }
-
+export async function getBibleLocale(bibleName: string) {
+    const info = await getBibleInfo(bibleName);
+    if (info === null) {
+        return 'en' as LocaleType;
+    }
+    return info.locale as LocaleType;
+}
 export async function toLocaleNumBB(bibleName: string, n: number | null) {
     if (typeof n !== 'number') {
         return null;
     }
-    const info = await getBibleInfo(bibleName);
-    if (info === null) {
-        return `${n}`;
-    }
-    return toLocaleNum(info.locale as LocalType, n);
+    const locale = await getBibleLocale(bibleName);
+    return toLocaleNum(locale, n);
 }
 export function useToLocaleNumBB(bibleName: string, nString: number | null) {
     const [str, setStr] = useState<string | null>(null);
@@ -52,7 +55,7 @@ export async function fromLocaleNumBB(bibleName: string, localeNum: string) {
     if (info === null) {
         return null;
     }
-    return fromLocaleNum(info.locale as LocalType, localeNum);
+    return fromLocaleNum(info.locale as LocaleType, localeNum);
 }
 export function useFromLocaleNumBB(bibleName: string, localeNum: string) {
     const [n, setN] = useState<number | null>(null);

@@ -98,6 +98,11 @@ export default function PresentFullText({ presentManager }: {
     return (
         <>
             <style>{styleText}</style>
+            <style>{`
+            #full-text th td {
+                ${presentFTManager.textStyleText}
+            }
+            `}</style>
             <div id='full-text' ref={div}
                 style={presentFTManager.containerStyle} />
         </>

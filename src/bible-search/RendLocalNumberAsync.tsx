@@ -1,4 +1,4 @@
-import { useToLocaleNumBB } from '../server/bible-helpers/helpers2';
+import { useToLocaleNumBB } from '../server/bible-helpers/bibleHelpers2';
 
 export default function RendLocalNumberAsync({ bibleSelected, ind }: {
     bibleSelected: string, ind: number,

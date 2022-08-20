@@ -9,8 +9,8 @@ import appProvider from '../server/appProvider';
 export default function SettingGeneralLanguage() {
     const [isSelecting, setIsSelecting] = useState(false);
     const [allLangs, setAllLangs] = useState<LanguageType[]>([]);
-    const currentLocal = getCurrentLocale();
-    const selectedLang = getLang(currentLocal);
+    const currentLocale = getCurrentLocale();
+    const selectedLang = getLang(currentLocale);
     useEffect(() => {
         if (allLangs.length === 0) {
             getAllLangsAsync().then(setAllLangs);
@@ -37,7 +37,7 @@ export default function SettingGeneralLanguage() {
                 {isSelecting &&
                     <div className='options d-flex flex-wrap'>
                         {allLangs.map((lang, i) => {
-                            const btnType = lang.locale === currentLocal ?
+                            const btnType = lang.locale === currentLocale ?
                                 'btn-info' : 'btn-outline-info';
                             return (
                                 <button key={`${i}`}

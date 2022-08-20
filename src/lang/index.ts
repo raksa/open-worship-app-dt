@@ -3,60 +3,63 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import appProvider from '../server/appProvider';
 
 export const locales = ['km', 'en'] as const;
-export type LocalType = typeof locales[number];
+export type LocaleType = typeof locales[number];
 export type LanguageType = {
   numList: string[];
   dictionary: AnyObjectType;
   name: string;
-  locale: LocalType;
+  locale: LocaleType;
   flagSVG: string;
 };
 
-export const defaultLocal: LocalType = 'en';
-let currentLocal: LocalType = defaultLocal;
-export function setCurrentLocale(local: LocalType) {
-  setSetting('language-local', local);
-  currentLocal = local;
+export const defaultLocal: LocaleType = 'en';
+let currentLocale: LocaleType = defaultLocal;
+export function setCurrentLocale(locale: LocaleType) {
+  setSetting('language-locale', locale);
+  currentLocale = locale;
+}
+export function checkIsValidate(locale: any) {
+  return locales.includes(locale);
 }
 export function getCurrentLocale() {
-  const lc = getSetting('language-local', 'en');
-  if (locales.includes(lc as any)) {
-    currentLocal = lc as LocalType;
+  const lc = getSetting('language-locale', 'en');
+  if (checkIsValidate(lc)) {
+    currentLocale = lc as LocaleType;
   }
-  return currentLocal;
+  return currentLocale;
 }
 
 const cache = new Map<string, LanguageType>();
 export function getLang(lang: string) {
   return cache.get(lang) || null;
 }
-async function importLang(local: LocalType) {
-  const langData = await import(`./data/${local}`);
+async function importLang(locale: LocaleType) {
+  const langData = await import(`./data/${locale}`);
   return langData.default;
 }
-export async function getLangAsync(local: LocalType) {
-  if (!cache.has(local)) {
+export async function getLangAsync(locale: LocaleType) {
+  if (!cache.has(locale)) {
     try {
-      const langData = await importLang(local);
-      cache.set(local, langData);
+      const langData = await importLang(locale);
+      cache.set(locale, langData);
     } catch (error) {
       appProvider.appUtils.handleError(error);
     }
   }
-  return getLang(local);
+  return getLang(locale);
 }
 export function getCurrentLangAsync() {
   return getLangAsync(getCurrentLocale());
 }
 export async function getAllLangsAsync() {
-  const allLangs = await Promise.all(locales.map((local) => {
-    return importLang(local as LocalType);
+  const allLangs = await Promise.all(locales.map((locale) => {
+    return importLang(locale);
   }));
   return allLangs.filter((lang) => lang !== null) as LanguageType[];
 }
 
 export function tran(text: string) {
-  const langData = getLang(currentLocal);
+  const langData = getLang(currentLocale);
   if (langData === null) {
     return text;
   }
@@ -64,8 +67,8 @@ export function tran(text: string) {
   return dictionary[text] || text;
 }
 
-export const toLocaleNum = (local: LocalType, n: number): string => {
-  const langData = getLang(local);
+export const toLocaleNum = (locale: LocaleType, n: number): string => {
+  const langData = getLang(locale);
   if (langData === null) {
     return `${n}`;
   }
@@ -73,8 +76,8 @@ export const toLocaleNum = (local: LocalType, n: number): string => {
   return `${n}`.split('').map(n1 => numList[+n1]).join('');
 };
 
-export function fromLocaleNum(local: LocalType, localeNum: string) {
-  const langData = getLang(local);
+export function fromLocaleNum(locale: LocaleType, localeNum: string) {
+  const langData = getLang(locale);
   if (langData === null) {
     return null;
   }
@@ -90,4 +93,11 @@ export function fromLocaleNum(local: LocalType, localeNum: string) {
     return null;
   }
   return Number(nString);
+}
+
+export function getFontFamilyByLocal(locale: LocaleType) {
+  if (locale === 'km') {
+    return 'Battambang';
+  }
+  return 'Arial';
 }

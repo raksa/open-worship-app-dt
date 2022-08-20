@@ -1,7 +1,9 @@
+import React from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
+import { checkIsValidate } from '../lang';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper, { BibleRenderedType } from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
@@ -22,8 +24,11 @@ export type FTItemDataType = {
 export type FTListType = {
     [key: string]: FTItemDataType;
 };
+export type StyleListType = {
+    [key: string]: React.CSSProperties;
+};
 
-export type PresentFTManagerEventType = 'update';
+export type PresentFTManagerEventType = 'update' | 'text-style';
 
 const settingName = 'present-ft-';
 export default class PresentFTManager extends EventHandler<PresentFTManagerEventType> {
@@ -87,6 +92,36 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                 PresentFTManager.setFTList(allFTList);
             }
         }
+    }
+    get textStyle() {
+        const styleList = PresentFTManager.getStyleList();
+        return styleList[this.key] || {};
+    }
+    set textStyle(textStyle: React.CSSProperties) {
+        const styleList = PresentFTManager.getStyleList();
+        styleList[this.key] = textStyle;
+        PresentFTManager.setStyleList(styleList);
+        this.addPropEvent('text-style');
+    }
+    get containerStyle(): React.CSSProperties {
+        return {
+            position: 'absolute',
+            width: `${this.presentManager.width}px`,
+            height: `${this.presentManager.height}px`,
+            overflowX: 'hidden',
+            overflowY: 'auto',
+        };
+    }
+    get textStyleText(): string {
+        const textStyle = this.textStyle;
+        const fontSize = textStyle || 16;
+        const fontColor = textStyle || '#ffffff';
+        const textShadow = textStyle || 'none';
+        return `
+            font-size: ${fontSize}px;
+            color: ${fontColor};
+            text-shadow: ${textShadow};
+        `;
     }
     get selectedIndex() {
         return this._ftItemData === null ? null :
@@ -165,16 +200,17 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         this.addPropEvent('update');
     }
     static getFTList(): FTListType {
-        const str = getSetting(settingName, '');
+        const str = getSetting(`${settingName}-ft-data`, '{}');
         if (str !== '') {
             try {
                 const json = JSON.parse(str);
                 const validateBible = (renderedList: any) => {
                     return !Array.isArray(renderedList)
                         || renderedList.some(({
-                            bibleName, title, verses,
+                            locale, bibleName, title, verses,
                         }: any) => {
-                            return typeof bibleName !== 'string'
+                            return !checkIsValidate(locale)
+                                || typeof bibleName !== 'string'
                                 || typeof title !== 'string'
                                 || !Array.isArray(verses)
                                 || verses.some(({ num, text }: any) => {
@@ -186,9 +222,10 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                 const validateLyric = (renderedList: any) => {
                     return !Array.isArray(renderedList)
                         || renderedList.some(({
-                            title, items,
+                            locale, title, items,
                         }: any) => {
-                            return typeof title !== 'string'
+                            return !checkIsValidate(locale)
+                                || typeof title !== 'string'
                                 || !Array.isArray(items)
                                 || items.some(({ text }: any) => {
                                     return typeof text !== 'string';
@@ -215,7 +252,28 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     static setFTList(ftList: FTListType) {
         const str = JSON.stringify(ftList);
-        setSetting(settingName, str);
+        setSetting(`${settingName}-ft-data`, str);
+    }
+    static getStyleList(): StyleListType {
+        const str = getSetting(`${settingName}-style-text`, '{}');
+        try {
+            const json = JSON.parse(str);
+            if (Object.values(json).some((style: any) => {
+                return typeof style !== 'object';
+            })) {
+                console.log(json);
+                throw new Error('Invalid style data');
+            }
+            return json;
+        } catch (error) {
+            appProviderPresent.appUtils
+                .handleError(error);
+        }
+        return {};
+    }
+    static setStyleList(styleList: StyleListType) {
+        const str = JSON.stringify(styleList);
+        setSetting(`${settingName}-style-text`, str);
     }
     static getDataList(ftFilePath: string, ftItemId: number) {
         const dataList = this.getFTList();
@@ -323,15 +381,6 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         fullTextPresentHelper.removeClassName(this.div, 'selected');
         fullTextPresentHelper.resetClassName(this.div, 'selected',
             true, `${this.selectedIndex}`);
-    }
-    get containerStyle(): React.CSSProperties {
-        return {
-            position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
-            overflowX: 'hidden',
-            overflowY: 'auto',
-        };
     }
     static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
         ftItemData: FTItemDataType) {

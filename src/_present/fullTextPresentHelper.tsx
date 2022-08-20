@@ -1,5 +1,5 @@
-import { getVerses } from '../server/bible-helpers/helpers1';
-import { toLocaleNumBB } from '../server/bible-helpers/helpers2';
+import { getVerses } from '../server/bible-helpers/bibleHelpers1';
+import { getBibleLocale, toLocaleNumBB } from '../server/bible-helpers/bibleHelpers2';
 import { removePX } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -9,6 +9,7 @@ import BibleItem from '../bible-list/BibleItem';
 import { renderPresent } from '../helper/presentingHelpers';
 import { presentEventListener } from '../event/PresentEventListener';
 import ReactDOMServer from 'react-dom/server';
+import { getFontFamilyByLocal, LocaleType } from '../lang';
 
 type StylingType = {
     color?: AppColorType;
@@ -20,6 +21,7 @@ type BibleRenderVerseType = {
     text: string,
 };
 export type BibleRenderedType = {
+    locale: LocaleType,
     bibleName: string,
     title: string,
     verses: BibleRenderVerseType[]
@@ -139,9 +141,11 @@ const fullTextPresentHelper = {
         const versesCount = renderedList[0].verses.length;
         const htmlString = ReactDOMServer.renderToStaticMarkup(<table>
             <thead><tr>
-                {renderedList.map(({ bibleName, title }, i) => {
+                {renderedList.map(({ locale, bibleName, title }, i) => {
                     return (
-                        <th key={i}>
+                        <th key={i} style={{
+                            fontFamily: getFontFamilyByLocal(locale),
+                        }}>
                             <span className='bible'>{bibleName}</span>|
                             <span className='title'>{title}</span >
                         </th>
@@ -152,10 +156,12 @@ const fullTextPresentHelper = {
                 {Array.from({ length: versesCount }).map((_, i) => {
                     return (
                         <tr key={i}>
-                            {renderedList.map(({ verses }, j) => {
+                            {renderedList.map(({ locale, verses }, j) => {
                                 const { num, text } = verses[i];
                                 return (
-                                    <td key={j}>
+                                    <td key={j} style={{
+                                        fontFamily: getFontFamilyByLocal(locale),
+                                    }}>
                                         <span className='highlight' data-highlight={i}>
                                             <span className='verse-number'>{num}</span>
                                             : {text}
@@ -228,7 +234,9 @@ const fullTextPresentHelper = {
                         }
                     }
                 }
+                const locale = await getBibleLocale(bibleItem.bibleName);
                 resolve({
+                    locale,
                     bibleName: bibleItem.bibleName,
                     title: bibleTitle,
                     verses: verseList,
