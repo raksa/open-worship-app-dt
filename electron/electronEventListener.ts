@@ -28,7 +28,8 @@ export type AnyObjectType = {
 
 export const presentTypeList = [
     'background', 'slide', 'full-text', 'full-text-scroll',
-    'display-change', 'visible', 'init', 'effect',
+    'full-text-selected-index', 'display-change', 'visible',
+    'init', 'effect',
 ] as const;
 export type PresentType = typeof presentTypeList[number];
 export type PresentMessageType = {

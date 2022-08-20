@@ -17,6 +17,7 @@ export type FTItemDataType = {
     id: number,
     renderedList: BibleRenderedType[],
     scroll: number,
+    selectedIndex: number | null,
 };
 export type FTListType = {
     [key: string]: FTItemDataType;
@@ -77,18 +78,29 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         this.sendSyncPresent();
         this.fireUpdate();
     }
-    get scroll() {
-        return this.ftItemData?.scroll || 0;
-    }
-    set scroll(scroll: number) {
+    private _setMetadata(key: string, value: any) {
         if (this._ftItemData !== null) {
-            this._ftItemData.scroll = scroll;
+            (this._ftItemData as any)[key] = value;
             if (!appProviderPresent.isPresent) {
                 const allFTList = PresentFTManager.getFTList();
                 allFTList[this.key] = this._ftItemData;
                 PresentFTManager.setFTList(allFTList);
             }
         }
+    }
+    get selectedIndex() {
+        return this._ftItemData === null ? null :
+            this._ftItemData.selectedIndex;
+    }
+    set selectedIndex(selectedIndex: number | null) {
+        this._setMetadata('selectedIndex', selectedIndex);
+        this.renderSelectedIndex();
+    }
+    get scroll() {
+        return this.ftItemData?.scroll || 0;
+    }
+    set scroll(scroll: number) {
+        this._setMetadata('scroll', scroll);
     }
     registerScrollListener() {
         this.div?.addEventListener('scroll', this._divScrollListener);
@@ -107,8 +119,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     static receiveSyncScroll(message: PresentMessageType) {
         const { data, presentId } = message;
-        const presentManager = PresentManager.getInstance(presentId);
-        const { presentFTManager } = presentManager;
+        const presentFTManager = this.getInstanceByPresentId(presentId);
         if (presentFTManager._syncScrollTimeout !== null) {
             clearTimeout(presentFTManager._syncScrollTimeout);
         }
@@ -120,6 +131,20 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         presentFTManager.scroll = data.scroll;
         presentFTManager.renderScroll();
     }
+    sendSyncSelectedIndex() {
+        sendPresentMessage({
+            presentId: this.presentId,
+            type: 'full-text-selected-index',
+            data: {
+                selectedIndex: this.selectedIndex,
+            },
+        }, true);
+    }
+    static receiveSyncSelectedIndex(message: PresentMessageType) {
+        const { data, presentId } = message;
+        const presentFTManager = this.getInstanceByPresentId(presentId);
+        presentFTManager.selectedIndex = data.selectedIndex;
+    }
     sendSyncPresent() {
         sendPresentMessage({
             presentId: this.presentId,
@@ -129,8 +154,8 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
-        const presentManager = PresentManager.getInstance(presentId);
-        presentManager.presentFTManager.ftItemData = data;
+        const presentFTManager = this.getInstanceByPresentId(presentId);
+        presentFTManager.ftItemData = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
@@ -216,6 +241,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                     id,
                     renderedList,
                     scroll: 0,
+                    selectedIndex: null,
                 };
             } else {
                 presentFTManager.ftItemData = null;
@@ -238,7 +264,10 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         const ftItemData = this.ftItemData;
         if (ftItemData !== null) {
             const newTable = fullTextPresentHelper.genHtmlFTItem(ftItemData.renderedList);
-            fullTextPresentHelper.registerHighlight(newTable);
+            fullTextPresentHelper.registerHighlight(newTable, (selectedIndex) => {
+                this.selectedIndex = selectedIndex;
+                this.sendSyncSelectedIndex();
+            });
             const divHaftScale = document.createElement('div');
             divHaftScale.appendChild(newTable);
             const parentWidth = this.presentManager.width;
@@ -265,6 +294,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             });
             this.div.appendChild(divContainer);
             this.renderScroll(true);
+            this.renderSelectedIndex();
         } else {
             if (this.div.lastChild !== null) {
                 const targetDiv = this.div.lastChild as HTMLDivElement;
@@ -285,6 +315,14 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             left: 0,
             behavior: 'smooth',
         });
+    }
+    renderSelectedIndex() {
+        if (this.div === null) {
+            return;
+        }
+        fullTextPresentHelper.removeClassName(this.div, 'selected');
+        fullTextPresentHelper.resetClassName(this.div, 'selected',
+            true, `${this.selectedIndex}`);
     }
     get containerStyle(): React.CSSProperties {
         return {
@@ -308,5 +346,9 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     async receivePresentDrag(presentData: AnyObjectType) {
         this.ftItemData = presentData.ftItemData;
+    }
+    static getInstanceByPresentId(presentId: number) {
+        const presentManager = PresentManager.getInstance(presentId);
+        return presentManager.presentFTManager;
     }
 }

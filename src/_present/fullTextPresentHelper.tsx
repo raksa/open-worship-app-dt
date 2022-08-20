@@ -172,37 +172,41 @@ const fullTextPresentHelper = {
         div.innerHTML = htmlString;
         return div.firstChild as HTMLTableElement;
     },
-    registerHighlight(table: HTMLTableElement) {
-        const removeClassName = (className: string) => {
-            const targets = table.querySelectorAll<HTMLSpanElement>(`span.${className}`);
-            const arrChildren = Array.from(targets);
-            arrChildren.forEach((target) => {
-                target.classList.remove(className);
-            });
-            return arrChildren;
-        };
-        const resetClassName = (className: string, isAdd: boolean, blockId?: string) => {
-            const currentBlocks = table.querySelectorAll(`[data-highlight="${blockId}"]`);
-            Array.from(currentBlocks).forEach((currentBlock) => {
-                if (isAdd) {
-                    currentBlock.classList.add(className);
-                } else {
-                    currentBlock.classList.remove(className);
-                }
-            });
-        };
+    removeClassName(parent: HTMLElement, className: string) {
+        const targets = parent.querySelectorAll<HTMLSpanElement>(`span.${className}`);
+        const arrChildren = Array.from(targets);
+        arrChildren.forEach((target) => {
+            target.classList.remove(className);
+        });
+        return arrChildren;
+    },
+    resetClassName(parent: HTMLElement, className: string, isAdd: boolean, blockId?: string) {
+        const currentBlocks = parent.querySelectorAll(`[data-highlight="${blockId}"]`);
+        Array.from(currentBlocks).forEach((currentBlock) => {
+            if (isAdd) {
+                currentBlock.classList.add(className);
+            } else {
+                currentBlock.classList.remove(className);
+            }
+        });
+    },
+    registerHighlight(table: HTMLTableElement,
+        callBack: (selectedIndex: number | null) => void) {
         const spans = table.querySelectorAll<HTMLSpanElement>('span.highlight');
         Array.from(spans).forEach((span) => {
-            span.addEventListener('mouseover', function () {
-                resetClassName('hover', true, this.dataset.highlight);
+            span.addEventListener('mouseover', () => {
+                this.resetClassName(table, 'hover', true, span.dataset.highlight);
             });
-            span.addEventListener('mouseout', function () {
-                resetClassName('hover', false, this.dataset.highlight);
+            span.addEventListener('mouseout', () => {
+                this.resetClassName(table, 'hover', false, span.dataset.highlight);
             });
-            span.addEventListener('click', function () {
-                const arrChildren = removeClassName('selected');
-                if (!arrChildren.includes(this)) {
-                    resetClassName('selected', true, this.dataset.highlight);
+            span.addEventListener('click', () => {
+                const arrChildren = this.removeClassName(table, 'selected');
+                if (!arrChildren.includes(span) && span.dataset.highlight
+                    && !isNaN(+span.dataset.highlight)) {
+                    callBack(+span.dataset.highlight);
+                } else {
+                    callBack(null);
                 }
             });
         });

@@ -180,6 +180,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             PresentFTManager.receiveSyncPresent(message);
         } else if (type === 'full-text-scroll') {
             PresentFTManager.receiveSyncScroll(message);
+        } else if (type === 'full-text-selected-index') {
+            PresentFTManager.receiveSyncSelectedIndex(message);
         } else if (type === 'effect') {
             PresentTransitionEffect.receiveSyncPresent(message);
         } else if (type === 'visible') {
