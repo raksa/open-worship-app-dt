@@ -174,6 +174,5 @@ export async function extractBible(bibleName: string, str: string) {
             return cloneObject(defaultExtractedBible);
         }
     }
-    console.log(result);
     return result;
 }

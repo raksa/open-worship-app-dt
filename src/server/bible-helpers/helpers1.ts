@@ -92,7 +92,6 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
         try {
             if (error || response.statusCode !== 200) {
                 appProvider.appUtils.handleError(error);
-                console.log(response);
                 writeStream.close();
                 await fsDeleteFile(filePath);
                 bibleHelper.setBibleCipherKey(fileName, '');
