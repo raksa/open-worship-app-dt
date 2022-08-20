@@ -3,15 +3,19 @@ import EventHandler from '../event/EventHandler';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
-import fullTextPresentHelper, { RenderedType } from './fullTextPresentHelper';
+import fullTextPresentHelper, { BibleRenderedType } from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 
+const ftDataType = [
+    'bible', 'lyric',
+] as const;
 export type FTItemDataType = {
     ftFilePath: string;
+    type: typeof ftDataType[number],
     id: number,
-    renderedList: RenderedType[],
+    renderedList: BibleRenderedType[],
     scroll: number,
 };
 export type FTListType = {
@@ -140,11 +144,9 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         if (str !== '') {
             try {
                 const json = JSON.parse(str);
-                Object.values(json).forEach((item: any) => {
-                    if (typeof item.ftFilePath !== 'string'
-                        || typeof item.id !== 'number'
-                        || !Array.isArray(item.renderedList)
-                        || item.renderedList.some(({
+                const validateBible = (renderedList: any) => {
+                    return !Array.isArray(renderedList)
+                        || renderedList.some(({
                             bibleName, title, verses,
                         }: any) => {
                             return typeof bibleName !== 'string'
@@ -154,7 +156,26 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                                     return typeof num !== 'string'
                                         || typeof text !== 'string';
                                 });
-                        })) {
+                        });
+                };
+                const validateLyric = (renderedList: any) => {
+                    return !Array.isArray(renderedList)
+                        || renderedList.some(({
+                            title, items,
+                        }: any) => {
+                            return typeof title !== 'string'
+                                || !Array.isArray(items)
+                                || items.some(({ text }: any) => {
+                                    return typeof text !== 'string';
+                                });
+                        });
+                };
+                Object.values(json).forEach((item: any) => {
+                    if (typeof item.ftFilePath !== 'string'
+                        || typeof item.id !== 'number'
+                        || !ftDataType.includes(item.type)
+                        || (item.type === 'bible' && validateBible(item.renderedList))
+                        || (item.type === 'lyric' && validateLyric(item.renderedList))) {
                         console.log(item);
                         throw new Error('Invalid full-text data');
                     }
@@ -178,7 +199,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                 data.id === ftItemId;
         });
     }
-    static async ftSelect(ftFilePath: string,
+    static async ftBibleSelect(ftFilePath: string,
         id: number, bibleItems: BibleItem[],
         event: React.MouseEvent) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
@@ -191,6 +212,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             if (selected !== willSelected) {
                 presentFTManager.ftItemData = {
                     ftFilePath,
+                    type: 'bible',
                     id,
                     renderedList,
                     scroll: 0,
@@ -205,7 +227,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         if (bibleItem.fileSource !== undefined) {
             const convertedItems = BibleItem.convertPresent(bibleItem,
                 BibleItem.getBiblePresentingSetting());
-            PresentFTManager.ftSelect(bibleItem.fileSource.filePath,
+            PresentFTManager.ftBibleSelect(bibleItem.fileSource.filePath,
                 bibleItem.id, convertedItems, event);
         }
     }
@@ -215,9 +237,10 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         }
         const ftItemData = this.ftItemData;
         if (ftItemData !== null) {
-            const newDiv = fullTextPresentHelper.genHtmlFTItem(ftItemData.renderedList);
+            const newTable = fullTextPresentHelper.genHtmlFTItem(ftItemData.renderedList);
+            fullTextPresentHelper.registerHighlight(newTable);
             const divHaftScale = document.createElement('div');
-            divHaftScale.appendChild(newDiv);
+            divHaftScale.appendChild(newTable);
             const parentWidth = this.presentManager.width;
             const parentHeight = this.presentManager.height;
             const { bounds } = PresentManager.getDisplayByPresentId(this.presentId);

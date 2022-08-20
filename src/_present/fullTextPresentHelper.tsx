@@ -15,14 +15,14 @@ type StylingType = {
     fontSize?: number;
     textShadow?: string;
 };
-type RenderVerseType = {
+type BibleRenderVerseType = {
     num: string,
     text: string,
 };
-export type RenderedType = {
+export type BibleRenderedType = {
     bibleName: string,
     title: string,
-    verses: RenderVerseType[]
+    verses: BibleRenderVerseType[]
 };
 const tableShowing = document.createElement('table');
 tableShowing.innerHTML = `
@@ -108,30 +108,6 @@ const fullTextPresentHelper = {
             html: this.tableShowing.outerHTML,
         }));
     },
-    setRenderScroll(amount: number, isScrollUp: boolean) {
-        renderPresent({
-            script: `
-            const ftViewer = getFullText();
-            ftViewer.scrollTop += ${(isScrollUp ? 1 : -1) * amount};
-        `});
-    },
-    setScrollTop() {
-        renderPresent({
-            script: `
-            const ftViewer = getFullText();
-            ftViewer.scrollTop = 0;
-        `});
-    },
-    setScrollBottom() {
-        renderPresent({
-            script: `
-            const ftViewer = getFullText();
-            const table = ftViewer.querySelector('table');
-            const bibleBC = ftViewer.getBoundingClientRect();
-            const tableBC = table.getBoundingClientRect();
-            ftViewer.scrollTop = tableBC.height - bibleBC.height;
-        `});
-    },
     resetHighlight() {
         const isShouldHighlight = getSetting(HIGHLIGHT_HOVER_SETTING) === 'true';
         const tds = this.tableShowing.querySelectorAll('td');
@@ -156,7 +132,7 @@ const fullTextPresentHelper = {
             this.show();
         }
     },
-    genHtmlFTItem(renderedList: RenderedType[]) {
+    genHtmlFTItem(renderedList: BibleRenderedType[]) {
         if (renderedList.length === 0) {
             return document.createElement('table');
         }
@@ -180,8 +156,9 @@ const fullTextPresentHelper = {
                                 const { num, text } = verses[i];
                                 return (
                                     <td key={j}>
-                                        <span data-highlight={j}>
-                                            <span className='verse-number'>{num}</span>: {text}
+                                        <span className='highlight' data-highlight={i}>
+                                            <span className='verse-number'>{num}</span>
+                                            : {text}
                                         </span>
                                     </td>
                                 );
@@ -195,12 +172,47 @@ const fullTextPresentHelper = {
         div.innerHTML = htmlString;
         return div.firstChild as HTMLTableElement;
     },
+    registerHighlight(table: HTMLTableElement) {
+        const removeClassName = (className: string) => {
+            const targets = table.querySelectorAll<HTMLSpanElement>(`span.${className}`);
+            const arrChildren = Array.from(targets);
+            arrChildren.forEach((target) => {
+                target.classList.remove(className);
+            });
+            return arrChildren;
+        };
+        const resetClassName = (className: string, isAdd: boolean, blockId?: string) => {
+            const currentBlocks = table.querySelectorAll(`[data-highlight="${blockId}"]`);
+            Array.from(currentBlocks).forEach((currentBlock) => {
+                if (isAdd) {
+                    currentBlock.classList.add(className);
+                } else {
+                    currentBlock.classList.remove(className);
+                }
+            });
+        };
+        const spans = table.querySelectorAll<HTMLSpanElement>('span.highlight');
+        Array.from(spans).forEach((span) => {
+            span.addEventListener('mouseover', function () {
+                resetClassName('hover', true, this.dataset.highlight);
+            });
+            span.addEventListener('mouseout', function () {
+                resetClassName('hover', false, this.dataset.highlight);
+            });
+            span.addEventListener('click', function () {
+                const arrChildren = removeClassName('selected');
+                if (!arrChildren.includes(this)) {
+                    resetClassName('selected', true, this.dataset.highlight);
+                }
+            });
+        });
+    },
     genRenderList(bibleItems: BibleItem[]) {
         return Promise.all(bibleItems.map((bibleItem) => {
-            return new Promise<RenderedType>(async (resolve, _) => {
+            return new Promise<BibleRenderedType>(async (resolve, _) => {
                 const bibleTitle = await BibleItem.itemToTitle(bibleItem);
                 const verses = await getVerses(bibleItem.bibleName, bibleItem.target.book, bibleItem.target.chapter);
-                const verseList: RenderVerseType[] = [];
+                const verseList: BibleRenderVerseType[] = [];
                 if (verses !== null) {
                     for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
                         const verseNumb = await toLocaleNumBB(bibleItem.bibleName, i);
@@ -243,7 +255,6 @@ const fullTextPresentHelper = {
     render() {
         presentEventListener.renderFT();
         this.resetHighlight();
-        this.setScrollTop();
         renderPresent({
             script: `
             const ftViewer = getFullText();
