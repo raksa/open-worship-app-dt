@@ -4,7 +4,8 @@ import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper, { RenderedType } from './fullTextPresentHelper';
-import { PresentMessageType, sendPresentMessage } from './presentHelpers';
+import { sendPresentMessage } from './presentEventHelpers';
+import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 
 export type FTItemDataType = {
@@ -24,6 +25,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     readonly presentId: number;
     private _ftItemData: FTItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
+    private _syncScrollTimeout: any = null;
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
@@ -67,24 +69,34 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         this.fireUpdate();
     }
     sendSyncScroll() {
-        if (this.div === null) {
+        if (this.div === null || this._syncScrollTimeout !== null) {
             return;
         }
         // FIXME: scrollTop is not sync from present to main
+        const scroll = this.div.scrollTop / this.div.scrollHeight;
         sendPresentMessage({
             presentId: this.presentId,
             type: 'full-text-scroll',
-            data: {
-                scroll: this.div.scrollTop / this.div.scrollHeight,
-            },
+            data: { scroll },
         }, true);
     }
     static receiveSyncScroll(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
-        const div = presentManager.presentFTManager.div;
+        const { presentFTManager } = presentManager;
+        const div = presentFTManager.div;
         if (div !== null) {
-            div.scrollTop = data.scroll * div.scrollHeight;
+            if (presentFTManager._syncScrollTimeout !== null) {
+                clearTimeout(presentFTManager._syncScrollTimeout);
+            }
+            presentFTManager._syncScrollTimeout = setTimeout(() => {
+                presentFTManager._syncScrollTimeout = null;
+            }, 2e3);
+            div.scroll({
+                top: data.scroll * div.scrollHeight,
+                left: 0,
+                behavior: 'smooth',
+            });
         }
     }
     sendSyncPresent() {

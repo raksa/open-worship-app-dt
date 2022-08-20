@@ -5,8 +5,6 @@ import {
     TargetType,
 } from './transition-effect/transitionEffectHelpers';
 
-const messageUtils = appProviderPresent.messageUtils;
-
 export const presentTypeList = [
     'background', 'slide', 'full-text', 'full-text-scroll',
     'display-change', 'visible', 'init', 'effect',
@@ -18,14 +16,7 @@ export type PresentMessageType = {
     data: any,
 };
 
-export function sendPresentMessage(message: PresentMessageType,
-    isForce?: boolean) {
-    if (appProviderPresent.isPresent && !isForce) {
-        return;
-    }
-    const channel1 = messageUtils.channels.presentMessageChannel;
-    messageUtils.sendData(channel1, message);
-}
+const messageUtils = appProviderPresent.messageUtils;
 
 export function calMediaSizes({
     parentWidth, parentHeight,
@@ -72,10 +63,10 @@ export function setDisplay({
 }
 
 export function getAllShowingPresentIds(): number[] {
-    return messageUtils.sendSyncData('main:app:get-presents');
+    return messageUtils.sendDataSync('main:app:get-presents');
 }
 export function getAllDisplays(): AllDisplayType {
-    return messageUtils.sendSyncData('main:app:get-displays');
+    return messageUtils.sendDataSync('main:app:get-displays');
 }
 
 type ShowPresentDataType = {

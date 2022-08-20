@@ -26,7 +26,10 @@ export type AnyObjectType = {
     [key: string]: any;
 };
 
-export const presentTypeList = ['background', 'display-change', 'visible'] as const;
+export const presentTypeList = [
+    'background', 'slide', 'full-text', 'full-text-scroll',
+    'display-change', 'visible', 'init', 'effect',
+] as const;
 export type PresentType = typeof presentTypeList[number];
 export type PresentMessageType = {
     presentId: number,
@@ -127,13 +130,26 @@ export function initPresent(appController: ElectronAppController) {
         }
     });
     ipcMain.on(channels.presentMessageChannel,
-        async (event, message: PresentMessageType) => {
-            if (!presentTypeList.includes(message.type)) {
+        async (event, {
+            type, presentId, isPresent, data,
+        }: PresentMessageType & {
+            isPresent: boolean,
+        }) => {
+            if (!presentTypeList.includes(type)) {
                 event.returnValue = false;
+                return;
             }
-            const presentController = ElectronPresentController.getInstance(message.presentId);
-            if (presentController !== null) {
-                presentController.sendMessage(message.type, message.data);
+            if (isPresent) {
+                appController.mainController.sendMessage({
+                    presentId,
+                    type,
+                    data,
+                });
+            } else {
+                const presentController = ElectronPresentController.getInstance(presentId);
+                if (presentController !== null) {
+                    presentController.sendMessage(type, data);
+                }
             }
             event.returnValue = true;
         });

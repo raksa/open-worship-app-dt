@@ -1,9 +1,9 @@
 import EventHandler from '../../event/EventHandler';
 import { getSetting, setSetting } from '../../helper/settingHelper';
+import { sendPresentMessage } from '../presentEventHelpers';
 import {
     PresentMessageType,
     PTEffectDataType,
-    sendPresentMessage,
 } from '../presentHelpers';
 import PresentManager from '../PresentManager';
 import {

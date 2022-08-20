@@ -9,7 +9,7 @@ const messageUtils = {
     sendData(channel: string, ...args: any[]) {
         electron.ipcRenderer.send(channel, ...args);
     },
-    sendSyncData(channel: string, ...args: any[]) {
+    sendDataSync(channel: string, ...args: any[]) {
         return electron.ipcRenderer.sendSync(channel, ...args);
     },
     listenForData(channel: string,

@@ -3,11 +3,10 @@ import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {
     PresentBGManagerEventType,
 } from './PresentBGManager';
-import PresentFTManager, { PresentFTManagerEventType } from './PresentFTManager';
-import {
-    PresentMessageType,
-    sendPresentMessage,
-} from './presentHelpers';
+import PresentFTManager, {
+    PresentFTManagerEventType,
+} from './PresentFTManager';
+import { PresentMessageType } from './presentHelpers';
 import PresentManager, {
     PresentManagerEventType,
 } from './PresentManager';
@@ -88,11 +87,24 @@ export function usePFTMEvents(events: PresentFTManagerEventType[],
 }
 
 const messageUtils = appProviderPresent.messageUtils;
-const channel = messageUtils.channels.presentMessageChannel;
-messageUtils.listenForData(channel,
+export function sendPresentMessage(message: PresentMessageType,
+    isForce?: boolean) {
+    if (appProviderPresent.isPresent && !isForce) {
+        return;
+    }
+    const channel = messageUtils.channels.presentMessageChannel;
+    const isSent = messageUtils.sendDataSync(channel, {
+        ...message,
+        isPresent: appProviderPresent.isPresent,
+    });
+    console.assert(isSent, JSON.stringify({ channel, message }));
+}
+messageUtils.listenForData(
+    messageUtils.channels.presentMessageChannel,
     (_, message: PresentMessageType) => {
         PresentManager.receiveSyncPresent(message);
     });
+
 if (appProviderPresent.isPresent) {
     const presentId = PresentManager.getAllInstances()[0]?.presentId || 0;
     sendPresentMessage({

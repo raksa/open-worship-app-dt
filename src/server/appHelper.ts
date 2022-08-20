@@ -39,14 +39,14 @@ appProvider.messageUtils.listenForData('app:main:ctrl-scrolling',
 
 export function selectDirs() {
     return appProvider.messageUtils.
-        sendSyncData('main:app:select-dirs') as string[];
+        sendDataSync('main:app:select-dirs') as string[];
 }
 export function selectFiles(filters: {
     name: string,
     extensions: string[],
 }[]) {
     return appProvider.messageUtils.
-        sendSyncData('main:app:select-files',
+        sendDataSync('main:app:select-files',
             filters) as string[];
 }
 
@@ -72,7 +72,7 @@ export function getPresentRendered() {
 }
 export function getUserWritablePath() {
     return appProvider.messageUtils.
-        sendSyncData('main:app:get-data-path');
+        sendDataSync('main:app:get-data-path');
 }
 export function sqlite3ReadValue(dbFilePath: string, table: string, key: string) {
     return new Promise<string | null>((resolve) => {

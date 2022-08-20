@@ -11,7 +11,7 @@ export type MessageUtilsType = {
         presentMessageChannel: string,
     },
     sendData: (channel: string, ...args: any[]) => void,
-    sendSyncData: (channel: string, ...args: any[]) => any,
+    sendDataSync: (channel: string, ...args: any[]) => any,
     listenForData: (channel: string,
         callback: (event: MessageEventType, ...args: any[]) => void) => void,
     listenOnceForData: (channel: string,

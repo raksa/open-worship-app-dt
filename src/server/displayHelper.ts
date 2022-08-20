@@ -22,7 +22,7 @@ export function saveDisplaySetting(data: {
     presentDisplayId: string,
 }) {
     const success = !!appProvider.messageUtils.
-        sendSyncData('main:app:set-present-display', data);
+        sendDataSync('main:app:set-present-display', data);
     ToastEventListener.showSimpleToast({
         title: 'Save Display',
         message: success ? 'Display setting have been saved' :
