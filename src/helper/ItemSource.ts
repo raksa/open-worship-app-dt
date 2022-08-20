@@ -78,9 +78,7 @@ export default abstract class ItemSource<T extends {
         }
         return null;
     }
-    clone(): this {
-        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-    }
+    abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
         const isSuccess = await this.fileSource.saveData(this);
         if (isSuccess) {

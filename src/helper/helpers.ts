@@ -15,9 +15,6 @@ export function getRandomColor() {
     }
     return color;
 }
-export const cloneObject = <T>(obj: T): T => {
-    return Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
-};
 export const cloneJson = <T>(obj: T): T => {
     return JSON.parse(JSON.stringify(obj));
 };

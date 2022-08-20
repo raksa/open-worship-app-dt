@@ -78,7 +78,7 @@ export default class Lyric extends ItemSource<LyricItem>{
         }
         this.fileSource.fireSelectEvent();
     }
-    static fromJson(fileSource: FileSource, json: LyricType) {
+    static fromJson(fileSource: FileSource, json: any) {
         this.validate(json);
         return new Lyric(fileSource, json);
     }
@@ -128,5 +128,8 @@ export default class Lyric extends ItemSource<LyricItem>{
             this.editingCacheManager.save();
         }
         return isSuccess;
+    }
+    clone() {
+        return Lyric.fromJson(this.fileSource, this.toJson());
     }
 }

@@ -1,6 +1,6 @@
 import Bible from '../bible-list/Bible';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneObject } from '../helper/helpers';
+import { AnyObjectType } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 
@@ -88,6 +88,6 @@ export default class PlaylistItem {
         }
     }
     clone() {
-        return cloneObject(this);
+        return PlaylistItem.fromJson(this.fileSource, this.toJson());
     }
 }

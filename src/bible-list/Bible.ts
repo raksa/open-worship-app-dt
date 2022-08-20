@@ -21,7 +21,7 @@ export default class Bible extends ItemSource<BibleItem>{
         super(fileSource);
         this._originalJson = json;
     }
-    static fromJson(fileSource: FileSource, json: BibleType) {
+    static fromJson(fileSource: FileSource, json: any) {
         this.validate(json);
         return new Bible(fileSource, json);
     }
@@ -158,5 +158,8 @@ export default class Bible extends ItemSource<BibleItem>{
     }
     static async create(dir: string, name: string) {
         return super.create(dir, name, []);
+    }
+    clone() {
+        return Bible.fromJson(this.fileSource, this.toJson());
     }
 }

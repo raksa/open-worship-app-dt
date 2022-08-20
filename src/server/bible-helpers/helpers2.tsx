@@ -5,7 +5,7 @@ import {
     getChapterCount,
     getVerses,
 } from './helpers1';
-import { cloneObject } from '../../helper/helpers';
+import { cloneJson } from '../../helper/helpers';
 import { useEffect, useState } from 'react';
 import { fromLocaleNum, LocalType, toLocaleNum } from '../../lang';
 
@@ -154,7 +154,7 @@ async function searchEndVerse(bibleName: string, verseCount: number,
     return endVerse;
 }
 export async function extractBible(bibleName: string, str: string) {
-    const result = cloneObject(defaultExtractedBible);
+    const result = cloneJson(defaultExtractedBible);
     try {
         const arr = str.trim().split(/\s+/);
         result.book = await searchBook(bibleName, arr);
@@ -171,7 +171,7 @@ export async function extractBible(bibleName: string, str: string) {
             verseCount, startVerse, arr2);
     } catch (error: any) {
         if (error.message === 'Invalid book') {
-            return cloneObject(defaultExtractedBible);
+            return cloneJson(defaultExtractedBible);
         }
     }
     return result;

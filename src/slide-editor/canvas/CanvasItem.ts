@@ -1,7 +1,6 @@
 import React, { CSSProperties } from 'react';
 import {
     AnyObjectType,
-    cloneObject,
 } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 import {
@@ -104,7 +103,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         });
     }
     clone() {
-        const newItem = cloneObject(this);
+        const newItem = CanvasItem.fromJson(this.toJson());
         newItem.props.id = -1;
         return newItem;
     }

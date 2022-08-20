@@ -1,6 +1,5 @@
 import './LyricView.scss';
 
-import { cloneObject } from '../helper/helpers';
 import LyricItem from '../lyric-list/LyricItem';
 
 export default function LyricView({
@@ -16,7 +15,7 @@ export default function LyricView({
             <div className='input-group'>
                 <input className='form-control' type='text' placeholder='title'
                     value={lyricItem.title} onChange={(event) => {
-                        const newItem = cloneObject(lyricItem);
+                        const newItem = lyricItem.clone();
                         newItem.title = event.target.value;
                         onLyricChange(newItem);
                     }} />
@@ -29,7 +28,7 @@ export default function LyricView({
             <textarea className='w-100 h-100 form-control'
                 placeholder='Lyric, use "===" to break text block'
                 value={lyricItem.content} onChange={(event) => {
-                    const newItem = cloneObject(lyricItem);
+                    const newItem = lyricItem.clone();
                     newItem.content = event.target.value;
                     onLyricChange(newItem);
                 }} />

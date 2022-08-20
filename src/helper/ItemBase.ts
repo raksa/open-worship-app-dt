@@ -1,7 +1,7 @@
 import FileSource from '../helper/FileSource';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import ColorNoteInf from './ColorNoteInf';
-import { AnyObjectType, cloneObject } from './helpers';
+import { AnyObjectType, cloneJson } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
@@ -20,7 +20,7 @@ export abstract class ItemBase implements ColorNoteInf {
     abstract get metadata(): AnyObjectType;
     abstract set metadata(metadata: AnyObjectType);
     set colorNote(c: string | null) {
-        const metadata = cloneObject(this.metadata);
+        const metadata = cloneJson(this.metadata);
         metadata['colorNote'] = c;
         this.metadata = metadata;
         this.save();
@@ -40,9 +40,7 @@ export abstract class ItemBase implements ColorNoteInf {
     async save(): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
-    clone() {
-        throw new Error('Method not implemented.');
-    }
+    abstract clone(): ItemBase;
     toJson() {
         throw new Error('Method not implemented.');
     }

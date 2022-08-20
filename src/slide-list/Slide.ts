@@ -221,7 +221,7 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         return newScale;
     }
-    static fromJson(fileSource: FileSource, json: SlideType) {
+    static fromJson(fileSource: FileSource, json: any) {
         this.validate(json);
         return new Slide(fileSource, json);
     }
@@ -269,5 +269,8 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     openContextMenu(e: any, slideItem: SlideItem) {
         openSlideContextMenu(e, this, slideItem);
+    }
+    clone() {
+        return Slide.fromJson(this.fileSource, this.toJson());
     }
 }

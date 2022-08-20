@@ -1,7 +1,7 @@
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
-import { AnyObjectType, cloneObject } from '../helper/helpers';
+import { AnyObjectType } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import SlideListEventListener from '../event/SlideListEventListener';
@@ -189,7 +189,7 @@ export default class SlideItem extends ItemBase {
         }
     }
     clone(isDuplicateId?: boolean) {
-        const slideItem = cloneObject(this);
+        const slideItem = SlideItem.fromJson(this.toJson(), this.fileSource);
         if (!isDuplicateId) {
             slideItem.id = -1;
         }

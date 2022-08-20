@@ -5,7 +5,7 @@ import { toLocaleNumBB, toInputText } from '../server/bible-helpers/helpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneObject } from '../helper/helpers';
+import { AnyObjectType } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -151,7 +151,7 @@ export default class BibleItem extends ItemBase {
         }
     }
     clone() {
-        const bibleItem = cloneObject(this);
+        const bibleItem = BibleItem.fromJson(this.toJson());
         bibleItem.id = -1;
         return bibleItem;
     }
@@ -180,8 +180,8 @@ export default class BibleItem extends ItemBase {
             list = [bibleItem.clone()];
         } else {
             list = presentingBibleItems.map((presentingBibleItem) => {
-                const newItem = presentingBibleItem.clone();
-                newItem.update(bibleItem);
+                const newItem = bibleItem.clone();
+                newItem.bibleName = presentingBibleItem.bibleName;
                 return newItem;
             });
         }
@@ -195,9 +195,6 @@ export default class BibleItem extends ItemBase {
     static getBiblePresentingSetting() {
         try {
             const str = getSetting('bible-present', '');
-            if (!str) {
-                return [];
-            }
             return JSON.parse(str).map((item: any) => {
                 return BibleItem.fromJson(item);
             }) as BibleItem[];

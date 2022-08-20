@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
 import fullTextPresentHelper from '../_present/fullTextPresentHelper';
-import { cloneObject } from '../helper/helpers';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
@@ -76,7 +75,7 @@ export default function LyricPreviewer() {
                 }}
                 onClick={() => {
                     const newLyric = lyric.clone();
-                    newLyric.items.push(cloneObject(lyricItems[0]));
+                    newLyric.items.push(lyricItems[0].clone());
                     setLyric(newLyric);
                 }}>
                 <i className='bi bi-plus' />

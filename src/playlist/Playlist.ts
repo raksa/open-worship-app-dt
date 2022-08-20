@@ -69,4 +69,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
     toJson(): PlaylistType {
         return this._originalJson;
     }
+    clone() {
+        return Playlist.fromJson(this.fileSource, this.toJson());
+    }
 }

@@ -1,7 +1,7 @@
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Lyric from './Lyric';
-import { AnyObjectType, cloneObject } from '../helper/helpers';
+import { AnyObjectType } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 
 export type LyricItemType = {
@@ -126,7 +126,7 @@ export default class LyricItem extends ItemBase {
         }
     }
     clone(isDuplicateId?: boolean) {
-        const lyricItem = cloneObject(this);
+        const lyricItem = LyricItem.fromJson(this.toJson(), this.fileSource);
         if (!isDuplicateId) {
             lyricItem.id = -1;
         }
