@@ -106,16 +106,17 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     set isShowing(isShowing: boolean) {
         this._isShowing = isShowing;
         if (isShowing) {
-            this.show().then(() => {
-                PresentTransitionEffect.sendSyncPresent();
-                this.presentBGManager.sendSyncPresent();
-                this.presentSlideManager.sendSyncPresent();
-                this.presentFTManager.sendSyncPresent();
-            });
+            this.show();
         } else {
             this.hide();
         }
         this.fireVisibleEvent();
+    }
+    setSyncPresent() {
+        PresentTransitionEffect.sendSyncPresent();
+        this.presentBGManager.sendSyncPresent();
+        this.presentSlideManager.sendSyncPresent();
+        this.presentFTManager.sendSyncPresent();
     }
     show() {
         return showPresent({
@@ -169,7 +170,9 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     static receiveSyncPresent(message: PresentMessageType) {
         const { type, data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
-        if (type === 'background') {
+        if (type === 'init') {
+            presentManager.setSyncPresent();
+        } else if (type === 'background') {
             PresentBGManager.receiveSyncPresent(message);
         } else if (type === 'slide') {
             PresentSlideManager.receiveSyncPresent(message);

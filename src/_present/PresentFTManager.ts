@@ -127,10 +127,15 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                     if (typeof item.ftFilePath !== 'string'
                         || typeof item.id !== 'number'
                         || !Array.isArray(item.renderedList)
-                        || item.renderedList.some(({ title, texts }: any) => {
-                            return typeof title !== 'string' || !Array.isArray(texts)
-                                || texts.some((text: any) => {
-                                    return typeof text !== 'string';
+                        || item.renderedList.some(({
+                            bibleName, title, verses,
+                        }: any) => {
+                            return typeof bibleName !== 'string'
+                                || typeof title !== 'string'
+                                || !Array.isArray(verses)
+                                || verses.some(({ num, text }: any) => {
+                                    return typeof num !== 'string'
+                                        || typeof text !== 'string';
                                 });
                         })) {
                         console.log(item);

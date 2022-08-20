@@ -8,15 +8,21 @@ import { HIGHLIGHT_HOVER_SETTING } from '../full-text-present/Utils';
 import BibleItem from '../bible-list/BibleItem';
 import { renderPresent } from '../helper/presentingHelpers';
 import { presentEventListener } from '../event/PresentEventListener';
+import ReactDOMServer from 'react-dom/server';
 
 type StylingType = {
     color?: AppColorType;
     fontSize?: number;
     textShadow?: string;
 };
+type RenderVerseType = {
+    num: string,
+    text: string,
+};
 export type RenderedType = {
-    title: string;
-    texts: string[];
+    bibleName: string,
+    title: string,
+    verses: RenderVerseType[]
 };
 const tableShowing = document.createElement('table');
 tableShowing.innerHTML = `
@@ -151,47 +157,66 @@ const fullTextPresentHelper = {
         }
     },
     genHtmlFTItem(renderedList: RenderedType[]) {
-        const tableShowing = document.createElement('table');
-        tableShowing.innerHTML = '<thead><tr></tr></thead><tbody><tr></tr></tbody>';
-        if (renderedList.length) {
-            renderedList.forEach(({ title }) => {
-                const trHead = tableShowing.tHead?.firstChild as HTMLTableRowElement;
-                const th = document.createElement('th');
-                th.innerHTML = title;
-                trHead.appendChild(th);
-            });
-            const textsLength = renderedList[0].texts.length;
-            for (let i = 0; i < textsLength; i++) {
-                const tr = document.createElement('tr');
-                renderedList.forEach((d) => {
-                    const td = document.createElement('td');
-                    td.innerHTML = d.texts[i];
-                    tr.appendChild(td);
-                });
-                const tBody = tableShowing.tBodies[0];
-                tBody.appendChild(tr);
-            }
+        if (renderedList.length === 0) {
+            return document.createElement('table');
         }
-        return tableShowing;
+        const versesCount = renderedList[0].verses.length;
+        const htmlString = ReactDOMServer.renderToStaticMarkup(<table>
+            <thead><tr>
+                {renderedList.map(({ bibleName, title }, i) => {
+                    return (
+                        <th key={i}>
+                            <span className='bible'>{bibleName}</span>|
+                            <span className='title'>{title}</span >
+                        </th>
+                    );
+                })}
+            </tr></thead>
+            <tbody>
+                {Array.from({ length: versesCount }).map((_, i) => {
+                    return (
+                        <tr key={i}>
+                            {renderedList.map(({ verses }, j) => {
+                                const { num, text } = verses[i];
+                                return (
+                                    <td key={j}>
+                                        <span data-highlight={j}>
+                                            <span className='verse-number'>{num}</span>: {text}
+                                        </span>
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </table>);
+        const div = document.createElement('div');
+        div.innerHTML = htmlString;
+        return div.firstChild as HTMLTableElement;
     },
     genRenderList(bibleItems: BibleItem[]) {
         return Promise.all(bibleItems.map((bibleItem) => {
-            return new Promise<{
-                title: string, texts: string[]
-            }>(async (resolve, _) => {
+            return new Promise<RenderedType>(async (resolve, _) => {
                 const bibleTitle = await BibleItem.itemToTitle(bibleItem);
-                const title = `<span class="bible">${bibleItem.bibleName}</span>|<span class="title">${bibleTitle}</span >`;
                 const verses = await getVerses(bibleItem.bibleName, bibleItem.target.book, bibleItem.target.chapter);
-                let text = '';
+                const verseList: RenderVerseType[] = [];
                 if (verses !== null) {
                     for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
                         const verseNumb = await toLocaleNumBB(bibleItem.bibleName, i);
-                        text += `<span data-highlight="${i}">
-                            <span class="verse-number">${verseNumb}</span>: ${verses[`${i}`]}
-                        </span>`;
+                        if (verseNumb !== null) {
+                            verseList.push({
+                                num: verseNumb,
+                                text: verses[`${i}`],
+                            });
+                        }
                     }
                 }
-                resolve({ title, texts: [text] });
+                resolve({
+                    bibleName: bibleItem.bibleName,
+                    title: bibleTitle,
+                    verses: verseList,
+                });
             });
         }));
     },

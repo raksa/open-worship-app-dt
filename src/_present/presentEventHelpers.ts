@@ -111,5 +111,5 @@ if (appProviderPresent.isPresent) {
         presentId,
         type: 'init',
         data: null,
-    });
+    }, true);
 }
