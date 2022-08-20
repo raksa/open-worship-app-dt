@@ -12,6 +12,7 @@ export type FTItemDataType = {
     ftFilePath: string;
     id: number,
     renderedList: RenderedType[],
+    scroll: number,
 };
 export type FTListType = {
     [key: string]: FTItemDataType;
@@ -26,6 +27,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     private _ftItemData: FTItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
+    private _divScrollListener;
     constructor(presentId: number) {
         super();
         this.presentId = presentId;
@@ -33,17 +35,20 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             const allFTList = PresentFTManager.getFTList();
             this._ftItemData = allFTList[this.key] || null;
         }
+        this._divScrollListener = () => {
+            if (this.div === null) {
+                return;
+            }
+            this.scroll = this.div.scrollTop / this.div.scrollHeight;
+            this.sendSyncScroll();
+        };
     }
     get div() {
         return this._div;
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
-        if (div !== null) {
-            div.addEventListener('scroll', () => {
-                this.sendSyncScroll();
-            });
-        }
+        this.registerScrollListener();
         this.render();
     }
     get presentManager() {
@@ -68,36 +73,48 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         this.sendSyncPresent();
         this.fireUpdate();
     }
-    sendSyncScroll() {
-        if (this.div === null || this._syncScrollTimeout !== null) {
-            return;
+    get scroll() {
+        return this.ftItemData?.scroll || 0;
+    }
+    set scroll(scroll: number) {
+        if (this._ftItemData !== null) {
+            this._ftItemData.scroll = scroll;
+            if (!appProviderPresent.isPresent) {
+                const allFTList = PresentFTManager.getFTList();
+                allFTList[this.key] = this._ftItemData;
+                PresentFTManager.setFTList(allFTList);
+            }
         }
-        // FIXME: scrollTop is not sync from present to main
-        const scroll = this.div.scrollTop / this.div.scrollHeight;
+    }
+    registerScrollListener() {
+        this.div?.addEventListener('scroll', this._divScrollListener);
+    }
+    unregisterScrollListener() {
+        this.div?.removeEventListener('scroll', this._divScrollListener);
+    }
+    sendSyncScroll() {
         sendPresentMessage({
             presentId: this.presentId,
             type: 'full-text-scroll',
-            data: { scroll },
+            data: {
+                scroll: this.scroll,
+            },
         }, true);
     }
     static receiveSyncScroll(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
         const { presentFTManager } = presentManager;
-        const div = presentFTManager.div;
-        if (div !== null) {
-            if (presentFTManager._syncScrollTimeout !== null) {
-                clearTimeout(presentFTManager._syncScrollTimeout);
-            }
-            presentFTManager._syncScrollTimeout = setTimeout(() => {
-                presentFTManager._syncScrollTimeout = null;
-            }, 2e3);
-            div.scroll({
-                top: data.scroll * div.scrollHeight,
-                left: 0,
-                behavior: 'smooth',
-            });
+        if (presentFTManager._syncScrollTimeout !== null) {
+            clearTimeout(presentFTManager._syncScrollTimeout);
         }
+        presentFTManager.unregisterScrollListener();
+        presentFTManager._syncScrollTimeout = setTimeout(() => {
+            presentFTManager._syncScrollTimeout = null;
+            presentFTManager.registerScrollListener();
+        }, 1e3);
+        presentFTManager.scroll = data.scroll;
+        presentFTManager.renderScroll();
     }
     sendSyncPresent() {
         sendPresentMessage({
@@ -176,6 +193,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                     ftFilePath,
                     id,
                     renderedList,
+                    scroll: 0,
                 };
             } else {
                 presentFTManager.ftItemData = null;
@@ -223,12 +241,27 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
                 child.remove();
             });
             this.div.appendChild(divContainer);
+            this.renderScroll(true);
         } else {
             if (this.div.lastChild !== null) {
                 const targetDiv = this.div.lastChild as HTMLDivElement;
                 targetDiv.remove();
             }
         }
+    }
+    renderScroll(isQuick?: boolean) {
+        if (this.div === null) {
+            return;
+        }
+        const scrollTop = this.scroll * this.div.scrollHeight;
+        if (isQuick) {
+            this.div.scrollTop = scrollTop;
+        }
+        this.div.scroll({
+            top: scrollTop,
+            left: 0,
+            behavior: 'smooth',
+        });
     }
     get containerStyle(): React.CSSProperties {
         return {
