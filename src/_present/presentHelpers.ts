@@ -18,6 +18,9 @@ export type PresentMessageType = {
     data: any,
 };
 
+const dragTargetList = ['background', 'slide', 'full-text'] as const;
+export type PresentDragTargetType = typeof dragTargetList[number];
+
 const messageUtils = appProviderPresent.messageUtils;
 
 export function calMediaSizes({

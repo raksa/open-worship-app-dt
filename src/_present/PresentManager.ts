@@ -6,6 +6,7 @@ import appProviderPresent from './appProviderPresent';
 import PresentBGManager from './PresentBGManager';
 import PresentFTManager from './PresentFTManager';
 import {
+    PresentDragTargetType,
     getAllDisplays,
     getAllShowingPresentIds,
     hidePresent,
@@ -272,12 +273,16 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         setSetting(`${settingName}instances`, JSON.stringify(json));
     }
     receivePresentDrag(presentData: {
-        target: 'background' | 'slide'
+        target: PresentDragTargetType,
     }) {
         if (presentData.target === 'background') {
             this.presentBGManager.receivePresentDrag(presentData);
         } else if (presentData.target === 'slide') {
             this.presentSlideManager.receivePresentDrag(presentData);
+        } else if (presentData.target === 'full-text') {
+            this.presentFTManager.receivePresentDrag(presentData);
+        } else {
+            console.log(presentData);
         }
     }
 }

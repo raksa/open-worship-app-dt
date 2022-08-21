@@ -8,9 +8,9 @@ import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { AnyObjectType } from '../helper/helpers';
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import PresentFTManager from '../_present/PresentFTManager';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage,
@@ -40,9 +40,10 @@ export default function BibleItemRender({
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
-                const newBibleItem = bibleItem.toJson() as AnyObjectType;
-                newBibleItem.filePath = bibleItem.fileSource?.filePath;
-                event.dataTransfer.setData('text/plain', JSON.stringify(newBibleItem));
+                const bibleItemJson = bibleItem.toJson();
+                PresentFTManager.startPresentDrag(bibleItemJson);
+                (bibleItemJson as any).filePath = bibleItem.fileSource?.filePath;
+                event.dataTransfer.setData('text/plain', JSON.stringify(bibleItemJson));
             }}
             onContextMenu={onContextMenu || (() => false)}
             onClick={(event) => {

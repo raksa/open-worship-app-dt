@@ -12,7 +12,7 @@ const BiblePreviewer = React.lazy(() => import('./BiblePreviewer'));
 const LyricPreviewer = React.lazy(() => import('./LyricPreviewer'));
 
 export const previewer: {
-    show: (_: React.MouseEvent) => void;
+    show: (_?: React.MouseEvent) => void;
 } = {
     show: () => void 0,
 };

@@ -1,7 +1,6 @@
 import ToastEventListener from '../event/ToastEventListener';
 import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
-import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { pathJoin } from './fileHelper';
 import bibleHelper from './bible-helpers/bibleHelpers';
 import { initBibleInfo } from './bible-helpers/bibleHelpers1';
@@ -85,8 +84,6 @@ export function sqlite3ReadValue(dbFilePath: string, table: string, key: string)
 export async function initApp() {
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);
-    // Showing
-    fullTextPresentHelper.loadSetting();
     // Bibles
     if (!bibleHelper.getBibleList().length) {
         await bibleHelper.getBibleListOnline();

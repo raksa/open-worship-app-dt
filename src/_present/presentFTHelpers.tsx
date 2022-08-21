@@ -1,7 +1,7 @@
 import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidate } from '../lang';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { createMouseEvent, showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper, {
@@ -11,11 +11,12 @@ import fullTextPresentHelper, {
 import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
 
-const ftDataType = [
+const ftDataTypeList = [
     'bible', 'lyric',
 ] as const;
+export type FfDataType = typeof ftDataTypeList[number];
 export type FTItemDataType = {
-    type: typeof ftDataType[number],
+    type: FfDataType,
     bibleData?: {
         renderedList: BibleRenderedType[],
         bibleItem: BibleItemType,
@@ -30,7 +31,7 @@ export type FTListType = {
     [key: string]: FTItemDataType;
 };
 
-export type PresentFTManagerEventType = 'update' | 'text-style' | 'change-bible';
+export type PresentFTManagerEventType = 'update' | 'text-style';
 
 export const settingName = 'present-ft-';
 
@@ -69,7 +70,7 @@ export function getFTList(): FTListType {
                     });
             };
             Object.values(json).forEach((item: any) => {
-                if (!ftDataType.includes(item.type)
+                if (!ftDataTypeList.includes(item.type)
                     || (item.type === 'bible' && validateBible(item.bibleData))
                     || (item.type === 'lyric' && validateLyric(item.lyricData))) {
                     console.log(item);
@@ -210,4 +211,16 @@ export async function bibleItemToFtData(bibleItems: BibleItem[]) {
         scroll: 0,
         selectedIndex: null,
     } as FTItemDataType;
+}
+
+export function genMouseEvent(event: any): MouseEvent {
+    if (event !== null) {
+        return event;
+    }
+    const miniPresentScreen = document.getElementsByClassName('mini-present-screen')[0];
+    if (miniPresentScreen !== undefined) {
+        const rect = miniPresentScreen.getBoundingClientRect();
+        return createMouseEvent(rect.x, rect.y);
+    }
+    return createMouseEvent(0, 0);
 }

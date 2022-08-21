@@ -1,11 +1,11 @@
 import CustomStyle from './CustomStyle';
 import { previewer } from './FullTextPreviewer';
-import Utils from './Utils';
+import FTPreviewerUtils from './FTPreviewerUtils';
 
 export default function FullTextTools() {
     return (
         <>
-            <Utils
+            <FTPreviewerUtils
                 onShow={(event) => {
                     previewer.show(event);
                 }} />

@@ -1,8 +1,8 @@
 import './TextShadow.scss';
 
 import { useEffect } from 'react';
-import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { AppColorType } from '../others/ColorPicker';
+import PresentFTManager from '../_present/PresentFTManager';
 
 
 export default function TextShadow() {
@@ -10,7 +10,7 @@ export default function TextShadow() {
         const divList = document.querySelectorAll<HTMLDivElement>('.ow-outline-demo');
         const listenList = Array.from(divList).map((d) => {
             const listener = () => {
-                fullTextPresentHelper.setStyle({
+                PresentFTManager.applyTextStyle({
                     textShadow: d.style.textShadow,
                     color: d.style.color as AppColorType,
                 });

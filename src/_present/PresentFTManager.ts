@@ -1,5 +1,5 @@
 import React from 'react';
-import BibleItem from '../bible-list/BibleItem';
+import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -14,8 +14,10 @@ import {
     setFTList,
     renderPFTManager,
     bibleItemToFtData,
+    FfDataType,
+    genMouseEvent,
 } from './presentFTHelpers';
-import { PresentMessageType } from './presentHelpers';
+import { PresentDragTargetType, PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 
 export default class PresentFTManager extends EventHandler<PresentFTManagerEventType> {
@@ -245,8 +247,10 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         const { data } = message;
         this.textStyle = data.textStyle;
     }
-    static async ftBibleSelect(event: React.MouseEvent, bibleItems: BibleItem[]) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
+    static async ftBibleSelect(event: React.MouseEvent | null, bibleItems: BibleItem[]) {
+        const chosenPresentManagers = await PresentManager.contextChooseInstances(
+            genMouseEvent(event) as any,
+        );
         const ftItemData = await bibleItemToFtData(bibleItems);
         chosenPresentManagers.forEach(async (presentManager) => {
             const { presentFTManager } = presentManager;
@@ -279,19 +283,28 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         fullTextPresentHelper.resetClassName(this.div, 'selected',
             true, `${this.selectedIndex}`);
     }
-    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
-        ftItemData: FTItemDataType) {
-        const data = {
-            present: {
-                target: 'ft',
-                ftItemData,
-            },
+    static startPresentDrag(bibleItemData: BibleItemType) {
+        const copiedBibleItemJson = JSON.parse(JSON.stringify(bibleItemData));
+        const target: PresentDragTargetType = 'full-text';
+        const type: FfDataType = 'bible';
+        (bibleItemData as any).present = {
+            target,
+            type,
+            bibleItem: copiedBibleItemJson,
         };
-        event.dataTransfer.setData('text/plain',
-            JSON.stringify(data));
     }
-    async receivePresentDrag(presentData: AnyObjectType) {
-        this.ftItemData = presentData.ftItemData;
+    async receivePresentDrag(present: AnyObjectType) {
+        try {
+            if (present.type === 'bible') {
+                const newBibleItems = [
+                    BibleItem.fromJson(present.bibleItem),
+                ];
+                const newFtItemData = await bibleItemToFtData(newBibleItems);
+                this.ftItemData = newFtItemData;
+            }
+        } catch (error) {
+            appProviderPresent.appUtils.handleError(error);
+        }
     }
     static getInstanceByPresentId(presentId: number) {
         const presentManager = PresentManager.getInstance(presentId);
