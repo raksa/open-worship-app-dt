@@ -64,18 +64,18 @@ const styleText = `
     -webkit-text-stroke: 0.01em greenyellow;
 }
 
-#full-text td .highlight {
+#full-text .highlight {
     border-radius: 0.5em;
     transition: background-color 0.5s ease;
     border: 0.05em solid transparent;
     cursor: pointer;
 }
 
-#full-text td .highlight.hover {
+#full-text .highlight.hover {
     border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
-#full-text td .highlight.selected {
+#full-text .highlight.selected {
     background: linear-gradient(transparent, transparent, rgba(255, 0, 157, 0.6), transparent);
 }`;
 

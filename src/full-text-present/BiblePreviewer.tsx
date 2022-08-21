@@ -3,11 +3,11 @@ import { useBibleItemSelecting } from '../event/PreviewingEventListener';
 import BibleView from './BibleView';
 import { previewer } from './FullTextPreviewer';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
-import { useChangingBible } from '../event/PresentEventListener';
 import ButtonAddMoreBible from './ButtonAddMoreBible';
 import BibleItem from '../bible-list/BibleItem';
 import BibleList from '../bible-list/BibleList';
 import PresentFTManager from '../_present/PresentFTManager';
+import { usePFTMEvents } from '../_present/presentEventHelpers';
 
 export default function BiblePreviewer() {
     const [bibleItem, setBibleItem] = useState<BibleItem | null | undefined>(null);
@@ -51,7 +51,7 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
             previewer.show = () => void 0;
         };
     }, [bibleItem]);
-    useChangingBible(async (isNext) => {
+    usePFTMEvents(['change-bible'], undefined, async (isNext) => {
         let bibleListDefault = await bibleHelper.getBibleListWithStatus();
         bibleListDefault = bibleListDefault.filter(([_, isAvailable]) => {
             return isAvailable;

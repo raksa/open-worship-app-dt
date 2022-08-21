@@ -70,12 +70,12 @@ export function usePSlideMEvents(events: PresentSlideManagerEventType[],
 
 export function usePFTMEvents(events: PresentFTManagerEventType[],
     presentFTManager?: PresentFTManager,
-    callback?: () => void) {
+    callback?: (args: any) => void) {
     const [n, setN] = useState(0);
     useEffect(() => {
-        const update = () => {
+        const update = (args: any) => {
             setN(n + 1);
-            callback?.();
+            callback?.(args);
         };
         const instanceEvents = presentFTManager?.registerEventListener(events, update) || [];
         const staticEvents = PresentFTManager.registerEventListener(events, update);

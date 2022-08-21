@@ -12,10 +12,8 @@ import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
 } from '../../slide-list/slideHelpers';
-import { usePresentFGClearing } from '../../event/PresentEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import SlideItem from '../../slide-list/SlideItem';
 import Slide from '../../slide-list/Slide';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
 
@@ -24,9 +22,6 @@ export default function SlideItems({ slide }: { slide: Slide }) {
         DEFAULT_THUMBNAIL_SIZE);
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useFSEvents(['select', 'edit'], slide.fileSource);
-    usePresentFGClearing(() => {
-        SlideItem.setSelectedItem(null);
-    });
     const slideItems = slide.items;
     if (!isWindowEditingMode()) {
         const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];

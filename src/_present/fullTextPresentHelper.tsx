@@ -1,5 +1,8 @@
 import { getVerses } from '../server/bible-helpers/bibleHelpers1';
-import { getBibleLocale, toLocaleNumBB } from '../server/bible-helpers/bibleHelpers2';
+import {
+    getBibleLocale,
+    toLocaleNumBB,
+} from '../server/bible-helpers/bibleHelpers2';
 import { removePX } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -7,9 +10,9 @@ import { AppColorType, BLACK_COLOR } from '../others/ColorPicker';
 import { HIGHLIGHT_HOVER_SETTING } from '../full-text-present/Utils';
 import BibleItem from '../bible-list/BibleItem';
 import { renderPresent } from '../helper/presentingHelpers';
-import { presentEventListener } from '../event/PresentEventListener';
 import ReactDOMServer from 'react-dom/server';
 import { getFontFamilyByLocal, LocaleType } from '../lang';
+import appProviderPresent from './appProviderPresent';
 
 type StylingType = {
     color?: AppColorType;
@@ -126,13 +129,6 @@ const fullTextPresentHelper = {
     renderFromData(data: {
         title: string, texts: string[],
     }[] | null) {
-        if (data === null) {
-            this.setList([]);
-            this.hide();
-        } else {
-            this.setList(data);
-            this.show();
-        }
     },
     genHtmlFTItem(renderedList: BibleRenderedType[], isLineSync: boolean) {
         if (renderedList.length === 0) {
@@ -146,12 +142,16 @@ const fullTextPresentHelper = {
                         <th key={i} style={{
                             fontFamily: getFontFamilyByLocal(locale),
                         }}>
-                            <span className='bible'>{bibleName}</span>|
-                            <span className='title'>{title}</span >
+                            <span className='bible highlight bible-name'
+                                data-index={i}>
+                                {bibleName}
+                            </span>
+                            |<span className='title'>{title}</span >
                         </th>
                     );
                 })}
-            </tr></thead>
+            </tr>
+            </thead>
             <tbody>
                 {isLineSync ? Array.from({ length: versesCount }).map((_, i) => {
                     return (
@@ -215,8 +215,27 @@ const fullTextPresentHelper = {
             }
         });
     },
-    registerHighlight(table: HTMLTableElement,
-        callBack: (selectedIndex: number | null) => void) {
+    registerHighlight(table: HTMLTableElement, {
+        onSelectIndex, onBibleSelect,
+    }: {
+        onSelectIndex: (selectedIndex: number | null) => void,
+        onBibleSelect: (event: MouseEvent, index: number) => void,
+    }) {
+        if (!appProviderPresent.isPresent) {
+            const spanBibleNames = table.querySelectorAll<HTMLSpanElement>('span.bible-name');
+            Array.from(spanBibleNames).forEach((spanBibleName) => {
+                spanBibleName.addEventListener('mouseover', () => {
+                    spanBibleName.classList.add('hover');
+                });
+                spanBibleName.addEventListener('mouseout', () => {
+                    spanBibleName.classList.remove('hover');
+                });
+                spanBibleName.addEventListener('click', (event) => {
+                    const index = Number(spanBibleName.getAttribute('data-index'));
+                    onBibleSelect(event, index);
+                });
+            });
+        }
         const spans = table.querySelectorAll<HTMLSpanElement>('span.highlight');
         Array.from(spans).forEach((span) => {
             span.addEventListener('mouseover', () => {
@@ -229,9 +248,9 @@ const fullTextPresentHelper = {
                 const arrChildren = this.removeClassName(table, 'selected');
                 if (!arrChildren.includes(span) && span.dataset.highlight
                     && !isNaN(+span.dataset.highlight)) {
-                    callBack(+span.dataset.highlight);
+                    onSelectIndex(+span.dataset.highlight);
                 } else {
-                    callBack(null);
+                    onSelectIndex(null);
                 }
             });
         });
@@ -272,24 +291,13 @@ const fullTextPresentHelper = {
         });
         this.renderFromData(newList);
     },
-    show() {
-        this.render();
-    },
-    hide() {
-        presentEventListener.clearFT(true);
-        renderPresent({
-            script: `
-            const ftViewer = getFullText();
-            ftViewer.innerHTML = '';
-        `});
-    },
     render() {
-        presentEventListener.renderFT();
         this.resetHighlight();
         renderPresent({
             script: `
             const ftViewer = getFullText();
-            ftViewer.innerHTML = \`${this.tableShowing.outerHTML}\`;
+            ftViewer.innerHTML = \`${this.tableShowing.outerHTML
+                }\`;
         `});
     },
 };

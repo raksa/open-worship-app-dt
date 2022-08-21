@@ -1,4 +1,3 @@
-import { presentEventListener } from '../event/PresentEventListener';
 import ToastEventListener from '../event/ToastEventListener';
 import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
@@ -27,15 +26,6 @@ export function copyToClipboard(str: string) {
     });
     return true;
 }
-
-appProvider.messageUtils.listenForData('app:main:change-bible',
-    (_event, isNext: boolean) => {
-        presentEventListener.changeBible(isNext);
-    });
-appProvider.messageUtils.listenForData('app:main:ctrl-scrolling',
-    (_event, isUp: boolean) => {
-        presentEventListener.presentCtrlScrolling(isUp);
-    });
 
 export function selectDirs() {
     return appProvider.messageUtils.

@@ -4,6 +4,8 @@ import EventHandler from '../event/EventHandler';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidate } from '../lang';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper, {
     BibleRenderedType,
@@ -27,7 +29,7 @@ export type FTListType = {
     [key: string]: FTItemDataType;
 };
 
-export type PresentFTManagerEventType = 'update' | 'text-style';
+export type PresentFTManagerEventType = 'update' | 'text-style' | 'change-bible';
 
 const settingName = 'present-ft-';
 export default class PresentFTManager extends EventHandler<PresentFTManagerEventType> {
@@ -322,6 +324,8 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     static async ftBibleSelect(ftFilePath: string,
         id: number, bibleItems: BibleItem[],
         event: React.MouseEvent) {
+            console.log(bibleItems);
+            
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         const renderedList = await fullTextPresentHelper.genRenderList(bibleItems);
         chosenPresentManagers.forEach(async (presentManager) => {
@@ -360,9 +364,31 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         if (ftItemData !== null) {
             const newTable = fullTextPresentHelper.genHtmlFTItem(ftItemData.renderedList,
                 PresentFTManager._isLineSync);
-            fullTextPresentHelper.registerHighlight(newTable, (selectedIndex) => {
-                this.selectedIndex = selectedIndex;
-                this.sendSyncSelectedIndex();
+            fullTextPresentHelper.registerHighlight(newTable, {
+                onSelectIndex: (selectedIndex) => {
+                    this.selectedIndex = selectedIndex;
+                    this.sendSyncSelectedIndex();
+                },
+                onBibleSelect: async (event: any, index) => {
+                    const bibleItemingList = ftItemData.renderedList.map(({ bibleName }) => {
+                        return bibleName;
+                    });
+                    const bibleList = await bibleHelper.getBibleListWithStatus();
+                    const bibleListFiltered = bibleList.filter(([bibleName]) => {
+                        return !bibleItemingList.includes(bibleName);
+                    });
+                    showAppContextMenu(event,
+                        bibleListFiltered.map(([bibleName, isAvailable]) => {
+                            return {
+                                title: bibleName,
+                                disabled: !isAvailable,
+                                onClick: () => {
+                                    // TODO: implement this select bible
+                                    console.log(index, bibleName);
+                                },
+                            };
+                        }));
+                },
             });
             const divHaftScale = document.createElement('div');
             divHaftScale.appendChild(newTable);

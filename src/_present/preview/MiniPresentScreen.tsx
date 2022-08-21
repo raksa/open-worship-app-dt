@@ -6,7 +6,10 @@ import MiniScreenClearControl from './MiniScreenClearControl';
 import PresentManager from '../PresentManager';
 import DisplayControl from './DisplayControl';
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { initReceivePresentMessage, usePMEvents } from '../presentEventHelpers';
+import {
+    initReceivePresentMessage,
+    usePMEvents,
+} from '../presentEventHelpers';
 import PTEffectControl from './PTEffectControl';
 import appProviderPresent from '../appProviderPresent';
 
