@@ -34,6 +34,8 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     static eventNamePrefix: string = 'present-ft-m';
     readonly presentId: number;
     private _ftItemData: FTItemDataType | null = null;
+    private static _textStyle: AnyObjectType = {};
+    private static _isLineSync = false;
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
     private _divScrollListener;
@@ -43,6 +45,19 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         if (appProviderPresent.isMain) {
             const allFTList = PresentFTManager.getFTList();
             this._ftItemData = allFTList[this.key] || null;
+
+            const str = getSetting(`${settingName}-style-text`, '{}');
+            try {
+                const style = JSON.parse(str);
+                if (typeof style !== 'object') {
+                    console.log(style);
+                    throw new Error('Invalid style data');
+                }
+                PresentFTManager._textStyle = style;
+            } catch (error) {
+                appProviderPresent.appUtils
+                    .handleError(error);
+            }
         }
         this._divScrollListener = () => {
             if (this.div === null) {
@@ -86,7 +101,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             allFTList[this.key] = ftItemData;
         }
         PresentFTManager.setFTList(allFTList);
-        this.sendSyncPresent();
+        this.sendSyncData();
         this.fireUpdate();
     }
     private _setMetadata(key: string, value: any) {
@@ -165,14 +180,14 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         const presentFTManager = this.getInstanceByPresentId(presentId);
         presentFTManager.selectedIndex = data.selectedIndex;
     }
-    sendSyncPresent() {
+    sendSyncData() {
         sendPresentMessage({
             presentId: this.presentId,
             type: 'full-text',
             data: this.ftItemData,
         });
     }
-    static receiveSyncPresent(message: PresentMessageType) {
+    static receiveSyncData(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
         presentFTManager.ftItemData = data;
@@ -240,56 +255,47 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         setSetting(`${settingName}-ft-data`, str);
     }
     static maxTextStyleTextFontSize = 200;
-    static getTextStyleTextFontSize(style: AnyObjectType) {
-        return typeof style.fontSize !== 'number' ? 25 : style.fontSize;
+    static get textStyleTextFontSize() {
+        const textStyle = this.textStyle;
+        return typeof textStyle.fontSize !== 'number' ? 25 : textStyle.fontSize;
     }
     static changeTextStyleTextFontSize(isUp: boolean) {
-        const textStyle = this.getTextStyle();
-        let fontSize = this.getTextStyleTextFontSize(textStyle);
+        let fontSize = this.textStyleTextFontSize;
         fontSize += isUp ? 1 : -1;
         this.applyTextStyle({
             fontSize: Math.min(this.maxTextStyleTextFontSize,
                 Math.max(1, fontSize)),
         });
     }
-    static getTextStyleTextColor(style: AnyObjectType): string {
-        return typeof style.color !== 'string' ? '#ffffff' : style.color;
+    static get textStyleTextColor(): string {
+        const textStyle = this.textStyle;
+        return typeof textStyle.color !== 'string' ? '#ffffff' : textStyle.color;
     }
-    static getTextStyleTextTextShadow(style: AnyObjectType): string {
-        return typeof style.textShadow !== 'string' ? 'none' : style.textShadow;
+    static get textStyleTextTextShadow(): string {
+        const textStyle = this.textStyle;
+        return typeof textStyle.textShadow !== 'string' ? 'none' : textStyle.textShadow;
     }
-    static getTextStyleText(): string {
-        const textStyle = this.getTextStyle();
+    static get textStyleText(): string {
         return `
-            font-size: ${this.getTextStyleTextFontSize(textStyle)}px;
-            color: ${this.getTextStyleTextColor(textStyle)};
-            text-shadow: ${this.getTextStyleTextTextShadow(textStyle)};
+            font-size: ${this.textStyleTextFontSize}px;
+            color: ${this.textStyleTextColor};
+            text-shadow: ${this.textStyleTextTextShadow};
         `;
     }
-    static getTextStyle(): AnyObjectType {
-        const str = getSetting(`${settingName}-style-text`, '{}');
-        try {
-            const style = JSON.parse(str);
-            if (typeof style !== 'object') {
-                console.log(style);
-                throw new Error('Invalid style data');
-            }
-            return style;
-        } catch (error) {
-            appProviderPresent.appUtils
-                .handleError(error);
-        }
-        return {};
+    static get textStyle(): AnyObjectType {
+        return this._textStyle;
     }
-    static setTextStyle(style: AnyObjectType) {
+    static set textStyle(style: AnyObjectType) {
+        this._textStyle = style;
         const str = JSON.stringify(style);
         setSetting(`${settingName}-style-text`, str);
+        this.sendSynTextStyle();
         this.addPropEvent('text-style');
     }
     static applyTextStyle(style: AnyObjectType) {
-        const textStyle = this.getTextStyle();
+        const textStyle = this.textStyle;
         Object.assign(textStyle, style);
-        this.setTextStyle(textStyle);
+        this.textStyle = textStyle;
     }
     static getDataList(ftFilePath: string, ftItemId: number) {
         const dataList = this.getFTList();
@@ -297,6 +303,21 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             return data.ftFilePath === ftFilePath &&
                 data.id === ftItemId;
         });
+    }
+    static sendSynTextStyle() {
+        PresentManager.getAllInstances().forEach((presentManager) => {
+            sendPresentMessage({
+                presentId: presentManager.presentId,
+                type: 'full-text-text-style',
+                data: {
+                    textStyle: this.textStyle,
+                },
+            });
+        });
+    }
+    static receiveSyncTextStyle(message: PresentMessageType) {
+        const { data } = message;
+        this.textStyle = data.textStyle;
     }
     static async ftBibleSelect(ftFilePath: string,
         id: number, bibleItems: BibleItem[],
@@ -337,7 +358,8 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         }
         const ftItemData = this.ftItemData;
         if (ftItemData !== null) {
-            const newTable = fullTextPresentHelper.genHtmlFTItem(ftItemData.renderedList);
+            const newTable = fullTextPresentHelper.genHtmlFTItem(ftItemData.renderedList,
+                PresentFTManager._isLineSync);
             fullTextPresentHelper.registerHighlight(newTable, (selectedIndex) => {
                 this.selectedIndex = selectedIndex;
                 this.sendSyncSelectedIndex();
@@ -415,5 +437,8 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     static getInstanceByPresentId(presentId: number) {
         const presentManager = PresentManager.getInstance(presentId);
         return presentManager.presentFTManager;
+    }
+    sendSyncPresent() {
+        this.sendSyncData();
     }
 }

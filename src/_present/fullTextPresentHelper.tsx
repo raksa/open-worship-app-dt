@@ -134,7 +134,7 @@ const fullTextPresentHelper = {
             this.show();
         }
     },
-    genHtmlFTItem(renderedList: BibleRenderedType[]) {
+    genHtmlFTItem(renderedList: BibleRenderedType[], isLineSync: boolean) {
         if (renderedList.length === 0) {
             return document.createElement('table');
         }
@@ -153,7 +153,7 @@ const fullTextPresentHelper = {
                 })}
             </tr></thead>
             <tbody>
-                {Array.from({ length: versesCount }).map((_, i) => {
+                {isLineSync ? Array.from({ length: versesCount }).map((_, i) => {
                     return (
                         <tr key={i}>
                             {renderedList.map(({ locale, verses }, j) => {
@@ -171,7 +171,26 @@ const fullTextPresentHelper = {
                             })}
                         </tr>
                     );
-                })}
+                }) : <tr>
+                    {renderedList.map(({ locale, verses }, i) => {
+                        return (
+                            <td key={i}>
+                                {verses.map(({ num, text }, j) => {
+                                    return (
+                                        <span key={j} className='highlight'
+                                            style={{
+                                                fontFamily: getFontFamilyByLocal(locale),
+                                            }}
+                                            data-highlight={j}>
+                                            <span className='verse-number'>{num}</span>
+                                            : {text}
+                                        </span>
+                                    );
+                                })}
+                            </td>
+                        );
+                    })}
+                </tr>}
             </tbody>
         </table>);
         const div = document.createElement('div');

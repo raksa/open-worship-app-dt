@@ -7,6 +7,7 @@ import {
 
 export const presentTypeList = [
     'background', 'slide', 'full-text', 'full-text-scroll',
+    'full-text-text-style',
     'full-text-selected-index', 'display-change', 'visible',
     'init', 'effect',
 ] as const;

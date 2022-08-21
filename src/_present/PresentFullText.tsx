@@ -46,15 +46,11 @@ const styleText = `
 
 #full-text th,
 #full-text td {
-    font-family: Battambang, system-ui, sans-serif !important;
     -webkit-font-smoothing: antialiased;
     border-left: 1px solid #000;
     text-align: left;
     vertical-align: top;
     line-height: 1.5em;
-    /* TODO: use em instead */
-    font-size: 111px;
-    color: black;
     padding: 0.3em;
     box-sizing: border-box;
 }
@@ -102,7 +98,7 @@ export default function PresentFullText({ presentManager }: {
             <style>{styleText}</style>
             <style>{`
             #full-text th, #full-text td {
-                ${PresentFTManager.getTextStyleText()}
+                ${PresentFTManager.textStyleText}
             }
             `}</style>
             <div id='full-text' ref={div}

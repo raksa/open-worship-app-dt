@@ -117,6 +117,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.presentBGManager.sendSyncPresent();
         this.presentSlideManager.sendSyncPresent();
         this.presentFTManager.sendSyncPresent();
+        PresentFTManager.sendSynTextStyle();
     }
     show() {
         return showPresent({
@@ -177,11 +178,13 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         } else if (type === 'slide') {
             PresentSlideManager.receiveSyncPresent(message);
         } else if (type === 'full-text') {
-            PresentFTManager.receiveSyncPresent(message);
+            PresentFTManager.receiveSyncData(message);
         } else if (type === 'full-text-scroll') {
             PresentFTManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {
             PresentFTManager.receiveSyncSelectedIndex(message);
+        } else if (type === 'full-text-text-style') {
+            PresentFTManager.receiveSyncTextStyle(message);
         } else if (type === 'effect') {
             PresentTransitionEffect.receiveSyncPresent(message);
         } else if (type === 'visible') {

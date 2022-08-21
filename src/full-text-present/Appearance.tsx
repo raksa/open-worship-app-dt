@@ -5,15 +5,13 @@ import { usePFTMEvents } from '../_present/presentEventHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
 
 export default function Appearance() {
-    const textStyle = PresentFTManager.getTextStyle();
     const [color, setColor] = useState(
-        PresentFTManager.getTextStyleTextColor(textStyle));
+        PresentFTManager.textStyleTextColor);
     const [fontSize, setFontSize] = useState(
-        PresentFTManager.getTextStyleTextFontSize(textStyle));
+        PresentFTManager.textStyleTextFontSize);
     usePFTMEvents(['text-style'], undefined, () => {
-        const newTextStyle = PresentFTManager.getTextStyle();
-        setColor(PresentFTManager.getTextStyleTextColor(newTextStyle));
-        setFontSize(PresentFTManager.getTextStyleTextFontSize(newTextStyle));
+        setColor(PresentFTManager.textStyleTextColor);
+        setFontSize(PresentFTManager.textStyleTextFontSize);
     });
     const setColorToStyle = (newColor: AppColorType) => {
         PresentFTManager.applyTextStyle({
