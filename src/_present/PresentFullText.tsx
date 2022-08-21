@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
-import { usePMEvents } from './presentEventHelpers';
+import { usePFTMEvents, usePMEvents } from './presentEventHelpers';
+import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
 
 const styleText = `
@@ -88,6 +89,7 @@ export default function PresentFullText({ presentManager }: {
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentFTManager.render();
     });
+    usePFTMEvents(['text-style']);
     const div = useRef<HTMLDivElement>(null);
     const { presentFTManager } = presentManager;
     useEffect(() => {
@@ -99,8 +101,8 @@ export default function PresentFullText({ presentManager }: {
         <>
             <style>{styleText}</style>
             <style>{`
-            #full-text th td {
-                ${presentFTManager.textStyleText}
+            #full-text th, #full-text td {
+                ${PresentFTManager.getTextStyleText()}
             }
             `}</style>
             <div id='full-text' ref={div}

@@ -15,12 +15,6 @@ if (container !== null) {
   );
 }
 
-document.addEventListener('wheel', function (event) {
-  if (event.ctrlKey) {
-    const isUp = event.deltaY < 0;
-    appProviderPresent.messageUtils.sendData('present:app:ctrl-scrolling', isUp);
-  }
-});
 document.addEventListener('keyup', function (event) {
   if ((event.ctrlKey || event.altKey)
     && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {

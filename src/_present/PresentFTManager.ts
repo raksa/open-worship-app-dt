@@ -5,7 +5,9 @@ import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidate } from '../lang';
 import appProviderPresent from './appProviderPresent';
-import fullTextPresentHelper, { BibleRenderedType } from './fullTextPresentHelper';
+import fullTextPresentHelper, {
+    BibleRenderedType,
+} from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
@@ -23,9 +25,6 @@ export type FTItemDataType = {
 };
 export type FTListType = {
     [key: string]: FTItemDataType;
-};
-export type StyleListType = {
-    [key: string]: React.CSSProperties;
 };
 
 export type PresentFTManagerEventType = 'update' | 'text-style';
@@ -58,6 +57,13 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
+        this._div?.addEventListener('wheel', (event) => {
+            if (event.ctrlKey) {
+                event.preventDefault();
+                const isUp = event.deltaY < 0;
+                PresentFTManager.changeTextStyleTextFontSize(isUp);
+            }
+        });
         this.registerScrollListener();
         this.render();
     }
@@ -93,16 +99,6 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             }
         }
     }
-    get textStyle() {
-        const styleList = PresentFTManager.getStyleList();
-        return styleList[this.key] || {};
-    }
-    set textStyle(textStyle: React.CSSProperties) {
-        const styleList = PresentFTManager.getStyleList();
-        styleList[this.key] = textStyle;
-        PresentFTManager.setStyleList(styleList);
-        this.addPropEvent('text-style');
-    }
     get containerStyle(): React.CSSProperties {
         return {
             position: 'absolute',
@@ -111,17 +107,6 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             overflowX: 'hidden',
             overflowY: 'auto',
         };
-    }
-    get textStyleText(): string {
-        const textStyle = this.textStyle;
-        const fontSize = textStyle || 16;
-        const fontColor = textStyle || '#ffffff';
-        const textShadow = textStyle || 'none';
-        return `
-            font-size: ${fontSize}px;
-            color: ${fontColor};
-            text-shadow: ${textShadow};
-        `;
     }
     get selectedIndex() {
         return this._ftItemData === null ? null :
@@ -254,26 +239,57 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         const str = JSON.stringify(ftList);
         setSetting(`${settingName}-ft-data`, str);
     }
-    static getStyleList(): StyleListType {
+    static maxTextStyleTextFontSize = 200;
+    static getTextStyleTextFontSize(style: AnyObjectType) {
+        return typeof style.fontSize !== 'number' ? 25 : style.fontSize;
+    }
+    static changeTextStyleTextFontSize(isUp: boolean) {
+        const textStyle = this.getTextStyle();
+        let fontSize = this.getTextStyleTextFontSize(textStyle);
+        fontSize += isUp ? 1 : -1;
+        this.applyTextStyle({
+            fontSize: Math.min(this.maxTextStyleTextFontSize,
+                Math.max(1, fontSize)),
+        });
+    }
+    static getTextStyleTextColor(style: AnyObjectType): string {
+        return typeof style.color !== 'string' ? '#ffffff' : style.color;
+    }
+    static getTextStyleTextTextShadow(style: AnyObjectType): string {
+        return typeof style.textShadow !== 'string' ? 'none' : style.textShadow;
+    }
+    static getTextStyleText(): string {
+        const textStyle = this.getTextStyle();
+        return `
+            font-size: ${this.getTextStyleTextFontSize(textStyle)}px;
+            color: ${this.getTextStyleTextColor(textStyle)};
+            text-shadow: ${this.getTextStyleTextTextShadow(textStyle)};
+        `;
+    }
+    static getTextStyle(): AnyObjectType {
         const str = getSetting(`${settingName}-style-text`, '{}');
         try {
-            const json = JSON.parse(str);
-            if (Object.values(json).some((style: any) => {
-                return typeof style !== 'object';
-            })) {
-                console.log(json);
+            const style = JSON.parse(str);
+            if (typeof style !== 'object') {
+                console.log(style);
                 throw new Error('Invalid style data');
             }
-            return json;
+            return style;
         } catch (error) {
             appProviderPresent.appUtils
                 .handleError(error);
         }
         return {};
     }
-    static setStyleList(styleList: StyleListType) {
-        const str = JSON.stringify(styleList);
+    static setTextStyle(style: AnyObjectType) {
+        const str = JSON.stringify(style);
         setSetting(`${settingName}-style-text`, str);
+        this.addPropEvent('text-style');
+    }
+    static applyTextStyle(style: AnyObjectType) {
+        const textStyle = this.getTextStyle();
+        Object.assign(textStyle, style);
+        this.setTextStyle(textStyle);
     }
     static getDataList(ftFilePath: string, ftItemId: number) {
         const dataList = this.getFTList();

@@ -6,6 +6,8 @@ import { useStateSettingBoolean } from '../helper/settingHelper';
 import SlideItem from '../slide-list/SlideItem';
 import EventHandler, { ListenerType } from './EventHandler';
 
+// TODO: remove this
+
 export type PresentEventType =
     | 'render-bg'
     | 'clear-bg'
