@@ -8,12 +8,13 @@ import BibleItem from '../bible-list/BibleItem';
 import ReactDOMServer from 'react-dom/server';
 import { getFontFamilyByLocal, LocaleType } from '../lang';
 import appProviderPresent from './appProviderPresent';
+import { Fragment } from 'react';
 
 type BibleRenderVerseType = {
     num: string,
     text: string,
 };
-export type BibleRenderedType = {
+export type BibleItemRenderedType = {
     locale: LocaleType,
     bibleName: string,
     title: string,
@@ -21,14 +22,13 @@ export type BibleRenderedType = {
 };
 export type LyricRenderedType = {
     title: string,
-    items: string[]
+    items: {
+        num: number,
+        text: string,
+    }[]
 };
 const fullTextPresentHelper = {
-    renderFromData(data: {
-        title: string, texts: string[],
-    }[] | null) {
-    },
-    genHtmlFTItem(bibleRenderedList: BibleRenderedType[],
+    genHtmlFromFtBibleItem(bibleRenderedList: BibleItemRenderedType[],
         isLineSync: boolean) {
         if (bibleRenderedList.length === 0) {
             return document.createElement('table');
@@ -84,6 +84,65 @@ const fullTextPresentHelper = {
                                             <span className='verse-number'>{num}</span>
                                             : {text}
                                         </span>
+                                    );
+                                })}
+                            </td>
+                        );
+                    })}
+                </tr>}
+            </tbody>
+        </table>);
+        const div = document.createElement('div');
+        div.innerHTML = htmlString;
+        return div.firstChild as HTMLTableElement;
+    },
+    genHtmlFromFtLyric(lyricRenderedList: LyricRenderedType[],
+        isLineSync: boolean) {
+        if (lyricRenderedList.length === 0) {
+            return document.createElement('table');
+        }
+        const itemsCount = lyricRenderedList[0].items.length;
+        const htmlString = ReactDOMServer.renderToStaticMarkup(<table>
+            <thead><tr>
+                {lyricRenderedList.map(({ title }, i) => {
+                    return (
+                        <th key={i}>
+                            <span className='title'>{title}</span >
+                        </th>
+                    );
+                })}
+            </tr>
+            </thead>
+            <tbody>
+                {isLineSync ? Array.from({ length: itemsCount }).map((_, i) => {
+                    return (
+                        <tr key={i}>
+                            {lyricRenderedList.map(({ items }, j) => {
+                                const { num, text } = items[i];
+                                return (
+                                    <td key={j}>
+                                        <span data-highlight={num}>
+                                            {text}
+                                        </span>
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    );
+                }) : <tr>
+                    {lyricRenderedList.map(({ items }, i) => {
+                        return (
+                            <td key={i}>
+                                {items.map(({ num, text }, j) => {
+                                    return (
+                                        <Fragment key={j}>
+                                            <span className='highlight'
+                                                data-highlight={j}>
+                                                <span className='verse-number'>{num}</span>
+                                                : {text}
+                                            </span>
+                                            <br />
+                                        </Fragment>
                                     );
                                 })}
                             </td>
@@ -154,9 +213,9 @@ const fullTextPresentHelper = {
             });
         });
     },
-    genRenderList(bibleItems: BibleItem[]) {
+    genBibleItemRenderList(bibleItems: BibleItem[]) {
         return Promise.all(bibleItems.map((bibleItem) => {
-            return new Promise<BibleRenderedType>(async (resolve, _) => {
+            return new Promise<BibleItemRenderedType>(async (resolve, _) => {
                 const bibleTitle = await BibleItem.itemToTitle(bibleItem);
                 const verses = await getVerses(bibleItem.bibleName, bibleItem.target.book, bibleItem.target.chapter);
                 const verseList: BibleRenderVerseType[] = [];
@@ -181,12 +240,18 @@ const fullTextPresentHelper = {
             });
         }));
     },
-    renderLyricsList(lyric: Lyric) {
-        lyric.items.map((lyricItem) => {
-            const texts = lyricItem.content.split('===').map((text, i) => {
-                return `<span data-highlight="${i}">${text.trim().replace(/\n/g, '<br/>')}</span>`;
+    genLyricRenderList(lyric: Lyric) {
+        return lyric.items.map(({ title, content }): LyricRenderedType => {
+            const items = content.split('===').map((text, i) => {
+                return {
+                    num: i,
+                    text: text.trim().replace(/\n/g, '<br/>'),
+                };
             });
-            return { title: lyricItem.title, texts };
+            return {
+                title,
+                items,
+            };
         });
     },
 };

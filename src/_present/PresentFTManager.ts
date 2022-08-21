@@ -3,6 +3,7 @@ import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
+import Lyric from '../lyric-list/Lyric';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
@@ -247,7 +248,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         const { data } = message;
         this.textStyle = data.textStyle;
     }
-    static async ftBibleSelect(event: React.MouseEvent | null, bibleItems: BibleItem[]) {
+    static async ftBibleItemSelect(event: React.MouseEvent | null, bibleItems: BibleItem[]) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(
             genMouseEvent(event) as any,
         );
@@ -256,7 +257,24 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             const { presentFTManager } = presentManager;
             presentFTManager.ftItemData = ftItemData;
         });
-        PresentFTManager.fireUpdateEvent();
+    }
+    static async ftLyricSelect(event: React.MouseEvent | null, lyric: Lyric) {
+        const chosenPresentManagers = await PresentManager.contextChooseInstances(
+            genMouseEvent(event) as any,
+        );
+        const renderedList = fullTextPresentHelper.genLyricRenderList(lyric);
+        const ftItemData: FTItemDataType = {
+            type: 'lyric',
+            lyricData: {
+                renderedList,
+            },
+            scroll: 0,
+            selectedIndex: null,
+        };
+        chosenPresentManagers.forEach(async (presentManager) => {
+            const { presentFTManager } = presentManager;
+            presentFTManager.ftItemData = ftItemData;
+        });
     }
     render() {
         renderPFTManager(this);
@@ -286,7 +304,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     static startPresentDrag(bibleItemData: BibleItemType) {
         const copiedBibleItemJson = JSON.parse(JSON.stringify(bibleItemData));
         const target: PresentDragTargetType = 'full-text';
-        const type: FfDataType = 'bible';
+        const type: FfDataType = 'bible-item';
         (bibleItemData as any).present = {
             target,
             type,

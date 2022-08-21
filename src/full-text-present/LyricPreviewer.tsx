@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
-import fullTextPresentHelper from '../_present/fullTextPresentHelper';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
+import PresentFTManager from '../_present/PresentFTManager';
+import { checkIsFtAutoShow } from './FTPreviewerUtils';
 
-let isMounted = false;
 export default function LyricPreviewer() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
     useLyricSelecting(setLyric);
@@ -16,19 +16,18 @@ export default function LyricPreviewer() {
                 setLyric(lr || undefined);
             });
         }
-    }, [lyric]);
-    useEffect(() => {
-        isMounted = true;
-        previewer.show = async () => {
-            if (!isMounted || !lyric) {
-                return;
+        previewer.show = (event?: React.MouseEvent) => {
+            if (lyric) {
+                PresentFTManager.ftLyricSelect(event || null, lyric);
             }
-            fullTextPresentHelper.renderLyricsList(lyric);
         };
+        if (checkIsFtAutoShow()) {
+            previewer.show();
+        }
         return () => {
-            isMounted = false;
+            previewer.show = () => void 0;
         };
-    });
+    }, [lyric]);
     if (!lyric) {
         return (
             <LyricList />
@@ -42,7 +41,8 @@ export default function LyricPreviewer() {
     }
     return (
         <div className='d-flex d-flex-row overflow-hidden w-100 h-100'>
-            {lyric.isChanged && <button className='btn btn-success' title='Save'
+            {lyric.isChanged && <button className='btn btn-success'
+                title='Save'
                 onClick={() => {
                     lyric.save();
                 }}
@@ -63,12 +63,15 @@ export default function LyricPreviewer() {
                         }}
                         onClose={() => {
                             const newLyric = lyric.clone();
-                            newLyric.items = newLyric.items.filter((_, i1) => i1 !== i);
+                            newLyric.items = newLyric.items.filter((_, i1) => {
+                                return i1 !== i;
+                            });
                             setLyric(newLyric);
                         }} />
                 );
             })}
-            <button className='btn btn-info' title='Add More Lyric'
+            <button className='btn btn-info'
+                title='Add More Lyric'
                 style={{
                     width: '20px',
                     padding: '0px',

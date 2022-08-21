@@ -18,12 +18,12 @@ export function setCurrentLocale(locale: LocaleType) {
   setSetting('language-locale', locale);
   currentLocale = locale;
 }
-export function checkIsValidate(locale: any) {
+export function checkIsValidLocale(locale: any) {
   return locales.includes(locale);
 }
 export function getCurrentLocale() {
   const lc = getSetting('language-locale', 'en');
-  if (checkIsValidate(lc)) {
+  if (checkIsValidLocale(lc)) {
     currentLocale = lc as LocaleType;
   }
   return currentLocale;

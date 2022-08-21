@@ -49,7 +49,7 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
         previewer.show = (event?: React.MouseEvent) => {
             const convertedItems = BibleItem.convertPresent(bibleItem,
                 BibleItem.getBiblePresentingSetting());
-            PresentFTManager.ftBibleSelect(event || null, convertedItems);
+            PresentFTManager.ftBibleItemSelect(event || null, convertedItems);
         };
         if (checkIsFtAutoShow()) {
             previewer.show();

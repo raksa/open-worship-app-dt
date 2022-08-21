@@ -1,24 +1,24 @@
 import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import { checkIsValidate } from '../lang';
+import { checkIsValidLocale } from '../lang';
 import { createMouseEvent, showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper, {
-    BibleRenderedType,
+    BibleItemRenderedType,
     LyricRenderedType,
 } from './fullTextPresentHelper';
 import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
 
 const ftDataTypeList = [
-    'bible', 'lyric',
+    'bible-item', 'lyric',
 ] as const;
 export type FfDataType = typeof ftDataTypeList[number];
 export type FTItemDataType = {
     type: FfDataType,
-    bibleData?: {
-        renderedList: BibleRenderedType[],
+    bibleItemData?: {
+        renderedList: BibleItemRenderedType[],
         bibleItem: BibleItemType,
     },
     lyricData?: {
@@ -35,43 +35,44 @@ export type PresentFTManagerEventType = 'update' | 'text-style';
 
 export const settingName = 'present-ft-';
 
+const validateBible = ({ renderedList, bibleItem }: any) => {
+    BibleItem.validate(bibleItem);
+    return !Array.isArray(renderedList)
+        || renderedList.some(({
+            locale, bibleName, title, verses,
+        }: any) => {
+            return !checkIsValidLocale(locale)
+                || typeof bibleName !== 'string'
+                || typeof title !== 'string'
+                || !Array.isArray(verses)
+                || verses.some(({ num, text }: any) => {
+                    return typeof num !== 'string'
+                        || typeof text !== 'string';
+                });
+        });
+};
+const validateLyric = ({ renderedList }: any) => {
+    return !Array.isArray(renderedList)
+        || renderedList.some(({
+            title, items,
+        }: any) => {
+            return typeof title !== 'string'
+                || !Array.isArray(items)
+                || items.some(({ num, text }: any) => {
+                    return typeof num !== 'number'
+                        || typeof text !== 'string';
+                });
+        });
+};
 export function getFTList(): FTListType {
     const str = getSetting(`${settingName}-ft-data`, '{}');
     if (str !== '') {
         try {
             const json = JSON.parse(str);
-            const validateBible = ({ renderedList, bibleItem }: any) => {
-                BibleItem.validate(bibleItem);
-                return !Array.isArray(renderedList)
-                    || renderedList.some(({
-                        locale, bibleName, title, verses,
-                    }: any) => {
-                        return !checkIsValidate(locale)
-                            || typeof bibleName !== 'string'
-                            || typeof title !== 'string'
-                            || !Array.isArray(verses)
-                            || verses.some(({ num, text }: any) => {
-                                return typeof num !== 'string'
-                                    || typeof text !== 'string';
-                            });
-                    });
-            };
-            const validateLyric = ({ renderedList }: any) => {
-                return !Array.isArray(renderedList)
-                    || renderedList.some(({
-                        locale, title, items,
-                    }: any) => {
-                        return !checkIsValidate(locale)
-                            || typeof title !== 'string'
-                            || !Array.isArray(items)
-                            || items.some(({ text }: any) => {
-                                return typeof text !== 'string';
-                            });
-                    });
-            };
+
             Object.values(json).forEach((item: any) => {
                 if (!ftDataTypeList.includes(item.type)
-                    || (item.type === 'bible' && validateBible(item.bibleData))
+                    || (item.type === 'bible-item' && validateBible(item.bibleItemData))
                     || (item.type === 'lyric' && validateLyric(item.lyricData))) {
                     console.log(item);
                     throw new Error('Invalid full-text data');
@@ -97,7 +98,7 @@ function onSelectIndex(presentFTManager: PresentFTManager,
 }
 async function onBibleSelect(presentFTManager: PresentFTManager,
     event: any, index: number, ftItemData: FTItemDataType) {
-    const bibleRenderedList = ftItemData.bibleData?.renderedList as BibleRenderedType[];
+    const bibleRenderedList = ftItemData.bibleItemData?.renderedList as BibleItemRenderedType[];
     const bibleItemingList = bibleRenderedList.map(({ bibleName }) => {
         return bibleName;
     });
@@ -105,7 +106,7 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
     const bibleListFiltered = bibleList.filter(([bibleName]) => {
         return !bibleItemingList.includes(bibleName);
     });
-    const bibleItemJson = ftItemData.bibleData?.bibleItem as BibleItemType;
+    const bibleItemJson = ftItemData.bibleItemData?.bibleItem as BibleItemType;
     const applyBibleItems = async (newBibleNames: string[]) => {
         const newBibleItems = newBibleNames.map((bibleName1) => {
             const bibleItem = BibleItem.fromJson(bibleItemJson);
@@ -159,52 +160,61 @@ export function renderPFTManager(presentFTManager: PresentFTManager) {
         }
         return;
     }
-    if (ftItemData.bibleData !== undefined) {
-        const newTable = fullTextPresentHelper.genHtmlFTItem(
-            ftItemData.bibleData.renderedList, PresentFTManager.isLineSync);
-        fullTextPresentHelper.registerHighlight(newTable, {
-            onSelectIndex: (selectedIndex) => {
-                onSelectIndex(presentFTManager, selectedIndex);
-            },
-            onBibleSelect: async (event: any, index) => {
-                onBibleSelect(presentFTManager, event, index, ftItemData);
-            },
-        });
-        const divHaftScale = document.createElement('div');
-        divHaftScale.appendChild(newTable);
-        const parentWidth = presentFTManager.presentManager.width;
-        const parentHeight = presentFTManager.presentManager.height;
-        const { bounds } = PresentManager.getDisplayByPresentId(presentFTManager.presentId);
-        const width = bounds.width;
-        const height = bounds.height;
-        Object.assign(divHaftScale.style, {
-            width: `${width}px`,
-            height: `${height}px`,
-            transform: 'translate(-50%, -50%)',
-        });
-        const scale = parentWidth / width;
-        const divContainer = document.createElement('div');
-        divContainer.appendChild(divHaftScale);
-        Object.assign(divContainer.style, {
-            position: 'absolute',
-            width: `${parentWidth}px`,
-            height: `${parentHeight}px`,
-            transform: `scale(${scale},${scale}) translate(50%, 50%)`,
-        });
-        Array.from(presentFTManager.div.children).forEach((child) => {
-            child.remove();
-        });
-        presentFTManager.div.appendChild(divContainer);
-        presentFTManager.renderScroll(true);
-        presentFTManager.renderSelectedIndex();
+    let newTable: HTMLTableElement | null = null;
+    if (ftItemData.type === 'bible-item' &&
+        ftItemData.bibleItemData !== undefined) {
+        newTable = fullTextPresentHelper.genHtmlFromFtBibleItem(
+            ftItemData.bibleItemData.renderedList, PresentFTManager.isLineSync);
+    } else if (ftItemData.type === 'lyric' &&
+        ftItemData.lyricData !== undefined) {
+        newTable = fullTextPresentHelper.genHtmlFromFtLyric(
+            ftItemData.lyricData.renderedList, PresentFTManager.isLineSync);
     }
+    if (newTable === null) {
+        return;
+    }
+    fullTextPresentHelper.registerHighlight(newTable, {
+        onSelectIndex: (selectedIndex) => {
+            onSelectIndex(presentFTManager, selectedIndex);
+        },
+        onBibleSelect: async (event: any, index) => {
+            onBibleSelect(presentFTManager, event, index, ftItemData);
+        },
+    });
+    const divHaftScale = document.createElement('div');
+    divHaftScale.appendChild(newTable);
+    const parentWidth = presentFTManager.presentManager.width;
+    const parentHeight = presentFTManager.presentManager.height;
+    const { bounds } = PresentManager.getDisplayByPresentId(presentFTManager.presentId);
+    const width = bounds.width;
+    const height = bounds.height;
+    Object.assign(divHaftScale.style, {
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: 'translate(-50%, -50%)',
+    });
+    const scale = parentWidth / width;
+    const divContainer = document.createElement('div');
+    divContainer.appendChild(divHaftScale);
+    Object.assign(divContainer.style, {
+        position: 'absolute',
+        width: `${parentWidth}px`,
+        height: `${parentHeight}px`,
+        transform: `scale(${scale},${scale}) translate(50%, 50%)`,
+    });
+    Array.from(presentFTManager.div.children).forEach((child) => {
+        child.remove();
+    });
+    presentFTManager.div.appendChild(divContainer);
+    presentFTManager.renderScroll(true);
+    presentFTManager.renderSelectedIndex();
 }
 
 export async function bibleItemToFtData(bibleItems: BibleItem[]) {
-    const bibleRenderedList = await fullTextPresentHelper.genRenderList(bibleItems);
+    const bibleRenderedList = await fullTextPresentHelper.genBibleItemRenderList(bibleItems);
     return {
-        type: 'bible',
-        bibleData: {
+        type: 'bible-item',
+        bibleItemData: {
             renderedList: bibleRenderedList,
             bibleItem: bibleItems[0].toJson(),
         },
