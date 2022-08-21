@@ -6,7 +6,7 @@ import MiniScreenClearControl from './MiniScreenClearControl';
 import PresentManager from '../PresentManager';
 import DisplayControl from './DisplayControl';
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { usePMEvents } from '../presentEventHelpers';
+import { initReceivePresentMessage, usePMEvents } from '../presentEventHelpers';
 import PTEffectControl from './PTEffectControl';
 import appProviderPresent from '../appProviderPresent';
 
@@ -48,6 +48,7 @@ function openContextMenu(e: any, presentManager: PresentManager) {
         ]]);
 }
 
+initReceivePresentMessage();
 export default function MiniPresentScreen() {
     usePMEvents(['instance']);
     const presentManagers = PresentManager.getPresentManagersSetting();

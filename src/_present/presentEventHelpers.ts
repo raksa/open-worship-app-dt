@@ -99,17 +99,10 @@ export function sendPresentMessage(message: PresentMessageType,
     });
     console.assert(isSent, JSON.stringify({ channel, message }));
 }
-messageUtils.listenForData(
-    messageUtils.channels.presentMessageChannel,
-    (_, message: PresentMessageType) => {
-        PresentManager.receiveSyncPresent(message);
-    });
-
-if (appProviderPresent.isPresent) {
-    const presentId = PresentManager.getAllInstances()[0]?.presentId || 0;
-    sendPresentMessage({
-        presentId,
-        type: 'init',
-        data: null,
-    }, true);
+export function initReceivePresentMessage() {
+    messageUtils.listenForData(
+        messageUtils.channels.presentMessageChannel,
+        (_, message: PresentMessageType) => {
+            PresentManager.receiveSyncPresent(message);
+        });
 }
