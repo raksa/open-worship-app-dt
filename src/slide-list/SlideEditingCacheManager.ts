@@ -9,7 +9,7 @@ export default class SlideEditingCacheManager
     _originalJson: Readonly<SlideType>;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource, 'slide');
-        this._originalJson = Object.freeze(json);
+        this._originalJson = Object.freeze(cloneJson(json));
     }
     get cloneItems() {
         return cloneJson(this._originalJson.items);

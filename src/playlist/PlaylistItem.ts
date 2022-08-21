@@ -1,6 +1,6 @@
 import Bible from '../bible-list/Bible';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 
@@ -18,7 +18,7 @@ export default class PlaylistItem {
     jsonError: any;
     constructor(fileSource: FileSource, json: PlaylistItemType) {
         this.fileSource = fileSource;
-        this._originalJson = Object.freeze(json);
+        this._originalJson = Object.freeze(cloneJson(json));
     }
     get isError() {
         return this.type === 'error';

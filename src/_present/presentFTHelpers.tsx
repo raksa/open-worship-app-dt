@@ -105,23 +105,45 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
         return !bibleItemingList.includes(bibleName);
     });
     const bibleItemJson = ftItemData.bibleData?.bibleItem as BibleItemType;
+    const applyBibleItems = async (newBibleNames: string[]) => {
+        const newBibleItems = newBibleNames.map((bibleName1) => {
+            const bibleItem = BibleItem.fromJson(bibleItemJson);
+            bibleItem.bibleName = bibleName1;
+            return bibleItem;
+        });
+        const newFtItemData = await bibleItemToFtData(newBibleItems);
+        presentFTManager.ftItemData = newFtItemData;
+    };
     showAppContextMenu(event,
-        bibleListFiltered.map(([bibleName, isAvailable]) => {
-            return {
-                title: bibleName,
-                disabled: !isAvailable,
+        [
+            ...bibleRenderedList.length > 1 ? [{
+                title: 'Remove(' + bibleRenderedList[index].bibleName + ')',
                 onClick: async () => {
-                    bibleItemingList[index] = bibleName;
-                    const newBibleItems = bibleItemingList.map((bibleName1) => {
-                        const bibleItem = BibleItem.fromJson(bibleItemJson);
-                        bibleItem.bibleName = bibleName1;
-                        return bibleItem;
-                    });
-                    const newFtItemData = await bibleItemToFtData(newBibleItems);
-                    presentFTManager.ftItemData = newFtItemData;
+                    bibleItemingList.splice(index, 1);
+                    applyBibleItems(bibleItemingList);
                 },
-            };
-        }));
+                otherChild: (<i className='bi bi-x-lg'
+                    style={{ color: 'red' }} />),
+            }] : [],
+            ...bibleListFiltered.length > 0 ? [{
+                title: 'Ship Click to Add',
+                disabled: true,
+            }] : [],
+            ...bibleListFiltered.map(([bibleName, isAvailable]) => {
+                return {
+                    title: bibleName,
+                    disabled: !isAvailable,
+                    onClick: async (event1: any) => {
+                        if (event1.shiftKey) {
+                            bibleItemingList.push(bibleName);
+                        } else {
+                            bibleItemingList[index] = bibleName;
+                        }
+                        applyBibleItems(bibleItemingList);
+                    },
+                };
+            }),
+        ]);
 }
 
 export function renderPFTManager(presentFTManager: PresentFTManager) {

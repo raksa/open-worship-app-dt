@@ -5,7 +5,7 @@ import { toLocaleNumBB, toInputText } from '../server/bible-helpers/bibleHelpers
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -34,7 +34,7 @@ export default class BibleItem extends ItemBase {
         super();
         this.id = id;
         this.fileSource = fileSource;
-        this._originalJson = json;
+        this._originalJson = cloneJson(json);
     }
     get bibleName() {
         return this._originalJson.bibleName;

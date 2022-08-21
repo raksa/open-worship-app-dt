@@ -4,7 +4,7 @@ import {
     MimetypeNameType,
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
@@ -19,7 +19,7 @@ export default class Bible extends ItemSource<BibleItem>{
     _originalJson: BibleType;
     constructor(fileSource: FileSource, json: BibleType) {
         super(fileSource);
-        this._originalJson = json;
+        this._originalJson = cloneJson(json);
     }
     static fromJson(fileSource: FileSource, json: any) {
         this.validate(json);

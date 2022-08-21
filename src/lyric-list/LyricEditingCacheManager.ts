@@ -9,7 +9,7 @@ export default class LyricEditingCacheManager
     _originalJson: Readonly<LyricType>;
     constructor(fileSource: FileSource, json: LyricType) {
         super(fileSource, 'lyric');
-        this._originalJson = Object.freeze(json);
+        this._originalJson = Object.freeze(cloneJson(json));
     }
     get cloneItems() {
         return cloneJson(this._originalJson.items);

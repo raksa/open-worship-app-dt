@@ -1,7 +1,7 @@
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import SlideListEventListener from '../event/SlideListEventListener';
@@ -32,7 +32,7 @@ export default class SlideItem extends ItemBase {
         this.id = id;
         this._width = json.metadata.width;
         this._height = json.metadata.height;
-        this._originalJson = Object.freeze(json);
+        this._originalJson = Object.freeze(cloneJson(json));
         this.fileSource = fileSource;
         if (editingCacheManager !== undefined) {
             this.editingCacheManager = editingCacheManager;

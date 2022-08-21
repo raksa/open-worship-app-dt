@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import {
-    AnyObjectType,
+    AnyObjectType, cloneJson,
 } from '../../helper/helpers';
 import { AppColorType } from '../../others/ColorPicker';
 import {
@@ -36,7 +36,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
     isControlling: boolean;
     isEditing: boolean;
     constructor(props: T) {
-        this.props = props;
+        this.props = cloneJson(props);
         this.isSelected = false;
         this.isControlling = false;
         this.isEditing = false;

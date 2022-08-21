@@ -7,7 +7,7 @@ import { ReactElement, useEffect, useState } from 'react';
 export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
 export type ContextMenuItemType = {
     title: string,
-    onClick?: (event: ContextMenuEventType, data?: any) => void,
+    onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, data?: any) => void,
     disabled?: boolean,
     otherChild?: ReactElement,
 };

@@ -4,7 +4,7 @@ import BibleItem, {
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from './CanvasItemText';
-import { AnyObjectType } from '../../helper/helpers';
+import { AnyObjectType, cloneJson } from '../../helper/helpers';
 import { CanvasItemError } from './CanvasItem';
 import {
     HAlignmentType,
@@ -24,7 +24,7 @@ export default class CanvasItemBible extends CanvasItemText {
     props: CanvasItemBiblePropsType;
     constructor(props: CanvasItemBiblePropsType) {
         super(props);
-        this.props = props;
+        this.props = cloneJson(props);
     }
     toJson(): CanvasItemBiblePropsType {
         return this.props;

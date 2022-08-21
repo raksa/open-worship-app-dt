@@ -1,7 +1,7 @@
 import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
 
@@ -16,7 +16,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
     _originalJson: PlaylistType;
     constructor(fileSource: FileSource, json: PlaylistType) {
         super(fileSource);
-        this._originalJson = json;
+        this._originalJson = cloneJson(json);
     }
     static fromJson(fileSource: FileSource, json: PlaylistType) {
         this.validate(json);

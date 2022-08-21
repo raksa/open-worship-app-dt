@@ -1,7 +1,7 @@
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 import Lyric from './Lyric';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 
 export type LyricItemType = {
@@ -26,7 +26,7 @@ export default class LyricItem extends ItemBase {
         editingCacheManager?: LyricEditingCacheManager) {
         super();
         this.id = id;
-        this._originalJson = Object.freeze(json);
+        this._originalJson = Object.freeze(cloneJson(json));
         this.fileSource = fileSource;
         if (editingCacheManager !== undefined) {
             this.editingCacheManager = editingCacheManager;
