@@ -70,9 +70,9 @@ export default function RenderFound({
     });
     useKeyboardRegistering({
         key: 'Tab',
-    }, (e: KeyboardEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+    }, (event: KeyboardEvent) => {
+        event.stopPropagation();
+        event.preventDefault();
         if (startVerse === null && endVerse === null) {
             applyChapterSelection(chapter);
         } else {

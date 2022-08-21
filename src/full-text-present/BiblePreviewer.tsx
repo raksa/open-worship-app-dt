@@ -45,7 +45,9 @@ function BiblePreviewerRender({ bibleItem }: { bibleItem: BibleItem }) {
         setBibleItems(BibleItem.convertPresent(bibleItem,
             BibleItem.getBiblePresentingSetting()));
         previewer.show = (event: React.MouseEvent) => {
-            PresentFTManager.bibleItemSelect(bibleItem, event);
+            const convertedItems = BibleItem.convertPresent(bibleItem,
+                BibleItem.getBiblePresentingSetting());
+            PresentFTManager.ftBibleSelect(event, convertedItems);
         };
         return () => {
             previewer.show = () => void 0;

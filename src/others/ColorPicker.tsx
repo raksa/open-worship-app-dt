@@ -25,15 +25,15 @@ export default function ColorPicker({
     color, onColorChange,
 }: {
     color: AppColorType | null,
-    onColorChange: (color: AppColorType | null, e: MouseEvent) => void
+    onColorChange: (color: AppColorType | null, event: MouseEvent) => void
 }) {
     const [localColor, setLocalColor] = useState(color);
     useEffect(() => {
         setLocalColor(color);
     }, [color]);
-    const applyNewColor = (newColor: string, e: MouseEvent) => {
+    const applyNewColor = (newColor: string, event: MouseEvent) => {
         const upperColor = newColor.toUpperCase() as AppColorType;
-        onColorChange(upperColor, e);
+        onColorChange(upperColor, event);
         setLocalColor(upperColor);
     };
     return (
@@ -70,7 +70,7 @@ function RenderColors({
 }: {
     colors: AnyObjectType,
     selectedColor: AppColorType | null,
-    onColorChange: (color: AppColorType | null, e: MouseEvent) => void,
+    onColorChange: (color: AppColorType | null, event: MouseEvent) => void,
 }) {
     return (
         <div>
@@ -110,8 +110,8 @@ function RenderColors({
         </div>
     );
 }
-function showContextMenu(e: any, color: AppColorType) {
-    showAppContextMenu(e, [{
+function showContextMenu(event: any, color: AppColorType) {
+    showAppContextMenu(event, [{
         title: `Copy to '${color}' to clipboard`,
         onClick: () => {
             copyToClipboard(color);
@@ -124,7 +124,7 @@ function RenderColor({
 }: {
     name: string, color: AppColorType,
     isSelected?: boolean,
-    onClick?: (e: MouseEvent) => void,
+    onClick?: (event: MouseEvent) => void,
 }) {
     return (
         <div title={name}
@@ -145,7 +145,7 @@ function RenderColor({
 }
 function RenderNoColor({ isSelected, onClick }: {
     isSelected: boolean,
-    onClick?: (e: MouseEvent) => void,
+    onClick?: (event: MouseEvent) => void,
 }) {
     return (
         <div title='no color'
@@ -165,7 +165,7 @@ function RenderNoColor({ isSelected, onClick }: {
 }
 function SelectCustomColor({ color, onColorSelected }: {
     color: AppColorType | null,
-    onColorSelected: (color: AppColorType, e: MouseEvent) => void,
+    onColorSelected: (color: AppColorType, event: MouseEvent) => void,
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [localColor, setLocalColor] = useState<AppColorType>(color || '#ffffff');
@@ -198,7 +198,7 @@ function SelectCustomColor({ color, onColorSelected }: {
 
 function OpacitySlider({ value, onOpacityChanged }: {
     value: number,
-    onOpacityChanged: (value: number, e: MouseEvent) => void,
+    onOpacityChanged: (value: number, event: MouseEvent) => void,
 }) {
     const [localValue, setLocalValue] = useState(value || 1);
     return (

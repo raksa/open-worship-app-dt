@@ -29,6 +29,10 @@ export type BibleRenderedType = {
     title: string,
     verses: BibleRenderVerseType[]
 };
+export type LyricRenderedType = {
+    title: string,
+    items: string[]
+};
 const tableShowing = document.createElement('table');
 tableShowing.innerHTML = `
 <thead><tr></tr></thead>
@@ -130,14 +134,15 @@ const fullTextPresentHelper = {
         title: string, texts: string[],
     }[] | null) {
     },
-    genHtmlFTItem(renderedList: BibleRenderedType[], isLineSync: boolean) {
-        if (renderedList.length === 0) {
+    genHtmlFTItem(bibleRenderedList: BibleRenderedType[],
+        isLineSync: boolean) {
+        if (bibleRenderedList.length === 0) {
             return document.createElement('table');
         }
-        const versesCount = renderedList[0].verses.length;
+        const versesCount = bibleRenderedList[0].verses.length;
         const htmlString = ReactDOMServer.renderToStaticMarkup(<table>
             <thead><tr>
-                {renderedList.map(({ locale, bibleName, title }, i) => {
+                {bibleRenderedList.map(({ locale, bibleName, title }, i) => {
                     return (
                         <th key={i} style={{
                             fontFamily: getFontFamilyByLocal(locale),
@@ -156,7 +161,7 @@ const fullTextPresentHelper = {
                 {isLineSync ? Array.from({ length: versesCount }).map((_, i) => {
                     return (
                         <tr key={i}>
-                            {renderedList.map(({ locale, verses }, j) => {
+                            {bibleRenderedList.map(({ locale, verses }, j) => {
                                 const { num, text } = verses[i];
                                 return (
                                     <td key={j} style={{
@@ -172,7 +177,7 @@ const fullTextPresentHelper = {
                         </tr>
                     );
                 }) : <tr>
-                    {renderedList.map(({ locale, verses }, i) => {
+                    {bibleRenderedList.map(({ locale, verses }, i) => {
                         return (
                             <td key={i}>
                                 {verses.map(({ num, text }, j) => {

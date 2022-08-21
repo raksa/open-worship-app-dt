@@ -31,9 +31,9 @@ export default function BackgroundColors() {
                         ids={selectedBGSrcList.map(([key]) => +key)} />
                 </div>
                 {selectedBGSrcList.map(([_, bgSrc], i) => {
-                    const onColorChange = async (newColor: AppColorType | null, e: any) => {
+                    const onColorChange = async (newColor: AppColorType | null, event: any) => {
                         setSelectedBGSrcList(null);
-                        PresentBGManager.bgSrcSelect(newColor || bgSrc.src, e, 'color');
+                        PresentBGManager.bgSrcSelect(newColor || bgSrc.src, event, 'color');
                     };
                     return (
                         <ColorPicker key={i}

@@ -219,14 +219,14 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 return presentManager.isSelected;
             });
     }
-    static contextChooseInstances(e: React.MouseEvent) {
+    static contextChooseInstances(event: React.MouseEvent) {
         return new Promise<PresentManager[]>((resolve) => {
             const selectedPresentManagers = this.getSelectedInstances();
             if (selectedPresentManagers.length > 0) {
                 return resolve(selectedPresentManagers);
             }
             const allPresentManagers = PresentManager.getAllInstances();
-            showAppContextMenu(e as any, allPresentManagers.map((presentManager) => {
+            showAppContextMenu(event as any, allPresentManagers.map((presentManager) => {
                 return {
                     title: presentManager.name,
                     onClick: () => {

@@ -16,7 +16,7 @@ type ListenedEvent = {
 };
 export default class BoxEditorController {
   onDone: () => void = () => false;
-  onClick: (e: any) => void = () => false;
+  onClick: (event: any) => void = () => false;
   editor: HTMLDivElement | null = null;
   target: HTMLDivElement | null = null;
   minWidth = 40;

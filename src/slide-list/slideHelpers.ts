@@ -22,9 +22,9 @@ export function toScaleThumbSize(isUp: boolean, currentScale: number) {
     return newScale;
 }
 
-export function openSlideContextMenu(e: any,
+export function openSlideContextMenu(event: any,
     slide: Slide, slideItem: SlideItem) {
-    showAppContextMenu(e, [
+    showAppContextMenu(event, [
         {
             title: 'Copy', onClick: () => {
                 SlideItem.copiedItem = slideItem;

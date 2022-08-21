@@ -38,7 +38,7 @@ export default function FileItemHandler({
     fileSource: FileSource,
     className?: string
     contextMenu?: ContextMenuItemType[],
-    onDrop?: (e: any) => void,
+    onDrop?: (event: any) => void,
     onClick?: () => void,
     child: any,
     isPointer?: boolean,

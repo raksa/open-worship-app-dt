@@ -1,7 +1,7 @@
 export default function ItemReadError({
     onContextMenu,
 }: {
-    onContextMenu?: (e: any) => void,
+    onContextMenu?: (event: any) => void,
 }) {
     return (
         <div className='card pointer' onContextMenu={onContextMenu} >

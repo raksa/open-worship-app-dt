@@ -15,10 +15,10 @@ export default function SlideItemRender({
     slideItem: SlideItem;
     width: number,
     index: number;
-    onContextMenu: (e: ContextMenuEventType) => void,
+    onContextMenu: (event: ContextMenuEventType) => void,
     onCopy: () => void,
-    onDragStart: (e: React.DragEvent<HTMLDivElement>) => void,
-    onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void,
+    onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
+    onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }) {
     usePSlideMEvents(['update']);
     const isEditing = isWindowEditingMode();

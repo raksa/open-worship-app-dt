@@ -25,14 +25,14 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     const slideItems = slide.items;
     if (!isWindowEditingMode()) {
         const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
-        const arrowListener = (e: KeyboardEvent) => {
+        const arrowListener = (event: KeyboardEvent) => {
             const selectedIndex = slide.selectedIndex;
             if (selectedIndex === -1) {
                 return;
             }
             const length = slideItems.length;
             if (length) {
-                let ind = e.key === 'ArrowLeft' ?
+                let ind = event.key === 'ArrowLeft' ?
                     selectedIndex - 1 : selectedIndex + 1;
                 if (ind >= length) {
                     ind = 0;

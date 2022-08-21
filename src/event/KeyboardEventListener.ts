@@ -23,7 +23,7 @@ export interface EventMapper {
 export interface RegisteredEventMapper extends EventMapper {
     listener: ListenerType;
 }
-export type ListenerType = ((e: KeyboardEvent) => void) | (() => void);
+export type ListenerType = ((event: KeyboardEvent) => void) | (() => void);
 export default class KeyboardEventListener extends EventHandler<string> {
     static eventNamePrefix: string = 'keyboard';
     static _layers: AppWidgetType[] = ['root'];
@@ -44,22 +44,22 @@ export default class KeyboardEventListener extends EventHandler<string> {
         const eventName = KeyboardEventListener.toEventMapperKey(option);
         this.addPropEvent(eventName, event);
     }
-    static addControlKey(option: EventMapper, e: KeyboardEvent) {
+    static addControlKey(option: EventMapper, event: KeyboardEvent) {
         if (appProvider.systemUtils.isWindows) {
             option.wControlKey = [];
-            e.ctrlKey && option.wControlKey.push('Ctrl');
-            e.altKey && option.wControlKey.push('Alt');
-            e.shiftKey && option.wControlKey.push('Shift');
+            event.ctrlKey && option.wControlKey.push('Ctrl');
+            event.altKey && option.wControlKey.push('Alt');
+            event.shiftKey && option.wControlKey.push('Shift');
         } else if (appProvider.systemUtils.isMac) {
             option.mControlKey = [];
-            e.ctrlKey && option.mControlKey.push('Ctrl');
-            e.altKey && option.mControlKey.push('Option');
-            e.shiftKey && option.mControlKey.push('Shift');
+            event.ctrlKey && option.mControlKey.push('Ctrl');
+            event.altKey && option.mControlKey.push('Option');
+            event.shiftKey && option.mControlKey.push('Shift');
         } else if (appProvider.systemUtils.isLinux) {
             option.lControlKey = [];
-            e.ctrlKey && option.lControlKey.push('Ctrl');
-            e.altKey && option.lControlKey.push('Alt');
-            e.shiftKey && option.lControlKey.push('Shift');
+            event.ctrlKey && option.lControlKey.push('Ctrl');
+            event.altKey && option.lControlKey.push('Alt');
+            event.shiftKey && option.lControlKey.push('Shift');
         }
     }
     static toControlKey(controlType: WindowsControlType[] | MacControlType[] | LinuxControlType[]) {

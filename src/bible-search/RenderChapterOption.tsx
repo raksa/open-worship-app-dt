@@ -46,11 +46,11 @@ export default function RenderChapterOption({
     const matches = genMatchedChapters(currentIndexing|| 0, chapterCount);
 
     const [attemptChapterIndex, setAttemptChapterIndex] = useState(0);
-    const arrowListener = async (e: KeyboardEvent) => {
+    const arrowListener = async (event: KeyboardEvent) => {
         const newChapterCount = await getChapterCount(bibleSelected, bookSelected);
         if (newChapterCount !== null) {
             const ind = genInd(attemptChapterIndex, newChapterCount,
-                e.key as KeyboardType, 6);
+                event.key as KeyboardType, 6);
             setAttemptChapterIndex(ind);
         }
     };

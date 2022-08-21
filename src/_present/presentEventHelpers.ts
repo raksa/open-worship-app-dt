@@ -3,9 +3,8 @@ import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {
     PresentBGManagerEventType,
 } from './PresentBGManager';
-import PresentFTManager, {
-    PresentFTManagerEventType,
-} from './PresentFTManager';
+import { PresentFTManagerEventType } from './presentFTHelpers';
+import PresentFTManager from './PresentFTManager';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager, {
     PresentManagerEventType,

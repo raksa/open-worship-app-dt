@@ -191,8 +191,8 @@ export default class Slide extends ItemSource<SlideItem>{
             return item.toJson();
         }));
     }
-    showSlideItemContextMenu(e: any) {
-        showAppContextMenu(e, [{
+    showSlideItemContextMenu(event: any) {
+        showAppContextMenu(event, [{
             title: 'New Slide Item', onClick: () => {
                 const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
                 const { width, height } = Canvas.getDefaultDim();
@@ -267,8 +267,8 @@ export default class Slide extends ItemSource<SlideItem>{
         return super.create(dir, name,
             [SlideItem.defaultSlideItemData(0)]);
     }
-    openContextMenu(e: any, slideItem: SlideItem) {
-        openSlideContextMenu(e, this, slideItem);
+    openContextMenu(event: any, slideItem: SlideItem) {
+        openSlideContextMenu(event, this, slideItem);
     }
     clone() {
         return Slide.fromJson(this.fileSource, this.toJson());

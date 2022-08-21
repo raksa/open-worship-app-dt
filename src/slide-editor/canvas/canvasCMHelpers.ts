@@ -5,9 +5,9 @@ import { showAppContextMenu } from '../../others/AppContextMenu';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
 
-export function showCanvasContextMenu(e: any) {
+export function showCanvasContextMenu(event: any) {
     const canvasController = CanvasController.getInstance();
-    showAppContextMenu(e, [
+    showAppContextMenu(event, [
         {
             title: 'New',
             onClick: () => canvasController.addNewTextItem(),
@@ -33,18 +33,18 @@ export function showCanvasContextMenu(e: any) {
                 ]);
                 filePaths.forEach((filePath) => {
                     const fileSource = FileSource.getInstance(filePath);
-                    canvasController.addNewMediaItem(fileSource, e);
+                    canvasController.addNewMediaItem(fileSource, event);
                 });
             },
         },
     ]);
 }
 
-export function showCanvasItemContextMenu(e: any,
+export function showCanvasItemContextMenu(event: any,
     canvasItem: CanvasItem<any>,
 ) {
     const canvasController = CanvasController.getInstance();
-    showAppContextMenu(e, [
+    showAppContextMenu(event, [
         {
             title: 'Copy', onClick: () => {
                 canvasController.copiedItem = canvasItem;

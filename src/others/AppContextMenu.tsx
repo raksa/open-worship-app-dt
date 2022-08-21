@@ -7,7 +7,7 @@ import { ReactElement, useEffect, useState } from 'react';
 export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
 export type ContextMenuItemType = {
     title: string,
-    onClick?: (e: ContextMenuEventType, data?: any) => void,
+    onClick?: (event: ContextMenuEventType, data?: any) => void,
     disabled?: boolean,
     otherChild?: ReactElement,
 };
@@ -78,8 +78,8 @@ export function showAppContextMenu(
                 KeyboardEventListener.unregisterEventListener(escEvent);
                 resolve();
             });
-        const listener = (e: MouseEvent) => {
-            e.stopPropagation();
+        const listener = (event: MouseEvent) => {
+            event.stopPropagation();
             setDataDelegator?.(null);
             document.body.removeEventListener('click', listener);
             KeyboardEventListener.unregisterEventListener(escEvent);

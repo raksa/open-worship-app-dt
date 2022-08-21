@@ -13,9 +13,9 @@ import {
 import PTEffectControl from './PTEffectControl';
 import appProviderPresent from '../appProviderPresent';
 
-function openContextMenu(e: any, presentManager: PresentManager) {
+function openContextMenu(event: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
-    showAppContextMenu(e, [
+    showAppContextMenu(event, [
         ...isOne ? [] : [{
             title: 'Solo',
             onClick() {

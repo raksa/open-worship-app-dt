@@ -20,7 +20,7 @@ export default function BibleItemRender({
     bibleItem: BibleItem,
     bible?: Bible;
     warningMessage?: string,
-    onContextMenu?: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+    onContextMenu?: (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
     fileSource?: FileSource,
 }) {
     useFSEvents(['select'], fileSource);

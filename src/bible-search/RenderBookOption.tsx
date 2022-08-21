@@ -24,10 +24,10 @@ export default function RenderBookOption({
     const matches = useMatch(bibleSelected, inputText);
 
     const useCallback = (key: KeyboardType) => {
-        useKeyboardRegistering({ key }, (e: KeyboardEvent) => {
+        useKeyboardRegistering({ key }, (event: KeyboardEvent) => {
             if (matches !== null && matches.length) {
                 const ind = genInd(attemptMatchIndex, matches.length,
-                    e.key as KeyboardType, 2);
+                    event.key as KeyboardType, 2);
                 setAttemptMatchIndex(ind);
             }
         });
