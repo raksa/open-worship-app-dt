@@ -14,7 +14,7 @@ import ToastEventListener from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
-import { DisplayType } from '../server/displayHelper';
+import { DisplayType } from '../_present/presentHelpers';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],

@@ -1,9 +1,23 @@
-import { AllDisplayType } from '../server/displayHelper';
 import appProviderPresent from './appProviderPresent';
 import {
     PresentTransitionEffectType,
     TargetType,
 } from './transition-effect/transitionEffectHelpers';
+
+export type BoundsType = {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+};
+export type DisplayType = {
+    id: number,
+    bounds: BoundsType,
+};
+export type AllDisplayType = {
+    primaryDisplay: DisplayType,
+    displays: DisplayType[],
+}
 
 export const presentTypeList = [
     'background', 'slide', 'full-text', 'full-text-scroll',
