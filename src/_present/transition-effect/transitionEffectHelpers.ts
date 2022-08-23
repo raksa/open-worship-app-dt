@@ -99,7 +99,7 @@ function fade(target: TargetType): StyleAnimType {
 }
 function move(): StyleAnimType {
     const duration = 500;
-    const move = ({
+    const movingMaker = ({
         from, to, durationMil,
         easing, callback,
     }: {
@@ -139,7 +139,7 @@ function move(): StyleAnimType {
                 };
                 const styleTarget = targetElement.style;
                 styleTarget.left = `${from}px`;
-                move({
+                movingMaker({
                     from,
                     to: 0,
                     durationMil: duration,
@@ -159,7 +159,7 @@ function move(): StyleAnimType {
                     return;
                 }
                 const rect = targetElement.parentElement.getBoundingClientRect();
-                move({
+                movingMaker({
                     from: 0,
                     to: rect.width,
                     durationMil: duration,

@@ -3,6 +3,7 @@ import { getWindowDim } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import appProviderPresent from './appProviderPresent';
+import PresentAlertManager from './PresentAlertManager';
 import PresentBGManager from './PresentBGManager';
 import PresentFTManager from './PresentFTManager';
 import {
@@ -26,6 +27,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     readonly presentBGManager: PresentBGManager;
     readonly presentSlideManager: PresentSlideManager;
     readonly presentFTManager: PresentFTManager;
+    readonly presentAlertManager: PresentAlertManager;
     readonly presentId: number;
     width: number;
     height: number;
@@ -43,6 +45,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.presentBGManager = new PresentBGManager(presentId);
         this.presentSlideManager = new PresentSlideManager(presentId);
         this.presentFTManager = new PresentFTManager(presentId);
+        this.presentAlertManager = new PresentAlertManager(presentId);
         const ids = getAllShowingPresentIds();
         this._isShowing = ids.some((id) => id === presentId);
     }
@@ -118,6 +121,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.presentBGManager.sendSyncPresent();
         this.presentSlideManager.sendSyncPresent();
         this.presentFTManager.sendSyncPresent();
+        this.presentAlertManager.sendSyncPresent();
         PresentFTManager.sendSynTextStyle();
     }
     show() {
@@ -186,6 +190,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             PresentFTManager.receiveSyncSelectedIndex(message);
         } else if (type === 'full-text-text-style') {
             PresentFTManager.receiveSyncTextStyle(message);
+        } else if (type === 'alert') {
+            PresentAlertManager.receiveSyncPresent(message);
         } else if (type === 'effect') {
             PresentTransitionEffect.receiveSyncPresent(message);
         } else if (type === 'visible') {

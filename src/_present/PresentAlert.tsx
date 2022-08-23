@@ -1,7 +1,23 @@
+import { useRef, useEffect } from 'react';
 import './PresentAlert.scss';
+import { usePMEvents } from './presentEventHelpers';
+import PresentManager from './PresentManager';
 
-export default function PresentAlert() {
+export default function PresentAlert({ presentManager }: {
+    presentManager: PresentManager;
+}) {
+    usePMEvents(['resize'], presentManager, () => {
+        presentManager.presentAlertManager.render();
+    });
+    const div = useRef<HTMLDivElement>(null);
+    const { presentAlertManager } = presentManager;
+    useEffect(() => {
+        if (div.current) {
+            presentAlertManager.div = div.current;
+        }
+    });
     return (
-        <div id="alert"></div>
+        <div id='alert' ref={div}
+            style={presentAlertManager.containerStyle} />
     );
 }

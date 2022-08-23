@@ -31,7 +31,8 @@ export default function MiniPresentApp({ id }: { id: number }) {
                 presentManager={presentManager} />
             <PresentFullText
                 presentManager={presentManager} />
-            <PresentAlert />
+            <PresentAlert
+                presentManager={presentManager} />
         </>
     );
 }

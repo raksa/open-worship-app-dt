@@ -26,16 +26,9 @@ export type AnyObjectType = {
     [key: string]: any;
 };
 
-export const presentTypeList = [
-    'background', 'slide', 'full-text', 'full-text-scroll',
-    'full-text-text-style',
-    'full-text-selected-index', 'display-change', 'visible',
-    'init', 'effect',
-] as const;
-export type PresentType = typeof presentTypeList[number];
 export type PresentMessageType = {
     presentId: number,
-    type: PresentType,
+    type: string,
     data: AnyObjectType,
 };
 type ShowPresentDataType = {
@@ -137,10 +130,6 @@ export function initPresent(appController: ElectronAppController) {
         }: PresentMessageType & {
             isPresent: boolean,
         }) => {
-            if (!presentTypeList.includes(type)) {
-                event.returnValue = false;
-                return;
-            }
             if (isPresent) {
                 appController.mainController.sendMessage({
                     presentId,

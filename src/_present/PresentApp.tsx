@@ -17,7 +17,6 @@ export default function PresentApp() {
     const presentId = +(urlParams.get('presentId') || '') || 0;
     const presentManager = PresentManager.getInstance(presentId);
     if (appProviderPresent.isPresent) {
-        console.log('presentId', presentId);
         sendPresentMessage({
             presentId,
             type: 'init',
@@ -36,7 +35,8 @@ export default function PresentApp() {
                 presentManager={presentManager} />
             <PresentFullText
                 presentManager={presentManager} />
-            <PresentAlert />
+            <PresentAlert
+                presentManager={presentManager} />
             <CloseButton
                 presentManager={presentManager} />
         </>

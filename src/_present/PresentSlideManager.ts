@@ -100,6 +100,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                 });
                 return json;
             } catch (error) {
+                console.log(str);
                 appProviderPresent.appUtils
                     .handleError(error);
             }

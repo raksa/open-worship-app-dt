@@ -1,6 +1,5 @@
 import { BrowserWindow } from 'electron';
 import {
-    PresentType,
     AnyObjectType,
     channels,
 } from './electronEventListener';
@@ -60,7 +59,7 @@ export default class ElectronPresentController {
     sendData(channel: string, data: any) {
         this.win.webContents.send(channel, data);
     }
-    sendMessage(type: PresentType, data: AnyObjectType) {
+    sendMessage(type: string, data: AnyObjectType) {
         this.win.webContents.send(
             channels.presentMessageChannel, {
             presentId: this.presentId,

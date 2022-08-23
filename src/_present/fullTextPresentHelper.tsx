@@ -1,3 +1,5 @@
+import ReactDOMServer from 'react-dom/server';
+import { Fragment } from 'react';
 import { getVerses } from '../server/bible-helpers/bibleHelpers1';
 import {
     getBibleLocale,
@@ -5,10 +7,8 @@ import {
 } from '../server/bible-helpers/bibleHelpers2';
 import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
-import ReactDOMServer from 'react-dom/server';
 import { getFontFamilyByLocal, LocaleType } from '../lang';
 import appProviderPresent from './appProviderPresent';
-import { Fragment } from 'react';
 
 type BibleRenderVerseType = {
     num: string,

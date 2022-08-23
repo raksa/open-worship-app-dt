@@ -81,7 +81,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
-        presentManager.presentBGManager.bgSrc = data as any;
+        presentManager.presentBGManager.bgSrc = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
