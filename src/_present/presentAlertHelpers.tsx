@@ -31,14 +31,11 @@ export function genHtmlAlert(alertData: AlertDataType,
                         will-change: transform;
                         width: max-content;
                         padding-left: 100%;
-                        animation: moving ${duration}s linear infinite;
-                    }
-                    .actor span:hover {
-                        animation-play-state: paused
+                        animation: moving ${duration}s infinite linear;
                     }
                     @keyframes moving {
-                        0% { transform: translate(0, 0); }
-                        100% { transform: translate(-100%, 0); }
+                        0% { left: 0 }
+                        100% { transform: translateX(-100%); }
                     }
                 `}</style>
             <p className='actor'>
