@@ -4,6 +4,7 @@ import {
     channels,
 } from './electronEventListener';
 import { isDev } from './electronHelpers';
+import ElectronMainController from './ElectronMainController';
 
 const url = 'http://localhost:3000';
 const htmlFile = `${__dirname}/../dist/index.html`;
@@ -39,6 +40,9 @@ export default class ElectronPresentController {
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
         }
+        presentWin.on('close', () => {
+            this.destroyInstance();
+        });
         return presentWin;
     }
     listenLoading() {
@@ -48,9 +52,15 @@ export default class ElectronPresentController {
             });
         });
     }
-    hide() {
-        this.win.close();
+    destroyInstance() {
+        ElectronMainController.getInstance().sendNotifyInvisibility(
+            this.presentId);
         ElectronPresentController._cache.delete(this.presentId.toString());
+    }
+    close() {
+        if (!this.win.isDestroyed()) {
+            this.win.close();
+        }
     }
     setDisplay(display: Electron.Display) {
         const bounds = display.bounds;

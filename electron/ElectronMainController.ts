@@ -53,6 +53,15 @@ export default class ElectronMainController {
     ctrlScrolling(isUp: boolean) {
         this.sendData('app:main:ctrl-scrolling', isUp);
     }
+    sendNotifyInvisibility(presentId: number) {
+        this.sendMessage({
+            presentId,
+            type: 'visible',
+            data: {
+                isShowing: false,
+            },
+        });
+    }
     static getInstance() {
         if (this._instance === null) {
             this._instance = new ElectronMainController();

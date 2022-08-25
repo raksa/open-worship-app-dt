@@ -2,13 +2,24 @@ import ReactDOMServer from 'react-dom/server';
 import { AlertDataType } from './PresentAlertManager';
 import PresentManager from './PresentManager';
 
+const alertTypeList = ['marquee', 'countdown', 'toast'] as const;
+export type AlertType = typeof alertTypeList[number];
+
+const classNameMapper = {
+    marquee: 'marquee-actor',
+    countdown: 'countdown-actor',
+    toast: 'toast-actor',
+};
+
 export function genHtmlAlert(alertData: AlertDataType,
     presentManager: PresentManager) {
-    if (alertData.type === 'marquee') {
-        const duration = (alertData.marqueeData?.length || 0) / 6;
+    if (alertData.marqueeData !== null) {
+        const duration = (alertData.marqueeData.length || 0) / 6;
         const scale = presentManager.height / 768;
         const fontSize = 75 * scale;
+        const actorClass = classNameMapper.marquee;
         const htmlString = ReactDOMServer.renderToStaticMarkup(<div
+            data-alert-cn={actorClass}
             style={{
                 position: 'absolute',
                 width: '100%',
@@ -16,7 +27,7 @@ export function genHtmlAlert(alertData: AlertDataType,
                 bottom: '0px',
             }}>
             <style>{`
-                    .actor {
+                    .${actorClass} {
                         width: 100%;
                         padding: 3px 0px;
                         margin: 0 auto;
@@ -25,8 +36,14 @@ export function genHtmlAlert(alertData: AlertDataType,
                         color: white;
                         font-size: ${fontSize}px;
                         box-shadow: inset 0 0 10px lightblue;
+                        will-change: transform;
+                        transform: translateY(100%);
+                        animation: from-bottom 500ms ease-in forwards;
                     }
-                    .actor span {
+                    .${actorClass}.out {
+                        animation: to-bottom 500ms ease-out forwards;
+                    }
+                    .${actorClass} span {
                         display: inline-block;
                         will-change: transform;
                         width: max-content;
@@ -34,11 +51,19 @@ export function genHtmlAlert(alertData: AlertDataType,
                         animation: moving ${duration}s infinite linear;
                     }
                     @keyframes moving {
-                        0% { left: 0 }
+                        0% { transform: translateX(0); }
                         100% { transform: translateX(-100%); }
                     }
+                    @keyframes from-bottom {
+                        0% { transform: translateY(100%); }
+                        100% { transform: translateY(0); }
+                    }
+                    @keyframes to-bottom {
+                        0% { transform: translateY(0); }
+                        100% { transform: translateY(100%); }
+                    }
                 `}</style>
-            <p className='actor'>
+            <p className={actorClass}>
                 <span>{alertData.marqueeData}</span>
             </p>
         </div>);
@@ -47,4 +72,17 @@ export function genHtmlAlert(alertData: AlertDataType,
         return div.firstChild as HTMLDivElement;
     }
     return document.createElement('div');
+}
+
+export function removeAlert(div: ChildNode) {
+    const remove = () => div.remove();
+    if (div instanceof HTMLDivElement
+        && div.dataset['alertCn'] !== undefined) {
+        const actorClassName = div.dataset['alertCn'];
+        const targets = div.getElementsByClassName(actorClassName);
+        Array.from(targets).forEach((target) => {
+            target.classList.add('out');
+        });
+        setTimeout(remove, 600);
+    }
 }

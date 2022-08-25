@@ -3,20 +3,27 @@ import ElectronSettingController from './ElectronSettingController';
 const electron = require('electron');
 
 export default class ElectronAppController {
+    private static _instance: ElectronAppController | null = null;
     settingController: ElectronSettingController;
     mainController: ElectronMainController;
     constructor() {
         this.settingController = new ElectronSettingController(this);
-        this.mainController = new ElectronMainController();
+        this.mainController = ElectronMainController.getInstance();
         this.settingController.syncMainWindow();
         electron.app.on('activate', () => {
             if (electron.BrowserWindow.getAllWindows().length === 0) {
-                this.mainController = new ElectronMainController();
+                this.mainController = ElectronMainController.getInstance();
                 this.settingController.syncMainWindow();
             }
         });
     }
-    get mainWin(){
+    get mainWin() {
         return this.mainController.win;
+    }
+    static getInstance() {
+        if (this._instance === null) {
+            this._instance = new ElectronAppController();
+        }
+        return this._instance;
     }
 }

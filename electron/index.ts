@@ -7,7 +7,7 @@ import { initMenu } from './electronMenu';
 const electron = require('electron');
 
 electron.app.whenReady().then(() => {
-    const appController = new ElectronAppController();
+    const appController = ElectronAppController.getInstance();
     initApp(appController);
     initPresent(appController);
     initMenu(appController);

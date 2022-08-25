@@ -2,24 +2,21 @@ import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { createMouseEvent } from '../others/AppContextMenu';
 import appProviderPresent from './appProviderPresent';
-import { genHtmlAlert } from './presentAlertHelpers';
+import { AlertType, genHtmlAlert, removeAlert } from './presentAlertHelpers';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
-const alertTypeList = ['marquee', 'countdown', 'toast'] as const;
-export type AlertType = typeof alertTypeList[number];
 export type AlertDataType = {
-    type: AlertType;
-    marqueeData?: string
-    countdownData?: {
+    marqueeData: string | null;
+    countdownData: {
         time: number
-    }
-    toastData?: {
+    } | null;
+    toastData: {
         text: string
-    }
+    } | null;
 };
 export type AlertSrcListType = {
     [key: string]: AlertDataType;
@@ -31,7 +28,11 @@ const settingName = 'present-alert-';
 export default class PresentAlertManager extends EventHandler<PresentAlertEventType> {
     static eventNamePrefix: string = 'present-alert-m';
     readonly presentId: number;
-    private _alertData: AlertDataType | null = null;
+    private alertData: AlertDataType = {
+        marqueeData: null,
+        countdownData: null,
+        toastData: null,
+    };
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'slide';
     constructor(presentId: number) {
@@ -39,7 +40,16 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         this.presentId = presentId;
         if (appProviderPresent.isMain) {
             const allAlertDataList = PresentAlertManager.getAlertDataList();
-            this._alertData = allAlertDataList[this.key] || null;
+            if (allAlertDataList[this.key] !== undefined) {
+                const {
+                    marqueeData,
+                    countdownData,
+                    toastData,
+                } = allAlertDataList[this.key];
+                this.alertData.marqueeData = marqueeData || null;
+                this.alertData.countdownData = countdownData || null;
+                this.alertData.toastData = toastData || null;
+            }
         }
     }
     get div() {
@@ -59,18 +69,10 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     get key() {
         return this.presentId.toString();
     }
-    get alertData() {
-        return this._alertData;
-    }
-    set alertData(alertData: AlertDataType | null) {
-        this._alertData = alertData;
+    saveAlertData() {
         this.render();
         const allAlertDataList = PresentAlertManager.getAlertDataList();
-        if (alertData === null) {
-            delete allAlertDataList[this.key];
-        } else {
-            allAlertDataList[this.key] = alertData;
-        }
+        allAlertDataList[this.key] = this.alertData;
         PresentAlertManager.setAlertDataList(allAlertDataList);
         this.sendSyncPresent();
         this.fireUpdate();
@@ -85,7 +87,10 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
-        presentManager.presentAlertManager.alertData = data;
+        const { presentAlertManager } = presentManager;
+        presentAlertManager.alertData = data;
+        presentAlertManager.render();
+        presentAlertManager.fireUpdate();
     }
     fireUpdate() {
         this.addPropEvent('update');
@@ -100,9 +105,8 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             try {
                 const json = JSON.parse(str);
                 Object.values(json).forEach((item: any) => {
-                    if (!alertTypeList.includes(item.type)
-                        || (item.type === 'marquee'
-                            && typeof item.marqueeData !== 'string')) {
+                    if (!(item.marqueeData === null
+                        || typeof item.marqueeData === 'string')) {
                         throw new Error('Invalid alert data');
                     }
                 });
@@ -121,42 +125,38 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     static getAlertDataListByType(alertType: AlertType) {
         const alertDataList = this.getAlertDataList();
         return Object.entries(alertDataList).filter(([_, bgSrc]) => {
-            return bgSrc.type === alertType;
+            if (alertType === 'marquee') {
+                return bgSrc.marqueeData !== null;
+            } else if (alertType === 'toast') {
+                return bgSrc.toastData !== null;
+            } else {
+                return bgSrc.countdownData !== null;
+            }
         });
     }
     static async showMarquee(text: string,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
-            presentManager.presentAlertManager.alertData = {
-                type: 'marquee',
-                marqueeData: text,
-            };
+            const { alertData } = presentManager.presentAlertManager;
+            alertData.marqueeData = alertData.marqueeData === text ? null : text;
+            presentManager.presentAlertManager.saveAlertData();
         });
-        this.fireUpdateEvent();
     }
     render() {
         if (this.div === null) {
             return;
         }
-        const aminData = this.ptEffect.styleAnim;
         if (this.alertData !== null) {
-            // TODO: apply scale like slide
             const newDiv = genHtmlAlert(this.alertData, this.presentManager);
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
-            // TODO: move from bottom
-            aminData.animIn(newDiv).then(() => {
-                childList.forEach((child) => {
-                    child.remove();
-                });
+            childList.forEach((child) => {
+                removeAlert(child);
             });
         } else {
             if (this.div.lastChild !== null) {
-                const targetDiv = this.div.lastChild as HTMLDivElement;
-                aminData.animOut(targetDiv).then(() => {
-                    targetDiv.remove();
-                });
+                removeAlert(this.div.lastChild);
             }
         }
     }
@@ -177,4 +177,3 @@ const showMarquee = () => {
     PresentAlertManager.showMarquee(text, createMouseEvent(0, 0) as any);
 };
 (window as any).showMarquee = showMarquee;
-setTimeout(() => showMarquee(), 3e3);

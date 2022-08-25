@@ -100,14 +100,8 @@ export function initPresent(appController: ElectronAppController) {
     ipcMain.on('app:hide-present', (_, presentId: number) => {
         const presentController = ElectronPresentController.getInstance(presentId);
         if (presentController !== null) {
-            presentController.hide();
-            appController.mainController.sendMessage({
-                presentId,
-                type: 'visible',
-                data: {
-                    isShowing: false,
-                },
-            });
+            presentController.close();
+            presentController.destroyInstance();
         }
     });
     ipcMain.on('main:app:set-present-display', (event, data: {
