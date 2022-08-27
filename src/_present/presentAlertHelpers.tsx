@@ -47,8 +47,17 @@ export function genHtmlAlert(alertData: AlertDataType,
                         display: inline-block;
                         will-change: transform;
                         width: max-content;
+                    }
+                    .${actorClass}.moving span {
                         padding-left: 100%;
-                        animation: moving ${duration}s infinite linear;
+                        animation-duration: ${duration}s;
+                        animation-timing-function: linear;
+                        animation-delay: 0s;
+                        animation-iteration-count: infinite;
+                        animation-direction: normal;
+                        animation-fill-mode: none;
+                        animation-play-state: running;
+                        animation-name: moving;
                     }
                     @keyframes moving {
                         0% { transform: translateX(0); }
@@ -63,7 +72,7 @@ export function genHtmlAlert(alertData: AlertDataType,
                         100% { transform: translateY(100%); }
                     }
                 `}</style>
-            <p className={actorClass}>
+            <p className={`marquee ${actorClass}`}>
                 <span>{alertData.marqueeData}</span>
             </p>
         </div>);
@@ -84,5 +93,7 @@ export function removeAlert(div: ChildNode) {
             target.classList.add('out');
         });
         setTimeout(remove, 600);
+    } else {
+        remove();
     }
 }

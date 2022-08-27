@@ -22,6 +22,9 @@ const SlidePreviewer = React.lazy(() => {
 const FullTextPresentController = React.lazy(() => {
     return import('../full-text-present/FullTextPresentController');
 });
+const PresentAlertController = React.lazy(() => {
+    return import('../present-alert/PresentAlertController');
+});
 
 const PRESENT_TAB_SETTING_NAME = 'presenting-tab';
 export function getIsShowingSlidePreviewer() {
@@ -34,6 +37,7 @@ export function getIsShowingFTPreviewer() {
 const tabTypeList = [
     ['s', 'Slides', SlidePreviewer],
     ['f', 'Full Text', FullTextPresentController],
+    ['a', 'Alert', PresentAlertController],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Presenting() {

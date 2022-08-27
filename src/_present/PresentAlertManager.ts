@@ -1,6 +1,5 @@
 import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import { createMouseEvent } from '../others/AppContextMenu';
 import appProviderPresent from './appProviderPresent';
 import { AlertType, genHtmlAlert, removeAlert } from './presentAlertHelpers';
 import { sendPresentMessage } from './presentEventHelpers';
@@ -134,7 +133,7 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             }
         });
     }
-    static async showMarquee(text: string,
+    static async setMarquee(text: string,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
@@ -151,6 +150,11 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             const newDiv = genHtmlAlert(this.alertData, this.presentManager);
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
+            newDiv.querySelectorAll('.marquee').forEach((element: any) => {
+                if (element.offsetWidth < element.scrollWidth) {
+                    element.classList.add('moving');
+                }
+            });
             childList.forEach((child) => {
                 removeAlert(child);
             });
@@ -170,10 +174,3 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         };
     }
 }
-
-const showMarquee = () => {
-    const text = '(4): And the serpent said unto the woman, Ye shall not surely '
-        + 'together, and made themselves aprons.';
-    PresentAlertManager.showMarquee(text, createMouseEvent(0, 0) as any);
-};
-(window as any).showMarquee = showMarquee;

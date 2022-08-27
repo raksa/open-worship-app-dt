@@ -32,7 +32,8 @@ export function useStateSettingString<T extends string>(settingName: string, def
     };
     return [data, setDataSetting] as [T, (t: T) => void];
 }
-export function useStateSettingNumber(settingName: string, defaultNumber: number): [number, (n: number) => void] {
+export function useStateSettingNumber(settingName: string
+    , defaultNumber: number): [number, (n: number) => void] {
     const defaultData = +(getSetting(settingName) || NaN);
     const [data, setData] = useState(isNaN(defaultData) ? defaultNumber : defaultData);
     const setDataSetting = (b: number) => {
