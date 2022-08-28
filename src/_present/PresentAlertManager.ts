@@ -3,7 +3,7 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import {
     AlertType,
-    checkIsCountdownDates,
+    checkIsCountdownDates as checkIsCountdownDatesEq,
     genHtmlAlertCountdown,
     genHtmlAlertMarquee,
     removeAlert,
@@ -63,7 +63,7 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     }
     getDivChild(divId: string) {
         if (this._div === null) {
-            return null;
+            return document.createElement('div');
         }
         return this._div.querySelector(`#${divId}`) as HTMLDivElement;
     }
@@ -78,7 +78,7 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
-        this.render();
+        this.renderAll();
     }
     get ptEffect() {
         return PresentTransitionEffect.getInstance(
@@ -91,7 +91,6 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         return this.presentId.toString();
     }
     saveAlertData() {
-        this.render();
         const allAlertDataList = PresentAlertManager.getAlertDataList();
         allAlertDataList[this.key] = this.alertData;
         PresentAlertManager.setAlertDataList(allAlertDataList);
@@ -105,12 +104,27 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             data: this.alertData,
         });
     }
+    setMarqueeData(marqueeData: { text: string } | null) {
+        if (marqueeData !== this.alertData.marqueeData) {
+            this.cleanRender(this.divMarquee);
+            this.alertData.marqueeData = marqueeData;
+            this.renderMarquee();
+        }
+    }
+    setCountdownData(countdownData: { dateTime: Date } | null) {
+        if (!checkIsCountdownDatesEq(countdownData?.dateTime || null,
+            this.alertData.countdownData?.dateTime || null)) {
+            this.cleanRender(this.divCountdown);
+            this.alertData.countdownData = countdownData;
+            this.renderCountdown();
+        }
+    }
     static receiveSyncPresent(message: PresentMessageType) {
-        const { data, presentId } = message;
-        const presentManager = PresentManager.getInstance(presentId);
+        const presentManager = PresentManager.getInstance(message.presentId);
         const { presentAlertManager } = presentManager;
-        presentAlertManager.alertData = data;
-        presentAlertManager.render();
+        const data: AlertDataType = message.data;
+        presentAlertManager.setMarqueeData(data.marqueeData);
+        presentAlertManager.setCountdownData(data.countdownData);
         presentAlertManager.fireUpdate();
     }
     fireUpdate() {
@@ -161,67 +175,60 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         });
     }
     static async setData(event: React.MouseEvent<HTMLElement, MouseEvent>,
-        callback: (presentManager: PresentManager) => void) {
+        callback: (presentManager: PresentAlertManager) => void) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
-            callback(presentManager);
+            callback(presentManager.presentAlertManager);
             presentManager.presentAlertManager.saveAlertData();
         });
     }
     static async setMarquee(text: string,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
-        this.setData(event, (presentManager) => {
-            const { alertData } = presentManager.presentAlertManager;
+        this.setData(event, (presentAlertManager) => {
+            const { alertData } = presentAlertManager;
             const { text: dataText } = alertData.marqueeData || {};
-            alertData.marqueeData = dataText === text ? null : { text };
+            const marqueeData = dataText === text ? null : { text };
+            presentAlertManager.setMarqueeData(marqueeData);
         });
     }
     static async setCountdown(dateTime: Date,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
-        this.setData(event, (presentManager) => {
-            const { alertData } = presentManager.presentAlertManager;
+        this.setData(event, (presentAlertManager) => {
+            const { alertData } = presentAlertManager;
             const { dateTime: dateTimeData } = alertData.countdownData || {};
-            alertData.countdownData = dateTimeData !== undefined
-                && checkIsCountdownDates(dateTimeData, dateTime) ? null : { dateTime };
+            const countdownData = dateTimeData !== undefined
+                && checkIsCountdownDatesEq(dateTimeData, dateTime) ? null : { dateTime };
+            presentAlertManager.setCountdownData(countdownData);
         });
     }
-    render() {
-        if (this.divMarquee !== null && this.alertData.marqueeData !== null) {
+    renderMarquee() {
+        if (this.alertData.marqueeData !== null) {
             const newDiv = genHtmlAlertMarquee(this.alertData.marqueeData,
                 this.presentManager);
-            const childList = Array.from(this.divMarquee.children);
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
                 if (element.offsetWidth < element.scrollWidth) {
                     element.classList.add('moving');
                 }
             });
-            childList.forEach((child) => {
-                removeAlert(child);
-            });
         }
-        if (this.divCountdown !== null && this.alertData.countdownData !== null) {
+    }
+    renderCountdown() {
+        if (this.alertData.countdownData !== null) {
             const newDiv = genHtmlAlertCountdown(this.alertData.countdownData,
                 this.presentManager);
-            const childList = Array.from(this.divCountdown.children);
             this.divCountdown.appendChild(newDiv);
-            childList.forEach((child) => {
-                removeAlert(child);
-            });
         }
-        this.cleanRender();
     }
-    cleanRender() {
-        if (this.divMarquee !== null && this.alertData.marqueeData === null) {
-            if (this.divMarquee.lastChild !== null) {
-                removeAlert(this.divMarquee.lastChild);
-            }
-        }
-        if (this.divCountdown !== null && this.alertData.countdownData === null) {
-            if (this.divCountdown.lastChild !== null) {
-                removeAlert(this.divCountdown.lastChild);
-            }
-        }
+    renderAll() {
+        this.renderMarquee();
+        this.renderCountdown();
+    }
+    cleanRender(divContainer: HTMLDivElement) {
+        const childList = Array.from(divContainer.children);
+        childList.forEach((child) => {
+            removeAlert(child);
+        });
     }
     get containerStyle(): React.CSSProperties {
         return {

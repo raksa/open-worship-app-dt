@@ -7,7 +7,7 @@ export default function PresentAlert({ presentManager }: {
     presentManager: PresentManager;
 }) {
     usePMEvents(['resize'], presentManager, () => {
-        presentManager.presentAlertManager.render();
+        presentManager.presentAlertManager.renderAll();
     });
     const div = useRef<HTMLDivElement>(null);
     const { presentAlertManager } = presentManager;
