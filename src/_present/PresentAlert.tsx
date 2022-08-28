@@ -18,6 +18,10 @@ export default function PresentAlert({ presentManager }: {
     });
     return (
         <div id='alert' ref={div}
-            style={presentAlertManager.containerStyle} />
+            style={presentAlertManager.containerStyle} >
+            <div id='countdown' />
+            <div id='marquee'/>
+            <div id='toast'/>
+        </div>
     );
 }

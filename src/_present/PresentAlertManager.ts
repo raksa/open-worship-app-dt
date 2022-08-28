@@ -1,7 +1,11 @@
 import EventHandler from '../event/EventHandler';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
-import { AlertType, genHtmlAlert, removeAlert } from './presentAlertHelpers';
+import {
+    AlertType,
+    genHtmlAlert,
+    removeAlert,
+} from './presentAlertHelpers';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
@@ -10,12 +14,14 @@ import PresentTransitionEffect from './transition-effect/PresentTransitionEffect
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 export type AlertDataType = {
-    marqueeData: string | null;
+    marqueeData: {
+        text: string,
+    } | null;
     countdownData: {
-        time: number
+        dateTime: Date,
     } | null;
     toastData: {
-        text: string
+        text: string,
     } | null;
 };
 export type AlertSrcListType = {
@@ -53,8 +59,20 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             }
         }
     }
-    get div() {
-        return this._div;
+    getDivChild(divId: string) {
+        if (this._div === null) {
+            return null;
+        }
+        return this._div.querySelector(`#${divId}`) as HTMLDivElement;
+    }
+    get divCountdown() {
+        return this.getDivChild('countdown');
+    }
+    get divMarquee() {
+        return this.getDivChild('marquee');
+    }
+    get divToast() {
+        return this.getDivChild('toast');
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
@@ -107,7 +125,7 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
                 const json = JSON.parse(str);
                 Object.values(json).forEach((item: any) => {
                     if (!(item.marqueeData === null
-                        || typeof item.marqueeData === 'string')) {
+                        || typeof item.marqueeData.text === 'string')) {
                         throw new Error('Invalid alert data');
                     }
                 });
@@ -135,23 +153,35 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             }
         });
     }
-    static async setMarquee(text: string,
-        event: React.MouseEvent<HTMLElement, MouseEvent>) {
+    static async setData(event: React.MouseEvent<HTMLElement, MouseEvent>,
+        callback: (presentManager: PresentManager) => void) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
-            const { alertData } = presentManager.presentAlertManager;
-            alertData.marqueeData = alertData.marqueeData === text ? null : text;
+            callback(presentManager);
             presentManager.presentAlertManager.saveAlertData();
         });
     }
+    static async setMarquee(text: string,
+        event: React.MouseEvent<HTMLElement, MouseEvent>) {
+        this.setData(event, (presentManager) => {
+            const { alertData } = presentManager.presentAlertManager;
+            const { text: dataText } = alertData.marqueeData || {};
+            alertData.marqueeData = dataText === text ? null : { text };
+        });
+    }
+    static async setCountdown(dateTime: Date,
+        event: React.MouseEvent<HTMLElement, MouseEvent>) {
+        this.setData(event, (presentManager) => {
+            const { alertData } = presentManager.presentAlertManager;
+            const { dateTime: dateTimeData } = alertData.countdownData || {};
+            alertData.countdownData = dateTimeData === dateTime ? null : { dateTime };
+        });
+    }
     render() {
-        if (this.div === null) {
-            return;
-        }
-        if (this.alertData !== null) {
+        if (this.divMarquee !== null && this.alertData.marqueeData !== null) {
             const newDiv = genHtmlAlert(this.alertData, this.presentManager);
-            const childList = Array.from(this.div.children);
-            this.div.appendChild(newDiv);
+            const childList = Array.from(this.divMarquee.children);
+            this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
                 if (element.offsetWidth < element.scrollWidth) {
                     element.classList.add('moving');
@@ -160,9 +190,10 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             childList.forEach((child) => {
                 removeAlert(child);
             });
-        } else {
-            if (this.div.lastChild !== null) {
-                removeAlert(this.div.lastChild);
+        }
+        if (this.divMarquee !== null && this.alertData.marqueeData === null) {
+            if (this.divMarquee.lastChild !== null) {
+                removeAlert(this.divMarquee.lastChild);
             }
         }
     }

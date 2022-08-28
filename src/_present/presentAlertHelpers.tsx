@@ -14,7 +14,8 @@ const classNameMapper = {
 export function genHtmlAlert(alertData: AlertDataType,
     presentManager: PresentManager) {
     if (alertData.marqueeData !== null) {
-        const duration = (alertData.marqueeData.length || 0) / 6;
+        const { text } = alertData.marqueeData;
+        const duration = (text.length || 0) / 6;
         const scale = presentManager.height / 768;
         const fontSize = 75 * scale;
         const actorClass = classNameMapper.marquee;
@@ -73,7 +74,7 @@ export function genHtmlAlert(alertData: AlertDataType,
                     }
                 `}</style>
             <p className={`marquee ${actorClass}`}>
-                <span>{alertData.marqueeData}</span>
+                <span>{text}</span>
             </p>
         </div>);
         const div = document.createElement('div');
