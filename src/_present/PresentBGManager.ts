@@ -6,6 +6,7 @@ import { genHtmlBG } from './PresentBackground';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
+import PresentManagerInf from './PresentManagerInf';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
@@ -24,7 +25,8 @@ export type BGSrcListType = {
 export type PresentBGManagerEventType = 'update';
 
 const settingName = 'present-bg-';
-export default class PresentBGManager extends EventHandler<PresentBGManagerEventType> {
+export default class PresentBGManager extends EventHandler<PresentBGManagerEventType>
+    implements PresentManagerInf {
     static eventNamePrefix: string = 'present-bg-m';
     readonly presentId: number;
     private _bgSrc: BackgroundSrcType | null = null;
@@ -215,5 +217,8 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
                 presentData.src, presentData.type);
             this.bgSrc = bgSrc;
         }
+    }
+    delete() {
+        this.bgSrc = null;
     }
 }

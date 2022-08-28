@@ -12,6 +12,7 @@ import {
 } from '../presentEventHelpers';
 import PTEffectControl from './PTEffectControl';
 import appProviderPresent from '../appProviderPresent';
+import { toMaxId } from '../../helper/helpers';
 
 function openContextMenu(event: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
@@ -36,14 +37,16 @@ function openContextMenu(event: any, presentManager: PresentManager) {
             title: 'Delete',
             onClick() {
                 presentManager.delete();
-                PresentManager.savePresentManagersSetting();
             },
         }],
         ...[{
             title: 'Add New Present',
             onClick() {
-                const nextId = PresentManager.getAllInstances().length;
-                PresentManager.getInstance(nextId);
+                const ids = PresentManager.getAllInstances().map((presentManager1) => {
+                    return presentManager1.presentId;
+                });
+                const maxId = toMaxId(ids);
+                PresentManager.getInstance(maxId + 1);
                 PresentManager.savePresentManagersSetting();
                 PresentManager.fireInstanceEvent();
             },

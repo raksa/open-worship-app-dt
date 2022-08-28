@@ -4,7 +4,7 @@ import {
     MimetypeNameType,
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson } from '../helper/helpers';
+import { AnyObjectType, cloneJson, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
@@ -48,7 +48,7 @@ export default class Bible extends ItemSource<BibleItem>{
     get maxItemId() {
         if (this.items.length) {
             const ids = this.items.map((item) => item.id);
-            return Math.max.apply(Math, ids);
+            return toMaxId(ids);
         }
         return 0;
     }

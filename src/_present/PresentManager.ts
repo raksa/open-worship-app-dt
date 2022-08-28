@@ -15,6 +15,7 @@ import {
     setDisplay,
     showPresent,
 } from './presentHelpers';
+import PresentManagerInf from './PresentManagerInf';
 import PresentSlideManager from './PresentSlideManager';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 
@@ -22,7 +23,8 @@ export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
 const settingName = 'present-display-';
 
-export default class PresentManager extends EventHandler<PresentManagerEventType> {
+export default class PresentManager extends EventHandler<PresentManagerEventType>
+    implements PresentManagerInf {
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
     readonly presentSlideManager: PresentSlideManager;
@@ -168,9 +170,13 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         this.addPropEvent('resize');
     }
     delete() {
+        this.presentBGManager.delete();
+        this.presentFTManager.delete();
+        this.presentSlideManager.delete();
+        this.presentAlertManager.delete();
         this.hide();
-        this.presentBGManager.bgSrc = null;
         PresentManager._cache.delete(this.key);
+        PresentManager.savePresentManagersSetting();
         this.fireInstanceEvent();
     }
     static receiveSyncPresent(message: PresentMessageType) {
@@ -264,7 +270,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             presentManagers = [this.getInstance(0)];
         }
         if (presentManagers.length === 1) {
-            presentManagers[0].isSelected = true;
+            presentManagers[0]._isSelected = true;
         }
         return presentManagers;
     }

@@ -7,6 +7,7 @@ import appProviderPresent from './appProviderPresent';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
+import PresentManagerInf from './PresentManagerInf';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
@@ -21,7 +22,8 @@ export type SlideListType = {
 export type PresentSlideManagerEventType = 'update';
 
 const settingName = 'present-slide-';
-export default class PresentSlideManager extends EventHandler<PresentSlideManagerEventType> {
+export default class PresentSlideManager extends EventHandler<PresentSlideManagerEventType>
+    implements PresentManagerInf {
     static eventNamePrefix: string = 'present-slide-m';
     readonly presentId: number;
     private _slideItemData: SlideItemDataType | null = null;
@@ -217,5 +219,8 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     }
     async receivePresentDrag(presentData: AnyObjectType) {
         this.slideItemData = presentData.slideItemData;
+    }
+    delete() {
+        this.slideItemData = null;
     }
 }

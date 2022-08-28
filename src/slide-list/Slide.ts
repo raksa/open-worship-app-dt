@@ -8,7 +8,7 @@ import {
     openSlideContextMenu,
     THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import ToastEventListener from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
@@ -91,7 +91,7 @@ export default class Slide extends ItemSource<SlideItem>{
     get maxItemId() {
         if (this.items.length) {
             const ids = this.items.map((item) => item.id);
-            return Math.max.apply(Math, ids);
+            return toMaxId(ids);
         }
         return 0;
     }

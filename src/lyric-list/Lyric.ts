@@ -3,7 +3,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 import LyricItem, { LyricItemType } from './LyricItem';
@@ -56,7 +56,7 @@ export default class Lyric extends ItemSource<LyricItem>{
     get maxItemId() {
         if (this.items.length) {
             const ids = this.items.map((item) => item.id);
-            return Math.max.apply(Math, ids);
+            return toMaxId(ids);
         }
         return 0;
     }

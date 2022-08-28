@@ -1,4 +1,4 @@
-import { AnyObjectType } from '../../helper/helpers';
+import { AnyObjectType, toMaxId } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import PresentManager from '../../_present/PresentManager';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
@@ -19,7 +19,8 @@ export default class Canvas {
     }
     get maxItemId() {
         if (this.canvasItems.length) {
-            return Math.max.apply(Math, this.canvasItems.map((item) => item.id));
+            const ids = this.canvasItems.map((item) => item.id);
+            return toMaxId(ids);
         }
         return 0;
     }

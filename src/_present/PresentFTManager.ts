@@ -20,8 +20,10 @@ import {
 } from './presentFTHelpers';
 import { PresentDragTargetType, PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
+import PresentManagerInf from './PresentManagerInf';
 
-export default class PresentFTManager extends EventHandler<PresentFTManagerEventType> {
+export default class PresentFTManager extends EventHandler<PresentFTManagerEventType>
+    implements PresentManagerInf {
     static eventNamePrefix: string = 'present-ft-m';
     readonly presentId: number;
     private _ftItemData: FTItemDataType | null = null;
@@ -330,5 +332,8 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     sendSyncPresent() {
         this.sendSyncData();
+    }
+    delete() {
+        this.ftItemData = null;
     }
 }

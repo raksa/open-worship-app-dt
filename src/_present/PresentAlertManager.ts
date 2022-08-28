@@ -5,6 +5,7 @@ import { AlertType, genHtmlAlert, removeAlert } from './presentAlertHelpers';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
+import PresentManagerInf from './PresentManagerInf';
 import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
@@ -24,7 +25,8 @@ export type AlertSrcListType = {
 export type PresentAlertEventType = 'update';
 
 const settingName = 'present-alert-';
-export default class PresentAlertManager extends EventHandler<PresentAlertEventType> {
+export default class PresentAlertManager extends EventHandler<PresentAlertEventType>
+    implements PresentManagerInf {
     static eventNamePrefix: string = 'present-alert-m';
     readonly presentId: number;
     private alertData: AlertDataType = {
@@ -172,5 +174,11 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             height: `${this.presentManager.height}px`,
             overflow: 'hidden',
         };
+    }
+    delete() {
+        this.alertData.marqueeData = null;
+        this.alertData.countdownData = null;
+        this.alertData.toastData = null;
+        this.saveAlertData();
     }
 }

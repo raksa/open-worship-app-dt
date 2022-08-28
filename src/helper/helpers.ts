@@ -131,3 +131,7 @@ export function getVideoDim(src: string) {
         video.src = src;
     });
 }
+
+export function toMaxId(ids: number[]) {
+    return Math.max.apply(Math, ids);
+}
