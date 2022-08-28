@@ -85,7 +85,7 @@ export function genHtmlAlertCountdown(countdownData: { dateTime: Date }
     , presentManager: PresentManager) {
     const { dateTime } = countdownData;
     const scale = presentManager.height / 768;
-    const fontSize = 75 * scale;
+    const fontSize = 100 * scale;
     const chunkSize = Math.floor(fontSize / 10);
     const actorClass = classNameMapper.countdown;
     const htmlString = ReactDOMServer.renderToStaticMarkup(<div
