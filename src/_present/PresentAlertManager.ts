@@ -105,7 +105,7 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         });
     }
     setMarqueeData(marqueeData: { text: string } | null) {
-        if (marqueeData !== this.alertData.marqueeData) {
+        if (marqueeData?.text !== this.alertData.marqueeData?.text) {
             this.cleanRender(this.divMarquee);
             this.alertData.marqueeData = marqueeData;
             this.renderMarquee();
