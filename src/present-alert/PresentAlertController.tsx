@@ -74,8 +74,8 @@ function DateTimePicker() {
             </div>
             <div>
                 <button className='btn btn-secondary'
-                    onClick={() => {
-                        console.log(new Date(date + ' ' + time));
+                    onClick={(event) => {
+                        PresentAlertManager.setCountdown(new Date(date + ' ' + time), event);
                     }}>Show Time</button>
             </div>
         </>

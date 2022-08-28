@@ -3,7 +3,9 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import {
     AlertType,
-    genHtmlAlert,
+    checkIsCountdownDates,
+    genHtmlAlertCountdown,
+    genHtmlAlertMarquee,
     removeAlert,
 } from './presentAlertHelpers';
 import { sendPresentMessage } from './presentEventHelpers';
@@ -125,8 +127,13 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
                 const json = JSON.parse(str);
                 Object.values(json).forEach((item: any) => {
                     if (!(item.marqueeData === null
-                        || typeof item.marqueeData.text === 'string')) {
+                        || typeof item.marqueeData.text === 'string') ||
+                        !(item.countdownData === null
+                            || typeof item.countdownData.dateTime === 'string')) {
                         throw new Error('Invalid alert data');
+                    }
+                    if (item.countdownData?.dateTime) {
+                        item.countdownData.dateTime = new Date(item.countdownData.dateTime);
                     }
                 });
                 return json;
@@ -174,12 +181,14 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         this.setData(event, (presentManager) => {
             const { alertData } = presentManager.presentAlertManager;
             const { dateTime: dateTimeData } = alertData.countdownData || {};
-            alertData.countdownData = dateTimeData === dateTime ? null : { dateTime };
+            alertData.countdownData = dateTimeData !== undefined
+                && checkIsCountdownDates(dateTimeData, dateTime) ? null : { dateTime };
         });
     }
     render() {
         if (this.divMarquee !== null && this.alertData.marqueeData !== null) {
-            const newDiv = genHtmlAlert(this.alertData, this.presentManager);
+            const newDiv = genHtmlAlertMarquee(this.alertData.marqueeData,
+                this.presentManager);
             const childList = Array.from(this.divMarquee.children);
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
@@ -191,9 +200,26 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
                 removeAlert(child);
             });
         }
+        if (this.divCountdown !== null && this.alertData.countdownData !== null) {
+            const newDiv = genHtmlAlertCountdown(this.alertData.countdownData,
+                this.presentManager);
+            const childList = Array.from(this.divCountdown.children);
+            this.divCountdown.appendChild(newDiv);
+            childList.forEach((child) => {
+                removeAlert(child);
+            });
+        }
+        this.cleanRender();
+    }
+    cleanRender() {
         if (this.divMarquee !== null && this.alertData.marqueeData === null) {
             if (this.divMarquee.lastChild !== null) {
                 removeAlert(this.divMarquee.lastChild);
+            }
+        }
+        if (this.divCountdown !== null && this.alertData.countdownData === null) {
+            if (this.divCountdown.lastChild !== null) {
+                removeAlert(this.divCountdown.lastChild);
             }
         }
     }
