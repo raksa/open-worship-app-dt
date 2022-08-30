@@ -13,13 +13,16 @@ import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
 import TabRender, { genTabBody } from './others/TabRender';
-import HandleAlert, { openConfirm } from './alert/HandleAlert';
+import HandleAlert from './alert/HandleAlert';
 
 const AppEditing = React.lazy(() => {
     return import('./AppEditing');
 });
 const AppPresenting = React.lazy(() => {
     return import('./AppPresenting');
+});
+const Read = React.lazy(() => {
+    return import('./read/Read');
 });
 
 const WINDOW_TYPE = 'window-type';
@@ -47,7 +50,7 @@ export function goEditSlide() {
 const tabTypeList = [
     ['e', 'Editing', AppEditing],
     ['p', 'Presenting', AppPresenting],
-    ['r', 'Read'],
+    ['r', 'Read', Read],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function App() {
@@ -68,18 +71,7 @@ export default function App() {
                         return [type, name];
                     })}
                     activeTab={tabType}
-                    setActiveTab={(newTabType) => {
-                        if (newTabType === 'r') {
-                            // TODO: implement read bible
-                            // should change location to read read-bible.html
-                            openConfirm('Not implemented',
-                                'Read mode is not implemented yet.').then((isOk) => {
-                                    console.log(isOk);
-                                });
-                        } else {
-                            setTabType(newTabType);
-                        }
-                    }} />
+                    setActiveTab={setTabType} />
                 <div className='highlight-border-bottom d-flex justify-content-center flex-fill'>
                     <BibleSearchHeader />
                 </div>
