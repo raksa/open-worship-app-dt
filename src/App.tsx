@@ -25,6 +25,9 @@ const Read = React.lazy(() => {
     return import('./read/Read');
 });
 
+const WINDOW_EDITING_MODE = 'e';
+const WINDOW_PRESENTING_MODE = 'p';
+const WINDOW_READING_MODE = 'r';
 const WINDOW_TYPE = 'window-type';
 export function getWindowMode(): TabType {
     const windowType = getSetting(WINDOW_TYPE) as any;
@@ -33,11 +36,19 @@ export function getWindowMode(): TabType {
     }).includes(windowType)) {
         return windowType;
     }
-    return 'p';
+    return WINDOW_PRESENTING_MODE;
 }
 export function isWindowEditingMode() {
     const windowType = getWindowMode();
-    return windowType === 'e';
+    return windowType === WINDOW_EDITING_MODE;
+}
+export function isWindowPresentingMode() {
+    const windowType = getWindowMode();
+    return windowType === WINDOW_PRESENTING_MODE;
+}
+export function isWindowReading() {
+    const windowType = getWindowMode();
+    return windowType === WINDOW_READING_MODE;
 }
 
 let startEditingSlide: (() => void) | null = null;
@@ -48,16 +59,17 @@ export function goEditSlide() {
 }
 
 const tabTypeList = [
-    ['e', 'Editing', AppEditing],
-    ['p', 'Presenting', AppPresenting],
-    ['r', 'Read', Read],
+    [WINDOW_EDITING_MODE, 'Editing', AppEditing],
+    [WINDOW_PRESENTING_MODE, 'Presenting', AppPresenting],
+    [WINDOW_READING_MODE, 'Read', Read],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function App() {
-    const [tabType, setTabType] = useStateSettingString<TabType>(WINDOW_TYPE, 'p');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        WINDOW_TYPE, WINDOW_PRESENTING_MODE);
     useEffect(() => {
         startEditingSlide = () => {
-            setTabType('e');
+            setTabType(WINDOW_EDITING_MODE);
         };
         return () => {
             startEditingSlide = null;

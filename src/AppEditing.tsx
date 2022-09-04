@@ -1,5 +1,5 @@
 import React from 'react';
-import { settingNames } from './resize-actor/flexSizeHelpers';
+import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const SlideItemEditorGround = React.lazy(() => {
@@ -11,7 +11,7 @@ const AppEditingLeft = React.lazy(() => {
 
 export default function AppEditing() {
     return (
-        <ResizeActor fSizeName={settingNames.appEditing}
+        <ResizeActor fSizeName={resizeSettingNames.appEditing}
             flexSizeDefault={{
                 'h1': ['1'],
                 'h2': ['3'],

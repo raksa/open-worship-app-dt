@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MiniPresentScreen from './_present/preview/MiniPresentScreen';
-import { settingNames } from './resize-actor/flexSizeHelpers';
+import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import PresentManager from './_present/PresentManager';
 
@@ -16,7 +16,7 @@ export default function AppPresentingRight() {
     return (
         <>
             <div className='flex-fill flex v h-100'>
-                <ResizeActor fSizeName={settingNames.appPresentingRight}
+                <ResizeActor fSizeName={resizeSettingNames.appPresentingRight}
                     flexSizeDefault={{
                         'v1': ['1'],
                         'v2': ['1'],

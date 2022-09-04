@@ -5,7 +5,7 @@ export const settingPrefix = 'widget-size';
 export const disablingTargetTypeList = ['first', 'second'] as const;
 export type DisablingTargetType = typeof disablingTargetTypeList[number];
 export type DisabledType = [DisablingTargetType, number];
-export const settingNames = {
+export const resizeSettingNames = {
     appEditing: 'app-editing-main',
     appEditingLeft: 'app-editing-left',
     appPresenting: 'app-presenting-main',
@@ -14,10 +14,11 @@ export const settingNames = {
     appPresentingRight: 'app-presenting-right',
     fullText: 'full-text',
     slideItemEditor: 'slide-item-editor',
+    read: 'read',
 };
 
 export function clearWidgetSizeSetting() {
-    Object.values(settingNames).forEach((name) => {
+    Object.values(resizeSettingNames).forEach((name) => {
         setSetting(`${toSettingString(name)}`, '');
     });
 }

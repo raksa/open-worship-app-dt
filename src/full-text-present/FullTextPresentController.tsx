@@ -2,7 +2,7 @@ import './FullTextPresentController.scss';
 
 import React from 'react';
 import ResizeActor from '../resize-actor/ResizeActor';
-import { settingNames } from '../resize-actor/flexSizeHelpers';
+import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 
 const FullTextPreviewer = React.lazy(() => {
     return import('./FullTextPreviewer');
@@ -16,7 +16,7 @@ export default function FullTextPresentController() {
         <div id='full-text-present-controller'
             className='card w-100 h-100 border-white-round'>
             <div className='card-body flex v'>
-                <ResizeActor fSizeName={settingNames.fullText}
+                <ResizeActor fSizeName={resizeSettingNames.fullText}
                     flexSizeDefault={{
                         'v1': ['2'],
                         'v2': ['1'],

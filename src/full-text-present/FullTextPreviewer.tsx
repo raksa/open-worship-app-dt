@@ -1,15 +1,25 @@
 import React from 'react';
 import {
-    useBibleItemSelecting, useLyricSelecting,
+    useBibleItemSelecting,
+    useLyricSelecting,
 } from '../event/PreviewingEventListener';
 import {
-    getSetting, setSetting, useStateSettingString,
+    getSetting, setSetting,
+    useStateSettingString,
 } from '../helper/settingHelper';
-import TabRender, { genTabBody } from '../others/TabRender';
-import { getIsShowingFTPreviewer } from '../slide-presenting/Presenting';
+import TabRender, {
+    genTabBody,
+} from '../others/TabRender';
+import {
+    getIsShowingFTPreviewer,
+} from '../slide-presenting/Presenting';
 
-const BiblePreviewer = React.lazy(() => import('./BiblePreviewer'));
-const LyricPreviewer = React.lazy(() => import('./LyricPreviewer'));
+const BiblePreviewer = React.lazy(() => {
+    return import('../read-bible/BiblePreviewer');
+});
+const LyricPreviewer = React.lazy(() => {
+    return import('./LyricPreviewer');
+});
 
 export const previewer: {
     show: (_?: React.MouseEvent) => void;
@@ -49,7 +59,8 @@ export default function FullTextPreviewer() {
         }
     });
     return (
-        <div className='previewer overflow-hidden border-white-round h-100 d-flex flex-column p-1'
+        <div className={'previewer overflow-hidden border-white-round '
+            + 'h-100 d-flex flex-column p-1'}
             style={{
                 minWidth: '300px',
             }}>

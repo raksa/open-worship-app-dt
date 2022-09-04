@@ -1,5 +1,5 @@
 import React from 'react';
-import { settingNames } from './resize-actor/flexSizeHelpers';
+import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const SlideList = React.lazy(() => import('./slide-list/SlideList'));
@@ -7,7 +7,7 @@ const SlidePreviewer = React.lazy(() => import('./slide-presenting/items/SlidePr
 
 export default function AppEditingLeft() {
     return (
-        <ResizeActor fSizeName={settingNames.appEditingLeft}
+        <ResizeActor fSizeName={resizeSettingNames.appEditingLeft}
             flexSizeDefault={{
                 'v1': ['1'],
                 'v2': ['2'],
