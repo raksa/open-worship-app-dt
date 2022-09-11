@@ -3,7 +3,7 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import {
     AlertType,
-    checkIsCountdownDates as checkIsCountdownDatesEq,
+    checkIsCountdownDatesEq,
     genHtmlAlertCountdown,
     genHtmlAlertMarquee,
     removeAlert,
@@ -22,9 +22,6 @@ export type AlertDataType = {
     countdownData: {
         dateTime: Date,
     } | null;
-    toastData: {
-        text: string,
-    } | null;
 };
 export type AlertSrcListType = {
     [key: string]: AlertDataType;
@@ -40,7 +37,6 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     private alertData: AlertDataType = {
         marqueeData: null,
         countdownData: null,
-        toastData: null,
     };
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'slide';
@@ -53,11 +49,9 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
                 const {
                     marqueeData,
                     countdownData,
-                    toastData,
                 } = allAlertDataList[this.key];
                 this.alertData.marqueeData = marqueeData || null;
                 this.alertData.countdownData = countdownData || null;
-                this.alertData.toastData = toastData || null;
             }
         }
     }
@@ -72,9 +66,6 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     }
     get divMarquee() {
         return this.getDivChild('marquee');
-    }
-    get divToast() {
-        return this.getDivChild('toast');
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
@@ -167,8 +158,6 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         return Object.entries(alertDataList).filter(([_, bgSrc]) => {
             if (alertType === 'marquee') {
                 return bgSrc.marqueeData !== null;
-            } else if (alertType === 'toast') {
-                return bgSrc.toastData !== null;
             } else {
                 return bgSrc.countdownData !== null;
             }
@@ -242,7 +231,6 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     delete() {
         this.alertData.marqueeData = null;
         this.alertData.countdownData = null;
-        this.alertData.toastData = null;
         this.saveAlertData();
     }
 }
