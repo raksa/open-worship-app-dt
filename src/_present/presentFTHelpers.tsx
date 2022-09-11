@@ -1,7 +1,7 @@
 import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidLocale } from '../lang';
-import { createMouseEvent, showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper, {
@@ -221,16 +221,4 @@ export async function bibleItemToFtData(bibleItems: BibleItem[]) {
         scroll: 0,
         selectedIndex: null,
     } as FTItemDataType;
-}
-
-export function genMouseEvent(event: any): MouseEvent {
-    if (event !== null) {
-        return event;
-    }
-    const miniPresentScreen = document.getElementsByClassName('mini-present-screen')[0];
-    if (miniPresentScreen !== undefined) {
-        const rect = miniPresentScreen.getBoundingClientRect();
-        return createMouseEvent(rect.x, rect.y);
-    }
-    return createMouseEvent(0, 0);
 }

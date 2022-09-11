@@ -1,3 +1,4 @@
+import { createMouseEvent } from '../others/AppContextMenu';
 import appProviderPresent from './appProviderPresent';
 import {
     PresentTransitionEffectType,
@@ -117,3 +118,15 @@ export type PTEffectDataType = {
     target: TargetType,
     effect: PresentTransitionEffectType,
 };
+
+export function genPresentMouseEvent(event?: any): MouseEvent {
+    if (event) {
+        return event;
+    }
+    const miniPresentScreen = document.getElementsByClassName('mini-present-screen')[0];
+    if (miniPresentScreen !== undefined) {
+        const rect = miniPresentScreen.getBoundingClientRect();
+        return createMouseEvent(rect.x, rect.y);
+    }
+    return createMouseEvent(0, 0);
+}

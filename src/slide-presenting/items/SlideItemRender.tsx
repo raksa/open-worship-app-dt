@@ -3,18 +3,22 @@ import './SlideItemRender.scss';
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
-import PresentSlideManager, { SlideItemDataType } from '../../_present/PresentSlideManager';
+import PresentSlideManager, {
+    SlideItemDataType,
+} from '../../_present/PresentSlideManager';
 import { isWindowEditingMode } from '../../App';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 
 export default function SlideItemRender({
     slideItem, width, index,
+    onClick,
     onContextMenu, onCopy,
     onDragStart, onDragEnd,
 }: {
     slideItem: SlideItem;
     width: number,
     index: number;
+    onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     onContextMenu: (event: ContextMenuEventType) => void,
     onCopy: () => void,
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
@@ -46,10 +50,7 @@ export default function SlideItemRender({
             style={{
                 width: `${width}px`,
             }}
-            onClick={(event) => {
-                PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
-                    slideItem.toJson(), event);
-            }}
+            onClick={onClick}
             onContextMenu={(event) => {
                 onContextMenu(event);
             }}

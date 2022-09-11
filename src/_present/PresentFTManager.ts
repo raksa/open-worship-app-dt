@@ -16,9 +16,8 @@ import {
     renderPFTManager,
     bibleItemToFtData,
     FfDataType,
-    genMouseEvent,
 } from './presentFTHelpers';
-import { PresentDragTargetType, PresentMessageType } from './presentHelpers';
+import { genPresentMouseEvent, PresentDragTargetType, PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
 
@@ -252,7 +251,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     static async ftBibleItemSelect(event: React.MouseEvent | null, bibleItems: BibleItem[]) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(
-            genMouseEvent(event) as any,
+            genPresentMouseEvent(event) as any,
         );
         const ftItemData = await bibleItemToFtData(bibleItems);
         chosenPresentManagers.forEach(async (presentManager) => {
@@ -262,7 +261,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     }
     static async ftLyricSelect(event: React.MouseEvent | null, lyric: Lyric) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(
-            genMouseEvent(event) as any,
+            genPresentMouseEvent(event) as any,
         );
         const renderedList = fullTextPresentHelper.genLyricRenderList(lyric);
         const ftItemData: FTItemDataType = {

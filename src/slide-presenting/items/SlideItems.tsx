@@ -16,6 +16,24 @@ import SlideItemGhost from './SlideItemGhost';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import Slide from '../../slide-list/Slide';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
+import PresentSlideManager from '../../_present/PresentSlideManager';
+import { genPresentMouseEvent } from '../../_present/presentHelpers';
+import SlideItem from '../../slide-list/SlideItem';
+
+function getPresentingIndex(slide: Slide) {
+    for (let i = 0; i < slide.items.length; i++) {
+        const selectedList = PresentSlideManager.getDataList(
+            slide.fileSource.filePath, slide.items[i].id);
+        if (selectedList.length > 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+function presentSlideItem(slideItem: SlideItem, event: any) {
+    PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
+        slideItem.toJson(), event);
+}
 
 export default function SlideItems({ slide }: { slide: Slide }) {
     const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
@@ -26,20 +44,21 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     if (!isWindowEditingMode()) {
         const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
         const arrowListener = (event: KeyboardEvent) => {
-            const selectedIndex = slide.selectedIndex;
-            if (selectedIndex === -1) {
+            const presentingIndex = getPresentingIndex(slide);
+            if (presentingIndex === -1) {
                 return;
             }
             const length = slideItems.length;
             if (length) {
                 let ind = event.key === 'ArrowLeft' ?
-                    selectedIndex - 1 : selectedIndex + 1;
+                    presentingIndex - 1 : presentingIndex + 1;
                 if (ind >= length) {
                     ind = 0;
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                slide.selectedIndex = ind;
+                presentSlideItem(slideItems[ind],
+                    genPresentMouseEvent() as any);
             }
         };
         const useCallback = (key: KeyboardType) => {
@@ -64,6 +83,9 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                         <SlideItemRender index={i}
                             slideItem={item}
                             width={thumbSize}
+                            onClick={(event) => {
+                                presentSlideItem(item, event);
+                            }}
                             onContextMenu={(event) => {
                                 slide.openContextMenu(event, item);
                             }}
