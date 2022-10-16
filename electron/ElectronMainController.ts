@@ -3,7 +3,7 @@ import { channels, PresentMessageType } from './electronEventListener';
 import { isDev } from './electronHelpers';
 
 const url = 'http://localhost:3000';
-const htmlFile = `${__dirname}/../dist/index.html`;
+const htmlFile = `${__dirname}/../../dist/index.html`;
 const mainPreloadFile = `${__dirname}/client/mainPreload.js`;
 export default class ElectronMainController {
     win: BrowserWindow;

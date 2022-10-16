@@ -1,5 +1,4 @@
 import ElectronAppController from './ElectronAppController';
-import { isDev } from './electronHelpers';
 import ElectronPresentController from './ElectronPresentController';
 
 import { readValue } from './sqlite3';
@@ -9,13 +8,9 @@ const electron = require('electron');
 const { dialog, ipcMain, app } = electron;
 
 
-let apiUrl = process.env.API_URL;
-let key = process.env.API_KEY;
-if (!isDev) {
-    const ow = require('../build/Release/ow');
-    apiUrl = ow.getApiUrl();
-    key = ow.getApiKey();
-}
+const owa = require('../../build/Release/owa.node');
+const apiUrl = owa.getApiUrl();
+const key = owa.getApiKey();
 function hasXApiKey() {
     const timeStr = Date.now().toString();
     const md5sum = crypto.createHash('md5').update(key + timeStr);
