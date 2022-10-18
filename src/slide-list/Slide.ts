@@ -192,7 +192,7 @@ export default class Slide extends ItemSource<SlideItem>{
         }));
     }
     showSlideItemContextMenu(event: any) {
-        showAppContextMenu(event, [{
+        showAppContextMenu(event as any, [{
             title: 'New Slide Item', onClick: () => {
                 const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
                 const { width, height } = Canvas.getDefaultDim();

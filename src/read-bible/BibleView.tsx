@@ -22,7 +22,7 @@ export default function BibleView({
     return (
         <div className='bible-view card flex-fill'
             onContextMenu={(event) => {
-                showAppContextMenu(event, [
+                showAppContextMenu(event as any, [
                     {
                         title: 'Copy', onClick: () => {
                             const toCopyText = `${title}\n${text}`;

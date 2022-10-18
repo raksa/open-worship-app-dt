@@ -54,7 +54,7 @@ export default function BibleItemRender({
                 },
             };
         });
-        showAppContextMenu(event, menuOptions);
+        showAppContextMenu(event as any, menuOptions);
     };
     if (bibleItem.isError) {
         return (

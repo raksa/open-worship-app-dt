@@ -52,7 +52,7 @@ export default function SlideItemRender({
             }}
             onClick={onClick}
             onContextMenu={(event) => {
-                onContextMenu(event);
+                onContextMenu(event as any);
             }}
             onCopy={onCopy}>
             <div className='card-header d-flex'>

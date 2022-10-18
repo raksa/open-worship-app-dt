@@ -116,7 +116,7 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
         const newFtItemData = await bibleItemToFtData(newBibleItems);
         presentFTManager.ftItemData = newFtItemData;
     };
-    showAppContextMenu(event,
+    showAppContextMenu(event as any,
         [
             ...bibleRenderedList.length > 1 ? [{
                 title: 'Remove(' + bibleRenderedList[index].bibleName + ')',

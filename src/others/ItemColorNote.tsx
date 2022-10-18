@@ -14,7 +14,7 @@ export default function ItemColorNote({ item }: {
                 ...Object.entries(colorList.main),
                 ...Object.entries(colorList.extension),
             ];
-            showAppContextMenu(event, [{
+            showAppContextMenu(event as any, [{
                 title: 'no color',
                 onClick: () => {
                     item.colorNote = null;

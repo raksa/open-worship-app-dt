@@ -69,7 +69,7 @@ export default function FileItemHandler({
     }
     if (data === undefined) {
         return <FileReadError onContextMenu={(event) => {
-            showAppContextMenu(event, selfContextMenu);
+            showAppContextMenu(event as any, selfContextMenu);
         }} />;
     }
     const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''}`;
@@ -79,7 +79,7 @@ export default function FileItemHandler({
             data-index={index + 1}
             title={fileSource.filePath}
             onContextMenu={(event) => {
-                showAppContextMenu(event, [
+                showAppContextMenu(event as any, [
                     ...(contextMenu || []),
                     ...genCommonMenu(fileSource),
                     ...selfContextMenu,

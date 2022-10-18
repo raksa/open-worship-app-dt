@@ -20,7 +20,7 @@ export default function RenderBibleItems({ bible }: {
                     bibleItem={bibleItem}
                     bible={bible}
                     onContextMenu={(event) => {
-                        showAppContextMenu(event, [
+                        showAppContextMenu(event as any, [
                             {
                                 title: 'Quick Edit', onClick: () => {
                                     setSetting('bible-list-editing', `${i1}`);

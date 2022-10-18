@@ -74,8 +74,8 @@ function genOnDrop(dirSource: DirSource, mimetype: MimetypeNameType) {
 }
 
 function genOnContextMenu(contextMenu?: ContextMenuItemType[]) {
-    return (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        showAppContextMenu(event, [
+    return (event: React.MouseEvent<any>) => {
+        showAppContextMenu(event as any, [
             {
                 title: 'Delete All', onClick: async () => {
                     const isOk = await openConfirm('Not implemented',

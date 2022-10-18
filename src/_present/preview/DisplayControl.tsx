@@ -19,7 +19,7 @@ export default function DisplayControl({ presentManager }: {
                         primaryDisplay,
                         displays,
                     } = getAllDisplays();
-                    showAppContextMenu(event, displays.map((display) => {
+                    showAppContextMenu(event as any, displays.map((display) => {
                         const bounds = display.bounds;
                         const isPrimary = display.id === primaryDisplay.id;
                         const isSelected = display.id === displayId;

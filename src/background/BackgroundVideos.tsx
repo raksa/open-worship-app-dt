@@ -34,7 +34,7 @@ export default function BackgroundVideos() {
                                             event, fileSource.src, 'video');
                                     }}
                                     onContextMenu={(event) => {
-                                        showAppContextMenu(event, genCommonMenu(fileSource));
+                                        showAppContextMenu(event as any, genCommonMenu(fileSource));
                                     }}
                                     onMouseEnter={() => {
                                         vRef.current?.play();

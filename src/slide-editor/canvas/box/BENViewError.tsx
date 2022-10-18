@@ -13,7 +13,7 @@ export default function BENViewError({
             style={canvasItem.getBoxStyle()}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                showAppContextMenu(event, [{
+                showAppContextMenu(event as any, [{
                     title: 'Delete',
                     onClick: () => {
                         const canvasController = CanvasController.getInstance();

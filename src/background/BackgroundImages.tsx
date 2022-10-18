@@ -31,7 +31,7 @@ export default function BackgroundImages() {
                                         PresentBGManager.startPresentDrag(event, fileSource.src, 'image');
                                     }}
                                     onContextMenu={(event) => {
-                                        showAppContextMenu(event, genCommonMenu(fileSource),);
+                                        showAppContextMenu(event as any, genCommonMenu(fileSource),);
                                     }}
                                     onClick={(event) => {
                                         PresentBGManager.bgSrcSelect(fileSource.src, event, 'image');

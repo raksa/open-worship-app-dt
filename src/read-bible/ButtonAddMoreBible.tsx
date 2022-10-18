@@ -31,7 +31,7 @@ export default function ButtonAddMoreBible({
                 const bibleListFiltered = bibleList.filter(([bibleName]) => {
                     return !bibleItemingList.includes(bibleName);
                 });
-                showAppContextMenu(event,
+                showAppContextMenu(event as any,
                     bibleListFiltered.map(([bibleName, isAvailable]) => {
                         return {
                             title: bibleName,

@@ -7,7 +7,7 @@ import CanvasController from './CanvasController';
 
 export function showCanvasContextMenu(event: any) {
     const canvasController = CanvasController.getInstance();
-    showAppContextMenu(event, [
+    showAppContextMenu(event as any, [
         {
             title: 'New',
             onClick: () => canvasController.addNewTextItem(),
@@ -44,7 +44,7 @@ export function showCanvasItemContextMenu(event: any,
     canvasItem: CanvasItem<any>,
 ) {
     const canvasController = CanvasController.getInstance();
-    showAppContextMenu(event, [
+    showAppContextMenu(event as any, [
         {
             title: 'Copy', onClick: () => {
                 canvasController.copiedItem = canvasItem;

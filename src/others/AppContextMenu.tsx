@@ -4,10 +4,10 @@ import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import { ReactElement, useEffect, useState } from 'react';
 
-export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
+export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
     title: string,
-    onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, data?: any) => void,
+    onClick?: (event: MouseEvent, data?: any) => void,
     disabled?: boolean,
     otherChild?: ReactElement,
 };
@@ -23,7 +23,7 @@ export function createMouseEvent(clientX: number, clientY: number) {
 }
 
 const setPositionMenu = (menu: HTMLElement,
-    event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event: MouseEvent) => {
     if (menu !== null) {
         menu.style.display = 'block';
         menu.style.left = '';
@@ -58,13 +58,13 @@ const setPositionMenu = (menu: HTMLElement,
 };
 
 type PropsType = {
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: MouseEvent,
     items: ContextMenuItemType[],
 };
 let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
 export function showAppContextMenu(
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: MouseEvent,
     items: ContextMenuItemType[]) {
     event.stopPropagation();
     return new Promise<void>((resolve) => {
@@ -91,7 +91,7 @@ export function showAppContextMenu(
 
 export default function AppContextMenu() {
     const [data, setData] = useState<{
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: MouseEvent,
         items: ContextMenuItemType[]
     } | null>(null);
     useEffect(() => {
@@ -120,7 +120,7 @@ export default function AppContextMenu() {
                             if (item.disabled) {
                                 return;
                             }
-                            item.onClick?.(event);
+                            item.onClick?.(event as any);
                         }}>
                         {item.title}
                         {item.otherChild || null}

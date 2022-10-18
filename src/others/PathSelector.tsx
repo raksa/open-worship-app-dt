@@ -25,7 +25,7 @@ export default function PathSelector({
     return (
         <div className='path-selector w-100'
             onContextMenu={(event) => {
-                showAppContextMenu(event, [
+                showAppContextMenu(event as any, [
                     {
                         title: 'Copy to Clipboard',
                         onClick: () => {
