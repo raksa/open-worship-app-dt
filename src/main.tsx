@@ -29,12 +29,25 @@ const confirmEraseLocalStorage = () => {
   });
 };
 
+function isDomException(error: any) {
+  return typeof error === 'object'
+    && typeof error.message === 'string'
+    && error.message.includes('DOMException');
+}
+
 window.onunhandledrejection = (promiseError) => {
-  console.log(promiseError);
+  const reason = promiseError.reason;
+  appProvider.appUtils.handleError(reason);
+  if (isDomException(reason)) {
+    return;
+  }
   confirmEraseLocalStorage();
 };
 
 window.onerror = function (error: any) {
   appProvider.appUtils.handleError(error);
+  if (isDomException(error)) {
+    return;
+  }
   confirmEraseLocalStorage();
 };

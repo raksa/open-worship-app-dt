@@ -41,10 +41,12 @@ export default function PathSelector({
                     },
                 ]);
             }}>
-            <div className='d-flex path-previewer pointer' onClick={() => {
-                setShowing(!showing);
-            }}>
-                <i className={`bi ${isShowing ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
+            <div className='d-flex path-previewer pointer'
+                onClick={() => {
+                    setShowing(!showing);
+                }}>
+                <i className={`bi ${isShowing ?
+                    'bi-chevron-down' : 'bi-chevron-right'}`} />
                 {dirSource.dirPath && <div
                     className='ellipsis-left border-white-round px-1 flex-fill'
                     title={dirSource.dirPath}>
@@ -60,7 +62,8 @@ export default function PathSelector({
                 }
             </div>
             {isShowing && <AppSuspense>
-                <PathPreviewer dirSource={dirSource}
+                <PathPreviewer
+                    dirSource={dirSource}
                     prefix={prefix} />
             </AppSuspense>}
         </div>
