@@ -1,0 +1,28 @@
+#include <napi.h>
+
+Napi::String GetApiUrl(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  std::string init_string = std::string("https://bibles-development.openworship.app");
+  Napi::String sting = Napi::String::New(env, init_string);
+  return sting;
+}
+
+Napi::String GetApiKey(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  std::string init_string = std::string("InJesusChrist");
+  Napi::String sting = Napi::String::New(env, init_string);
+  return sting;
+}
+
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+  exports.Set(
+    Napi::String::New(env, "getApiUrl"), Napi::Function::New(env, GetApiUrl)
+  );
+  exports.Set(
+    Napi::String::New(env, "getApiKey"), Napi::Function::New(env, GetApiKey)
+  );
+
+  return exports;
+}
+
+NODE_API_MODULE(font_manager, Init)

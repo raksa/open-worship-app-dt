@@ -1,24 +1,23 @@
-import appProvider from './appProvider';
-import { PlaylistType, validatePlaylist } from './playlistHelper';
-import { readFile, deleteFile, createFile } from './fileHelper';
+import { useState, useEffect } from 'react';
+import appProvider from '../server/appProvider';
+import FileSource from './FileSource';
+import ItemSource from './ItemSource';
 
-export function getAppInfo() {
-    return appProvider.ipcRenderer.sendSync('main:app:info') as {
-        name: string,
-        version: string,
-        description: string,
-    };
-}
+export type AnyObjectType = {
+    [key: string]: any;
+};
 
 export function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
-    for (var i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
 }
-export const cloneObject = <T>(obj: T): T =>  JSON.parse(JSON.stringify(obj));
+export const cloneJson = <T>(obj: T): T => {
+    return JSON.parse(JSON.stringify(obj));
+};
 
 // https://stackoverflow.com/a/41698614/17066360
 export function isVisible(elem: any) {
@@ -56,86 +55,6 @@ export function isVisible(elem: any) {
     return false;
 }
 
-
-export function getFontData(fontName: string) {
-    const fontBR = require('../fonts/Battambang/Battambang-Regular.ttf') as { default: string };
-    const fontBB = require('../fonts/Battambang/Battambang-Bold.ttf') as { default: string };
-    const font = {
-        'Battambang-Regular': fontBR.default,
-        'Battambang-Bold': fontBB.default,
-    }[fontName];
-    return `${window.location.origin}${font}`;
-}
-export function toSlideItemThumbSelected(filePath: string | null, id: string | null) {
-    if (filePath === null || id === null) {
-        return null;
-    }
-    return `${filePath},${id}`;
-}
-export function extractSlideItemThumbSelected(slideFilePathId: string) {
-    const [slideFilePath, id] = slideFilePathId.split(',');
-    return { slideFilePath, id };
-}
-export function parseSlideItemThumbSelected(selected: string, filePath: string | null) {
-    if (!selected || filePath === null) {
-        return null;
-    }
-    try {
-        if (~selected.indexOf(filePath)) {
-            const id = selected.split(',')[1];
-            if (id) {
-                return { id };
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return null;
-}
-
-export function savePlaylist(playlistFilePath: string, playlist: PlaylistType) {
-    try {
-        if (deleteFile(playlistFilePath) &&
-            createFile(JSON.stringify(playlist), playlistFilePath)) {
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return false;
-}
-export function getPlaylistDataByFilePath(filePath: string) {
-    try {
-        const str = readFile(filePath);
-        if (str !== null) {
-            const json = JSON.parse(str);
-            if (validatePlaylist(json)) {
-                return json as PlaylistType;
-            }
-        }
-    } catch (error) {
-        console.log(error);
-    }
-    return null;
-}
-export function getInnerHTML(div: HTMLDivElement) {
-    const html = div.outerHTML;
-    const parentDiv = document.createElement('div');
-    parentDiv.innerHTML = html;
-    cleanDiv(parentDiv.children);
-    return parentDiv.innerHTML;
-}
-function cleanDiv(children: HTMLCollection) {
-    for (const child of Array.from(children)) {
-        if (child instanceof HTMLElement) {
-            child.className = '';
-            child.id = '';
-            child.contentEditable = 'inherit';
-            cleanDiv(child.children);
-        }
-    }
-}
-
 export function getRotationDeg(str: string) {
     const match = str.match(/rotate\((.+)deg\)/);
     return match ? +match[1] : 0;
@@ -152,8 +71,6 @@ export function genRandomString(length: number = 5) {
     }
     return result;
 }
-export const toBase64 = (str: string) => Buffer.from(str, 'utf-8').toString('base64');
-export const fromBase64 = (str: string) => Buffer.from(str, 'base64').toString('utf-8');
 
 export function getWindowDim() {
     const width = window.innerWidth || document.documentElement.clientWidth ||
@@ -161,4 +78,71 @@ export function getWindowDim() {
     const height = window.innerHeight || document.documentElement.clientHeight ||
         document.body.clientHeight;
     return { width, height };
+}
+export function validateAppMeta(meta: any) {
+    try {
+        if (meta.fileVersion === 1 && meta.app === 'OpenWorship') {
+            return true;
+        }
+    } catch (error) {
+        appProvider.appUtils.handleError(error);
+    }
+    return false;
+}
+export function useReadFileToData<T extends ItemSource<any>>(
+    fileSource: FileSource | null) {
+    const [data, setData] = useState<T | null | undefined>(null);
+    useEffect(() => {
+        if (fileSource !== null) {
+            fileSource.readFileToJsonData().then((itemSource: any) => {
+                setData(itemSource);
+            });
+        }
+    }, [fileSource]);
+    return data;
+}
+
+export function getLastItem<T>(arr: T[]) {
+    return arr[arr.length - 1] || null;
+}
+
+export function getImageDim(src: string) {
+    return new Promise<[number, number]>((resolve, reject) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.onload = () => {
+            resolve([img.naturalWidth, img.naturalHeight]);
+        };
+        img.onerror = () => {
+            reject(new Error('Fail to load image:' + src));
+        };
+    });
+}
+
+export function getVideoDim(src: string) {
+    return new Promise<[number, number]>((resolve, reject) => {
+        const video = document.createElement('video');
+        video.addEventListener('loadedmetadata', () => {
+            resolve([video.videoWidth, video.videoHeight]);
+        }, false);
+        video.onerror = () => {
+            reject(new Error('Fail to load video:' + src));
+        };
+        video.src = src;
+    });
+}
+
+export function toMaxId(ids: number[]) {
+    return Math.max.apply(Math, ids);
+}
+
+export function isValidJson(json: any, isSilent: boolean = false) {
+    try {
+        return JSON.parse(json);
+    } catch (error) {
+        if (!isSilent && json === '') {
+            console.trace('Invalid Json:', json);
+        }
+        return false;
+    }
 }

@@ -1,0 +1,52 @@
+import ColorPicker from '../../../others/ColorPicker';
+import Tool from './Tool';
+import ToolAlign from './ToolAlign';
+import CanvasItemText, {
+    ToolingTextType,
+} from '../CanvasItemText';
+import ToolsTextFontControl from './ToolsTextFontControl';
+import { CanvasItemContext } from '../CanvasItem';
+import { useContext } from 'react';
+
+export default function ToolsText() {
+    const canvasItem = useContext(CanvasItemContext);
+    if (canvasItem === null) {
+        return null;
+    }
+    if (!(canvasItem instanceof CanvasItemText)) {
+        return null;
+    }
+    const applyTextData = (newData: ToolingTextType) => {
+        canvasItem.applyTextData(newData);
+    };
+    return (
+        <div className='d-flex'>
+            <Tool>
+                <div style={{
+                    maxWidth: '300px',
+                }}>
+                    <ColorPicker color={canvasItem.props.color}
+                        onColorChange={(newColor) => {
+                            applyTextData({
+                                color: newColor || '#ffffff',
+                            });
+                        }} />
+                </div>
+            </Tool>
+            <Tool title='Text Alignment'>
+                <ToolAlign isText onData={(newData) => {
+                    const textData: ToolingTextType = {};
+                    if (newData.horizontalAlignment !== undefined) {
+                        textData.textHorizontalAlignment = newData.horizontalAlignment;
+                    }
+                    if (newData.verticalAlignment !== undefined) {
+                        textData.textVerticalAlignment = newData.verticalAlignment;
+                    }
+                    applyTextData(textData);
+                }} />
+            </Tool>
+            <ToolsTextFontControl
+                canvasItemText={canvasItem} />
+        </div>
+    );
+}

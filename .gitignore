@@ -10,6 +10,7 @@
 
 # production
 /build
+/electron-build
 /dist
 
 # misc
@@ -28,4 +29,5 @@ release/
 .env
 .env.prod
 electron/ow.node
-*binding.gyp
+src-binding.gyp/owa.cc
+Default.owb

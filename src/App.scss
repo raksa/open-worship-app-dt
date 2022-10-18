@@ -54,6 +54,7 @@
     display: flex;
     position: relative;
     overflow: hidden;
+    min-width: 120px;
   }
 
   * {
@@ -81,6 +82,22 @@
       linear-gradient(-45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  .rotating {
+    i:before {
+      animation: rotating-hover 1s linear infinite;
+
+      @keyframes rotating-hover {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
   }
 
   .rotating-hover:hover {
@@ -135,5 +152,36 @@
 
   .drag-receiving {
     background-color: green;
+  }
+
+  .highlight-selected {
+    border: 1px dashed $hight-light-color;
+  }
+
+  .hidden-widget {
+    $bg-color: var(--bs-gray-700);
+    $bg-color-hover: var(--bs-gray-600);
+    $color: var(--bs-gray-800);
+
+    padding: 3px;
+    border-radius: 5px;
+    background-color: $bg-color;
+    background: repeating-linear-gradient(45deg,
+        $color,
+        $color 4px,
+        $bg-color 2px,
+        $bg-color 8px);
+
+    &:hover {
+      background: repeating-linear-gradient(45deg,
+          $color,
+          $color 4px,
+          $bg-color-hover 2px,
+          $bg-color-hover 8px);
+    }
+
+    * {
+      display: none;
+    }
   }
 }

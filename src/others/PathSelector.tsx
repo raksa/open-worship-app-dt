@@ -2,71 +2,70 @@ import './PathSelector.scss';
 
 import {
     copyToClipboard,
-    isMac,
     openExplorer,
-    selectDirs,
-} from '../helper/appHelper';
+} from '../server/appHelper';
 import { showAppContextMenu } from './AppContextMenu';
 import { useStateSettingBoolean } from '../helper/settingHelper';
+import DirSource from '../helper/DirSource';
+import React from 'react';
+import AppSuspense from './AppSuspense';
+import appProvider from '../server/appProvider';
+
+const PathPreviewer = React.lazy(() => import('./PathPreviewer'));
 
 export default function PathSelector({
-    dirPath,
-    onRefresh,
-    onChangeDirPath,
-    onSelectDirPath,
-    prefix,
+    dirSource, prefix,
 }: {
-    dirPath: string,
-    onRefresh: () => void,
-    onChangeDirPath: (dir: string) => void,
-    onSelectDirPath: (dir: string) => void
-    prefix: string;
+    dirSource: DirSource,
+    prefix: string
 }) {
-    const [showing, setShowing] = useStateSettingBoolean(`${prefix}-showing-path-selector`, false);
-    const isShowing = !dirPath || showing;
+    const [showing, setShowing] = useStateSettingBoolean(
+        `${prefix}-selector-opened`, false);
+    const isShowing = !dirSource.dirPath || showing;
     return (
-        <div className="path-selector" onContextMenu={(e) => {
-            showAppContextMenu(e, [
-                {
-                    title: 'Copy to Clipboard',
-                    onClick: () => {
-                        copyToClipboard(dirPath);
+        <div className='path-selector w-100'
+            onContextMenu={(event) => {
+                showAppContextMenu(event as any, [
+                    {
+                        title: 'Copy to Clipboard',
+                        onClick: () => {
+                            copyToClipboard(dirSource.dirPath);
+                        },
                     },
-                },
-                {
-                    title: `Reveal in ${isMac() ? 'Finder' : 'File Explorer'}`,
-                    onClick: () => {
-                        openExplorer(dirPath);
+                    {
+                        title: `Reveal in ${appProvider.systemUtils.isMac ?
+                            'Finder' : 'File Explorer'}`,
+                        onClick: () => {
+                            openExplorer(dirSource.dirPath);
+                        },
                     },
-                },
-            ]);
-        }}>
-            <div className='path-previewer pointer' onClick={() => setShowing(!showing)}>
-                <i className={`bi ${isShowing ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {dirPath && <div className='ellipsis-left border-white-round px-1' title={dirPath}>
-                    {dirPath}</div>}
-            </div>
-            {isShowing &&
-                <div className="input-group mb-3">
-                    <button className="btn btn-secondary" type="button"
-                        onClick={onRefresh}>
-                        <i className="bi bi-arrow-clockwise" />
-                    </button>
-                    <input type="text" className="form-control" value={dirPath}
-                        onChange={(e) => {
-                            onChangeDirPath(e.target.value);
-                        }} />
-                    <button className="btn btn-secondary" type="button"
-                        onClick={() => {
-                            const dirs = selectDirs();
-                            if (dirs.length) {
-                                onSelectDirPath(dirs[0]);
-                            }
+                ]);
+            }}>
+            <div className='d-flex path-previewer pointer'
+                onClick={() => {
+                    setShowing(!showing);
+                }}>
+                <i className={`bi ${isShowing ?
+                    'bi-chevron-down' : 'bi-chevron-right'}`} />
+                {dirSource.dirPath && <div
+                    className='ellipsis-left border-white-round px-1 flex-fill'
+                    title={dirSource.dirPath}>
+                    {dirSource.dirPath}</div>}
+                {dirSource.dirPath &&
+                    <div className='px-2'
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            dirSource.fireReloadEvent();
                         }}>
-                        <i className="bi bi-folder2-open" />
-                    </button>
-                </div>
-            }
+                        <i className='bi bi-arrow-clockwise' />
+                    </div>
+                }
+            </div>
+            {isShowing && <AppSuspense>
+                <PathPreviewer
+                    dirSource={dirSource}
+                    prefix={prefix} />
+            </AppSuspense>}
         </div>
     );
 }

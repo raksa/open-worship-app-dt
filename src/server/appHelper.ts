@@ -1,0 +1,103 @@
+import ToastEventListener from '../event/ToastEventListener';
+import { genRandomString } from '../helper/helpers';
+import appProvider from './appProvider';
+import { pathJoin } from './fileHelper';
+import bibleHelper from './bible-helpers/bibleHelpers';
+import { initBibleInfo } from './bible-helpers/bibleHelpers1';
+import {
+    defaultLocal,
+    getCurrentLangAsync,
+    getLangAsync,
+    LocaleType,
+} from '../lang';
+
+export function openExplorer(dir: string) {
+    appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
+}
+export function openLink(link: string) {
+    appProvider.browserUtils.openLink(link);
+}
+export function copyToClipboard(str: string) {
+    appProvider.browserUtils.copyToClipboard(str);
+    ToastEventListener.showSimpleToast({
+        title: 'Copy',
+        message: 'Text has been copied to clip',
+    });
+    return true;
+}
+
+export function selectDirs() {
+    return appProvider.messageUtils.
+        sendDataSync('main:app:select-dirs') as string[];
+}
+export function selectFiles(filters: {
+    name: string,
+    extensions: string[],
+}[]) {
+    return appProvider.messageUtils.
+        sendDataSync('main:app:select-files',
+            filters) as string[];
+}
+
+export type RenderedType = {
+    background?: boolean,
+    foreground?: boolean,
+    fullText?: boolean,
+    alert?: boolean,
+    show?: boolean,
+};
+export function getPresentRendered() {
+    return new Promise<RenderedType>((resolve) => {
+        const newDate = (new Date()).getTime();
+        const returningEvent = `main:app:is-rendered-return-${newDate}`;
+        appProvider.messageUtils.
+            listenOnceForData(returningEvent,
+                (_event, data: RenderedType) => {
+                    resolve(data);
+                });
+        appProvider.messageUtils.
+            sendData('main:app:is-rendered', returningEvent);
+    });
+}
+export function getUserWritablePath() {
+    return appProvider.messageUtils.
+        sendDataSync('main:app:get-data-path');
+}
+export function sqlite3ReadValue(dbFilePath: string, table: string, key: string) {
+    return new Promise<string | null>((resolve) => {
+        const waitingEventName = `main:app:db-read-reply-${genRandomString(5)}`;
+        appProvider.messageUtils.
+            listenOnceForData(waitingEventName,
+                (_event, data: string | null) => {
+                    resolve(data);
+                });
+        appProvider.messageUtils.
+            sendData('main:app:db-read', {
+                dbFilePath,
+                table,
+                key,
+                waitingEventName,
+            });
+    });
+}
+
+export async function initApp() {
+    await getCurrentLangAsync();
+    await getLangAsync(defaultLocal);
+    // Bibles
+    if (!bibleHelper.getBibleList().length) {
+        await bibleHelper.getBibleListOnline();
+    }
+    const list = await bibleHelper.getDownloadedBibleList();
+    for (const bibleName of list) {
+        const info = await initBibleInfo(bibleName);
+        if (info !== null) {
+            const isExist = await bibleHelper.checkExist(bibleName);
+            if (isExist) {
+                await getLangAsync(info.locale as LocaleType);
+            }
+        }
+    }
+
+
+}

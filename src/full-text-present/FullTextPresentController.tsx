@@ -1,46 +1,34 @@
 import './FullTextPresentController.scss';
 
-import { BiblePresentType } from './fullTextPresentHelper';
-import CustomStyle from './CustomStyle';
-import Utils from './Utils';
-import Previewer, { previewer } from './Previewer';
-import ReSizer from '../resizer/ReSizer';
+import React from 'react';
+import ResizeActor from '../resize-actor/ResizeActor';
+import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 
-export function convertPresent(present: BiblePresentType,
-    oldPresents: BiblePresentType[]) {
-    if (oldPresents.length < 2) {
-        return [present];
-    }
-    return oldPresents.map((oldPresent) => {
-        oldPresent.target = present.target;
-        return oldPresent;
-    });
-}
+const FullTextPreviewer = React.lazy(() => {
+    return import('./FullTextPreviewer');
+});
+const FullTextTools = React.lazy(() => {
+    return import('./FullTextTools');
+});
 
 export default function FullTextPresentController() {
-    const resizeSettingName = 'full-text-present-window-size';
-    const flexSizeDefault = {
-        'previewer': '2',
-        'tools': '1',
-    };
     return (
-        <div id="full-text-present-controller"
-            className="card w-100 h-100 border-white-round">
-            <div className="card-body flex v">
-                <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                    resizerKinds={['v']}
-                    sizeKeys={[
-                        ['previewer', 'overflow-hidden'],
-                        ['tools', 'h-100 d-flex flex-column', {
+        <div id='full-text-present-controller'
+            className='card w-100 h-100 border-white-round'>
+            <div className='card-body flex v'>
+                <ResizeActor fSizeName={resizeSettingNames.fullText}
+                    flexSizeDefault={{
+                        'v1': ['2'],
+                        'v2': ['1'],
+                    }}
+                    resizeKinds={['v']}
+                    dataInput={[
+                        [FullTextPreviewer, 'v1', 'overflow-hidden'],
+                        [FullTextTools, 'v2', 'h-100 d-flex flex-column', {
                             overflowX: 'hidden',
                             overflowY: 'auto',
-                        }]]}>
-                    <Previewer />
-                    <>
-                        <Utils onShow={() => previewer.show()} />
-                        <CustomStyle />
-                    </>
-                </ReSizer>
+                        }],
+                    ]} />
             </div>
         </div>
     );

@@ -1,14 +1,16 @@
 import './CustomStyle.scss';
 
-import TextShadow from './TextShadow';
 import { useStateSettingString } from '../helper/settingHelper';
-import Appearance from './Appearance';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+import TabRender, { genTabBody } from '../others/TabRender';
+
+const Appearance = React.lazy(() => import('./Appearance'));
+const TextShadow = React.lazy(() => import('./TextShadow'));
 
 export default function CustomStyle() {
     return (
-        <div className="custom-style card pointer border-white-round mt-1">
-            <div className="card-header">
+        <div className='custom-style card pointer border-white-round mt-1'>
+            <div className='card-header'>
                 Custom Style
             </div>
             <Body />
@@ -16,27 +18,29 @@ export default function CustomStyle() {
     );
 }
 
+const tabTypeList = [
+    ['a', 'Appearance', Appearance],
+    ['s', 'Shadow', TextShadow],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 function Body() {
-    const { t } = useTranslation();
-    // a: appearance, s: shadow
-    const [tabType, setTabType] = useStateSettingString('tull-text-present-custom-style-tab', 'a');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'tull-text-present-custom-style-tab', 'a');
     return (
         <div className='card-body'>
-            <div className="d-flex">
-                <ul className="nav nav-tabs flex-fill">
-                    {[['a', 'Appearance'], ['s', 'Shadow']].map(([key, title], i) => {
-                        return (<li key={i} className="nav-item">
-                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => setTabType(key)}>
-                                {t(title)}
-                            </button>
-                        </li>);
+            <div className='d-flex'>
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name];
                     })}
-                </ul>
+                    activeTab={tabType}
+                    setActiveTab={setTabType}
+                    className='flex-fill' />
             </div>
             <div className='custom-style-body p-2'>
-                {tabType === 'a' && <Appearance />}
-                {tabType === 's' && <TextShadow />}
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
         </div>
     );

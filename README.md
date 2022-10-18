@@ -1,6 +1,6 @@
 # OpenWorship app (PSA.150.6, Praise the Lord)
 
-![OpenWorship app 01/30/22](./docs/open-worship-app-01-30-22.png)
+![OpenWorship app 06/12/22](./docs/images/openworship-2022-06-12.png.png)
 
 Open source and always free for worship presenter.
 
@@ -11,45 +11,14 @@ Open source and always free for worship presenter.
 * [Bootstrap](https://getbootstrap.com/)
 * [SASS](https://sass-lang.com/)
 
-Special Thanks
-* [Bootstrap Icons](https://icons.getbootstrap.com/)
-* [Sqlite3](https://www.sqlite.org/index.html)
-* [React I18Next](https://react.i18next.com/)
-* and other frameworks
-
-And Thanks others framework and tool
-* sqlite3
-* @testing-library/jest-dom
-* @testing-library/react
-* @testing-library/user-event
-* @types/jest
-* @types/react
-* @types/react-color
-* @types/react-dom
-* bootstrap
-* bootstrap-icons
-* concurrently
-* electron
-* electron-builder
-* env-cmd
-* i18next
-* react
-* react-colorful
-* react-dom
-* react-i18next
-* react-scripts
-* sass
-* typescript
-* wait-on
-* @typescript-eslint/eslint-plugin": "^4.15.1
-* @typescript-eslint/parser": "^4.15.1
-* eslint": "^7.20.0
+Special thanks for others frameworks and tools in [npm package](./package.json)
 
 ## Install
 
 * copy .env.example to .env
 
 ```bash
+$ cp src-binding.gyp/owa.cc-example src-binding.gyp/owa.cc
 $ npm i
 ```
 

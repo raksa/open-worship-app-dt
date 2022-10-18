@@ -1,0 +1,25 @@
+.slide-preview {
+  &>.card-body {
+    overflow-x: hidden;
+  }
+
+  &>.card-footer {
+    height: 40px;
+    .size {
+      width: 150px;
+
+      &>div {
+        display: inline;
+      }
+
+      .form-range {
+        width: 75px;
+      }
+
+      .form-label {
+        float: left;
+        margin-right: 5px;
+      }
+    }
+  }
+}

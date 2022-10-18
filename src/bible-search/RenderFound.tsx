@@ -2,20 +2,13 @@ import './RenderFound.scss';
 
 import { useEffect, useState } from 'react';
 import {
-    keyboardEventListener,
-    KeyEnum,
-    LinuxControlEnum,
-    MacControlEnum,
     useKeyboardRegistering,
-    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
-import { closeBibleSearch } from './BibleSearchPopup';
-import { fromLocaleNumber, toLocaleNumber } from './bibleSearchHelpers';
-import { addBibleItem } from '../bible-list/BibleList';
-import { isWindowEditingMode } from '../App';
-import { bookToKey, getVerses, VerseList } from '../bible-helper/helpers';
-import { toastEventListener } from '../event/ToastEventListener';
-import { presentBible } from '../bible-list/BibleItem';
+import {
+    bookToKey, getVerses, VerseList,
+} from '../server/bible-helpers/bibleHelpers1';
+import RendLocalNumberAsync from './RendLocalNumberAsync';
+import RenderFoundButtons from './RenderFoundButtons';
 
 let mouseDownInd: number | null = null;
 function mouseUp() {
@@ -34,11 +27,11 @@ export async function consumeStartVerseEndVerse(
     endVerse: number | null,
     bibleSelected: string,
 ) {
-    const bookKey = bookToKey(bibleSelected, book);
+    const bookKey = await bookToKey(bibleSelected, book);
     if (bookKey === null) {
         return null;
     }
-    const verses = await getVerses(bibleSelected, bookKey, fromLocaleNumber(bibleSelected, chapter));
+    const verses = await getVerses(bibleSelected, bookKey, chapter);
     if (verses === null) {
         return null;
     }
@@ -67,73 +60,24 @@ export default function RenderFound({
     startVerse: number | null,
     endVerse: number | null,
     applyChapterSelection: (chapter: number) => void,
-    onVerseChange: (startVerse?: number, endVerse?: number) => void,
+    onVerseChange: (sv?: number, ev?: number) => void,
     bibleSelected: string,
 }) {
-    const addListEventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
-        key: KeyEnum.Enter,
-    };
-    const genBiblePresent = () => {
-        const key = bookToKey(bibleSelected, book);
-        if (key === null) {
-            return null;
-        }
-        return {
-            bible: bibleSelected,
-            target: {
-                book: key,
-                chapter: +fromLocaleNumber(bibleSelected, chapter),
-                startVerse: +fromLocaleNumber(bibleSelected, sVerse),
-                endVerse: +fromLocaleNumber(bibleSelected, eVerse),
-            },
-        };
-    };
-    const addListListener = () => {
-        const biblePresent = genBiblePresent();
-        if (biblePresent !== null) {
-            addBibleItem(biblePresent);
-            closeBibleSearch();
-        } else {
-            toastEventListener.showSimpleToast({
-                title: 'Adding bible',
-                message: 'Fail to add bible to list',
-            });
-        }
-    };
-    const presentEventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl, WindowsControlEnum.Shift],
-        mControlKey: [MacControlEnum.Ctrl, MacControlEnum.Shift],
-        lControlKey: [LinuxControlEnum.Ctrl, LinuxControlEnum.Shift],
-        key: KeyEnum.Enter,
-    };
-    const presentListener = () => {
-        const biblePresent = genBiblePresent();
-        if (biblePresent !== null) {
-            addBibleItem(biblePresent);
-            closeBibleSearch();
-            presentBible(biblePresent);
-        } else {
-            toastEventListener.showSimpleToast({
-                title: 'Adding bible',
-                message: 'Fail to add bible to list',
-            });
-        }
-    };
-    useKeyboardRegistering(addListEventMapper, addListListener);
-    useKeyboardRegistering(presentEventMapper, presentListener);
-    useKeyboardRegistering({ key: KeyEnum.Enter }, () => {
+    useKeyboardRegistering({
+        key: 'Enter',
+    }, () => {
         onVerseChange(sVerse, eVerse);
     });
-    useKeyboardRegistering({ key: KeyEnum.Tab }, (e: KeyboardEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+    useKeyboardRegistering({
+        key: 'Tab',
+    }, (event: KeyboardEvent) => {
+        event.stopPropagation();
+        event.preventDefault();
         if (startVerse === null && endVerse === null) {
             applyChapterSelection(chapter);
         } else {
-            onVerseChange(startVerse !== null ? startVerse : endVerse as number);
+            onVerseChange(startVerse !== null ?
+                startVerse : endVerse as number);
         }
     });
     useEffect(() => {
@@ -144,20 +88,23 @@ export default function RenderFound({
     });
     const [found, setFound] = useState<ConsumeVerseType | null>(null);
     useEffect(() => {
-        consumeStartVerseEndVerse(book, chapter, startVerse, endVerse, bibleSelected).then((newFound) => {
-            setFound(newFound);
-        });
+        consumeStartVerseEndVerse(book, chapter, startVerse,
+            endVerse, bibleSelected).then((newFound) => {
+                setFound(newFound);
+            });
     }, [book, chapter, startVerse, endVerse, bibleSelected]);
     if (found === null) {
-        return (<div>Not Found</div>);
+        return (
+            <div>Not Found</div>
+        );
     }
     const sVerse = found.sVerse;
     const eVerse = found.eVerse;
     const verseCount = Object.values(found.verses).length;
     return (
-        <div className="render-found card border-success mb-3 mx-auto mt-5">
-            <div className="card-body">
-                <div className="verse-select d-flex align-content-start flex-wrap">
+        <div className='render-found card border-success mb-3 mx-auto mt-5'>
+            <div className='card-body'>
+                <div className='verse-select d-flex align-content-start flex-wrap'>
                     {Array.from({ length: verseCount }, (_, i) => {
                         const ind = i + 1;
                         const started = sVerse === ind;
@@ -168,10 +115,9 @@ export default function RenderFound({
                         select += ` ${ended ? 'selected-end' : ''}`;
                         return (
                             <div key={`${ind}`}
-                                onMouseDown={(e) => {
-                                    if (e.shiftKey) {
+                                onMouseDown={(event) => {
+                                    if (event.shiftKey) {
                                         const arr = [ind, sVerse, eVerse].sort((a, b) => a - b);
-                                        console.log(arr);
                                         onVerseChange(arr.shift(), arr.pop());
                                     } else {
                                         onVerseChange(ind);
@@ -185,24 +131,16 @@ export default function RenderFound({
                                     }
                                 }}
                                 className={`item alert alert-secondary text-center ${select}`}>
-                                <span>{toLocaleNumber(bibleSelected, ind)}</span>
+                                <RendLocalNumberAsync ind={ind}
+                                    bibleSelected={bibleSelected} />
                             </div>
                         );
                     })}
                 </div>
             </div>
-            {!isWindowEditingMode() &&
-                <div className="card-footer bg-transparent border-success d-flex justify-content-evenly">
-                    <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
-                        onClick={addListListener}
-                        data-tool-tip={keyboardEventListener.toShortcutKey(addListEventMapper)}
-                    >Add Bible List</button>
-                    <button type="button" className="tool-tip tool-tip-fade btn btn-sm btn-primary ms-5 me-5"
-                        onClick={presentListener}
-                        data-tool-tip={keyboardEventListener.toShortcutKey(presentEventMapper)}
-                    >Present</button>
-                </div>
-            }
+            <RenderFoundButtons found={found}
+                book={book} chapter={chapter}
+                bibleSelected={bibleSelected} />
         </div>
     );
 }

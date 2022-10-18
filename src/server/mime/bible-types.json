@@ -1,0 +1,10 @@
+[
+    {
+        "type": "OpenWorship Bible",
+        "title": "Json file for OpenWorship bible",
+        "mimetype": "application/json",
+        "extensions": [
+            ".owb"
+        ]
+    }
+]

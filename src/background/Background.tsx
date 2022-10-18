@@ -1,34 +1,68 @@
 import './Background.scss';
 
-import Colors from './Colors';
-import Images from './Images';
-import Videos from './Videos';
-import { useStateSettingString } from '../helper/settingHelper';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+import {
+    useStateSettingString,
+} from '../helper/settingHelper';
+import TabRender, {
+    genTabBody,
+} from '../others/TabRender';
+import PresentBGManager, {
+    BackgroundType,
+} from '../_present/PresentBGManager';
+import {
+    usePBGMEvents,
+} from '../_present/presentEventHelpers';
 
+const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
+const BackgroundImages = React.lazy(() => import('./BackgroundImages'));
+const BackgroundVideos = React.lazy(() => import('./BackgroundVideos'));
+
+
+const tabTypeList = [
+    ['color', 'Colors', BackgroundColors],
+    ['image', 'Images', BackgroundImages],
+    ['video', 'Videos', BackgroundVideos],
+] as const;
+type TabType = typeof tabTypeList[number][0];
 export default function Background() {
-    const { t } = useTranslation();
-    // c: color, i: image, v: video
-    const [tabType, setTabType] = useStateSettingString('background-tab', 'i');
+    const [tabType, setTabType] = useStateSettingString<TabType>('background-tab', 'image');
+    usePBGMEvents(['update']);
+    const bgSrcList = PresentBGManager.getBGSrcList();
+    const toHLS = (type: BackgroundType) => {
+        const b = Object.values(bgSrcList).some(src => {
+            return src.type === type;
+        });
+        return b ? 'nav-highlight-selected' : undefined;
+    };
     return (
-        <div className="background w-100 d-flex flex-column">
+        <div className='background w-100 d-flex flex-column'>
             <div className='background-header'>
-                <ul className="nav nav-tabs">
-                    {[['c', 'Colors'], ['i', 'Images'], ['v', 'Videos']].map(([key, title], i) => {
-                        return (<li key={i} className="nav-item">
-                            <button className={`btn btn-link nav-link ${tabType === key ? 'active' : ''}`}
-                                onClick={() => setTabType(key)}>
-                                {t(title)}
-                            </button>
-                        </li>);
+                <TabRender<TabType>
+                    tabs={tabTypeList.map(([type, name]) => {
+                        return [type, name, toHLS(type)];
                     })}
-                </ul>
+                    activeTab={tabType}
+                    setActiveTab={setTabType} />
             </div>
-            <div className="background-body w-100 flex-fill">
-                {tabType === 'c' && <Colors />}
-                {tabType === 'i' && <Images />}
-                {tabType === 'v' && <Videos />}
+            <div className='background-body w-100 flex-fill'>
+                {tabTypeList.map(([type, _, target]) => {
+                    return genTabBody<TabType>(tabType, [type, target]);
+                })}
             </div>
+        </div>
+    );
+}
+
+export function RenderPresentIds({ ids }: {
+    ids: number[],
+}) {
+    return (
+        <div style={{
+            position: 'absolute',
+            textShadow: '1px 1px 5px #000',
+        }}>
+            {ids.join(',')}
         </div>
     );
 }

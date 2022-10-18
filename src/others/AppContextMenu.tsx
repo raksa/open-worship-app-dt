@@ -1,17 +1,29 @@
 import './AppContextMenu.scss';
 
-import { keyboardEventListener, KeyEnum } from '../event/KeyboardEventListener';
+import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import { ReactElement, useEffect, useState } from 'react';
 
-export type ContextMenuEventType = React.MouseEvent<HTMLDivElement, MouseEvent>;
-type ContextMenuItemType = {
+export type ContextMenuEventType = MouseEvent;
+export type ContextMenuItemType = {
     title: string,
-    onClick?: (e: ContextMenuEventType, data?: any) => void,
+    onClick?: (event: MouseEvent, data?: any) => void,
     disabled?: boolean,
     otherChild?: ReactElement,
 };
-const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+
+export function createMouseEvent(clientX: number, clientY: number) {
+    return new MouseEvent('click', {
+        clientX,
+        clientY,
+        bubbles: true,
+        cancelable: true,
+        view: window,
+    });
+}
+
+const setPositionMenu = (menu: HTMLElement,
+    event: MouseEvent) => {
     if (menu !== null) {
         menu.style.display = 'block';
         menu.style.left = '';
@@ -46,33 +58,40 @@ const setPositionMenu = (menu: HTMLElement, event: React.MouseEvent<HTMLElement,
 };
 
 type PropsType = {
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: MouseEvent,
     items: ContextMenuItemType[],
 };
 let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
 export function showAppContextMenu(
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: MouseEvent,
     items: ContextMenuItemType[]) {
     event.stopPropagation();
-    setDataDelegator && setDataDelegator({ event, items });
-    const listener = (e: MouseEvent) => {
-        e.stopPropagation();
-        setDataDelegator && setDataDelegator(null);
-        document.body.removeEventListener('click', listener);
-    };
-    document.body.addEventListener('click', listener);
-    const escEvent = keyboardEventListener.registerShortcutEventListener({
-        key: KeyEnum.Escape,
-    }, () => {
-        setDataDelegator && setDataDelegator(null);
-        keyboardEventListener.unregisterShortcutEventListener(escEvent);
+    return new Promise<void>((resolve) => {
+        setDataDelegator?.({ event, items });
+        const eventName = KeyboardEventListener.toEventMapperKey({
+            key: 'Escape',
+        });
+        const escEvent = KeyboardEventListener.registerEventListener(
+            [eventName], () => {
+                setDataDelegator?.(null);
+                KeyboardEventListener.unregisterEventListener(escEvent);
+                resolve();
+            });
+        const listener = (event: MouseEvent) => {
+            event.stopPropagation();
+            setDataDelegator?.(null);
+            document.body.removeEventListener('click', listener);
+            KeyboardEventListener.unregisterEventListener(escEvent);
+            resolve();
+        };
+        document.body.addEventListener('click', listener);
     });
 }
 
 export default function AppContextMenu() {
     const [data, setData] = useState<{
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: MouseEvent,
         items: ContextMenuItemType[]
     } | null>(null);
     useEffect(() => {
@@ -91,15 +110,17 @@ export default function AppContextMenu() {
             if (self !== null) {
                 setPositionMenu(self, data.event);
             }
-        }} className="app-context-menu">
+        }} className='app-context-menu'>
             {data.items.map((item, i) => {
                 return (
-                    <div key={`${i}`} className={`app-context-menu-item ${item.disabled ? 'disabled' : ''}`}
-                        onClick={(e) => {
+                    <div key={`${i}`}
+                        className={'app-context-menu-item'
+                            + ` ${item.disabled ? 'disabled' : ''}`}
+                        onClick={(event) => {
                             if (item.disabled) {
                                 return;
                             }
-                            item.onClick && item.onClick(e);
+                            item.onClick?.(event as any);
                         }}>
                         {item.title}
                         {item.otherChild || null}

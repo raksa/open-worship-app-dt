@@ -1,0 +1,20 @@
+@import '../others/variables.scss';
+
+.background-image {
+  .image-thumbnail {
+    width: 100px;
+    margin: 5px;
+    cursor: pointer;
+
+    .card-body {
+      padding: 0 !important;
+      height: 75%;
+    }
+    .card-footer {
+      font-size: 10px;
+      white-space: nowrap;
+      text-align: right;
+      padding: 0 !important;
+    }
+  }
+}

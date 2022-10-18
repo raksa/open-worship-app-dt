@@ -14,13 +14,13 @@ function SimpleToast({ onClose, toast }: {
     toast: SimpleToastType,
 }) {
     return (
-        <div className="toast show fade" role="alert" aria-live="assertive" aria-atomic="true">
-            <div className="toast-header">
-                <strong className="me-auto">{toast.title}</strong>
-                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"
+        <div className='toast show fade' role='alert' aria-live='assertive' aria-atomic='true'>
+            <div className='toast-header'>
+                <strong className='me-auto'>{toast.title}</strong>
+                <button type='button' className='btn-close' data-bs-dismiss='toast' aria-label='Close'
                     onClick={onClose} />
             </div>
-            <div className="toast-body">
+            <div className='toast-body'>
                 {toast.message}
             </div>
         </div>

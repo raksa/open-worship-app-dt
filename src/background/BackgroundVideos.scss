@@ -1,0 +1,23 @@
+.background-video {
+  .video-thumbnail {
+    width: 100px;
+    margin: 5px;
+    cursor: pointer;
+
+    .card-body {
+      padding: 0 !important;
+
+      video {
+        width: 100%;
+        max-height: 50px;
+      }
+    }
+
+    .card-footer {
+      font-size: 10px;
+      white-space: nowrap;
+      text-align: right;
+      padding: 0 !important;
+    }
+  }
+}

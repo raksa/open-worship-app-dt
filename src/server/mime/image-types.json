@@ -1,0 +1,62 @@
+[
+    {
+        "type": "APNG",
+        "title": "Animated Portable Network Graphics",
+        "mimetype": "image/apng",
+        "extensions": [
+            ".apng"
+        ]
+    },
+    {
+        "type": "AVIF",
+        "title": "AV1 Image File Format",
+        "mimetype": "image/avif",
+        "extensions": [
+            ".avif"
+        ]
+    },
+    {
+        "type": "GIF",
+        "title": "Graphics Interchange Format",
+        "mimetype": "image/gif",
+        "extensions": [
+            ".gif"
+        ]
+    },
+    {
+        "type": "JPEG",
+        "title": "Joint Photographic Expert Group image",
+        "mimetype": "image/jpeg",
+        "extensions": [
+            ".jpg",
+            ".jpeg",
+            ".jfif",
+            ".pjpeg",
+            ".pjp"
+        ]
+    },
+    {
+        "type": "PNG",
+        "title": "Portable Network Graphics",
+        "mimetype": "image/png",
+        "extensions": [
+            ".png"
+        ]
+    },
+    {
+        "type": "SVG",
+        "title": "Scalable Vector Graphics",
+        "mimetype": "image/svg+xml",
+        "extensions": [
+            ".svg"
+        ]
+    },
+    {
+        "type": "WebP",
+        "title": "Web Picture format",
+        "mimetype": "image/webp",
+        "extensions": [
+            ".webp"
+        ]
+    }
+]

@@ -1,32 +1,25 @@
-import SlideList from './slide-list/SlideList';
-import SlideItemThumbEditor from './editor/SlideItemThumbEditor';
-import SlideItemThumbList from './slide-presenting/SlideItemThumbList';
-import { getWindowMode } from './App';
-import ReSizer from './resizer/ReSizer';
+import React from 'react';
+import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
+import ResizeActor from './resize-actor/ResizeActor';
+
+const SlideItemEditorGround = React.lazy(() => {
+    return import('./slide-editor/SlideItemEditorGround');
+});
+const AppEditingLeft = React.lazy(() => {
+    return import('./AppEditingLeft');
+});
 
 export default function AppEditing() {
-    const resizeSettingName = `${getWindowMode()}-window-size`;
-    const flexSizeDefault = {
-        'h1': '1',
-        'h1-v1': '1',
-        'h1-v2': '2',
-        'h2': '3',
-    };
     return (
-        <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-            resizerKinds={['v']}
-            sizeKeys={[
-                ['h1', 'flex v'],
-                ['h2', 'flex v']]}>
-            <ReSizer settingName={resizeSettingName} flexSizeDefault={flexSizeDefault}
-                resizerKinds={['v']}
-                sizeKeys={[
-                    ['h1-v1', 'flex-item'],
-                    ['h1-v2', 'flex-item']]}>
-                <SlideList />
-                <SlideItemThumbList />
-            </ReSizer>
-            <SlideItemThumbEditor />
-        </ReSizer>
+        <ResizeActor fSizeName={resizeSettingNames.appEditing}
+            flexSizeDefault={{
+                'h1': ['1'],
+                'h2': ['3'],
+            }}
+            resizeKinds={['h']}
+            dataInput={[
+                [AppEditingLeft, 'h1', 'flex v'],
+                [SlideItemEditorGround, 'h2', 'flex v'],
+            ]} />
     );
 }

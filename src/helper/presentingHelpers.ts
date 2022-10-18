@@ -1,10 +1,13 @@
-import { renderPresent } from './appHelper';
+import { AppColorType } from '../others/ColorPicker';
 
-export function renderFG(html: string) {
+export function renderPresent(_: any) {
+    return false;
+}
+export function renderFG(htmlString: string) {
     renderPresent({
         script: `
 const shadow = getShadow('foreground');
-shadow.innerHTML = \`${html}\`;
+shadow.innerHTML = \`${htmlString}\`;
 `});
 }
 export function clearForeground() {
@@ -36,7 +39,7 @@ clearOldBackground();
 ` });
 }
 
-export function renderBGColor(color: string) {
+export function renderBGColor(color: AppColorType) {
     renderPresent({
         script: `
 const shadow = getShadow('background');

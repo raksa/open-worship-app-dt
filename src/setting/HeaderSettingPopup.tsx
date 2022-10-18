@@ -1,28 +1,25 @@
-import {
-    keyboardEventListener,
-    LinuxControlEnum,
-    MacControlEnum,
+import KeyboardEventListener, {
+    EventMapper as KBEventMapper,
     useKeyboardRegistering,
-    WindowsControlEnum,
 } from '../event/KeyboardEventListener';
-import { closeSetting } from './SettingPopup';
+import { closeSetting } from './HandleSetting';
 
 export default function HeaderSettingPopup() {
-    const eventMapper = {
-        wControlKey: [WindowsControlEnum.Ctrl],
-        mControlKey: [MacControlEnum.Ctrl],
-        lControlKey: [LinuxControlEnum.Ctrl],
+    const eventMapper: KBEventMapper = {
+        wControlKey: ['Ctrl'],
+        mControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
         key: 'q',
     };
     useKeyboardRegistering(eventMapper, closeSetting);
     return (
-        <div className="card-header text-center w-100">
+        <div className='card-header text-center w-100'>
             <span>
-                <i className="bi bi-gear-wide-connected" />Setting
+                <i className='bi bi-gear-wide-connected' />Setting
             </span>
-            <button type="button" onClick={closeSetting}
-                data-tool-tip={keyboardEventListener.toShortcutKey(eventMapper)}
-                className="tool-tip tool-tip-fade tool-tip-left btn-close float-end"></button>
+            <button type='button' onClick={closeSetting}
+                data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
+                className='btn-close float-end'></button>
         </div>
     );
 }

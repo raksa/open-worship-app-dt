@@ -25,6 +25,14 @@ module.exports = {
         "destructuring": "any",
         "ignoreReadBeforeAssign": false
       }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": false
+      }
     ]
   }
 };
