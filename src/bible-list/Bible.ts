@@ -71,6 +71,16 @@ export default class Bible extends ItemSource<BibleItem>{
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
+    setItemById(id: number, item: BibleItem) {
+        const items = this.items;
+        const newItems = items.map((item1) => {
+            if (item1.id === id) {
+                return item;
+            }
+            return item1;
+        });
+        this.items = newItems;
+    }
     static async updateOrToDefault(bibleItem: BibleItem) {
         const selectedBibleItem = await BibleItem.getSelectedItemEditing();
         if (selectedBibleItem) {
@@ -89,31 +99,31 @@ export default class Bible extends ItemSource<BibleItem>{
         }
         return null;
     }
-    async removeItem(bibleItem: BibleItem) {
+    removeItem(bibleItem: BibleItem) {
         const items = this.items;
         const index = items.indexOf(bibleItem);
         items.splice(index, 1);
         this.items = items;
-        return this.save();
     }
-    async addItem(item: BibleItem) {
+    addItem(item: BibleItem) {
         item.fileSource = this.fileSource;
         item.id = this.maxItemId + 1;
         const items = this.items;
         items.push(item);
         this.items = items;
-        return this.save();
     }
     async moveItemFrom(bibleItem: BibleItem, fileSource: FileSource) {
         try {
             const isSelected = bibleItem.isSelected;
             const id = bibleItem.id;
-            await this.addItem(bibleItem);
+            this.addItem(bibleItem);
+            await this.save();
             const fromBible = await Bible.readFileToData(fileSource);
             if (fromBible) {
                 const item = fromBible.getItemById(id);
                 if (item !== null) {
-                    await fromBible.removeItem(item);
+                    fromBible.removeItem(item);
+                    await fromBible.save();
                 }
             }
             if (isSelected) {

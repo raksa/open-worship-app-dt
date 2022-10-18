@@ -167,6 +167,7 @@ export default class BibleItem extends ItemBase {
             const bibleItem = bible.getItemById(this.id);
             if (bibleItem !== null) {
                 bibleItem.update(this);
+                bible.setItemById(this.id, bibleItem);
                 return bible.save();
             }
         }

@@ -30,12 +30,14 @@ export default function RenderBibleItems({ bible }: {
                             {
                                 title: 'Delete', onClick: () => {
                                     bible.removeItem(bibleItem);
+                                    bible.save();
                                 },
                             },
                         ]);
                     }} />;
             })}
-            {bible.isDefault && <div className='p-2 pointer'
+            {bible.isDefault && <div
+                className='p-2 pointer border-white-round'
                 style={{
                     margin: 'auto',
                     fontSize: '0.8rem',
