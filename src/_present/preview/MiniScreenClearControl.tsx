@@ -40,7 +40,7 @@ export default function MiniScreenClearControl({ presentManager }: {
     return (
         <div className='btn-group control'>
             <button type='button'
-                className={'tool-tip tool-tip-fade btn btn-sm '
+                className={'tool-tip btn btn-sm '
                     + `btn-${isPresenting ? '' : 'outline-'}danger`}
                 disabled={!isPresenting}
                 title='clear all'
@@ -50,7 +50,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 onClick={clearAll}>All</button>
 
             <button type='button'
-                className={'tool-tip tool-tip-fade btn btn-sm '
+                className={'tool-tip btn btn-sm '
                     + `btn-${isPresentingBG ? '' : 'outline-'}secondary`}
                 disabled={!isPresentingBG}
                 title='clear background'
@@ -59,7 +59,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 })}
                 onClick={clearBG}>BG</button>
 
-            <button type='button' className={'tool-tip tool-tip-fade btn btn-sm '
+            <button type='button' className={'tool-tip btn btn-sm '
                 + `btn-${isPresentingFG ? '' : 'outline-'}info`}
                 disabled={!isPresentingFG}
                 title='clear foreground'
@@ -68,7 +68,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 })}
                 onClick={clearFG}>FG</button>
 
-            <button type='button' className={'tool-tip tool-tip-fade btn btn-sm '
+            <button type='button' className={'tool-tip btn btn-sm '
                 + `btn-${isPresentingFT ? '' : 'outline-'}primary`}
                 disabled={!isPresentingFT}
                 title='clear full text'

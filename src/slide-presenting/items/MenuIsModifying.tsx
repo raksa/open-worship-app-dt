@@ -12,7 +12,7 @@ export default function MenuIsModifying({ slide, eventMapper }: {
                     slide.discardChanged();
                 }}>Discard Changed</button>
             <button type='button'
-                className='btn btn-sm btn-success tool-tip tool-tip-fade'
+                className='btn btn-sm btn-success tool-tip'
                 disabled={!slide.isChanged}
                 data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
                 title='save slide thumbs'

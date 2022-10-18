@@ -10,7 +10,6 @@ $card-header-height: 41px;
 
 $z-index-bible-search: 10;
 $z-index-context-menu: $z-index-bible-search + 10;
-$z-index-tool-tip: $z-index-context-menu + 10;
-$z-index-toast: $z-index-tool-tip + 10;
+$z-index-toast: $z-index-context-menu + 10;
 $z-index-resize-actor-top: $z-index-toast + 10;
 $hight-light-color: #ad0090;

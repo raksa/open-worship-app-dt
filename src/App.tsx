@@ -1,7 +1,6 @@
 import './App.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
-import './others/tool-tip.scss';
 
 import React, { useEffect } from 'react';
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
