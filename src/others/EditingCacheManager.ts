@@ -26,7 +26,7 @@ export default abstract class EditingCacheManager<T1, T2> {
     }
     get _changes(): ChangesType<T1> {
         const str = getSetting(this.settingName, '');
-        if (isValidJson(str)) {
+        if (isValidJson(str, true)) {
             return JSON.parse(str);
         }
         return {};

@@ -99,7 +99,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     }
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');
-        if (isValidJson(str)) {
+        if (isValidJson(str, true)) {
             return JSON.parse(str);
         }
         return {};

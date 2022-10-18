@@ -154,8 +154,8 @@ const bibleHelper = {
         });
     },
     getBibleList() {
-        const str = getSetting('bibles-list');
-        if (isValidJson(str)) {
+        const str = getSetting('bibles-list', '');
+        if (isValidJson(str, true)) {
             const list = JSON.parse(str);
             if (list instanceof Array && list.every((s: any) => {
                 return typeof s === 'string';

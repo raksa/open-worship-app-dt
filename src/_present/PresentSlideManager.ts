@@ -92,7 +92,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     static getSlideList(): SlideListType {
         const str = getSetting(settingName, '');
         try {
-            if (!isValidJson(str)) {
+            if (!isValidJson(str, true)) {
                 return {};
             }
             const json = JSON.parse(str);

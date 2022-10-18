@@ -136,11 +136,13 @@ export function toMaxId(ids: number[]) {
     return Math.max.apply(Math, ids);
 }
 
-export function isValidJson(json: any) {
+export function isValidJson(json: any, isSilent: boolean = false) {
     try {
         return JSON.parse(json);
     } catch (error) {
-        console.trace('Invalid Json:', json);
+        if (!isSilent && json === '') {
+            console.trace('Invalid Json:', json);
+        }
         return false;
     }
 }

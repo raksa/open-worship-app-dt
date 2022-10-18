@@ -198,7 +198,7 @@ export default class BibleItem extends ItemBase {
     static getBiblePresentingSetting() {
         try {
             const str = getSetting('bible-present', '');
-            if (isValidJson(str)) {
+            if (isValidJson(str, true)) {
                 return JSON.parse(str).map((item: any) => {
                     return BibleItem.fromJson(item);
                 }) as BibleItem[];

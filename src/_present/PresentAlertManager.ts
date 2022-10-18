@@ -129,7 +129,7 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     static getAlertDataList(): AlertSrcListType {
         const str = getSetting(settingName, '');
         try {
-            if (!isValidJson(str)) {
+            if (!isValidJson(str, true)) {
                 return {};
             }
             const json = JSON.parse(str);

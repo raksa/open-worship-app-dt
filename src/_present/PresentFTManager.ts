@@ -46,9 +46,9 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             const allFTList = getFTList();
             this._ftItemData = allFTList[this.key] || null;
 
-            const str = getSetting(`${settingName}-style-text`, '{}');
+            const str = getSetting(`${settingName}-style-text`, '');
             try {
-                if (isValidJson(str)) {
+                if (isValidJson(str, true)) {
                     const style = JSON.parse(str);
                     if (typeof style !== 'object') {
                         console.log(style);

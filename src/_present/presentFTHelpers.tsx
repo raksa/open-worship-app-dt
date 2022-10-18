@@ -66,25 +66,23 @@ const validateLyric = ({ renderedList }: any) => {
         });
 };
 export function getFTList(): FTListType {
-    const str = getSetting(`${settingName}-ft-data`, '{}');
-    if (str !== '') {
-        try {
-            if (!isValidJson(str)) {
-                return {};
-            }
-            const json = JSON.parse(str);
-            Object.values(json).forEach((item: any) => {
-                if (!ftDataTypeList.includes(item.type)
-                    || (item.type === 'bible-item' && validateBible(item.bibleItemData))
-                    || (item.type === 'lyric' && validateLyric(item.lyricData))) {
-                    console.log(item);
-                    throw new Error('Invalid full-text data');
-                }
-            });
-            return json;
-        } catch (error) {
-            appProviderPresent.appUtils.handleError(error);
+    const str = getSetting(`${settingName}-ft-data`, '');
+    try {
+        if (!isValidJson(str, true)) {
+            return {};
         }
+        const json = JSON.parse(str);
+        Object.values(json).forEach((item: any) => {
+            if (!ftDataTypeList.includes(item.type)
+                || (item.type === 'bible-item' && validateBible(item.bibleItemData))
+                || (item.type === 'lyric' && validateLyric(item.lyricData))) {
+                console.log(item);
+                throw new Error('Invalid full-text data');
+            }
+        });
+        return json;
+    } catch (error) {
+        appProviderPresent.appUtils.handleError(error);
     }
     return {};
 }

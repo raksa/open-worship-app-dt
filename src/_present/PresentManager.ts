@@ -250,8 +250,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     }
     static getPresentManagersSetting() {
         let presentManagers = this.getAllInstances();
-        const str = getSetting(`${settingName}instances`, '[]');
-        if (isValidJson(str)) {
+        const str = getSetting(`${settingName}instances`, '');
+        if (isValidJson(str, true)) {
             const json = JSON.parse(str);
             json.forEach(({ presentId, isSelected }: any) => {
                 if (typeof presentId === 'number') {
