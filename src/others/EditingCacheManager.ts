@@ -1,8 +1,8 @@
 import FileSource from '../helper/FileSource';
+import { isValidJson } from '../helper/helpers';
 import {
     getSetting, setSetting,
 } from '../helper/settingHelper';
-import appProvider from '../server/appProvider';
 
 type ChangeObjectType<T> = {
     undoQueue: T[],
@@ -25,13 +25,11 @@ export default abstract class EditingCacheManager<T1, T2> {
         return !!this.histories.length;
     }
     get _changes(): ChangesType<T1> {
-        const str = getSetting(this.settingName, '{}');
-        try {
+        const str = getSetting(this.settingName, '');
+        if (isValidJson(str)) {
             return JSON.parse(str);
-        } catch (error) {
-            appProvider.appUtils.handleError(error);
-            return {};
         }
+        return {};
     }
     set _changes(changes: ChangesType<T1>) {
         if (!this.isUsingHistory) {

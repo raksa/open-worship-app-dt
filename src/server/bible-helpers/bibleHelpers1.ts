@@ -6,6 +6,7 @@ import {
     fsDeleteFile,
     pathJoin,
 } from '../fileHelper';
+import { isValidJson } from '../../helper/helpers';
 
 export async function sqlite3Read(bibleName: string, key: string, cipherKey: string) {
     const dbFilePath = await bibleHelper.toDbPath(bibleName);
@@ -20,13 +21,11 @@ export async function sqlite3Read(bibleName: string, key: string, cipherKey: str
         const encryptKey = appProvider.cryptoUtils.encrypt(key, cipherKey);
         const value = await sqlite3ReadValue(dbFilePath, 'bibles', encryptKey);
         if (value !== null) {
-            try {
-                const decrypted = appProvider.cryptoUtils.decrypt(value, cipherKey);
-                const json = JSON.parse(decrypted);
+            const str = appProvider.cryptoUtils.decrypt(value, cipherKey);
+            if (isValidJson(str)) {
+                const json = JSON.parse(str);
                 callback(json);
                 return;
-            } catch (error) {
-                appProvider.appUtils.handleError(error);
             }
         }
         callback(null);
@@ -53,8 +52,8 @@ export function fetch(pathName: string) {
             if (error) {
                 return reject(error);
             } else if (response.statusCode !== 200) {
-                const errorMessage = `Fail to request with status ${response.statusCode}`;
-                return reject(new Error(errorMessage));
+                const message = `Fail to request with status ${response.statusCode}`;
+                return reject(new Error(message));
             }
             const chunks: Buffer[] = [];
             response.on('data', (chunk: Buffer) => {
@@ -62,15 +61,15 @@ export function fetch(pathName: string) {
             });
             response.on('end', () => {
                 try {
-                    const body = Buffer.concat(chunks).toString();
-                    try {
-                        const json = JSON.parse(body);
+                    const str = Buffer.concat(chunks).toString();
+                    if (isValidJson(str)) {
+                        const json = JSON.parse(str);
                         resolve(json);
-                    } catch (error1) {
-                        resolve(body);
+                    } else {
+                        resolve(str);
                     }
-                } catch (error2) {
-                    console.log(error2);
+                } catch (error) {
+                    appProvider.appUtils.handleError(error);
                     reject(new Error('Fail to fetch body'));
                 }
             });
@@ -107,7 +106,7 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
                 if (writeStream.writable) {
                     writeStream.write(chunk, (error1) => {
                         if (error1) {
-                            console.log(error1);
+                            appProvider.appUtils.handleError(error1);
                         }
                     });
                 }

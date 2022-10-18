@@ -20,6 +20,7 @@ import { toBase64, fromBase64 } from '../helpers';
 
 import bibleJson from './bible.json';
 import appProvider from '../appProvider';
+import { isValidJson } from '../../helper/helpers';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -154,13 +155,13 @@ const bibleHelper = {
     },
     getBibleList() {
         const str = getSetting('bibles-list');
-        try {
-            const list = JSON.parse(str) as string[];
-            if (list.every((s) => typeof s === 'string')) {
-                return list;
+        if (isValidJson(str)) {
+            const list = JSON.parse(str);
+            if (list instanceof Array && list.every((s: any) => {
+                return typeof s === 'string';
+            })) {
+                return list as string[];
             }
-        } catch (error) {
-            appProvider.appUtils.handleError(error);
         }
         return [];
     },

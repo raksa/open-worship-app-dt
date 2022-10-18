@@ -1,4 +1,5 @@
 import EventHandler from '../event/EventHandler';
+import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import {
@@ -127,25 +128,26 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     }
     static getAlertDataList(): AlertSrcListType {
         const str = getSetting(settingName, '');
-        if (str !== '') {
-            try {
-                const json = JSON.parse(str);
-                Object.values(json).forEach((item: any) => {
-                    if (!(item.marqueeData === null
-                        || typeof item.marqueeData.text === 'string') ||
-                        !(item.countdownData === null
-                            || typeof item.countdownData.dateTime === 'string')) {
-                        throw new Error('Invalid alert data');
-                    }
-                    if (item.countdownData?.dateTime) {
-                        item.countdownData.dateTime = new Date(item.countdownData.dateTime);
-                    }
-                });
-                return json;
-            } catch (error) {
-                console.log(str);
-                console.error(error);
+        try {
+            if (!isValidJson(str)) {
+                return {};
             }
+            const json = JSON.parse(str);
+            Object.values(json).forEach((item: any) => {
+                const { countdownData } = item;
+                if (!(item.marqueeData === null
+                    || typeof item.marqueeData.text === 'string') ||
+                    !(countdownData === null
+                        || typeof countdownData.dateTime === 'string')) {
+                    throw new Error('Invalid alert data');
+                }
+                if (countdownData?.dateTime) {
+                    countdownData.dateTime = new Date(countdownData.dateTime);
+                }
+            });
+            return json;
+        } catch (error) {
+            appProviderPresent.appUtils.handleError(error);
         }
         return {};
     }

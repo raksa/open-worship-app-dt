@@ -5,6 +5,7 @@ import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ToastEventListener from '../event/ToastEventListener';
 import AppSuspense from '../others/AppSuspense';
+import { isValidJson } from '../helper/helpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
@@ -35,9 +36,12 @@ export default function BibleFile({
                 if (!data) {
                     return;
                 }
-                const receivedData = event.dataTransfer.getData('text');
+                const str = event.dataTransfer.getData('text');
                 try {
-                    const json = JSON.parse(receivedData);
+                    if (!isValidJson(str)) {
+                        return;
+                    }
+                    const json = JSON.parse(str);
                     if (!json.filePath) {
                         throw new Error('Not a bible file');
                     }

@@ -1,8 +1,7 @@
 import EventHandler from '../event/EventHandler';
-import { getWindowDim } from '../helper/helpers';
+import { getWindowDim, isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import appProviderPresent from './appProviderPresent';
 import PresentAlertManager from './PresentAlertManager';
 import PresentBGManager from './PresentBGManager';
 import PresentFTManager from './PresentFTManager';
@@ -252,7 +251,7 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     static getPresentManagersSetting() {
         let presentManagers = this.getAllInstances();
         const str = getSetting(`${settingName}instances`, '[]');
-        try {
+        if (isValidJson(str)) {
             const json = JSON.parse(str);
             json.forEach(({ presentId, isSelected }: any) => {
                 if (typeof presentId === 'number') {
@@ -265,8 +264,8 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                     }
                 }
             });
-        } catch (error) {
-            appProviderPresent.appUtils.handleError(error);
+        }
+        if (presentManagers.length === 0) {
             presentManagers = [this.getInstance(0)];
         }
         if (presentManagers.length === 1) {

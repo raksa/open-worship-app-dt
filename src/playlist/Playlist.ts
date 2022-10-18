@@ -1,7 +1,11 @@
 import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson } from '../helper/helpers';
+import {
+    AnyObjectType,
+    cloneJson,
+    isValidJson,
+} from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
 
@@ -52,12 +56,14 @@ export default class Playlist extends ItemSource<PlaylistItem>{
     static async create(dir: string, name: string) {
         return super.create(dir, name, []);
     }
-    addFromData(dataStr: string) {
+    addFromData(str: string) {
         try {
-            const json = JSON.parse(dataStr);
-            const item = PlaylistItem.fromJson(this.fileSource, json);
-            this._originalJson.items.push(item.toJson());
-            return true;
+            if (isValidJson(str)) {
+                const json = JSON.parse(str);
+                const item = PlaylistItem.fromJson(this.fileSource, json);
+                this._originalJson.items.push(item.toJson());
+                return true;
+            }
         } catch (error: any) {
             ToastEventListener.showSimpleToast({
                 title: 'Adding Playlist Item',

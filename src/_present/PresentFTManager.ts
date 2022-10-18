@@ -1,7 +1,11 @@
 import React from 'react';
 import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
-import { AnyObjectType } from '../helper/helpers';
+import {
+    AnyObjectType,
+    cloneJson,
+    isValidJson,
+} from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import appProviderPresent from './appProviderPresent';
@@ -17,7 +21,11 @@ import {
     bibleItemToFtData,
     FfDataType,
 } from './presentFTHelpers';
-import { genPresentMouseEvent, PresentDragTargetType, PresentMessageType } from './presentHelpers';
+import {
+    genPresentMouseEvent,
+    PresentDragTargetType,
+    PresentMessageType,
+} from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
 
@@ -40,15 +48,16 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
 
             const str = getSetting(`${settingName}-style-text`, '{}');
             try {
-                const style = JSON.parse(str);
-                if (typeof style !== 'object') {
-                    console.log(style);
-                    throw new Error('Invalid style data');
+                if (isValidJson(str)) {
+                    const style = JSON.parse(str);
+                    if (typeof style !== 'object') {
+                        console.log(style);
+                        throw new Error('Invalid style data');
+                    }
+                    PresentFTManager._textStyle = style;
                 }
-                PresentFTManager._textStyle = style;
             } catch (error) {
-                appProviderPresent.appUtils
-                    .handleError(error);
+                appProviderPresent.appUtils.handleError(error);
             }
         }
         this._divScrollListener = () => {
@@ -303,7 +312,7 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             true, `${this.selectedIndex}`);
     }
     static startPresentDrag(bibleItemData: BibleItemType) {
-        const copiedBibleItemJson = JSON.parse(JSON.stringify(bibleItemData));
+        const copiedBibleItemJson = cloneJson(bibleItemData);
         const target: PresentDragTargetType = 'full-text';
         const type: FfDataType = 'bible-item';
         (bibleItemData as any).present = {

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { keyToBook, getVerses } from '../server/bible-helpers/bibleHelpers1';
-import { toLocaleNumBB, toInputText } from '../server/bible-helpers/bibleHelpers2';
+import {
+    toLocaleNumBB,
+    toInputText,
+} from '../server/bible-helpers/bibleHelpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson } from '../helper/helpers';
+import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -195,9 +198,11 @@ export default class BibleItem extends ItemBase {
     static getBiblePresentingSetting() {
         try {
             const str = getSetting('bible-present', '');
-            return JSON.parse(str).map((item: any) => {
-                return BibleItem.fromJson(item);
-            }) as BibleItem[];
+            if (isValidJson(str)) {
+                return JSON.parse(str).map((item: any) => {
+                    return BibleItem.fromJson(item);
+                }) as BibleItem[];
+            }
         } catch (error) {
             appProvider.appUtils.handleError(error);
         }

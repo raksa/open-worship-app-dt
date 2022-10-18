@@ -106,7 +106,7 @@ export default abstract class ItemSource<T extends {
         if (fileSource === null) {
             return null;
         }
-        const json = await fileSource.readFileToData();
+        const json = await fileSource.readFileToJsonData();
         if (json !== null) {
             try {
                 return this.fromJson(fileSource, json);

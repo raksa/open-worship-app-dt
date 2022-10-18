@@ -1,4 +1,5 @@
 import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
+import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -68,8 +69,10 @@ export function getFTList(): FTListType {
     const str = getSetting(`${settingName}-ft-data`, '{}');
     if (str !== '') {
         try {
+            if (!isValidJson(str)) {
+                return {};
+            }
             const json = JSON.parse(str);
-
             Object.values(json).forEach((item: any) => {
                 if (!ftDataTypeList.includes(item.type)
                     || (item.type === 'bible-item' && validateBible(item.bibleItemData))
@@ -80,8 +83,7 @@ export function getFTList(): FTListType {
             });
             return json;
         } catch (error) {
-            appProviderPresent.appUtils
-                .handleError(error);
+            appProviderPresent.appUtils.handleError(error);
         }
     }
     return {};

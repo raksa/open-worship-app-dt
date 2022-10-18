@@ -135,6 +135,9 @@ export default class Bible extends ItemSource<BibleItem>{
     }
     static async getDefault() {
         const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
+        if (!dir) {
+            return null;
+        }
         const fileSources = await fsListFilesWithMimetype(dir, 'bible') || [];
         if (fileSources === null) {
             return null;

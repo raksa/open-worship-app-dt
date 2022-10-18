@@ -11,8 +11,7 @@ import {
     usePMEvents,
 } from '../presentEventHelpers';
 import PTEffectControl from './PTEffectControl';
-import appProviderPresent from '../appProviderPresent';
-import { toMaxId } from '../../helper/helpers';
+import { isValidJson, toMaxId } from '../../helper/helpers';
 
 function openContextMenu(event: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
@@ -85,14 +84,12 @@ export default function MiniPresentScreen() {
                             event.preventDefault();
                             event.currentTarget.classList
                                 .remove('receiving-child');
-                            const receivedData = event.dataTransfer.getData('text');
-                            try {
-                                const data = JSON.parse(receivedData);
+                            const str = event.dataTransfer.getData('text');
+                            if (isValidJson(str)) {
+                                const data = JSON.parse(str);
                                 if (data.present && typeof data.present === 'object') {
                                     presentManager.receivePresentDrag(data.present);
                                 }
-                            } catch (error) {
-                                appProviderPresent.appUtils.handleError(error);
                             }
                         }}>
                         <div className='card-header pb-2' style={{

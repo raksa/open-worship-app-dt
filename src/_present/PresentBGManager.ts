@@ -1,5 +1,10 @@
 import EventHandler from '../event/EventHandler';
-import { AnyObjectType, getImageDim, getVideoDim } from '../helper/helpers';
+import {
+    AnyObjectType,
+    getImageDim,
+    getVideoDim,
+    isValidJson,
+} from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import { genHtmlBG } from './PresentBackground';
@@ -94,12 +99,8 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     }
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');
-        if (str !== '') {
-            try {
-                return JSON.parse(str);
-            } catch (error) {
-                console.error(error);
-            }
+        if (isValidJson(str)) {
+            return JSON.parse(str);
         }
         return {};
     }

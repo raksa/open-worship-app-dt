@@ -1,5 +1,5 @@
 import EventHandler from '../event/EventHandler';
-import { AnyObjectType } from '../helper/helpers';
+import { AnyObjectType, isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genHtmlSlideItem } from '../slide-presenting/items/SlideItemRenderer';
@@ -91,21 +91,20 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     }
     static getSlideList(): SlideListType {
         const str = getSetting(settingName, '');
-        if (str !== '') {
-            try {
-                const json = JSON.parse(str);
-                Object.values(json).forEach((item: any) => {
-                    if (typeof item.slideFilePath !== 'string') {
-                        throw new Error('Invalid slide path');
-                    }
-                    SlideItem.validate(item.slideItemJson);
-                });
-                return json;
-            } catch (error) {
-                console.log(str);
-                appProviderPresent.appUtils
-                    .handleError(error);
+        try {
+            if (!isValidJson(str)) {
+                return {};
             }
+            const json = JSON.parse(str);
+            Object.values(json).forEach((item: any) => {
+                if (typeof item.slideFilePath !== 'string') {
+                    throw new Error('Invalid slide path');
+                }
+                SlideItem.validate(item.slideItemJson);
+            });
+            return json;
+        } catch (error) {
+            appProviderPresent.appUtils.handleError(error);
         }
         return {};
     }

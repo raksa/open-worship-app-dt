@@ -10,7 +10,7 @@ import {
     pathJoin,
     pathSeparator,
 } from '../server/fileHelper';
-import { AnyObjectType } from './helpers';
+import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
@@ -74,10 +74,12 @@ export default class FileSource extends EventHandler<FSEventType> {
         ItemSource.deleteCache(this.filePath);
         this.fireDeleteCacheEvent();
     }
-    async readFileToData() {
+    async readFileToJsonData() {
         try {
             const str = await fsReadFile(this.filePath);
-            return JSON.parse(str) as AnyObjectType;
+            if (isValidJson(str)) {
+                return JSON.parse(str) as AnyObjectType;
+            }
         } catch (error: any) {
             ToastEventListener.showSimpleToast({
                 title: 'Reading File Data',

@@ -94,7 +94,7 @@ export function useReadFileToData<T extends ItemSource<any>>(
     const [data, setData] = useState<T | null | undefined>(null);
     useEffect(() => {
         if (fileSource !== null) {
-            fileSource.readFileToData().then((itemSource: any) => {
+            fileSource.readFileToJsonData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }
@@ -134,4 +134,13 @@ export function getVideoDim(src: string) {
 
 export function toMaxId(ids: number[]) {
     return Math.max.apply(Math, ids);
+}
+
+export function isValidJson(json: any) {
+    try {
+        return JSON.parse(json);
+    } catch (error) {
+        console.trace('Invalid Json:', json);
+        return false;
+    }
 }
