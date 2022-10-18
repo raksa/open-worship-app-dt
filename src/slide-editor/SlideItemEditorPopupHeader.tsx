@@ -23,7 +23,7 @@ export default function SlideItemEditorPopupHeader() {
             </span>
             <button type='button' onClick={closeItemSlideEdit}
                 data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
-                className='tool-tip btn-close float-end'></button>
+                className='btn-close float-end'></button>
         </div>
     );
 }

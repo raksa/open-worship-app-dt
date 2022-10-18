@@ -1,8 +1,3 @@
-function isToolTip(target: any) {
-    return target instanceof HTMLElement
-        && target.classList.contains('tool-tip');
-}
-
 let isInitialized = false;
 
 export function initToolTip() {
@@ -12,16 +7,19 @@ export function initToolTip() {
     isInitialized = true;
     document.body.addEventListener('mouseover', function (event) {
         const { target } = event;
-        if (isToolTip(target)) {
+        const toolTipText = getToolTipText(target);
+        if (toolTipText) {
             const element = target as HTMLElement;
-            const toolTipText = getToolTipText(element);
-            if (toolTipText && !element.title.includes(toolTipText)) {
+            if (!element.title.includes(toolTipText)) {
                 element.title = `(${toolTipText}) ` + element.title;
             }
         }
     });
 }
 
-function getToolTipText(target: HTMLElement) {
-    return target.dataset['toolTip'];
+function getToolTipText(target: any) {
+    if (target instanceof HTMLElement) {
+        return target.dataset['toolTip'];
+    }
+    return '';
 }

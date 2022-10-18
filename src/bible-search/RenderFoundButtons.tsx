@@ -87,14 +87,14 @@ export default function RenderFoundButtons({
         <div className='card-footer bg-transparent border-success d-flex justify-content-evenly'>
             {isWindowEditing && !isSlideSelectEditing ? null :
                 <button type='button'
-                    className='tool-tip btn btn-sm btn-primary ms-5 me-5'
+                    className='btn btn-sm btn-primary ms-5 me-5'
                     onClick={addBibleItem}
                     data-tool-tip={KeyboardEventListener
                         .toShortcutKey(addListEventMapper)}>
                     {getAddingTitle()}
                 </button>}
             {!isWindowEditing && <button type='button'
-                className='tool-tip btn btn-sm btn-primary ms-5 me-5'
+                className='btn btn-sm btn-primary ms-5 me-5'
                 onClick={addBibleItemAndPresent}
                 data-tool-tip={KeyboardEventListener
                     .toShortcutKey(presentEventMapper)}>

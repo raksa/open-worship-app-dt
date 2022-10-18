@@ -18,7 +18,7 @@ export default function Header() {
             <span>📖 {tran('bible-search')}</span>
             <button type='button' onClick={closeBibleSearch}
                 data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
-                className='tool-tip btn-close float-end'></button>
+                className='btn-close float-end'></button>
         </div>
     );
 }

@@ -14,7 +14,7 @@ export default function BibleSearchHeader() {
     };
     useKeyboardRegistering(eventMapper, openBibleSearch);
     return (
-        <button className='tool-tip btn btn-labeled btn-primary'
+        <button className='btn btn-labeled btn-primary'
             style={{
                 width: '220px',
             }}

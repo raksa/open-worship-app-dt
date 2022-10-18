@@ -17,7 +17,7 @@ export default function ShowHidePresent({
     usePMEvents(['visible'], presentManager);
     const isShowing = presentManager.isShowing;
     return (
-        <div className={'show-hide tool-tip '
+        <div className={'show-hide '
             + `form-check form-switch pointer ${isShowing ? 'show' : ''}`}
             onClick={() => {
                 presentManager.isShowing = !isShowing;
