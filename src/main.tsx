@@ -6,8 +6,10 @@ import App from './App';
 import { initApp } from './server/appHelper';
 import appProvider from './server/appProvider';
 import { openConfirm } from './alert/HandleAlert';
+import { initToolTip } from './tool-tip/init';
 
 initApp().then(() => {
+  initToolTip();
   const container = document.getElementById('root');
   if (container !== null) {
     const root = createRoot(container);
