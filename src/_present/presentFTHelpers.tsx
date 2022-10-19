@@ -5,10 +5,11 @@ import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import appProviderPresent from './appProviderPresent';
-import fullTextPresentHelper, {
+import {
     BibleItemRenderedType,
     LyricRenderedType,
-} from './fullTextPresentHelper';
+} from './fullTextPresentComps';
+import fullTextPresentHelper from './fullTextPresentHelper';
 import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
 

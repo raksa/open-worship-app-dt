@@ -96,10 +96,3 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
   }
   return Number(nString);
 }
-
-export function getFontFamilyByLocal(locale: LocaleType) {
-  if (locale === 'km') {
-    return 'Battambang';
-  }
-  return 'Arial';
-}
