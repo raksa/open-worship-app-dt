@@ -30,9 +30,13 @@ function getPresentingIndex(slide: Slide) {
     }
     return -1;
 }
-function presentSlideItem(slideItem: SlideItem, event: any) {
-    PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
-        slideItem.toJson(), event);
+function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
+    if (isWindowEditingMode()) {
+        slideItem.isSelected = !slideItem.isSelected;
+    } else {
+        PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
+            slideItem.toJson(), event);
+    }
 }
 
 export default function SlideItems({ slide }: { slide: Slide }) {
@@ -57,7 +61,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                 } else if (ind < 0) {
                     ind = length - 1;
                 }
-                presentSlideItem(slideItems[ind],
+                handleSlideItemSelecting(slideItems[ind],
                     genPresentMouseEvent() as any);
             }
         };
@@ -84,7 +88,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                             slideItem={item}
                             width={thumbSize}
                             onClick={(event) => {
-                                presentSlideItem(item, event);
+                                handleSlideItemSelecting(item, event);
                             }}
                             onContextMenu={(event) => {
                                 slide.openContextMenu(event, item);
