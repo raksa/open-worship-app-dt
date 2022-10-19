@@ -140,7 +140,6 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         PresentSlideManager.fireUpdateEvent();
     }
     render() {
-        console.trace('render');
         if (this.div === null) {
             return;
         }
