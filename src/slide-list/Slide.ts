@@ -161,41 +161,38 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         this.items = newItems;
     }
-    static toWrongDimensionString({ slide, display }: {
-        slide: { width: number, height: number },
+    static toWrongDimensionString({ slideItem, display }: {
+        slideItem: { width: number, height: number },
         display: { width: number, height: number },
     }) {
-        return `⚠️ slide:${slide.width}x${slide.height} `
+        return `⚠️ slide:${slideItem.width}x${slideItem.height} `
             + `display:${display.width}x${display.height}`;
     }
-    checkIsWrongDimension({ bounds }: DisplayType) {
-        const found = this.items.map((item) => {
-            return {
-                width: item.width,
-                height: item.height,
-            };
-        }).find(({ width, height }: {
-            width: number,
-            height: number,
-        }) => {
-            return bounds.width !== width || bounds.height !== height;
+    checkIsWrongDimension(display: DisplayType) {
+        const found = this.items.find((item) => {
+            return item.checkIsWrongDimension(display);
         });
         if (found) {
             return {
-                slide: found,
+                slideItem: found,
                 display: {
-                    width: bounds.width,
-                    height: bounds.height,
+                    width: display.bounds.width,
+                    height: display.bounds.height,
                 },
             };
         }
         return null;
     }
-    async fixSlideDimension({ bounds }: DisplayType) {
-        this.items.forEach((item) => {
-            item.width = bounds.width;
-            item.height = bounds.height;
+    async fixSlideDimension(display: DisplayType) {
+        const newItemsJson = this.items.map((item) => {
+            const json = item.toJson();
+            if (item.checkIsWrongDimension(display)) {
+                json.metadata.width = display.bounds.width;
+                json.metadata.height = display.bounds.height;
+            }
+            return json;
         });
+        this.editingCacheManager.pushSlideItems(newItemsJson);
     }
     showSlideItemContextMenu(event: any) {
         showAppContextMenu(event, [{

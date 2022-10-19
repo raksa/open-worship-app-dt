@@ -6,6 +6,7 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
+import { DisplayType } from '../_present/presentHelpers';
 
 export type SlideItemType = {
     id: number,
@@ -203,5 +204,9 @@ export default class SlideItem extends ItemBase {
     }
     static clearCache() {
         this._cache = new Map();
+    }
+    checkIsWrongDimension({ bounds }: DisplayType) {
+        return bounds.width !== this.width ||
+            bounds.height !== this.height;
     }
 }
