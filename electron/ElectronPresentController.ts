@@ -33,7 +33,7 @@ export default class ElectronPresentController {
         });
         const query = `?presentId=${this.presentId}`;
         if (isDev) {
-            presentWin.loadURL(url + query);
+            presentWin.loadURL(`${url}${query}`);
         } else {
             presentWin.loadURL(`file://${htmlFile}${query}`);
         }
