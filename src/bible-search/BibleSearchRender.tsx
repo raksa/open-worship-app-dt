@@ -84,7 +84,7 @@ export default function BibleSearchRender({ bibleItem }: {
             <div className='body card-body w-100'>
                 <div className='input-group'>
                     <span className='input-group-text'>
-                        <i className='bi bi-search'></i>
+                        <i className='bi bi-search' />
                     </span>
                     <InputHandler
                         inputText={inputText}

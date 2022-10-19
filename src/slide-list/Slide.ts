@@ -40,7 +40,9 @@ export default class Slide extends ItemSource<SlideItem>{
         return this.editingCacheManager.isChanged;
     }
     get copiedItem() {
-        return this.items.find((item) => item.isCopied) || null;
+        return this.items.find((item) => {
+            return item.isCopied;
+        }) || null;
     }
     set copiedItem(newItem: SlideItem | null) {
         this.items.forEach((item) => {
@@ -51,7 +53,9 @@ export default class Slide extends ItemSource<SlideItem>{
         }
     }
     get selectedIndex() {
-        const foundItem = this.items.find((item) => item.isSelected) || null;
+        const foundItem = this.items.find((item) => {
+            return item.isSelected;
+        }) || null;
         if (foundItem) {
             return this.items.indexOf(foundItem);
         }
@@ -67,6 +71,9 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     get metadata() {
         return this.editingCacheManager.presentJson.metadata;
+    }
+    set metadata(metadata: AnyObjectType) {
+        this.editingCacheManager.pushMetadata(metadata);
     }
     get items() {
         const latestHistory = this.editingCacheManager.presentJson;
@@ -85,7 +92,9 @@ export default class Slide extends ItemSource<SlideItem>{
         });
     }
     set items(newItems: SlideItem[]) {
-        const slideItems = newItems.map((item) => item.toJson());
+        const slideItems = newItems.map((item) => {
+            return item.toJson();
+        });
         this.editingCacheManager.pushSlideItems(slideItems);
     }
     get maxItemId() {
@@ -187,23 +196,28 @@ export default class Slide extends ItemSource<SlideItem>{
             item.width = bounds.width;
             item.height = bounds.height;
         });
-        this.editingCacheManager.pushSlideItems(this.items.map((item) => {
-            return item.toJson();
-        }));
     }
     showSlideItemContextMenu(event: any) {
-        showAppContextMenu(event as any, [{
-            title: 'New Slide Item', onClick: () => {
+        showAppContextMenu(event, [{
+            title: 'New Slide Item',
+            onClick: () => {
                 const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
                 const { width, height } = Canvas.getDefaultDim();
-                this.addItem(new SlideItem(item.id, this.fileSource, {
+                const json = {
                     id: item.id,
-                    metadata: { width, height },
+                    metadata: {
+                        width,
+                        height,
+                    },
                     canvasItems: [], // TODO: add default canvas item
-                }, this.editingCacheManager));
+                };
+                const newItem = new SlideItem(item.id, this.fileSource, json,
+                    this.editingCacheManager);
+                this.addItem(newItem);
             },
         }, {
-            title: 'Paste', disabled: SlideItem.copiedItem === null,
+            title: 'Paste',
+            disabled: SlideItem.copiedItem === null,
             onClick: () => this.pasteItem(),
         }]);
     }
@@ -245,14 +259,17 @@ export default class Slide extends ItemSource<SlideItem>{
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    static async readFileToDataNoCache(fileSource: FileSource | null, isOrigin?: boolean) {
-        const slide = await super.readFileToDataNoCache(fileSource) as Slide | null | undefined;
+    static async readFileToDataNoCache(fileSource: FileSource | null,
+        isOrigin?: boolean) {
+        const data = await super.readFileToDataNoCache(fileSource);
+        const slide = data as Slide | null | undefined;
         if (isOrigin && slide) {
             slide.editingCacheManager.isUsingHistory = false;
         }
         return slide;
     }
-    static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
+    static async readFileToData(fileSource: FileSource | null,
+        isForceCache?: boolean) {
         const slide = super.readFileToData(fileSource, isForceCache);
         return slide as Promise<Slide | undefined | null>;
     }

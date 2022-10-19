@@ -46,7 +46,7 @@ export default function InputHandler({
                     onInputChange(value);
                 }} />
             <span className='input-group-text select'>
-                <i className='bi bi-journal-bookmark'></i>
+                <i className='bi bi-journal-bookmark' />
                 <select className='form-select bible' value={bibleSelected}
                     onChange={(event) => {
                         const value = event.target.value;

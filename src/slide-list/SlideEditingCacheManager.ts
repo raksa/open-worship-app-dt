@@ -58,6 +58,8 @@ export default class SlideEditingCacheManager
         this.pushUndo(newHistory);
     }
     pushMetadata(metadata: AnyObjectType) {
+        console.trace(metadata);
+        
         const newHistory = {
             metadata,
         };

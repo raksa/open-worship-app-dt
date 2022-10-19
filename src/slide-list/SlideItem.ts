@@ -14,7 +14,7 @@ export type SlideItemType = {
 };
 
 export default class SlideItem extends ItemBase {
-    _originalJson: Readonly<SlideItemType>;
+    _json: SlideItemType;
     static SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     fileSource: FileSource;
@@ -22,22 +22,19 @@ export default class SlideItem extends ItemBase {
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     editingCacheManager: SlideEditingCacheManager;
-    _width: number;
-    _height: number;
     static _cache = new Map<string, SlideItem>();
     constructor(id: number, fileSource: FileSource,
         json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager) {
         super();
         this.id = id;
-        this._width = json.metadata.width;
-        this._height = json.metadata.height;
-        this._originalJson = Object.freeze(cloneJson(json));
+        this._json = cloneJson(json);
         this.fileSource = fileSource;
         if (editingCacheManager !== undefined) {
             this.editingCacheManager = editingCacheManager;
         } else {
-            this.editingCacheManager = new SlideEditingCacheManager(this.fileSource, {
+            this.editingCacheManager = new SlideEditingCacheManager(
+                this.fileSource, {
                 items: [json],
                 metadata: {},
             });
@@ -47,12 +44,27 @@ export default class SlideItem extends ItemBase {
         const key = SlideItem.genKeyByFileSource(fileSource, id);
         SlideItem._cache.set(key, this);
     }
+    get originalJson() {
+        return this._json;
+    }
+    set originalJson(json: SlideItemType) {
+        this._json = json;
+        const items = this.editingCacheManager.presentJson.items;
+        const newItems = items.map((item) => {
+            if (item.id === this.id) {
+                return this.toJson();
+            }
+            return item;
+        });
+        this.editingCacheManager.pushSlideItems(newItems);
+    }
     get metadata() {
-        const json = this.editingCacheManager.getSlideItemById(this.id);
-        return json?.metadata || this._originalJson.metadata;
+        return this.originalJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this.editingCacheManager.pushMetadata(metadata);
+        const json = cloneJson(this.originalJson);
+        json.metadata = metadata;
+        this.originalJson = json;
     }
     get canvas() {
         return Canvas.fromJson({
@@ -66,36 +78,25 @@ export default class SlideItem extends ItemBase {
         });
     }
     get canvasItemsJson() {
-        const items = this.editingCacheManager.presentJson.items;
-        const slideItemJson = items.find((item) => {
-            return item.id === this.id;
-        });
-        return slideItemJson?.canvasItems ||
-            this._originalJson.canvasItems;
+        return this.originalJson.canvasItems;
     }
     set canvasItemsJson(canvasItemsJson: CanvasItemPropsType[]) {
-        const items = this.editingCacheManager.presentJson.items;
-        items.forEach((item) => {
-            if (item.id === this.id) {
-                item.canvasItems = canvasItemsJson;
-            }
-        });
-        this.editingCacheManager.pushSlideItems(items);
+        const json = cloneJson(this.originalJson);
+        json.canvasItems = canvasItemsJson;
+        this.originalJson = json;
     }
     get width() {
-        return this._width;
+        return this.metadata.width;
     }
     set width(width: number) {
-        this._width = width;
         const metadata = this.metadata;
         metadata.width = width;
         this.metadata = metadata;
     }
     get height() {
-        return this._height;
+        return this.metadata.height;
     }
     set height(height: number) {
-        this._height = height;
         const metadata = this.metadata;
         metadata.height = height;
         this.metadata = metadata;
@@ -160,11 +161,13 @@ export default class SlideItem extends ItemBase {
     static fromJsonError(json: AnyObjectType,
         fileSource: FileSource,
         editingCacheManager?: SlideEditingCacheManager) {
-        const item = new SlideItem(-1, fileSource, {
+        const newJson = {
             id: -1,
             metadata: {},
             canvasItems: [],
-        }, editingCacheManager);
+        };
+        const item = new SlideItem(-1, fileSource, newJson,
+            editingCacheManager);
         item.jsonError = json;
         return item;
     }

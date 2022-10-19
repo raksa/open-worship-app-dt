@@ -22,7 +22,7 @@ export default function BibleSearchHeader() {
             data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
             type='button'>
             <span className='btn-label'>
-                <i className='bi bi-book'></i>
+                <i className='bi bi-book' />
             </span>
             {tran('bible-search')}
         </button>

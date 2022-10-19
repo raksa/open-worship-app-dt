@@ -25,7 +25,7 @@ export default function SettingBible() {
                             setIsRefreshing(false);
                         });
                     }}
-                ><i className={`bi bi-arrow-clockwise ${isRefreshing ? 'rotating' : ''}`}></i>
+                ><i className={`bi bi-arrow-clockwise ${isRefreshing ? 'rotating' : ''}`} />
                     Refresh</button>
             </div>
             <ul className='list-group d-flex flex-fill'>
@@ -91,7 +91,7 @@ function BibleItem({ bibleName }: { bibleName: string }) {
                         <div className='progress'>
                             <div className='progress-bar progress-bar-striped progress-bar-animated'
                                 role='progressbar' aria-valuenow={dProgress * 100}
-                                aria-valuemin={0} aria-valuemax={100} style={{ width: `${dProgress * 100}%` }}></div>
+                                aria-valuemin={0} aria-valuemax={100} style={{ width: `${dProgress * 100}%` }} />
                         </div>
                     </div>
                 }

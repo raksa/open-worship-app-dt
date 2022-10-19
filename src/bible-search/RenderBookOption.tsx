@@ -45,7 +45,7 @@ export default function RenderBookOption({
     }
     return <>
         <span className='input-group-text float-start'>
-            <i className='bi bi-bookmark'></i>
+            <i className='bi bi-bookmark' />
         </span>
         <div className='row w-75 align-items-start g-2'>
             {(matches === null || bookKVList === null) ?

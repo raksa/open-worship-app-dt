@@ -42,6 +42,6 @@ export default function SlideItemDragReceiver({ width, onDrop }: {
                 if (result !== null) {
                     onDrop(result.id);
                 }
-            }}></div>
+            }} />
     );
 }

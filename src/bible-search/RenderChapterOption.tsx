@@ -77,7 +77,7 @@ export default function RenderChapterOption({
     }
     return <>
         <span className='input-group-text float-start'>
-            <i className='bi bi-box-arrow-in-right'></i>
+            <i className='bi bi-box-arrow-in-right' />
         </span>
         <div className='row w-75 align-items-start g-2'>
             {matches === null ? <div>

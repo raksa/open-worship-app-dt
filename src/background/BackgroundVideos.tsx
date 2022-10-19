@@ -51,8 +51,10 @@ export default function BackgroundVideos() {
                                     <div className='card-body'>
                                         <RenderPresentIds
                                             ids={selectedBGSrcList.map(([key]) => +key)} />
-                                        <video ref={vRef} loop
-                                            muted src={fileSource.src}></video>
+                                        <video ref={vRef}
+                                            loop
+                                            muted
+                                            src={fileSource.src} />
                                     </div>
                                     <div className='card-footer'>
                                         <p className='ellipsis-left card-text'>

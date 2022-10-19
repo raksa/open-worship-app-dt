@@ -19,7 +19,7 @@ export default function HeaderSettingPopup() {
             </span>
             <button type='button' onClick={closeSetting}
                 data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
-                className='btn-close float-end'></button>
+                className='btn-close float-end' />
         </div>
     );
 }

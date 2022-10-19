@@ -2,7 +2,11 @@ import './AppContextMenu.scss';
 
 import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
-import { ReactElement, useEffect, useState } from 'react';
+import {
+    ReactElement,
+    useEffect,
+    useState,
+} from 'react';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
@@ -25,11 +29,13 @@ export function createMouseEvent(clientX: number, clientY: number) {
 const setPositionMenu = (menu: HTMLElement,
     event: MouseEvent) => {
     if (menu !== null) {
-        menu.style.display = 'block';
-        menu.style.left = '';
-        menu.style.right = '';
-        menu.style.top = '';
-        menu.style.bottom = '';
+        Object.assign(menu.style, {
+            display: 'block',
+            left: '',
+            right: '',
+            top: '',
+            bottom: '',
+        });
         event.preventDefault();
         event.stopPropagation();
         const x = event.clientX;
@@ -113,20 +119,27 @@ export default function AppContextMenu() {
         }} className='app-context-menu'>
             {data.items.map((item, i) => {
                 return (
-                    <div key={`${i}`}
-                        className={'app-context-menu-item'
-                            + ` ${item.disabled ? 'disabled' : ''}`}
-                        onClick={(event) => {
-                            if (item.disabled) {
-                                return;
-                            }
-                            item.onClick?.(event as any);
-                        }}>
-                        {item.title}
-                        {item.otherChild || null}
-                    </div>
+                    <ContextMenuItem key={i} item={item} />
                 );
             })}
+        </div>
+    );
+}
+
+function ContextMenuItem({ item }: {
+    item: ContextMenuItemType,
+}) {
+    return (
+        <div className={'app-context-menu-item'
+            + ` ${item.disabled ? 'disabled' : ''}`}
+            onClick={(event) => {
+                if (item.disabled) {
+                    return;
+                }
+                item.onClick?.(event as any);
+            }}>
+            {item.title}
+            {item.otherChild || null}
         </div>
     );
 }
