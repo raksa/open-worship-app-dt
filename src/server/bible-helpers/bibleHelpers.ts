@@ -36,7 +36,9 @@ export const toLocaleNum = (n: number, numList: string[]) => {
     if (!numList) {
         return n;
     }
-    return `${n}`.split('').map(n1 => numList[+n1]).join('');
+    return `${n}`.split('').map((n1) => {
+        return numList[+n1];
+    }).join('');
 };
 
 export async function genMatches(bibleName: string, inputText: string) {

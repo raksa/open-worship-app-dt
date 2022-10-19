@@ -15,7 +15,9 @@ function genMatchedChapters(currentIndexing: number,
     if (currentIndexing !== null && chapterCount !== null) {
         const chapterList = Array.from({
             length: chapterCount,
-        }, (_, i) => i + 1);
+        }, (_, i) => {
+            return i + 1;
+        });
         return currentIndexing ? chapterList.filter((c) => {
             if (`${c}`.includes(`${currentIndexing}`)) {
                 return true;
@@ -43,7 +45,7 @@ export default function RenderChapterOption({
     const chapterCount = useGetChapterCount(bibleSelected, bookSelected);
     const currentIndexing = useFromLocaleNumBB(bibleSelected,
         inputText.split(bookSelected)[1]);
-    const matches = genMatchedChapters(currentIndexing|| 0, chapterCount);
+    const matches = genMatchedChapters(currentIndexing || 0, chapterCount);
 
     const [attemptChapterIndex, setAttemptChapterIndex] = useState(0);
     const arrowListener = async (event: KeyboardEvent) => {

@@ -73,7 +73,9 @@ export const toLocaleNum = (locale: LocaleType, n: number): string => {
     return `${n}`;
   }
   const numList = langData.numList;
-  return `${n}`.split('').map(n1 => numList[+n1]).join('');
+  return `${n}`.split('').map((n1) => {
+    return numList[+n1];
+  }).join('');
 };
 
 export function fromLocaleNum(locale: LocaleType, localeNum: string) {
@@ -82,7 +84,7 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
     return null;
   }
   const numList = langData.numList;
-  const nString = `${localeNum}`.split('').map(n => {
+  const nString = `${localeNum}`.split('').map((n) => {
     const ind = numList.indexOf(n);
     if (ind > -1) {
       return ind;

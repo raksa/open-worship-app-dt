@@ -30,7 +30,7 @@ export default function Background() {
     usePBGMEvents(['update']);
     const bgSrcList = PresentBGManager.getBGSrcList();
     const toHLS = (type: BackgroundType) => {
-        const b = Object.values(bgSrcList).some(src => {
+        const b = Object.values(bgSrcList).some((src) => {
             return src.type === type;
         });
         return b ? 'nav-highlight-selected' : undefined;

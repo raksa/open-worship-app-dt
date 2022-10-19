@@ -9,7 +9,7 @@ const LyricList = React.lazy(() => import('./lyric-list/LyricList'));
 
 export default function AppPresentingRight() {
     useEffect(() => {
-        PresentManager.getAllInstances().forEach(presentManager => {
+        PresentManager.getAllInstances().forEach((presentManager) => {
             presentManager.fireResizeEvent();
         });
     });

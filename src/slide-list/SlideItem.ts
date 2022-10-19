@@ -74,7 +74,7 @@ export default class SlideItem extends ItemBase {
         });
     }
     set canvas(canvas: Canvas) {
-        this.canvasItemsJson = canvas.canvasItems.map(item => {
+        this.canvasItemsJson = canvas.canvasItems.map((item) => {
             return item.toJson();
         });
     }
