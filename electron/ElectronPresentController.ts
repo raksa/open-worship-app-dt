@@ -7,7 +7,7 @@ import { isDev } from './electronHelpers';
 import ElectronMainController from './ElectronMainController';
 
 const url = 'http://localhost:3000';
-const htmlFile = `${__dirname}/../dist/index.html`;
+const htmlFile = `${__dirname}/../../dist/index.html`;
 const presentPreloadFile = `${__dirname}/client/presentPreload.js`;
 export default class ElectronPresentController {
     win: BrowserWindow;
@@ -35,7 +35,7 @@ export default class ElectronPresentController {
         if (isDev) {
             presentWin.loadURL(url + query);
         } else {
-            presentWin.loadFile(htmlFile + query);
+            presentWin.loadURL(`file://${htmlFile}${query}`);
         }
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
