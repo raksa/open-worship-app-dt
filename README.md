@@ -20,6 +20,7 @@ Special thanks for others frameworks and tools in [npm package](./package.json)
 ```bash
 $ cp src-binding.gyp/owa.cc-example src-binding.gyp/owa.cc
 $ npm i
+$ cp node_modules/pdfjs-dist/build/pdf.worker.js public/js
 ```
 
 ## Run
