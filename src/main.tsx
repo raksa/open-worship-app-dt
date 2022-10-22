@@ -5,8 +5,8 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { initApp } from './server/appHelper';
 import appProvider from './server/appProvider';
-import { openConfirm } from './alert/HandleAlert';
 import { initToolTip } from './tool-tip/init';
+import { openConfirm } from './alert/alertHelpers';
 
 initApp().then(() => {
   initToolTip();

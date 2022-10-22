@@ -1,11 +1,11 @@
 import './ConfirmPopup.scss';
 
 import Modal from '../others/Modal';
+import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     closeAlert,
     ConfirmDataType,
-} from './HandleAlert';
-import HeaderAlertPopup from './HeaderAlertPopup';
+} from './alertHelpers';
 
 export default function ConfirmPopup({ data }: {
     data: ConfirmDataType,

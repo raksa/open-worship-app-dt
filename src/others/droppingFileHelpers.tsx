@@ -9,7 +9,7 @@ import {
 } from './AppContextMenu';
 import FileSource from '../helper/FileSource';
 import DirSource from '../helper/DirSource';
-import { openConfirm } from '../alert/HandleAlert';
+import { openConfirm } from '../alert/alertHelpers';
 
 export function genOnDrag(dirSource: DirSource, mimetype: MimetypeNameType) {
     return (event: React.DragEvent<HTMLDivElement>) => {

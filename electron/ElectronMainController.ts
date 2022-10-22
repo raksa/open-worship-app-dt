@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, shell } from 'electron';
 import { channels, PresentMessageType } from './electronEventListener';
 import { isDev } from './electronHelpers';
 
@@ -22,6 +22,14 @@ export default class ElectronMainController {
                 preload: mainPreloadFile,
             },
         });
+        win.webContents.on('new-window', function (e, url) {
+            e.preventDefault();
+            require('electron').shell.openExternal(url);
+        });
+        win.webContents.setWindowOpenHandler(({ url }) => {
+            shell.openExternal(url);
+            return { action: 'deny' };
+          });
         win.on('closed', () => {
             process.exit(0);
         });

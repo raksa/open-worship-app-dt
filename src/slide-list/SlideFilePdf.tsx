@@ -1,4 +1,4 @@
-import { openConfirm } from '../alert/HandleAlert';
+import { openConfirm } from '../alert/alertHelpers';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 

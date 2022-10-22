@@ -14,9 +14,6 @@ import {
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
 }
-export function openLink(link: string) {
-    appProvider.browserUtils.openLink(link);
-}
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
     ToastEventListener.showSimpleToast({

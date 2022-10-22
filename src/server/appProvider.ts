@@ -72,7 +72,6 @@ const appProvider = (window as any).provider as {
     };
     browserUtils: {
         openExplorer: (dir: string) => void,
-        openLink: (link: string) => void,
         copyToClipboard: (str: string) => void,
         urlPathToFileURL: (urlPath: string) => string,
     };

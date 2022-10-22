@@ -6,9 +6,6 @@ const browserUtils = {
     openExplorer(dir: string) {
         electron.shell.showItemInFolder(path.join(dir, ''));
     },
-    openLink(link: string) {
-        electron.shell.openExternal(link);
-    },
     copyToClipboard(str: string) {
         electron.clipboard.writeText(str);
     },

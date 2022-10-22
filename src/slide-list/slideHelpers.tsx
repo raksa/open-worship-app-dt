@@ -1,5 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
-import { openConfirm } from '../alert/HandleAlert';
+import { openAlert, openConfirm } from '../alert/alertHelpers';
 import { isWindowEditingMode } from '../App';
 import SlideListEventListener from '../event/SlideListEventListener';
 import ToastEventListener from '../event/ToastEventListener';
@@ -84,13 +84,16 @@ export const supportOfficeFE = [
 
 export async function convertOfficeFile(fileSource: FileSource,
     dirSource: DirSource) {
-    const { fileName } = fileSource;
+    const toHtmlBold = (text: string) => {
+        return `<b>${text}</b>`;
+    };
+    const { filePath, fileName } = fileSource;
     const { dirPath } = dirSource;
     const title = 'Converting to PDF';
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
-        <span style={{ fontWeight: 'bold' }}>{fileName}</span>
+        <b>{fileName}</b>
         {' will be converted to PDF into '}
-        <span style={{ fontWeight: 'bold' }}>{dirPath}</span>
+        <b>{dirPath}</b>
     </div>);
     const isOk = await openConfirm(title, confirmMessage);
     if (!isOk) {
@@ -98,20 +101,33 @@ export async function convertOfficeFile(fileSource: FileSource,
     }
     ToastEventListener.showSimpleToast({
         title,
-        message: `${fileSource.filePath}`,
+        message: `${toHtmlBold(filePath)}, do not close application`,
     });
     try {
-        await appProvider.pdfUtils.toPdf(
-            fileSource.filePath, dirPath);
+        await appProvider.pdfUtils.toPdf(filePath, dirPath);
         ToastEventListener.showSimpleToast({
             title,
-            message: `${fileName} is converted to PDF`,
+            message: `${toHtmlBold(fileName)} is converted to PDF`,
         });
-    } catch (error) {
+        dirSource.fireReloadEvent();
+    } catch (error: any) {
+        if (error.message.includes('Could not find soffice binary')) {
+            const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
+                <b>LibreOffice</b>
+                {' is required to convert Office file to PDF.'}
+                <br />
+                <b>
+                    <a href='https://www.google.com/search?q=download+libreoffice'
+                        target='_blank'>Download</a>
+                </b>
+            </div>);
+            openAlert('LibreOffice is not installed', alertMessage);
+            return;
+        }
         appProvider.appUtils.handleError(error);
         ToastEventListener.showSimpleToast({
             title,
-            message: `Fail to convert ${fileName}`,
+            message: `Fail to convert ${toHtmlBold(fileName)}`,
         });
     }
 }

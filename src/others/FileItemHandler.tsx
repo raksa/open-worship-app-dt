@@ -7,9 +7,9 @@ import {
 } from '../server/appHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
-import { openConfirm } from '../alert/HandleAlert';
 import appProvider from '../server/appProvider';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { openConfirm } from '../alert/alertHelpers';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -58,7 +58,8 @@ export default function FileItemHandler({
         }, {
             title: 'Delete',
             onClick: async () => {
-                const isOk = await openConfirm(`Deleting "${fileSource.fileName}"`,
+                const isOk = await openConfirm(
+                    `Deleting "${fileSource.fileName}"`,
                     'Are you sure to delete this file?');
                 if (isOk) {
                     await fileSource.delete();

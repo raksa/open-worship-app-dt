@@ -2,7 +2,6 @@ import BibleItem, {
     useBibleItemRenderText,
     useBibleItemToInputText,
 } from '../bible-list/BibleItem';
-import { openLink } from '../server/appHelper';
 
 export default function SettingAbout() {
     const bookKey = 'PSA';
@@ -36,7 +35,7 @@ export default function SettingAbout() {
                 Official Github repo here: <button className='btn btn-success'
                     onClick={() => {
                         const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
-                        openLink(url);
+                        window.open(url, '_blank');
                     }}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>
             </div>
