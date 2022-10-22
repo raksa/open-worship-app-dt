@@ -14,7 +14,7 @@ export default function BackgroundImages() {
     return (
         <FileListHandler id='background-image' mimetype='image'
             dirSource={dirSource}
-            body={(fileSources) => {
+            bodyHandler={(fileSources) => {
                 return (
                     <div className='d-flex justify-content-start flex-wrap'>
                         {fileSources.map((fileSource, i) => {

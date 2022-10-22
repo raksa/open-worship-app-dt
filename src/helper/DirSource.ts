@@ -19,6 +19,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
     static _objectId = 0;
+    checkExtraFile: ((fileName: string) => FileMetadataType | null) | null = null;
     constructor(settingName: string) {
         super();
         if (!settingName) {
@@ -57,9 +58,13 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             const mimetypeList = getAppMimetype(mimetype);
             const files = await fsListFiles(this.dirPath);
             const matchedFiles = files.map((fileName) => {
-                return getFileMetaData(fileName, mimetypeList);
-            }).filter((d) => {
-                return !!d;
+                const fileMetadata = getFileMetaData(fileName, mimetypeList);
+                if (fileMetadata === null && this.checkExtraFile) {
+                    return this.checkExtraFile(fileName);
+                }
+                return fileMetadata;
+            }).filter((fileMetadata) => {
+                return fileMetadata !== null;
             }) as FileMetadataType[];
             return matchedFiles.map((fileMetadata) => {
                 return FileSource.getInstance(

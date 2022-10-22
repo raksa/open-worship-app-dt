@@ -10,7 +10,8 @@ import { goEditSlide } from '../App';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 
 export default function SlideFile({
-    index, fileSource,
+    index,
+    fileSource,
 }: {
     index: number,
     fileSource: FileSource,
@@ -51,7 +52,8 @@ export default function SlideFile({
                 <ItemColorNote item={data as ItemSource<any>} />
             </>}
             contextMenu={[{
-                title: 'Edit', onClick: () => {
+                title: 'Edit',
+                onClick: () => {
                     if (data) {
                         data.isSelected = true;
                         goEditSlide();
@@ -59,7 +61,8 @@ export default function SlideFile({
                 },
             }]}
             onDelete={() => {
-                if (Slide.getSelectedFileSource()?.filePath === fileSource.filePath) {
+                const filePath = Slide.getSelectedFileSource()?.filePath;
+                if (filePath === fileSource.filePath) {
                     Slide.setSelectedFileSource(null);
                 }
                 data?.editingCacheManager.delete();

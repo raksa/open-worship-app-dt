@@ -43,7 +43,7 @@ export const createNewItem = async (dir: string, name: string,
 
 export const mimetypeNameTypeList = [
     'image', 'video', 'slide',
-    'playlist', 'lyric', 'bible',
+    'playlist', 'lyric', 'bible', 'other',
 ] as const;
 export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 

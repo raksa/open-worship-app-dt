@@ -36,12 +36,12 @@ export function genOnDragLeave(dirSource: DirSource) {
 export function genOnDrop({
     dirSource,
     mimetype,
-    isSupportedDroppedFile,
+    checkExtraFile,
     takeDroppedFile,
 }: {
     dirSource: DirSource,
     mimetype: MimetypeNameType,
-    isSupportedDroppedFile?: (fileSource: FileSource) => boolean,
+    checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
 }) {
     return (event: React.DragEvent<HTMLDivElement>) => {
@@ -52,11 +52,11 @@ export function genOnDrop({
         event.currentTarget.style.opacity = '1';
         Array.from(event.dataTransfer.files).forEach(async (file) => {
             const fileSource = FileSource.getInstance((file as any).path);
-            if (takeDroppedFile && !takeDroppedFile(fileSource)) {
+            if (takeDroppedFile && takeDroppedFile(fileSource)) {
                 return;
             }
             const title = 'Copying File';
-            if (isSupportedDroppedFile?.(fileSource) ||
+            if (checkExtraFile?.(fileSource) ||
                 !isSupportedExt(fileSource.fileName, mimetype)) {
                 ToastEventListener.showSimpleToast({
                     title,

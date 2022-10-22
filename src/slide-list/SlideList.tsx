@@ -4,15 +4,32 @@ import FileListHandler from '../others/FileListHandler';
 import SlideFile from './SlideFile';
 import Slide from './Slide';
 import DirSource from '../helper/DirSource';
-import { convertOfficeFile, supportOfficeFE } from './slideHelpers';
+import {
+    checkIsPdf,
+    convertOfficeFile,
+    pdfMimetype,
+    supportOfficeFE,
+} from './slideHelpers';
+import { extractExtension } from '../server/fileHelper';
+import SlideFilePdf from './SlideFilePdf';
 
 export default function SlideList() {
     const dirSource = DirSource.getInstance('slide-list-selected-dir');
+    dirSource.checkExtraFile = (fileName: string) => {
+        if (checkIsPdf(extractExtension(fileName))) {
+            return {
+                fileName,
+                appMimetype: pdfMimetype,
+            };
+        }
+        return null;
+    };
     return (
-        <FileListHandler id={'slide-list'} mimetype={'slide'}
+        <FileListHandler id={'slide-list'}
+            mimetype={'slide'}
             dirSource={dirSource}
-            isSupportedDroppedFile={(fileSource) => {
-                if (fileSource.extension.toLocaleLowerCase() === '.pdf') {
+            checkExtraFile={(fileSource) => {
+                if (checkIsPdf(fileSource.extension)) {
                     return true;
                 }
                 return false;
@@ -33,9 +50,13 @@ export default function SlideList() {
                 return true;
             }}
             header={<span>Slides</span>}
-            body={(fileSources) => {
+            bodyHandler={(fileSources) => {
                 return (<>
                     {fileSources.map((fileSource, i) => {
+                        if (checkIsPdf(fileSource.extension)) {
+                            return <SlideFilePdf key={`${i}`} index={i}
+                                fileSource={fileSource} />;
+                        }
                         return <SlideFile key={`${i}`} index={i}
                             fileSource={fileSource} />;
                     })}

@@ -19,7 +19,7 @@ export default function BibleList() {
                 return true;
             }}
             header={<span>Bibles</span>}
-            body={(fileSources) => {
+            bodyHandler={(fileSources) => {
                 return (
                     <>
                         {fileSources.map((fileSource, i) => {

@@ -51,11 +51,13 @@ export default function FileItemHandler({
     };
     const selfContextMenu = [
         {
-            title: 'Reload', onClick: () => {
+            title: 'Reload',
+            onClick: () => {
                 reload();
             },
         }, {
-            title: 'Delete', onClick: async () => {
+            title: 'Delete',
+            onClick: async () => {
                 const isOk = await openConfirm(`Deleting "${fileSource.fileName}"`,
                     'Are you sure to delete this file?');
                 if (isOk) {
@@ -74,7 +76,8 @@ export default function FileItemHandler({
     }
     const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''}`;
     return (
-        <li className={`list-group-item mx-1 ${moreClassName} ${isPointer ? 'pointer' : ''}`}
+        <li className={`list-group-item mx-1 ${moreClassName} 
+        ${isPointer ? 'pointer' : ''}`}
             onClick={applyClick}
             data-index={index + 1}
             title={fileSource.filePath}

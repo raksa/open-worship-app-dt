@@ -7,6 +7,7 @@ import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import appProvider from '../server/appProvider';
+import { AppMimetypeType } from '../server/fileHelper';
 import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
@@ -57,6 +58,18 @@ export function openSlideContextMenu(event: any,
             },
         },
     ]);
+}
+
+export const pdfMimetype: AppMimetypeType = {
+    type: 'PDF File',
+    title: 'PDF File',
+    mimetype: 'application/pdf',
+    mimetypeName: 'other',
+    extensions: ['.pdf'],
+};
+
+export function checkIsPdf(ext: string) {
+    return ext.toLocaleLowerCase() === '.pdf';
 }
 
 export const supportOfficeFE = [

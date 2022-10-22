@@ -5,10 +5,13 @@ import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelper';
 
 export default function RenderList({
-    dirSource, mimetype, body,
+    dirSource,
+    mimetype,
+    bodyHandler,
 }: {
-    dirSource: DirSource, mimetype: MimetypeNameType,
-    body: (fileSources: FileSource[]) => any,
+    dirSource: DirSource,
+    mimetype: MimetypeNameType,
+    bodyHandler: (fileSources: FileSource[]) => any,
 }) {
     const [fileSources, setFileSources] = useState<FileSource[] | null | undefined>(null);
     const refresh = () => {
@@ -40,5 +43,5 @@ export default function RenderList({
         );
 
     }
-    return body(fileSources);
+    return bodyHandler(fileSources);
 }

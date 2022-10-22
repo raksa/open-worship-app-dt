@@ -20,19 +20,23 @@ import {
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
-    id, mimetype, dirSource,
-    header, body, contextMenu,
+    id,
+    mimetype,
+    dirSource,
+    header,
+    bodyHandler,
+    contextMenu,
     onNewFile,
-    isSupportedDroppedFile,
+    checkExtraFile,
     takeDroppedFile,
 }: {
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
     header?: any,
-    body: (fileSources: FileSource[]) => any,
+    bodyHandler: (fileSources: FileSource[]) => any,
     onNewFile?: (n: string) => Promise<boolean>,
     contextMenu?: ContextMenuItemType[],
-    isSupportedDroppedFile?: (fileSource: FileSource) => boolean,
+    checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
 }) {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -43,7 +47,7 @@ export default function FileListHandler({
             onDrop={genOnDrop({
                 dirSource,
                 mimetype,
-                isSupportedDroppedFile,
+                checkExtraFile,
                 takeDroppedFile,
             })}>
             {header && <div className='card-header'>{header}
@@ -71,7 +75,7 @@ export default function FileListHandler({
                             });
                         }} />}
                     <RenderList dirSource={dirSource}
-                        body={body}
+                        bodyHandler={bodyHandler}
                         mimetype={mimetype} />
                 </ul>
             </div>

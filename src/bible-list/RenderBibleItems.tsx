@@ -22,13 +22,15 @@ export default function RenderBibleItems({ bible }: {
                     onContextMenu={(event) => {
                         showAppContextMenu(event as any, [
                             {
-                                title: 'Quick Edit', onClick: () => {
+                                title: 'Quick Edit',
+                                onClick: () => {
                                     setSetting('bible-list-editing', `${i1}`);
                                     bibleItem.isSelectedEditing = true;
                                 },
                             },
                             {
-                                title: 'Delete', onClick: () => {
+                                title: 'Delete',
+                                onClick: () => {
                                     bible.removeItem(bibleItem);
                                     bible.save();
                                 },
@@ -42,7 +44,9 @@ export default function RenderBibleItems({ bible }: {
                     margin: 'auto',
                     fontSize: '0.8rem',
                 }}
-                onClick={() => openBibleSearch()}>
+                onClick={() => {
+                    openBibleSearch();
+                }}>
                 Add Bible Item
             </div>}
         </ul>

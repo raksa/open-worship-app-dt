@@ -18,7 +18,7 @@ export default function LyricList() {
                 return true;
             }}
             header={<span>Lyrics</span>}
-            body={(fileSources) => {
+            bodyHandler={(fileSources) => {
                 return (
                     <>
                         {fileSources.map((fileSource, i) => {

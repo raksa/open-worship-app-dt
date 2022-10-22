@@ -18,7 +18,7 @@ export default function PlaylistList() {
                 return true;
             }}
             header={<span>Playlists</span>}
-            body={(fileSources) => {
+            bodyHandler={(fileSources) => {
                 return (
                     <>
                         {fileSources.map((fileSource, i) => {
