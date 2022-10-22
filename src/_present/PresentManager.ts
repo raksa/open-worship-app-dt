@@ -238,14 +238,15 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 return resolve(selectedPresentManagers);
             }
             const allPresentManagers = PresentManager.getAllInstances();
-            showAppContextMenu(event as any, allPresentManagers.map((presentManager) => {
-                return {
-                    title: presentManager.name,
-                    onClick: () => {
-                        resolve([presentManager]);
-                    },
-                };
-            })).then(() => resolve([]));
+            showAppContextMenu(event as any,
+                allPresentManagers.map((presentManager) => {
+                    return {
+                        title: presentManager.name,
+                        onClick: () => {
+                            resolve([presentManager]);
+                        },
+                    };
+                })).then(() => resolve([]));
         });
     }
     static getPresentManagersSetting() {

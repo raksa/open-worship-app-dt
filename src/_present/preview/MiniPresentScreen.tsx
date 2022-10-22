@@ -15,7 +15,7 @@ import { isValidJson, toMaxId } from '../../helper/helpers';
 
 function openContextMenu(event: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
-    showAppContextMenu(event as any, [
+    showAppContextMenu(event, [
         ...isOne ? [] : [{
             title: 'Solo',
             onClick() {

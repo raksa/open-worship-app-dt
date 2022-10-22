@@ -111,7 +111,7 @@ function RenderColors({
     );
 }
 function showContextMenu(event: any, color: AppColorType) {
-    showAppContextMenu(event as any, [{
+    showAppContextMenu(event, [{
         title: `Copy to '${color}' to clipboard`,
         onClick: () => {
             copyToClipboard(color);
