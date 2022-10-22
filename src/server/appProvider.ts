@@ -56,6 +56,9 @@ export type FontListType = {
 export type AppUtilsType = {
     handleError: (error: any) => void,
 };
+export type PdfUtilsType = {
+    toPdf: (filePath: string, outputDir: string) => Promise<void>,
+}
 
 const appProvider = (window as any).provider as {
     isMain: boolean,
@@ -83,6 +86,7 @@ const appProvider = (window as any).provider as {
     appInfo: AppInfoType,
     reload: () => void,
     appUtils: AppUtilsType,
+    pdfUtils: PdfUtilsType,
 };
 
 export default appProvider;

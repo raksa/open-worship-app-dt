@@ -1,6 +1,12 @@
+import ReactDOMServer from 'react-dom/server';
+import { openConfirm } from '../alert/HandleAlert';
 import { isWindowEditingMode } from '../App';
 import SlideListEventListener from '../event/SlideListEventListener';
+import ToastEventListener from '../event/ToastEventListener';
+import DirSource from '../helper/DirSource';
+import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
+import appProvider from '../server/appProvider';
 import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
@@ -51,4 +57,48 @@ export function openSlideContextMenu(event: any,
             },
         },
     ]);
+}
+
+export const supportOfficeFE = [
+    '.doc',
+    '.docx',
+    '.xls',
+    '.xlsx',
+    '.ppt',
+    '.pptx',
+    '.odp',
+];
+
+export async function convertOfficeFile(fileSource: FileSource,
+    dirSource: DirSource) {
+    const { fileName } = fileSource;
+    const { dirPath } = dirSource;
+    const title = 'Converting to PDF';
+    const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
+        <span style={{ fontWeight: 'bold' }}>{fileName}</span>
+        {' will be converted to PDF into '}
+        <span style={{ fontWeight: 'bold' }}>{dirPath}</span>
+    </div>);
+    const isOk = await openConfirm(title, confirmMessage);
+    if (!isOk) {
+        return;
+    }
+    ToastEventListener.showSimpleToast({
+        title,
+        message: `${fileSource.filePath}`,
+    });
+    try {
+        await appProvider.pdfUtils.toPdf(
+            fileSource.filePath, dirPath);
+        ToastEventListener.showSimpleToast({
+            title,
+            message: `${fileName} is converted to PDF`,
+        });
+    } catch (error) {
+        appProvider.appUtils.handleError(error);
+        ToastEventListener.showSimpleToast({
+            title,
+            message: `Fail to convert ${fileName}`,
+        });
+    }
 }

@@ -8,6 +8,7 @@ import pathUtils from './pathUtils';
 import appInfo from '../../package.json';
 import fontUtils from './fontUtils';
 import appUtils from './appUtils';
+import pdfUtils from './pdfUtils';
 
 const provider = {
     isMain: true,
@@ -20,6 +21,7 @@ const provider = {
     pathUtils,
     fileUtils,
     systemUtils,
+    pdfUtils,
     appInfo: {
         name: appInfo.name,
         description: appInfo.description,

@@ -72,7 +72,7 @@ export default function Preview({
                         }}>copy all</button>
                 </div>
             </div>
-            <div className='card-body bg-transparent border-success select-text'>
+            <div className='card-body bg-transparent border-success selectable-text'>
                 {text}
             </div>
         </div>

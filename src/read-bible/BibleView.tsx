@@ -50,7 +50,7 @@ export default function BibleView({
                     onClick={onClose} />
             </div>
             <div className='card-body p-3'>
-                <p className='select-text'>{text}</p>
+                <p className='selectable-text'>{text}</p>
             </div>
         </div>
     );

@@ -5,7 +5,7 @@ import './others/scrollbar.scss';
 import React, { useEffect } from 'react';
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
 import HandleBibleSearch from './bible-search/HandleBibleSearch';
-import Toast from './others/Toast';
+import Toast from './toast/Toast';
 import HandleItemSlideEdit from './slide-presenting/HandleItemSlideEdit';
 import { getSetting, useStateSettingString } from './helper/settingHelper';
 import AppContextMenu from './others/AppContextMenu';

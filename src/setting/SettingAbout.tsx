@@ -27,7 +27,7 @@ export default function SettingAbout() {
                 <div className='card-header bg-transparent border-success'>
                     KJV|{title}
                 </div>
-                <div className='card-body bg-transparent border-success select-text'>
+                <div className='card-body bg-transparent border-success selectable-text'>
                     {text}
                 </div>
             </div>

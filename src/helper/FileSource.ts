@@ -41,6 +41,9 @@ export default class FileSource extends EventHandler<FSEventType> {
         return this.fileName.substring(0,
             this.fileName.lastIndexOf('.'));
     }
+    get extension() {
+        return this.fileName.substring(this.fileName.lastIndexOf('.'));
+    }
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
     }

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import PDFManager from './pdf/PDFManager';
+import PDFManager, {
+    PDFImageData,
+} from './pdf/PDFManager';
 import PDFViewer from './pdf/PDFViewer';
 import appProvider from './server/appProvider';
 
 function usePDFImage(pdfPath: string) {
-    const [images, setImages] = useState<string[] | null>(null);
+    const [images, setImages] = useState<PDFImageData[] | null>(null);
     useEffect(() => {
         if (images === null) {
             const pdfManager = PDFManager.getInstance();

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { PDFImageData } from './PDFManager';
 
 export type PDFViewerStateType = {
 };
 export type PDFViewerPropsType = {
-    images: string[];
+    images: PDFImageData[];
 };
 export default class PDFViewer extends Component<PDFViewerPropsType, PDFViewerStateType> {
     ref: React.RefObject<HTMLDivElement>;
@@ -17,9 +18,16 @@ export default class PDFViewer extends Component<PDFViewerPropsType, PDFViewerSt
                 height: '600px',
                 overflow: 'auto',
             }} ref={this.ref} >
-                {this.props.images.map((image, index) => {
+                {this.props.images.map(({
+                    width,
+                    height,
+                    src,
+                }, index) => {
                     return (
-                        <img key={index} src={image} />
+                        <img key={index}
+                            width={width}
+                            height={height}
+                            src={src} />
                     );
                 })}
             </div>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SimpleToastType } from '../others/Toast';
+import { SimpleToastType } from '../toast/SimpleToast';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type ToastEventType = 'simple';
