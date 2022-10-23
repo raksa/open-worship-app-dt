@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { PDFImageData } from './PDFManager';
+import { PdfImageDataType } from './PdfController';
 
-export type PDFViewerStateType = {
+export type PdfViewerStateType = {
 };
-export type PDFViewerPropsType = {
-    images: PDFImageData[];
+export type PdfViewerPropsType = {
+    images: PdfImageDataType[];
 };
-export default class PDFViewer extends Component<PDFViewerPropsType, PDFViewerStateType> {
+export default class PdfItemViewer extends Component<PdfViewerPropsType, PdfViewerStateType> {
     ref: React.RefObject<HTMLDivElement>;
-    constructor(props: PDFViewerPropsType) {
+    constructor(props: PdfViewerPropsType) {
         super(props);
         this.ref = React.createRef();
     }

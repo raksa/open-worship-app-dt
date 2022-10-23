@@ -2,30 +2,30 @@ import pdfjsLibType, {
     PDFDocumentProxy,
 } from 'pdfjs-dist';
 
-export type PDFImageData = {
+export type PdfImageDataType = {
     width: number;
     height: number;
     src: string,
 };
 
-export default class PDFManager {
-    static _instance: PDFManager | null = null;
+export default class PdfController {
+    static _instance: PdfController | null = null;
     static pdfjsLib: typeof pdfjsLibType | null = null;
     get pdfjsLib() {
-        if (PDFManager.pdfjsLib === null) {
+        if (PdfController.pdfjsLib === null) {
             const pdfjsLib = require('pdfjs-dist/build/pdf') as typeof pdfjsLibType;
             pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.js';
-            PDFManager.pdfjsLib = pdfjsLib;
+            PdfController.pdfjsLib = pdfjsLib;
         }
-        return PDFManager.pdfjsLib;
+        return PdfController.pdfjsLib;
     }
-    async genPDFImages(pdfPath: string) {
+    async genPdfImages(pdfPath: string) {
         const loadingTask = this.pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
         return this._genImages(pdf);
     }
     _genImages(pdf: PDFDocumentProxy) {
-        return new Promise<PDFImageData[]>((resolve, reject) => {
+        return new Promise<PdfImageDataType[]>((resolve, reject) => {
             const pageNumbers = Array.from(Array(pdf.numPages).keys());
             const promises = pageNumbers.map((pageNumber) => {
                 return this._genImage(pdf, pageNumber + 1);
@@ -34,7 +34,7 @@ export default class PDFManager {
         });
     }
     _genImage(pdf: PDFDocumentProxy, pageNumber: number) {
-        return new Promise<PDFImageData>((resolve, reject) => {
+        return new Promise<PdfImageDataType>((resolve, reject) => {
             pdf.getPage(pageNumber).then((page) => {
                 const viewport = page.getViewport({ scale: 1 });
                 const canvas = document.createElement('canvas');
@@ -63,9 +63,9 @@ export default class PDFManager {
         });
     }
     static getInstance() {
-        if (PDFManager._instance === null) {
-            PDFManager._instance = new PDFManager();
+        if (PdfController._instance === null) {
+            PdfController._instance = new PdfController();
         }
-        return PDFManager._instance;
+        return PdfController._instance;
     }
 }

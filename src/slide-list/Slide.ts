@@ -15,6 +15,7 @@ import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import { DisplayType } from '../_present/presentHelpers';
+import { PdfImageDataType } from '../pdf/PdfController';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],
@@ -31,12 +32,19 @@ export default class Slide extends ItemSource<SlideItem>{
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editingCacheManager: SlideEditingCacheManager;
+    _imageDataUrls: PdfImageDataType[] | null = null;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource);
         this.editingCacheManager = new SlideEditingCacheManager(
             this.fileSource, json);
     }
+    get isPdf() {
+        return this._imageDataUrls !== null;
+    }
     get isChanged() {
+        if (this.isPdf) {
+            return false;
+        }
         return this.editingCacheManager.isChanged;
     }
     get copiedItem() {
@@ -70,12 +78,26 @@ export default class Slide extends ItemSource<SlideItem>{
         }
     }
     get metadata() {
+        if (this.isPdf) {
+            return {};
+        }
         return this.editingCacheManager.presentJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
         this.editingCacheManager.pushMetadata(metadata);
     }
     get items() {
+        if (this.isPdf) {
+            return (this._imageDataUrls || []).map((imageDataUrl, i) => {
+                const slideItem = new SlideItem(i, this.fileSource, {
+                    id: i,
+                    canvasItems: [],
+                    metadata: {},
+                });
+                slideItem._imageDataUrl = imageDataUrl;
+                return slideItem;
+            });
+        }
         const latestHistory = this.editingCacheManager.presentJson;
         return latestHistory.items.map((json) => {
             try {

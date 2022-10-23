@@ -7,6 +7,7 @@ import SlideEditingCacheManager from './SlideEditingCacheManager';
 import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_present/presentHelpers';
+import { PdfImageDataType } from '../pdf/PdfController';
 
 export type SlideItemType = {
     id: number,
@@ -24,6 +25,7 @@ export default class SlideItem extends ItemBase {
     static copiedItem: SlideItem | null = null;
     editingCacheManager: SlideEditingCacheManager;
     static _cache = new Map<string, SlideItem>();
+    _imageDataUrl: PdfImageDataType | null = null;
     constructor(id: number, fileSource: FileSource,
         json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager) {
@@ -44,6 +46,9 @@ export default class SlideItem extends ItemBase {
         this.isCopied = false;
         const key = SlideItem.genKeyByFileSource(fileSource, id);
         SlideItem._cache.set(key, this);
+    }
+    get isPdf() {
+        return this._imageDataUrl !== null;
     }
     get originalJson() {
         return this._json;
@@ -67,6 +72,9 @@ export default class SlideItem extends ItemBase {
         json.metadata = metadata;
         this.originalJson = json;
     }
+    get imageSrc() {
+        return this._imageDataUrl?.src || null;
+    }
     get canvas() {
         return Canvas.fromJson({
             metadata: this.metadata,
@@ -87,6 +95,9 @@ export default class SlideItem extends ItemBase {
         this.originalJson = json;
     }
     get width() {
+        if (this.isPdf) {
+            return this._imageDataUrl?.width || 0;
+        }
         return this.metadata.width;
     }
     set width(width: number) {
@@ -95,6 +106,9 @@ export default class SlideItem extends ItemBase {
         this.metadata = metadata;
     }
     get height() {
+        if (this.isPdf) {
+            return this._imageDataUrl?.height || 0;
+        }
         return this.metadata.height;
     }
     set height(height: number) {

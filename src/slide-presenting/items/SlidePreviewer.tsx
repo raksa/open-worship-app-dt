@@ -17,8 +17,8 @@ import SlideItemsMenu from './SlideItemsMenu';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
 
 export default function SlidePreviewer() {
-    const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
-        DEFAULT_THUMBNAIL_SIZE);
+    const [thumbSize, setThumbSize] = useSlideItemSizing(
+        THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
     const [slide, setSlide] = useState<Slide | null | undefined>(null);
     useSlideSelecting(() => {
         setSlide(null);
@@ -42,13 +42,23 @@ export default function SlidePreviewer() {
         );
     }
     return (
-        <div id='slide-previewer' className='card w-100 h-100'>
-            <div className='card-body w-100 h-100 overflow-hidden'>
-                <SlideItemsMenu slide={slide} />
-                <SlideItemsPreviewer slide={slide} />
-            </div>
-            <SlidePreviewerFooter thumbnailSize={thumbSize}
-                setThumbnailSize={(s) => setThumbSize(s)} />
+        <div id='slide-previewer'
+            className='card w-100 h-100'>
+            <PreviewSlide slide={slide} />
+            <SlidePreviewerFooter
+                thumbnailSize={thumbSize}
+                setThumbnailSize={(newSize) => {
+                    setThumbSize(newSize);
+                }} />
+        </div>
+    );
+}
+
+function PreviewSlide({ slide }: { slide: Slide }) {
+    return (
+        <div className='card-body w-100 h-100 overflow-hidden'>
+            <SlideItemsMenu slide={slide} />
+            <SlideItemsPreviewer slide={slide} />
         </div>
     );
 }

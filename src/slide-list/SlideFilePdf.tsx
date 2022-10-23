@@ -1,6 +1,7 @@
 import { openConfirm } from '../alert/alertHelpers';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
+import Slide from './Slide';
 
 export default function SlideFilePdf({
     index,
@@ -9,7 +10,11 @@ export default function SlideFilePdf({
     index: number,
     fileSource: FileSource,
 }) {
-    const applyClick = () => {
+    const applyClick = async () => {
+        const selectedSlide = await Slide.getSelected();
+        if (selectedSlide) {
+            selectedSlide.isSelected = false;
+        }
         console.log(fileSource.src);
     };
     return (
