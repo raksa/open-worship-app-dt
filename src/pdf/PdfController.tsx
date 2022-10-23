@@ -8,6 +8,8 @@ export type PdfImageDataType = {
     src: string,
 };
 
+const mapper = new Map<string, PdfImageDataType[]>();
+
 export default class PdfController {
     static _instance: PdfController | null = null;
     static pdfjsLib: typeof pdfjsLibType | null = null;
@@ -20,9 +22,14 @@ export default class PdfController {
         return PdfController.pdfjsLib;
     }
     async genPdfImages(pdfPath: string) {
+        if(mapper.has(pdfPath)) {
+            return mapper.get(pdfPath) as PdfImageDataType[];
+        }
         const loadingTask = this.pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
-        return this._genImages(pdf);
+        const pdfImageDataList = await this._genImages(pdf);
+        mapper.set(pdfPath, pdfImageDataList);
+        return pdfImageDataList;
     }
     _genImages(pdf: PDFDocumentProxy) {
         return new Promise<PdfImageDataType[]>((resolve, reject) => {

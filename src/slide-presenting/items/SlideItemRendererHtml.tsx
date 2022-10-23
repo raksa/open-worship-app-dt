@@ -5,12 +5,12 @@ import SlideItemRenderer from './SlideItemRenderer';
 export default function SlideItemRendererHtml({ slideItem }: {
     slideItem: SlideItem,
 }) {
+    const [parentWidth, setWidth] = useState(0);
     if (slideItem.isError) {
         return (
             <div className='alert alert-danger'>Error</div>
         );
     }
-    const [parentWidth, setWidth] = useState(0);
     const scale = parentWidth / slideItem.width;
     return (
         <div ref={(div) => {

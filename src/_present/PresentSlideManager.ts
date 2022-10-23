@@ -1,7 +1,9 @@
 import EventHandler from '../event/EventHandler';
 import { AnyObjectType, isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
+import { PdfImageDataType } from '../pdf/PdfController';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
+import { genPdfSlideItem } from '../slide-presenting/items/SlideItemPdfRender';
 import { genHtmlSlideItem } from '../slide-presenting/items/SlideItemRenderer';
 import appProviderPresent from './appProviderPresent';
 import { sendPresentMessage } from './presentEventHelpers';
@@ -139,6 +141,25 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         });
         PresentSlideManager.fireUpdateEvent();
     }
+    renderPdf(pdfImageData: PdfImageDataType) {
+        if (this.div === null) {
+            return;
+        }
+        Array.from(this.div.children).forEach((child) => {
+            child.remove();
+        });
+        const { src: pdfImageSrc } = pdfImageData;
+        const parentWidth = this.presentManager.width;
+        const content = genPdfSlideItem(parentWidth, pdfImageSrc);
+        const divContainer = document.createElement('div');
+        Object.assign(divContainer.style, {
+            width: '100%',
+            height: '100%',
+            overflow: 'auto',
+        });
+        divContainer.appendChild(content);
+        this.div.appendChild(divContainer);
+    }
     render() {
         if (this.div === null) {
             return;
@@ -146,10 +167,14 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         const aminData = this.ptEffect.styleAnim;
         const slideItemData = this.slideItemData;
         if (slideItemData !== null) {
+            if (slideItemData.slideItemJson.pdfImageData) {
+                this.renderPdf(slideItemData.slideItemJson.pdfImageData);
+                return;
+            }
             const { slideItemJson } = slideItemData;
-            const newDiv = genHtmlSlideItem(slideItemJson.canvasItems);
+            const content = genHtmlSlideItem(slideItemJson.canvasItems);
             const divHaftScale = document.createElement('div');
-            divHaftScale.appendChild(newDiv);
+            divHaftScale.appendChild(content);
             const parentWidth = this.presentManager.width;
             const parentHeight = this.presentManager.height;
             const width = slideItemJson.metadata.width;
@@ -175,7 +200,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                     child.remove();
                 });
                 if (appProviderPresent.isPresent) {
-                    Array.from(newDiv.children).forEach((child) => {
+                    Array.from(content.children).forEach((child) => {
                         child.querySelectorAll('svg').forEach((svg) => {
                             svg.style.display = 'none';
                         });
@@ -198,7 +223,6 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     }
     get containerStyle(): React.CSSProperties {
         return {
-            pointerEvents: 'none',
             position: 'absolute',
             width: `${this.presentManager.width}px`,
             height: `${this.presentManager.height}px`,

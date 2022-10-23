@@ -207,7 +207,6 @@ export default class SlideItem extends ItemBase {
             typeof json.metadata.height !== 'number' ||
             !(json.canvasItems instanceof Array)) {
             console.log(json);
-            debugger;
             throw new Error('Invalid slide item data');
         }
     }
