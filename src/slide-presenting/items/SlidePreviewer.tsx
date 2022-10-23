@@ -7,6 +7,7 @@ import {
 import {
     THUMBNAIL_WIDTH_SETTING_NAME,
     DEFAULT_THUMBNAIL_SIZE,
+    SlideDynamicType,
 } from '../../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
@@ -19,7 +20,7 @@ import { useFSEvents } from '../../helper/dirSourceHelpers';
 export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(
         THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
-    const [slide, setSlide] = useState<Slide | null | undefined>(null);
+    const [slide, setSlide] = useState<SlideDynamicType>(null);
     useSlideSelecting(() => {
         setSlide(null);
     });
@@ -57,7 +58,7 @@ export default function SlidePreviewer() {
 function PreviewSlide({ slide }: { slide: Slide }) {
     return (
         <div className='card-body w-100 h-100 overflow-hidden'>
-            <SlideItemsMenu slide={slide} />
+            {!slide.isPdf && <SlideItemsMenu slide={slide} />}
             <SlideItemsPreviewer slide={slide} />
         </div>
     );

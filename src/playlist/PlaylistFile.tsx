@@ -15,12 +15,13 @@ export default function PlaylistFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
+    const settingName = `opened-${fileSource.filePath}`;
+    const [isOpened, setIsOpened] = useStateSettingBoolean(settingName);
     useEffect(() => {
         if (data === null) {
             Playlist.readFileToData(fileSource).then(setData);
         }
     }, [data]);
-    const [isOpened, setIsOpened] = useStateSettingBoolean(`opened-${fileSource.filePath}`);
     return (
         <FileItemHandler
             index={index}
@@ -39,36 +40,59 @@ export default function PlaylistFile({
                     }
                 }
             }}
-            child={<div className='card pointer mt-1 ps-2'>
-                <div className='card-header'
-                    onClick={() => setIsOpened(!isOpened)}>
-                    <i className={`bi ${isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                    {fileSource.name}
-                </div>
-                {isOpened && data && <div className='card-body d-flex flex-column'>
-                    {data.items.map((playlistItem, i) => {
-                        if (playlistItem.isSlide) {
-                            return (
-                                <PlaylistSlideItem
-                                    playlistItem={playlistItem} />
-                            );
-                        } else if (playlistItem.isBibleItem) {
-                            playlistItem.getBibleItem();
-                            return (
-                                <Suspense fallback={<div>Loadding ...</div>}>
-                                    <PlaylistBibleItem key={i} index={i}
-                                        playlistItem={playlistItem} />
-                                </Suspense>
-                            );
-                        } else if (playlistItem.isLyric) {
-                            return (
-                                <div>Not Supported Item Type</div>
-                            );
-                        }
-                    })}
-                </div>}
-            </div>}
+            renderChild={(playlist) => {
+                return (
+                    <PlaylistPreview
+                        isOpened={isOpened}
+                        setIsOpened={setIsOpened}
+                        playlist={playlist as Playlist} />
+                );
+            }}
         />
+    );
+}
+
+function PlaylistPreview({
+    isOpened,
+    setIsOpened,
+    playlist,
+}: {
+    isOpened: boolean,
+    setIsOpened: (isOpened: boolean) => void,
+    playlist: Playlist,
+}) {
+    return (
+        <div className='card pointer mt-1 ps-2'>
+            <div className='card-header'
+                onClick={() => setIsOpened(!isOpened)}>
+                <i className={`bi ${isOpened ?
+                    'bi-chevron-down' : 'bi-chevron-right'}`} />
+                {playlist.fileSource.name}
+            </div>
+            {isOpened && playlist && <div
+                className='card-body d-flex flex-column'>
+                {playlist.items.map((playlistItem, i) => {
+                    if (playlistItem.isSlide) {
+                        return (
+                            <PlaylistSlideItem
+                                playlistItem={playlistItem} />
+                        );
+                    } else if (playlistItem.isBibleItem) {
+                        playlistItem.getBibleItem();
+                        return (
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PlaylistBibleItem key={i} index={i}
+                                    playlistItem={playlistItem} />
+                            </Suspense>
+                        );
+                    } else if (playlistItem.isLyric) {
+                        return (
+                            <div>Not Supported Item Type</div>
+                        );
+                    }
+                })}
+            </div>}
+        </div>
     );
 }
 

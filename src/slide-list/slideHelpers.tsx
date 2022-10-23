@@ -6,6 +6,7 @@ import ToastEventListener from '../event/ToastEventListener';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
+import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import { AppMimetypeType } from '../server/fileHelper';
 import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
@@ -17,6 +18,8 @@ export const THUMBNAIL_SCALE_STEP = 0.2;
 export const MAX_THUMBNAIL_SCALE = 3;
 export const DEFAULT_THUMBNAIL_SIZE = 250;
 export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenting-item-thumbnail-size';
+
+export type SlideDynamicType = Slide | null | undefined;
 
 export function toScaleThumbSize(isUp: boolean, currentScale: number) {
     let newScale = currentScale + (isUp ? -1 : 1) * THUMBNAIL_SCALE_STEP;
@@ -130,4 +133,20 @@ export async function convertOfficeFile(fileSource: FileSource,
             message: `Fail to convert ${toHtmlBold(fileName)}`,
         });
     }
+}
+
+export async function readPdfToSlide(fileSource: FileSource) {
+    const pdfManager = PdfController.getInstance();
+    try {
+        const imageDataList = await pdfManager.genPdfImages(fileSource.src);
+        const slide = new Slide(fileSource, {
+            items: [],
+            metadata: {},
+        });
+        slide._pdfImageDataList = imageDataList;
+        return slide;
+    } catch (error) {
+        appProvider.appUtils.handleError(error);
+    }
+    return null;
 }

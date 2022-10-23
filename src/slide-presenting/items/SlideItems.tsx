@@ -19,6 +19,7 @@ import { useFSEvents } from '../../helper/dirSourceHelpers';
 import PresentSlideManager from '../../_present/PresentSlideManager';
 import { genPresentMouseEvent } from '../../_present/presentHelpers';
 import SlideItem from '../../slide-list/SlideItem';
+import SlideItemPdfRender from './SlideItemPdfRender';
 
 function getPresentingIndex(slide: Slide) {
     for (let i = 0; i < slide.items.length; i++) {
@@ -72,7 +73,17 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     }
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {slideItems.map((item, i) => {
+            {slideItems.map((slideItem, i) => {
+                if (slideItem.isPdf) {
+                    return (
+                        <SlideItemPdfRender key={i}
+                            onClick={(event) => {
+                                handleSlideItemSelecting(slideItem, event);
+                            }}
+                            slideItem={slideItem}
+                            width={thumbSize} index={i} />
+                    );
+                }
                 const shouldReceiveAtFirst = draggingIndex !== null &&
                     draggingIndex !== 0 && i === 0;
                 const shouldReceiveAtLast = draggingIndex !== null &&
@@ -85,16 +96,16 @@ export default function SlideItems({ slide }: { slide: Slide }) {
                                 slide.moveItem(id, i);
                             }} />}
                         <SlideItemRender index={i}
-                            slideItem={item}
+                            slideItem={slideItem}
                             width={thumbSize}
                             onClick={(event) => {
-                                handleSlideItemSelecting(item, event);
+                                handleSlideItemSelecting(slideItem, event);
                             }}
                             onContextMenu={(event) => {
-                                slide.openContextMenu(event, item);
+                                slide.openContextMenu(event, slideItem);
                             }}
                             onCopy={() => {
-                                slide.copiedItem = item;
+                                slide.copiedItem = slideItem;
                             }}
                             onDragStart={() => {
                                 setDraggingIndex(i);

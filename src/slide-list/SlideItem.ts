@@ -12,6 +12,7 @@ import { PdfImageDataType } from '../pdf/PdfController';
 export type SlideItemType = {
     id: number,
     canvasItems: CanvasItemPropsType[],
+    pdfImageData?: PdfImageDataType,
     metadata: AnyObjectType,
 };
 
@@ -25,7 +26,6 @@ export default class SlideItem extends ItemBase {
     static copiedItem: SlideItem | null = null;
     editingCacheManager: SlideEditingCacheManager;
     static _cache = new Map<string, SlideItem>();
-    _imageDataUrl: PdfImageDataType | null = null;
     constructor(id: number, fileSource: FileSource,
         json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager) {
@@ -47,8 +47,11 @@ export default class SlideItem extends ItemBase {
         const key = SlideItem.genKeyByFileSource(fileSource, id);
         SlideItem._cache.set(key, this);
     }
+    get pdfImageData() {
+        return this.originalJson.pdfImageData || null;
+    }
     get isPdf() {
-        return this._imageDataUrl !== null;
+        return this.pdfImageData !== null;
     }
     get originalJson() {
         return this._json;
@@ -72,8 +75,8 @@ export default class SlideItem extends ItemBase {
         json.metadata = metadata;
         this.originalJson = json;
     }
-    get imageSrc() {
-        return this._imageDataUrl?.src || null;
+    get pdfImageSrc() {
+        return this.pdfImageData?.src || '';
     }
     get canvas() {
         return Canvas.fromJson({
@@ -96,7 +99,7 @@ export default class SlideItem extends ItemBase {
     }
     get width() {
         if (this.isPdf) {
-            return this._imageDataUrl?.width || 0;
+            return Math.floor(this.pdfImageData?.width || 0);
         }
         return this.metadata.width;
     }
@@ -107,7 +110,7 @@ export default class SlideItem extends ItemBase {
     }
     get height() {
         if (this.isPdf) {
-            return this._imageDataUrl?.height || 0;
+            return Math.floor(this.pdfImageData?.height || 0);
         }
         return this.metadata.height;
     }
@@ -193,6 +196,7 @@ export default class SlideItem extends ItemBase {
         return {
             id: this.id,
             canvasItems: this.canvasItemsJson,
+            pdfImageData: this.pdfImageData || undefined,
             metadata: this.metadata,
         };
     }
@@ -203,6 +207,7 @@ export default class SlideItem extends ItemBase {
             typeof json.metadata.height !== 'number' ||
             !(json.canvasItems instanceof Array)) {
             console.log(json);
+            debugger;
             throw new Error('Invalid slide item data');
         }
     }

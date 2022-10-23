@@ -27,10 +27,20 @@ export const genCommonMenu = (fileSource: FileSource) => {
         },
     ];
 };
+
+
 export default function FileItemHandler({
-    data, reload, index, fileSource, className,
-    contextMenu, onDrop, onClick,
-    child, isPointer, onDelete,
+    data,
+    reload,
+    index,
+    fileSource,
+    className,
+    contextMenu,
+    onDrop,
+    onClick,
+    renderChild,
+    isPointer,
+    onDelete,
 }: {
     data: ItemSource<any> | null | undefined,
     reload: () => void,
@@ -40,7 +50,7 @@ export default function FileItemHandler({
     contextMenu?: ContextMenuItemType[],
     onDrop?: (event: any) => void,
     onClick?: () => void,
-    child: any,
+    renderChild: (_: ItemSource<any>) => any,
     isPointer?: boolean,
     onDelete?: () => void,
 }) {
@@ -110,7 +120,7 @@ export default function FileItemHandler({
                     onDrop(event);
                 }
             }}>
-            {child}
+            {renderChild(data)}
         </li>
     );
 }

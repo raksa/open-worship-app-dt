@@ -8,6 +8,7 @@ import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { goEditSlide } from '../App';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { SlideDynamicType } from './slideHelpers';
 
 export default function SlideFile({
     index,
@@ -16,7 +17,7 @@ export default function SlideFile({
     index: number,
     fileSource: FileSource,
 }) {
-    const [data, setData] = useState<Slide | null | undefined>(null);
+    const [data, setData] = useState<SlideDynamicType>(null);
     useEffect(() => {
         if (data === null) {
             Slide.readFileToData(fileSource).then(setData);
@@ -44,14 +45,13 @@ export default function SlideFile({
                     data.isSelected = !data.isSelected;
                 }
             }}
-            child={<>
-                <i className='bi bi-file-earmark-slides' />
-                {fileSource.name}
-                {data && data.isChanged && <span
-                    style={{ color: 'red' }}>*</span>}
-                <ItemColorNote item={data as ItemSource<any>} />
-            </>}
-            contextMenu={[{
+            renderChild={(slide) => {
+                const slide1 = slide as Slide;
+                return slide1.isPdf ?
+                    <SlideFilePreviewPdf slide={slide1} /> :
+                    <SlideFilePreviewNormal slide={slide1} />;
+            }}
+            contextMenu={data?.isPdf ? [] : [{
                 title: 'Edit',
                 onClick: () => {
                     if (data) {
@@ -68,5 +68,28 @@ export default function SlideFile({
                 data?.editingCacheManager.delete();
             }}
         />
+    );
+}
+
+
+function SlideFilePreviewNormal({ slide }: { slide: Slide }) {
+    return (
+        <>
+            <i className='bi bi-file-earmark-slides' />
+            {slide.fileSource.name}
+            {slide.isChanged && <span
+                style={{ color: 'red' }}>*</span>}
+            <ItemColorNote item={slide as ItemSource<any>} />
+        </>
+    );
+}
+
+function SlideFilePreviewPdf({ slide }: { slide: Slide }) {
+    return (
+        <>
+            <i className='bi bi-filetype-pdf' />
+            {slide.fileSource.name}
+            <ItemColorNote item={slide as ItemSource<any>} />
+        </>
     );
 }

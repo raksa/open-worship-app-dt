@@ -55,29 +55,39 @@ export default function BibleFile({
                     });
                 }
             }}
-            child={data && <div className='accordion accordion-flush'>
-                <div className='accordion-header pointer'
-                    onClick={() => {
-                        if (data) {
-                            data.setIsOpened(!data.isOpened);
-                        }
-                    }}>
-                    <i className={`bi ${data.isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                    <span className='w-100 text-center'>
-                        {fileSource.name}
-                    </span>
-                </div>
-                <div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}
-                    style={{
-                        overflow: 'auto',
-                    }}>
-                    {data.isOpened && <div className='accordion-body'>
-                        <AppSuspense>
-                            <RenderBibleItems bible={data} />
-                        </AppSuspense>
-                    </div>}
-                </div>
-            </div>}
+            renderChild={(bible) => {
+                return (
+                    <BiblePreview bible={bible as Bible} />
+                );
+            }}
         />
+    );
+}
+
+function BiblePreview({ bible }: { bible: Bible }) {
+    return (
+        <div className='accordion accordion-flush'>
+            <div className='accordion-header pointer'
+                onClick={() => {
+                    bible.setIsOpened(!bible.isOpened);
+                }}>
+                <i className={`bi ${bible.isOpened ?
+                    'bi-chevron-down' : 'bi-chevron-right'}`} />
+                <span className='w-100 text-center'>
+                    {bible.fileSource.name}
+                </span>
+            </div>
+            <div className={`accordion-collapse collapse ${bible.isOpened ?
+                'show' : ''}`}
+                style={{
+                    overflow: 'auto',
+                }}>
+                {bible.isOpened && <div className='accordion-body'>
+                    <AppSuspense>
+                        <RenderBibleItems bible={bible} />
+                    </AppSuspense>
+                </div>}
+            </div>
+        </div>
     );
 }

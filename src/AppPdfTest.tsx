@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import PdfManager, {
+import PdfController, {
     PdfImageDataType,
 } from './pdf/PdfController';
 import PdfItemViewer from './pdf/PdfItemViewer';
@@ -9,7 +9,7 @@ function usePdfImage(pdfPath: string) {
     const [images, setImages] = useState<PdfImageDataType[] | null>(null);
     useEffect(() => {
         if (images === null) {
-            const pdfManager = PdfManager.getInstance();
+            const pdfManager = PdfController.getInstance();
             pdfManager.genPdfImages(pdfPath).then((images) => {
                 setImages(images);
             }).catch((error) => {

@@ -11,7 +11,6 @@ import {
     supportOfficeFE,
 } from './slideHelpers';
 import { extractExtension } from '../server/fileHelper';
-import SlideFilePdf from './SlideFilePdf';
 
 export default function SlideList() {
     const dirSource = DirSource.getInstance('slide-list-selected-dir');
@@ -51,16 +50,10 @@ export default function SlideList() {
             }}
             header={<span>Slides</span>}
             bodyHandler={(fileSources) => {
-                return (<>
-                    {fileSources.map((fileSource, i) => {
-                        if (checkIsPdf(fileSource.extension)) {
-                            return <SlideFilePdf key={`${i}`} index={i}
-                                fileSource={fileSource} />;
-                        }
-                        return <SlideFile key={`${i}`} index={i}
-                            fileSource={fileSource} />;
-                    })}
-                </>);
+                return fileSources.map((fileSource, i) => {
+                    return <SlideFile key={`${i}`} index={i}
+                        fileSource={fileSource} />;
+                });
             }} />
     );
 }

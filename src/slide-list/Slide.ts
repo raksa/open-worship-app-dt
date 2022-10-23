@@ -3,9 +3,12 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
+    checkIsPdf,
     MAX_THUMBNAIL_SCALE,
     MIN_THUMBNAIL_SCALE,
     openSlideContextMenu,
+    readPdfToSlide,
+    SlideDynamicType,
     THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
@@ -32,14 +35,14 @@ export default class Slide extends ItemSource<SlideItem>{
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editingCacheManager: SlideEditingCacheManager;
-    _imageDataUrls: PdfImageDataType[] | null = null;
+    _pdfImageDataList: PdfImageDataType[] | null = null;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource);
         this.editingCacheManager = new SlideEditingCacheManager(
             this.fileSource, json);
     }
     get isPdf() {
-        return this._imageDataUrls !== null;
+        return this._pdfImageDataList !== null;
     }
     get isChanged() {
         if (this.isPdf) {
@@ -88,13 +91,16 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     get items() {
         if (this.isPdf) {
-            return (this._imageDataUrls || []).map((imageDataUrl, i) => {
+            return (this._pdfImageDataList || []).map((pdfImageData, i) => {
                 const slideItem = new SlideItem(i, this.fileSource, {
                     id: i,
                     canvasItems: [],
-                    metadata: {},
+                    pdfImageData,
+                    metadata: {
+                        width: pdfImageData.width,
+                        height: pdfImageData.height,
+                    },
                 });
-                slideItem._imageDataUrl = imageDataUrl;
                 return slideItem;
             });
         }
@@ -280,8 +286,11 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     static async readFileToDataNoCache(fileSource: FileSource | null,
         isOrigin?: boolean) {
+        if (fileSource?.src && checkIsPdf(fileSource.extension)) {
+            return readPdfToSlide(fileSource);
+        }
         const data = await super.readFileToDataNoCache(fileSource);
-        const slide = data as Slide | null | undefined;
+        const slide = data as SlideDynamicType;
         if (isOrigin && slide) {
             slide.editingCacheManager.isUsingHistory = false;
         }
@@ -304,6 +313,10 @@ export default class Slide extends ItemSource<SlideItem>{
             [SlideItem.defaultSlideItemData(0)]);
     }
     openContextMenu(event: any, slideItem: SlideItem) {
+        if (this.isPdf) {
+            event.stopPropagation();
+            return;
+        }
         openSlideContextMenu(event, this, slideItem);
     }
     clone() {

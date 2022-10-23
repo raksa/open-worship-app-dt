@@ -42,13 +42,23 @@ export default function LyricFile({
                     data.isSelected = !data.isSelected;
                 }
             }}
-            child={<>
-                <i className='bi bi-music-note' />
-                {fileSource.name}
-                {data && data.isChanged && <span
-                    style={{ color: 'red' }}>*</span>}
-                <ItemColorNote item={data as ItemSource<any>} />
-            </>}
+            renderChild={(lyric) => {
+                return (
+                    <LyricFilePreview lyric={lyric as Lyric} />
+                );
+            }}
         />
+    );
+}
+
+function LyricFilePreview({ lyric }: { lyric: Lyric }) {
+    return (
+        <>
+            <i className='bi bi-music-note' />
+            {lyric.fileSource.name}
+            {lyric.isChanged && <span
+                style={{ color: 'red' }}>*</span>}
+            <ItemColorNote item={lyric as ItemSource<any>} />
+        </>
     );
 }
