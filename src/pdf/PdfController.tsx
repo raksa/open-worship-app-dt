@@ -16,7 +16,7 @@ export default class PdfController {
     get pdfjsLib() {
         if (PdfController.pdfjsLib === null) {
             const pdfjsLib = require('pdfjs-dist/build/pdf') as typeof pdfjsLibType;
-            pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.js';
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js';
             PdfController.pdfjsLib = pdfjsLib;
         }
         return PdfController.pdfjsLib;
