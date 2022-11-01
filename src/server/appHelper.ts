@@ -10,6 +10,7 @@ import {
     getLangAsync,
     LocaleType,
 } from '../lang';
+import initCrypto from '../_owa-crypto';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -79,6 +80,7 @@ export function sqlite3ReadValue(dbFilePath: string, table: string, key: string)
 }
 
 export async function initApp() {
+    await initCrypto();
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);
     // Bibles
@@ -95,6 +97,4 @@ export async function initApp() {
             }
         }
     }
-
-
 }

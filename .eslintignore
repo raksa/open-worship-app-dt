@@ -4,3 +4,4 @@ node_modules/
 .vscode/
 webpack.config.*
 .eslintrc.js
+src/_owa-crypto/*.js
