@@ -1,6 +1,6 @@
 import { showAppContextMenu } from '../others/AppContextMenu';
-import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import BibleItem from '../bible-list/BibleItem';
+import { getBibleListWithStatus } from '../server/bible-helpers/bibleHelpers';
 
 export default function ButtonAddMoreBible({
     bibleItems, applyPresents,
@@ -24,7 +24,7 @@ export default function ButtonAddMoreBible({
                     ];
                     applyPresents(newBibleItems);
                 };
-                const bibleList = await bibleHelper.getBibleListWithStatus();
+                const bibleList = await getBibleListWithStatus();
                 const bibleItemingList = bibleItems.map(({ bibleName }) => {
                     return bibleName;
                 });

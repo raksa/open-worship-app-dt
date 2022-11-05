@@ -1,5 +1,5 @@
-import bibleHelper, {
-    BibleMinimalInfoType,
+import {
+    BibleMinimalInfoType, deleteBible,
 } from '../../server/bible-helpers/bibleHelpers';
 import ToastEventListener from '../../event/ToastEventListener';
 import { BibleListType } from './helpers';
@@ -82,7 +82,7 @@ function DownloadedBibleItem({
     const { key, title } = bible;
     const onDeleteHandler = async () => {
         try {
-            await bibleHelper.delete(key);
+            await deleteBible(key);
             onDeleted();
         } catch (error: any) {
             ToastEventListener.showSimpleToast({

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import bibleHelper from '../server/bible-helpers/bibleHelpers';
 import { keyToBook, getVerses } from '../server/bible-helpers/bibleHelpers1';
 import {
     toLocaleNumBB,
@@ -14,6 +13,7 @@ import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
 import appProvider from '../server/appProvider';
+import { getKJVKeyValue } from '../server/bible-helpers/bibleHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -218,7 +218,7 @@ export default class BibleItem extends ItemBase {
         const txtV = `${startVerseLocale}${startVerse !== endVerse ? ('-' + endVerseLocale) : ''}`;
         let bookKey = await keyToBook(bible, book);
         if (bookKey === null) {
-            bookKey = bibleHelper.getKJVKeyValue()[book];
+            bookKey = getKJVKeyValue()[book];
         }
         return `${bookKey} ${chapterLocale}:${txtV}`;
     }

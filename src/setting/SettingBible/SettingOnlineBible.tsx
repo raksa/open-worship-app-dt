@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import bibleHelper, {
-    BibleMinimalInfoType,
+import {
+    BibleMinimalInfoType, downloadBible,
 } from '../../server/bible-helpers/bibleHelpers';
 import ToastEventListener from '../../event/ToastEventListener';
 import appProvider from '../../server/appProvider';
@@ -64,7 +64,7 @@ export function OnlineBibleItem({
     const [downloadingProgress, setDownloadingProgress] = useState<number | null>(null);
     const onDownloadHandler = () => {
         setDownloadingProgress(0);
-        bibleHelper.download(key, {
+        downloadBible(key, {
             onStart: (totalSize) => {
                 ToastEventListener.showSimpleToast({
                     title: `Start downloading ${key}`,

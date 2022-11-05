@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import bibleHelper, {
+import {
     BibleMinimalInfoType,
+    getDownloadedBibleList,
+    getOnlineBibleList,
 } from '../../server/bible-helpers/bibleHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;
@@ -11,7 +13,7 @@ export function useDownloadedBibleList() {
         if (bibleList !== null) {
             return;
         }
-        bibleHelper.getDownloadedBibleList().then((bbList) => {
+        getDownloadedBibleList().then((bbList) => {
             setBibleList(bbList || undefined);
         });
     });
@@ -24,7 +26,7 @@ export function useOnlineBibleList() {
         if (bibleList !== null) {
             return;
         }
-        bibleHelper.getOnlineBibleList().then((bbList) => {
+        getOnlineBibleList().then((bbList) => {
             setBibleList(bbList || undefined);
         });
     });

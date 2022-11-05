@@ -1,13 +1,13 @@
 import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import { pathJoin } from './fileHelper';
-import bibleHelper from './bible-helpers/bibleHelpers';
 import {
     defaultLocal,
     getCurrentLangAsync,
     getLangAsync,
 } from '../lang';
 import initCrypto from '../_owa-crypto';
+import { getDownloadedBibleList } from './bible-helpers/bibleHelpers';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -63,7 +63,7 @@ export async function initApp() {
     await initCrypto();
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);
-    const downloadedBibleList = await bibleHelper.getDownloadedBibleList();
+    const downloadedBibleList = await getDownloadedBibleList();
     for (const bibleInfo of downloadedBibleList || []) {
         await getLangAsync(bibleInfo.locale);
     }

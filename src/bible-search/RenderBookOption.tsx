@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import bibleHelper, {
+import {
+    getKJVKeyValue,
     useGetBookKVList, useMatch,
 } from '../server/bible-helpers/bibleHelpers';
 import {
@@ -18,7 +19,7 @@ export default function RenderBookOption({
     onSelect: (book: string) => void,
     bibleSelected: string,
 }) {
-    const kjvKeyValue = bibleHelper.getKJVKeyValue();
+    const kjvKeyValue = getKJVKeyValue();
     const bookKVList = useGetBookKVList(bibleSelected);
     const [attemptMatchIndex, setAttemptMatchIndex] = useState(0);
     const matches = useMatch(bibleSelected, inputText);

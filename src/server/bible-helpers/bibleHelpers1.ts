@@ -1,5 +1,4 @@
 import appProvider from '../appProvider';
-import bibleHelper from './bibleHelpers';
 import {
     fsCreateDir,
     fsCreateWriteStream,
@@ -11,6 +10,11 @@ import { isValidJson } from '../../helper/helpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../appHelper';
 import { get_api_url, get_api_key } from '../../_owa-crypto';
+import {
+    getKJVChapterCount,
+    toBookKey,
+    toFileName,
+} from './bibleHelpers';
 
 export function httpsRequest(pathName: string,
     callback: (error: Error | null, response?: any) => void) {
@@ -167,18 +171,18 @@ export async function bookToKey(bibleName: string, book: string) {
 }
 export async function getChapterCount(bibleName: string, book: string) {
     if (!bibleStorage.chapterCountMapper.has(book)) {
-        const bookKey = await bibleHelper.toBookKey(bibleName, book);
+        const bookKey = await toBookKey(bibleName, book);
         if (bookKey === null) {
             return null;
         }
-        const chapterCount = bibleHelper.getKJVChapterCount(bookKey);
+        const chapterCount = getKJVChapterCount(bookKey);
         bibleStorage.chapterCountMapper.set(book, chapterCount);
     }
     return bibleStorage.chapterCountMapper.get(book) || null;
 }
 export async function getBookChapterData(bibleName: string,
     bookKey: string, chapterNumber: number) {
-    const fileName = bibleHelper.toFileName(bookKey, chapterNumber);
+    const fileName = toFileName(bookKey, chapterNumber);
     const vInfo = await readBibleData(bibleName, fileName) as ChapterType | null;
     if (vInfo === null) {
         return null;
