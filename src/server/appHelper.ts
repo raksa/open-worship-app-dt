@@ -1,14 +1,11 @@
 import ToastEventListener from '../event/ToastEventListener';
-import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
 import { pathJoin } from './fileHelper';
 import bibleHelper from './bible-helpers/bibleHelpers';
-import { initBibleInfo } from './bible-helpers/bibleHelpers1';
 import {
     defaultLocal,
     getCurrentLangAsync,
     getLangAsync,
-    LocaleType,
 } from '../lang';
 import initCrypto from '../_owa-crypto';
 
@@ -61,40 +58,13 @@ export function getUserWritablePath() {
     return appProvider.messageUtils.
         sendDataSync('main:app:get-data-path');
 }
-export function sqlite3ReadValue(dbFilePath: string, table: string, key: string) {
-    return new Promise<string | null>((resolve) => {
-        const waitingEventName = `main:app:db-read-reply-${genRandomString(5)}`;
-        appProvider.messageUtils.
-            listenOnceForData(waitingEventName,
-                (_event, data: string | null) => {
-                    resolve(data);
-                });
-        appProvider.messageUtils.
-            sendData('main:app:db-read', {
-                dbFilePath,
-                table,
-                key,
-                waitingEventName,
-            });
-    });
-}
 
 export async function initApp() {
     await initCrypto();
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);
-    // Bibles
-    if (!bibleHelper.getBibleList().length) {
-        await bibleHelper.getBibleListOnline();
-    }
-    const list = await bibleHelper.getDownloadedBibleList();
-    for (const bibleName of list) {
-        const info = await initBibleInfo(bibleName);
-        if (info !== null) {
-            const isExist = await bibleHelper.checkExist(bibleName);
-            if (isExist) {
-                await getLangAsync(info.locale as LocaleType);
-            }
-        }
+    const downloadedBibleList = await bibleHelper.getDownloadedBibleList();
+    for (const bibleInfo of downloadedBibleList || []) {
+        await getLangAsync(bibleInfo.locale);
     }
 }

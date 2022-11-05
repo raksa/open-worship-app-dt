@@ -1,6 +1,7 @@
 import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from '../helper/FileSource';
+import { Stats } from 'fs';
 
 export type AppMimetypeType = {
     type: string,
@@ -112,18 +113,98 @@ export function fsCreateWriteStream(filePath: string) {
     return appProvider.fileUtils.createWriteStream(filePath);
 }
 
-export function fsListFiles(dir: string) {
-    return new Promise<string[]>((resolve, reject) => {
-        if (!dir) {
-            return resolve([]);
-        }
-        appProvider.fileUtils.readdir(dir, (error, list) => {
+export type FileResultType = {
+    isFile: boolean,
+    isDirectory: boolean,
+    name: string,
+    filePath: string,
+};
+
+function fsFilePromise<T>(fn: Function, ...args: any[]): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        args = args || [];
+        args.push(function (error: any, ...args1: any[]) {
             if (error) {
-                appProvider.appUtils.handleError(error);
-                return reject(new Error('Error occurred during listing file'));
+                reject(error);
+            } else {
+                args1 = args1 || [];
+                resolve.apply(null, args1 as any);
             }
-            resolve(list);
         });
+        fn.apply(null, args);
+    });
+}
+function _fsStat(filePath: string) {
+    return fsFilePromise<Stats>(appProvider.fileUtils.stat, filePath);
+}
+function _fsMkdir(dirPath: string) {
+    return fsFilePromise<void>(appProvider.fileUtils.mkdir, dirPath);
+}
+function _fsRmdir(dirPath: string) {
+    return fsFilePromise<void>(appProvider.fileUtils.rmdir, dirPath);
+}
+function _fsReaddir(dirPath: string) {
+    return fsFilePromise<string[]>(appProvider.fileUtils.readdir, dirPath);
+}
+function _fsReadFile(filePath: string, options?: any) {
+    return fsFilePromise<string>(appProvider.fileUtils.readFile, filePath, options);
+}
+function _fsWriteFile(filePath: string, data: string, options?: any) {
+    return fsFilePromise<void>(appProvider.fileUtils.writeFile, filePath, data, options);
+}
+function _fsRename(oldPath: string, newPath: string) {
+    return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
+}
+function _fsUnlink(filePath: string) {
+    return fsFilePromise<void>(appProvider.fileUtils.unlink, filePath);
+}
+function _fsCopyFile(src: string, dest: string) {
+    return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
+}
+
+export async function fsList(dir: string) {
+    if (!dir) {
+        return [];
+    }
+    try {
+        const list = await _fsReaddir(dir);
+        const fileList = [];
+        for (const file of list) {
+            try {
+                const filePath = pathJoin(dir, file);
+                const fileStat = await _fsStat(filePath);
+                fileList.push({
+                    isFile: fileStat.isFile(),
+                    isDirectory: fileStat.isDirectory(),
+                    name: file,
+                    filePath,
+                });
+            } catch (error) {
+                appProvider.appUtils.handleError(error);
+            }
+        }
+        return fileList;
+    } catch (error) {
+        appProvider.appUtils.handleError(error);
+        throw new Error('Error occurred during listing file');
+    }
+}
+
+export async function fsListFiles(dir: string) {
+    const list = await fsList(dir);
+    return list.filter(({ isFile }) => {
+        return isFile;
+    }).map(({ name }) => {
+        return name;
+    });
+}
+
+export async function fsListDirectories(dir: string) {
+    const list = await fsList(dir);
+    return list.filter(({ isDirectory }) => {
+        return isDirectory;
+    }).map(({ name }) => {
+        return name;
     });
 }
 
@@ -152,26 +233,25 @@ export async function fsListFilesWithMimetype(dir: string, mimetype: MimetypeNam
     return null;
 }
 
-export function fsCheckFileExist(filePath: string, fileName?: string) {
-    return new Promise<boolean>((resolve, reject) => {
-        if (fileName) {
-            filePath = pathJoin(filePath, fileName);
+export async function fsCheckFileExist(filePath: string, fileName?: string) {
+    if (fileName) {
+        filePath = pathJoin(filePath, fileName);
+    }
+    try {
+        await _fsStat(filePath);
+        return true;
+    } catch (error: any) {
+        if (error.code === 'ENOENT') {
+            return false;
+        } else {
+            appProvider.appUtils.handleError(error);
+            throw new Error('Error during checking file exist');
         }
-        appProvider.fileUtils.stat(filePath, (error) => {
-            if (error === null) {
-                resolve(true);
-            } else if (error.code === 'ENOENT') {
-                resolve(false);
-            } else {
-                appProvider.appUtils.handleError(error);
-                reject(new Error('Error during checking file exist'));
-            }
-        });
-    });
+    }
 }
 export async function fsCreateDir(dirPath: string) {
     try {
-        appProvider.fileUtils.mkdirSync(dirPath);
+        await _fsMkdir(dirPath);
     } catch (error: any) {
         if (!error.message.includes('file already exists')) {
             return error;
@@ -181,8 +261,9 @@ export async function fsCreateDir(dirPath: string) {
 export async function fsWhiteFile(filePath: string, txt: string) {
     try {
         if (!await fsCheckFileExist(filePath)) {
-            appProvider.fileUtils.writeFileSync(filePath, txt, {
-                encoding: 'utf8', flag: 'w',
+            await _fsWriteFile(filePath, txt, {
+                encoding: 'utf8',
+                flag: 'w',
             });
             return filePath;
         } else {
@@ -203,7 +284,7 @@ export async function fsCreateFile(filePath: string,
                 throw new Error('File exist');
             }
         }
-        appProvider.fileUtils.writeFileSync(filePath, txt);
+        await _fsWriteFile(filePath, txt);
         return filePath;
     } catch (error) {
         appProvider.appUtils.handleError(error);
@@ -215,7 +296,7 @@ export async function fsRenameFile(basePath: string,
     try {
         const oldFilePath = pathJoin(basePath, oldFileName);
         const newFilePath = pathJoin(basePath, newFileName);
-        appProvider.fileUtils.renameSync(oldFilePath, newFilePath);
+        await _fsRename(oldFilePath, newFilePath);
     } catch (error) {
         appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during renaming file');
@@ -224,16 +305,26 @@ export async function fsRenameFile(basePath: string,
 export async function fsDeleteFile(filePath: string) {
     try {
         if (await fsCheckFileExist(filePath)) {
-            appProvider.fileUtils.unlinkSync(filePath);
+            await _fsUnlink(filePath);
         }
     } catch (error) {
         appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during deleting file');
     }
 }
+export async function fsDeleteDir(filePath: string) {
+    try {
+        if (await fsCheckFileExist(filePath)) {
+            await _fsRmdir(filePath);
+        }
+    } catch (error) {
+        appProvider.appUtils.handleError(error);
+        throw new Error('Error occurred during deleting directory');
+    }
+}
 export async function fsReadFile(filePath: string) {
     try {
-        return appProvider.fileUtils.readFileSync(filePath, 'utf8');
+        return await _fsReadFile(filePath, 'utf8');
     } catch (error) {
         appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during reading file');
@@ -243,7 +334,7 @@ export async function fsCopyFileToPath(filePath: string,
     fileName: string, destinationPath: string) {
     try {
         const targetPath = pathJoin(destinationPath, fileName);
-        appProvider.fileUtils.copyFileSync(filePath, targetPath);
+        await _fsCopyFile(filePath, targetPath);
     } catch (error) {
         appProvider.appUtils.handleError(error);
         throw new Error('Error occurred during copying file');

@@ -1,7 +1,6 @@
 import ElectronAppController from './ElectronAppController';
 import ElectronPresentController from './ElectronPresentController';
 
-import { readValue } from './sqlite3';
 const crypto = require('crypto');
 const electron = require('electron');
 
@@ -52,11 +51,6 @@ export function initApp(appController: ElectronAppController) {
             filters,
         });
         event.returnValue = result.filePaths;
-    });
-
-    ipcMain.on('main:app:db-read', async (event, data) => {
-        const value = await readValue(data.dbFilePath, data.table, data.key);
-        event.reply(data.waitingEventName, value);
     });
 
     ipcMain.on('app:app:https-credential', (event) => {

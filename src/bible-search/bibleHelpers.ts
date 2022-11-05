@@ -10,20 +10,20 @@ export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {
         return bibleItem.bibleName;
     }
-    const bibleName = getSetting('selected-bible') || null;
-    if (bibleName === null) {
-        const bibleNames = await bibleHelper.getDownloadedBibleList();
-        if (!bibleNames || !bibleNames.length) {
+    let bibleKey = getSetting('selected-bible') || null;
+    if (bibleKey === null) {
+        const downloadedBibleList = await bibleHelper.getDownloadedBibleList();
+        if (!downloadedBibleList || !downloadedBibleList.length) {
             ToastEventListener.showSimpleToast({
                 title: 'Getting Selected Bible',
                 message: 'Unable to get selected bible',
             });
             return null;
         }
-        setSetting('selected-bible', bibleNames[0]);
-        return bibleNames[0];
+        bibleKey = downloadedBibleList[0].key;
+        setSetting('selected-bible', bibleKey);
     }
-    return bibleName;
+    return bibleKey;
 }
 
 export function useGetSelectedBibleItem(bibleItem: BibleItem | null) {

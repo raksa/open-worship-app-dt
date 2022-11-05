@@ -1,36 +1,15 @@
-import { sqlite3ReadValue } from '../appHelper';
 import appProvider from '../appProvider';
 import bibleHelper from './bibleHelpers';
 import {
+    fsCreateDir,
     fsCreateWriteStream,
     fsDeleteFile,
+    fsReadFile,
     pathJoin,
 } from '../fileHelper';
 import { isValidJson } from '../../helper/helpers';
-
-export async function sqlite3Read(bibleName: string, key: string, cipherKey: string) {
-    const dbFilePath = await bibleHelper.toDbPath(bibleName);
-    if (dbFilePath === null) {
-        return Promise.resolve(null);
-    }
-    return new Promise<any | null>(async (resolve) => {
-        let callback = (data: any) => {
-            callback = () => false;
-            resolve(data);
-        };
-        const encryptKey = appProvider.cryptoUtils.encrypt(key, cipherKey);
-        const value = await sqlite3ReadValue(dbFilePath, 'bibles', encryptKey);
-        if (value !== null) {
-            const str = appProvider.cryptoUtils.decrypt(value, cipherKey);
-            if (isValidJson(str)) {
-                const json = JSON.parse(str);
-                callback(json);
-                return;
-            }
-        }
-        callback(null);
-    });
-}
+import { LocaleType } from '../../lang';
+import { getUserWritablePath } from '../appHelper';
 
 export function httpsRequest(pathName: string,
     callback: (error: Error | null, response?: any) => void) {
@@ -46,7 +25,7 @@ export function httpsRequest(pathName: string,
     });
     request.end();
 }
-export function fetch(pathName: string) {
+export function appFetch(pathName: string) {
     return new Promise<any>((resolve, reject) => {
         httpsRequest(pathName, (error, response) => {
             if (error) {
@@ -93,7 +72,6 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
                 appProvider.appUtils.handleError(error);
                 writeStream.close();
                 await fsDeleteFile(filePath);
-                bibleHelper.setBibleCipherKey(fileName, '');
                 onDone(new Error('Error during download'));
                 return;
             }
@@ -115,7 +93,7 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
             });
             response.on('end', async () => {
                 writeStream.close();
-                await initBibleInfo(fileName);
+                await getBibleInfo(fileName, true);
                 onDone();
             });
         } catch (error2) {
@@ -129,28 +107,27 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
 export type BibleInfoType = {
     title: string,
     key: string,
-    locale: string,
+    locale: LocaleType,
     legalNote: string,
     publisher: string,
     copyRights: string,
     books: { [key: string]: string },
     numList?: string[],
+    version: number,
 };
 export type BookList = { [key: string]: string };
 export type VerseList = { [key: string]: string };
 export type ChapterType = { title: string, verses: VerseList };
 export const bibleStorage: {
-    infoMapper: { [key: string]: BibleInfoType | null },
+    infoMapper: Map<string, BibleInfoType | null>,
     bibles: string[],
-    localeMapper: { [key: string]: string }
-    chapterCountMapper: { [key: string]: number }
-    chapterMapper: { [key: string]: ChapterType | null },
+    chapterCountMapper: Map<string, number>,
+    chapterMapper: Map<string, ChapterType | null>,
 } = {
-    infoMapper: {},
+    infoMapper: new Map(),
     bibles: [],
-    localeMapper: {},
-    chapterCountMapper: {},
-    chapterMapper: {},
+    chapterCountMapper: new Map(),
+    chapterMapper: new Map(),
 };
 
 export async function getBookKVList(bibleName: string) {
@@ -184,58 +161,80 @@ export async function bookToKey(bibleName: string, book: string) {
     return bookVKList[book] || null;
 }
 export async function getChapterCount(bibleName: string, book: string) {
-    if (!bibleStorage.chapterCountMapper[book]) {
+    if (!bibleStorage.chapterCountMapper.has(book)) {
         const bookKey = await bibleHelper.toBookKey(bibleName, book);
         if (bookKey === null) {
             return null;
         }
         const chapterCount = bibleHelper.getKJVChapterCount(bookKey);
-        bibleStorage.chapterCountMapper[book] = chapterCount;
+        bibleStorage.chapterCountMapper.set(book, chapterCount);
     }
-    return bibleStorage.chapterCountMapper[book];
+    return bibleStorage.chapterCountMapper.get(book) || null;
 }
 export async function getBookChapterData(bibleName: string,
     bookKey: string, chapterNumber: number) {
     const fileName = bibleHelper.toFileName(bookKey, chapterNumber);
-    const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
-    if (cipherKey === null) {
-        return null;
-    }
-    const vInfo = await sqlite3Read(bibleName, fileName, cipherKey) as ChapterType | null;
+    const vInfo = await readBibleData(bibleName, fileName) as ChapterType | null;
     if (vInfo === null) {
         return null;
     }
     return vInfo;
 }
 export async function getVerses(bibleName: string, bookKey: string, chapter: number) {
-    const k = `${bibleName} => ${bookKey} ${chapter}`;
-    if (!bibleStorage.chapterMapper[k]) {
-        bibleStorage.chapterMapper[k] = await getBookChapterData(bibleName, bookKey, chapter);;
+    const key = `${bibleName} => ${bookKey} ${chapter}`;
+    if (!bibleStorage.chapterMapper.has(key)) {
+        const chapterData = await getBookChapterData(bibleName, bookKey, chapter);;
+        bibleStorage.chapterMapper.set(key, chapterData);
     }
-    const chapterObj = bibleStorage.chapterMapper[k];
-    if (chapterObj === null) {
+    const chapterObj = bibleStorage.chapterMapper.get(key);
+    if (!chapterObj) {
         return null;
     }
     return chapterObj.verses;
 }
 
-export async function initBibleInfo(bibleName: string) {
-    const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
-    if (cipherKey !== null) {
-        const info = await sqlite3Read(bibleName, '_info.js', cipherKey) as BibleInfoType | null;
-        bibleStorage.infoMapper[bibleName] = info;
-        return info;
+export async function getWritableBiblePath() {
+    const dirPath = pathJoin(getUserWritablePath(), 'bibles');
+    try {
+        await fsCreateDir(dirPath);
+    } catch (error: any) {
+        appProvider.appUtils.handleError(error);
+        return null;
+    }
+    return pathJoin(getUserWritablePath(), 'bibles');
+}
+
+export async function toBiblePath(bibleName: string) {
+    const writableBiblePath = await getWritableBiblePath();
+    if (writableBiblePath === null) {
+        return null;
+    }
+    return pathJoin(writableBiblePath, bibleName);
+}
+
+export async function readBibleData(bibleName: string, key: string) {
+    try {
+        const biblePath = await toBiblePath(bibleName);
+        if (biblePath === null) {
+            return null;
+        }
+        const filePath = pathJoin(biblePath, key);
+        const data = await fsReadFile(filePath);
+        return JSON.parse(data);
+    } catch (error) {
+        appProvider.appUtils.handleError(error);
     }
     return null;
 }
-export async function getBibleInfo(bibleName: string) {
-    if (!bibleStorage.infoMapper[bibleName]) {
-        const cipherKey = bibleHelper.getBibleCipherKey(bibleName);
-        if (cipherKey !== null) {
-            const info: BibleInfoType | null = await sqlite3Read(bibleName, '_info.js', cipherKey);
-            bibleStorage.infoMapper[bibleName] = info;
-        }
+
+export async function getBibleInfo(bibleName: string, isForce: boolean = false) {
+    if (isForce) {
+        bibleStorage.infoMapper.delete(bibleName);
     }
-    return bibleStorage.infoMapper[bibleName] || null;
+    if (!bibleStorage.infoMapper.has(bibleName)) {
+        const info: BibleInfoType | null = await readBibleData(bibleName, '_info');
+        bibleStorage.infoMapper.set(bibleName, info);
+    }
+    return bibleStorage.infoMapper.get(bibleName) || null;
 }
 

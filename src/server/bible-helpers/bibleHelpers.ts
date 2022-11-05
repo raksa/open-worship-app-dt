@@ -2,25 +2,23 @@ import {
     DownloadOptionsType,
     getBibleInfo,
     startDownloading,
-    fetch,
+    appFetch,
     getBookKVList,
     getChapterCount,
+    getWritableBiblePath,
+    toBiblePath,
 } from './bibleHelpers1';
-import { getUserWritablePath } from '../appHelper';
-import { setSetting, getSetting } from '../../helper/settingHelper';
 import {
-    fsCheckFileExist,
-    fsCreateDir,
     fsDeleteFile,
-    pathJoin,
+    fsListDirectories,
 } from '../fileHelper';
 import { useState, useEffect } from 'react';
 import BibleItem from '../../bible-list/BibleItem';
-import { toBase64, fromBase64 } from '../helpers';
 
 import bibleJson from './bible.json';
 import appProvider from '../appProvider';
-import { isValidJson } from '../../helper/helpers';
+import { get_api_url } from '../../_owa-crypto';
+import { LocaleType } from '../../lang';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -94,8 +92,8 @@ export function useGetBibleWithStatus(bibleName: string) {
 export function useGetChapterCount(bibleSelected: string, bookSelected: string) {
     const [chapterCount, setChapterCount] = useState<number | null>(null);
     useEffect(() => {
-        getChapterCount(bibleSelected, bookSelected).then((cc) => {
-            setChapterCount(cc);
+        getChapterCount(bibleSelected, bookSelected).then((chapterCount) => {
+            setChapterCount(chapterCount);
         });
     });
     return chapterCount;
@@ -115,11 +113,19 @@ export function genDuplicatedMessage(list: BibleItem[],
     return warningMessage;
 }
 
+export type BibleMinimalInfoType = {
+    locale: LocaleType,
+    title: string,
+    key: string,
+    version: number,
+    filePath?: string,
+};
+
 const bibleHelper = {
     async download(bibleName: string, options: DownloadOptionsType) {
         try {
             await this.delete(bibleName);
-            const downloadPath = await this.getWritablePath();
+            const downloadPath = await getWritableBiblePath();
             if (downloadPath === null) {
                 return options.onDone(new Error('Cannot create writable path'));
             }
@@ -128,109 +134,77 @@ const bibleHelper = {
                 key: string,
                 name: string,
                 version: string,
-            } = await fetch(`/pointers/${encodeURI(bibleName + '.json')}`);
-            this.setBibleCipherKey(bibleName, data.cipherKey);
-            if (this.getBibleCipherKey(bibleName) !== data.cipherKey) {
-                return options.onDone(new Error('Fail to save!'));
-            }
+            } = await appFetch(`/pointers/${encodeURI(bibleName + '.json')}`);
             await startDownloading(`/${encodeURI(data.key)}`,
                 downloadPath, data.name, options);
         } catch (error: any) {
             options.onDone(error);
         }
     },
-    setBibleList(list: string[]) {
-        setSetting('bibles-list', JSON.stringify(list));
-    },
-    getBibleListOnline() {
-        return new Promise<boolean>((resolve) => {
-            fetch('/info.json').then((data: {
-                bibleList: string[],
-            }) => {
-                this.setBibleList(data.bibleList);
-                resolve(true);
-            }).catch((error) => {
-                appProvider.appUtils.handleError(error);
-                resolve(false);
-            });
-        });
-    },
-    getBibleList() {
-        const str = getSetting('bibles-list', '');
-        if (isValidJson(str, true)) {
-            const list = JSON.parse(str);
-            if (list instanceof Array && list.every((s: any) => {
-                return typeof s === 'string';
-            })) {
-                return list as string[];
+    async getOnlineBibleList(): Promise<BibleMinimalInfoType[] | null> {
+        try {
+            const apiUrl = get_api_url();
+            const content = await fetch(`${apiUrl}/info.json`);
+            const json = await content.json();
+            if (typeof json.mapper !== 'object') {
+                throw new Error('Cannot get bible list');
             }
+            return Object.entries(json.mapper).map(([key, value]:
+                [key: string, value: any]) => {
+                return {
+                    locale: value.locale,
+                    title: value.title,
+                    key,
+                    version: value.version,
+                };
+            });
+        } catch (error) {
+            appProvider.appUtils.handleError(error);
         }
-        return [];
+        return null;
     },
     getKJVKeyValue() {
         return bibleObj.kjvKeyValue;
     },
     async getDownloadedBibleList() {
-        const list = [];
-        for (const bibleName of this.getBibleList()) {
-            if (await this.checkExist(bibleName)) {
-                list.push(bibleName);
-            }
+        const writableBiblePath = await getWritableBiblePath();
+        if (writableBiblePath === null) {
+            return null;
         }
-        return list;
+        const directoryNames = await fsListDirectories(writableBiblePath);
+        const promises = directoryNames.map(async (bibleName) => {
+            return getBibleInfo(bibleName);
+        });
+        try {
+            const infoList = await Promise.all(promises);
+            return infoList.filter((info) => info !== null) as BibleMinimalInfoType[];
+        } catch (error) {
+            appProvider.appUtils.handleError(error);
+        }
+        return null;
     },
     async getBibleWithStatus(bibleName: string): Promise<[string, boolean, string]> {
-        const isAvailable = !!await this.checkExist(bibleName);
+        const bibleInfo = await getBibleInfo(bibleName);
+        const isAvailable = bibleInfo !== null;
         return [bibleName, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleName}`];
     },
-    async getBibleListWithStatus(): Promise<[string, boolean, string][]> {
-        const list = [];
-        for (const bibleName of this.getBibleList()) {
-            list.push(await this.getBibleWithStatus(bibleName));
+    async getBibleListWithStatus() {
+        const list: [string, boolean, string][] = [];
+        const bibleListOnline = await this.getOnlineBibleList();
+        if (bibleListOnline === null) {
+            return list;
+        }
+        for (const bible of bibleListOnline) {
+            list.push(await this.getBibleWithStatus(bible.key));
         }
         return list;
     },
-    async getWritablePath() {
-        const dirPath = pathJoin(getUserWritablePath(), 'bibles');
-        try {
-            await fsCreateDir(dirPath);
-        } catch (error: any) {
-            appProvider.appUtils.handleError(error);
-            return null;
-        }
-        return pathJoin(getUserWritablePath(), 'bibles');
-    },
-    async toDbPath(bibleName: string) {
-        const dirPath = await this.getWritablePath();
-        if (dirPath === null) {
-            return null;
-        }
-        return pathJoin(dirPath, bibleName);
-
-    },
-    async checkExist(bibleName: string) {
-        const biblePath = await this.toDbPath(bibleName);
-        if (biblePath === null) {
-            return false;
-        }
-        if (this.getBibleCipherKey(bibleName) === null) {
-            return false;
-        }
-        return !!await fsCheckFileExist(biblePath);
-
-    },
     async delete(bibleName: string) {
-        const basePath = await this.getWritablePath() as string;
-        const filePath = pathJoin(basePath, bibleName);
+        const filePath = await toBiblePath(bibleName);
+        if (filePath === null) {
+            return;
+        }
         await fsDeleteFile(filePath);
-        this.setBibleCipherKey(bibleName, null);
-    },
-    setBibleCipherKey(bibleName: string, key: string | null) {
-        setSetting(toBase64(`ck-${bibleName}`), toBase64(key || ''));
-    },
-    getBibleCipherKey(bibleName: string) {
-        const saved = getSetting(toBase64(`ck-${bibleName}`));
-        return saved ? fromBase64(saved) : null;
     },
     async toChapter(bibleName: string, bookKey: string,
         chapterNum: number) {

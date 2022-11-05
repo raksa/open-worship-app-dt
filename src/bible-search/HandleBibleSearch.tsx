@@ -30,8 +30,8 @@ export function closeBibleSearch() {
 export default function HandleBibleSearch() {
     const [isShowing, setIsShowing] = useStateSettingBoolean('showing-bible-search-popup');
     const openBibleSearchPopup = async () => {
-        const list = await bibleHelper.getDownloadedBibleList();
-        if (list.length) {
+        const downloadedBibleList = await bibleHelper.getDownloadedBibleList();
+        if (downloadedBibleList === null || downloadedBibleList.length) {
             setIsShowing(true);
         } else {
             openSetting();

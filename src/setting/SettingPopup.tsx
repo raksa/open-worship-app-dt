@@ -7,7 +7,7 @@ import TabRender, { genTabBody } from '../others/TabRender';
 import React from 'react';
 
 const SettingGeneral = React.lazy(() => import('./SettingGeneral'));
-const SettingBible = React.lazy(() => import('./SettingBible'));
+const SettingBible = React.lazy(() => import('./SettingBible/SettingBible'));
 const SettingAbout = React.lazy(() => import('./SettingAbout'));
 
 export default function SettingPopup() {

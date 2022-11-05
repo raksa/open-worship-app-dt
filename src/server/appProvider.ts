@@ -22,12 +22,13 @@ export type FileUtilsType = {
     createWriteStream: typeof fs.createWriteStream,
     readdir: typeof fs.readdir,
     stat: typeof fs.stat,
-    mkdirSync: typeof fs.mkdirSync,
-    writeFileSync: typeof fs.writeFileSync,
-    renameSync: typeof fs.renameSync,
-    unlinkSync: typeof fs.unlinkSync,
-    readFileSync: typeof fs.readFileSync,
-    copyFileSync: typeof fs.copyFileSync,
+    mkdir: typeof fs.mkdir,
+    writeFile: typeof fs.writeFile,
+    rename: typeof fs.rename,
+    unlink: typeof fs.unlink,
+    rmdir: typeof fs.rmdir,
+    readFile: typeof fs.readFile,
+    copyFile: typeof fs.copyFile,
 };
 
 export type PathUtilsType = {

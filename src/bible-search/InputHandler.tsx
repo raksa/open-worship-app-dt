@@ -1,5 +1,4 @@
-import bibleHelper, {
-    useGetBibleWithStatus,
+import {
     useGetBookKVList,
 } from '../server/bible-helpers/bibleHelpers';
 import { useBibleItemToInputText } from '../bible-list/BibleItem';
@@ -7,18 +6,7 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { setSetting } from '../helper/settingHelper';
-
-export function BibleSelectOption({ bibleName }: { bibleName: string }) {
-    const bibleStatus = useGetBibleWithStatus(bibleName);
-    if (bibleStatus === null) {
-        return null;
-    }
-    const [bible1, isAvailable, bibleName1] = bibleStatus;
-    return (
-        <option disabled={!isAvailable}
-            value={bible1}>{bibleName1}</option>
-    );
-}
+import BibleSelection from './BibleSelection';
 
 export default function InputHandler({
     inputText,
@@ -34,10 +22,7 @@ export default function InputHandler({
     const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemToInputText(bibleSelected, bookKey, 1, 1, 2);
-
     useKeyboardRegistering({ key: 'Escape' }, () => onInputChange(''));
-
-    const bibleList = bibleHelper.getBibleList();
     return (
         <>
             <input type='text' className='form-control' value={inputText}
@@ -47,14 +32,11 @@ export default function InputHandler({
                 }} />
             <span className='input-group-text select'>
                 <i className='bi bi-journal-bookmark' />
-                <select className='form-select bible' value={bibleSelected}
-                    onChange={(event) => {
-                        const value = event.target.value;
-                        setSetting('selected-bible', value);
-                        onBibleChange(bibleSelected);
-                    }}>
-                    {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bibleName={b} />)}
-                </select>
+                <BibleSelection value={bibleSelected}
+                    onChange={(bibleKey) => {
+                        setSetting('selected-bible', bibleKey);
+                        onBibleChange(bibleKey);
+                    }} />
             </span>
         </>
     );

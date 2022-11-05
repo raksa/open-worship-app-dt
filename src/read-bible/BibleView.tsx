@@ -1,13 +1,12 @@
 import './BibleView.scss';
 
-import bibleHelper from '../server/bible-helpers/bibleHelpers';
-import { BibleSelectOption } from '../bible-search/InputHandler';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import BibleItem, {
     useBibleItemRenderText,
     useBibleItemRenderTitle,
 } from '../bible-list/BibleItem';
 import { copyToClipboard } from '../server/appHelper';
+import BibleSelection from '../bible-search/BibleSelection';
 
 export default function BibleView({
     bibleItem, onBibleChange, onClose,
@@ -18,7 +17,6 @@ export default function BibleView({
 }) {
     const title = useBibleItemRenderTitle(bibleItem);
     const text = useBibleItemRenderText(bibleItem);
-    const bibleList = bibleHelper.getBibleList();
     return (
         <div className='bible-view card flex-fill'
             onContextMenu={(event) => {
@@ -33,17 +31,10 @@ export default function BibleView({
             }}>
             <div className='card-header'>
                 <span className='input-group-text select float-start'>
-                    <select className='form-select bible'
-                        value={bibleItem.bibleName}
-                        onChange={(event) => {
-                            onBibleChange(event.target.value);
-                        }}>
-                        {bibleList.map((b, i) => {
-                            return (
-                                <BibleSelectOption key={`${i}`} bibleName={b} />
-                            );
-                        })}
-                    </select>
+                    <BibleSelection value={bibleItem.bibleName}
+                        onChange={(bibleKey) => {
+                            onBibleChange(bibleKey);
+                        }} />
                 </span>
                 {title}
                 <button className='btn-close float-end'
