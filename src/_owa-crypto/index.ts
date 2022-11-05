@@ -14,3 +14,7 @@ export function decrypt(message: string): string {
 export function get_api_url(): string {
     return 'https://bibles-development.openworship.app';
 }
+
+export function get_api_key(): string {
+    return 'InJesusName';
+}

@@ -10,6 +10,7 @@ import {
 import { isValidJson } from '../../helper/helpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../appHelper';
+import { get_api_url, get_api_key } from '../../_owa-crypto';
 
 export function httpsRequest(pathName: string,
     callback: (error: Error | null, response?: any) => void) {
@@ -17,6 +18,10 @@ export function httpsRequest(pathName: string,
         port: 443,
         path: pathName,
         method: 'GET',
+        hostname: get_api_url(),
+        headers: {
+            'x-api-key': get_api_key(),
+        },
     }, (response) => {
         callback(null, response);
     });

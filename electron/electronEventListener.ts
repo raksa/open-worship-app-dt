@@ -1,20 +1,10 @@
 import ElectronAppController from './ElectronAppController';
 import ElectronPresentController from './ElectronPresentController';
 
-const crypto = require('crypto');
 const electron = require('electron');
 
 const { dialog, ipcMain, app } = electron;
 
-
-const owa = require('../../build/Release/owa.node');
-const apiUrl = owa.getApiUrl();
-const key = owa.getApiKey();
-function hasXApiKey() {
-    const timeStr = Date.now().toString();
-    const md5sum = crypto.createHash('md5').update(key + timeStr);
-    return `${timeStr}.${md5sum.digest('hex')}`;
-}
 
 export type AnyObjectType = {
     [key: string]: any;
@@ -53,12 +43,6 @@ export function initApp(appController: ElectronAppController) {
         event.returnValue = result.filePaths;
     });
 
-    ipcMain.on('app:app:https-credential', (event) => {
-        event.returnValue = {
-            apiUrl,
-            apiKey: hasXApiKey(),
-        };
-    });
 }
 export function initPresent(appController: ElectronAppController) {
     ipcMain.on('main:app:get-displays', (event) => {
