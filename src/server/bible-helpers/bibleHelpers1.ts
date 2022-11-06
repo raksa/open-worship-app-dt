@@ -9,7 +9,7 @@ import {
 import { isValidJson } from '../../helper/helpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../appHelper';
-import { get_api_url, get_api_key } from '../../_owa-crypto';
+import { get_api_url, get_api_key, is_dev } from '../../_owa-crypto';
 import {
     getKJVChapterCount,
     toBookKey,
@@ -24,7 +24,7 @@ export function httpsRequest(pathName: string,
         method: 'GET',
         hostname: get_api_url(),
         headers: {
-            'x-api-key': get_api_key(`${new Date().getTime()}`),
+            'x-api-key': get_api_key(),
         },
     }, (response) => {
         callback(null, response);
@@ -107,7 +107,11 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
             });
         } catch (error2) {
             writeStream.close();
-            await fsDeleteFile(filePath);
+            try {
+                await fsDeleteFile(filePath);
+            } catch (error) {
+                appProvider.appUtils.handleError(error);
+            }
             onDone(error2 as Error);
         }
     });
@@ -203,12 +207,14 @@ export async function getVerses(bibleName: string, bookKey: string, chapter: num
 }
 
 export async function getWritableBiblePath() {
-    const dirPath = pathJoin(getUserWritablePath(), 'bibles');
+    const dirPath = pathJoin(getUserWritablePath(), `bibles${is_dev() ? '-dev' : ''}`);
     try {
         await fsCreateDir(dirPath);
     } catch (error: any) {
-        appProvider.appUtils.handleError(error);
-        return null;
+        if (!error.message.includes('file already exists')) {
+            appProvider.appUtils.handleError(error);
+            return null;
+        }
     }
     return pathJoin(getUserWritablePath(), 'bibles');
 }
@@ -230,8 +236,10 @@ export async function readBibleData(bibleName: string, key: string) {
         const filePath = pathJoin(biblePath, key);
         const data = await fsReadFile(filePath);
         return JSON.parse(data);
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
+    } catch (error: any) {
+        if (error.code !== 'ENOENT') {
+            appProvider.appUtils.handleError(error);
+        }
     }
     return null;
 }

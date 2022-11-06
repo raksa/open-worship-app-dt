@@ -1,34 +1,34 @@
 import { useState, useEffect } from 'react';
 import {
     BibleMinimalInfoType,
-    getDownloadedBibleList,
-    getOnlineBibleList,
+    getDownloadedBibleInfoList,
+    getOnlineBibleInfoList,
 } from '../../server/bible-helpers/bibleHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 
-export function useDownloadedBibleList() {
-    const [bibleList, setBibleList] = useState<BibleListType>(null);
+export function useDownloadedBibleInfoList() {
+    const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
     useEffect(() => {
-        if (bibleList !== null) {
+        if (bibleInfoList !== null) {
             return;
         }
-        getDownloadedBibleList().then((bbList) => {
-            setBibleList(bbList || undefined);
+        getDownloadedBibleInfoList().then((bibleInfoList) => {
+            setBibleInfoList(bibleInfoList || undefined);
         });
     });
-    return [bibleList, setBibleList] as const;
+    return [bibleInfoList, setBibleInfoList] as const;
 }
 
-export function useOnlineBibleList() {
-    const [bibleList, setBibleList] = useState<BibleListType>(null);
+export function useOnlineBibleInfoList() {
+    const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
     useEffect(() => {
-        if (bibleList !== null) {
+        if (bibleInfoList !== null) {
             return;
         }
-        getOnlineBibleList().then((bbList) => {
-            setBibleList(bbList || undefined);
+        getOnlineBibleInfoList().then((bibleInfoList) => {
+            setBibleInfoList(bibleInfoList || undefined);
         });
     });
-    return [bibleList, setBibleList] as const;
+    return [bibleInfoList, setBibleInfoList] as const;
 }

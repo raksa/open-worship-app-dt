@@ -4,7 +4,7 @@ import ToastEventListener from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
 import { getBookKVList } from '../server/bible-helpers/bibleHelpers1';
 import { extractBible, toInputText } from '../server/bible-helpers/bibleHelpers2';
-import { getDownloadedBibleList } from '../server/bible-helpers/bibleHelpers';
+import { getDownloadedBibleInfoList } from '../server/bible-helpers/bibleHelpers';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {
@@ -12,15 +12,15 @@ export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     }
     let bibleKey = getSetting('selected-bible') || null;
     if (bibleKey === null) {
-        const downloadedBibleList = await getDownloadedBibleList();
-        if (!downloadedBibleList || !downloadedBibleList.length) {
+        const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+        if (!downloadedBibleInfoList || !downloadedBibleInfoList.length) {
             ToastEventListener.showSimpleToast({
                 title: 'Getting Selected Bible',
                 message: 'Unable to get selected bible',
             });
             return null;
         }
-        bibleKey = downloadedBibleList[0].key;
+        bibleKey = downloadedBibleInfoList[0].key;
         setSetting('selected-bible', bibleKey);
     }
     return bibleKey;

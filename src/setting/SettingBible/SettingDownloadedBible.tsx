@@ -6,27 +6,29 @@ import { BibleListType } from './helpers';
 import { OnlineBibleItem } from './SettingOnlineBible';
 
 export default function SettingDownloadedBible({
-    onlineBibleList,
-    downloadedBibleList,
-    setDownloadedBibleList,
+    onlineBibleInfoList,
+    downloadedBibleInfoList,
+    setDownloadedBibleInfoList,
 }: {
-    onlineBibleList: BibleListType,
-    downloadedBibleList: BibleListType,
-    setDownloadedBibleList: (bbList: BibleListType) => void
+    onlineBibleInfoList: BibleListType,
+    downloadedBibleInfoList: BibleListType,
+    setDownloadedBibleInfoList: (bbList: BibleListType) => void
 }) {
     const refreshHandler = () => {
-        setDownloadedBibleList(null);
+        setDownloadedBibleInfoList(null);
     };
-    if (downloadedBibleList === null) {
+    if (downloadedBibleInfoList === null) {
         return <div>Loading...</div>;
     }
-    if (downloadedBibleList === undefined) {
+    if (downloadedBibleInfoList === undefined) {
         return <div>Unable to get downloaded bible list</div>;
     }
-    const bibleList = downloadedBibleList.map((bible) => {
-        const isUpdatable = onlineBibleList && onlineBibleList.some((bible1) => {
-            return bible1.key === bible.key && bible1.version > bible.version;
-        });
+    const bibleList = downloadedBibleInfoList.map((bible) => {
+        const isUpdatable = onlineBibleInfoList &&
+            onlineBibleInfoList.some((bible1) => {
+                return bible1.key === bible.key &&
+                    bible1.version > bible.version;
+            });
         return {
             isDownloading: false,
             ...bible,
@@ -43,14 +45,16 @@ export default function SettingDownloadedBible({
                 </button>
             </div>
             <ul className='list-group d-flex flex-fill'>
-                {bibleList.length === 0 ? (<div>No bible downloaded</div>) : (<>
+                {bibleList.length === 0 ? (<div>
+                    No bible downloaded
+                </div>) : (<>
                     {bibleList.map((bible, i) => {
                         if (bible.isDownloading) {
                             return (
                                 <OnlineBibleItem key={`${i}`}
-                                    bible={bible}
+                                    bibleInfo={bible}
                                     onDownloaded={() => {
-                                        setDownloadedBibleList(null);
+                                        setDownloadedBibleInfoList(null);
                                     }} />
                             );
                         }
@@ -58,11 +62,11 @@ export default function SettingDownloadedBible({
                             <DownloadedBibleItem key={`${i}`}
                                 bible={bible}
                                 onDeleted={() => {
-                                    setDownloadedBibleList(null);
+                                    setDownloadedBibleInfoList(null);
                                 }}
                                 onUpdate={() => {
                                     bible.isDownloading = true;
-                                    setDownloadedBibleList([...bibleList]);
+                                    setDownloadedBibleInfoList([...bibleList]);
                                 }} />
                         );
                     })}

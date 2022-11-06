@@ -1,6 +1,6 @@
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    getBibleListWithStatus,
+    getBibleInfoWithStatusList,
     useGetBibleWithStatus,
 } from '../server/bible-helpers/bibleHelpers';
 import ItemColorNote from '../others/ItemColorNote';
@@ -41,7 +41,7 @@ export default function BibleItemRender({
             return;
         }
         event.stopPropagation();
-        const bibleList = await getBibleListWithStatus();
+        const bibleList = await getBibleInfoWithStatusList();
         const currentBible = bibleItem.bibleName;
         const bibleListFiltered = bibleList.filter(([bibleName]) => {
             return currentBible !== bibleName;

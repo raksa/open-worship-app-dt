@@ -3,7 +3,7 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { getBibleListWithStatus } from '../server/bible-helpers/bibleHelpers';
+import { getBibleInfoWithStatusList } from '../server/bible-helpers/bibleHelpers';
 import appProviderPresent from './appProviderPresent';
 import {
     BibleItemRenderedType,
@@ -103,7 +103,7 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
     const bibleItemingList = bibleRenderedList.map(({ bibleName }) => {
         return bibleName;
     });
-    const bibleList = await getBibleListWithStatus();
+    const bibleList = await getBibleInfoWithStatusList();
     const bibleListFiltered = bibleList.filter(([bibleName]) => {
         return !bibleItemingList.includes(bibleName);
     });

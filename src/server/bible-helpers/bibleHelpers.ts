@@ -85,7 +85,7 @@ export function useGetBookKVList(bibleSelected: string) {
 export function useGetBibleWithStatus(bibleName: string) {
     const [bibleStatus, setBibleStatus] = useState<[string, boolean, string] | null>(null);
     useEffect(() => {
-        getBibleWithStatus(bibleName).then((bs) => setBibleStatus(bs));
+        getBibleInfoWithStatus(bibleName).then((bs) => setBibleStatus(bs));
     }, [bibleName]);
     return bibleStatus;
 }
@@ -141,10 +141,10 @@ export async function downloadBible(bibleName: string, options: DownloadOptionsT
     }
 }
 
-export async function getOnlineBibleList(): Promise<BibleMinimalInfoType[] | null> {
+export async function getOnlineBibleInfoList(): Promise<BibleMinimalInfoType[] | null> {
     try {
         const apiUrl = get_api_url();
-        const apiKey = get_api_key(`${new Date().getTime()}`);
+        const apiKey = get_api_key();
         const content = await fetch(`${apiUrl}/info.json`, {
             headers: {
                 'x-api-key': apiKey,
@@ -173,7 +173,7 @@ export function getKJVKeyValue() {
     return bibleObj.kjvKeyValue;
 }
 
-export async function getDownloadedBibleList() {
+export async function getDownloadedBibleInfoList() {
     const writableBiblePath = await getWritableBiblePath();
     if (writableBiblePath === null) {
         return null;
@@ -191,20 +191,20 @@ export async function getDownloadedBibleList() {
     return null;
 }
 
-async function getBibleWithStatus(bibleName: string): Promise<[string, boolean, string]> {
+async function getBibleInfoWithStatus(bibleName: string): Promise<[string, boolean, string]> {
     const bibleInfo = await getBibleInfo(bibleName);
     const isAvailable = bibleInfo !== null;
     return [bibleName, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleName}`];
 }
 
-export async function getBibleListWithStatus() {
+export async function getBibleInfoWithStatusList() {
     const list: [string, boolean, string][] = [];
-    const bibleListOnline = await getOnlineBibleList();
+    const bibleListOnline = await getOnlineBibleInfoList();
     if (bibleListOnline === null) {
         return list;
     }
     for (const bible of bibleListOnline) {
-        list.push(await getBibleWithStatus(bible.key));
+        list.push(await getBibleInfoWithStatus(bible.key));
     }
     return list;
 }

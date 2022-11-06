@@ -7,7 +7,7 @@ import {
     getLangAsync,
 } from '../lang';
 import initCrypto from '../_owa-crypto';
-import { getDownloadedBibleList } from './bible-helpers/bibleHelpers';
+import { getDownloadedBibleInfoList } from './bible-helpers/bibleHelpers';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -63,8 +63,8 @@ export async function initApp() {
     await initCrypto();
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);
-    const downloadedBibleList = await getDownloadedBibleList();
-    for (const bibleInfo of downloadedBibleList || []) {
+    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+    for (const bibleInfo of downloadedBibleInfoList || []) {
         await getLangAsync(bibleInfo.locale);
     }
 }

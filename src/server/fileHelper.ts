@@ -161,6 +161,32 @@ function _fsUnlink(filePath: string) {
 function _fsCopyFile(src: string, dest: string) {
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
 }
+async function _fsCheckExist(isFile: boolean, filePath: string, fileName?: string) {
+    if (fileName) {
+        filePath = pathJoin(filePath, fileName);
+    }
+    try {
+        const stat = await _fsStat(filePath);
+        if (isFile) {
+            return stat.isFile();
+        } else {
+            return stat.isDirectory();
+        }
+    } catch (error: any) {
+        if (error.code === 'ENOENT') {
+            return false;
+        } else {
+            appProvider.appUtils.handleError(error);
+            throw new Error('Error during checking file exist');
+        }
+    }
+}
+export function fsCheckDirExist(filePath: string, fileName?: string) {
+    return _fsCheckExist(false, filePath, fileName);
+}
+export function fsCheckFileExist(filePath: string, fileName?: string) {
+    return _fsCheckExist(false, filePath, fileName);
+}
 
 export async function fsList(dir: string) {
     if (!dir) {
@@ -233,110 +259,64 @@ export async function fsListFilesWithMimetype(dir: string, mimetype: MimetypeNam
     return null;
 }
 
-export async function fsCheckFileExist(filePath: string, fileName?: string) {
-    if (fileName) {
-        filePath = pathJoin(filePath, fileName);
-    }
-    try {
-        await _fsStat(filePath);
-        return true;
-    } catch (error: any) {
-        if (error.code === 'ENOENT') {
-            return false;
-        } else {
-            appProvider.appUtils.handleError(error);
-            throw new Error('Error during checking file exist');
-        }
-    }
+export function fsCreateDir(dirPath: string) {
+    return _fsMkdir(dirPath);
 }
-export async function fsCreateDir(dirPath: string) {
-    try {
-        await _fsMkdir(dirPath);
-    } catch (error: any) {
-        if (!error.message.includes('file already exists')) {
-            return error;
-        }
+export async function fsWriteFile(filePath: string, txt: string) {
+    if (await fsCheckDirExist(filePath)) {
+        throw new Error(`${filePath} is not a directory`);
     }
-}
-export async function fsWhiteFile(filePath: string, txt: string) {
-    try {
-        if (!await fsCheckFileExist(filePath)) {
-            await _fsWriteFile(filePath, txt, {
-                encoding: 'utf8',
-                flag: 'w',
-            });
-            return filePath;
-        } else {
-            throw new Error('File exist');
-        }
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during creating file');
+    if (await fsCheckFileExist(filePath)) {
+        throw new Error('File exist');
     }
+    await _fsWriteFile(filePath, txt, {
+        encoding: 'utf8',
+        flag: 'w',
+    });
+    return filePath;
 }
 export async function fsCreateFile(filePath: string,
     txt: string, isOverride?: boolean) {
-    try {
-        if (await fsCheckFileExist(filePath)) {
-            if (isOverride) {
-                await fsDeleteFile(filePath);
-            } else {
-                throw new Error('File exist');
-            }
+    if (await fsCheckDirExist(filePath)) {
+        throw new Error(`${filePath} is not a directory`);
+    }
+    if (await fsCheckFileExist(filePath)) {
+        if (isOverride) {
+            await fsDeleteFile(filePath);
+        } else {
+            throw new Error('File exist');
         }
-        await _fsWriteFile(filePath, txt);
-        return filePath;
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during creating file');
     }
+    await _fsWriteFile(filePath, txt);
+    return filePath;
 }
-export async function fsRenameFile(basePath: string,
+export function fsRenameFile(basePath: string,
     oldFileName: string, newFileName: string) {
-    try {
-        const oldFilePath = pathJoin(basePath, oldFileName);
-        const newFilePath = pathJoin(basePath, newFileName);
-        await _fsRename(oldFilePath, newFilePath);
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during renaming file');
-    }
+    const oldFilePath = pathJoin(basePath, oldFileName);
+    const newFilePath = pathJoin(basePath, newFileName);
+    return _fsRename(oldFilePath, newFilePath);
 }
 export async function fsDeleteFile(filePath: string) {
-    try {
-        if (await fsCheckFileExist(filePath)) {
-            await _fsUnlink(filePath);
-        }
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during deleting file');
+    if (await fsCheckDirExist(filePath)) {
+        throw new Error(`${filePath} is not a file`);
+    }
+    if (await fsCheckFileExist(filePath)) {
+        await _fsUnlink(filePath);
     }
 }
 export async function fsDeleteDir(filePath: string) {
-    try {
-        if (await fsCheckFileExist(filePath)) {
-            await _fsRmdir(filePath);
-        }
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during deleting directory');
+    if (await fsCheckFileExist(filePath)) {
+        throw new Error(`${filePath} is not a directory`);
+    }
+    if (await fsCheckDirExist(filePath)) {
+        await _fsRmdir(filePath);
     }
 }
-export async function fsReadFile(filePath: string) {
-    try {
-        return await _fsReadFile(filePath, 'utf8');
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during reading file');
-    }
+export function fsReadFile(filePath: string) {
+    return _fsReadFile(filePath, 'utf8');
 }
-export async function fsCopyFileToPath(filePath: string,
+export function fsCopyFileToPath(filePath: string,
     fileName: string, destinationPath: string) {
-    try {
-        const targetPath = pathJoin(destinationPath, fileName);
-        await _fsCopyFile(filePath, targetPath);
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-        throw new Error('Error occurred during copying file');
-    }
+    const targetPath = pathJoin(destinationPath, fileName);
+    return _fsCopyFile(filePath, targetPath);
 }

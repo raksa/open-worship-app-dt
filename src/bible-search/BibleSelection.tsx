@@ -1,11 +1,11 @@
-import { useDownloadedBibleList } from '../setting/SettingBible/helpers';
+import { useDownloadedBibleInfoList } from '../setting/SettingBible/helpers';
 import BibleSelectOption from './BibleSelectOption';
 
 export default function BibleSelection({ value, onChange }: {
     value: string,
     onChange: (value: string) => void,
 }) {
-    const [bibleInfoList] = useDownloadedBibleList();
+    const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
         return (
             <div>Loading ...</div>

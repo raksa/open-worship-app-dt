@@ -7,18 +7,20 @@ import appProvider from '../../server/appProvider';
 import { BibleListType } from './helpers';
 
 export default function SettingOnlineBible({
-    downloadedBibleList,
-    onlineBibleList,
-    setOnlineBibleList,
+    downloadedBibleInfoList,
+    onlineBibleInfoList,
+    setOnlineBibleInfoList,
 }: {
-    downloadedBibleList: BibleListType,
-    onlineBibleList: BibleListType,
-    setOnlineBibleList: (bbList: BibleListType) => void
+    downloadedBibleInfoList: BibleListType,
+    onlineBibleInfoList: BibleListType,
+    setOnlineBibleInfoList: (bbList: BibleListType) => void
 }) {
+    console.log(onlineBibleInfoList);
+    
     const refreshHandler = () => {
-        setOnlineBibleList(null);
+        setOnlineBibleInfoList(null);
     };
-    if (onlineBibleList === null) {
+    if (onlineBibleInfoList === null) {
         return <div>Loading...</div>;
     }
     const getRefresher = () => {
@@ -30,7 +32,7 @@ export default function SettingOnlineBible({
             </button>
         );
     };
-    if (onlineBibleList === undefined) {
+    if (onlineBibleInfoList === undefined) {
         return (
             <div>
                 <div>
@@ -40,10 +42,11 @@ export default function SettingOnlineBible({
             </div>
         );
     }
-    const bibleList = onlineBibleList.filter((bible) => {
-        return !downloadedBibleList || downloadedBibleList.some((bb) => {
-            return bb.key !== bible.key;
-        });
+    const bibleList = onlineBibleInfoList.filter((bible) => {
+        return !downloadedBibleInfoList ||
+            downloadedBibleInfoList.some((bb) => {
+                return bb.key !== bible.key;
+            });
     });
     return (
         <div className='w-100'>
@@ -54,9 +57,9 @@ export default function SettingOnlineBible({
                 {bibleList.map((bible, i) => {
                     return (
                         <OnlineBibleItem key={`${i}`}
-                            bible={bible}
+                            bibleInfo={bible}
                             onDownloaded={() => {
-                                setOnlineBibleList(null);
+                                setOnlineBibleInfoList(null);
                             }} />
                     );
                 })}
@@ -66,13 +69,13 @@ export default function SettingOnlineBible({
 }
 
 export function OnlineBibleItem({
-    bible,
+    bibleInfo,
     onDownloaded,
 }: {
-    bible: BibleMinimalInfoType,
+    bibleInfo: BibleMinimalInfoType,
     onDownloaded: () => void,
 }) {
-    const { key, title } = bible;
+    const { key, title } = bibleInfo;
     const [downloadingProgress, setDownloadingProgress] = useState<number | null>(null);
     const onDownloadHandler = () => {
         setDownloadingProgress(0);
