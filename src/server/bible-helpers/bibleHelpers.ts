@@ -17,7 +17,7 @@ import BibleItem from '../../bible-list/BibleItem';
 
 import bibleJson from './bible.json';
 import appProvider from '../appProvider';
-import { get_api_url } from '../../_owa-crypto';
+import { get_api_key, get_api_url } from '../../_owa-crypto';
 import { LocaleType } from '../../lang';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
@@ -144,7 +144,12 @@ export async function downloadBible(bibleName: string, options: DownloadOptionsT
 export async function getOnlineBibleList(): Promise<BibleMinimalInfoType[] | null> {
     try {
         const apiUrl = get_api_url();
-        const content = await fetch(`${apiUrl}/info.json`);
+        const apiKey = get_api_key(`${new Date().getTime()}`);
+        const content = await fetch(`${apiUrl}/info.json`, {
+            headers: {
+                'x-api-key': apiKey,
+            },
+        });
         const json = await content.json();
         if (typeof json.mapper !== 'object') {
             throw new Error('Cannot get bible list');

@@ -43,28 +43,30 @@ export default function SettingDownloadedBible({
                 </button>
             </div>
             <ul className='list-group d-flex flex-fill'>
-                {bibleList.map((bible, i) => {
-                    if (bible.isDownloading) {
+                {bibleList.length === 0 ? (<div>No bible downloaded</div>) : (<>
+                    {bibleList.map((bible, i) => {
+                        if (bible.isDownloading) {
+                            return (
+                                <OnlineBibleItem key={`${i}`}
+                                    bible={bible}
+                                    onDownloaded={() => {
+                                        setDownloadedBibleList(null);
+                                    }} />
+                            );
+                        }
                         return (
-                            <OnlineBibleItem key={`${i}`}
+                            <DownloadedBibleItem key={`${i}`}
                                 bible={bible}
-                                onDownloaded={() => {
+                                onDeleted={() => {
                                     setDownloadedBibleList(null);
+                                }}
+                                onUpdate={() => {
+                                    bible.isDownloading = true;
+                                    setDownloadedBibleList([...bibleList]);
                                 }} />
                         );
-                    }
-                    return (
-                        <DownloadedBibleItem key={`${i}`}
-                            bible={bible}
-                            onDeleted={() => {
-                                setDownloadedBibleList(null);
-                            }}
-                            onUpdate={() => {
-                                bible.isDownloading = true;
-                                setDownloadedBibleList([...bibleList]);
-                            }} />
-                    );
-                })}
+                    })}
+                </>)}
             </ul>
         </div>
     );

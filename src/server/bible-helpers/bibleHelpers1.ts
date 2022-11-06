@@ -24,7 +24,7 @@ export function httpsRequest(pathName: string,
         method: 'GET',
         hostname: get_api_url(),
         headers: {
-            'x-api-key': get_api_key(),
+            'x-api-key': get_api_key(`${new Date().getTime()}`),
         },
     }, (response) => {
         callback(null, response);

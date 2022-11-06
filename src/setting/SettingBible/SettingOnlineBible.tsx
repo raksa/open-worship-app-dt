@@ -21,8 +21,24 @@ export default function SettingOnlineBible({
     if (onlineBibleList === null) {
         return <div>Loading...</div>;
     }
+    const getRefresher = () => {
+        return (
+            <button className='btn btn-info'
+                onClick={refreshHandler}>
+                <i className='bi bi-arrow-clockwise' />
+                Refresh
+            </button>
+        );
+    };
     if (onlineBibleList === undefined) {
-        return <div>Unable to get online bible list</div>;
+        return (
+            <div>
+                <div>
+                    {getRefresher()}
+                </div>
+                Unable to get online bible list
+            </div>
+        );
     }
     const bibleList = onlineBibleList.filter((bible) => {
         return !downloadedBibleList || downloadedBibleList.some((bb) => {
@@ -32,11 +48,7 @@ export default function SettingOnlineBible({
     return (
         <div className='w-100'>
             <div>
-                <button className='btn btn-info'
-                    onClick={refreshHandler}>
-                    <i className='bi bi-arrow-clockwise' />
-                    Refresh
-                </button>
+                {getRefresher()}
             </div>
             <ul className='list-group d-flex flex-fill'>
                 {bibleList.map((bible, i) => {
