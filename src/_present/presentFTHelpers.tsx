@@ -41,10 +41,10 @@ const validateBible = ({ renderedList, bibleItem }: any) => {
     BibleItem.validate(bibleItem);
     return !Array.isArray(renderedList)
         || renderedList.some(({
-            locale, bibleName, title, verses,
+            locale, bibleKey, title, verses,
         }: any) => {
             return !checkIsValidLocale(locale)
-                || typeof bibleName !== 'string'
+                || typeof bibleKey !== 'string'
                 || typeof title !== 'string'
                 || !Array.isArray(verses)
                 || verses.some(({ num, text }: any) => {
@@ -100,18 +100,18 @@ function onSelectIndex(presentFTManager: PresentFTManager,
 async function onBibleSelect(presentFTManager: PresentFTManager,
     event: any, index: number, ftItemData: FTItemDataType) {
     const bibleRenderedList = ftItemData.bibleItemData?.renderedList as BibleItemRenderedType[];
-    const bibleItemingList = bibleRenderedList.map(({ bibleName }) => {
-        return bibleName;
+    const bibleItemingList = bibleRenderedList.map(({ bibleKey }) => {
+        return bibleKey;
     });
     const bibleList = await getBibleInfoWithStatusList();
-    const bibleListFiltered = bibleList.filter(([bibleName]) => {
-        return !bibleItemingList.includes(bibleName);
+    const bibleListFiltered = bibleList.filter(([bibleKey]) => {
+        return !bibleItemingList.includes(bibleKey);
     });
     const bibleItemJson = ftItemData.bibleItemData?.bibleItem as BibleItemType;
-    const applyBibleItems = async (newBibleNames: string[]) => {
-        const newBibleItems = newBibleNames.map((bibleName1) => {
+    const applyBibleItems = async (newBibleKeys: string[]) => {
+        const newBibleItems = newBibleKeys.map((bibleKey1) => {
             const bibleItem = BibleItem.fromJson(bibleItemJson);
-            bibleItem.bibleName = bibleName1;
+            bibleItem.bibleKey = bibleKey1;
             return bibleItem;
         });
         const newFtItemData = await bibleItemToFtData(newBibleItems);
@@ -120,7 +120,7 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
     showAppContextMenu(event,
         [
             ...bibleRenderedList.length > 1 ? [{
-                title: 'Remove(' + bibleRenderedList[index].bibleName + ')',
+                title: 'Remove(' + bibleRenderedList[index].bibleKey + ')',
                 onClick: async () => {
                     bibleItemingList.splice(index, 1);
                     applyBibleItems(bibleItemingList);
@@ -132,15 +132,15 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
                 title: 'Ship Click to Add',
                 disabled: true,
             }] : [],
-            ...bibleListFiltered.map(([bibleName, isAvailable]) => {
+            ...bibleListFiltered.map(([bibleKey, isAvailable]) => {
                 return {
-                    title: bibleName,
+                    title: bibleKey,
                     disabled: !isAvailable,
                     onClick: async (event1: any) => {
                         if (event1.shiftKey) {
-                            bibleItemingList.push(bibleName);
+                            bibleItemingList.push(bibleKey);
                         } else {
-                            bibleItemingList[index] = bibleName;
+                            bibleItemingList[index] = bibleKey;
                         }
                         applyBibleItems(bibleItemingList);
                     },

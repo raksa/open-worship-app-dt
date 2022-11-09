@@ -1,15 +1,20 @@
 import appProvider from '../appProvider';
 import {
+    fsCheckFileExist,
     fsCreateDir,
     fsCreateWriteStream,
     fsDeleteFile,
     fsReadFile,
     pathJoin,
 } from '../fileHelper';
-import { isValidJson } from '../../helper/helpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../appHelper';
-import { get_api_url, get_api_key, is_dev } from '../../_owa-crypto';
+import {
+    get_api_url,
+    get_api_key,
+    is_dev,
+    decrypt,
+} from '../../_owa-crypto';
 import {
     getKJVChapterCount,
     toBookKey,
@@ -18,11 +23,12 @@ import {
 
 export function httpsRequest(pathName: string,
     callback: (error: Error | null, response?: any) => void) {
+    const hostname = get_api_url().split('//')[1];
     const request = appProvider.httpUtils.request({
         port: 443,
         path: pathName,
         method: 'GET',
-        hostname: get_api_url(),
+        hostname,
         headers: {
             'x-api-key': get_api_key(),
         },
@@ -34,61 +40,33 @@ export function httpsRequest(pathName: string,
     });
     request.end();
 }
-export function appFetch(pathName: string) {
-    return new Promise<any>((resolve, reject) => {
-        httpsRequest(pathName, (error, response) => {
-            if (error) {
-                return reject(error);
-            } else if (response.statusCode !== 200) {
-                const message = `Fail to request with status ${response.statusCode}`;
-                return reject(new Error(message));
-            }
-            const chunks: Buffer[] = [];
-            response.on('data', (chunk: Buffer) => {
-                chunks.push(Buffer.from(chunk));
-            });
-            response.on('end', () => {
-                try {
-                    const str = Buffer.concat(chunks).toString();
-                    if (isValidJson(str)) {
-                        const json = JSON.parse(str);
-                        resolve(json);
-                    } else {
-                        resolve(str);
-                    }
-                } catch (error) {
-                    appProvider.appUtils.handleError(error);
-                    reject(new Error('Fail to fetch body'));
-                }
-            });
-        });
-    });
-}
 
 export type DownloadOptionsType = {
-    onStart: (totalSize: number) => void, onProgress: (percentage: number) => void,
+    onStart: (totalSize: number) => void,
+    onProgress: (percentage: number) => void,
     onDone: (error?: Error) => void
 }
 
-export async function startDownloading(url: string, downloadPath: string, fileName: string,
-    { onStart, onProgress, onDone }: DownloadOptionsType) {
-    const filePath = pathJoin(downloadPath, fileName);
-    await fsDeleteFile(filePath);
-    httpsRequest(url, async (error, response: any) => {
+const getDownloadHandler = (filePath: string, fileName: string,
+    options: DownloadOptionsType) => {
+    return async (error: any, response: any) => {
+        if (await fsCheckFileExist(filePath)) {
+            await fsDeleteFile(filePath);
+        }
         const writeStream = fsCreateWriteStream(filePath);
         try {
             if (error || response.statusCode !== 200) {
                 appProvider.appUtils.handleError(error);
                 writeStream.close();
                 await fsDeleteFile(filePath);
-                onDone(new Error('Error during download'));
+                options.onDone(new Error('Error during download'));
                 return;
             }
             const len = parseInt(response.headers['content-length'], 10);
             let cur = 0;
             const mb = 1048576;//1048576 - bytes in  1Megabyte
             const total = len / mb;
-            onStart(+(total.toFixed(2)));
+            options.onStart(+(total.toFixed(2)));
             response.on('data', (chunk: Buffer) => {
                 if (writeStream.writable) {
                     writeStream.write(chunk, (error1) => {
@@ -98,12 +76,12 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
                     });
                 }
                 cur += chunk.length;
-                onProgress(cur / len);
+                options.onProgress(cur / len);
             });
             response.on('end', async () => {
                 writeStream.close();
                 await getBibleInfo(fileName, true);
-                onDone();
+                options.onDone();
             });
         } catch (error2) {
             writeStream.close();
@@ -112,9 +90,25 @@ export async function startDownloading(url: string, downloadPath: string, fileNa
             } catch (error) {
                 appProvider.appUtils.handleError(error);
             }
-            onDone(error2 as Error);
+            options.onDone(error2 as Error);
         }
-    });
+    };
+};
+export async function startDownloadBible({
+    bibleFileFullName,
+    fileName,
+    options,
+}: {
+    bibleFileFullName: string,
+    fileName: string,
+    options: DownloadOptionsType
+}) {
+    const filePath = await toBiblePath(bibleFileFullName);
+    if (filePath === null) {
+        return options.onDone(new Error('Invalid file path'));
+    }
+    httpsRequest(bibleFileFullName,
+        getDownloadHandler(filePath, fileName, options));
 }
 
 export type BibleInfoType = {
@@ -131,7 +125,7 @@ export type BibleInfoType = {
 export type BookList = { [key: string]: string };
 export type VerseList = { [key: string]: string };
 export type ChapterType = { title: string, verses: VerseList };
-export const bibleStorage: {
+const bibleStorage: {
     infoMapper: Map<string, BibleInfoType | null>,
     bibles: string[],
     chapterCountMapper: Map<string, number>,
@@ -142,23 +136,28 @@ export const bibleStorage: {
     chapterCountMapper: new Map(),
     chapterMapper: new Map(),
 };
+export function clearBibleCache() {
+    bibleStorage.infoMapper.clear();
+    bibleStorage.chapterCountMapper.clear();
+    bibleStorage.chapterMapper.clear();
+}
 
-export async function getBookKVList(bibleName: string) {
-    const info = await getBibleInfo(bibleName);
+export async function getBookKVList(bibleKey: string) {
+    const info = await getBibleInfo(bibleKey);
     if (info === null) {
         return null;
     }
     return info.books;
 }
-export async function keyToBook(bibleName: string, bookKey: string) {
-    const bookKVList = await getBookKVList(bibleName);
+export async function keyToBook(bibleKey: string, bookKey: string) {
+    const bookKVList = await getBookKVList(bibleKey);
     if (bookKVList === null) {
         return null;
     }
     return bookKVList[bookKey] || null;
 }
-export async function getBookVKList(bibleName: string) {
-    const bibleVKList = await getBookKVList(bibleName);
+export async function getBookVKList(bibleKey: string) {
+    const bibleVKList = await getBookKVList(bibleKey);
     if (bibleVKList === null) {
         return null;
     }
@@ -166,16 +165,16 @@ export async function getBookVKList(bibleName: string) {
         return [v, k];
     }));
 }
-export async function bookToKey(bibleName: string, book: string) {
-    const bookVKList = await getBookVKList(bibleName);
+export async function bookToKey(bibleKey: string, book: string) {
+    const bookVKList = await getBookVKList(bibleKey);
     if (bookVKList === null) {
         return null;
     }
     return bookVKList[book] || null;
 }
-export async function getChapterCount(bibleName: string, book: string) {
+export async function getChapterCount(bibleKey: string, book: string) {
     if (!bibleStorage.chapterCountMapper.has(book)) {
-        const bookKey = await toBookKey(bibleName, book);
+        const bookKey = await toBookKey(bibleKey, book);
         if (bookKey === null) {
             return null;
         }
@@ -184,19 +183,19 @@ export async function getChapterCount(bibleName: string, book: string) {
     }
     return bibleStorage.chapterCountMapper.get(book) || null;
 }
-export async function getBookChapterData(bibleName: string,
+export async function getBookChapterData(bibleKey: string,
     bookKey: string, chapterNumber: number) {
     const fileName = toFileName(bookKey, chapterNumber);
-    const vInfo = await readBibleData(bibleName, fileName) as ChapterType | null;
+    const vInfo = await readBibleData(bibleKey, fileName) as ChapterType | null;
     if (vInfo === null) {
         return null;
     }
     return vInfo;
 }
-export async function getVerses(bibleName: string, bookKey: string, chapter: number) {
-    const key = `${bibleName} => ${bookKey} ${chapter}`;
+export async function getVerses(bibleKey: string, bookKey: string, chapter: number) {
+    const key = `${bibleKey} => ${bookKey} ${chapter}`;
     if (!bibleStorage.chapterMapper.has(key)) {
-        const chapterData = await getBookChapterData(bibleName, bookKey, chapter);;
+        const chapterData = await getBookChapterData(bibleKey, bookKey, chapter);;
         bibleStorage.chapterMapper.set(key, chapterData);
     }
     const chapterObj = bibleStorage.chapterMapper.get(key);
@@ -219,23 +218,24 @@ export async function getWritableBiblePath() {
     return pathJoin(getUserWritablePath(), 'bibles');
 }
 
-export async function toBiblePath(bibleName: string) {
+export async function toBiblePath(bibleKey: string) {
     const writableBiblePath = await getWritableBiblePath();
     if (writableBiblePath === null) {
         return null;
     }
-    return pathJoin(writableBiblePath, bibleName);
+    return pathJoin(writableBiblePath, bibleKey);
 }
 
-export async function readBibleData(bibleName: string, key: string) {
+export async function readBibleData(bibleKey: string, key: string) {
     try {
-        const biblePath = await toBiblePath(bibleName);
+        const biblePath = await toBiblePath(bibleKey);
         if (biblePath === null) {
             return null;
         }
         const filePath = pathJoin(biblePath, key);
         const data = await fsReadFile(filePath);
-        return JSON.parse(data);
+        const rawData = appProvider.appUtils.base64Decode(decrypt(data));
+        return JSON.parse(rawData);
     } catch (error: any) {
         if (error.code !== 'ENOENT') {
             appProvider.appUtils.handleError(error);
@@ -244,14 +244,14 @@ export async function readBibleData(bibleName: string, key: string) {
     return null;
 }
 
-export async function getBibleInfo(bibleName: string, isForce: boolean = false) {
+export async function getBibleInfo(bibleKey: string, isForce: boolean = false) {
     if (isForce) {
-        bibleStorage.infoMapper.delete(bibleName);
+        bibleStorage.infoMapper.delete(bibleKey);
     }
-    if (!bibleStorage.infoMapper.has(bibleName)) {
-        const info: BibleInfoType | null = await readBibleData(bibleName, '_info');
-        bibleStorage.infoMapper.set(bibleName, info);
+    if (!bibleStorage.infoMapper.has(bibleKey)) {
+        const info: BibleInfoType | null = await readBibleData(bibleKey, '_info');
+        bibleStorage.infoMapper.set(bibleKey, info);
     }
-    return bibleStorage.infoMapper.get(bibleName) || null;
+    return bibleStorage.infoMapper.get(bibleKey) || null;
 }
 

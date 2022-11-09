@@ -8,7 +8,7 @@ import { getDownloadedBibleInfoList } from '../server/bible-helpers/bibleHelpers
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {
-        return bibleItem.bibleName;
+        return bibleItem.bibleKey;
     }
     let bibleKey = getSetting('selected-bible') || null;
     if (bibleKey === null) {
@@ -27,13 +27,13 @@ export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
 }
 
 export function useGetSelectedBibleItem(bibleItem: BibleItem | null) {
-    const [bibleNameSelected, setBibleNameSelected] = useState<string | null>(null);
+    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(null);
     useEffect(() => {
-        getSelectedEditingBibleItem(bibleItem).then((bibleName) => {
-            setBibleNameSelected(bibleName);
+        getSelectedEditingBibleItem(bibleItem).then((bibleKey) => {
+            setBibleKeySelected(bibleKey);
         });
     });
-    return [bibleNameSelected, setBibleNameSelected] as [string | null, (b: string | null) => void];
+    return [bibleKeySelected, setBibleKeySelected] as [string | null, (b: string | null) => void];
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
@@ -49,7 +49,7 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
 }
 
 export async function genInputText(preBible: string,
-    bibleName: string, inputText: string) {
+    bibleKey: string, inputText: string) {
     const result = await extractBible(preBible, inputText);
     const {
         book: newBook,
@@ -63,9 +63,9 @@ export async function genInputText(preBible: string,
             return bookObj[k] === newBook;
         });
         if (key) {
-            const newBookObj = await getBookKVList(bibleName);
+            const newBookObj = await getBookKVList(bibleKey);
             if (newBookObj !== null) {
-                return toInputText(bibleName, newBookObj[key],
+                return toInputText(bibleKey, newBookObj[key],
                     newChapter, newStartVerse, newEndVerse);
             }
         }

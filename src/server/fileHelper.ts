@@ -141,7 +141,9 @@ function _fsMkdir(dirPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.mkdir, dirPath);
 }
 function _fsRmdir(dirPath: string) {
-    return fsFilePromise<void>(appProvider.fileUtils.rmdir, dirPath);
+    return fsFilePromise<void>(appProvider.fileUtils.rmdir, dirPath, {
+        recursive: true,
+    });
 }
 function _fsReaddir(dirPath: string) {
     return fsFilePromise<string[]>(appProvider.fileUtils.readdir, dirPath);
@@ -185,7 +187,7 @@ export function fsCheckDirExist(filePath: string, fileName?: string) {
     return _fsCheckExist(false, filePath, fileName);
 }
 export function fsCheckFileExist(filePath: string, fileName?: string) {
-    return _fsCheckExist(false, filePath, fileName);
+    return _fsCheckExist(true, filePath, fileName);
 }
 
 export async function fsList(dir: string) {
@@ -216,8 +218,8 @@ export async function fsList(dir: string) {
     }
 }
 
-export async function fsListFiles(dir: string) {
-    const list = await fsList(dir);
+export async function fsListFiles(dirPath: string) {
+    const list = await fsList(dirPath);
     return list.filter(({ isFile }) => {
         return isFile;
     }).map(({ name }) => {
@@ -225,8 +227,8 @@ export async function fsListFiles(dir: string) {
     });
 }
 
-export async function fsListDirectories(dir: string) {
-    const list = await fsList(dir);
+export async function fsListDirectories(dirPath: string) {
+    const list = await fsList(dirPath);
     return list.filter(({ isDirectory }) => {
         return isDirectory;
     }).map(({ name }) => {
@@ -234,12 +236,13 @@ export async function fsListDirectories(dir: string) {
     });
 }
 
-export async function fsListFilesWithMimetype(dir: string, mimetype: MimetypeNameType) {
+export async function fsListFilesWithMimetype(dir: string,
+    mimetype: MimetypeNameType) {
     if (!dir) {
         return [];
     }
     try {
-        const mimetypeList = require(`./mime/${mimetype}-types.json`) as AppMimetypeType[];
+        const mimetypeList = require(`./mime/${mimetype}-types.json`);
         const files = await fsListFiles(dir);
         const matchedFiles = files.map((fileName) => {
             return getFileMetaData(fileName, mimetypeList);

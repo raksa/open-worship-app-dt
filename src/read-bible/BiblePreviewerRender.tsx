@@ -43,11 +43,11 @@ export default function BiblePreviewerRender({ bibleItem }: {
             {isAvailable ? bibleItems.map((item, i) => {
                 return (
                     <BibleView key={`${i}`} bibleItem={item}
-                        onBibleChange={(bibleName: string) => {
+                        onBibleChange={(bibleKey: string) => {
                             const bibleItem1 = bibleItems.map((item1) => {
                                 return item1.clone();
                             });
-                            bibleItem1[i].bibleName = bibleName;
+                            bibleItem1[i].bibleKey = bibleKey;
                             applyPresents(bibleItem1);
                         }}
                         onClose={() => {

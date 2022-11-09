@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import {
-    BibleMinimalInfoType, downloadBible,
+    BibleMinimalInfoType,
+    downloadBible,
+    extractDownloadedBible,
 } from '../../server/bible-helpers/bibleHelpers';
 import ToastEventListener from '../../event/ToastEventListener';
 import appProvider from '../../server/appProvider';
@@ -10,23 +12,22 @@ export default function SettingOnlineBible({
     downloadedBibleInfoList,
     onlineBibleInfoList,
     setOnlineBibleInfoList,
+    refresh,
 }: {
     downloadedBibleInfoList: BibleListType,
     onlineBibleInfoList: BibleListType,
     setOnlineBibleInfoList: (bbList: BibleListType) => void
+    refresh: () => void,
 }) {
-    console.log(onlineBibleInfoList);
-    
-    const refreshHandler = () => {
-        setOnlineBibleInfoList(null);
-    };
     if (onlineBibleInfoList === null) {
         return <div>Loading...</div>;
     }
     const getRefresher = () => {
         return (
             <button className='btn btn-info'
-                onClick={refreshHandler}>
+                onClick={() => {
+                    setOnlineBibleInfoList(null);
+                }}>
                 <i className='bi bi-arrow-clockwise' />
                 Refresh
             </button>
@@ -42,24 +43,26 @@ export default function SettingOnlineBible({
             </div>
         );
     }
-    const bibleList = onlineBibleInfoList.filter((bible) => {
-        return !downloadedBibleInfoList ||
-            downloadedBibleInfoList.some((bb) => {
-                return bb.key !== bible.key;
-            });
+    const bibleInfoList = onlineBibleInfoList.filter((bible) => {
+        return bible.filePath && (!downloadedBibleInfoList ||
+            downloadedBibleInfoList.length === 0 ||
+            downloadedBibleInfoList.some((bible1) => {
+                return bible1.key !== bible.key;
+            }));
     });
+
     return (
         <div className='w-100'>
             <div>
                 {getRefresher()}
             </div>
             <ul className='list-group d-flex flex-fill'>
-                {bibleList.map((bible, i) => {
+                {bibleInfoList.map((bibleInfo, i) => {
                     return (
                         <OnlineBibleItem key={`${i}`}
-                            bibleInfo={bible}
+                            bibleInfo={bibleInfo}
                             onDownloaded={() => {
-                                setOnlineBibleInfoList(null);
+                                refresh();
                             }} />
                     );
                 })}
@@ -79,37 +82,35 @@ export function OnlineBibleItem({
     const [downloadingProgress, setDownloadingProgress] = useState<number | null>(null);
     const onDownloadHandler = () => {
         setDownloadingProgress(0);
-        downloadBible(key, {
-            onStart: (totalSize) => {
-                ToastEventListener.showSimpleToast({
-                    title: `Start downloading ${key}`,
-                    message: `Total size${totalSize}mb`,
-                });
-            },
-            onProgress: (percentage) => {
-                setDownloadingProgress(percentage);
-            },
-            onDone: (error) => {
-                if (error) {
-                    appProvider.appUtils.handleError(error);
-                } else {
-                    onDownloaded();
-                }
-                setDownloadingProgress(null);
+        downloadBible({
+            bibleInfo,
+            options: {
+                onStart: (totalSize) => {
+                    ToastEventListener.showSimpleToast({
+                        title: `Start downloading ${key}`,
+                        message: `Total file size ${totalSize}mb`,
+                    });
+                },
+                onProgress: (percentage) => {
+                    setDownloadingProgress(percentage);
+                },
+                onDone: async (error) => {
+                    if (error) {
+                        appProvider.appUtils.handleError(error);
+                    } else {
+                        await extractDownloadedBible(bibleInfo.filePath as string,
+                            bibleInfo.key);
+                        onDownloaded();
+                    }
+                    setDownloadingProgress(null);
+                },
             },
         });
     };
     return (
         <li className='list-group-item'>
-            <div>
+            <div className='w-100'>
                 <span>{title}({key})</span>
-                <div className='float-end'>
-                    <button className='btn btn-info'
-                        onClick={onDownloadHandler}>
-                        Download
-                        <i className='bi bi-cloud-arrow-down' />
-                    </button>
-                </div>
                 {downloadingProgress === null ?
                     (<div className='float-end'>
                         <button className='btn btn-info'

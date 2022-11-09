@@ -9,59 +9,59 @@ import { cloneJson } from '../../helper/helpers';
 import { useEffect, useState } from 'react';
 import { fromLocaleNum, LocaleType, toLocaleNum } from '../../lang';
 
-export async function toInputText(bibleName: string,
+export async function toInputText(bibleKey: string,
     book?: string | null, chapter?: number | null,
     startVerse?: number | null, endVerse?: number | null) {
     let txt = '';
     if (book) {
         txt += `${book} `;
         if (chapter !== undefined && chapter !== null) {
-            txt += `${await toLocaleNumBB(bibleName, chapter)}`;
+            txt += `${await toLocaleNumBB(bibleKey, chapter)}`;
             if (startVerse !== undefined && startVerse !== null) {
-                txt += `:${await toLocaleNumBB(bibleName, startVerse)}`;
+                txt += `:${await toLocaleNumBB(bibleKey, startVerse)}`;
                 if (endVerse !== undefined && endVerse !== null &&
                     endVerse !== startVerse) {
-                    txt += `-${await toLocaleNumBB(bibleName, endVerse)}`;
+                    txt += `-${await toLocaleNumBB(bibleKey, endVerse)}`;
                 }
             }
         }
     }
     return txt;
 }
-export async function getBibleLocale(bibleName: string) {
-    const info = await getBibleInfo(bibleName);
+export async function getBibleLocale(bibleKey: string) {
+    const info = await getBibleInfo(bibleKey);
     if (info === null) {
         return 'en' as LocaleType;
     }
     return info.locale as LocaleType;
 }
-export async function toLocaleNumBB(bibleName: string, n: number | null) {
+export async function toLocaleNumBB(bibleKey: string, n: number | null) {
     if (typeof n !== 'number') {
         return null;
     }
-    const locale = await getBibleLocale(bibleName);
+    const locale = await getBibleLocale(bibleKey);
     return toLocaleNum(locale, n);
 }
-export function useToLocaleNumBB(bibleName: string, nString: number | null) {
+export function useToLocaleNumBB(bibleKey: string, nString: number | null) {
     const [str, setStr] = useState<string | null>(null);
     useEffect(() => {
-        toLocaleNumBB(bibleName, nString).then(setStr);
-    }, [bibleName, nString]);
+        toLocaleNumBB(bibleKey, nString).then(setStr);
+    }, [bibleKey, nString]);
     return str;
 }
 
-export async function fromLocaleNumBB(bibleName: string, localeNum: string) {
-    const info = await getBibleInfo(bibleName);
+export async function fromLocaleNumBB(bibleKey: string, localeNum: string) {
+    const info = await getBibleInfo(bibleKey);
     if (info === null) {
         return null;
     }
     return fromLocaleNum(info.locale as LocaleType, localeNum);
 }
-export function useFromLocaleNumBB(bibleName: string, localeNum: string) {
+export function useFromLocaleNumBB(bibleKey: string, localeNum: string) {
     const [n, setN] = useState<number | null>(null);
     useEffect(() => {
-        fromLocaleNumBB(bibleName, localeNum).then(setN);
-    }, [bibleName, localeNum]);
+        fromLocaleNumBB(bibleKey, localeNum).then(setN);
+    }, [bibleKey, localeNum]);
     return n;
 }
 
@@ -80,8 +80,8 @@ export const defaultExtractedBible: ExtractedBibleResult = {
     endVerse: null,
 };
 
-async function searchBook(bibleName: string, arr: string[]) {
-    const bookVKList = await getBookVKList(bibleName);
+async function searchBook(bibleKey: string, arr: string[]) {
+    const bookVKList = await getBookVKList(bibleKey);
     if (bookVKList !== null) {
         if (arr.length) {
             let i = 0;
@@ -99,43 +99,43 @@ async function searchBook(bibleName: string, arr: string[]) {
     }
     throw new Error('Invalid book');
 }
-async function searchChapter(bibleName: string,
+async function searchChapter(bibleKey: string,
     book: string, arr: string[]) {
     const error = new Error('Invalid chapter');
     if (!arr[0]) {
         throw error;
     }
-    const chapterCount = await getChapterCount(bibleName, book);
+    const chapterCount = await getChapterCount(bibleKey, book);
     if (chapterCount === null) {
         throw error;
     }
     const arr1 = arr[0].split(':');
-    const chapter = await fromLocaleNumBB(bibleName, arr1[0]);
+    const chapter = await fromLocaleNumBB(bibleKey, arr1[0]);
     if (chapter === null || chapter < 1 ||
         chapter > chapterCount) {
         throw error;
     }
     arr1.shift();
-    const bookKey = await bookToKey(bibleName, book);
+    const bookKey = await bookToKey(bibleKey, book);
     const err1 = new Error('Invalid book');
     if (bookKey === null) {
         throw err1;
     }
-    const verses = await getVerses(bibleName, bookKey, chapter);
+    const verses = await getVerses(bibleKey, bookKey, chapter);
     if (!verses) {
         throw err1;
     }
     const verseCount = Object.keys(verses).length;
     return { arr1, chapter, verseCount };
 }
-async function searchStartVerse(bibleName: string,
+async function searchStartVerse(bibleKey: string,
     verseCount: number, arr1: string[]) {
     const error = new Error('Invalid start verse');
     if (!arr1[0]) {
         throw error;
     }
     const arr2 = arr1[0].split('-');
-    const startVerse = await fromLocaleNumBB(bibleName, arr2[0]);
+    const startVerse = await fromLocaleNumBB(bibleKey, arr2[0]);
     if (startVerse === null || startVerse < 0 ||
         startVerse > verseCount) {
         throw error;
@@ -143,34 +143,34 @@ async function searchStartVerse(bibleName: string,
     arr2.shift();
     return { arr2, startVerse };
 }
-async function searchEndVerse(bibleName: string, verseCount: number,
+async function searchEndVerse(bibleKey: string, verseCount: number,
     startVerse: number, arr2: string[]) {
     const error = new Error('Invalid end verse');
     if (!arr2[0]) {
         throw error;
     }
-    const endVerse = await fromLocaleNumBB(bibleName, arr2[0]);
+    const endVerse = await fromLocaleNumBB(bibleKey, arr2[0]);
     if (endVerse === null || endVerse < 1 || endVerse > verseCount ||
         endVerse <= startVerse) {
         throw error;
     }
     return endVerse;
 }
-export async function extractBible(bibleName: string, str: string) {
+export async function extractBible(bibleKey: string, str: string) {
     const result = cloneJson(defaultExtractedBible);
     try {
         const arr = str.trim().split(/\s+/);
-        result.book = await searchBook(bibleName, arr);
+        result.book = await searchBook(bibleKey, arr);
         const {
             arr1, chapter, verseCount,
-        } = await searchChapter(bibleName, result.book, arr);
+        } = await searchChapter(bibleKey, result.book, arr);
         result.chapter = chapter;
         const {
             arr2, startVerse,
-        } = await searchStartVerse(bibleName, verseCount, arr1);
+        } = await searchStartVerse(bibleKey, verseCount, arr1);
         result.startVerse = startVerse;
         result.endVerse = startVerse;
-        result.endVerse = await searchEndVerse(bibleName,
+        result.endVerse = await searchEndVerse(bibleKey,
             verseCount, startVerse, arr2);
     } catch (error: any) {
         if (error.message === 'Invalid book') {

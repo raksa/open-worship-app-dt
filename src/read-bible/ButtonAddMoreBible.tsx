@@ -15,9 +15,9 @@ export default function ButtonAddMoreBible({
                 padding: '0px',
             }}
             onClick={async (event) => {
-                const addBibleView = (bibleName: string) => {
+                const addBibleView = (bibleKey: string) => {
                     const newBibleItem = bibleItems[0].clone();
-                    newBibleItem.bibleName = bibleName;
+                    newBibleItem.bibleKey = bibleKey;
                     const newBibleItems = [
                         ...bibleItems,
                         newBibleItem,
@@ -25,19 +25,19 @@ export default function ButtonAddMoreBible({
                     applyPresents(newBibleItems);
                 };
                 const bibleList = await getBibleInfoWithStatusList();
-                const bibleItemingList = bibleItems.map(({ bibleName }) => {
-                    return bibleName;
+                const bibleItemingList = bibleItems.map(({ bibleKey }) => {
+                    return bibleKey;
                 });
-                const bibleListFiltered = bibleList.filter(([bibleName]) => {
-                    return !bibleItemingList.includes(bibleName);
+                const bibleListFiltered = bibleList.filter(([bibleKey]) => {
+                    return !bibleItemingList.includes(bibleKey);
                 });
                 showAppContextMenu(event as any,
-                    bibleListFiltered.map(([bibleName, isAvailable]) => {
+                    bibleListFiltered.map(([bibleKey, isAvailable]) => {
                         return {
-                            title: bibleName,
+                            title: bibleKey,
                             disabled: !isAvailable,
                             onClick: () => {
-                                addBibleView(bibleName);
+                                addBibleView(bibleKey);
                             },
                         };
                     }));

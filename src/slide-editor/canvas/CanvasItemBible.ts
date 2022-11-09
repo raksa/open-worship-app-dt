@@ -13,7 +13,7 @@ import {
 import appProvider from '../../server/appProvider';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
-    bibleNames: string[];
+    bibleKeys: string[];
     bibleItemTarget: BibleTargetType,
     bibleRenderedList: {
         title: string,
@@ -46,7 +46,7 @@ export default class CanvasItemBible extends CanvasItemText {
         props.id = id;
         const json: CanvasItemBiblePropsType = {
             ...props,
-            bibleNames: [bibleItem.bibleName],
+            bibleKeys: [bibleItem.bibleKey],
             bibleItemTarget: bibleItem.toJson().target,
             bibleRenderedList: [{
                 title, text,
@@ -64,7 +64,7 @@ export default class CanvasItemBible extends CanvasItemText {
         BibleItem.validate({
             id: -1,
             target: json.bibleItemTarget,
-            bibleName: json.bibleNames[0],
+            bibleKey: json.bibleKeys[0],
         });
     }
 }

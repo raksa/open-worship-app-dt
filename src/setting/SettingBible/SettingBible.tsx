@@ -1,3 +1,4 @@
+import { clearBibleCache } from '../../server/bible-helpers/bibleHelpers1';
 import {
     useDownloadedBibleInfoList,
     useOnlineBibleInfoList,
@@ -8,19 +9,27 @@ import SettingOnlineBible from './SettingOnlineBible';
 export default function SettingBible() {
     const [downloadedBbInfoList, setDownloadedBbInfoList] = useDownloadedBibleInfoList();
     const [onlineBbInfoList, setOnlineBbInfoList] = useOnlineBibleInfoList();
+    const refresh = () => {
+        setDownloadedBbInfoList(null);
+        setOnlineBbInfoList(null);
+        clearBibleCache();
+    };
     return (
-        <div>
+        <div className='w-100'>
             <h3>Downloaded Bible List</h3>
             <SettingDownloadedBible
                 onlineBibleInfoList={onlineBbInfoList}
                 downloadedBibleInfoList={downloadedBbInfoList}
-                setDownloadedBibleInfoList={setDownloadedBbInfoList} />
+                setOnlineBibleInfoList={setOnlineBbInfoList}
+                setDownloadedBibleInfoList={setDownloadedBbInfoList}
+                refresh={refresh} />
             <hr />
             <h3>Online Bible List</h3>
             <SettingOnlineBible
                 onlineBibleInfoList={onlineBbInfoList}
                 downloadedBibleInfoList={downloadedBbInfoList}
-                setOnlineBibleInfoList={setOnlineBbInfoList} />
+                setOnlineBibleInfoList={setOnlineBbInfoList}
+                refresh={refresh} />
         </div>
     );
 }

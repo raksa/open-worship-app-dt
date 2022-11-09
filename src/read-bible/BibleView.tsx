@@ -12,7 +12,7 @@ export default function BibleView({
     bibleItem, onBibleChange, onClose,
 }: {
     bibleItem: BibleItem,
-    onBibleChange: (bibleName: string) => void,
+    onBibleChange: (bibleKey: string) => void,
     onClose: () => void,
 }) {
     const title = useBibleItemRenderTitle(bibleItem);
@@ -31,7 +31,7 @@ export default function BibleView({
             }}>
             <div className='card-header'>
                 <span className='input-group-text select float-start'>
-                    <BibleSelection value={bibleItem.bibleName}
+                    <BibleSelection value={bibleItem.bibleKey}
                         onChange={(bibleKey) => {
                             onBibleChange(bibleKey);
                         }} />

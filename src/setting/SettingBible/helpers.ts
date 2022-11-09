@@ -16,7 +16,7 @@ export function useDownloadedBibleInfoList() {
         getDownloadedBibleInfoList().then((bibleInfoList) => {
             setBibleInfoList(bibleInfoList || undefined);
         });
-    });
+    }, [bibleInfoList]);
     return [bibleInfoList, setBibleInfoList] as const;
 }
 
@@ -29,6 +29,9 @@ export function useOnlineBibleInfoList() {
         getOnlineBibleInfoList().then((bibleInfoList) => {
             setBibleInfoList(bibleInfoList || undefined);
         });
-    });
-    return [bibleInfoList, setBibleInfoList] as const;
+    }, [bibleInfoList]);
+    const _setBibleInfoList = (bibleInfoList: BibleListType) => {
+        setBibleInfoList(bibleInfoList);
+    };
+    return [bibleInfoList, _setBibleInfoList] as const;
 }

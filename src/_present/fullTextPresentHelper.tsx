@@ -69,16 +69,16 @@ const fullTextPresentHelper = {
         onBibleSelect: (event: MouseEvent, index: number) => void,
     }) {
         if (!appProviderPresent.isPresent) {
-            const spanBibleNames = table.querySelectorAll<HTMLSpanElement>('span.bible-name');
-            Array.from(spanBibleNames).forEach((spanBibleName) => {
-                spanBibleName.addEventListener('mouseover', () => {
-                    spanBibleName.classList.add('hover');
+            const spanBibleKeys = table.querySelectorAll<HTMLSpanElement>('span.bible-name');
+            Array.from(spanBibleKeys).forEach((spanBibleKey) => {
+                spanBibleKey.addEventListener('mouseover', () => {
+                    spanBibleKey.classList.add('hover');
                 });
-                spanBibleName.addEventListener('mouseout', () => {
-                    spanBibleName.classList.remove('hover');
+                spanBibleKey.addEventListener('mouseout', () => {
+                    spanBibleKey.classList.remove('hover');
                 });
-                spanBibleName.addEventListener('click', (event) => {
-                    const index = Number(spanBibleName.getAttribute('data-index'));
+                spanBibleKey.addEventListener('click', (event) => {
+                    const index = Number(spanBibleKey.getAttribute('data-index'));
                     onBibleSelect(event, index);
                 });
             });
@@ -106,13 +106,13 @@ const fullTextPresentHelper = {
         return Promise.all(bibleItems.map((bibleItem) => {
             return new Promise<BibleItemRenderedType>(async (resolve, _) => {
                 const bibleTitle = await BibleItem.itemToTitle(bibleItem);
-                const verses = await getVerses(bibleItem.bibleName,
+                const verses = await getVerses(bibleItem.bibleKey,
                     bibleItem.target.book, bibleItem.target.chapter);
                 const verseList: BibleRenderVerseType[] = [];
                 if (verses !== null) {
                     for (let i = bibleItem.target.startVerse;
                         i <= bibleItem.target.endVerse; i++) {
-                        const verseNumb = await toLocaleNumBB(bibleItem.bibleName, i);
+                        const verseNumb = await toLocaleNumBB(bibleItem.bibleKey, i);
                         if (verseNumb !== null) {
                             verseList.push({
                                 num: verseNumb,
@@ -121,10 +121,10 @@ const fullTextPresentHelper = {
                         }
                     }
                 }
-                const locale = await getBibleLocale(bibleItem.bibleName);
+                const locale = await getBibleLocale(bibleItem.bibleKey);
                 resolve({
                     locale,
-                    bibleName: bibleItem.bibleName,
+                    bibleKey: bibleItem.bibleKey,
                     title: bibleTitle,
                     verses: verseList,
                 });

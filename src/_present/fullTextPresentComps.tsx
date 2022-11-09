@@ -8,7 +8,7 @@ export type BibleRenderVerseType = {
 };
 export type BibleItemRenderedType = {
     locale: LocaleType,
-    bibleName: string,
+    bibleKey: string,
     title: string,
     verses: BibleRenderVerseType[]
 };
@@ -40,7 +40,7 @@ export function FTBibleTable({
             <table>
                 <thead>
                     <tr>
-                        {bibleRenderedList.map(({ locale, bibleName, title }, i) => {
+                        {bibleRenderedList.map(({ locale, bibleKey, title }, i) => {
                             return (
                                 <th key={i}
                                     style={{
@@ -48,7 +48,7 @@ export function FTBibleTable({
                                     }}>
                                     <span className='bible highlight bible-name'
                                         data-index={i}>
-                                        {bibleName}
+                                        {bibleKey}
                                     </span>
                                     |<span className='title'>{title}</span >
                                 </th>

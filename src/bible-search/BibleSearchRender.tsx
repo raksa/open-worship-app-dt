@@ -66,12 +66,12 @@ export default function BibleSearchRender({ bibleItem }: {
         setInputText(txt);
     };
     const handleBibleChange = async (preBible: string) => {
-        const bibleName = await getSelectedEditingBibleItem(null);
-        if (bibleName === null) {
+        const bibleKey = await getSelectedEditingBibleItem(null);
+        if (bibleKey === null) {
             return;
         }
-        setBibleSelected(bibleName);
-        const newText = await genInputText(preBible, bibleName, inputText);
+        setBibleSelected(bibleKey);
+        const newText = await genInputText(preBible, bibleKey, inputText);
         if (newText !== null) {
             setInputText(newText);
         }

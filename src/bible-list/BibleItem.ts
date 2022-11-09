@@ -23,7 +23,7 @@ export type BibleTargetType = {
 };
 export type BibleItemType = {
     id: number,
-    bibleName: string,
+    bibleKey: string,
     target: BibleTargetType,
     metadata: AnyObjectType,
 }
@@ -39,11 +39,11 @@ export default class BibleItem extends ItemBase {
         this.fileSource = fileSource;
         this._originalJson = cloneJson(json);
     }
-    get bibleName() {
-        return this._originalJson.bibleName;
+    get bibleKey() {
+        return this._originalJson.bibleKey;
     }
-    set bibleName(name: string) {
-        this._originalJson.bibleName = name;
+    set bibleKey(name: string) {
+        this._originalJson.bibleKey = name;
     }
     get target() {
         return this._originalJson.target;
@@ -117,7 +117,7 @@ export default class BibleItem extends ItemBase {
     static fromJsonError(json: BibleItemType, fileSource?: FileSource) {
         const item = new BibleItem(-1, {
             id: -1,
-            bibleName: '',
+            bibleKey: '',
             target: {
                 book: '',
                 chapter: 0,
@@ -135,13 +135,13 @@ export default class BibleItem extends ItemBase {
         }
         return {
             id: this.id,
-            bibleName: this.bibleName,
+            bibleKey: this.bibleKey,
             target: this.target,
             metadata: this.metadata,
         };
     }
     static validate(json: AnyObjectType) {
-        if (!json.bibleName ||
+        if (!json.bibleKey ||
             typeof json.id !== 'number' ||
             (json.metadata && typeof json.metadata !== 'object') ||
             !json.target || typeof json.target !== 'object' ||
@@ -174,7 +174,7 @@ export default class BibleItem extends ItemBase {
         return false;
     }
     update(bibleItem: BibleItem) {
-        this.bibleName = bibleItem.bibleName;
+        this.bibleKey = bibleItem.bibleKey;
         this.target = bibleItem.target;
         this.metadata = bibleItem.metadata || this.metadata;
     }
@@ -185,7 +185,7 @@ export default class BibleItem extends ItemBase {
         } else {
             list = presentingBibleItems.map((presentingBibleItem) => {
                 const newItem = bibleItem.clone();
-                newItem.bibleName = presentingBibleItem.bibleName;
+                newItem.bibleKey = presentingBibleItem.bibleKey;
                 return newItem;
             });
         }
@@ -210,7 +210,7 @@ export default class BibleItem extends ItemBase {
         return [];
     }
     static async itemToTitle(item: BibleItem) {
-        const { bibleName: bible, target } = item;
+        const { bibleKey: bible, target } = item;
         const { book, chapter, startVerse, endVerse } = target;
         const chapterLocale = await toLocaleNumBB(bible, chapter);
         const startVerseLocale = await toLocaleNumBB(bible, startVerse);
@@ -223,7 +223,7 @@ export default class BibleItem extends ItemBase {
         return `${bookKey} ${chapterLocale}:${txtV}`;
     }
     static async itemToText(item: BibleItem) {
-        const { bibleName: bible, target } = item;
+        const { bibleKey: bible, target } = item;
         let txt = '😟Unable to get bible text, check downloaded bible list in setting or refresh application!👌';
         if (target.chapter === null) {
             return txt;
@@ -260,13 +260,13 @@ export function useBibleItemRenderText(item: BibleItem) {
     }, [item]);
     return text;
 }
-export function useBibleItemToInputText(bibleName: string, book?: string | null,
+export function useBibleItemToInputText(bibleKey: string, book?: string | null,
     chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
     const [text, setText] = useState<string>('');
     useEffect(() => {
-        toInputText(bibleName, book, chapter, startVerse, endVerse).then((text1) => {
+        toInputText(bibleKey, book, chapter, startVerse, endVerse).then((text1) => {
             setText(text1);
         });
-    }, [bibleName, book, chapter, startVerse, endVerse]);
+    }, [bibleKey, book, chapter, startVerse, endVerse]);
     return text;
 }

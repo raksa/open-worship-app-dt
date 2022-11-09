@@ -1,15 +1,15 @@
 import {
     DownloadOptionsType,
     getBibleInfo,
-    startDownloading,
-    appFetch,
+    startDownloadBible,
     getBookKVList,
     getChapterCount,
     getWritableBiblePath,
     toBiblePath,
 } from './bibleHelpers1';
 import {
-    fsDeleteFile,
+    fsCheckDirExist,
+    fsDeleteDir,
     fsListDirectories,
 } from '../fileHelper';
 import { useState, useEffect } from 'react';
@@ -19,6 +19,7 @@ import bibleJson from './bible.json';
 import appProvider from '../appProvider';
 import { get_api_key, get_api_url } from '../../_owa-crypto';
 import { LocaleType } from '../../lang';
+import ToastEventListener from '../../event/ToastEventListener';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -39,9 +40,9 @@ export const toLocaleNum = (n: number, numList: string[]) => {
     }).join('');
 };
 
-export async function genMatches(bibleName: string, inputText: string) {
+export async function genMatches(bibleKey: string, inputText: string) {
     const kjvKeyValue = getKJVKeyValue();
-    const bookKVList = await getBookKVList(bibleName);
+    const bookKVList = await getBookKVList(bibleKey);
     if (bookKVList === null) {
         return null;
     }
@@ -62,13 +63,13 @@ export async function genMatches(bibleName: string, inputText: string) {
         return false;
     });
 };
-export function useMatch(bibleName: string, inputText: string) {
+export function useMatch(bibleKey: string, inputText: string) {
     const [matches, setMatches] = useState<string[] | null>(null);
     useEffect(() => {
-        genMatches(bibleName, inputText).then((ms) => {
+        genMatches(bibleKey, inputText).then((ms) => {
             setMatches(ms);
         });
-    }, [bibleName, inputText]);
+    }, [bibleKey, inputText]);
     return matches;
 }
 export function useGetBookKVList(bibleSelected: string) {
@@ -82,11 +83,11 @@ export function useGetBookKVList(bibleSelected: string) {
     }, [bibleSelected]);
     return bookKVList;
 }
-export function useGetBibleWithStatus(bibleName: string) {
+export function useGetBibleWithStatus(bibleKey: string) {
     const [bibleStatus, setBibleStatus] = useState<[string, boolean, string] | null>(null);
     useEffect(() => {
-        getBibleInfoWithStatus(bibleName).then((bs) => setBibleStatus(bs));
-    }, [bibleName]);
+        getBibleInfoWithStatus(bibleKey).then((bs) => setBibleStatus(bs));
+    }, [bibleKey]);
     return bibleStatus;
 }
 export function useGetChapterCount(bibleSelected: string, bookSelected: string) {
@@ -121,27 +122,60 @@ export type BibleMinimalInfoType = {
     filePath?: string,
 };
 
-export async function downloadBible(bibleName: string, options: DownloadOptionsType) {
+export async function downloadBible({
+    bibleInfo,
+    options,
+}: {
+    bibleInfo: BibleMinimalInfoType,
+    options: DownloadOptionsType,
+}) {
+    if (bibleInfo.filePath === undefined) {
+        return options.onDone(new Error('Invalid file path'));
+    }
     try {
-        await deleteBible(bibleName);
         const downloadPath = await getWritableBiblePath();
         if (downloadPath === null) {
             return options.onDone(new Error('Cannot create writable path'));
         }
-        const data: {
-            cipherKey: string,
-            key: string,
-            name: string,
-            version: string,
-        } = await appFetch(`/pointers/${encodeURI(bibleName + '.json')}`);
-        await startDownloading(`/${encodeURI(data.key)}`,
-            downloadPath, data.name, options);
+        await startDownloadBible({
+            bibleFileFullName: `/${encodeURI(bibleInfo.filePath)}`,
+            fileName: bibleInfo.key,
+            options,
+        });
     } catch (error: any) {
         options.onDone(error);
     }
 }
+export async function extractDownloadedBible(archivedFileName: string,
+    bibleKey: string) {
+    try {
+        const downloadPath = await getWritableBiblePath();
+        const filePath = await toBiblePath(archivedFileName);
+        const bibleDestination = await toBiblePath(bibleKey);
+        if (downloadPath === null || filePath === null ||
+            bibleDestination === null) {
+            return false;
+        }
+        if (await fsCheckDirExist(bibleDestination)) {
+            await fsDeleteDir(bibleDestination);
+        }
+        await appProvider.fileUtils.tarExtract({
+            file: filePath,
+            cwd: downloadPath,
+        });
+        return true;
+    } catch (error: any) {
+        appProvider.appUtils.handleError(error);
+        ToastEventListener.showSimpleToast({
+            title: 'Extracting Bible',
+            message: 'Fail to extract bible',
+        });
+    }
+    return false;
+}
 
-export async function getOnlineBibleInfoList(): Promise<BibleMinimalInfoType[] | null> {
+export async function getOnlineBibleInfoList():
+    Promise<BibleMinimalInfoType[] | null> {
     try {
         const apiUrl = get_api_url();
         const apiKey = get_api_key();
@@ -161,6 +195,7 @@ export async function getOnlineBibleInfoList(): Promise<BibleMinimalInfoType[] |
                 title: value.title,
                 key,
                 version: value.version,
+                filePath: value.filePath,
             };
         });
     } catch (error) {
@@ -179,22 +214,25 @@ export async function getDownloadedBibleInfoList() {
         return null;
     }
     const directoryNames = await fsListDirectories(writableBiblePath);
-    const promises = directoryNames.map(async (bibleName) => {
-        return getBibleInfo(bibleName);
+    const promises = directoryNames.map(async (bibleKey) => {
+        return getBibleInfo(bibleKey);
     });
     try {
         const infoList = await Promise.all(promises);
-        return infoList.filter((info) => info !== null) as BibleMinimalInfoType[];
+        return infoList.filter((info) => {
+            return info !== null;
+        }) as BibleMinimalInfoType[];
     } catch (error) {
         appProvider.appUtils.handleError(error);
     }
     return null;
 }
 
-async function getBibleInfoWithStatus(bibleName: string): Promise<[string, boolean, string]> {
-    const bibleInfo = await getBibleInfo(bibleName);
+async function getBibleInfoWithStatus(bibleKey: string):
+    Promise<[string, boolean, string]> {
+    const bibleInfo = await getBibleInfo(bibleKey);
     const isAvailable = bibleInfo !== null;
-    return [bibleName, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleName}`];
+    return [bibleKey, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleKey}`];
 }
 
 export async function getBibleInfoWithStatusList() {
@@ -209,18 +247,10 @@ export async function getBibleInfoWithStatusList() {
     return list;
 }
 
-export async function deleteBible(bibleName: string) {
-    const filePath = await toBiblePath(bibleName);
-    if (filePath === null) {
-        return;
-    }
-    await fsDeleteFile(filePath);
-}
-
-async function toChapter(bibleName: string, bookKey: string,
+async function toChapter(bibleKey: string, bookKey: string,
     chapterNum: number) {
     // KJV, GEN, 1
-    const info = await getBibleInfo(bibleName);
+    const info = await getBibleInfo(bibleKey);
     if (info === null) {
         return null;
     }
@@ -234,11 +264,11 @@ export function getKJVChapterCount(bookKey: string) {
     return bibleObj.books[bookKey].chapterCount;
 }
 
-export function toChapterList(bibleName: string, bookKey: string) {
+export function toChapterList(bibleKey: string, bookKey: string) {
     // KJV, GEN
     const chapterCount = getKJVChapterCount(bookKey);
     return Array.from({ length: chapterCount }, (_, i) => {
-        return toChapter(bibleName, bookKey, i + 1);
+        return toChapter(bibleKey, bookKey, i + 1);
     });
 }
 
@@ -273,8 +303,8 @@ export function toFileName(bookKey: string, chapterNum: number) {
     return `${indexStr}-${bookKey}.${chapterNum}.json`;
 }
 
-export async function toBookKey(bibleName: string, book: string) {
-    const info = await getBibleInfo(bibleName);
+export async function toBookKey(bibleKey: string, book: string) {
+    const info = await getBibleInfo(bibleKey);
     if (info !== null) {
         for (const k in info.books) {
             if (info.books[k] === book) {

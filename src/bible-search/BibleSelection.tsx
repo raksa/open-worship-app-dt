@@ -25,7 +25,7 @@ export default function BibleSelection({ value, onChange }: {
             {bibleInfoList.map((bibleInfo, i) => {
                 return (
                     <BibleSelectOption key={`${i}`}
-                        bibleName={bibleInfo.key} />
+                        bibleKey={bibleInfo.key} />
                 );
             })}
         </select>

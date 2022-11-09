@@ -36,7 +36,7 @@ export default function RenderFoundButtons({
         }
         const bibleItem = BibleItem.fromJson({
             id: -1,
-            bibleName: bibleSelected,
+            bibleKey: bibleSelected,
             target: {
                 book: key,
                 chapter,

@@ -1,6 +1,7 @@
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import tar from 'tar';
 
 export type MessageEventType = {
     returnValue: any,
@@ -29,6 +30,7 @@ export type FileUtilsType = {
     rmdir: typeof fs.rmdir,
     readFile: typeof fs.readFile,
     copyFile: typeof fs.copyFile,
+    tarExtract: typeof tar.x,
 };
 
 export type PathUtilsType = {
@@ -56,6 +58,8 @@ export type FontListType = {
 };
 export type AppUtilsType = {
     handleError: (error: any) => void,
+    base64Encode: (str: string) => string,
+    base64Decode: (str: string) => string,
 };
 export type PdfUtilsType = {
     toPdf: (filePath: string, outputDir: string) => Promise<void>,

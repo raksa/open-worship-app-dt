@@ -7,7 +7,7 @@ export default function SettingAbout() {
     const bookKey = 'PSA';
     const text = useBibleItemRenderText(BibleItem.fromJson({
         id: -1,
-        bibleName: 'KJV',
+        bibleKey: 'KJV',
         target: {
             book: bookKey, chapter: 150,
             startVerse: 6,

@@ -32,7 +32,7 @@ export default function Preview({
             const newTitle = await toInputText(bibleSelected, book, chapter, sVerse, eVerse);
             const newText = await BibleItem.itemToText(BibleItem.fromJson({
                 id: -1,
-                bibleName: bibleSelected,
+                bibleKey: bibleSelected,
                 target: {
                     book: await bookToKey(bibleSelected, book) || '',
                     chapter,

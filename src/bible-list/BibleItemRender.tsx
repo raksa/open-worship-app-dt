@@ -29,11 +29,11 @@ export default function BibleItemRender({
 }) {
     useFSEvents(['select'], fileSource);
     const title = useBibleItemRenderTitle(bibleItem);
-    const bibleStatus = useGetBibleWithStatus(bibleItem.bibleName);
-    const changeBible = (newBibleName: string) => {
-        console.log('changeBible', newBibleName);
+    const bibleStatus = useGetBibleWithStatus(bibleItem.bibleKey);
+    const changeBible = (newBibleKey: string) => {
+        console.log('changeBible', newBibleKey);
 
-        bibleItem.bibleName = newBibleName;
+        bibleItem.bibleKey = newBibleKey;
         bibleItem.save();
     };
     const startChangingBible = async (event: React.MouseEvent<any>) => {
@@ -42,16 +42,16 @@ export default function BibleItemRender({
         }
         event.stopPropagation();
         const bibleList = await getBibleInfoWithStatusList();
-        const currentBible = bibleItem.bibleName;
-        const bibleListFiltered = bibleList.filter(([bibleName]) => {
-            return currentBible !== bibleName;
+        const currentBible = bibleItem.bibleKey;
+        const bibleListFiltered = bibleList.filter(([bibleKey]) => {
+            return currentBible !== bibleKey;
         });
-        const menuOptions = bibleListFiltered.map(([bibleName, isAvailable]) => {
+        const menuOptions = bibleListFiltered.map(([bibleKey, isAvailable]) => {
             return {
-                title: bibleName,
+                title: bibleKey,
                 disabled: !isAvailable,
                 onClick: () => {
-                    changeBible(bibleName);
+                    changeBible(bibleKey);
                 },
             };
         });
