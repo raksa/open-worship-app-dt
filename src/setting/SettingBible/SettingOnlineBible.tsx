@@ -46,7 +46,7 @@ export default function SettingOnlineBible({
     const bibleInfoList = onlineBibleInfoList.filter((bible) => {
         return bible.filePath && (!downloadedBibleInfoList ||
             downloadedBibleInfoList.length === 0 ||
-            downloadedBibleInfoList.some((bible1) => {
+            downloadedBibleInfoList.every((bible1) => {
                 return bible1.key !== bible.key;
             }));
     });
