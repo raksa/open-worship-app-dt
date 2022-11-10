@@ -36,11 +36,11 @@ export default function SettingOnlineBible({
             </div>
         );
     }
-    const bibleInfoList = onlineBibleInfoList.filter((bible) => {
-        return bible.filePath && (!downloadedBibleInfoList ||
+    const bibleInfoList = onlineBibleInfoList.filter((bibleInfo) => {
+        return bibleInfo.filePath && (!downloadedBibleInfoList ||
             downloadedBibleInfoList.length === 0 ||
             downloadedBibleInfoList.every((bible1) => {
-                return bible1.key !== bible.key;
+                return bible1.key !== bibleInfo.key;
             }));
     });
 

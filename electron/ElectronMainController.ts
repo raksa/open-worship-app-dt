@@ -11,6 +11,13 @@ export default class ElectronMainController {
     constructor() {
         this.win = this.createMainWindow();
     }
+    previewPdf(pdfFilePath: string) {
+        const mainWin = this.win;
+        const pdfWin = new BrowserWindow({
+            parent: mainWin,
+        });
+        pdfWin.loadURL(pdfFilePath);
+    }
     createMainWindow() {
         const win = new BrowserWindow({
             backgroundColor: '#000000',
@@ -29,7 +36,7 @@ export default class ElectronMainController {
         win.webContents.setWindowOpenHandler(({ url }) => {
             shell.openExternal(url);
             return { action: 'deny' };
-          });
+        });
         win.on('closed', () => {
             process.exit(0);
         });

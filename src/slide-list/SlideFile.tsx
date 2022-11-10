@@ -9,6 +9,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import { goEditSlide } from '../App';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
+import appProvider from '../server/appProvider';
 
 export default function SlideFile({
     index,
@@ -51,7 +52,13 @@ export default function SlideFile({
                     <SlideFilePreviewPdf slide={slide1} /> :
                     <SlideFilePreviewNormal slide={slide1} />;
             }}
-            contextMenu={data?.isPdf ? [] : [{
+            contextMenu={data?.isPdf ? [{
+                title: 'Preview PDF',
+                onClick: () => {
+                    appProvider.messageUtils.sendData('app:preview-pdf',
+                        data.fileSource.src);
+                },
+            }] : [{
                 title: 'Edit',
                 onClick: () => {
                     if (data) {

@@ -117,4 +117,7 @@ export function initPresent(appController: ElectronAppController) {
     ipcMain.on('present:app:ctrl-scrolling', (_, isUp) => {
         appController.mainController.ctrlScrolling(isUp);
     });
+    ipcMain.on('app:preview-pdf', (_, pdfFilePath: string) => {
+        appController.mainController.previewPdf(pdfFilePath);
+    });
 }
