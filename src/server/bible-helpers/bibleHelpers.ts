@@ -178,7 +178,7 @@ export function toFileName(bookKey: string, chapterNum: number) {
     }
     let indexStr = `000${index}`;
     indexStr = indexStr.substring(indexStr.length - 4);
-    return `${indexStr}-${bookKey}.${chapterNum}.json`;
+    return `${indexStr}-${bookKey}.${chapterNum}`;
 }
 
 export async function toBookKey(bibleKey: string, book: string) {
