@@ -7,7 +7,9 @@ import {
     getLangAsync,
 } from '../lang';
 import initCrypto from '../_owa-crypto';
-import { getDownloadedBibleInfoList } from './bible-helpers/bibleHelpers';
+import {
+    getDownloadedBibleInfoList,
+} from './bible-helpers/bibleDownloadHelpers';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));

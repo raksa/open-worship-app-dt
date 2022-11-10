@@ -3,7 +3,7 @@ import {
     BibleMinimalInfoType,
     getDownloadedBibleInfoList,
     getOnlineBibleInfoList,
-} from '../../server/bible-helpers/bibleHelpers';
+} from '../../server/bible-helpers/bibleDownloadHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 

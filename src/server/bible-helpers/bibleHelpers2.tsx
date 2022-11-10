@@ -4,10 +4,14 @@ import {
     getBookVKList,
     getChapterCount,
     getVerses,
-} from './bibleHelpers1';
+} from './bibleInfoHelpers';
 import { cloneJson } from '../../helper/helpers';
 import { useEffect, useState } from 'react';
-import { fromLocaleNum, LocaleType, toLocaleNum } from '../../lang';
+import {
+    fromLocaleNum,
+    LocaleType,
+    toLocaleNum,
+} from '../../lang';
 
 export async function toInputText(bibleKey: string,
     book?: string | null, chapter?: number | null,

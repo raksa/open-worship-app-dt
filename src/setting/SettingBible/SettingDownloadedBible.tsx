@@ -1,24 +1,25 @@
-import {
-    BibleMinimalInfoType,
-} from '../../server/bible-helpers/bibleHelpers';
 import ToastEventListener from '../../event/ToastEventListener';
 import { BibleListType } from './helpers';
 import { OnlineBibleItem } from './SettingOnlineBible';
-import { toBiblePath } from '../../server/bible-helpers/bibleHelpers1';
-import { fsCheckDirExist, fsDeleteDir } from '../../server/fileHelper';
+import {
+    toBiblePath,
+} from '../../server/bible-helpers/bibleInfoHelpers';
+import {
+    fsCheckDirExist,
+    fsDeleteDir,
+} from '../../server/fileHelper';
+import {
+    BibleMinimalInfoType,
+} from '../../server/bible-helpers/bibleDownloadHelpers';
 
 export default function SettingDownloadedBible({
     onlineBibleInfoList,
     downloadedBibleInfoList,
     setDownloadedBibleInfoList,
-    setOnlineBibleInfoList,
-    refresh,
 }: {
     onlineBibleInfoList: BibleListType,
     downloadedBibleInfoList: BibleListType,
-    setDownloadedBibleInfoList: (bbList: BibleListType) => void
-    setOnlineBibleInfoList: (bbList: BibleListType) => void,
-    refresh: () => void,
+    setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }) {
     if (downloadedBibleInfoList === null) {
         return (
@@ -34,7 +35,7 @@ export default function SettingDownloadedBible({
         const foundBibleInfo = onlineBibleInfoList &&
             onlineBibleInfoList.find((bible1) => {
                 return bible1.key === bibleInfo.key &&
-                    bible1.version > bibleInfo.version;
+                    bible1.version >= bibleInfo.version;
             });
         return {
             isDownloading: false,
@@ -64,7 +65,7 @@ export default function SettingDownloadedBible({
                                 <OnlineBibleItem key={`${i}`}
                                     bibleInfo={bibleInfo}
                                     onDownloaded={() => {
-                                        refresh();
+                                        setDownloadedBibleInfoList(null);
                                     }} />
                             );
                         }
@@ -72,7 +73,7 @@ export default function SettingDownloadedBible({
                             <DownloadedBibleItem key={`${i}`}
                                 bibleInfo={bibleInfo}
                                 onDeleted={() => {
-                                    refresh();
+                                    setDownloadedBibleInfoList(null);
                                 }}
                                 onUpdate={() => {
                                     bibleInfo.isDownloading = true;
@@ -114,7 +115,7 @@ function DownloadedBibleItem({
     return (
         <li className='list-group-item'>
             <div>
-                <span>{title}({key})</span>
+                <span>{title} ({key})</span>
                 <div className='float-end'>
                     <div className='btn-group'>
                         <button className='btn btn-danger'

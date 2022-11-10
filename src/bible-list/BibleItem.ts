@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { keyToBook, getVerses } from '../server/bible-helpers/bibleHelpers1';
+import {
+    keyToBook,
+    getVerses,
+} from '../server/bible-helpers/bibleInfoHelpers';
 import {
     toLocaleNumBB,
     toInputText,

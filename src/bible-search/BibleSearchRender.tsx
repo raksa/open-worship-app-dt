@@ -12,7 +12,7 @@ import {
 } from '../server/bible-helpers/bibleHelpers2';
 import {
     getChapterCount,
-} from '../server/bible-helpers/bibleHelpers1';
+} from '../server/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { closeBibleSearch } from './HandleBibleSearch';
 import {

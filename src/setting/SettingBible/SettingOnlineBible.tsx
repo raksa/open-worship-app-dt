@@ -1,23 +1,23 @@
 import { useState } from 'react';
+import ToastEventListener from '../../event/ToastEventListener';
+import appProvider from '../../server/appProvider';
 import {
     BibleMinimalInfoType,
     downloadBible,
     extractDownloadedBible,
-} from '../../server/bible-helpers/bibleHelpers';
-import ToastEventListener from '../../event/ToastEventListener';
-import appProvider from '../../server/appProvider';
+} from '../../server/bible-helpers/bibleDownloadHelpers';
 import { BibleListType } from './helpers';
 
 export default function SettingOnlineBible({
     downloadedBibleInfoList,
     onlineBibleInfoList,
     setOnlineBibleInfoList,
-    refresh,
+    setDownloadedBibleInfoList,
 }: {
     downloadedBibleInfoList: BibleListType,
     onlineBibleInfoList: BibleListType,
     setOnlineBibleInfoList: (bbList: BibleListType) => void
-    refresh: () => void,
+    setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }) {
     if (onlineBibleInfoList === null) {
         return <div>Loading...</div>;
@@ -62,7 +62,7 @@ export default function SettingOnlineBible({
                         <OnlineBibleItem key={`${i}`}
                             bibleInfo={bibleInfo}
                             onDownloaded={() => {
-                                refresh();
+                                setDownloadedBibleInfoList(null);
                             }} />
                     );
                 })}
@@ -79,27 +79,29 @@ export function OnlineBibleItem({
     onDownloaded: () => void,
 }) {
     const { key, title } = bibleInfo;
-    const [downloadingProgress, setDownloadingProgress] = useState<number | null>(null);
+    const [
+        downloadingProgress,
+        setDownloadingProgress,
+    ] = useState<number | null>(null);
     const onDownloadHandler = () => {
         setDownloadingProgress(0);
         downloadBible({
             bibleInfo,
             options: {
-                onStart: (totalSize) => {
+                onStart: (fileSize) => {
                     ToastEventListener.showSimpleToast({
                         title: `Start downloading ${key}`,
-                        message: `Total file size ${totalSize}mb`,
+                        message: `Total file size ${fileSize}mb`,
                     });
                 },
                 onProgress: (percentage) => {
                     setDownloadingProgress(percentage);
                 },
-                onDone: async (error) => {
+                onDone: async (error, filePath) => {
                     if (error) {
                         appProvider.appUtils.handleError(error);
                     } else {
-                        await extractDownloadedBible(bibleInfo.filePath as string,
-                            bibleInfo.key);
+                        await extractDownloadedBible(filePath as string);
                         onDownloaded();
                     }
                     setDownloadingProgress(null);
@@ -110,7 +112,7 @@ export function OnlineBibleItem({
     return (
         <li className='list-group-item'>
             <div className='w-100'>
-                <span>{title}({key})</span>
+                <span>{title} ({key})</span>
                 {downloadingProgress === null ?
                     (<div className='float-end'>
                         <button className='btn btn-info'
@@ -120,7 +122,8 @@ export function OnlineBibleItem({
                         </button>
                     </div>) : (<div>
                         <div className='progress'>
-                            <div className='progress-bar progress-bar-striped progress-bar-animated'
+                            <div className={'progress-bar progress-bar-striped '
+                                + 'progress-bar-animated'}
                                 role='progressbar'
                                 aria-valuenow={downloadingProgress * 100}
                                 aria-valuemin={0}

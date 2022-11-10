@@ -2,9 +2,14 @@ import { useEffect, useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import ToastEventListener from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
-import { getBookKVList } from '../server/bible-helpers/bibleHelpers1';
-import { extractBible, toInputText } from '../server/bible-helpers/bibleHelpers2';
-import { getDownloadedBibleInfoList } from '../server/bible-helpers/bibleHelpers';
+import { getBookKVList } from '../server/bible-helpers/bibleInfoHelpers';
+import {
+    extractBible,
+    toInputText,
+} from '../server/bible-helpers/bibleHelpers2';
+import {
+    getDownloadedBibleInfoList,
+} from '../server/bible-helpers/bibleDownloadHelpers';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {

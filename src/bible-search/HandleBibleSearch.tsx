@@ -4,9 +4,13 @@ import WindowEventListener, {
     useWindowEvent,
     EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
-import { useStateSettingBoolean } from '../helper/settingHelper';
+import {
+    useStateSettingBoolean,
+} from '../helper/settingHelper';
 import AppSuspense from '../others/AppSuspense';
-import { getDownloadedBibleInfoList } from '../server/bible-helpers/bibleHelpers';
+import {
+    getDownloadedBibleInfoList,
+} from '../server/bible-helpers/bibleDownloadHelpers';
 import { openSetting } from '../setting/HandleSetting';
 
 const BibleSearchPopup = React.lazy(() => import('./BibleSearchPopup'));

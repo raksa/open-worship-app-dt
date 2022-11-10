@@ -7,7 +7,7 @@ import { genInd } from './genInd';
 import {
     useFromLocaleNumBB, useToLocaleNumBB,
 } from '../server/bible-helpers/bibleHelpers2';
-import { getChapterCount } from '../server/bible-helpers/bibleHelpers1';
+import { getChapterCount } from '../server/bible-helpers/bibleInfoHelpers';
 import { useGetChapterCount } from '../server/bible-helpers/bibleHelpers';
 
 function genMatchedChapters(currentIndexing: number,

@@ -1,25 +1,13 @@
 import {
-    DownloadOptionsType,
     getBibleInfo,
-    startDownloadBible,
     getBookKVList,
     getChapterCount,
-    getWritableBiblePath,
-    toBiblePath,
-} from './bibleHelpers1';
-import {
-    fsCheckDirExist,
-    fsDeleteDir,
-    fsListDirectories,
-} from '../fileHelper';
+} from './bibleInfoHelpers';
 import { useState, useEffect } from 'react';
 import BibleItem from '../../bible-list/BibleItem';
 
 import bibleJson from './bible.json';
-import appProvider from '../appProvider';
-import { get_api_key, get_api_url } from '../../_owa-crypto';
-import { LocaleType } from '../../lang';
-import ToastEventListener from '../../event/ToastEventListener';
+import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -114,118 +102,8 @@ export function genDuplicatedMessage(list: BibleItem[],
     return warningMessage;
 }
 
-export type BibleMinimalInfoType = {
-    locale: LocaleType,
-    title: string,
-    key: string,
-    version: number,
-    filePath?: string,
-};
-
-export async function downloadBible({
-    bibleInfo,
-    options,
-}: {
-    bibleInfo: BibleMinimalInfoType,
-    options: DownloadOptionsType,
-}) {
-    if (bibleInfo.filePath === undefined) {
-        return options.onDone(new Error('Invalid file path'));
-    }
-    try {
-        const downloadPath = await getWritableBiblePath();
-        if (downloadPath === null) {
-            return options.onDone(new Error('Cannot create writable path'));
-        }
-        await startDownloadBible({
-            bibleFileFullName: `/${encodeURI(bibleInfo.filePath)}`,
-            fileName: bibleInfo.key,
-            options,
-        });
-    } catch (error: any) {
-        options.onDone(error);
-    }
-}
-export async function extractDownloadedBible(archivedFileName: string,
-    bibleKey: string) {
-    try {
-        const downloadPath = await getWritableBiblePath();
-        const filePath = await toBiblePath(archivedFileName);
-        const bibleDestination = await toBiblePath(bibleKey);
-        if (downloadPath === null || filePath === null ||
-            bibleDestination === null) {
-            return false;
-        }
-        if (await fsCheckDirExist(bibleDestination)) {
-            await fsDeleteDir(bibleDestination);
-        }
-        await appProvider.fileUtils.tarExtract({
-            file: filePath,
-            cwd: downloadPath,
-        });
-        return true;
-    } catch (error: any) {
-        appProvider.appUtils.handleError(error);
-        ToastEventListener.showSimpleToast({
-            title: 'Extracting Bible',
-            message: 'Fail to extract bible',
-        });
-    }
-    return false;
-}
-
-export async function getOnlineBibleInfoList():
-    Promise<BibleMinimalInfoType[] | null> {
-    try {
-        const apiUrl = get_api_url();
-        const apiKey = get_api_key();
-        const content = await fetch(`${apiUrl}/info.json`, {
-            headers: {
-                'x-api-key': apiKey,
-            },
-        });
-        const json = await content.json();
-        if (typeof json.mapper !== 'object') {
-            throw new Error('Cannot get bible list');
-        }
-        return Object.entries(json.mapper).map(([key, value]:
-            [key: string, value: any]) => {
-            return {
-                locale: value.locale,
-                title: value.title,
-                key,
-                version: value.version,
-                filePath: value.filePath,
-            };
-        });
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-    }
-    return null;
-}
-
 export function getKJVKeyValue() {
     return bibleObj.kjvKeyValue;
-}
-
-export async function getDownloadedBibleInfoList() {
-    const writableBiblePath = await getWritableBiblePath();
-    if (writableBiblePath === null) {
-        return null;
-    }
-    const directoryNames = await fsListDirectories(writableBiblePath);
-    const promises = directoryNames.map(async (bibleKey) => {
-        return getBibleInfo(bibleKey);
-    });
-    try {
-        const infoList = await Promise.all(promises);
-        return infoList.filter((info) => {
-            return info !== null;
-        }) as BibleMinimalInfoType[];
-    } catch (error) {
-        appProvider.appUtils.handleError(error);
-    }
-    return null;
 }
 
 async function getBibleInfoWithStatus(bibleKey: string):

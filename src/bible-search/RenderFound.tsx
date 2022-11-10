@@ -6,7 +6,7 @@ import {
 } from '../event/KeyboardEventListener';
 import {
     bookToKey, getVerses, VerseList,
-} from '../server/bible-helpers/bibleHelpers1';
+} from '../server/bible-helpers/bibleInfoHelpers';
 import RendLocalNumberAsync from './RendLocalNumberAsync';
 import RenderFoundButtons from './RenderFoundButtons';
 

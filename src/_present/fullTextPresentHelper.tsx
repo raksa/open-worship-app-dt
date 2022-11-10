@@ -1,5 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
-import { getVerses } from '../server/bible-helpers/bibleHelpers1';
+import { getVerses } from '../server/bible-helpers/bibleInfoHelpers';
 import {
     getBibleLocale,
     toLocaleNumBB,
