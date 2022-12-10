@@ -14,8 +14,7 @@
         "electron": "wait-on tcp:3000 && env-cmd -f .env electron .",
         "electron:watch": "nodemon --exec \"npm run electron\" --watch electron-build",
         "electron:dev": "npm run electron:build && concurrently -k \"npm run electron:build:watch\" \"npm run electron:watch\"",
-        "build": "npm run build:native && npm run react:build && npm run electron:build",
-        "build:native": "rm -rf build && node-gyp rebuild",
+        "build": "npm run react:build && npm run electron:build",
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
         "pack:mac": "npm run build && electron-builder build --mac",
@@ -40,13 +39,12 @@
         "extends": null,
         "productName": "Open Worship app",
         "appId": "app.openworship.desktop",
-        "nodeGypRebuild": "true",
+        "nodeGypRebuild": "false",
         "files": [
             "electron-build/**/*",
             "build/**/*",
             "dist/**/*",
-            "package.json",
-            "binding.gyp"
+            "package.json"
         ],
         "dmg": {
             "contents": [

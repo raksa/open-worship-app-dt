@@ -103,7 +103,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         });
     }
     clone() {
-        const newItem = CanvasItem.fromJson(this.toJson());
+        const newItem = (this.constructor as typeof CanvasItem<any>).fromJson(this.toJson());
         newItem.props.id = -1;
         return newItem;
     }

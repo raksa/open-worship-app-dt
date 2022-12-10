@@ -59,6 +59,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             color: props.color,
             alignItems: props.textVerticalAlignment,
             justifyContent: props.textHorizontalAlignment,
+            padding: `${props.fontSize / 10}px`,
         };
         return style;
     }

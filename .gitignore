@@ -29,5 +29,4 @@ release/
 .env
 .env.prod
 electron/ow.node
-src-binding.gyp/owa.cc
 Default.owb
