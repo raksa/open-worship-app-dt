@@ -169,10 +169,6 @@ export default class SlideItem extends ItemBase {
     }
     static fromJson(json: SlideItemType, fileSource: FileSource,
         editingCacheManager?: SlideEditingCacheManager) {
-        const key = SlideItem.genKeyByFileSource(fileSource, json.id);
-        if (SlideItem._cache.has(key)) {
-            return SlideItem._cache.get(key) as SlideItem;
-        }
         return new SlideItem(json.id, fileSource, json,
             editingCacheManager);
     }

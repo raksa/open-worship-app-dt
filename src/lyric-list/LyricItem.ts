@@ -90,10 +90,6 @@ export default class LyricItem extends ItemBase {
     static fromJson(json: LyricItemType, fileSource: FileSource,
         editingCacheManager?: LyricEditingCacheManager) {
         this.validate(json);
-        const key = LyricItem.genKeyByFileSource(fileSource, json.id);
-        if (LyricItem._cache.has(key)) {
-            return LyricItem._cache.get(key) as LyricItem;
-        }
         return new LyricItem(json.id, fileSource, json,
             editingCacheManager);
     }
