@@ -70,6 +70,9 @@ export function getAllAppMimetype() {
 }
 
 export function getAppMimetype(mimetype: MimetypeNameType) {
+    if (mimetype === 'other') {
+        return [];
+    }
     const json = require(`./mime/${mimetype}-types.json`);
     json.forEach((data: any) => {
         data.mimetypeName = mimetype;
