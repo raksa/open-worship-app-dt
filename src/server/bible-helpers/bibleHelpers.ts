@@ -14,6 +14,8 @@ export const bibleObj = bibleJson as {
     kjvKeyValue: { [key: string]: string },
 };
 
+export type BibleStatusType = [string, boolean, string];
+
 export type BookType = {
     key: string,
     chapterCount: number
@@ -72,7 +74,7 @@ export function useGetBookKVList(bibleSelected: string) {
     return bookKVList;
 }
 export function useGetBibleWithStatus(bibleKey: string) {
-    const [bibleStatus, setBibleStatus] = useState<[string, boolean, string] | null>(null);
+    const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(null);
     useEffect(() => {
         getBibleInfoWithStatus(bibleKey).then((bs) => setBibleStatus(bs));
     }, [bibleKey]);
@@ -107,14 +109,14 @@ export function getKJVKeyValue() {
 }
 
 async function getBibleInfoWithStatus(bibleKey: string):
-    Promise<[string, boolean, string]> {
+    Promise<BibleStatusType> {
     const bibleInfo = await getBibleInfo(bibleKey);
     const isAvailable = bibleInfo !== null;
     return [bibleKey, isAvailable, `${!isAvailable ? '🚫' : ''}${bibleKey}`];
 }
 
 export async function getBibleInfoWithStatusList() {
-    const list: [string, boolean, string][] = [];
+    const list: BibleStatusType[] = [];
     const bibleListOnline = await getOnlineBibleInfoList();
     if (bibleListOnline === null) {
         return list;

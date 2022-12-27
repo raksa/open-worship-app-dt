@@ -7,7 +7,9 @@ export default function BibleSelectOption({ bibleKey }: {
 }) {
     const bibleStatus = useGetBibleWithStatus(bibleKey);
     if (bibleStatus === null) {
-        return null;
+        return (
+            <option disabled value={bibleKey}>{bibleKey}</option>
+        );
     }
     const [bible1, isAvailable, bibleKey1] = bibleStatus;
     return (

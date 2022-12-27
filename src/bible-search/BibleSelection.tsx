@@ -22,9 +22,9 @@ export default function BibleSelection({ value, onChange }: {
             onChange={(event) => {
                 onChange(event.target.value);
             }}>
-            {bibleInfoList.map((bibleInfo, i) => {
+            {bibleInfoList.map((bibleInfo) => {
                 return (
-                    <BibleSelectOption key={`${i}`}
+                    <BibleSelectOption key={bibleInfo.key}
                         bibleKey={bibleInfo.key} />
                 );
             })}
