@@ -64,6 +64,12 @@ const styleText = `
     -webkit-text-stroke: 0.01em greenyellow;
 }
 
+#full-text .header .bible-key {
+    opacity: 0.5;
+    font-weight: 100;
+    transform: scale(0.7);
+}
+
 #full-text .highlight {
     border-radius: 0.5em;
     transition: background-color 0.5s ease;

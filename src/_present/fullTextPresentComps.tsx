@@ -42,15 +42,16 @@ export function FTBibleTable({
                     <tr>
                         {bibleRenderedList.map(({ locale, bibleKey, title }, i) => {
                             return (
-                                <th key={i}
+                                <th key={i} className='header'
                                     style={{
+                                        display: 'flex',
                                         fontFamily: getFontFamilyByLocal(locale),
                                     }}>
-                                    <span className='bible highlight bible-name'
+                                    <div className='bible highlight bible-name bible-key'
                                         data-index={i}>
                                         {bibleKey}
-                                    </span>
-                                    |<span className='title'>{title}</span >
+                                    </div>
+                                    <div className='title'>{title}</div>
                                 </th>
                             );
                         })}

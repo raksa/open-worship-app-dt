@@ -69,16 +69,16 @@ const fullTextPresentHelper = {
         onBibleSelect: (event: MouseEvent, index: number) => void,
     }) {
         if (!appProviderPresent.isPresent) {
-            const spanBibleKeys = table.querySelectorAll<HTMLSpanElement>('span.bible-name');
-            Array.from(spanBibleKeys).forEach((spanBibleKey) => {
-                spanBibleKey.addEventListener('mouseover', () => {
-                    spanBibleKey.classList.add('hover');
+            const divBibleKeys = table.querySelectorAll<HTMLSpanElement>('div.bible-name');
+            Array.from(divBibleKeys).forEach((divBibleKey) => {
+                divBibleKey.addEventListener('mouseover', () => {
+                    divBibleKey.classList.add('hover');
                 });
-                spanBibleKey.addEventListener('mouseout', () => {
-                    spanBibleKey.classList.remove('hover');
+                divBibleKey.addEventListener('mouseout', () => {
+                    divBibleKey.classList.remove('hover');
                 });
-                spanBibleKey.addEventListener('click', (event) => {
-                    const index = Number(spanBibleKey.getAttribute('data-index'));
+                divBibleKey.addEventListener('click', (event) => {
+                    const index = Number(divBibleKey.getAttribute('data-index'));
                     onBibleSelect(event, index);
                 });
             });
