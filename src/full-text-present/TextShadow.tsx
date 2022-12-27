@@ -30,6 +30,9 @@ export default function TextShadow() {
         <div className='card-body'>
             <div className='text-shadow' dangerouslySetInnerHTML={{
                 __html: `
+            <div class="ow-outline-demo" style="color: #ffffff">
+                None
+            </div>
             <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
                 Outline1
             </div>
