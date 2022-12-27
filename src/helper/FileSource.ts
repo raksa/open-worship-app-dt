@@ -15,6 +15,9 @@ import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
+import appProvider from '../server/appProvider';
+
+export type SrcData = `data:${string}`;
 
 export type FSEventType = 'select' | 'update'
     | 'history-update' | 'edit' | 'delete'
@@ -34,6 +37,26 @@ export default class FileSource extends EventHandler<FSEventType> {
         this.fileName = fileName;
         this.filePath = filePath;
         this.src = src;
+    }
+    getSrcData() {
+        return new Promise<SrcData>((resolve, reject) => {
+            appProvider.fileUtils.readFile(this.filePath, {
+                encoding: 'base64',
+            }, (err, data) => {
+                debugger;
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                const metadata = this.metadata;
+                if (metadata === null) {
+                    reject(new Error('metadata not found'));
+                    return;
+                }
+                const mimeType = metadata.appMimetype.mimetype;
+                resolve(`data:${mimeType};base64,${data}`);
+            });
+        });
     }
     get metadata() {
         return getFileMetaData(this.fileName);

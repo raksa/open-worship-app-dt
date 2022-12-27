@@ -22,8 +22,9 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
         const [mediaWidth, mediaHeight] = await getImageDim(fileSource.src);
+        const srcData = await fileSource.getSrcData();
         const props: CanvasItemImagePropsType = {
-            src: fileSource.src,
+            srcData,
             mediaWidth,
             mediaHeight,
             ...genTextDefaultBoxStyle(),
@@ -37,7 +38,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     }
     toJson(): CanvasItemImagePropsType {
         return {
-            src: this.props.src,
+            srcData: this.props.srcData,
             mediaWidth: this.props.mediaWidth,
             mediaHeight: this.props.mediaHeight,
             ...super.toJson(),

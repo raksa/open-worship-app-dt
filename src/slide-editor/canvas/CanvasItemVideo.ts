@@ -22,8 +22,9 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
         const [mediaWidth, mediaHeight] = await getVideoDim(fileSource.src);
+        const srcData = await fileSource.getSrcData();
         const props: CanvasItemVideoPropsType = {
-            src: fileSource.src,
+            srcData,
             mediaWidth: mediaWidth,
             mediaHeight: mediaHeight,
             ...genTextDefaultBoxStyle(),
@@ -37,7 +38,7 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     }
     toJson(): CanvasItemVideoPropsType {
         return {
-            src: this.props.src,
+            srcData: this.props.srcData,
             mediaWidth: this.props.mediaWidth,
             mediaHeight: this.props.mediaHeight,
             ...super.toJson(),
