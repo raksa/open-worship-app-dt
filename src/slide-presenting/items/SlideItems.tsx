@@ -72,7 +72,20 @@ export default function SlideItems({ slide }: { slide: Slide }) {
         arrows.forEach(useCallback);
     }
     return (
-        <div className='d-flex flex-wrap justify-content-center'>
+        <div className='d-flex flex-wrap justify-content-center'
+            ref={(element) => {
+                if (!element || slide.itemIdShouldToView < 0) {
+                    return;
+                }
+                setTimeout(() => {
+                    const parentElement = element.parentElement as HTMLElement;
+                    parentElement.scrollTo({
+                        top: parentElement.scrollHeight,
+                        behavior: 'smooth',
+                    });
+                    slide.itemIdShouldToView = -1;
+                }, 0);
+            }}>
             {slideItems.map((slideItem, i) => {
                 if (slideItem.isPdf) {
                     return (

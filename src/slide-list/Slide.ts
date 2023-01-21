@@ -36,6 +36,7 @@ export default class Slide extends ItemSource<SlideItem>{
     SELECT_SETTING_NAME = 'slide-selected';
     editingCacheManager: SlideEditingCacheManager;
     _pdfImageDataList: PdfImageDataType[] | null = null;
+    itemIdShouldToView = -1;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource);
         this.editingCacheManager = new SlideEditingCacheManager(
@@ -238,6 +239,7 @@ export default class Slide extends ItemSource<SlideItem>{
                 };
                 const newItem = new SlideItem(item.id, this.fileSource, json,
                     this.editingCacheManager);
+                this.itemIdShouldToView = newItem.id;
                 this.addItem(newItem);
             },
         }, {

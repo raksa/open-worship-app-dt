@@ -89,6 +89,7 @@ export default function SlideItemRender({
     } = toCNHighlight(slideItem);
     return (
         <div className={`slide-item card pointer ${activeCN} ${presentingCN}`}
+            data-slide-item-id={slideItem.id}
             draggable
             onDragStart={(event) => {
                 PresentSlideManager.startPresentDrag(event, {

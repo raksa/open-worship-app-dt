@@ -43,7 +43,6 @@ export default class FileSource extends EventHandler<FSEventType> {
             appProvider.fileUtils.readFile(this.filePath, {
                 encoding: 'base64',
             }, (err, data) => {
-                debugger;
                 if (err) {
                     reject(err);
                     return;
