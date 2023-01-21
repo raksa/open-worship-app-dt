@@ -136,7 +136,9 @@ function ContextMenuItem({ item }: {
                 if (item.disabled) {
                     return;
                 }
-                item.onClick?.(event as any);
+                setTimeout(() => {
+                    item.onClick?.(event as any);
+                }, 0);
             }}>
             {item.title}
             {item.otherChild || null}
