@@ -29,6 +29,13 @@ export default function RenderBibleItems({ bible }: {
                                 },
                             },
                             {
+                                title: 'Duplicate',
+                                onClick: () => {
+                                    bible.duplicate(i1);
+                                    bible.save();
+                                },
+                            },
+                            {
                                 title: 'Delete',
                                 onClick: () => {
                                     bible.removeItem(bibleItem);

@@ -31,8 +31,6 @@ export default function BibleItemRender({
     const title = useBibleItemRenderTitle(bibleItem);
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleKey);
     const changeBible = (newBibleKey: string) => {
-        console.log('changeBible', newBibleKey);
-
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save();
     };

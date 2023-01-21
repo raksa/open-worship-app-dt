@@ -99,6 +99,13 @@ export default class Bible extends ItemSource<BibleItem>{
         }
         return null;
     }
+    duplicate(index: number) {
+        const items = this.items;
+        const newItem = items[index].clone();
+        newItem.id = this.maxItemId + 1;
+        items.splice(index + 1, 0, newItem);
+        this.items = items;
+    }
     removeItem(bibleItem: BibleItem) {
         const items = this.items;
         const index = items.indexOf(bibleItem);
