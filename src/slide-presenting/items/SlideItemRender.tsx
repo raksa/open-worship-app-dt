@@ -92,10 +92,8 @@ export default function SlideItemRender({
             data-slide-item-id={slideItem.id}
             draggable
             onDragStart={(event) => {
-                PresentSlideManager.startPresentDrag(event, {
-                    slideFilePath: slideItem.fileSource.filePath,
-                    slideItemJson: slideItem.toJson(),
-                });
+                PresentSlideManager.startPresentDrag(event,
+                    slideItem.fileSource.filePath, slideItem.id);
                 onDragStart(event);
             }}
             onDragEnd={(event) => {

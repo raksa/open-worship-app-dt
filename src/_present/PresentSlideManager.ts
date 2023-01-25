@@ -1,7 +1,9 @@
 import EventHandler from '../event/EventHandler';
+import FileSource from '../helper/FileSource';
 import { AnyObjectType, isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { PdfImageDataType } from '../pdf/PdfController';
+import Slide from '../slide-list/Slide';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genPdfSlideItem } from '../slide-presenting/items/SlideItemPdfRender';
 import { genHtmlSlideItem } from '../slide-presenting/items/SlideItemRenderer';
@@ -229,19 +231,51 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
             overflow: 'hidden',
         };
     }
-    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
-        slideItemData: SlideItemDataType) {
+    static serializeDragData(slideFilePath: string, slideItemId: number) {
         const data = {
             present: {
                 target: 'slide',
-                slideItemData,
+                data: {
+                    slideFilePath,
+                    slideItemId,
+                },
             },
         };
+        return JSON.stringify(data);
+    }
+    static deserializeDragData(dragDataString: string) {
+        const presentData = JSON.parse(dragDataString);
+        const data = presentData.present.data;
+        // TODO: change to slide item => filePath:id
+        return {
+            slideFilePath: data.slideFilePath as string,
+            slideItemId: data.slideItemId as number,
+        };
+    }
+    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
+        slideFilePath: string, slideItemIndex: number) {
         event.dataTransfer.setData('text/plain',
-            JSON.stringify(data));
+            this.serializeDragData(slideFilePath, slideItemIndex));
     }
     async receivePresentDrag(presentData: AnyObjectType) {
-        this.slideItemData = presentData.slideItemData;
+        const data = presentData.data as {
+            slideFilePath: string, slideItemId: number,
+        };
+        const slide = await Slide.readFileToData(
+            FileSource.getInstance(data.slideFilePath));
+        if (!slide) {
+            return;
+        }
+        const slideItem = slide.items.find((item) => {
+            return item.id === data.slideItemId;
+        });
+        if (!slideItem) {
+            return;
+        }
+        this.slideItemData = {
+            slideFilePath: data.slideFilePath,
+            slideItemJson: slideItem.toJson(),
+        };
     }
     delete() {
         this.slideItemData = null;
