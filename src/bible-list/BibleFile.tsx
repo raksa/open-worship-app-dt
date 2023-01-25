@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
@@ -6,6 +6,7 @@ import BibleItem from './BibleItem';
 import ToastEventListener from '../event/ToastEventListener';
 import AppSuspense from '../others/AppSuspense';
 import { isValidJson } from '../helper/helpers';
+import ItemSource from '../helper/ItemSource';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
@@ -18,48 +19,51 @@ export default function BibleFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
+    const onDropCallback = useCallback(async (event: any) => {
+        if (!data) {
+            return;
+        }
+        const str = event.dataTransfer.getData('text');
+        try {
+            if (!isValidJson(str)) {
+                return;
+            }
+            const json = JSON.parse(str);
+            if (!json.filePath) {
+                throw new Error('Not a bible file');
+            }
+            const fromFS = FileSource.getInstance(json.filePath);
+            const bibleItem = BibleItem.fromJson(json, fromFS);
+            data.moveItemFrom(bibleItem, fromFS);
+        } catch (error: any) {
+            ToastEventListener.showSimpleToast({
+                title: 'Receiving Bible Item',
+                message: error.message,
+            });
+        }
+    }, []);
     useEffect(() => {
         if (data === null) {
             Bible.readFileToData(fileSource).then(setData);
         }
     }, [data]);
+    const renderChildCallback = useCallback((bible: ItemSource<any>) => {
+        return (
+            <BiblePreview bible={bible as Bible} />
+        );
+    }, []);
+    const reloadCallback = useCallback(() => {
+        setData(null);
+    }, [setData]);
     return (
         <FileItemHandler
             index={index}
             data={data}
-            reload={() => {
-                setData(null);
-            }}
+            reload={reloadCallback}
             fileSource={fileSource}
             className={'bible-file'}
-            onDrop={async (event) => {
-                if (!data) {
-                    return;
-                }
-                const str = event.dataTransfer.getData('text');
-                try {
-                    if (!isValidJson(str)) {
-                        return;
-                    }
-                    const json = JSON.parse(str);
-                    if (!json.filePath) {
-                        throw new Error('Not a bible file');
-                    }
-                    const fromFS = FileSource.getInstance(json.filePath);
-                    const bibleItem = BibleItem.fromJson(json, fromFS);
-                    data.moveItemFrom(bibleItem, fromFS);
-                } catch (error: any) {
-                    ToastEventListener.showSimpleToast({
-                        title: 'Receiving Bible Item',
-                        message: error.message,
-                    });
-                }
-            }}
-            renderChild={(bible) => {
-                return (
-                    <BiblePreview bible={bible as Bible} />
-                );
-            }}
+            onDrop={onDropCallback}
+            renderChild={renderChildCallback}
         />
     );
 }

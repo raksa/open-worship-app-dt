@@ -12,6 +12,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
+import { useCallback } from 'react';
 
 export default function BibleItemRender({
     index,
@@ -24,12 +25,16 @@ export default function BibleItemRender({
     bibleItem: BibleItem,
     bible?: Bible;
     warningMessage?: string,
-    onContextMenu?: (_: React.MouseEvent<any>) => void,
+    onContextMenu?: (event: React.MouseEvent<any>,
+        bibleItem: BibleItem, index: number) => void,
     fileSource?: FileSource,
 }) {
     useFSEvents(['select'], fileSource);
     const title = useBibleItemRenderTitle(bibleItem);
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleKey);
+    const onContextMenuCallback = useCallback((event: React.MouseEvent<any>) => {
+        onContextMenu?.(event, bibleItem, index);
+    }, [bibleItem, index]);
     const changeBible = (newBibleKey: string) => {
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save();
@@ -57,12 +62,13 @@ export default function BibleItemRender({
     };
     if (bibleItem.isError) {
         return (
-            <ItemReadError onContextMenu={onContextMenu || (() => false)} />
+            <ItemReadError onContextMenu={onContextMenuCallback} />
         );
     }
     const { isSelected } = bibleItem;
     return (
         <li className={`list-group-item item pointer ${isSelected ? 'active' : ''}`}
+            title={title}
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
@@ -73,7 +79,7 @@ export default function BibleItemRender({
                 event.dataTransfer.setData('text/plain',
                     JSON.stringify(bibleItemJson));
             }}
-            onContextMenu={onContextMenu || (() => false)}
+            onContextMenu={onContextMenuCallback}
             onClick={(event) => {
                 event.stopPropagation();
                 if (isSelected && !getIsPreviewingBible()) {
