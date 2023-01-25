@@ -146,3 +146,9 @@ export function isValidJson(json: any, isSilent: boolean = false) {
         return false;
     }
 }
+
+export function isColor(strColor: string) {
+    const s = new Option().style;
+    s.color = strColor;
+    return !!s.color;
+}

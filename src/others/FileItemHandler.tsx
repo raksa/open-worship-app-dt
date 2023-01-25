@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import FileReadError from './FileReadError';
 import {
     ContextMenuItemType, showAppContextMenu,
@@ -77,13 +78,14 @@ export default function FileItemHandler({
                 }
             },
         }];
+    const callContextMenu = useCallback((event: any) => {
+        showAppContextMenu(event, selfContextMenu);
+    }, [selfContextMenu]);
     if (data === null) {
         return null;
     }
     if (data === undefined) {
-        return <FileReadError onContextMenu={(event) => {
-            showAppContextMenu(event, selfContextMenu);
-        }} />;
+        return <FileReadError onContextMenu={callContextMenu} />;
     }
     const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''}`;
     return (

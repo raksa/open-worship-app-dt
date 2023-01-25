@@ -11,14 +11,14 @@ export abstract class ItemBase implements ColorNoteInf {
     get isError() {
         return !!this.jsonError;
     }
+    abstract get metadata(): AnyObjectType;
+    abstract set metadata(metadata: AnyObjectType);
     get colorNote() {
         if (this.metadata && this.metadata['colorNote']) {
             return this.metadata['colorNote'];
         }
         return null;
     }
-    abstract get metadata(): AnyObjectType;
-    abstract set metadata(metadata: AnyObjectType);
     set colorNote(c: string | null) {
         const metadata = cloneJson(this.metadata);
         metadata['colorNote'] = c;

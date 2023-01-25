@@ -9,6 +9,7 @@ import {
     AnyObjectType, validateAppMeta,
 } from './helpers';
 import { setSetting, getSetting } from './settingHelper';
+import ItemSourceMetaManager from './ItemSourceMetaManager';
 
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
@@ -34,11 +35,11 @@ export default abstract class ItemSource<T extends {
         this.fileSource?.fireSelectEvent();
     }
     get colorNote() {
-        return this.metadata['colorNote'] || null;
+        return ItemSourceMetaManager.getColorNote(this.fileSource);
     }
-    set colorNote(c: string | null) {
-        this.metadata['colorNote'] = c;
-        this.save();
+    set colorNote(color: string | null) {
+        ItemSourceMetaManager.setColorNote(this.fileSource, color);
+        this.fileSource.fireRefreshDirEvent();
     }
     abstract get maxItemId(): number;
     abstract get metadata(): AnyObjectType;
