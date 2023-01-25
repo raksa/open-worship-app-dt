@@ -1,4 +1,5 @@
 import appProvider from '../server/appProvider';
+import { fsCheckFileExist } from '../server/fileHelper';
 import FileSource from './FileSource';
 import { isColor } from './helpers';
 import { SettingManager } from './settingHelper';
@@ -38,4 +39,22 @@ export default class ItemSourceMetaManager {
         }
         this.settingManager.setSetting(setting);
     }
+    static unsetColorNote(fileSource: FileSource) {
+        this.setColorNote(fileSource, null);
+    }
+    static async checkAllColorNotes() {
+        const setting = this.settingManager.getSetting();
+        for (const key in setting) {
+            try {
+                if (await fsCheckFileExist(key)) {
+                    continue;
+                }
+            } catch (error) {
+                appProvider.appUtils.handleError(error);
+            }
+            delete setting[key];
+        }
+        this.settingManager.setSetting(setting);
+    }
+
 }

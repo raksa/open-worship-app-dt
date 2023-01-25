@@ -10,6 +10,7 @@ import initCrypto from '../_owa-crypto';
 import {
     getDownloadedBibleInfoList,
 } from './bible-helpers/bibleDownloadHelpers';
+import ItemSourceMetaManager from '../helper/ItemSourceMetaManager';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -62,6 +63,7 @@ export function getUserWritablePath() {
 }
 
 export async function initApp() {
+    await ItemSourceMetaManager.checkAllColorNotes();
     await initCrypto();
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);
