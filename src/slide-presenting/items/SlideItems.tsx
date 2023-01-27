@@ -122,8 +122,8 @@ function SlideItemRenderWrapper({
     index: number,
     setDraggingIndex: (index: number | null) => void,
 }) {
-    const onDropCallback = useCallback((id: number) => {
-        slide.moveItem(id, index);
+    const onDropCallback = useCallback((id: number, isLeft: boolean) => {
+        slide.moveItem(id, index, isLeft);
     }, [slide, index]);
     const onClickCallback = useCallback((event: any) => {
         handleSlideItemSelecting(slideItem, event);
@@ -156,6 +156,7 @@ function SlideItemRenderWrapper({
         <Fragment key={slideItem.id}>
             {shouldReceiveAtFirst && <SlideItemDragReceiver
                 width={thumbSize}
+                isLeft
                 onDrop={onDropCallback} />}
             <SlideItemRender index={index}
                 slideItem={slideItem}

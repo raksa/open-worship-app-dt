@@ -4,8 +4,11 @@ import { CSSProperties, useState } from 'react';
 import SlideItem from '../../slide-list/SlideItem';
 import { DragTypeEnum, handleDrop } from '../../helper/DragInf';
 
-export default function SlideItemDragReceiver({ width, onDrop }: {
-    width: number, onDrop: (id: number) => void,
+export default function SlideItemDragReceiver({
+    width, onDrop, isLeft,
+}: {
+    width: number, isLeft?: boolean,
+    onDrop: (id: number, isLeft: boolean) => void,
 }) {
     const [isVertical, setIsVertical] = useState(false);
     const style: CSSProperties = isVertical ? {
@@ -43,7 +46,7 @@ export default function SlideItemDragReceiver({ width, onDrop }: {
                     droppedData.type !== DragTypeEnum.SLIDE_ITEM) {
                     return;
                 }
-                onDrop((droppedData.item as SlideItem).id);
+                onDrop((droppedData.item as SlideItem).id, !!isLeft);
             }} />
     );
 }

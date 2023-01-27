@@ -165,10 +165,13 @@ export default class Slide extends ItemSource<SlideItem>{
             this.items = newItems;
         }
     }
-    moveItem(id: number, toIndex: number) {
+    moveItem(id: number, toIndex: number, isLeft: boolean) {
         const fromIndex: number = this.items.findIndex((item) => {
             return item.id === id;
         });
+        if (fromIndex > toIndex && !isLeft) {
+            toIndex++;
+        }
         const items = this.items;
         const target = items.splice(fromIndex, 1)[0];
         items.splice(toIndex, 0, target);
