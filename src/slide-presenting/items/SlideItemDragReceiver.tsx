@@ -1,7 +1,8 @@
 import './SlideItemDragReceiver.scss';
 
 import { CSSProperties, useState } from 'react';
-import PresentSlideManager from '../../_present/PresentSlideManager';
+import SlideItem from '../../slide-list/SlideItem';
+import { DragTypeEnum, handleDrop } from '../../helper/DragInf';
 
 export default function SlideItemDragReceiver({ width, onDrop }: {
     width: number, onDrop: (id: number) => void,
@@ -36,11 +37,13 @@ export default function SlideItemDragReceiver({ width, onDrop }: {
                 event.preventDefault();
                 (event.currentTarget as HTMLDivElement).style.opacity = '0.1';
             }}
-            onDrop={(event) => {
-                const dragDataString = event.dataTransfer.getData('text');
-                const { slideItemId } = PresentSlideManager
-                    .deserializeDragData(dragDataString);
-                onDrop(slideItemId);
+            onDrop={async (event) => {
+                const droppedData = await handleDrop(event);
+                if (droppedData == null ||
+                    droppedData.type !== DragTypeEnum.SLIDE_ITEM) {
+                    return;
+                }
+                onDrop((droppedData.item as SlideItem).id);
             }} />
     );
 }

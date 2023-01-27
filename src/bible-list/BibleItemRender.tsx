@@ -11,8 +11,8 @@ import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
-import PresentFTManager from '../_present/PresentFTManager';
 import { useCallback } from 'react';
+import { handleDragStart } from '../helper/DragInf';
 
 export default function BibleItemRender({
     index,
@@ -72,12 +72,7 @@ export default function BibleItemRender({
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
-                const bibleItemJson = bibleItem.toJson();
-                PresentFTManager.startPresentDrag(bibleItemJson);
-                const filePath = bibleItem.fileSource?.filePath;
-                (bibleItemJson as any).filePath = filePath;
-                event.dataTransfer.setData('text/plain',
-                    JSON.stringify(bibleItemJson));
+                handleDragStart(event, bibleItem);
             }}
             onContextMenu={onContextMenuCallback}
             onClick={(event) => {

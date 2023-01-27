@@ -8,6 +8,7 @@ import PresentSlideManager, {
 } from '../../_present/PresentSlideManager';
 import { isWindowEditingMode } from '../../App';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
+import { handleDragStart } from '../../helper/DragInf';
 
 export function RendShowingScreen({ slideItem }: {
     slideItem: SlideItem,
@@ -92,8 +93,7 @@ export default function SlideItemRender({
             data-slide-item-id={slideItem.id}
             draggable
             onDragStart={(event) => {
-                PresentSlideManager.startPresentDrag(event,
-                    slideItem.fileSource.filePath, slideItem.id);
+                handleDragStart(event, slideItem);
                 onDragStart(event);
             }}
             onDragEnd={(event) => {

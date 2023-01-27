@@ -17,6 +17,7 @@ import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
 import appProvider from '../server/appProvider';
 import { getKJVKeyValue } from '../server/bible-helpers/bibleHelpers';
+import DragInf, { DragTypeEnum } from '../helper/DragInf';
 
 export type BibleTargetType = {
     book: string,
@@ -30,7 +31,7 @@ export type BibleItemType = {
     target: BibleTargetType,
     metadata: AnyObjectType,
 }
-export default class BibleItem extends ItemBase {
+export default class BibleItem extends ItemBase implements DragInf<BibleItemType> {
     static SELECT_SETTING_NAME = 'bible-item-selected';
     _originalJson: BibleItemType;
     id: number;
@@ -246,6 +247,12 @@ export default class BibleItem extends ItemBase {
         if (bibleItem) {
             bibleItem.isSelected = false;
         }
+    }
+    dragSerialize() {
+        return {
+            type: DragTypeEnum.BIBLE_ITEM,
+            data: this.toJson(),
+        };
     }
 }
 

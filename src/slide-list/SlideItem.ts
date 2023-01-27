@@ -8,6 +8,7 @@ import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
+import DragInf, { DragTypeEnum } from '../helper/DragInf';
 
 export type SlideItemType = {
     id: number,
@@ -16,7 +17,7 @@ export type SlideItemType = {
     metadata: AnyObjectType,
 };
 
-export default class SlideItem extends ItemBase {
+export default class SlideItem extends ItemBase implements DragInf<string> {
     _json: SlideItemType;
     static SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
@@ -44,8 +45,10 @@ export default class SlideItem extends ItemBase {
             this.editingCacheManager.isUsingHistory = false;
         }
         this.isCopied = false;
-        const key = SlideItem.genKeyByFileSource(fileSource, id);
-        SlideItem._cache.set(key, this);
+        SlideItem._cache.set(this.key, this);
+    }
+    get key() {
+        return SlideItem.genKeyByFileSource(this.fileSource, this.id);
     }
     get pdfImageData() {
         return this.originalJson.pdfImageData || null;
@@ -213,8 +216,33 @@ export default class SlideItem extends ItemBase {
         }
         return slideItem;
     }
+    static async fromKey(key: string) {
+        const extracted = this.extractKey(key);
+        if (extracted === null) {
+            return null;
+        }
+        const { filePath, id } = extracted;
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        const slide = await Slide.readFileToData(FileSource.getInstance(filePath));
+        if (!slide) {
+            return null;
+        }
+        return slide.getItemById(id);
+    }
     static genKeyByFileSource(fileSource: FileSource, id: number) {
         return `${fileSource.filePath}:${id}`;
+    }
+    static extractKey(key: string) {
+        const [filePath, id] = key.split(':');
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        return {
+            filePath,
+            id: parseInt(id),
+        };
     }
     static clearCache() {
         this._cache = new Map();
@@ -222,5 +250,11 @@ export default class SlideItem extends ItemBase {
     checkIsWrongDimension({ bounds }: DisplayType) {
         return bounds.width !== this.width ||
             bounds.height !== this.height;
+    }
+    dragSerialize() {
+        return {
+            type: DragTypeEnum.SLIDE_ITEM,
+            data: this.key,
+        };
     }
 }

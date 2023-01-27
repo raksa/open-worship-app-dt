@@ -1,9 +1,9 @@
 import React from 'react';
-import BibleItem, { BibleItemType } from '../bible-list/BibleItem';
+import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
+import { DroppedDataType, DragTypeEnum } from '../helper/DragInf';
 import {
     AnyObjectType,
-    cloneJson,
     isValidJson,
 } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -19,11 +19,9 @@ import {
     setFTList,
     renderPFTManager,
     bibleItemToFtData,
-    FfDataType,
 } from './presentFTHelpers';
 import {
     genPresentMouseEvent,
-    PresentDragTargetType,
     PresentMessageType,
 } from './presentHelpers';
 import PresentManager from './PresentManager';
@@ -311,27 +309,12 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
         fullTextPresentHelper.resetClassName(this.div, 'selected',
             true, `${this.selectedIndex}`);
     }
-    static startPresentDrag(bibleItemData: BibleItemType) {
-        const copiedBibleItemJson = cloneJson(bibleItemData);
-        const target: PresentDragTargetType = 'full-text';
-        const type: FfDataType = 'bible-item';
-        (bibleItemData as any).present = {
-            target,
-            type,
-            bibleItem: copiedBibleItemJson,
-        };
-    }
-    async receivePresentDrag(present: AnyObjectType) {
-        try {
-            if (present.type === 'bible') {
-                const newBibleItems = [
-                    BibleItem.fromJson(present.bibleItem),
-                ];
-                const newFtItemData = await bibleItemToFtData(newBibleItems);
-                this.ftItemData = newFtItemData;
-            }
-        } catch (error) {
-            appProviderPresent.appUtils.handleError(error);
+    async receivePresentDrag(droppedData: DroppedDataType) {
+        if (droppedData.type === DragTypeEnum.BIBLE_ITEM) {
+            const newFtItemData = await bibleItemToFtData([droppedData.item]);
+            this.ftItemData = newFtItemData;
+        } else {
+            console.log(droppedData);
         }
     }
     static getInstanceByPresentId(presentId: number) {

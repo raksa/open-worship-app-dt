@@ -16,6 +16,7 @@ import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
+import DragInf, { DragTypeEnum } from './DragInf';
 
 export type SrcData = `data:${string}`;
 
@@ -23,7 +24,8 @@ export type FSEventType = 'select' | 'update'
     | 'history-update' | 'edit' | 'delete'
     | 'delete-cache' | 'refresh-dir';
 
-export default class FileSource extends EventHandler<FSEventType> {
+export default class FileSource extends EventHandler<FSEventType>
+    implements DragInf<string> {
     static eventNamePrefix: string = 'file-source';
     basePath: string;
     fileName: string;
@@ -166,5 +168,11 @@ export default class FileSource extends EventHandler<FSEventType> {
         }
         this._cache.set(fileSource.filePath, fileSource);
         return fileSource;
+    }
+    dragSerialize(type?: DragTypeEnum) {
+        return {
+            type: type ?? DragTypeEnum.UNKNOWN,
+            data: this.filePath,
+        };
     }
 }

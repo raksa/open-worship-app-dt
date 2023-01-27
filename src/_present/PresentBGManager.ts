@@ -1,6 +1,6 @@
 import EventHandler from '../event/EventHandler';
+import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
-    AnyObjectType,
     getImageDim,
     getVideoDim,
     isValidJson,
@@ -199,23 +199,14 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             overflow: 'hidden',
         };
     }
-    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
-        src: string, type: string) {
-        const data = {
-            present: {
-                target: 'background',
-                type,
-                src,
-            },
+    async receivePresentDrag(droppedData: DroppedDataType) {
+        const bgTypeMap: { [key: string]: BackgroundType } = {
+            [DragTypeEnum.BG_IMAGE]: 'image',
+            [DragTypeEnum.BG_VIDEO]: 'video',
         };
-        event.dataTransfer.setData('text/plain',
-            JSON.stringify(data));
-    }
-    async receivePresentDrag(presentData: AnyObjectType) {
-        if (['image', 'video'].includes(presentData.type)
-            && presentData.src !== '') {
+        if (bgTypeMap[droppedData.type] !== undefined) {
             const bgSrc = await PresentBGManager.initBGSrcDim(
-                presentData.src, presentData.type);
+                droppedData.item.src, bgTypeMap[droppedData.type]);
             this.bgSrc = bgSrc;
         }
     }
