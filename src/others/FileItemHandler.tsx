@@ -56,10 +56,16 @@ export default function FileItemHandler({
     useFSEvents(['select'], fileSource);
     const applyClick = () => {
         fileSource.fireSelectEvent();
-        onClick && onClick();
+        onClick?.();
     };
     const selfContextMenu = [
         {
+            title: 'Duplicate',
+            onClick: async () => {
+                await fileSource.duplicate();
+                fileSource.fireReloadDirEvent();
+            },
+        }, {
             title: 'Rename',
             onClick: () => {
                 setIsRenaming(true);
@@ -77,7 +83,7 @@ export default function FileItemHandler({
                     'Are you sure to delete this file?');
                 if (isOk) {
                     await fileSource.delete();
-                    onDelete && onDelete();
+                    onDelete?.();
                 }
             },
         }];

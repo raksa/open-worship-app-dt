@@ -2,7 +2,7 @@ import ToastEventListener from '../event/ToastEventListener';
 import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
-    createNewItem,
+    createNewFileDetail,
 } from '../server/fileHelper';
 import FileSource from './FileSource';
 import {
@@ -97,7 +97,7 @@ export default abstract class ItemSource<T extends {
             },
             items,
         });
-        const filePath = await createNewItem(dir, name, data, this.mimetype);
+        const filePath = await createNewFileDetail(dir, name, data, this.mimetype);
         if (filePath !== null) {
             return FileSource.getInstance(filePath);
         }

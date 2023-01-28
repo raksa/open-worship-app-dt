@@ -3,6 +3,7 @@ import SlideItem from '../slide-list/SlideItem';
 import DirSource from './DirSource';
 import {
     extractExtension,
+    fsCheckFileExist,
     fsCreateFile,
     fsDeleteFile,
     fsReadFile,
@@ -187,7 +188,39 @@ export default class FileSource extends EventHandler<FSEventType>
             await fsRenameFile(this.basePath, this.fileName,
                 newName + this.extension);
             return true;
+        } catch (error: any) {
+            appProvider.appUtils.handleError(error);
+            ToastEventListener.showSimpleToast({
+                title: 'Renaming File',
+                message: `Unable to rename file: ${error.message}`,
+            });
+        }
+        return false;
+    }
+    private async _duplicate() {
+        let i = 1;
+        let newName = this.name + ' (Copy)';
+        while (await fsCheckFileExist(
+            this.basePath, newName + this.extension)) {
+            newName = this.name + ' (Copy ' + i + ')';
+            i++;
+        }
+        const newFilePath = pathJoin(this.basePath, newName + this.extension);
+        const data = await this.readFileToJsonData();
+        if (data !== null) {
+            await fsCreateFile(newFilePath, JSON.stringify(data));
+        }
+    }
+    async duplicate() {
+        try {
+            await this._duplicate();
+            return true;
         } catch (error) {
+            ToastEventListener.showSimpleToast({
+                title: 'Duplicating File',
+                message: 'Unable to duplicate file',
+            });
+            // TODO: handle error by a function
             appProvider.appUtils.handleError(error);
         }
         return false;

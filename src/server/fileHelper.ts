@@ -24,7 +24,7 @@ export function pathBasename(filePath: string) {
     return appProvider.pathUtils.basename(filePath);
 }
 
-export const createNewItem = async (dir: string, name: string,
+export const createNewFileDetail = async (dir: string, name: string,
     content: string, mimetype: MimetypeNameType) => {
     // TODO: verify file name before create
     const mimetypeList = getAppMimetype(mimetype);
@@ -296,10 +296,15 @@ export async function fsCreateFile(filePath: string,
     await _fsWriteFile(filePath, txt);
     return filePath;
 }
-export function fsRenameFile(basePath: string,
+export async function fsRenameFile(basePath: string,
     oldFileName: string, newFileName: string) {
     const oldFilePath = pathJoin(basePath, oldFileName);
     const newFilePath = pathJoin(basePath, newFileName);
+    if (!await fsCheckFileExist(oldFilePath)) {
+        throw new Error('File not exist');
+    } else if (await fsCheckFileExist(newFilePath)) {
+        throw new Error('File exist');
+    }
     return _fsRename(oldFilePath, newFilePath);
 }
 export async function fsDeleteFile(filePath: string) {
