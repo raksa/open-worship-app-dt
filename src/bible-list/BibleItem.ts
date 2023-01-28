@@ -254,6 +254,14 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
             data: this.toJson(),
         };
     }
+    static dragDeserialize(data: any) {
+        try {
+            return this.fromJson(data);
+        } catch (error) {
+            appProvider.appUtils.handleError(error);
+        }
+        return null;
+    }
 }
 
 export function useBibleItemRenderTitle(item: BibleItem) {

@@ -7,6 +7,7 @@ import {
 } from '../event/KeyboardEventListener';
 import { setSetting } from '../helper/settingHelper';
 import BibleSelection from './BibleSelection';
+import { useCallback } from 'react';
 
 export default function InputHandler({
     inputText,
@@ -19,24 +20,32 @@ export default function InputHandler({
     onBibleChange: (preBible: string) => void,
     bibleSelected: string;
 }) {
+    const onChangeHandler = useCallback((bibleKey: string) => {
+        setSetting('selected-bible', bibleKey);
+        onBibleChange(bibleKey);
+    }, [onBibleChange]);
     const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = useBibleItemToInputText(bibleSelected, bookKey, 1, 1, 2);
-    useKeyboardRegistering({ key: 'Escape' }, () => onInputChange(''));
+    const placeholder = useBibleItemToInputText(
+        bibleSelected, bookKey, 1, 1, 2);
+    useKeyboardRegistering({ key: 'Escape' }, () => {
+        onInputChange('');
+    });
     return (
         <>
-            <input type='text' className='form-control' value={inputText}
-                autoFocus placeholder={placeholder} onChange={(event) => {
+            <input type='text'
+                className='form-control'
+                value={inputText}
+                autoFocus
+                placeholder={placeholder}
+                onChange={(event) => {
                     const value = event.target.value;
                     onInputChange(value);
                 }} />
             <span className='input-group-text select'>
                 <i className='bi bi-journal-bookmark' />
                 <BibleSelection value={bibleSelected}
-                    onChange={(bibleKey) => {
-                        setSetting('selected-bible', bibleKey);
-                        onBibleChange(bibleKey);
-                    }} />
+                    onChange={onChangeHandler} />
             </span>
         </>
     );

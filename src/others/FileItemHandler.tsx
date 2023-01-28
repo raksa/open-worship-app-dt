@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import FileReadError from './FileReadError';
 import {
     ContextMenuItemType, showAppContextMenu,
@@ -11,6 +11,7 @@ import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
+import { AskingNewName } from './AskingNewName';
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -55,6 +56,7 @@ export default function FileItemHandler({
     isPointer?: boolean,
     onDelete?: () => void,
 }) {
+    const [isRenaming, setIsRenaming] = useState(false);
     useFSEvents(['select'], fileSource);
     const applyClick = () => {
         fileSource.fireSelectEvent();
@@ -62,6 +64,11 @@ export default function FileItemHandler({
     };
     const selfContextMenu = [
         {
+            title: 'Rename',
+            onClick: () => {
+                setIsRenaming(true);
+            },
+        }, {
             title: 'Reload',
             onClick: () => {
                 reload();
@@ -122,7 +129,28 @@ export default function FileItemHandler({
                     onDrop(event);
                 }
             }}>
-            {renderChild(data)}
+            {isRenaming ? <RenderRenaming
+                setIsRenaming={setIsRenaming}
+                fileSource={fileSource} /> :
+                renderChild(data)}
         </li>
     );
+}
+
+function RenderRenaming({
+    setIsRenaming, fileSource,
+}: {
+    setIsRenaming: (value: boolean) => void,
+    fileSource: FileSource,
+}) {
+    const applyNameCallback = useCallback(async (name: string | null) => {
+        if (name === null) {
+            setIsRenaming(false);
+            return;
+        }
+        const isSuccess = await fileSource.renameTo(name);
+        setIsRenaming(!isSuccess);
+    }, []);
+    return <AskingNewName defaultName={fileSource.name}
+        applyName={applyNameCallback} />;
 }

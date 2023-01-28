@@ -257,4 +257,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             data: this.key,
         };
     }
+    static dragDeserialize(data: any) {
+        return this.fromKey(data);
+    }
 }

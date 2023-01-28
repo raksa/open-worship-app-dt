@@ -1,5 +1,4 @@
 import BibleItem from '../bible-list/BibleItem';
-import appProvider from '../server/appProvider';
 import SlideItem from '../slide-list/SlideItem';
 import FileSource from './FileSource';
 
@@ -44,33 +43,22 @@ export function handleDrop(event: any) {
 async function deserializeDragData({
     type, data,
 }: DragDataType<any>): Promise<DroppedDataType | null> {
+    let item: any = null;
     if (type === DragTypeEnum.SLIDE_ITEM) {
-        const slideItem = await SlideItem.fromKey(data);
-        if (slideItem !== null) {
-            return {
-                type,
-                item: slideItem,
-            };
-        }
+        item = await SlideItem.dragDeserialize(data);
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
-        try {
-            const bibleItem = BibleItem.fromJson(data);
-            return {
-                type,
-                item: bibleItem,
-            };
-        } catch (error) {
-            console.log(type, data);
-            appProvider.appUtils.handleError(error);
-        }
-    } else if ([DragTypeEnum.BG_VIDEO, DragTypeEnum.BG_IMAGE].includes(type)) {
-        return {
-            type,
-            item: FileSource.getInstance(data),
-        };
+        item = BibleItem.dragDeserialize(data);
+    } else if ([
+        DragTypeEnum.BG_VIDEO,
+        DragTypeEnum.BG_IMAGE,
+    ].includes(type)) {
+        item = FileSource.dragDeserialize(data);
     }
-    console.log(type, data);
-    return null;
+    if (item === null) {
+        console.log(type, data);
+        return null;
+    }
+    return { type, item };
 }
 
 interface DragInf<T> {

@@ -6,6 +6,7 @@ import {
     fsCreateFile,
     fsDeleteFile,
     fsReadFile,
+    fsRenameFile,
     getFileMetaData,
     pathBasename,
     pathJoin,
@@ -174,5 +175,21 @@ export default class FileSource extends EventHandler<FSEventType>
             type: type ?? DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
+    }
+    static dragDeserialize(data: any) {
+        return this.getInstance(data);
+    }
+    async renameTo(newName: string) {
+        if (newName === this.name) {
+            return false;
+        }
+        try {
+            await fsRenameFile(this.basePath, this.fileName,
+                newName + this.extension);
+            return true;
+        } catch (error) {
+            appProvider.appUtils.handleError(error);
+        }
+        return false;
     }
 }

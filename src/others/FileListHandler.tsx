@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import {
     MimetypeNameType,
@@ -39,6 +39,15 @@ export default function FileListHandler({
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
 }) {
+    const applyNameCallback = useCallback(async (name: string | null) => {
+        if (name === null) {
+            setIsCreatingNew(false);
+            return;
+        }
+        onNewFile?.(name).then((isSuccess) => {
+            setIsCreatingNew(isSuccess);
+        });
+    }, [onNewFile]);
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     return (
         <div className={`${id} card w-100 h-100`}
@@ -65,15 +74,7 @@ export default function FileListHandler({
                     dirSource={dirSource} />
                 <ul className='list-group'>
                     {onNewFile && isCreatingNew && <AskingNewName
-                        applyName={async (name) => {
-                            if (name === null) {
-                                setIsCreatingNew(false);
-                                return;
-                            }
-                            onNewFile(name).then((b) => {
-                                setIsCreatingNew(b);
-                            });
-                        }} />}
+                        applyName={applyNameCallback} />}
                     <RenderList dirSource={dirSource}
                         bodyHandler={bodyHandler}
                         mimetype={mimetype} />
