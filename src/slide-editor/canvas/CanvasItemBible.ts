@@ -39,7 +39,7 @@ export default class CanvasItemBible extends CanvasItemText {
         }
     }
     static async fromBibleItem(id: number, bibleItem: BibleItem) {
-        const title = await BibleItem.itemToTitle(bibleItem);
+        const title = await bibleItem.toTitle();
         const text = await BibleItem.itemToText(bibleItem);
         const newTextItem = super.genDefaultItem();
         const props = newTextItem.toJson();

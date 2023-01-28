@@ -20,11 +20,9 @@ import { closeBibleSearch } from './HandleBibleSearch';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
 
-export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
-    if (bibleItem !== null) {
-        return bibleItem.bibleKey;
-    }
-    let bibleKey = getSetting('selected-bible') || null;
+export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
+async function getSelectedEditingBibleItem() {
+    let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
         if (!downloadedBibleInfoList || !downloadedBibleInfoList.length) {
@@ -37,12 +35,15 @@ export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     }
     return bibleKey;
 }
-
-export function useGetSelectedBibleItem(bibleItem: BibleItem | null) {
-    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
+export function useGetSelectedBibleKey() {
+    const [bibleKeySelected, _setBibleKeySelected] = useState<string | null>(
         null);
+    const setBibleKeySelected = (bibleKey: string | null) => {
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
+        _setBibleKeySelected(bibleKey);
+    };
     useEffect(() => {
-        getSelectedEditingBibleItem(bibleItem).then((bibleKey) => {
+        getSelectedEditingBibleItem().then((bibleKey) => {
             setBibleKeySelected(bibleKey);
         });
     });
@@ -54,7 +55,7 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
     useEffect(() => {
         if (bibleItem !== null) {
-            BibleItem.itemToTitle(bibleItem).then((text) => {
+            bibleItem.toTitle().then((text) => {
                 setInputText(text);
             });
         }

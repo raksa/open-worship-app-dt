@@ -4,17 +4,31 @@ import { useEffect, useState } from 'react';
 import Modal from '../others/Modal';
 import BibleItem from '../bible-list/BibleItem';
 import BibleSearchRender from './BibleSearchRender';
+import { setSetting } from '../helper/settingHelper';
+import { SELECTED_BIBLE_SETTING_NAME } from './bibleHelpers';
 
 export default function BibleSearchPopup() {
-    const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
+    const [inputText, setInputText] = useState<string | null>(null);
     useEffect(() => {
-        BibleItem.getSelectedItemEditing().then((item) => {
-            setBibleItem(item || null);
+        if (inputText !== null) {
+            return;
+        }
+        BibleItem.getSelectedItemEditing().then(async (item) => {
+            if (!item) {
+                setInputText('');
+                return;
+            }
+            setSetting(SELECTED_BIBLE_SETTING_NAME, item.bibleKey);
+            const title = await item.toTitle();
+            setInputText(title);
         });
-    });
+    }, [inputText]);
     return (
         <Modal>
-            <BibleSearchRender bibleItem={bibleItem} />
+            {inputText === null ?
+                <div>Loading...</div> :
+                <BibleSearchRender editingInputText={inputText} />
+            }
         </Modal>
     );
 }

@@ -105,7 +105,7 @@ const fullTextPresentHelper = {
     genBibleItemRenderList(bibleItems: BibleItem[]) {
         return Promise.all(bibleItems.map((bibleItem) => {
             return new Promise<BibleItemRenderedType>(async (resolve, _) => {
-                const bibleTitle = await BibleItem.itemToTitle(bibleItem);
+                const bibleTitle = await bibleItem.toTitle();
                 const verses = await getVerses(bibleItem.bibleKey,
                     bibleItem.target.book, bibleItem.target.chapter);
                 const verseList: BibleRenderVerseType[] = [];

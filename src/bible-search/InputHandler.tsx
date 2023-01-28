@@ -1,13 +1,13 @@
 import {
     useGetBookKVList,
 } from '../server/bible-helpers/bibleHelpers';
-import { useBibleItemToInputText } from '../bible-list/BibleItem';
+import {
+    useBibleItemToInputText,
+} from '../bible-list/BibleItem';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { setSetting } from '../helper/settingHelper';
 import BibleSelection from './BibleSelection';
-import { useCallback } from 'react';
 
 export default function InputHandler({
     inputText,
@@ -17,13 +17,9 @@ export default function InputHandler({
 }: {
     inputText: string
     onInputChange: (str: string) => void
-    onBibleChange: (preBible: string) => void,
+    onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
     bibleSelected: string;
 }) {
-    const onChangeHandler = useCallback((bibleKey: string) => {
-        setSetting('selected-bible', bibleKey);
-        onBibleChange(bibleKey);
-    }, [onBibleChange]);
     const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemToInputText(
@@ -45,7 +41,7 @@ export default function InputHandler({
             <span className='input-group-text select'>
                 <i className='bi bi-journal-bookmark' />
                 <BibleSelection value={bibleSelected}
-                    onChange={onChangeHandler} />
+                    onChange={onBibleChange} />
             </span>
         </>
     );

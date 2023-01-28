@@ -213,8 +213,8 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
         }
         return [];
     }
-    static async itemToTitle(item: BibleItem) {
-        const { bibleKey: bible, target } = item;
+    async toTitle() {
+        const { bibleKey: bible, target } = this;
         const { book, chapter, startVerse, endVerse } = target;
         const chapterLocale = await toLocaleNumBB(bible, chapter);
         const startVerseLocale = await toLocaleNumBB(bible, startVerse);
@@ -267,7 +267,7 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
 export function useBibleItemRenderTitle(item: BibleItem) {
     const [title, setTitle] = useState<string>('');
     useEffect(() => {
-        BibleItem.itemToTitle(item).then(setTitle);
+        item.toTitle().then(setTitle);
     }, [item]);
     return title;
 }

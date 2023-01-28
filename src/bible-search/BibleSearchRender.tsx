@@ -13,23 +13,21 @@ import {
 import {
     getChapterCount,
 } from '../server/bible-helpers/bibleInfoHelpers';
-import BibleItem from '../bible-list/BibleItem';
 import { closeBibleSearch } from './HandleBibleSearch';
 import {
-    useGetDefaultInputText,
-    useGetSelectedBibleItem,
-    getSelectedEditingBibleItem,
-    genInputText,
+    genInputText, useGetSelectedBibleKey,
 } from './bibleHelpers';
 import RenderSearchSuggestion, {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
 
-export default function BibleSearchRender({ bibleItem }: {
-    bibleItem: BibleItem | null,
+export default function BibleSearchRender({ editingInputText }: {
+    editingInputText: string,
 }) {
-    const [inputText, setInputText] = useGetDefaultInputText(bibleItem);
-    const [bibleSelected, setBibleSelected] = useGetSelectedBibleItem(bibleItem);
+    const [inputText, setInputText] = useState<string>(editingInputText);
+
+    const [bibleSelected, setBibleSelected] = useGetSelectedBibleKey();
+
     useKeyboardRegistering({ key: 'Escape' }, () => {
         !inputText && closeBibleSearch();
     });
@@ -71,14 +69,14 @@ export default function BibleSearchRender({ bibleItem }: {
         const txt = await toInputText(bibleSelected, bibleResult.book,
             bibleResult.chapter, newStartVerse, newEndVerse);
         setInputText(txt);
-    }, [bibleSelected, bibleResult.book, bibleResult.chapter, setInputText]);
-    const handleBibleChange = useCallback(async (preBible: string) => {
-        const bibleKey = await getSelectedEditingBibleItem(null);
-        if (bibleKey === null) {
-            return;
-        }
-        setBibleSelected(bibleKey);
-        const newText = await genInputText(preBible, bibleKey, inputText);
+    }, [
+        bibleSelected, bibleResult.book,
+        bibleResult.chapter, setInputText,
+    ]);
+    const handleBibleChange = useCallback(async (
+        oldBibleKey: string, newBibleKey: string) => {
+        const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
+        setBibleSelected(newBibleKey);
         if (newText !== null) {
             setInputText(newText);
         }

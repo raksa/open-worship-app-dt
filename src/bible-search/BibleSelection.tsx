@@ -3,7 +3,7 @@ import BibleSelectOption from './BibleSelectOption';
 
 export default function BibleSelection({ value, onChange }: {
     value: string,
-    onChange: (value: string) => void,
+    onChange: (oldValue: string, newValue: string) => void,
 }) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
@@ -20,7 +20,7 @@ export default function BibleSelection({ value, onChange }: {
         <select className='form-select bible'
             value={value}
             onChange={(event) => {
-                onChange(event.target.value);
+                onChange(value, event.target.value);
             }}>
             {bibleInfoList.map((bibleInfo) => {
                 return (
