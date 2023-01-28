@@ -1,4 +1,3 @@
-import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
     createNewFileDetail,
@@ -8,12 +7,11 @@ import {
     AnyObjectType, validateAppMeta,
 } from './helpers';
 import { setSetting, getSetting } from './settingHelper';
-import ItemSourceMetaManager from './ItemSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
-}> implements ColorNoteInf {
+}> {
     static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
     static mimetype: MimetypeNameType;
@@ -33,13 +31,6 @@ export default abstract class ItemSource<T extends {
         ItemSource.setSelectedFileSource(b ? this.fileSource : null,
             this.SELECT_SETTING_NAME);
         this.fileSource?.fireSelectEvent();
-    }
-    get colorNote() {
-        return ItemSourceMetaManager.getColorNote(this.fileSource);
-    }
-    set colorNote(color: string | null) {
-        ItemSourceMetaManager.setColorNote(this.fileSource, color);
-        this.fileSource.fireRefreshDirEvent();
     }
     abstract get maxItemId(): number;
     abstract get metadata(): AnyObjectType;

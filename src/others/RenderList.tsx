@@ -31,7 +31,9 @@ export default function RenderList({
     if (fileSources === undefined) {
         return (
             <div className='alert alert-warning pointer'
-                onClick={() => dirSource.fireReloadEvent()}>
+                onClick={() => {
+                    dirSource.fireReloadEvent();
+                }}>
                 Fail To Get File List
             </div>
         );
@@ -44,5 +46,41 @@ export default function RenderList({
         );
 
     }
-    return bodyHandler(fileSources);
+    const fileSourceColorMap: { [key: string]: FileSource[] } = {};
+    fileSources.forEach((fileSource) => {
+        const colorNote = fileSource.colorNote || 'unknown';
+        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
+        fileSourceColorMap[colorNote].push(fileSource);
+    });
+    if (Object.keys(fileSourceColorMap).length === 1) {
+        return bodyHandler(fileSources);
+    }
+    const keys = Object.keys(fileSourceColorMap);
+    // "unknown" should be at the end
+    keys.sort((a, b) => {
+        if (a === 'unknown') {
+            return 1;
+        }
+        if (b === 'unknown') {
+            return -1;
+        }
+        return 0;
+    });
+    return (
+        <>{keys.map((colorNote) => {
+            const subFileSources = fileSourceColorMap[colorNote];
+            return (
+                <>
+                    {colorNote === 'unknown' ? <hr /> :
+                        <hr style={{
+                            backgroundColor: colorNote,
+                            height: '1px',
+                            border: 0,
+                        }} />}
+                    {bodyHandler(subFileSources)}
+                </>
+            );
+        })}
+        </>
+    );
 }

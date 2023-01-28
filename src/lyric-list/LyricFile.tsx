@@ -61,7 +61,7 @@ function LyricFilePreview({ lyric }: { lyric: Lyric }) {
             {lyric.fileSource.name}
             {lyric.isChanged && <span
                 style={{ color: 'red' }}>*</span>}
-            <ItemColorNote item={lyric as ItemSource<any>} />
+            <ItemColorNote item={lyric.fileSource} />
         </>
     );
 }

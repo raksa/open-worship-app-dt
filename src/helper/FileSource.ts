@@ -20,6 +20,8 @@ import appProvider from '../server/appProvider';
 import DragInf, { DragTypeEnum } from './DragInf';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
+import FileSourceMetaManager from './FileSourceMetaManager';
+import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
@@ -28,7 +30,7 @@ export type FSEventType = 'select' | 'update'
     | 'delete-cache' | 'refresh-dir';
 
 export default class FileSource extends EventHandler<FSEventType>
-    implements DragInf<string> {
+    implements DragInf<string>, ColorNoteInf {
     static eventNamePrefix: string = 'file-source';
     basePath: string;
     fileName: string;
@@ -61,6 +63,13 @@ export default class FileSource extends EventHandler<FSEventType>
                 resolve(`data:${mimeType};base64,${data}`);
             });
         });
+    }
+    get colorNote() {
+        return FileSourceMetaManager.getColorNote(this);
+    }
+    set colorNote(color: string | null) {
+        FileSourceMetaManager.setColorNote(this, color);
+        this.fireRefreshDirEvent();
     }
     get metadata() {
         return getFileMetaData(this.fileName);

@@ -9,7 +9,7 @@ import initCrypto from '../_owa-crypto';
 import {
     getDownloadedBibleInfoList,
 } from './bible-helpers/bibleDownloadHelpers';
-import ItemSourceMetaManager from '../helper/ItemSourceMetaManager';
+import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export function openExplorer(dir: string) {
@@ -60,7 +60,7 @@ export function getUserWritablePath() {
 }
 
 export async function initApp() {
-    await ItemSourceMetaManager.checkAllColorNotes();
+    await FileSourceMetaManager.checkAllColorNotes();
     await initCrypto();
     await getCurrentLangAsync();
     await getLangAsync(defaultLocal);

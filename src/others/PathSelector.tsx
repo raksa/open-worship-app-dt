@@ -23,7 +23,15 @@ export default function PathSelector({
 }) {
     const [showing, setShowing] = useStateSettingBoolean(
         `${prefix}-selector-opened`, false);
-    const isShowing = !dirSource.dirPath || showing;
+    const dirPath = dirSource.dirPath;
+    const isShowing = !dirPath || showing;
+    // TODO: check direction rtl error with /*
+    const cleanPath = (path: string) => {
+        if (path && path[0] === '/') {
+            path = path.substring(1);
+        }
+        return path;
+    };
     return (
         <div className='path-selector w-100'
             onContextMenu={(event) => {
@@ -31,14 +39,14 @@ export default function PathSelector({
                     {
                         title: 'Copy to Clipboard',
                         onClick: () => {
-                            copyToClipboard(dirSource.dirPath);
+                            copyToClipboard(dirPath);
                         },
                     },
                     {
                         title: `Reveal in ${appProvider.systemUtils.isMac ?
                             'Finder' : 'File Explorer'}`,
                         onClick: () => {
-                            openExplorer(dirSource.dirPath);
+                            openExplorer(dirPath);
                         },
                     },
                 ]);
@@ -49,11 +57,11 @@ export default function PathSelector({
                 }}>
                 <i className={`bi ${isShowing ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {dirSource.dirPath && <div
+                {dirPath && <div
                     className='ellipsis-left border-white-round px-1 flex-fill'
-                    title={dirSource.dirPath}>
-                    {dirSource.dirPath}</div>}
-                {dirSource.dirPath &&
+                    title={cleanPath(dirPath)}>
+                    {cleanPath(dirPath)}</div>}
+                {dirPath &&
                     <div className='px-2'
                         onClick={(event) => {
                             event.stopPropagation();

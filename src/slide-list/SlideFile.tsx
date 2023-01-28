@@ -90,7 +90,7 @@ function SlideFilePreviewNormal({ slide }: { slide: Slide }) {
             {slide.fileSource.name}
             {slide.isChanged && <span
                 style={{ color: 'red' }}>*</span>}
-            <ItemColorNote item={slide as ItemSource<any>} />
+            <ItemColorNote item={slide.fileSource} />
         </>
     );
 }
@@ -100,7 +100,7 @@ function SlideFilePreviewPdf({ slide }: { slide: Slide }) {
         <>
             <i className='bi bi-filetype-pdf' />
             {slide.fileSource.name}
-            <ItemColorNote item={slide as ItemSource<any>} />
+            <ItemColorNote item={slide.fileSource} />
         </>
     );
 }

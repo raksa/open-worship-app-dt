@@ -4,7 +4,7 @@ import FileSource from './FileSource';
 import { isColor } from './helpers';
 import { SettingManager } from './settingHelper';
 
-export default class ItemSourceMetaManager {
+export default class FileSourceMetaManager {
     static settingManager = new SettingManager<{ [key: string]: string }>({
         settingName: 'itemSourcesMeta',
         defaultValue: {},
