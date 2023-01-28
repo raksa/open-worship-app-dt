@@ -7,7 +7,7 @@ import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
 import { useCallback, useContext } from 'react';
 import ColorPicker from '../../../others/color/ColorPicker';
-import { AppColorType } from '../../../others/color/helpers';
+import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsText() {
     const onDataCallback = useCallback((newData: any) => {

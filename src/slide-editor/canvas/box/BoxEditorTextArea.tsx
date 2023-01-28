@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AppColorType } from '../../../others/color/helpers';
+import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function BoxEditorTextArea({ color, text, setText }: {
     color?: AppColorType, text: string,

@@ -6,7 +6,7 @@ import {
     AppColorType,
     transparentColor,
     colorToTransparent,
-} from './helpers';
+} from './colorHelpers';
 import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';
 

@@ -1,6 +1,6 @@
 import { showAppContextMenu } from '../AppContextMenu';
 import { copyToClipboard } from '../../server/appHelper';
-import { AppColorType } from './helpers';
+import { AppColorType } from './colorHelpers';
 
 function showContextMenu(event: any, color: AppColorType) {
     showAppContextMenu(event, [{

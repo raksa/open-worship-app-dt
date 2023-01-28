@@ -1,5 +1,5 @@
 import DownloadedBibleItem from './DownloadedBibleItem';
-import { BibleListType } from './helpers';
+import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
 
 export default function SettingDownloadedBible({

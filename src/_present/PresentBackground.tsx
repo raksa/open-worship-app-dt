@@ -6,7 +6,7 @@ import PresentBackgroundColor from './PresentBackgroundColor';
 import PresentBackgroundImage from './PresentBackgroundImage';
 import PresentBackgroundVideo from './PresentBackgroundVideo';
 import { usePMEvents } from './presentEventHelpers';
-import { AppColorType } from '../others/color/helpers';
+import { AppColorType } from '../others/color/colorHelpers';
 
 export default function PresentBackground({ presentManager }: {
     presentManager: PresentManager;

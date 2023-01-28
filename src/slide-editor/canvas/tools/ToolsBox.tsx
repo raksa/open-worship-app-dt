@@ -5,7 +5,7 @@ import CanvasController from '../CanvasController';
 import { useCallback, useContext } from 'react';
 import { ToolingBoxType } from '../canvasHelpers';
 import { CanvasItemContext } from '../CanvasItem';
-import { AppColorType } from '../../../others/color/helpers';
+import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsBox() {
     const onDataCallback = useCallback((newData: any) => {

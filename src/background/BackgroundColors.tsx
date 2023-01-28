@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import ColorPicker from '../others/color/ColorPicker';
-import { AppColorType } from '../others/color/helpers';
+import { AppColorType } from '../others/color/colorHelpers';
 import PresentBGManager, {
     BackgroundSrcType,
 } from '../_present/PresentBGManager';

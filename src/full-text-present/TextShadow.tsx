@@ -2,7 +2,7 @@ import './TextShadow.scss';
 
 import { useEffect } from 'react';
 import PresentFTManager from '../_present/PresentFTManager';
-import { AppColorType } from '../others/color/helpers';
+import { AppColorType } from '../others/color/colorHelpers';
 
 
 export default function TextShadow() {

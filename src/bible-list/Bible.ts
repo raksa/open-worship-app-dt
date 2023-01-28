@@ -12,7 +12,7 @@ import {
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
-import { showSimpleToast } from '../toast/helpers';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type BibleType = {
     items: BibleItemType[],

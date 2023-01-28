@@ -6,7 +6,7 @@ import BibleItem from './BibleItem';
 import AppSuspense from '../others/AppSuspense';
 import { isValidJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { showSimpleToast } from '../toast/helpers';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');

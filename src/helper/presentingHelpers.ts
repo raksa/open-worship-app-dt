@@ -1,4 +1,4 @@
-import { AppColorType } from '../others/color/helpers';
+import { AppColorType } from '../others/color/colorHelpers';
 
 export function renderPresent(_: any) {
     return false;

@@ -1,4 +1,4 @@
-import { BibleListType } from './helpers';
+import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
 
 export default function SettingOnlineBible({

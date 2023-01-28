@@ -1,7 +1,7 @@
 import {
     useDownloadedBibleInfoList,
     useOnlineBibleInfoList,
-} from './helpers';
+} from './bibleSettingHelpers';
 import SettingDownloadedBible from './SettingDownloadedBible';
 import SettingOnlineBible from './SettingOnlineBible';
 

@@ -17,7 +17,7 @@ import { isWindowEditingMode } from '../App';
 import Bible from '../bible-list/Bible';
 import { ConsumeVerseType } from './RenderFound';
 import { closeBibleSearch } from './HandleBibleSearch';
-import { showSimpleToast } from '../toast/helpers';
+import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {

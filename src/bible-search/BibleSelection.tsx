@@ -1,4 +1,4 @@
-import { useDownloadedBibleInfoList } from '../setting/SettingBible/helpers';
+import { useDownloadedBibleInfoList } from '../setting/bible-setting/bibleSettingHelpers';
 import BibleSelectOption from './BibleSelectOption';
 
 export default function BibleSelection({ value, onChange }: {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppColorType } from '../others/color/helpers';
+import { AppColorType } from '../others/color/colorHelpers';
 import { usePFTMEvents } from '../_present/presentEventHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
 

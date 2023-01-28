@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { AnyObjectType } from '../../helper/helpers';
-import { AppColorType, compareColor } from './helpers';
+import { AppColorType, compareColor } from './colorHelpers';
 import SelectCustomColor from './SelectCustomColor';
 import RenderColor from './RenderColor';
 import RenderNoColor from './RenderNoColor';
