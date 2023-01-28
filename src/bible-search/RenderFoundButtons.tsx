@@ -5,30 +5,34 @@ import KeyboardEventListener, {
 import { isWindowEditingMode } from '../App';
 import BibleItem from '../bible-list/BibleItem';
 import SlideItem from '../slide-list/SlideItem';
-import { addBibleItem, AddBiblePropsType } from './bibleHelpers';
+import {
+    addBibleItem,
+    AddBiblePropsType,
+} from './bibleHelpers';
 
+const presentEventMapper: KBEventMapper = {
+    wControlKey: ['Ctrl', 'Shift'],
+    mControlKey: ['Ctrl', 'Shift'],
+    lControlKey: ['Ctrl', 'Shift'],
+    key: 'Enter',
+};
+
+const addListEventMapper: KBEventMapper = {
+    wControlKey: ['Ctrl'],
+    mControlKey: ['Ctrl'],
+    lControlKey: ['Ctrl'],
+    key: 'Enter',
+};
 
 export default function RenderFoundButtons(props: AddBiblePropsType) {
     const isBibleSelectEditing = !!BibleItem.getSelectedEditingResult();
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
     const isWindowEditing = isWindowEditingMode();
-    const addListEventMapper: KBEventMapper = {
-        wControlKey: ['Ctrl'],
-        mControlKey: ['Ctrl'],
-        lControlKey: ['Ctrl'],
-        key: 'Enter',
-    };
     const addBibleItemAndPresent = async () => {
         const bibleItem = await addBibleItem(props);
         if (bibleItem !== null) {
             bibleItem.isSelected = true;
         }
-    };
-    const presentEventMapper: KBEventMapper = {
-        wControlKey: ['Ctrl', 'Shift'],
-        mControlKey: ['Ctrl', 'Shift'],
-        lControlKey: ['Ctrl', 'Shift'],
-        key: 'Enter',
     };
     useKeyboardRegistering(addListEventMapper, () => {
         addBibleItem(props);

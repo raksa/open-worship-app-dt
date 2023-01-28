@@ -4,47 +4,14 @@ import { useEffect, useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import {
-    bookToKey, getVerses, VerseList,
-} from '../server/bible-helpers/bibleInfoHelpers';
-import RendLocalNumberAsync from './RendLocalNumberAsync';
 import RenderFoundButtons from './RenderFoundButtons';
-
-let mouseDownInd: number | null = null;
-function mouseUp() {
-    mouseDownInd = null;
-}
-
-export type ConsumeVerseType = {
-    sVerse: number,
-    eVerse: number,
-    verses: VerseList,
-};
-export async function consumeStartVerseEndVerse(
-    book: string,
-    chapter: number,
-    startVerse: number | null,
-    endVerse: number | null,
-    bibleSelected: string,
-) {
-    const bookKey = await bookToKey(bibleSelected, book);
-    if (bookKey === null) {
-        return null;
-    }
-    const verses = await getVerses(bibleSelected, bookKey, chapter);
-    if (verses === null) {
-        return null;
-    }
-    const verseCount = Object.keys(verses).length;
-    const sVerse = startVerse !== null ? startVerse : 1;
-    const eVerse = endVerse !== null ? endVerse : verseCount;
-    const result: ConsumeVerseType = {
-        verses,
-        sVerse,
-        eVerse,
-    };
-    return result;
-}
+import {
+    ConsumeVerseType,
+    consumeStartVerseEndVerse,
+} from './bibleHelpers';
+import RenderVerseNumOption, {
+    mouseUp,
+} from './RenderVerseNumOption';
 
 export default function RenderFound({
     book,
@@ -108,7 +75,8 @@ export default function RenderFound({
                     + 'align-content-start flex-wrap'}>
                     {Array.from({ length: verseCount }, (_, i) => {
                         return (
-                            <RenderVerseNum key={i} index={i}
+                            <RenderVerseNumOption key={i}
+                                index={i}
                                 onVerseChange={onVerseChange}
                                 bibleSelected={bibleSelected}
                                 found={found} />
@@ -118,49 +86,6 @@ export default function RenderFound({
             </div>
             <RenderFoundButtons found={found}
                 book={book} chapter={chapter}
-                bibleSelected={bibleSelected} />
-        </div>
-    );
-}
-
-function RenderVerseNum({
-    index, bibleSelected, onVerseChange, found,
-}: {
-    index: number,
-    onVerseChange: (sv?: number, ev?: number) => void,
-    bibleSelected: string,
-    found: ConsumeVerseType,
-}) {
-    const sVerse = found.sVerse;
-    const eVerse = found.eVerse;
-    const ind = index + 1;
-    const started = sVerse === ind;
-    const inside = sVerse <= ind && ind <= eVerse;
-    const ended = eVerse === ind;
-    let select = `${started ? 'selected-start' : ''}`;
-    select += ` ${inside ? 'selected' : ''}`;
-    select += ` ${ended ? 'selected-end' : ''}`;
-    return (
-        <div className={`item alert alert-secondary text-center ${select}`}
-            onMouseDown={(event) => {
-                if (event.shiftKey) {
-                    const arr = [ind, sVerse, eVerse]
-                        .sort((a, b) => {
-                            return a - b;
-                        });
-                    onVerseChange(arr.shift(), arr.pop());
-                } else {
-                    onVerseChange(ind);
-                    mouseDownInd = ind;
-                }
-            }}
-            onMouseEnter={() => {
-                if (mouseDownInd !== null) {
-                    onVerseChange(Math.min(mouseDownInd, ind),
-                        Math.max(mouseDownInd, ind));
-                }
-            }}>
-            <RendLocalNumberAsync ind={ind}
                 bibleSelected={bibleSelected} />
         </div>
     );

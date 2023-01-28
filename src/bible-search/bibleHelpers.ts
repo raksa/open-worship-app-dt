@@ -4,6 +4,8 @@ import BibleItem from '../bible-list/BibleItem';
 import {
     getBookKVList,
     bookToKey,
+    VerseList,
+    getVerses,
 } from '../server/bible-helpers/bibleInfoHelpers';
 import {
     extractBible,
@@ -14,7 +16,6 @@ import {
 } from '../server/bible-helpers/bibleDownloadHelpers';
 import { isWindowEditingMode } from '../App';
 import Bible from '../bible-list/Bible';
-import { ConsumeVerseType } from './RenderFound';
 import { closeBibleSearch } from './HandleBibleSearch';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
@@ -38,13 +39,15 @@ export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
 }
 
 export function useGetSelectedBibleItem(bibleItem: BibleItem | null) {
-    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(null);
+    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
+        null);
     useEffect(() => {
         getSelectedEditingBibleItem(bibleItem).then((bibleKey) => {
             setBibleKeySelected(bibleKey);
         });
     });
-    return [bibleKeySelected, setBibleKeySelected] as [string | null, (b: string | null) => void];
+    return [bibleKeySelected, setBibleKeySelected] as
+        [string | null, (b: string | null) => void];
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
@@ -70,9 +73,10 @@ export async function genInputText(preBible: string,
     } = result;
     if (newBook !== null) {
         const bookObj = await getBookKVList(preBible);
-        const key = bookObj === null ? null : Object.keys(bookObj).find((k) => {
-            return bookObj[k] === newBook;
-        });
+        const key = bookObj === null ? null : Object.keys(bookObj)
+            .find((k) => {
+                return bookObj[k] === newBook;
+            });
         if (key) {
             const newBookObj = await getBookKVList(bibleKey);
             if (newBookObj !== null) {
@@ -126,3 +130,35 @@ export async function addBibleItem({
     }
     return null;
 };
+
+
+export type ConsumeVerseType = {
+    sVerse: number,
+    eVerse: number,
+    verses: VerseList,
+};
+export async function consumeStartVerseEndVerse(
+    book: string,
+    chapter: number,
+    startVerse: number | null,
+    endVerse: number | null,
+    bibleSelected: string,
+) {
+    const bookKey = await bookToKey(bibleSelected, book);
+    if (bookKey === null) {
+        return null;
+    }
+    const verses = await getVerses(bibleSelected, bookKey, chapter);
+    if (verses === null) {
+        return null;
+    }
+    const verseCount = Object.keys(verses).length;
+    const sVerse = startVerse !== null ? startVerse : 1;
+    const eVerse = endVerse !== null ? endVerse : verseCount;
+    const result: ConsumeVerseType = {
+        verses,
+        sVerse,
+        eVerse,
+    };
+    return result;
+}
