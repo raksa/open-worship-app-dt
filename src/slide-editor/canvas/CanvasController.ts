@@ -18,8 +18,8 @@ import {
     CCEventType,
 } from './canvasHelpers';
 import CanvasItemVideo from './CanvasItemVideo';
-import appProvider from '../../server/appProvider';
 import { showSimpleToast } from '../../toast/toastHelpers';
+import { handleError } from '../../helper/errorHelpers';
 
 export default class CanvasController extends EventHandler<CCEventType> {
     static eventNamePrefix: string = 'canvas-c';
@@ -139,7 +139,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
             this.addNewItem(newItem);
             return;
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
         }
         showSimpleToast('Insert Image or Video', 'Fail to insert medias');
     }

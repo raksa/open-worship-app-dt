@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import appProvider from '../../server/appProvider';
+import { handleError } from '../../helper/errorHelpers';
 import {
     BibleMinimalInfoType,
     downloadBible,
@@ -33,7 +33,7 @@ export default function OnlineBibleItem({
                 },
                 onDone: async (error, filePath) => {
                     if (error) {
-                        appProvider.appUtils.handleError(error);
+                        handleError(error);
                     } else {
                         await extractDownloadedBible(filePath as string);
                         onDownloaded();

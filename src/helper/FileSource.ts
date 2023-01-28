@@ -19,6 +19,7 @@ import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
 import DragInf, { DragTypeEnum } from './DragInf';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { handleError } from './errorHelpers';
 
 export type SrcData = `data:${string}`;
 
@@ -180,7 +181,7 @@ export default class FileSource extends EventHandler<FSEventType>
                 newName + this.extension);
             return true;
         } catch (error: any) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             showSimpleToast('Renaming File',
                 `Unable to rename file: ${error.message}`);
         }
@@ -207,7 +208,7 @@ export default class FileSource extends EventHandler<FSEventType>
         } catch (error) {
             showSimpleToast('Duplicating File', 'Unable to duplicate file');
             // TODO: handle error by a function
-            appProvider.appUtils.handleError(error);
+            handleError(error);
         }
     }
 }

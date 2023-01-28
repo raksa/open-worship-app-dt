@@ -1,3 +1,4 @@
+import { handleError } from '../../helper/errorHelpers';
 import { LocaleType } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
@@ -52,7 +53,7 @@ const getDownloadHandler = (filePath: string, fileName: string,
         const writeStream = fsCreateWriteStream(filePath);
         try {
             if (error || response.statusCode !== 200) {
-                appProvider.appUtils.handleError(error);
+                handleError(error);
                 writeStream.close();
                 await fsDeleteFile(filePath);
                 options.onDone(new Error('Error during download'));
@@ -67,7 +68,7 @@ const getDownloadHandler = (filePath: string, fileName: string,
                 if (writeStream.writable) {
                     writeStream.write(chunk, (error1) => {
                         if (error1) {
-                            appProvider.appUtils.handleError(error1);
+                            handleError(error1);
                         }
                     });
                 }
@@ -84,7 +85,7 @@ const getDownloadHandler = (filePath: string, fileName: string,
             try {
                 await fsDeleteFile(filePath);
             } catch (error) {
-                appProvider.appUtils.handleError(error);
+                handleError(error);
             }
             options.onDone(error2 as Error);
         }
@@ -150,7 +151,7 @@ export async function extractDownloadedBible(filePath: string) {
         await fsDeleteFile(filePath);
         return true;
     } catch (error: any) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
         showSimpleToast('Extracting Bible', 'Fail to extract bible');
     }
     return false;
@@ -181,7 +182,7 @@ export async function getOnlineBibleInfoList():
             };
         });
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
     }
     return null;
 }
@@ -201,7 +202,7 @@ export async function getDownloadedBibleInfoList() {
             return info !== null;
         }) as BibleMinimalInfoType[];
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
     }
     return null;
 }

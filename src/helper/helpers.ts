@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import appProvider from '../server/appProvider';
+import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import ItemSource from './ItemSource';
 
@@ -85,7 +85,7 @@ export function validateAppMeta(meta: any) {
             return true;
         }
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
     }
     return false;
 }

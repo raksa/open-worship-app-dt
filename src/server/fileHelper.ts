@@ -2,6 +2,7 @@ import appProvider from './appProvider';
 import FileSource from '../helper/FileSource';
 import { Stats } from 'fs';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export type AppMimetypeType = {
     type: string,
@@ -178,7 +179,7 @@ async function _fsCheckExist(isFile: boolean, filePath: string, fileName?: strin
         if (error.code === 'ENOENT') {
             return false;
         } else {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             throw new Error('Error during checking file exist');
         }
     }
@@ -208,12 +209,12 @@ export async function fsList(dir: string) {
                     filePath,
                 });
             } catch (error) {
-                appProvider.appUtils.handleError(error);
+                handleError(error);
             }
         }
         return fileList;
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
         throw new Error('Error occurred during listing file');
     }
 }
@@ -253,7 +254,7 @@ export async function fsListFilesWithMimetype(dir: string,
             return FileSource.getInstance(dir, fileMetadata.fileName);
         });
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
         showSimpleToast('Getting File List',
             'Error occurred during listing file');
     }

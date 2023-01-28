@@ -1,5 +1,4 @@
 import EventHandler from '../event/EventHandler';
-import appProvider from '../server/appProvider';
 import {
     FileMetadataType,
     getFileMetaData,
@@ -8,6 +7,7 @@ import {
     fsListFiles,
 } from '../server/fileHelper';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
@@ -71,7 +71,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
                     this.dirPath, fileMetadata.fileName);
             });
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             showSimpleToast('Getting File List',
                 'Error occurred during listing file');
             return undefined;

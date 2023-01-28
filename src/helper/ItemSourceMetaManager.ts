@@ -1,5 +1,5 @@
-import appProvider from '../server/appProvider';
 import { fsCheckFileExist } from '../server/fileHelper';
+import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { isColor } from './helpers';
 import { SettingManager } from './settingHelper';
@@ -14,7 +14,7 @@ export default class ItemSourceMetaManager {
                 const json = JSON.parse(jsonString);
                 return json instanceof Object;
             } catch (error) {
-                appProvider.appUtils.handleError(error);
+                handleError(error);
             }
             return false;
         },
@@ -50,7 +50,7 @@ export default class ItemSourceMetaManager {
                     continue;
                 }
             } catch (error) {
-                appProvider.appUtils.handleError(error);
+                handleError(error);
             }
             delete setting[key];
         }

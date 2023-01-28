@@ -9,7 +9,7 @@ import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
-import appProvider from '../../server/appProvider';
+import { handleError } from '../../helper/errorHelpers';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
 export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
@@ -49,7 +49,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             this.validate(json);
             return new CanvasItemImage(json);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

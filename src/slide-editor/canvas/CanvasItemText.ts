@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+import { handleError } from '../../helper/errorHelpers';
 import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 import appProvider from '../../server/appProvider';
@@ -84,7 +85,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             this.validate(json);
             return new CanvasItemText(json);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

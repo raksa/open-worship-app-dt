@@ -1,6 +1,6 @@
+import { handleError } from '../helper/errorHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import appProvider from '../server/appProvider';
 
 export const locales = ['km', 'en'] as const;
 export type LocaleType = typeof locales[number];
@@ -43,7 +43,7 @@ export async function getLangAsync(locale: LocaleType) {
       const langData = await importLang(locale);
       cache.set(locale, langData);
     } catch (error) {
-      appProvider.appUtils.handleError(error);
+      handleError(error);
     }
   }
   return getLang(locale);

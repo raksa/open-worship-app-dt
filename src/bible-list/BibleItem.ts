@@ -15,9 +15,9 @@ import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
-import appProvider from '../server/appProvider';
 import { getKJVKeyValue } from '../server/bible-helpers/bibleHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
+import { handleError } from '../helper/errorHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -209,7 +209,7 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
                 }) as BibleItem[];
             }
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
         }
         return [];
     }
@@ -258,7 +258,7 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
         try {
             return this.fromJson(data);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
         }
         return null;
     }

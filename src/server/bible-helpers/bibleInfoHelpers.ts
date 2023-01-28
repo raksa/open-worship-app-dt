@@ -15,6 +15,7 @@ import {
     toBookKey,
     toFileName,
 } from './bibleHelpers';
+import { handleError } from '../../helper/errorHelpers';
 
 export type BibleInfoType = {
     title: string,
@@ -116,7 +117,7 @@ export async function getWritableBiblePath() {
         await fsCreateDir(dirPath);
     } catch (error: any) {
         if (!error.message.includes('file already exists')) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return null;
         }
     }
@@ -143,7 +144,7 @@ export async function readBibleData(bibleKey: string, key: string) {
         return JSON.parse(rawData);
     } catch (error: any) {
         if (error.code !== 'ENOENT') {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
         }
     }
     return null;

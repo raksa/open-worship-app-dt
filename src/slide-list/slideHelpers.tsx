@@ -3,6 +3,7 @@ import { openAlert, openConfirm } from '../alert/alertHelpers';
 import { isWindowEditingMode } from '../App';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
+import { handleError } from '../helper/errorHelpers';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import PdfController from '../pdf/PdfController';
@@ -121,7 +122,7 @@ export async function convertOfficeFile(fileSource: FileSource,
             openAlert('LibreOffice is not installed', alertMessage);
             return;
         }
-        appProvider.appUtils.handleError(error);
+        handleError(error);
         showSimpleToast(title, `Fail to convert ${toHtmlBold(fileName)}`);
     }
 }
@@ -137,7 +138,7 @@ export async function readPdfToSlide(fileSource: FileSource) {
         slide._pdfImageDataList = imageDataList;
         return slide;
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
     }
     return null;
 }
