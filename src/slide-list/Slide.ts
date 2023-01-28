@@ -143,10 +143,16 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     duplicateItem(slideItem: SlideItem) {
         const items = this.items;
+        const index = items.findIndex((item) => {
+            return item.id === slideItem.id;
+        });
+        if (index === -1) {
+            showSimpleToast('Duplicate Item', 'Unable to find item');
+            return;
+        }
         const newItem = slideItem.clone();
         if (newItem !== null) {
             newItem.id = this.maxItemId + 1;
-            const index = this.items.indexOf(slideItem);
             items.splice(index + 1, 0, newItem);
             this.items = items;
         }
