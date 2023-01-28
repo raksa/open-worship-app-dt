@@ -101,8 +101,8 @@
     },
     "dependencies": {
         "@types/node": "^16.11.33",
-        "@types/react": "^18.0.15",
-        "@types/react-dom": "^18.0.6",
+        "@types/react": "^18.0.27",
+        "@types/react-dom": "^18.0.10",
         "bootstrap": "^5.2.0",
         "bootstrap-icons": "^1.9.1",
         "electron-font-manager": "^0.0.1",
