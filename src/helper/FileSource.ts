@@ -1,4 +1,3 @@
-import ToastEventListener from '../event/ToastEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import DirSource from './DirSource';
 import {
@@ -19,6 +18,7 @@ import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
 import DragInf, { DragTypeEnum } from './DragInf';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type SrcData = `data:${string}`;
 
@@ -111,10 +111,7 @@ export default class FileSource extends EventHandler<FSEventType>
                 return JSON.parse(str) as AnyObjectType;
             }
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Reading File Data',
-                message: error.message,
-            });
+            showSimpleToast('Reading File Data', error.message);
         }
         return null;
     }
@@ -125,10 +122,7 @@ export default class FileSource extends EventHandler<FSEventType>
             this.fireUpdateEvent();
             return true;
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Saving File',
-                message: error.message,
-            });
+            showSimpleToast('Saving File', error.message);
         }
         return false;
     }
@@ -140,10 +134,7 @@ export default class FileSource extends EventHandler<FSEventType>
             this.fireReloadDirEvent();
             return true;
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Saving File',
-                message: error.message,
-            });
+            showSimpleToast('Saving File', error.message);
         }
         return false;
     }
@@ -190,10 +181,8 @@ export default class FileSource extends EventHandler<FSEventType>
             return true;
         } catch (error: any) {
             appProvider.appUtils.handleError(error);
-            ToastEventListener.showSimpleToast({
-                title: 'Renaming File',
-                message: `Unable to rename file: ${error.message}`,
-            });
+            showSimpleToast('Renaming File',
+                `Unable to rename file: ${error.message}`);
         }
         return false;
     }
@@ -216,10 +205,7 @@ export default class FileSource extends EventHandler<FSEventType>
             await this._duplicate();
             this.fireReloadDirEvent();
         } catch (error) {
-            ToastEventListener.showSimpleToast({
-                title: 'Duplicating File',
-                message: 'Unable to duplicate file',
-            });
+            showSimpleToast('Duplicating File', 'Unable to duplicate file');
             // TODO: handle error by a function
             appProvider.appUtils.handleError(error);
         }

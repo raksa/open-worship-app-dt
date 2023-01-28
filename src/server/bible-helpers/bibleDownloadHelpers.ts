@@ -1,5 +1,5 @@
-import ToastEventListener from '../../event/ToastEventListener';
 import { LocaleType } from '../../lang';
+import { showSimpleToast } from '../../toast/toastHelpers';
 import {
     get_api_url,
     get_api_key,
@@ -151,10 +151,7 @@ export async function extractDownloadedBible(filePath: string) {
         return true;
     } catch (error: any) {
         appProvider.appUtils.handleError(error);
-        ToastEventListener.showSimpleToast({
-            title: 'Extracting Bible',
-            message: 'Fail to extract bible',
-        });
+        showSimpleToast('Extracting Bible', 'Fail to extract bible');
     }
     return false;
 }

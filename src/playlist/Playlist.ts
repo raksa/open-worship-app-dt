@@ -1,4 +1,3 @@
-import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import {
@@ -8,6 +7,7 @@ import {
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type PlaylistType = {
     items: PlaylistItemType[],
@@ -34,10 +34,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
             try {
                 return PlaylistItem.fromJson(this.fileSource, json);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Playlist Item',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Playlist Item', error.message);
             }
             return PlaylistItem.fromJsonError(this.fileSource, json);
         });
@@ -65,10 +62,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
                 return true;
             }
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Adding Playlist Item',
-                message: error.message,
-            });
+            showSimpleToast('Adding Playlist Item', error.message);
         }
         return false;
     }

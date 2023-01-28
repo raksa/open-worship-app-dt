@@ -13,12 +13,12 @@ import {
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import ToastEventListener from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],
@@ -111,10 +111,7 @@ export default class Slide extends ItemSource<SlideItem>{
                 return SlideItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Bible Item',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Bible Item', error.message);
             }
             return SlideItem.fromJsonError(json, this.fileSource,
                 this.editingCacheManager);

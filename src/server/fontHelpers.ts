@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import ToastEventListener from '../event/ToastEventListener';
 import { LocaleType } from '../lang';
+import { showSimpleToast } from '../toast/toastHelpers';
 import appProvider, {
     FontListType,
 } from './appProvider';
@@ -13,10 +13,7 @@ export function useFontList() {
                 setFontList(fonts);
             }).catch((error) => {
                 appProvider.appUtils.handleError(error);
-                ToastEventListener.showSimpleToast({
-                    title: 'Loading Fonts',
-                    message: 'Fail to load font list',
-                });
+                showSimpleToast('Loading Fonts', 'Fail to load font list');
             });
         }
     });

@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import ToastEventListener from '../../event/ToastEventListener';
 import appProvider from '../../server/appProvider';
 import {
     BibleMinimalInfoType,
     downloadBible,
     extractDownloadedBible,
 } from '../../server/bible-helpers/bibleDownloadHelpers';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 export default function OnlineBibleItem({
     bibleInfo,
@@ -25,10 +25,8 @@ export default function OnlineBibleItem({
             bibleInfo,
             options: {
                 onStart: (fileSize) => {
-                    ToastEventListener.showSimpleToast({
-                        title: `Start downloading ${key}`,
-                        message: `Total file size ${fileSize}mb`,
-                    });
+                    showSimpleToast(`Start downloading ${key}`,
+                        `Total file size ${fileSize}mb`);
                 },
                 onProgress: (percentage) => {
                     setDownloadingProgress(percentage);

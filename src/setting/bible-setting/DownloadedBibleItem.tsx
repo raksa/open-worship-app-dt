@@ -1,4 +1,3 @@
-import ToastEventListener from '../../event/ToastEventListener';
 import {
     toBiblePath,
 } from '../../server/bible-helpers/bibleInfoHelpers';
@@ -9,6 +8,7 @@ import {
 import {
     BibleMinimalInfoType,
 } from '../../server/bible-helpers/bibleDownloadHelpers';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 export default function DownloadedBibleItem({
     bibleInfo,
@@ -29,10 +29,7 @@ export default function DownloadedBibleItem({
             }
             onDeleted();
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Deleting',
-                message: error.message,
-            });
+            showSimpleToast('Deleting', error.message);
         }
     };
     return (

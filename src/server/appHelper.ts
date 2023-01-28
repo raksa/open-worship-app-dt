@@ -1,4 +1,3 @@
-import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import { pathJoin } from './fileHelper';
 import {
@@ -11,16 +10,14 @@ import {
     getDownloadedBibleInfoList,
 } from './bible-helpers/bibleDownloadHelpers';
 import ItemSourceMetaManager from '../helper/ItemSourceMetaManager';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
 }
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
-    ToastEventListener.showSimpleToast({
-        title: 'Copy',
-        message: 'Text has been copied to clip',
-    });
+    showSimpleToast('Copy', 'Text has been copied to clip');
     return true;
 }
 

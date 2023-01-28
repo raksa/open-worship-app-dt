@@ -2,7 +2,6 @@ import ReactDOMServer from 'react-dom/server';
 import { openAlert, openConfirm } from '../alert/alertHelpers';
 import { isWindowEditingMode } from '../App';
 import SlideListEventListener from '../event/SlideListEventListener';
-import ToastEventListener from '../event/ToastEventListener';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -10,6 +9,7 @@ import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import { AppMimetypeType } from '../server/fileHelper';
 import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
+import { showSimpleToast } from '../toast/toastHelpers';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
 
@@ -102,16 +102,10 @@ export async function convertOfficeFile(fileSource: FileSource,
     if (!isOk) {
         return;
     }
-    ToastEventListener.showSimpleToast({
-        title,
-        message: `${toHtmlBold(filePath)}, do not close application`,
-    });
+    showSimpleToast(title, `${toHtmlBold(filePath)}, do not close application`);
     try {
         await appProvider.pdfUtils.toPdf(filePath, dirPath);
-        ToastEventListener.showSimpleToast({
-            title,
-            message: `${toHtmlBold(fileName)} is converted to PDF`,
-        });
+        showSimpleToast(title, `${toHtmlBold(fileName)} is converted to PDF`);
         dirSource.fireReloadEvent();
     } catch (error: any) {
         if (error.message.includes('Could not find soffice binary')) {
@@ -128,10 +122,7 @@ export async function convertOfficeFile(fileSource: FileSource,
             return;
         }
         appProvider.appUtils.handleError(error);
-        ToastEventListener.showSimpleToast({
-            title,
-            message: `Fail to convert ${toHtmlBold(fileName)}`,
-        });
+        showSimpleToast(title, `Fail to convert ${toHtmlBold(fileName)}`);
     }
 }
 

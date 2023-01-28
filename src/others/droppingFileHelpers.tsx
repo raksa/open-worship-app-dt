@@ -1,4 +1,3 @@
-import ToastEventListener from '../event/ToastEventListener';
 import {
     fsCopyFileToPath,
     isSupportedExt,
@@ -10,6 +9,7 @@ import {
 import FileSource from '../helper/FileSource';
 import DirSource from '../helper/DirSource';
 import { openConfirm } from '../alert/alertHelpers';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export function genOnDrag(dirSource: DirSource, mimetype: MimetypeNameType) {
     return (event: React.DragEvent<HTMLDivElement>) => {
@@ -58,24 +58,15 @@ export function genOnDrop({
             const title = 'Copying File';
             if (checkExtraFile?.(fileSource) ||
                 !isSupportedExt(fileSource.fileName, mimetype)) {
-                ToastEventListener.showSimpleToast({
-                    title,
-                    message: 'Unsupported file type!',
-                });
+                showSimpleToast(title, 'Unsupported file type!');
             } else {
                 try {
                     await fsCopyFileToPath(fileSource.filePath,
                         fileSource.fileName, dirSource.dirPath);
-                    ToastEventListener.showSimpleToast({
-                        title,
-                        message: 'File has been copied',
-                    });
+                    showSimpleToast(title, 'File has been copied');
                     dirSource.fireReloadEvent();
                 } catch (error: any) {
-                    ToastEventListener.showSimpleToast({
-                        title,
-                        message: error.message,
-                    });
+                    showSimpleToast(title, error.message);
                 }
             }
         });
@@ -90,10 +81,8 @@ export function genOnContextMenu(contextMenu?: ContextMenuItemType[]) {
                     const isOk = await openConfirm('Not implemented',
                         'Read mode is not implemented yet.');
                     if (isOk) {
-                        ToastEventListener.showSimpleToast({
-                            title: 'Deleting All',
-                            message: 'Not implemented, need input "delete all"',
-                        });
+                        showSimpleToast('Deleting All',
+                            'Not implemented, need input "delete all"');
                     }
                 },
             },

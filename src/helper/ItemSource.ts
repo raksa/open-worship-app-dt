@@ -1,4 +1,3 @@
-import ToastEventListener from '../event/ToastEventListener';
 import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
@@ -10,6 +9,7 @@ import {
 } from './helpers';
 import { setSetting, getSetting } from './settingHelper';
 import ItemSourceMetaManager from './ItemSourceMetaManager';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
@@ -112,10 +112,7 @@ export default abstract class ItemSource<T extends {
             try {
                 return this.fromJson(fileSource, json);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Data',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Data', error.message);
             }
         }
         return undefined;

@@ -1,7 +1,7 @@
-import ToastEventListener from '../event/ToastEventListener';
 import appProvider from './appProvider';
 import FileSource from '../helper/FileSource';
 import { Stats } from 'fs';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type AppMimetypeType = {
     type: string,
@@ -34,10 +34,7 @@ export const createNewFileDetail = async (dir: string, name: string,
         return await fsCreateFile(filePath,
             content);
     } catch (error: any) {
-        ToastEventListener.showSimpleToast({
-            title: 'Creating Playlist',
-            message: error.message,
-        });
+        showSimpleToast('Creating Playlist', error.message);
     }
     return null;
 };
@@ -257,10 +254,8 @@ export async function fsListFilesWithMimetype(dir: string,
         });
     } catch (error) {
         appProvider.appUtils.handleError(error);
-        ToastEventListener.showSimpleToast({
-            title: 'Getting File List',
-            message: 'Error occurred during listing file',
-        });
+        showSimpleToast('Getting File List',
+            'Error occurred during listing file');
     }
     return null;
 }
