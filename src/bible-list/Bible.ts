@@ -178,4 +178,7 @@ export default class Bible extends ItemSource<BibleItem>{
     clone() {
         return Bible.fromJson(this.fileSource, this.toJson());
     }
+    empty() {
+        this.items = [];
+    }
 }

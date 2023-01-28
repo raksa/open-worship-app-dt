@@ -6,13 +6,15 @@
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: $z-index-context-menu;
+
   .app-context-menu {
     position: fixed;
     width: 200px;
     border-radius: 4px;
     background-color: var(--bs-gray-600);
     padding: 10px 0;
-    z-index: $z-index-context-menu;
+    z-index: $z-index-context-menu+1;
     box-shadow: 0 0 20px rgba(0, 0, 0, .2);
     color: white;
     overflow: auto;

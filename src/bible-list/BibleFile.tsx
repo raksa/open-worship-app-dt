@@ -7,6 +7,7 @@ import AppSuspense from '../others/AppSuspense';
 import { isValidJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { openConfirm } from '../alert/alertHelpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
@@ -61,6 +62,24 @@ export default function BibleFile({
             className={'bible-file'}
             onDrop={onDropCallback}
             renderChild={renderChildCallback}
+            contextMenu={[{
+                title: 'Empty',
+                onClick: () => {
+                    if (!data) {
+                        return;
+                    }
+                    openConfirm(
+                        'Empty Bible List',
+                        'Are you sure to empty this bible list?'
+                    ).then((isOk) => {
+                        if (!isOk) {
+                            return;
+                        }
+                        data.empty();
+                        data.save();
+                    });
+                },
+            }]}
         />
     );
 }
