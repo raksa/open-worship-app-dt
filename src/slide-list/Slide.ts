@@ -154,6 +154,7 @@ export default class Slide extends ItemSource<SlideItem>{
         if (newItem !== null) {
             newItem.id = this.maxItemId + 1;
             items.splice(index + 1, 0, newItem);
+            this.itemIdShouldToView = newItem.id;
             this.items = items;
         }
     }
