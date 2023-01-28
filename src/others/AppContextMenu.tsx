@@ -7,6 +7,7 @@ import {
     useEffect,
     useState,
 } from 'react';
+import WindowEventListener from '../event/WindowEventListener';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
@@ -84,22 +85,21 @@ export function showAppContextMenu(
                 KeyboardEventListener.unregisterEventListener(escEvent);
                 resolve();
             });
-        const listener = (event: MouseEvent) => {
-            event.stopPropagation();
-            setDataDelegator?.(null);
-            document.body.removeEventListener('click', listener);
-            KeyboardEventListener.unregisterEventListener(escEvent);
-            resolve();
-        };
-        document.body.addEventListener('click', listener);
     });
 }
 
 export default function AppContextMenu() {
-    const [data, setData] = useState<{
+    const [data, _setData] = useState<{
         event: MouseEvent,
         items: ContextMenuItemType[]
     } | null>(null);
+    const setData = (newData: PropsType | null) => {
+        WindowEventListener.fireEvent({
+            widget: 'context-menu',
+            state: newData === null ? 'close' : 'open',
+        });
+        _setData(newData);
+    };
     useEffect(() => {
         setDataDelegator = (newData) => {
             setData(newData);
@@ -112,17 +112,23 @@ export default function AppContextMenu() {
         return null;
     }
     return (
-        <div ref={(self) => {
-            if (self !== null) {
-                setPositionMenu(self, data.event);
-            }
-        }} className='app-context-menu'>
-            {data.items.map((item, i) => {
-                return (
-                    <ContextMenuItem key={item.title}
-                        item={item} />
-                );
-            })}
+        <div id="context-menu-container"
+            onClick={(event) => {
+                event.stopPropagation();
+                setDataDelegator?.(null);
+            }}>
+            <div ref={(self) => {
+                if (self !== null) {
+                    setPositionMenu(self, data.event);
+                }
+            }} className='app-context-menu'>
+                {data.items.map((item) => {
+                    return (
+                        <ContextMenuItem key={item.title}
+                            item={item} />
+                    );
+                })}
+            </div>
         </div>
     );
 }

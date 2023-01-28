@@ -35,11 +35,11 @@ export default class KeyboardEventListener extends EventHandler<string> {
     static getLastLayer() {
         return getLastItem(this._layers);
     }
-    static addLayer(l: AppWidgetType) {
-        this._layers.push(l);
+    static addLayer(layer: AppWidgetType) {
+        this._layers.push(layer);
     }
-    static removeLayer(l: AppWidgetType) {
-        this._layers = this._layers.filter((l1) => l1 !== l);
+    static removeLayer(layer: AppWidgetType) {
+        this._layers = this._layers.filter((l1) => l1 !== layer);
     }
     static fireEvent(event: KeyboardEvent) {
         const option = {

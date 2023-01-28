@@ -70,7 +70,7 @@ export default function RenderList({
         <>{keys.map((colorNote) => {
             const subFileSources = fileSourceColorMap[colorNote];
             return (
-                <>
+                <div key={colorNote}>
                     {colorNote === 'unknown' ? <hr /> :
                         <hr style={{
                             backgroundColor: colorNote,
@@ -78,7 +78,7 @@ export default function RenderList({
                             border: 0,
                         }} />}
                     {bodyHandler(subFileSources)}
-                </>
+                </div>
             );
         })}
         </>

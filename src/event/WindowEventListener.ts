@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import EventHandler, { ListenerType } from './EventHandler';
 import KeyboardEventListener from './KeyboardEventListener';
 
-export type AppWidgetType = 'root' | 'bible-search' | 'slide-item-edit' | 'setting';
+export type AppWidgetType = 'root' | 'bible-search' | 'slide-item-edit' |
+    'setting' | 'context-menu';
 export type OpenCloseType = 'open' | 'close';
 export type EventMapper = {
     widget: AppWidgetType,
