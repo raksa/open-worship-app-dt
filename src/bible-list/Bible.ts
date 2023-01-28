@@ -4,10 +4,15 @@ import {
     MimetypeNameType,
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson, toMaxId } from '../helper/helpers';
+import {
+    AnyObjectType,
+    cloneJson,
+    toMaxId,
+} from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
+import { showSimpleToast } from '../toast/helpers';
 
 export type BibleType = {
     items: BibleItemType[],
@@ -33,10 +38,7 @@ export default class Bible extends ItemSource<BibleItem>{
             try {
                 return BibleItem.fromJson(json, this.fileSource);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Bible Item',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Bible Item', error.message);
             }
             return BibleItem.fromJsonError(json, this.fileSource);
         });
@@ -137,10 +139,7 @@ export default class Bible extends ItemSource<BibleItem>{
                 bibleItem.isSelected = true;
             }
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Moving Bible Item',
-                message: error.message,
-            });
+            showSimpleToast('Moving Bible Item', error.message);
         }
     }
     static mimetype: MimetypeNameType = 'bible';

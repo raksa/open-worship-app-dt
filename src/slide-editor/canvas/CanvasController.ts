@@ -1,9 +1,7 @@
 import EventHandler from '../../event/EventHandler';
 import Canvas from './Canvas';
 import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
-import {
-    getSetting, setSetting,
-} from '../../helper/settingHelper';
+import { getSetting, setSetting } from '../../helper/settingHelper';
 import FileSource from '../../helper/FileSource';
 import ToastEventListener from '../../event/ToastEventListener';
 import CanvasItemText from './CanvasItemText';

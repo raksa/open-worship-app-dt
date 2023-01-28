@@ -3,23 +3,12 @@ import KeyboardEventListener, {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { isWindowEditingMode } from '../App';
-import { bookToKey } from '../server/bible-helpers/bibleInfoHelpers';
-import ToastEventListener from '../event/ToastEventListener';
-import Bible from '../bible-list/Bible';
 import BibleItem from '../bible-list/BibleItem';
-import { ConsumeVerseType } from './RenderFound';
 import SlideItem from '../slide-list/SlideItem';
-import { closeBibleSearch } from './HandleBibleSearch';
+import { addBibleItem, AddBiblePropsType } from './bibleHelpers';
 
-export default function RenderFoundButtons({
-    found, book, chapter,
-    bibleSelected,
-}: {
-    found: ConsumeVerseType,
-    book: string,
-    chapter: number,
-    bibleSelected: string,
-}) {
+
+export default function RenderFoundButtons(props: AddBiblePropsType) {
     const isBibleSelectEditing = !!BibleItem.getSelectedEditingResult();
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
     const isWindowEditing = isWindowEditingMode();
@@ -29,42 +18,8 @@ export default function RenderFoundButtons({
         lControlKey: ['Ctrl'],
         key: 'Enter',
     };
-    const addBibleItem = async () => {
-        const key = await bookToKey(bibleSelected, book);
-        if (key === null) {
-            return null;
-        }
-        const bibleItem = BibleItem.fromJson({
-            id: -1,
-            bibleKey: bibleSelected,
-            target: {
-                book: key,
-                chapter,
-                startVerse: found.sVerse,
-                endVerse: found.eVerse,
-            },
-            metadata: {},
-        });
-        if (isWindowEditing) {
-            const canvasController = await import('../slide-editor/canvas/CanvasController') as any;
-            canvasController?.addNewBibleItem(bibleItem);
-            closeBibleSearch();
-            return null;
-        }
-        const savedBibleItem = await Bible.updateOrToDefault(bibleItem);
-        if (savedBibleItem !== null) {
-            closeBibleSearch();
-            return savedBibleItem;
-        } else {
-            ToastEventListener.showSimpleToast({
-                title: 'Adding bible',
-                message: 'Fail to add bible to list',
-            });
-        }
-        return null;
-    };
     const addBibleItemAndPresent = async () => {
-        const bibleItem = await addBibleItem();
+        const bibleItem = await addBibleItem(props);
         if (bibleItem !== null) {
             bibleItem.isSelected = true;
         }
@@ -75,7 +30,9 @@ export default function RenderFoundButtons({
         lControlKey: ['Ctrl', 'Shift'],
         key: 'Enter',
     };
-    useKeyboardRegistering(addListEventMapper, addBibleItem);
+    useKeyboardRegistering(addListEventMapper, () => {
+        addBibleItem(props);
+    });
     useKeyboardRegistering(presentEventMapper, addBibleItemAndPresent);
     const getAddingTitle = () => {
         if (isWindowEditing) {
@@ -84,11 +41,14 @@ export default function RenderFoundButtons({
         return isBibleSelectEditing ? 'Save Bible Item' : 'Add Bible Item';
     };
     return (
-        <div className='card-footer bg-transparent border-success d-flex justify-content-evenly'>
+        <div className={'card-footer bg-transparent border-success '
+            + 'd-flex justify-content-evenly'}>
             {isWindowEditing && !isSlideSelectEditing ? null :
                 <button type='button'
                     className='btn btn-sm btn-primary ms-5 me-5'
-                    onClick={addBibleItem}
+                    onClick={() => {
+                        addBibleItem(props);
+                    }}
                     data-tool-tip={KeyboardEventListener
                         .toShortcutKey(addListEventMapper)}>
                     {getAddingTitle()}

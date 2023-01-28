@@ -3,10 +3,10 @@ import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import BibleItem from './BibleItem';
-import ToastEventListener from '../event/ToastEventListener';
 import AppSuspense from '../others/AppSuspense';
 import { isValidJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
+import { showSimpleToast } from '../toast/helpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
@@ -36,10 +36,7 @@ export default function BibleFile({
             const bibleItem = BibleItem.fromJson(json, fromFS);
             data.moveItemFrom(bibleItem, fromFS);
         } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Receiving Bible Item',
-                message: error.message,
-            });
+            showSimpleToast('Receiving Bible Item', error.message);
         }
     }, []);
     useEffect(() => {

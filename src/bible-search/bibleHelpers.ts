@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import ToastEventListener from '../event/ToastEventListener';
 import BibleItem from '../bible-list/BibleItem';
-import { getBookKVList } from '../server/bible-helpers/bibleInfoHelpers';
+import {
+    getBookKVList,
+    bookToKey,
+} from '../server/bible-helpers/bibleInfoHelpers';
 import {
     extractBible,
     toInputText,
@@ -10,6 +13,12 @@ import {
 import {
     getDownloadedBibleInfoList,
 } from '../server/bible-helpers/bibleDownloadHelpers';
+import { isWindowEditingMode } from '../App';
+import Bible from '../bible-list/Bible';
+import { ConsumeVerseType } from './RenderFound';
+import { closeBibleSearch } from './HandleBibleSearch';
+import { showSimpleToast } from '../toast/helpers';
+import CanvasController from '../slide-editor/canvas/CanvasController';
 
 export async function getSelectedEditingBibleItem(bibleItem: BibleItem | null) {
     if (bibleItem !== null) {
@@ -77,3 +86,46 @@ export async function genInputText(preBible: string,
     }
     return '';
 }
+
+export type AddBiblePropsType = {
+    found: ConsumeVerseType,
+    book: string,
+    chapter: number,
+    bibleSelected: string,
+};
+
+export async function addBibleItem({
+    found, book, chapter,
+    bibleSelected,
+}: AddBiblePropsType) {
+    const isWindowEditing = isWindowEditingMode();
+    const key = await bookToKey(bibleSelected, book);
+    if (key === null) {
+        return null;
+    }
+    const bibleItem = BibleItem.fromJson({
+        id: -1,
+        bibleKey: bibleSelected,
+        target: {
+            book: key,
+            chapter,
+            startVerse: found.sVerse,
+            endVerse: found.eVerse,
+        },
+        metadata: {},
+    });
+    if (isWindowEditing) {
+        const canvasController = CanvasController.getInstance();
+        canvasController.addNewBibleItem(bibleItem);
+        closeBibleSearch();
+        return null;
+    }
+    const savedBibleItem = await Bible.updateOrToDefault(bibleItem);
+    if (savedBibleItem !== null) {
+        closeBibleSearch();
+        return savedBibleItem;
+    } else {
+        showSimpleToast('Adding bible', 'Fail to add bible to list');
+    }
+    return null;
+};
