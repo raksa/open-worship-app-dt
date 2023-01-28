@@ -11,10 +11,14 @@ export default function ItemColorNote({ item }: {
         <span className={`color-note ${item.colorNote ? 'active' : ''}`}
             onClick={(event) => {
                 event.stopPropagation();
-                const colors = [
+                let colors = [
                     ...Object.entries(colorList.main),
                     ...Object.entries(colorList.extension),
                 ];
+                // unique colors by key
+                colors = colors.filter((value, index, self) => {
+                    return self.findIndex((v) => v[0] === value[0]) === index;
+                });
                 showAppContextMenu(event as any, [{
                     title: 'no color',
                     onClick: () => {
