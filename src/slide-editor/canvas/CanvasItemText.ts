@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 import { AnyObjectType } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
+import { AppColorType } from '../../others/color/helpers';
 import appProvider from '../../server/appProvider';
 import {
     CanvasItemKindType,

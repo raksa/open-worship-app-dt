@@ -1,6 +1,6 @@
 import { SrcData } from '../../helper/FileSource';
 import { AnyObjectType } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
+import { AppColorType } from '../../others/color/helpers';
 
 export type CCEventType = 'select' | 'control' |
     'text-edit' | 'update' | 'scale';

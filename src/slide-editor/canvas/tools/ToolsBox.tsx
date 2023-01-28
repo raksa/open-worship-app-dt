@@ -1,14 +1,28 @@
-import ColorPicker, {
-    AppColorType,
-} from '../../../others/ColorPicker';
+import ColorPicker from '../../../others/color/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
 import CanvasController from '../CanvasController';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { ToolingBoxType } from '../canvasHelpers';
 import { CanvasItemContext } from '../CanvasItem';
+import { AppColorType } from '../../../others/color/helpers';
 
 export default function ToolsBox() {
+    const onDataCallback = useCallback((newData: any) => {
+        applyBoxData(newData);
+    }, []);
+    const onNoColorCallback = useCallback((
+        newColor: AppColorType) => {
+        applyBoxData({
+            backgroundColor: null,
+        });
+    }, []);
+    const onColorChangedCallback = useCallback((
+        newColor: AppColorType) => {
+        applyBoxData({
+            backgroundColor: newColor,
+        });
+    }, []);
     const canvasItem = useContext(CanvasItemContext);
     if (canvasItem === null) {
         return null;
@@ -28,17 +42,13 @@ export default function ToolsBox() {
                     maxWidth: '300px',
                 }}>
                     <ColorPicker color={canvasItem.props.backgroundColor}
-                        onColorChange={(newColor: AppColorType | null) => {
-                            applyBoxData({
-                                backgroundColor: newColor,
-                            });
-                        }} />
+                        defaultColor='#ffffff'
+                        onNoColor={onNoColorCallback}
+                        onColorChange={onColorChangedCallback} />
                 </div>
             </Tool>
             <Tool title='Box Alignment'>
-                <ToolAlign onData={(newData) => {
-                    applyBoxData(newData);
-                }} />
+                <ToolAlign onData={onDataCallback} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info'

@@ -34,7 +34,7 @@ export default function BibleItemRender({
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleKey);
     const onContextMenuCallback = useCallback((event: React.MouseEvent<any>) => {
         onContextMenu?.(event, bibleItem, index);
-    }, [bibleItem, index]);
+    }, [onContextMenu, bibleItem, index]);
     const changeBible = (newBibleKey: string) => {
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save();

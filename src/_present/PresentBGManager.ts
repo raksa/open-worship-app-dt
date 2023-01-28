@@ -132,20 +132,22 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         }
         return bgSrc;
     }
-    static async bgSrcSelect(src: string,
+    static async bgSrcSelect(src: string | null,
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         bgType: BackgroundType) {
-        const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
-        if (selectedBGSrcList.length > 0) {
-            selectedBGSrcList.forEach(([key]) => {
-                PresentManager.getInstanceByKey(key)
-                    .presentBGManager.bgSrc = null;
-            });
-            return;
+        if (src !== null) {
+            const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
+            if (selectedBGSrcList.length > 0) {
+                selectedBGSrcList.forEach(([key]) => {
+                    PresentManager.getInstanceByKey(key)
+                        .presentBGManager.bgSrc = null;
+                });
+                return;
+            }
         }
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
-            const bgSrc = await this.initBGSrcDim(src, bgType);
+            const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
             presentManager.presentBGManager.bgSrc = bgSrc;
         });
         this.fireUpdateEvent();

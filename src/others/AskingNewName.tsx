@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function AskingNewName({
+export default function AskingNewName({
     defaultName, applyName, customIcon,
 }: {
     defaultName?: string,

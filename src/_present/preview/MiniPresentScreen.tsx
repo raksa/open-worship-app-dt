@@ -42,7 +42,8 @@ function openContextMenu(event: any, presentManager: PresentManager) {
         ...[{
             title: 'Add New Present',
             onClick() {
-                const ids = PresentManager.getAllInstances().map((presentManager1) => {
+                const instances = PresentManager.getAllInstances();
+                const ids = instances.map((presentManager1) => {
                     return presentManager1.presentId;
                 });
                 const maxId = toMaxId(ids);
@@ -60,61 +61,70 @@ export default function MiniPresentScreen() {
     const presentManagers = PresentManager.getPresentManagersSetting();
     return (
         <>
-            {presentManagers.map((presentManager, i) => {
-                const selectedCN = presentManager.isSelected ? 'highlight-selected' : '';
+            {presentManagers.map((presentManager) => {
                 return (
-                    <div key={i}
-                        className={`mini-present-screen card ${selectedCN}`}
-                        style={{
-                            overflow: 'hidden',
-                        }}
-                        onContextMenu={(event) => {
-                            openContextMenu(event, presentManager);
-                        }}
-                        onDragOver={(event) => {
-                            event.preventDefault();
-                            event.currentTarget.classList
-                                .add('receiving-child');
-                        }}
-                        onDragLeave={(event) => {
-                            event.preventDefault();
-                            event.currentTarget.classList
-                                .remove('receiving-child');
-                        }}
-                        onDrop={async (event) => {
-                            event.currentTarget.classList.remove('receiving-child');
-                            const droppedData = await handleDrop(event);
-                            if (droppedData === null) {
-                                return;
-                            }
-                            presentManager.receivePresentDrag(droppedData);
-                        }}>
-                        <div className='card-header pb-2' style={{
-                            overflowX: 'auto',
-                            overflowY: 'hidden',
-                            height: '52px',
-                        }}>
-                            <div className={'d-flex justify-content-around align-content-start'}
-                                style={{
-                                    minWidth: '500px',
-                                }}>
-                                <ShowHidePresent
-                                    presentManager={presentManager} />
-                                <MiniScreenClearControl
-                                    presentManager={presentManager} />
-                                <DisplayControl
-                                    presentManager={presentManager} />
-                                <PTEffectControl
-                                    presentManager={presentManager} />
-                            </div>
-                        </div>
-                        <div>
-                            <mini-present-previewer
-                                presentId={presentManager.presentId} />
-                        </div>
-                    </div>
+                    <RenderManager key={presentManager.key}
+                        presentManager={presentManager} />
                 );
             })}
         </>
+    );
+}
+
+function RenderManager({ presentManager }: {
+    presentManager: PresentManager;
+}) {
+    const selectedCN = presentManager.isSelected ? 'highlight-selected' : '';
+    return (
+        <div key={presentManager.key}
+            className={`mini-present-screen card ${selectedCN}`}
+            style={{
+                overflow: 'hidden',
+            }}
+            onContextMenu={(event) => {
+                openContextMenu(event, presentManager);
+            }}
+            onDragOver={(event) => {
+                event.preventDefault();
+                event.currentTarget.classList
+                    .add('receiving-child');
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                event.currentTarget.classList
+                    .remove('receiving-child');
+            }}
+            onDrop={async (event) => {
+                event.currentTarget.classList.remove('receiving-child');
+                const droppedData = await handleDrop(event);
+                if (droppedData === null) {
+                    return;
+                }
+                presentManager.receivePresentDrag(droppedData);
+            }}>
+            <div className='card-header pb-2' style={{
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                height: '52px',
+            }}>
+                <div className={'d-flex justify-content-around align-content-start'}
+                    style={{
+                        minWidth: '500px',
+                    }}>
+                    <ShowHidePresent
+                        presentManager={presentManager} />
+                    <MiniScreenClearControl
+                        presentManager={presentManager} />
+                    <DisplayControl
+                        presentManager={presentManager} />
+                    <PTEffectControl
+                        presentManager={presentManager} />
+                </div>
+            </div>
+            <div>
+                <mini-present-previewer
+                    presentId={presentManager.presentId} />
+            </div>
+        </div>
     );
 }

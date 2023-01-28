@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import {
     AnyObjectType, cloneJson,
 } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
+import { AppColorType } from '../../others/color/helpers';
 import {
     ToolingBoxType,
     tooling2BoxProps,

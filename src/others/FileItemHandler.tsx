@@ -1,7 +1,8 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import FileReadError from './FileReadError';
 import {
-    ContextMenuItemType, showAppContextMenu,
+    ContextMenuItemType,
+    showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
     copyToClipboard, openExplorer,
@@ -11,7 +12,10 @@ import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
-import { AskingNewName } from './AskingNewName';
+
+const RenderRenaming = React.lazy(() => {
+    return import('./RenderRenaming');
+});
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -32,17 +36,9 @@ export const genCommonMenu = (fileSource: FileSource) => {
 
 
 export default function FileItemHandler({
-    data,
-    reload,
-    index,
-    fileSource,
-    className,
-    contextMenu,
-    onDrop,
-    onClick,
-    renderChild,
-    isPointer,
-    onDelete,
+    data, reload, index, fileSource, className,
+    contextMenu, onDrop, onClick, renderChild,
+    isPointer, onDelete,
 }: {
     data: ItemSource<any> | null | undefined,
     reload: () => void,
@@ -135,22 +131,4 @@ export default function FileItemHandler({
                 renderChild(data)}
         </li>
     );
-}
-
-function RenderRenaming({
-    setIsRenaming, fileSource,
-}: {
-    setIsRenaming: (value: boolean) => void,
-    fileSource: FileSource,
-}) {
-    const applyNameCallback = useCallback(async (name: string | null) => {
-        if (name === null) {
-            setIsRenaming(false);
-            return;
-        }
-        const isSuccess = await fileSource.renameTo(name);
-        setIsRenaming(!isSuccess);
-    }, []);
-    return <AskingNewName defaultName={fileSource.name}
-        applyName={applyNameCallback} />;
 }

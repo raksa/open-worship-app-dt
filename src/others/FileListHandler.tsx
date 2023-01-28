@@ -1,9 +1,8 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import {
     MimetypeNameType,
 } from '../server/fileHelper';
-import { AskingNewName } from './AskingNewName';
 import {
     ContextMenuItemType,
 } from './AppContextMenu';
@@ -17,17 +16,16 @@ import {
     genOnContextMenu,
 } from './droppingFileHelpers';
 
+const AskingNewName = React.lazy(() => {
+    return import('./AskingNewName');
+});
+
+
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
-    id,
-    mimetype,
-    dirSource,
-    header,
-    bodyHandler,
-    contextMenu,
-    onNewFile,
-    checkExtraFile,
+    id, mimetype, dirSource, header, bodyHandler,
+    contextMenu, onNewFile, checkExtraFile,
     takeDroppedFile,
 }: {
     id: string, mimetype: MimetypeNameType,
