@@ -1,5 +1,6 @@
-import KeyboardEventListener, {
+import {
     EventMapper as KBEventMapper,
+    toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { tran } from '../lang';
@@ -19,7 +20,7 @@ export default function BibleSearchHeader() {
                 width: '220px',
             }}
             onClick={openBibleSearch}
-            data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
+            data-tool-tip={toShortcutKey(eventMapper)}
             type='button'>
             <span className='btn-label'>
                 <i className='bi bi-book' />

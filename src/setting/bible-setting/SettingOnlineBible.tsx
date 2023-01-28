@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
 
@@ -12,6 +13,9 @@ export default function SettingOnlineBible({
     setOnlineBibleInfoList: (bbList: BibleListType) => void
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }) {
+    const onDownloadedCallback = useCallback(() => {
+        setDownloadedBibleInfoList(null);
+    }, []);
     if (onlineBibleInfoList === null) {
         return <div>Loading...</div>;
     }
@@ -52,11 +56,9 @@ export default function SettingOnlineBible({
             <ul className='list-group d-flex flex-fill'>
                 {bibleInfoList.map((bibleInfo, i) => {
                     return (
-                        <OnlineBibleItem key={`${i}`}
+                        <OnlineBibleItem key={bibleInfo.key}
                             bibleInfo={bibleInfo}
-                            onDownloaded={() => {
-                                setDownloadedBibleInfoList(null);
-                            }} />
+                            onDownloaded={onDownloadedCallback} />
                     );
                 })}
             </ul>

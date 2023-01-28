@@ -35,13 +35,15 @@ export default function RenderBookOption({
     };
     allArrows.forEach(useCallback);
     useKeyboardRegistering({ key: 'Enter' }, () => {
-        if (matches !== null && bookKVList !== null && matches[attemptMatchIndex]) {
+        if (matches !== null && bookKVList !== null
+            && matches[attemptMatchIndex]) {
             const k = matches[attemptMatchIndex];
             onSelect(bookKVList[k]);
         }
     });
     let applyAttemptIndex = attemptMatchIndex;
-    if (matches !== null && matches.length && attemptMatchIndex >= matches.length) {
+    if (matches !== null && matches.length
+        && attemptMatchIndex >= matches.length) {
         applyAttemptIndex = 0;
     }
     return <>
@@ -51,25 +53,64 @@ export default function RenderBookOption({
         <div className='row w-75 align-items-start g-2'>
             {(matches === null || bookKVList === null) ?
                 <div>No matched found</div> :
-                matches.map((k, i) => {
-                    const highlight = i === applyAttemptIndex;
+                matches.map((key, i) => {
                     return (
-                        <div key={`${i}`} className='col-6'>
-                            <button ref={(self) => {
-                                if (self && highlight && !isVisible(self)) {
-                                    self.scrollIntoView({ block: 'end', behavior: 'smooth' });
-                                }
-                            }} type='button' onClick={() => {
-                                onSelect(bookKVList[k]);
-                            }} style={{ width: '240px', overflowX: 'auto' }}
-                                className={`text-nowrap btn-sm btn btn-outline-success ${highlight ? 'active' : ''}`}>
-                                <span>{bookKVList[k]}</span>
-                                {bookKVList[k] !== kjvKeyValue[k] &&
-                                    <>(<small className='text-muted'>{kjvKeyValue[k]}</small>)</>}
-                            </button>
-                        </div>
+                        <RenderOption key={key}
+                            index={i}
+                            bibleKey={key}
+                            bookKVList={bookKVList}
+                            kjvKeyValue={kjvKeyValue}
+                            onSelect={onSelect}
+                            applyAttemptIndex={applyAttemptIndex}
+                        />
                     );
                 })}
         </div>
     </>;
+}
+
+function RenderOption({
+    index, bibleKey, bookKVList, kjvKeyValue,
+    onSelect, applyAttemptIndex,
+}: {
+    index: number,
+    bibleKey: string,
+    bookKVList: {
+        [key: string]: string;
+    } | null,
+    kjvKeyValue: {
+        [key: string]: string;
+    },
+    onSelect: (book: string) => void
+    applyAttemptIndex: number,
+}) {
+    const highlight = index === applyAttemptIndex;
+    if (bookKVList === null) {
+        return <div>No matched found</div>;
+    }
+    return (
+        <div className='col-6'>
+            <button style={{ width: '240px', overflowX: 'auto' }}
+                ref={(self) => {
+                    if (self && highlight && !isVisible(self)) {
+                        self.scrollIntoView({
+                            block: 'end',
+                            behavior: 'smooth',
+                        });
+                    }
+                }}
+                type='button'
+                onClick={() => {
+                    onSelect(bookKVList[bibleKey]);
+                }}
+                className={'text-nowrap btn-sm btn btn-outline-success '
+                    + `${highlight ? 'active' : ''}`}>
+                <span>{bookKVList[bibleKey]}</span>
+                {bookKVList[bibleKey] !== kjvKeyValue[bibleKey] &&
+                    <>(<small className='text-muted'>
+                        {kjvKeyValue[bibleKey]}
+                    </small>)</>}
+            </button>
+        </div>
+    );
 }

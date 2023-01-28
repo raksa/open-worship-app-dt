@@ -48,7 +48,7 @@ export default function FileItemHandler({
     contextMenu?: ContextMenuItemType[],
     onDrop?: (event: any) => void,
     onClick?: () => void,
-    renderChild: (_: ItemSource<any>) => any,
+    renderChild: (lyric: ItemSource<any>) => any,
     isPointer?: boolean,
     onDelete?: () => void,
 }) {
@@ -95,7 +95,8 @@ export default function FileItemHandler({
     if (data === undefined) {
         return <FileReadError onContextMenu={callContextMenu} />;
     }
-    const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''}`;
+    const moreClassName = `${data.isSelected ? 'active' : ''} `
+        + `${className || ''}`;
     return (
         <li className={`list-group-item mx-1 ${moreClassName} 
         ${isPointer ? 'pointer' : ''}`}

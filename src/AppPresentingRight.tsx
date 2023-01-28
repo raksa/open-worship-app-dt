@@ -4,8 +4,12 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import PresentManager from './_present/PresentManager';
 
-const BibleList = React.lazy(() => import('./bible-list/BibleList'));
-const LyricList = React.lazy(() => import('./lyric-list/LyricList'));
+const BibleList = React.lazy(() => {
+    return import('./bible-list/BibleList');
+});
+const LyricList = React.lazy(() => {
+    return import('./lyric-list/LyricList');
+});
 
 export default function AppPresentingRight() {
     useEffect(() => {

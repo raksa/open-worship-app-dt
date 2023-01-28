@@ -5,7 +5,8 @@ import BibleList from '../bible-list/BibleList';
 import BiblePreviewerRender from './BiblePreviewerRender';
 
 export default function BiblePreviewer() {
-    const [bibleItem, setBibleItem] = useState<BibleItem | null | undefined>(null);
+    const [bibleItem, setBibleItem] = useState<
+        BibleItem | null | undefined>(null);
     useBibleItemSelecting(setBibleItem);
     useEffect(() => {
         if (bibleItem === null) {

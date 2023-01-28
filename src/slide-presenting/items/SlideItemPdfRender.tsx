@@ -1,11 +1,19 @@
 import './SlideItemRender.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
-import { usePSlideMEvents } from '../../_present/presentEventHelpers';
-import { RendInfo, RendShowingScreen, toCNHighlight } from './SlideItemRender';
+import {
+    usePSlideMEvents,
+} from '../../_present/presentEventHelpers';
+import {
+    RendInfo,
+    RendShowingScreen,
+    toCNHighlight,
+} from './SlideItemRender';
 import ReactDOMServer from 'react-dom/server';
 
-export function SlideItemPdfRenderContent({ width, pdfImageSrc }: {
+export function SlideItemPdfRenderContent({
+    width, pdfImageSrc,
+}: {
     width: number,
     pdfImageSrc: string,
 }) {

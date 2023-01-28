@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import BibleView from './BibleView';
 import {
     previewer,
@@ -15,13 +15,27 @@ export default function BiblePreviewerRender({ bibleItem }: {
     bibleItem: BibleItem,
 }) {
     const [bibleItems, setBibleItems] = useState<BibleItem[]>([]);
-    const applyPresents = (newBibleItems: BibleItem[]) => {
+    const applyPresents = useCallback((newBibleItems: BibleItem[]) => {
         BibleItem.setBiblePresentingSetting(newBibleItems);
         if (checkIsFtAutoShow()) {
             previewer.show();
         }
         setBibleItems(newBibleItems);
-    };
+    }, [setBibleItems]);
+    const onBibleChangeCallback = useCallback((
+        bibleKey: string, index: number) => {
+        const bibleItem1 = bibleItems.map((item1) => {
+            return item1.clone();
+        });
+        bibleItem1[index].bibleKey = bibleKey;
+        applyPresents(bibleItem1);
+    }, [bibleItems]);
+    const onCloseCallback = useCallback((index: number) => {
+        const newBibleItems = bibleItems.filter((_, i1) => {
+            return i1 !== index;
+        });
+        applyPresents(newBibleItems);
+    }, [bibleItems]);
     useEffect(() => {
         setBibleItems(BibleItem.convertPresent(bibleItem,
             BibleItem.getBiblePresentingSetting()));
@@ -42,23 +56,15 @@ export default function BiblePreviewerRender({ bibleItem }: {
         <div className='d-flex d-flex-row overflow-hidden h-100'>
             {isAvailable ? bibleItems.map((item, i) => {
                 return (
-                    <BibleView key={`${i}`} bibleItem={item}
-                        onBibleChange={(bibleKey: string) => {
-                            const bibleItem1 = bibleItems.map((item1) => {
-                                return item1.clone();
-                            });
-                            bibleItem1[i].bibleKey = bibleKey;
-                            applyPresents(bibleItem1);
-                        }}
-                        onClose={() => {
-                            const newBibleItems = bibleItems.filter((_, i1) => {
-                                return i1 !== i;
-                            });
-                            applyPresents(newBibleItems);
-                        }} />
+                    <BibleView key={item.id}
+                        index={i}
+                        bibleItem={item}
+                        onBibleChange={onBibleChangeCallback}
+                        onClose={onCloseCallback} />
                 );
             }) : 'No Bible Available'}
-            {isAvailable && <ButtonAddMoreBible bibleItems={bibleItems}
+            {isAvailable && <ButtonAddMoreBible
+                bibleItems={bibleItems}
                 applyPresents={applyPresents} />
             }
         </div>

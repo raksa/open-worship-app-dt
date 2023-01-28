@@ -57,7 +57,8 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     }
                 }}
                 style={{
-                    border: canvasItem.isSelected ? '2px dashed green' : undefined,
+                    border: canvasItem.isSelected ?
+                        '2px dashed green' : undefined,
                     transform: 'translate(-50%, -50%)',
                     width: `${canvasItem.props.width}px`,
                     height: `${canvasItem.props.height}px`,
@@ -68,7 +69,7 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     <div className={`object ${boxEditorController.rotatorCN}`} />
                     <div className='rotate-link' />
                     {Object.keys(boxEditorController.resizeActorList)
-                        .map((cn, i) => <div key={`${i}`}
+                        .map((cn, i) => <div key={cn}
                             className={`object ${cn}`} />)
                     }
                 </div>

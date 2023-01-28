@@ -2,8 +2,11 @@ import RenderBookOption from './RenderBookOption';
 import RenderChapterOption from './RenderChapterOption';
 import Header from './Header';
 import RenderFound from './RenderFound';
-import { ExtractedBibleResult } from '../server/bible-helpers/bibleHelpers2';
+import {
+    ExtractedBibleResult,
+} from '../server/bible-helpers/bibleHelpers2';
 import Preview from './Preview';
+import { useCallback } from 'react';
 
 export default function RenderSearchSuggestion({
     bibleResult, inputText, bibleSelected,
@@ -14,9 +17,14 @@ export default function RenderSearchSuggestion({
     inputText: string, bibleSelected: string,
     bibleResult: ExtractedBibleResult,
     applyChapterSelection: (newChapter: number) => void;
-    applyVerseSelection: (newStartVerse?: number, newEndVerse?: number) => void;
+    applyVerseSelection: (newStartVerse?: number,
+        newEndVerse?: number) => void;
     applyBookSelection: (newBook: string) => void;
 }) {
+    const onVerseChangeCallback = useCallback((
+        newStartVerse?: number, newEndVerse?: number) => {
+        applyVerseSelection(newStartVerse, newEndVerse);
+    }, [applyVerseSelection]);
     const {
         book, chapter,
         startVerse, endVerse,
@@ -42,9 +50,7 @@ export default function RenderSearchSuggestion({
                 startVerse={startVerse}
                 endVerse={endVerse}
                 applyChapterSelection={applyChapterSelection}
-                onVerseChange={(newStartVerse, newEndVerse) => {
-                    applyVerseSelection(newStartVerse, newEndVerse);
-                }}
+                onVerseChange={onVerseChangeCallback}
             />}
             {book && chapter !== null && <Preview
                 bibleSelected={bibleSelected}

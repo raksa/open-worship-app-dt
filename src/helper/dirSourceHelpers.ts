@@ -13,7 +13,8 @@ export function useDSEvents(events: DirSourceEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = dirSource?.registerEventListener(events, update) || [];
+        const instanceEvents = dirSource?.registerEventListener(
+            events, update) || [];
         const staticEvents = DirSource.registerEventListener(events, update);
         return () => {
             dirSource?.unregisterEventListener(instanceEvents);
@@ -31,8 +32,10 @@ export function useFSEvents(events: FSEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = fileSource?.registerEventListener(events, update) || [];
-        const staticEvents = FileSource.registerEventListener(events, update);
+        const instanceEvents = fileSource?.registerEventListener(
+            events, update) || [];
+        const staticEvents = FileSource.registerEventListener(
+            events, update);
         return () => {
             fileSource?.unregisterEventListener(instanceEvents);
             FileSource.unregisterEventListener(staticEvents);

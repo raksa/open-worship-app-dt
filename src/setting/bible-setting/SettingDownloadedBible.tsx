@@ -1,7 +1,17 @@
 import DownloadedBibleItem from './DownloadedBibleItem';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
+import { useCallback } from 'react';
 
+type BibleInfoType = {
+    isUpdatable: boolean;
+    filePath: string | undefined;
+    locale: 'km' | 'en';
+    title: string;
+    key: string;
+    version: number;
+    isDownloading: boolean;
+};
 export default function SettingDownloadedBible({
     onlineBibleInfoList,
     downloadedBibleInfoList,
@@ -21,19 +31,20 @@ export default function SettingDownloadedBible({
             <div>Unable to get downloaded bible list</div>
         );
     }
-    const bibleInfoList = downloadedBibleInfoList.map((bibleInfo) => {
-        const foundBibleInfo = onlineBibleInfoList &&
-            onlineBibleInfoList.find((bible1) => {
-                return bible1.key === bibleInfo.key &&
-                    bible1.version >= bibleInfo.version;
-            });
-        return {
-            isDownloading: false,
-            ...bibleInfo,
-            isUpdatable: !!foundBibleInfo,
-            filePath: foundBibleInfo?.filePath,
-        };
-    });
+    const bibleInfoList = downloadedBibleInfoList
+        .map<BibleInfoType>((bibleInfo) => {
+            const foundBibleInfo = onlineBibleInfoList &&
+                onlineBibleInfoList.find((bible1) => {
+                    return bible1.key === bibleInfo.key &&
+                        bible1.version >= bibleInfo.version;
+                });
+            return {
+                isDownloading: false,
+                ...bibleInfo,
+                isUpdatable: !!foundBibleInfo,
+                filePath: foundBibleInfo?.filePath,
+            };
+        });
     return (
         <div className='w-100'>
             <div>
@@ -50,29 +61,51 @@ export default function SettingDownloadedBible({
                     No bible downloaded
                 </div>) : (<>
                     {bibleInfoList.map((bibleInfo, i) => {
-                        if (bibleInfo.isDownloading) {
-                            return (
-                                <OnlineBibleItem key={`${i}`}
-                                    bibleInfo={bibleInfo}
-                                    onDownloaded={() => {
-                                        setDownloadedBibleInfoList(null);
-                                    }} />
-                            );
-                        }
                         return (
-                            <DownloadedBibleItem key={`${i}`}
+                            <RenderItem key={bibleInfo.key}
+                                index={i}
+                                bibleInfoList={bibleInfoList}
                                 bibleInfo={bibleInfo}
-                                onDeleted={() => {
-                                    setDownloadedBibleInfoList(null);
-                                }}
-                                onUpdate={() => {
-                                    bibleInfo.isDownloading = true;
-                                    setDownloadedBibleInfoList([...bibleInfoList]);
-                                }} />
+                                setDownloadedBibleInfoList={
+                                    setDownloadedBibleInfoList} />
                         );
                     })}
                 </>)}
             </ul>
         </div>
+    );
+}
+
+function RenderItem({
+    bibleInfoList, bibleInfo, index,
+    setDownloadedBibleInfoList,
+}: {
+    bibleInfoList: BibleInfoType[],
+    bibleInfo: BibleInfoType,
+    index: number,
+    setDownloadedBibleInfoList: (bbList: BibleListType) => void,
+}) {
+    const onDownloadedCallback = useCallback(() => {
+        setDownloadedBibleInfoList(null);
+    }, [setDownloadedBibleInfoList]);
+    const onDeletedCallback = useCallback(() => {
+        setDownloadedBibleInfoList(null);
+    }, [setDownloadedBibleInfoList]);
+    const onUpdateCallback = useCallback(() => {
+        bibleInfo.isDownloading = true;
+        setDownloadedBibleInfoList([...bibleInfoList]);
+    }, [bibleInfoList, bibleInfo, setDownloadedBibleInfoList]);
+    if (bibleInfo.isDownloading) {
+        return (
+            <OnlineBibleItem key={`${index}`}
+                bibleInfo={bibleInfo}
+                onDownloaded={onDownloadedCallback} />
+        );
+    }
+    return (
+        <DownloadedBibleItem key={`${index}`}
+            bibleInfo={bibleInfo}
+            onDeleted={onDeletedCallback}
+            onUpdate={onUpdateCallback} />
     );
 }

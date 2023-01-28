@@ -45,7 +45,8 @@ export function BENTextRender({ props }: {
     const htmlText = props.text.replace(/\n/g, '<br />');
     return (
         <div className='w-100 h-100'
-            style={CanvasItemText.genStyle(props)} dangerouslySetInnerHTML={{
+            style={CanvasItemText.genStyle(props)}
+            dangerouslySetInnerHTML={{
                 __html: htmlText,
             }} />
     );

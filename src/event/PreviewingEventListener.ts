@@ -41,7 +41,8 @@ export default class PreviewingEventListener extends EventHandler<PreviewingType
 
 export const previewingEventListener = new PreviewingEventListener();
 
-export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) {
+export function useBibleItemSelecting(
+    listener: ListenerType<BibleItem | null>) {
     useEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-bible-item'], listener);

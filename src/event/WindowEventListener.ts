@@ -25,10 +25,12 @@ export default class WindowEventListener extends EventHandler<string> {
     }
 }
 
-export function useWindowEvent(eventMapper: EventMapper, listener: ListenerType<any>) {
+export function useWindowEvent(eventMapper: EventMapper,
+    listener: ListenerType<any>) {
     useEffect(() => {
         const eventName = WindowEventListener.toEventMapperKey(eventMapper);
-        const event = WindowEventListener.registerEventListener([eventName], listener);
+        const event = WindowEventListener.registerEventListener(
+            [eventName], listener);
         return () => {
             WindowEventListener.unregisterEventListener(event);
         };

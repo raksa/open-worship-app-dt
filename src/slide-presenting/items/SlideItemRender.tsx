@@ -39,7 +39,8 @@ export function RendInfo({ index, slideItem }: {
                 </span>}
             </div>
             <div className='flex-fill d-flex justify-content-end'>
-                <span title={`width:${slideItem.width}, height:${slideItem.height}`}>
+                <span title={`width:${slideItem.width}, `
+                    + `height:${slideItem.height}`}>
                     <small className='pe-2'>
                         {slideItem.width}x{slideItem.height}
                     </small>

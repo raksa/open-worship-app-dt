@@ -21,7 +21,8 @@ export default function SlideItemsPreviewer({ slide }: {
                     return;
                 }
                 const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE);
-                const newScale = Slide.toScaleThumbSize(event.deltaY > 0, currentScale);
+                const newScale = Slide.toScaleThumbSize(
+                    event.deltaY > 0, currentScale);
                 setThumbSize(newScale * DEFAULT_THUMBNAIL_SIZE);
             }}
             onContextMenu={(event) => {

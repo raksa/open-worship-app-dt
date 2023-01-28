@@ -29,7 +29,8 @@ export default function SlideItemRendererHtml({ slideItem }: {
                 height: `${slideItem.height}px`,
                 transform: 'translate(-50%, -50%)',
             }}>
-                <SlideItemRenderer canvasItemsJson={slideItem.canvasItemsJson}
+                <SlideItemRenderer
+                    canvasItemsJson={slideItem.canvasItemsJson}
                     width={`${slideItem.width}px`}
                     height={`${slideItem.height}px`} />
             </div>

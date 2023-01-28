@@ -7,7 +7,8 @@ export default function SelectCustomColor({ color, onColorSelected }: {
     onColorSelected: (color: AppColorType, event: MouseEvent) => void,
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [localColor, setLocalColor] = useState<AppColorType>(color || '#ffffff');
+    const [localColor, setLocalColor] = useState<AppColorType>(
+        color || '#ffffff');
     const applyColor = (newColor: AppColorType) => {
         setLocalColor(newColor);
         let e = createMouseEvent(0, 0);

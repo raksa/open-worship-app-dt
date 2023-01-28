@@ -83,7 +83,8 @@ export default function App() {
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
-                <div className='highlight-border-bottom d-flex justify-content-center flex-fill'>
+                <div className={'highlight-border-bottom d-flex '
+                    + 'justify-content-center flex-fill'}>
                     <BibleSearchHeader />
                 </div>
                 <div className='highlight-border-bottom'>

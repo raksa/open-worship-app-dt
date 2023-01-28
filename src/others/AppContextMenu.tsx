@@ -119,7 +119,8 @@ export default function AppContextMenu() {
         }} className='app-context-menu'>
             {data.items.map((item, i) => {
                 return (
-                    <ContextMenuItem key={i} item={item} />
+                    <ContextMenuItem key={item.title}
+                        item={item} />
                 );
             })}
         </div>

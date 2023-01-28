@@ -18,7 +18,9 @@ export default function Preview({
     endVerse: number | null,
     bibleSelected: string,
 }) {
-    const [rendered, setRendered] = useState<{ title: string, text: string } | null>(null);
+    const [rendered, setRendered] = useState<{
+        title: string, text: string,
+    } | null>(null);
     useEffect(() => {
         (async () => {
             const found = await consumeStartVerseEndVerse(book, chapter,
@@ -29,7 +31,8 @@ export default function Preview({
             }
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
-            const newTitle = await toInputText(bibleSelected, book, chapter, sVerse, eVerse);
+            const newTitle = await toInputText(
+                bibleSelected, book, chapter, sVerse, eVerse);
             const newText = await BibleItem.itemToText(BibleItem.fromJson({
                 id: -1,
                 bibleKey: bibleSelected,
@@ -58,21 +61,25 @@ export default function Preview({
             <div className='card-header bg-transparent border-success'>
                 {title}
                 <div className='btn-group float-end'>
-                    <button type='button' className='btn btn-sm btn-outline-danger'
+                    <button type='button'
+                        className='btn btn-sm btn-outline-danger'
                         onClick={() => {
                             copyToClipboard(title);
                         }}>copy title</button>
-                    <button type='button' className='btn btn-sm btn-outline-success'
+                    <button type='button'
+                        className='btn btn-sm btn-outline-success'
                         onClick={() => {
                             copyToClipboard(text);
                         }}>copy verse text</button>
-                    <button type='button' className='btn btn-sm btn-outline-info'
+                    <button type='button'
+                        className='btn btn-sm btn-outline-info'
                         onClick={() => {
                             copyToClipboard(`${title}\n${text}`);
                         }}>copy all</button>
                 </div>
             </div>
-            <div className='card-body bg-transparent border-success selectable-text'>
+            <div className={'card-body bg-transparent '
+                + 'border-success selectable-text'}>
                 {text}
             </div>
         </div>

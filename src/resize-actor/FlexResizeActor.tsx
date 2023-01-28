@@ -176,7 +176,8 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
                         ['down', 'chevron-down'],
                     ].map(([type, icon], i) => {
                         return (
-                            <i key={i} title={`Disable ${type}`}
+                            <i key={type}
+                                title={`Disable ${type}`}
                                 className={`${type} bi bi-${icon}`}
                                 onClick={(event) => {
                                     event.stopPropagation();

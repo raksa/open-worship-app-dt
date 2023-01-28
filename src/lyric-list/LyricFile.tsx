@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
@@ -15,6 +15,23 @@ export default function LyricFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
+    const reloadCallback = useCallback(() => {
+        setData(null);
+    }, [setData]);
+    const onClickCallback = useCallback(() => {
+        if (data) {
+            if (data.isSelected && !getIsPreviewingLyric()) {
+                previewingEventListener.selectLyric(data);
+                return;
+            }
+            data.isSelected = !data.isSelected;
+        }
+    }, [data]);
+    const renderChildCallback = useCallback((lyric: ItemSource<any>) => {
+        return (
+            <LyricFilePreview lyric={lyric as Lyric} />
+        );
+    }, []);
     useEffect(() => {
         if (data === null) {
             Lyric.readFileToData(fileSource).then(setData);
@@ -28,25 +45,11 @@ export default function LyricFile({
         <FileItemHandler
             index={index}
             data={data}
-            reload={() => {
-                setData(null);
-            }}
+            reload={reloadCallback}
             fileSource={fileSource}
             isPointer
-            onClick={() => {
-                if (data) {
-                    if (data.isSelected && !getIsPreviewingLyric()) {
-                        previewingEventListener.selectLyric(data);
-                        return;
-                    }
-                    data.isSelected = !data.isSelected;
-                }
-            }}
-            renderChild={(lyric) => {
-                return (
-                    <LyricFilePreview lyric={lyric as Lyric} />
-                );
-            }}
+            onClick={onClickCallback}
+            renderChild={renderChildCallback}
         />
     );
 }

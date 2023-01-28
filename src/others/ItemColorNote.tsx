@@ -8,31 +8,35 @@ export default function ItemColorNote({ item }: {
     item: ColorNoteInf,
 }) {
     return (
-        <span className={`color-note ${item.colorNote ? 'active' : ''}`} onClick={(event) => {
-            event.stopPropagation();
-            const colors = [
-                ...Object.entries(colorList.main),
-                ...Object.entries(colorList.extension),
-            ];
-            showAppContextMenu(event as any, [{
-                title: 'no color',
-                onClick: () => {
-                    item.colorNote = null;
-                },
-            }, ...colors.map(([name, colorCode]) => {
-                return {
-                    title: name,
+        <span className={`color-note ${item.colorNote ? 'active' : ''}`}
+            onClick={(event) => {
+                event.stopPropagation();
+                const colors = [
+                    ...Object.entries(colorList.main),
+                    ...Object.entries(colorList.extension),
+                ];
+                showAppContextMenu(event as any, [{
+                    title: 'no color',
                     onClick: () => {
-                        item.colorNote = colorCode;
+                        item.colorNote = null;
                     },
-                    otherChild: (<span style={{ float: 'right' }}>
-                        <i className='bi bi-record-circle' style={{ color: colorCode }} />
-                    </span>),
-                };
-            })]);
-        }} >
+                }, ...colors.map(([name, colorCode]) => {
+                    return {
+                        title: name,
+                        onClick: () => {
+                            item.colorNote = colorCode;
+                        },
+                        otherChild: (<span style={{ float: 'right' }}>
+                            <i className='bi bi-record-circle'
+                                style={{ color: colorCode }} />
+                        </span>),
+                    };
+                })]);
+            }} >
             <i className='bi bi-record-circle'
-                style={item.colorNote ? { color: item.colorNote } : {}} />
+                style={item.colorNote ? {
+                    color: item.colorNote,
+                } : {}} />
         </span>
     );
 }

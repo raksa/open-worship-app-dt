@@ -6,7 +6,8 @@ export type PdfViewerStateType = {
 export type PdfViewerPropsType = {
     images: PdfImageDataType[];
 };
-export default class PdfItemViewer extends Component<PdfViewerPropsType, PdfViewerStateType> {
+export default class PdfItemViewer extends
+    Component<PdfViewerPropsType, PdfViewerStateType> {
     ref: React.RefObject<HTMLDivElement>;
     constructor(props: PdfViewerPropsType) {
         super(props);
@@ -19,12 +20,10 @@ export default class PdfItemViewer extends Component<PdfViewerPropsType, PdfView
                 overflow: 'auto',
             }} ref={this.ref} >
                 {this.props.images.map(({
-                    width,
-                    height,
-                    src,
-                }, index) => {
+                    width, height, src,
+                }) => {
                     return (
-                        <img key={index}
+                        <img key={src}
                             width={width}
                             height={height}
                             src={src} />

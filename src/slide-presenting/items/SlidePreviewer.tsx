@@ -12,7 +12,7 @@ import {
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
 import { useSlideSelecting } from '../../event/PreviewingEventListener';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
@@ -21,6 +21,9 @@ export default function SlidePreviewer() {
     const [thumbSize, setThumbSize] = useSlideItemSizing(
         THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
     const [slide, setSlide] = useState<SlideDynamicType>(null);
+    const setThumbnailSizeCallback = useCallback((newSize: number) => {
+        setThumbSize(newSize);
+    }, [setThumbSize]);
     useSlideSelecting(() => {
         setSlide(null);
     });
@@ -48,9 +51,7 @@ export default function SlidePreviewer() {
             <PreviewSlide slide={slide} />
             <SlidePreviewerFooter
                 thumbnailSize={thumbSize}
-                setThumbnailSize={(newSize) => {
-                    setThumbSize(newSize);
-                }} />
+                setThumbnailSize={setThumbnailSizeCallback} />
         </div>
     );
 }

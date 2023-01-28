@@ -60,7 +60,8 @@ export default function SlideItemsMenu({
                 {foundWrongDimension !== null &&
                     <button type='button'
                         className='btn btn-sm btn-warning'
-                        title={Slide.toWrongDimensionString(foundWrongDimension)}
+                        title={Slide.toWrongDimensionString(
+                            foundWrongDimension)}
                         onClick={() => {
                             slide.fixSlideDimension(presentDisplay);
                         }}>

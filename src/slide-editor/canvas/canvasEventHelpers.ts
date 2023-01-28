@@ -21,9 +21,10 @@ export function useCCScale() {
     const canvasController = CanvasController.getInstance();
     const [scale, setScale] = useState(canvasController.scale);
     useEffect(() => {
-        const regEvents = canvasController.registerEventListener(['scale'], () => {
-            setScale(canvasController.scale);
-        });
+        const regEvents = canvasController
+            .registerEventListener(['scale'], () => {
+                setScale(canvasController.scale);
+            });
         return () => {
             canvasController.unregisterEventListener(regEvents);
         };
@@ -32,7 +33,8 @@ export function useCCScale() {
 }
 
 export function useCIControl(canvasItem: CanvasItem<any>) {
-    const [isControlling, setIsControlling] = useState(canvasItem.isControlling);
+    const [isControlling, setIsControlling] = useState(
+        canvasItem.isControlling);
     const canvasController = CanvasController.getInstance();
     useEffect(() => {
         const regEvents = canvasController.registerEventListener(

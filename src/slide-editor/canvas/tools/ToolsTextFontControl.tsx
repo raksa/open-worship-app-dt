@@ -43,7 +43,7 @@ function FontSize({ canvasItemText }: {
                 <option>--</option>
                 {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
                     .reverse().map((n, i) => {
-                        return <option key={`${i}`}
+                        return <option key={n}
                             value={n}>{n}px</option>;
                     })}
             </select>
@@ -81,8 +81,8 @@ function FontFamily({ canvasItemText }: {
                         applyFontFamily(event.target.value);
                     }} >
                     <option>--</option>
-                    {Object.keys(fontList).map((ff, i) => {
-                        return <option key={i}
+                    {Object.keys(fontList).map((ff) => {
+                        return <option key={ff}
                             value={ff}>{ff}</option>;
                     })}
                 </select>
@@ -124,9 +124,9 @@ function FontWeight({
                     applyFontWeight(event.target.value);
                 }} >
                 <option>--</option>
-                {fontList[fontFamily].map((fs, i) => {
+                {fontList[fontFamily].map((fs) => {
                     return (
-                        <option key={i}
+                        <option key={fs}
                             value={fs}>{fs}</option>
                     );
                 })}

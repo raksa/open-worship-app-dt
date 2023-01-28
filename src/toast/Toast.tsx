@@ -1,8 +1,12 @@
 import './Toast.scss';
 
 import { useCallback, useState } from 'react';
-import { useToastSimpleShowing } from '../event/ToastEventListener';
-import SimpleToast, { SimpleToastType } from './SimpleToast';
+import {
+    useToastSimpleShowing,
+} from '../event/ToastEventListener';
+import SimpleToast, {
+    SimpleToastType,
+} from './SimpleToast';
 
 let timeoutId: any = null;
 export default function Toast() {
@@ -15,7 +19,8 @@ export default function Toast() {
     const onCloseCallback = useCallback(() => {
         setSimpleToast(null);
     }, []);
-    const [simpleToast, setSimpleToast] = useState<SimpleToastType | null>(null);
+    const [simpleToast, setSimpleToast] = useState<
+        SimpleToastType | null>(null);
     const clearTimer = () => {
         if (timeoutId !== null) {
             clearTimeout(timeoutId);

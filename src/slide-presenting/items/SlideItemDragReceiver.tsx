@@ -2,7 +2,10 @@ import './SlideItemDragReceiver.scss';
 
 import { CSSProperties, useState } from 'react';
 import SlideItem from '../../slide-list/SlideItem';
-import { DragTypeEnum, handleDrop } from '../../helper/DragInf';
+import {
+    DragTypeEnum,
+    handleDrop,
+} from '../../helper/DragInf';
 
 export default function SlideItemDragReceiver({
     width, onDrop, isLeft,
@@ -22,7 +25,8 @@ export default function SlideItemDragReceiver({
             style={style}
             ref={(div) => {
                 if (div) {
-                    const childrenElements = div.parentElement?.querySelectorAll('.slide-item');
+                    const childrenElements = div.parentElement?.
+                        querySelectorAll('.slide-item');
                     const children = Array.from(childrenElements || []);
                     const getLeft = (element: Element) => {
                         return element.getBoundingClientRect().left;

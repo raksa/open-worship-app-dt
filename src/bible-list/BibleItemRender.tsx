@@ -32,7 +32,8 @@ export default function BibleItemRender({
     useFSEvents(['select'], fileSource);
     const title = useBibleItemRenderTitle(bibleItem);
     const bibleStatus = useGetBibleWithStatus(bibleItem.bibleKey);
-    const onContextMenuCallback = useCallback((event: React.MouseEvent<any>) => {
+    const onContextMenuCallback = useCallback((
+        event: React.MouseEvent<any>) => {
         onContextMenu?.(event, bibleItem, index);
     }, [onContextMenu, bibleItem, index]);
     const changeBible = (newBibleKey: string) => {
@@ -49,15 +50,16 @@ export default function BibleItemRender({
         const bibleListFiltered = bibleList.filter(([bibleKey]) => {
             return currentBible !== bibleKey;
         });
-        const menuOptions = bibleListFiltered.map(([bibleKey, isAvailable]) => {
-            return {
-                title: bibleKey,
-                disabled: !isAvailable,
-                onClick: () => {
-                    changeBible(bibleKey);
-                },
-            };
-        });
+        const menuOptions = bibleListFiltered
+            .map(([bibleKey, isAvailable]) => {
+                return {
+                    title: bibleKey,
+                    disabled: !isAvailable,
+                    onClick: () => {
+                        changeBible(bibleKey);
+                    },
+                };
+            });
         showAppContextMenu(event as any, menuOptions);
     };
     if (bibleItem.isError) {
@@ -67,7 +69,8 @@ export default function BibleItemRender({
     }
     const { isSelected } = bibleItem;
     return (
-        <li className={`list-group-item item pointer ${isSelected ? 'active' : ''}`}
+        <li className={'list-group-item item pointer '
+            + `${isSelected ? 'active' : ''}`}
             title={title}
             data-index={index + 1}
             draggable

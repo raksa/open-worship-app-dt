@@ -1,5 +1,8 @@
 import React from 'react';
-import { getSetting, useStateSettingBoolean } from '../helper/settingHelper';
+import {
+    getSetting,
+    useStateSettingBoolean,
+} from '../helper/settingHelper';
 
 const settingName = 'full-text-present-auto-show';
 export function checkIsFtAutoShow(): boolean {

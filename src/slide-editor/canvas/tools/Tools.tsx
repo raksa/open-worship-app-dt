@@ -7,9 +7,15 @@ import CanvasController from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
 import { useCCEvents, useCCScale } from '../canvasEventHelpers';
 
-const ToolsBox = React.lazy(() => import('./ToolsBox'));
-const ToolsText = React.lazy(() => import('./ToolsText'));
-const ToolCanvasItems = React.lazy(() => import('./ToolCanvasItems'));
+const ToolsBox = React.lazy(() => {
+    return import('./ToolsBox');
+});
+const ToolsText = React.lazy(() => {
+    return import('./ToolsText');
+});
+const ToolCanvasItems = React.lazy(() => {
+    return import('./ToolCanvasItems');
+});
 
 const tabTypeList = [
     ['t', 'Text'],
@@ -21,7 +27,8 @@ export default function Tools() {
     const canvasController = CanvasController.getInstance();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
     useCCEvents(['select']);
-    const [tabType, setTabType] = useStateSettingString<TabType>('editor-tools-tab', 't');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'editor-tools-tab', 't');
     const scale = useCCScale();
     return (
         <div className='tools d-flex flex-column w-100 h-100'>
@@ -32,7 +39,8 @@ export default function Tools() {
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType} />
-                <div className='align-self-end flex-fill d-flex justify-content-end'>
+                <div className={'align-self-end flex-fill d-flex '
+                    + 'justify-content-end'}>
                     <span>{scale.toFixed(1)}x</span>
                     <div style={{ maxWidth: '200px' }}>
                         <input type='range' className='form-range'
@@ -50,9 +58,9 @@ export default function Tools() {
                 </div>
             </div>
             <div className='tools-body d-flex flex-row flex-fill'>
-                {selectedCanvasItems?.map((canvasItem, i) => {
+                {selectedCanvasItems?.map((canvasItem) => {
                     return (
-                        <Fragment key={i}>
+                        <Fragment key={canvasItem.id}>
                             <CanvasItemContext.Provider value={canvasItem}>
                                 {genTabBody<TabType>(tabType, ['t', ToolsText])}
                                 {genTabBody<TabType>(tabType, ['b', ToolsBox])}

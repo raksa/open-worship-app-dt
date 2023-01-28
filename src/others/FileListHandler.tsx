@@ -32,7 +32,7 @@ export default function FileListHandler({
     dirSource: DirSource,
     header?: any,
     bodyHandler: (fileSources: FileSource[]) => any,
-    onNewFile?: (n: string) => Promise<boolean>,
+    onNewFile?: (newName: string) => Promise<boolean>,
     contextMenu?: ContextMenuItemType[],
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,

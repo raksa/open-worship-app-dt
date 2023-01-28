@@ -42,7 +42,7 @@ export function FTBibleTable({
                     <tr>
                         {bibleRenderedList.map(({ locale, bibleKey, title }, i) => {
                             return (
-                                <th key={i} className='header'
+                                <th key={title} className='header'
                                     style={{
                                         display: 'flex',
                                         fontFamily: getFontFamilyByLocal(locale),
@@ -120,9 +120,9 @@ export function FTLyricItem({
         <table>
             <thead>
                 <tr>
-                    {lyricRenderedList.map(({ title }, i) => {
+                    {lyricRenderedList.map(({ title }) => {
                         return (
-                            <th key={i}>
+                            <th key={title}>
                                 <span className='title'>{title}</span >
                             </th>
                         );

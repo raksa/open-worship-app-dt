@@ -15,42 +15,7 @@ export default function BackgroundImages() {
     const renderCallback = useCallback((fileSources: FileSource[]) => {
         return (
             <div className='d-flex justify-content-start flex-wrap'>
-                {fileSources.map((fileSource, i) => {
-                    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
-                        fileSource.src, 'image');
-                    const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
-                    return (
-                        <div key={fileSource.name}
-                            className={`image-thumbnail card ${selectedCN}`}
-                            title={fileSource.filePath + '\n Show in presents:'
-                                + selectedBGSrcList.map(([key]) => key).join(',')}
-                            draggable
-                            onDragStart={(event) => {
-                                handleDragStart(event, fileSource, DragTypeEnum.BG_IMAGE);
-                            }}
-                            onContextMenu={(event) => {
-                                showAppContextMenu(event as any, genCommonMenu(fileSource),);
-                            }}
-                            onClick={(event) => {
-                                PresentBGManager.bgSrcSelect(fileSource.src, event, 'image');
-                            }}>
-                            <div className='card-body'>
-                                <RenderPresentIds
-                                    ids={selectedBGSrcList.map(([key]) => +key)} />
-                                <img src={fileSource.src}
-                                    className='card-img-top' alt='...'
-                                    style={{
-                                        pointerEvents: 'none',
-                                    }} />
-                            </div>
-                            <div className='card-footer'>
-                                <p className='ellipsis-left card-text'>
-                                    {fileSource.fileName}
-                                </p>
-                            </div>
-                        </div>
-                    );
-                })}
+                {fileSources.map(genBody)}
             </div>
         );
     }, []);
@@ -60,5 +25,42 @@ export default function BackgroundImages() {
         <FileListHandler id='background-image' mimetype='image'
             dirSource={dirSource}
             bodyHandler={renderCallback} />
+    );
+}
+
+function genBody(fileSource: FileSource) {
+    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
+        fileSource.src, 'image');
+    const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
+    return (
+        <div key={fileSource.name}
+            className={`image-thumbnail card ${selectedCN}`}
+            title={fileSource.filePath + '\n Show in presents:'
+                + selectedBGSrcList.map(([key]) => key).join(',')}
+            draggable
+            onDragStart={(event) => {
+                handleDragStart(event, fileSource, DragTypeEnum.BG_IMAGE);
+            }}
+            onContextMenu={(event) => {
+                showAppContextMenu(event as any, genCommonMenu(fileSource),);
+            }}
+            onClick={(event) => {
+                PresentBGManager.bgSrcSelect(fileSource.src, event, 'image');
+            }}>
+            <div className='card-body'>
+                <RenderPresentIds
+                    ids={selectedBGSrcList.map(([key]) => +key)} />
+                <img src={fileSource.src}
+                    className='card-img-top' alt='...'
+                    style={{
+                        pointerEvents: 'none',
+                    }} />
+            </div>
+            <div className='card-footer'>
+                <p className='ellipsis-left card-text'>
+                    {fileSource.fileName}
+                </p>
+            </div>
+        </div>
     );
 }

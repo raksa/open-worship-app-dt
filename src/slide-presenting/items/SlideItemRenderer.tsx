@@ -26,7 +26,7 @@ export default function SlideItemRenderer({
         }}>
             {canvasItemsJson.map((canvasItemJson: any, i) => {
                 return (
-                    <div key={i}
+                    <div key={canvasItemJson.id}
                         style={CanvasItem.genBoxStyle(canvasItemJson)}>
                         <CanvasItemRenderer
                             props={canvasItemJson} />

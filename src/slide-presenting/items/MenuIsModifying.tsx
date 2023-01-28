@@ -1,4 +1,6 @@
-import KeyboardEventListener from '../../event/KeyboardEventListener';
+import {
+    toShortcutKey,
+} from '../../event/KeyboardEventListener';
 import Slide from '../../slide-list/Slide';
 
 export default function MenuIsModifying({
@@ -20,8 +22,7 @@ export default function MenuIsModifying({
             <button type='button'
                 className='btn btn-sm btn-success'
                 disabled={!slide.isChanged}
-                data-tool-tip={KeyboardEventListener
-                    .toShortcutKey(eventMapper)}
+                data-tool-tip={toShortcutKey(eventMapper)}
                 title='save slide thumbs'
                 onClick={() => {
                     slide.save();

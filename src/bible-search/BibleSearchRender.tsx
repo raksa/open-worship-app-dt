@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
@@ -42,30 +42,37 @@ export default function BibleSearchRender({ bibleItem }: {
             });
         }
     }, [bibleSelected, inputText]);
-    if (bibleSelected === null) {
-        return (
-            <BibleNotAvailable />
-        );
-    }
-    const applyBookSelection = async (newBook: string) => {
+    const applyBookSelectionCallback = useCallback(async (
+        newBook: string) => {
+        if (bibleSelected === null) {
+            return;
+        }
         const count = await getChapterCount(bibleSelected, newBook);
         if (count !== null) {
             setInputText(await toInputText(bibleSelected, newBook));
             return;
         }
         alert('Fail to generate input text');
-    };
-    const applyChapterSelection = async (newChapter: number) => {
+    }, [bibleSelected, setInputText]);
+    const applyChapterSelectionCallback = useCallback(async (
+        newChapter: number) => {
+        if (bibleSelected === null) {
+            return;
+        }
         const newText = await toInputText(bibleSelected,
             bibleResult.book, newChapter);
         setInputText(`${newText}:`);
-    };
-    const applyVerseSelection = async (newStartVerse?: number, newEndVerse?: number) => {
+    }, [bibleSelected, bibleResult.book, setInputText]);
+    const applyVerseSelectionCallback = useCallback(async (
+        newStartVerse?: number, newEndVerse?: number) => {
+        if (bibleSelected === null) {
+            return;
+        }
         const txt = await toInputText(bibleSelected, bibleResult.book,
             bibleResult.chapter, newStartVerse, newEndVerse);
         setInputText(txt);
-    };
-    const handleBibleChange = async (preBible: string) => {
+    }, [bibleSelected, bibleResult.book, bibleResult.chapter, setInputText]);
+    const handleBibleChange = useCallback(async (preBible: string) => {
         const bibleKey = await getSelectedEditingBibleItem(null);
         if (bibleKey === null) {
             return;
@@ -75,8 +82,12 @@ export default function BibleSearchRender({ bibleItem }: {
         if (newText !== null) {
             setInputText(newText);
         }
-    };
-
+    }, [inputText]);
+    if (bibleSelected === null) {
+        return (
+            <BibleNotAvailable />
+        );
+    }
     return (
         <div id='bible-search-popup'
             className='app-modal shadow card'>
@@ -96,9 +107,9 @@ export default function BibleSearchRender({ bibleItem }: {
                     inputText={inputText}
                     bibleSelected={bibleSelected}
                     bibleResult={bibleResult}
-                    applyChapterSelection={applyChapterSelection}
-                    applyVerseSelection={applyVerseSelection}
-                    applyBookSelection={applyBookSelection} />
+                    applyChapterSelection={applyChapterSelectionCallback}
+                    applyVerseSelection={applyVerseSelectionCallback}
+                    applyBookSelection={applyBookSelectionCallback} />
             </div>
         </div>
     );

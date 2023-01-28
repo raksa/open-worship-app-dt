@@ -11,7 +11,8 @@ export default function BoxEditorTextArea({ color, text, setText }: {
     }, [text]);
     return (
         <textarea style={{ color }}
-            className='w-100 h-100' value={localText}
+            className='w-100 h-100'
+            value={localText}
             onChange={(event) => {
                 const newText = event.target.value;
                 setLocalText(newText);

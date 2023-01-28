@@ -5,7 +5,9 @@ import WindowEventListener, {
 } from '../event/WindowEventListener';
 import AppSuspense from '../others/AppSuspense';
 
-const SettingPopup = React.lazy(() => import('./SettingPopup'));
+const SettingPopup = React.lazy(() => {
+    return import('./SettingPopup');
+});
 
 export const openSettingEvent: WEventMapper = {
     widget: 'setting',

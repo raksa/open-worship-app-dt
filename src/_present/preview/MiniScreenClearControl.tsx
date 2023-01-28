@@ -1,4 +1,5 @@
-import KeyboardEventListener, {
+import {
+    toShortcutKey,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import {
@@ -48,7 +49,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                     '' : 'outline-'}danger`}
                 disabled={!isPresenting}
                 title='clear all'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                data-tool-tip={toShortcutKey({
                     key: 'F6',
                 })}
                 onClick={clearAll}>All</button>
@@ -58,7 +59,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                     + `btn-${isPresentingBG ? '' : 'outline-'}secondary`}
                 disabled={!isPresentingBG}
                 title='clear background'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                data-tool-tip={toShortcutKey({
                     key: 'F7',
                 })}
                 onClick={clearBG}>BG</button>
@@ -67,7 +68,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 + `btn-${isPresentingFG ? '' : 'outline-'}info`}
                 disabled={!isPresentingFG}
                 title='clear foreground'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                data-tool-tip={toShortcutKey({
                     key: 'F8',
                 })}
                 onClick={clearFG}>FG</button>
@@ -76,7 +77,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 + `btn-${isPresentingFT ? '' : 'outline-'}primary`}
                 disabled={!isPresentingFT}
                 title='clear full text'
-                data-tool-tip={KeyboardEventListener.toShortcutKey({
+                data-tool-tip={toShortcutKey({
                     key: 'F9',
                 })}
                 onClick={clearFT}>FT</button>

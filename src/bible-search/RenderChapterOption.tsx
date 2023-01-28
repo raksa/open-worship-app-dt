@@ -49,7 +49,8 @@ export default function RenderChapterOption({
 
     const [attemptChapterIndex, setAttemptChapterIndex] = useState(0);
     const arrowListener = async (event: KeyboardEvent) => {
-        const newChapterCount = await getChapterCount(bibleSelected, bookSelected);
+        const newChapterCount = await getChapterCount(
+            bibleSelected, bookSelected);
         if (newChapterCount !== null) {
             const ind = genInd(attemptChapterIndex, newChapterCount,
                 event.key as KeyboardType, 6);
@@ -88,9 +89,10 @@ export default function RenderChapterOption({
                 matches.map((chapter, i) => {
                     const highlight = i === applyAttemptIndex;
                     const activeClass = highlight ? 'active' : '';
-                    const className = `chapter-select btn btn-outline-success ${activeClass}`;
+                    const className = 'chapter-select btn btn-outline-success '
+                        + activeClass;
                     return (
-                        <div className='col-2' key={`${i}`}>
+                        <div className='col-2' key={chapter}>
                             <button type='button' onClick={() => {
                                 onSelect(chapter);
                             }} className={className}>

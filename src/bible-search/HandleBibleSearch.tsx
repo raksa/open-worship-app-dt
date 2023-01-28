@@ -13,7 +13,9 @@ import {
 } from '../server/bible-helpers/bibleDownloadHelpers';
 import { openSetting } from '../setting/HandleSetting';
 
-const BibleSearchPopup = React.lazy(() => import('./BibleSearchPopup'));
+const BibleSearchPopup = React.lazy(() => {
+    return import('./BibleSearchPopup');
+});
 
 export const openBibleSearchEvent: WEventMapper = {
     widget: 'bible-search',
@@ -32,10 +34,12 @@ export function closeBibleSearch() {
 }
 
 export default function HandleBibleSearch() {
-    const [isShowing, setIsShowing] = useStateSettingBoolean('showing-bible-search-popup');
+    const [isShowing, setIsShowing] = useStateSettingBoolean(
+        'showing-bible-search-popup');
     const openBibleSearchPopup = async () => {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
-        if (downloadedBibleInfoList === null || downloadedBibleInfoList.length) {
+        if (downloadedBibleInfoList === null
+            || downloadedBibleInfoList.length) {
             setIsShowing(true);
         } else {
             openSetting();

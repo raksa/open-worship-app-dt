@@ -45,9 +45,9 @@ export function BENBibleRender({ props }: {
     return (
         <div className='w-100 h-100'
             style={CanvasItemBible.genStyle(props)}>
-            {bibleRenderedList.map((bibleRendered, i) => {
+            {bibleRenderedList.map((bibleRendered) => {
                 return (
-                    <div key={i}>
+                    <div key={bibleRendered.title}>
                         <div>{bibleRendered.title}</div>
                         <div>{bibleRendered.text}</div>
                     </div>

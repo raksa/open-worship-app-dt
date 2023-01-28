@@ -16,6 +16,10 @@ export default function SettingAbout() {
         metadata: {},
     }));
     const title = useBibleItemToInputText('KJV', bookKey, 150, 6, 6);
+    const onClick = () => {
+        const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
+        window.open(url, '_blank');
+    };
     return (
         <div>
             <div className='card border-success mb-3 mx-auto mt-5'
@@ -33,10 +37,7 @@ export default function SettingAbout() {
             <div className='alert alert-info'>
                 This is an open-source presentation app for worship service.
                 Official Github repo here: <button className='btn btn-success'
-                    onClick={() => {
-                        const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
-                        window.open(url, '_blank');
-                    }}
+                    onClick={onClick}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>
             </div>
         </div>

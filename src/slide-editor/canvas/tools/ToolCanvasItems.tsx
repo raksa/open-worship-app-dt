@@ -11,14 +11,17 @@ export default function ToolCanvasItems() {
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem, i) => {
                 return (
-                    <div className='card pointer align-self-start m-2' key={i}
+                    <div key={canvasItem.id}
+                        className='card pointer align-self-start m-2'
                         style={{
                             maxWidth: '200px',
-                            border: canvasItem.isSelected ? '2px dashed green' : undefined,
+                            border: canvasItem.isSelected ?
+                                '2px dashed green' : undefined,
                         }}
                         onClick={() => {
                             canvasController.stopAllMods();
-                            canvasController.setItemIsSelecting(canvasItem, true);
+                            canvasController.setItemIsSelecting(
+                                canvasItem, true);
                         }}
                         onContextMenu={(event) => {
                             showCanvasItemContextMenu(event, canvasItem);

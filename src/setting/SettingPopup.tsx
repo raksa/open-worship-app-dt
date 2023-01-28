@@ -6,9 +6,15 @@ import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, { genTabBody } from '../others/TabRender';
 import React from 'react';
 
-const SettingGeneral = React.lazy(() => import('./SettingGeneral'));
-const SettingBible = React.lazy(() => import('./bible-setting/SettingBible'));
-const SettingAbout = React.lazy(() => import('./SettingAbout'));
+const SettingGeneral = React.lazy(() => {
+    return import('./SettingGeneral');
+});
+const SettingBible = React.lazy(() => {
+    return import('./bible-setting/SettingBible');
+});
+const SettingAbout = React.lazy(() => {
+    return import('./SettingAbout');
+});
 
 export default function SettingPopup() {
     return (
@@ -28,7 +34,8 @@ const tabTypeList = [
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 function Setting() {
-    const [tabType, setTabType] = useStateSettingString<TabType>('popup-setting-tab', 'b');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'popup-setting-tab', 'b');
     return (
         <div className='card-body d-flex flex-column'>
             <div className='setting-header d-flex'>

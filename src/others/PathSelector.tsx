@@ -11,7 +11,9 @@ import React from 'react';
 import AppSuspense from './AppSuspense';
 import appProvider from '../server/appProvider';
 
-const PathPreviewer = React.lazy(() => import('./PathPreviewer'));
+const PathPreviewer = React.lazy(() => {
+    return import('./PathPreviewer');
+});
 
 export default function PathSelector({
     dirSource, prefix,

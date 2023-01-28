@@ -17,7 +17,8 @@ export default function PresentAlertController() {
 }
 
 function Marquee() {
-    const [text, setText] = useStateSettingString<string>('marquee-setting', '');
+    const [text, setText] = useStateSettingString<string>(
+        'marquee-setting', '');
     return (
         <div className='form-floating'>
             <textarea id='marquee-textarea'
@@ -45,8 +46,10 @@ function DateTimePicker() {
         const timeStr = nowArr()[1];
         return timeStr.substring(0, timeStr.lastIndexOf(':'));
     };
-    const [date, setDate] = useStateSettingString<string>('alert-date-setting', todayStr());
-    const [time, setTime] = useStateSettingString<string>('alert-time-setting', nowStr());
+    const [date, setDate] = useStateSettingString<string>(
+        'alert-date-setting', todayStr());
+    const [time, setTime] = useStateSettingString<string>(
+        'alert-time-setting', nowStr());
     return (
         <>
             <div className='d-flex'>
@@ -75,7 +78,8 @@ function DateTimePicker() {
             <div>
                 <button className='btn btn-secondary'
                     onClick={(event) => {
-                        PresentAlertManager.setCountdown(new Date(date + ' ' + time), event);
+                        PresentAlertManager.setCountdown(
+                            new Date(date + ' ' + time), event);
                     }}>Show Time</button>
             </div>
         </>

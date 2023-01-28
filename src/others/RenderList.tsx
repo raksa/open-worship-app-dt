@@ -13,7 +13,8 @@ export default function RenderList({
     mimetype: MimetypeNameType,
     bodyHandler: (fileSources: FileSource[]) => any,
 }) {
-    const [fileSources, setFileSources] = useState<FileSource[] | null | undefined>(null);
+    const [fileSources, setFileSources] = useState<
+        FileSource[] | null | undefined>(null);
     const refresh = () => {
         dirSource.getFileSources(mimetype).then((newFileSources) => {
             setFileSources(newFileSources);

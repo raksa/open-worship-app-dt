@@ -47,7 +47,8 @@ const tabTypeList = [
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function FullTextPreviewer() {
-    const [tabType, setTabType] = useStateSettingString<TabType>(FT_TAB_SETTING_NAME, 'b');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        FT_TAB_SETTING_NAME, 'b');
     useBibleItemSelecting((item) => {
         if (item !== null) {
             setTabType('b');

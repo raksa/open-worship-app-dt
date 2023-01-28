@@ -40,7 +40,7 @@ export default function SettingGeneralLanguage() {
                             const btnType = lang.locale === currentLocale ?
                                 'btn-info' : 'btn-outline-info';
                             return (
-                                <button key={`${i}`}
+                                <button key={lang.locale}
                                     onClick={() => {
                                         setCurrentLocale(lang.locale);
                                         appProvider.reload();

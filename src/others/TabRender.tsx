@@ -15,7 +15,8 @@ export default function TabRender<T extends string>({
         <ul className={`nav nav-tabs ${className}`}>
             {tabs.map(([tab, title, tabClassName], i) => {
                 const activeClass = activeTab === tab ? 'active' : '';
-                return (<li key={i} className={'nav-item ' + (tabClassName || '')}>
+                return (<li key={title}
+                    className={'nav-item ' + (tabClassName || '')}>
                     <button className={`btn btn-link nav-link ${activeClass}`}
                         onClick={() => {
                             if (tab !== activeTab) {

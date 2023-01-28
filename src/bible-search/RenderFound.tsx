@@ -60,7 +60,7 @@ export default function RenderFound({
     startVerse: number | null,
     endVerse: number | null,
     applyChapterSelection: (chapter: number) => void,
-    onVerseChange: (sv?: number, ev?: number) => void,
+    onVerseChange: (startVerse?: number, endVerse?: number) => void,
     bibleSelected: string,
 }) {
     useKeyboardRegistering({
@@ -104,45 +104,63 @@ export default function RenderFound({
     return (
         <div className='render-found card border-success mb-3 mx-auto mt-5'>
             <div className='card-body'>
-                <div className='verse-select d-flex align-content-start flex-wrap'>
+                <div className={'verse-select d-flex '
+                    + 'align-content-start flex-wrap'}>
                     {Array.from({ length: verseCount }, (_, i) => {
-                        const ind = i + 1;
-                        const started = sVerse === ind;
-                        const inside = sVerse <= ind && ind <= eVerse;
-                        const ended = eVerse === ind;
-                        let select = `${started ? 'selected-start' : ''}`;
-                        select += ` ${inside ? 'selected' : ''}`;
-                        select += ` ${ended ? 'selected-end' : ''}`;
                         return (
-                            <div key={`${ind}`}
-                                onMouseDown={(event) => {
-                                    if (event.shiftKey) {
-                                        const arr = [ind, sVerse, eVerse]
-                                            .sort((a, b) => {
-                                                return a - b;
-                                            });
-                                        onVerseChange(arr.shift(), arr.pop());
-                                    } else {
-                                        onVerseChange(ind);
-                                        mouseDownInd = ind;
-                                    }
-                                }}
-                                onMouseEnter={() => {
-                                    if (mouseDownInd !== null) {
-                                        onVerseChange(Math.min(mouseDownInd, ind),
-                                            Math.max(mouseDownInd, ind));
-                                    }
-                                }}
-                                className={`item alert alert-secondary text-center ${select}`}>
-                                <RendLocalNumberAsync ind={ind}
-                                    bibleSelected={bibleSelected} />
-                            </div>
+                            <RenderVerseNum key={i} index={i}
+                                onVerseChange={onVerseChange}
+                                bibleSelected={bibleSelected}
+                                found={found} />
                         );
                     })}
                 </div>
             </div>
             <RenderFoundButtons found={found}
                 book={book} chapter={chapter}
+                bibleSelected={bibleSelected} />
+        </div>
+    );
+}
+
+function RenderVerseNum({
+    index, bibleSelected, onVerseChange, found,
+}: {
+    index: number,
+    onVerseChange: (sv?: number, ev?: number) => void,
+    bibleSelected: string,
+    found: ConsumeVerseType,
+}) {
+    const sVerse = found.sVerse;
+    const eVerse = found.eVerse;
+    const ind = index + 1;
+    const started = sVerse === ind;
+    const inside = sVerse <= ind && ind <= eVerse;
+    const ended = eVerse === ind;
+    let select = `${started ? 'selected-start' : ''}`;
+    select += ` ${inside ? 'selected' : ''}`;
+    select += ` ${ended ? 'selected-end' : ''}`;
+    return (
+        <div className={`item alert alert-secondary text-center ${select}`}
+            onMouseDown={(event) => {
+                if (event.shiftKey) {
+                    const arr = [ind, sVerse, eVerse]
+                        .sort((a, b) => {
+                            return a - b;
+                        });
+                    onVerseChange(arr.shift(), arr.pop());
+                } else {
+                    onVerseChange(ind);
+                    mouseDownInd = ind;
+                }
+            }}
+            onMouseEnter={() => {
+                if (mouseDownInd !== null) {
+                    onVerseChange(Math.min(mouseDownInd, ind),
+                        Math.max(mouseDownInd, ind));
+                }
+            }}>
+            <RendLocalNumberAsync ind={ind}
                 bibleSelected={bibleSelected} />
         </div>
     );

@@ -6,12 +6,15 @@ import {
 } from './alertHelpers';
 import AlertPopup from './AlertPopup';
 
-const ConfirmPopup = React.lazy(() => import('./ConfirmPopup'));
+const ConfirmPopup = React.lazy(() => {
+    return import('./ConfirmPopup');
+});
 
 export type AlertType = 'confirm' | null;
 
 export default function HandleAlert() {
-    const [confirmData, setConfirmData] = useState<ConfirmDataType | null>(null);
+    const [confirmData, setConfirmData] = useState<
+        ConfirmDataType | null>(null);
     alertManager.openConfirm = (newConfirmData) => {
         setConfirmData(newConfirmData);
     };
