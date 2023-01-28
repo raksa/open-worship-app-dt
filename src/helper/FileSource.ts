@@ -214,7 +214,7 @@ export default class FileSource extends EventHandler<FSEventType>
     async duplicate() {
         try {
             await this._duplicate();
-            return true;
+            this.fireReloadDirEvent();
         } catch (error) {
             ToastEventListener.showSimpleToast({
                 title: 'Duplicating File',
@@ -223,6 +223,5 @@ export default class FileSource extends EventHandler<FSEventType>
             // TODO: handle error by a function
             appProvider.appUtils.handleError(error);
         }
-        return false;
     }
 }

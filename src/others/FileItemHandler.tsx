@@ -61,9 +61,8 @@ export default function FileItemHandler({
     const selfContextMenu = [
         {
             title: 'Duplicate',
-            onClick: async () => {
-                await fileSource.duplicate();
-                fileSource.fireReloadDirEvent();
+            onClick: () => {
+                fileSource.duplicate();
             },
         }, {
             title: 'Rename',
