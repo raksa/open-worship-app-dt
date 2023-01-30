@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useState } from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
@@ -8,6 +8,7 @@ import FileSource from '../helper/FileSource';
 import BibleItemRender from '../bible-list/BibleItemRender';
 import PlaylistItem from './PlaylistItem';
 import ItemSource from '../helper/ItemSource';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function PlaylistFile({
     index, fileSource,
@@ -40,7 +41,7 @@ export default function PlaylistFile({
                 playlist={playlist as Playlist} />
         );
     }, [isOpened]);
-    useEffect(() => {
+    useAppEffect(() => {
         if (data === null) {
             Playlist.readFileToData(fileSource).then(setData);
         }
@@ -128,7 +129,7 @@ function PlaylistBibleItem({
     playlistItem: PlaylistItem,
 }) {
     const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         playlistItem.getBibleItem().then((newBibleItem) => {
             setBibleItem(newBibleItem);
         });

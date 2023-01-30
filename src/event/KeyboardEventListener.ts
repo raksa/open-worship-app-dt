@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import { getLastItem } from '../helper/helpers';
 import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
@@ -102,7 +102,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
 
 export function useKeyboardRegistering(
     eventMapper: EventMapper, listener: ListenerType) {
-    useEffect(() => {
+    useAppEffect(() => {
         const eventName = KeyboardEventListener.toEventMapperKey(eventMapper);
         const registeredEvent = KeyboardEventListener.registerEventListener(
             [eventName], listener);

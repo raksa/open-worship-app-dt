@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from './debuggerHelpers';
 import DirSource, {
     DirSourceEventType,
 } from './DirSource';
@@ -8,7 +9,7 @@ export function useDSEvents(events: DirSourceEventType[],
     dirSource?: DirSource,
     callback?: () => void) {
     const [n, setN] = useState(0);
-    useEffect(() => {
+    useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();
@@ -27,7 +28,7 @@ export function useFSEvents(events: FSEventType[],
     fileSource?: FileSource,
     callback?: () => void) {
     const [n, setN] = useState(0);
-    useEffect(() => {
+    useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();

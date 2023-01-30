@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
@@ -10,6 +10,7 @@ import { goEditSlide } from '../App';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function SlideFile({
     index,
@@ -44,7 +45,7 @@ export default function SlideFile({
         }
         data?.editingCacheManager.delete();
     }, [data, fileSource]);
-    useEffect(() => {
+    useAppEffect(() => {
         if (data === null) {
             Slide.readFileToData(fileSource).then(setData);
         }

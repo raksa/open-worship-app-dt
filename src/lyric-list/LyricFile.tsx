@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
@@ -7,6 +7,7 @@ import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
     index, fileSource,
@@ -32,7 +33,7 @@ export default function LyricFile({
             <LyricFilePreview lyric={lyric as Lyric} />
         );
     }, []);
-    useEffect(() => {
+    useAppEffect(() => {
         if (data === null) {
             Lyric.readFileToData(fileSource).then(setData);
         }

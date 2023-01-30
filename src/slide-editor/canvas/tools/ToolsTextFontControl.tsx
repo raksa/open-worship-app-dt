@@ -1,8 +1,9 @@
 import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
+import { useAppEffect } from '../../../helper/debuggerHelpers';
 
 export default function ToolsTextFontControl({ canvasItemText }: {
     canvasItemText: CanvasItemText,
@@ -20,7 +21,7 @@ function FontSize({ canvasItemText }: {
 }) {
     const [localFontSize, setLocalFontSize] = useState(
         canvasItemText.props.fontSize);
-    useEffect(() => {
+    useAppEffect(() => {
         setLocalFontSize(canvasItemText.props.fontSize);
     }, [canvasItemText]);
     const applyFontSize = (fontSize: number) => {
@@ -105,7 +106,7 @@ function FontWeight({
     canvasItemText: CanvasItemText,
 }) {
     const [localFontWeight, setLocalFontWeight] = useState(fontWeight);
-    useEffect(() => {
+    useAppEffect(() => {
         setLocalFontWeight(fontWeight);
     }, [fontWeight]);
     const applyFontWeight = (newFontWeight: string) => {

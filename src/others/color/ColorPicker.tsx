@@ -1,6 +1,6 @@
 import './ColorPicker.scss';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import colorList from '../color-list.json';
 import {
     AppColorType,
@@ -9,6 +9,7 @@ import {
 } from './colorHelpers';
 import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
 export default function ColorPicker({
     defaultColor, color, onColorChange, onNoColor,
@@ -43,7 +44,7 @@ export default function ColorPicker({
         newColor[8] = hex[1];
         applyNewColor(newColor.join(''), event);
     }, [localColor]);
-    useEffect(() => {
+    useAppEffect(() => {
         setLocalColor(color);
     }, [color]);
     const applyNewColor = (newColor: string, event: MouseEvent) => {

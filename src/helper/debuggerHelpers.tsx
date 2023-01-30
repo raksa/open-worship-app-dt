@@ -5,18 +5,19 @@ const THRESHOLD = 10;
 const mapper = new Map<string, number>();
 export function useAppEffect(
     effect: React.EffectCallback,
-    deps: React.DependencyList,
-    key: string,
+    deps?: React.DependencyList,
+    key?: string,
 ) {
+    const toKey = key || effect.toString();
     useEffect(() => {
-        const count = (mapper.get(key) || 0) + 1;
+        const count = (mapper.get(toKey) || 0) + 1;
         const millieSecond = 1000;
         setTimeout(() => {
-            mapper.set(key, 0);
+            mapper.set(toKey, 0);
         }, millieSecond);
-        mapper.set(key, count);
+        mapper.set(toKey, count);
         if (count > THRESHOLD) {
-            console.warn(`[useAppEffect] ${key} is called more than `
+            console.warn(`[useAppEffect] ${toKey} is called more than `
                 + `${THRESHOLD} times in ${millieSecond}ms`);
         }
         return effect();

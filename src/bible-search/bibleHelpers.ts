@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import {
@@ -19,6 +19,7 @@ import Bible from '../bible-list/Bible';
 import { closeBibleSearch } from './HandleBibleSearch';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 async function getSelectedEditingBibleItem() {
@@ -42,7 +43,7 @@ export function useGetSelectedBibleKey() {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
         _setBibleKeySelected(bibleKey);
     };
-    useEffect(() => {
+    useAppEffect(() => {
         getSelectedEditingBibleItem().then((bibleKey) => {
             setBibleKeySelected(bibleKey);
         });
@@ -53,7 +54,7 @@ export function useGetSelectedBibleKey() {
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
-    useEffect(() => {
+    useAppEffect(() => {
         if (bibleItem !== null) {
             bibleItem.toTitle().then((text) => {
                 setInputText(text);

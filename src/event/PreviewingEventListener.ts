@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import {
     setIsPreviewingBible, setIsPreviewingLyric,
 } from '../full-text-present/FullTextPreviewer';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 import EventHandler, { ListenerType } from './EventHandler';
@@ -43,7 +43,7 @@ export const previewingEventListener = new PreviewingEventListener();
 
 export function useBibleItemSelecting(
     listener: ListenerType<BibleItem | null>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-bible-item'], listener);
         return () => {
@@ -52,7 +52,7 @@ export function useBibleItemSelecting(
     });
 }
 export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-lyric'], listener);
         return () => {
@@ -61,7 +61,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
     });
 }
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['update-lyric'], listener);
         return () => {
@@ -70,7 +70,7 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
     });
 }
 export function useSlideSelecting(listener: ListenerType<Slide | null>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-slide'], listener);
         return () => {
@@ -79,7 +79,7 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
     });
 }
 export function useSlideUpdating(listener: ListenerType<Slide>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['update-slide'], listener);
         return () => {
@@ -88,7 +88,7 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
     });
 }
 export function useFullTextOpening(listener: ListenerType<void>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const eventLyric = previewingEventListener.registerEventListener(
             ['select-lyric'], listener);
         const eventBible = previewingEventListener.registerEventListener(

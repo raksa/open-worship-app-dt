@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import ItemSource from './ItemSource';
@@ -92,7 +93,7 @@ export function validateAppMeta(meta: any) {
 export function useReadFileToData<T extends ItemSource<any>>(
     fileSource: FileSource | null) {
     const [data, setData] = useState<T | null | undefined>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (fileSource !== null) {
             fileSource.readFileToJsonData().then((itemSource: any) => {
                 setData(itemSource);

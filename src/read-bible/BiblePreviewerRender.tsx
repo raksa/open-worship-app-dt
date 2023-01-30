@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import BibleView from './BibleView';
 import {
     previewer,
@@ -10,6 +10,7 @@ import {
     checkIsFtAutoShow,
 } from '../full-text-present/FTPreviewerUtils';
 import { isWindowPresentingMode } from '../App';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BiblePreviewerRender({ bibleItem }: {
     bibleItem: BibleItem,
@@ -36,7 +37,7 @@ export default function BiblePreviewerRender({ bibleItem }: {
         });
         applyPresents(newBibleItems);
     }, [bibleItems]);
-    useEffect(() => {
+    useAppEffect(() => {
         setBibleItems(BibleItem.convertPresent(bibleItem,
             BibleItem.getBiblePresentingSetting()));
         previewer.show = (event?: React.MouseEvent) => {

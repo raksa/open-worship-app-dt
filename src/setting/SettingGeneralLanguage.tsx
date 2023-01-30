@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     getAllLangsAsync,
     getCurrentLocale,
@@ -11,7 +12,7 @@ export default function SettingGeneralLanguage() {
     const [allLangs, setAllLangs] = useState<LanguageType[]>([]);
     const currentLocale = getCurrentLocale();
     const selectedLang = getLang(currentLocale);
-    useEffect(() => {
+    useAppEffect(() => {
         if (allLangs.length === 0) {
             getAllLangsAsync().then(setAllLangs);
         }

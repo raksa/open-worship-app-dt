@@ -1,9 +1,10 @@
 import { copyToClipboard } from '../server/appHelper';
 import { toInputText } from '../server/bible-helpers/bibleHelpers2';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { bookToKey } from '../server/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { consumeStartVerseEndVerse } from './bibleHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function Preview({
     book,
@@ -21,7 +22,7 @@ export default function Preview({
     const [rendered, setRendered] = useState<{
         title: string, text: string,
     } | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         (async () => {
             const found = await consumeStartVerseEndVerse(book, chapter,
                 startVerse, endVerse, bibleSelected);

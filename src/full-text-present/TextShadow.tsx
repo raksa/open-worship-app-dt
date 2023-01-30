@@ -1,8 +1,8 @@
 import './TextShadow.scss';
 
-import { useEffect } from 'react';
 import PresentFTManager from '../_present/PresentFTManager';
 import { AppColorType } from '../others/color/colorHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 function genShadow1(color1: string, color2: string) {
     const style = `color: ${color1}; text-shadow: 2px 2px 0 ${color2}, `
@@ -20,7 +20,7 @@ function genShadow1(color1: string, color2: string) {
 }
 
 export default function TextShadow() {
-    useEffect(() => {
+    useAppEffect(() => {
         const divList = document.querySelectorAll<HTMLDivElement>(
             '.ow-outline-demo');
         const listenList = Array.from(divList).map((d) => {

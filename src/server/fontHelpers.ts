@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { LocaleType } from '../lang';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -8,7 +9,7 @@ import appProvider, {
 
 export function useFontList() {
     const [fontList, setFontList] = useState<FontListType | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (fontList === null) {
             appProvider.fontUtils.getFonts().then((fonts) => {
                 setFontList(fonts);

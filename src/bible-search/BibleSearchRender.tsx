@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
@@ -20,6 +20,7 @@ import {
 import RenderSearchSuggestion, {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BibleSearchRender({ editingInputText }: {
     editingInputText: string,
@@ -33,7 +34,7 @@ export default function BibleSearchRender({ editingInputText }: {
     });
     const [bibleResult, setBibleResult] = useState<ExtractedBibleResult>(
         defaultExtractedBible);
-    useEffect(() => {
+    useAppEffect(() => {
         if (bibleSelected !== null) {
             extractBible(bibleSelected, inputText).then((result) => {
                 setBibleResult(result);

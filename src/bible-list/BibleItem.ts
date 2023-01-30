@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     keyToBook,
     getVerses,
@@ -18,6 +18,7 @@ import Bible from './Bible';
 import { getKJVKeyValue } from '../server/bible-helpers/bibleHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -266,14 +267,14 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
 
 export function useBibleItemRenderTitle(item: BibleItem) {
     const [title, setTitle] = useState<string>('');
-    useEffect(() => {
+    useAppEffect(() => {
         item.toTitle().then(setTitle);
     }, [item]);
     return title;
 }
 export function useBibleItemRenderText(item: BibleItem) {
     const [text, setText] = useState<string>('');
-    useEffect(() => {
+    useAppEffect(() => {
         BibleItem.itemToText(item).then(setText);
     }, [item]);
     return text;
@@ -281,7 +282,7 @@ export function useBibleItemRenderText(item: BibleItem) {
 export function useBibleItemToInputText(bibleKey: string, book?: string | null,
     chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
     const [text, setText] = useState<string>('');
-    useEffect(() => {
+    useAppEffect(() => {
         toInputText(bibleKey, book, chapter, startVerse, endVerse).then((text1) => {
             setText(text1);
         });

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import MiniPresentScreen from './_present/preview/MiniPresentScreen';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import PresentManager from './_present/PresentManager';
+import { useAppEffect } from './helper/debuggerHelpers';
 
 const BibleList = React.lazy(() => {
     return import('./bible-list/BibleList');
@@ -12,7 +13,7 @@ const LyricList = React.lazy(() => {
 });
 
 export default function AppPresentingRight() {
-    useEffect(() => {
+    useAppEffect(() => {
         PresentManager.getAllInstances().forEach((presentManager) => {
             presentManager.fireResizeEvent();
         });

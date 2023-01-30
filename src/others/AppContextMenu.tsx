@@ -2,12 +2,9 @@ import './AppContextMenu.scss';
 
 import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
-import {
-    ReactElement,
-    useEffect,
-    useState,
-} from 'react';
+import { ReactElement, useState } from 'react';
 import WindowEventListener from '../event/WindowEventListener';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
@@ -100,7 +97,7 @@ export default function AppContextMenu() {
         });
         _setData(newData);
     };
-    useEffect(() => {
+    useAppEffect(() => {
         setDataDelegator = (newData) => {
             setData(newData);
         };

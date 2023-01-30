@@ -3,11 +3,12 @@ import {
     getBookKVList,
     getChapterCount,
 } from './bibleInfoHelpers';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import BibleItem from '../../bible-list/BibleItem';
 
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -55,7 +56,7 @@ export async function genMatches(bibleKey: string, inputText: string) {
 };
 export function useMatch(bibleKey: string, inputText: string) {
     const [matches, setMatches] = useState<string[] | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         genMatches(bibleKey, inputText).then((ms) => {
             setMatches(ms);
         });
@@ -66,7 +67,7 @@ export function useGetBookKVList(bibleSelected: string) {
     const [bookKVList, setBookKVList] = useState<{
         [key: string]: string;
     } | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         getBookKVList(bibleSelected).then((list) => {
             setBookKVList(list);
         });
@@ -75,14 +76,14 @@ export function useGetBookKVList(bibleSelected: string) {
 }
 export function useGetBibleWithStatus(bibleKey: string) {
     const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         getBibleInfoWithStatus(bibleKey).then((bs) => setBibleStatus(bs));
     }, [bibleKey]);
     return bibleStatus;
 }
 export function useGetChapterCount(bibleSelected: string, bookSelected: string) {
     const [chapterCount, setChapterCount] = useState<number | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         getChapterCount(bibleSelected, bookSelected).then((chapterCount) => {
             setChapterCount(chapterCount);
         });

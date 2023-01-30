@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePFTMEvents, usePMEvents } from './presentEventHelpers';
 import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
@@ -94,7 +95,7 @@ export default function PresentFullText({ presentManager }: {
     usePFTMEvents(['text-style']);
     const div = useRef<HTMLDivElement>(null);
     const { presentFTManager } = presentManager;
-    useEffect(() => {
+    useAppEffect(() => {
         if (div.current) {
             presentFTManager.div = div.current;
         }

@@ -1,15 +1,16 @@
 import './BibleSearchPopup.scss';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Modal from '../others/Modal';
 import BibleItem from '../bible-list/BibleItem';
 import BibleSearchRender from './BibleSearchRender';
 import { setSetting } from '../helper/settingHelper';
 import { SELECTED_BIBLE_SETTING_NAME } from './bibleHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BibleSearchPopup() {
     const [inputText, setInputText] = useState<string | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (inputText !== null) {
             return;
         }

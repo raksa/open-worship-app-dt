@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
@@ -7,6 +7,7 @@ import LyricList from '../lyric-list/LyricList';
 import PresentFTManager from '../_present/PresentFTManager';
 import { checkIsFtAutoShow } from './FTPreviewerUtils';
 import LyricItem from '../lyric-list/LyricItem';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricPreviewer() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
@@ -30,7 +31,7 @@ export default function LyricPreviewer() {
         });
         setLyric(newLyric);
     }, [lyric]);
-    useEffect(() => {
+    useAppEffect(() => {
         if (lyric === null) {
             Lyric.getSelected().then((lr) => {
                 setLyric(lr || undefined);

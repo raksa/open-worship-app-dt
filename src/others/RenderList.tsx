@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import { useDSEvents } from '../helper/dirSourceHelpers';
 import FileSource from '../helper/FileSource';
@@ -20,7 +21,7 @@ export default function RenderList({
             setFileSources(newFileSources);
         });
     };
-    useEffect(() => {
+    useAppEffect(() => {
         if (fileSources === null) {
             refresh();
         }

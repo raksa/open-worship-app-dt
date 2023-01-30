@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
@@ -8,6 +8,7 @@ import { isValidJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { openConfirm } from '../alert/alertHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
@@ -40,7 +41,7 @@ export default function BibleFile({
             showSimpleToast('Receiving Bible Item', error.message);
         }
     }, []);
-    useEffect(() => {
+    useAppEffect(() => {
         if (data === null) {
             Bible.readFileToData(fileSource).then(setData);
         }

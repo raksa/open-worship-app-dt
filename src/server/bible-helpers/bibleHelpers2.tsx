@@ -6,12 +6,13 @@ import {
     getVerses,
 } from './bibleInfoHelpers';
 import { cloneJson } from '../../helper/helpers';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     fromLocaleNum,
     LocaleType,
     toLocaleNum,
 } from '../../lang';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
 export async function toInputText(bibleKey: string,
     book?: string | null, chapter?: number | null,
@@ -48,7 +49,7 @@ export async function toLocaleNumBB(bibleKey: string, n: number | null) {
 }
 export function useToLocaleNumBB(bibleKey: string, nString: number | null) {
     const [str, setStr] = useState<string | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         toLocaleNumBB(bibleKey, nString).then(setStr);
     }, [bibleKey, nString]);
     return str;
@@ -59,11 +60,11 @@ export async function fromLocaleNumBB(bibleKey: string, localeNum: string) {
     if (info === null) {
         return null;
     }
-    return fromLocaleNum(info.locale as LocaleType, localeNum);
+    return fromLocaleNum(info.locale, localeNum);
 }
 export function useFromLocaleNumBB(bibleKey: string, localeNum: string) {
     const [n, setN] = useState<number | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         fromLocaleNumBB(bibleKey, localeNum).then(setN);
     }, [bibleKey, localeNum]);
     return n;

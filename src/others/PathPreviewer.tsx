@@ -1,13 +1,14 @@
 import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function PathPreviewer({ dirSource }: {
     dirSource: DirSource,
     prefix: string
 }) {
     const [text, setText] = useState('');
-    useEffect(() => {
+    useAppEffect(() => {
         setText(dirSource.dirPath);
     }, [dirSource]);
     const applyNewText = (newText: string) => {

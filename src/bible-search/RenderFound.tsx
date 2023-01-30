@@ -1,6 +1,6 @@
 import './RenderFound.scss';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
@@ -12,6 +12,7 @@ import {
 import RenderVerseNumOption, {
     mouseUp,
 } from './RenderVerseNumOption';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function RenderFound({
     book,
@@ -47,14 +48,14 @@ export default function RenderFound({
                 startVerse : endVerse as number);
         }
     });
-    useEffect(() => {
+    useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
             document.body.removeEventListener('mouseup', mouseUp);
         };
     });
     const [found, setFound] = useState<ConsumeVerseType | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         consumeStartVerseEndVerse(book, chapter, startVerse,
             endVerse, bibleSelected).then((newFound) => {
                 setFound(newFound);

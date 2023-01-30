@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 import PresentTransitionEffect from './PresentTransitionEffect';
 
 export type StyleAnimType = {
@@ -200,7 +201,7 @@ export function usePTEEvents(events: PTFEventType[],
     ptEffect: PresentTransitionEffect,
     callback?: () => void) {
     const [n, setN] = useState(0);
-    useEffect(() => {
+    useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();

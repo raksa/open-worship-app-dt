@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import EventHandler, { ListenerType } from './EventHandler';
 import KeyboardEventListener from './KeyboardEventListener';
 
@@ -28,7 +28,7 @@ export default class WindowEventListener extends EventHandler<string> {
 
 export function useWindowEvent(eventMapper: EventMapper,
     listener: ListenerType<any>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const eventName = WindowEventListener.toEventMapperKey(eventMapper);
         const event = WindowEventListener.registerEventListener(
             [eventName], listener);

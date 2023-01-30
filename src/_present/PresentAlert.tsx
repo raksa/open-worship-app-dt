@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import './PresentAlert.scss';
 import { usePMEvents } from './presentEventHelpers';
 import PresentManager from './PresentManager';
@@ -11,7 +12,7 @@ export default function PresentAlert({ presentManager }: {
     });
     const div = useRef<HTMLDivElement>(null);
     const { presentAlertManager } = presentManager;
-    useEffect(() => {
+    useAppEffect(() => {
         if (div.current) {
             presentAlertManager.div = div.current;
         }
@@ -20,8 +21,8 @@ export default function PresentAlert({ presentManager }: {
         <div id='alert' ref={div}
             style={presentAlertManager.containerStyle} >
             <div id='countdown' />
-            <div id='marquee'/>
-            <div id='toast'/>
+            <div id='marquee' />
+            <div id='toast' />
         </div>
     );
 }

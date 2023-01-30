@@ -1,11 +1,11 @@
 import './BoxEditor.scss';
 
-import { useEffect } from 'react';
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMode from './BoxEditorControllingMode';
 import { useCIControl } from '../canvasEventHelpers';
+import { useAppEffect } from '../../../helper/debuggerHelpers';
 
 export function BoxEditor({
     canvasItem, scale,
@@ -13,7 +13,7 @@ export function BoxEditor({
     canvasItem: CanvasItem<any>, scale: number,
 }) {
     const isControlling = useCIControl(canvasItem);
-    useEffect(() => {
+    useAppEffect(() => {
         boxEditorController.setScaleFactor(scale);
     }, [scale]);
     // TODO: switch box by tab, shift
