@@ -2,17 +2,21 @@ import './App.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import BibleSearchHeader from './bible-search/BibleSearchHeader';
 import HandleBibleSearch from './bible-search/HandleBibleSearch';
 import Toast from './toast/Toast';
 import HandleItemSlideEdit from './slide-presenting/HandleItemSlideEdit';
-import { getSetting, useStateSettingString } from './helper/settingHelper';
+import {
+    getSetting,
+    useStateSettingString,
+} from './helper/settingHelper';
 import AppContextMenu from './others/AppContextMenu';
 import SettingHeader from './setting/SettingHeader';
 import HandleSetting from './setting/HandleSetting';
 import TabRender, { genTabBody } from './others/TabRender';
 import HandleAlert from './alert/HandleAlert';
+import { useAppEffect } from './helper/debuggerHelpers';
 
 const AppEditing = React.lazy(() => {
     return import('./AppEditing');
@@ -66,16 +70,17 @@ type TabType = typeof tabTypeList[number][0];
 export default function App() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         WINDOW_TYPE, WINDOW_PRESENTING_MODE);
-    useEffect(() => {
+    useAppEffect(() => {
         startEditingSlide = () => {
             setTabType(WINDOW_EDITING_MODE);
         };
         return () => {
             startEditingSlide = null;
         };
-    });
+    }, [], 'App');
     return (
         <div id='app' className='dark d-flex flex-column'>
+            {/* <TestInfinite /> */}
             <div className='app-header d-flex'>
                 <TabRender<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
