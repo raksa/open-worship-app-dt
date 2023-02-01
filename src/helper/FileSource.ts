@@ -161,7 +161,8 @@ export default class FileSource extends EventHandler<FSEventType>
         return new FileSource(basePath, fileName, filePath,
             urlPathToFileURL(filePath).toString());
     }
-    static getInstance(filePath: string, fileName?: string, refreshCache?: boolean) {
+    static getInstance(filePath: string, fileName?: string,
+        refreshCache?: boolean) {
         const fileSource = this.getInstanceNoCache(filePath, fileName);
         if (refreshCache) {
             this._cache.delete(fileSource.filePath);

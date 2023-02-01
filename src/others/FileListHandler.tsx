@@ -22,14 +22,18 @@ const AskingNewName = React.lazy(() => {
     return import('./AskingNewName');
 });
 
-function watch(dirPath: string, signal: AbortSignal,
-    callback: (eventType: string, filename: string) => void) {
-    appProvider.fileUtils.watch(dirPath, {
+function watch(dirSource: DirSource, signal: AbortSignal) {
+    appProvider.fileUtils.watch(dirSource.dirPath, {
         signal,
-    }, (eventType, filename) => {
-        callback(eventType as any, filename);
+    }, (eventType, fileName) => {
+        if (eventType === 'rename') {
+            dirSource.fireReloadEvent();
+        } else if (eventType === 'change') {
+            dirSource.fireReloadFileEvent(fileName);
+        }
     });
 }
+
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
@@ -58,11 +62,7 @@ export default function FileListHandler({
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     useAppEffect(() => {
         const abortController = new AbortController();
-        watch(dirSource.dirPath, abortController.signal,
-            (eventType, filename) => {
-                // TODO: use event to update file list
-                console.log('watch', eventType, filename);
-            });
+        watch(dirSource, abortController.signal);
         return () => {
             abortController.abort();
         };

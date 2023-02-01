@@ -50,6 +50,13 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     fireReloadEvent() {
         this.addPropEvent('reload');
     }
+    fireReloadFileEvent(fileName: string) {
+        if(!this.dirPath) {
+            return;
+        }
+        const fileSource = FileSource.getInstance(this.dirPath, fileName);
+        fileSource.fireUpdateEvent();
+    }
     async getFileSources(mimetype: MimetypeNameType) {
         if (!this.dirPath) {
             return [];
