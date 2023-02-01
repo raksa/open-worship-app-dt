@@ -31,6 +31,7 @@ export type FileUtilsType = {
     readFile: typeof fs.readFile,
     copyFile: typeof fs.copyFile,
     tarExtract: typeof tar.x,
+    watch: typeof fs.watch,
 };
 
 export type PathUtilsType = {

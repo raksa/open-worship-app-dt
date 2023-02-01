@@ -1,7 +1,7 @@
 const ext = '.pdf';
 
 function toFuturePdfPath(filePath: string, outputDir: string) {
-    const path = require('path') as typeof import('path');
+    const path = require('node:path') as typeof import('path');
     const fileName = path.basename(filePath);
     return path.join(outputDir, `${fileName}${ext}`);
 }
@@ -9,8 +9,8 @@ function toFuturePdfPath(filePath: string, outputDir: string) {
 function toPdf(filePath: string, outputDir: string) {
     return new Promise<void>((resolve, reject) => {
         const { convert } = require('libreoffice-convert');
-        const path = require('path') as typeof import('path');
-        const fs = require('fs') as typeof import('fs');
+        const path = require('node:path') as typeof import('path');
+        const fs = require('node:fs') as typeof import('fs');
         const fileName = path.basename(filePath);
         if (!fs.existsSync(filePath)) {
             throw new Error(`File ${filePath} not found`);

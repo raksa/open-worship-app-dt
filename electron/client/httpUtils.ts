@@ -1,5 +1,5 @@
-import { IncomingMessage } from 'http';
-const https = require('https');
+import { IncomingMessage } from 'node:http';
+const https = require('node:https');
 
 const httpUtils = {
     request(options: { [key: string]: any },

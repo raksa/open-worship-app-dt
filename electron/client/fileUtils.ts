@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const tar = require('tar');
 
 const fileUtils = {
@@ -13,6 +13,7 @@ const fileUtils = {
     readFile: fs.readFile,
     copyFile: fs.copyFile,
     tarExtract: tar.x,
+    watch: fs.watch,
 };
 
 export default fileUtils;
