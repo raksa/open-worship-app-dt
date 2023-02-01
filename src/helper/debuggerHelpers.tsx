@@ -1,37 +1,71 @@
 import { useEffect, useState } from 'react';
 
 const THRESHOLD = 10;
+const MILLIE_SECOND = 1000;
 
-const mapper = new Map<string, number>();
+type StoreType = {
+    count: number,
+    timeoutId: any,
+};
+function restore(toKey: string) {
+    const store = (mapper.get(toKey) || {
+        count: 0,
+        timeoutId: 0,
+    });
+    if (store.count === 0) {
+        console.info('[useAppEffect] is called for the first time');
+    }
+    store.count++;
+    if (store.timeoutId) {
+        clearTimeout(store.timeoutId);
+    }
+    store.timeoutId = setTimeout(() => {
+        mapper.set(toKey, {
+            count: 0,
+            timeoutId: 0,
+        });
+    }, MILLIE_SECOND);
+    return store;
+}
+
+const mapper = new Map<string, StoreType>();
 export function useAppEffect(
     effect: React.EffectCallback,
     deps?: React.DependencyList,
     key?: string,
 ) {
     const toKey = key || effect.toString();
-    useEffect(() => {
-        const count = (mapper.get(toKey) || 0) + 1;
-        const millieSecond = 1000;
-        setTimeout(() => {
-            mapper.set(toKey, 0);
-        }, millieSecond);
-        mapper.set(toKey, count);
-        if (count > THRESHOLD) {
+    const toEffect = () => {
+        const store = restore(toKey);
+        mapper.set(toKey, store);
+        if (store.count > THRESHOLD) {
             console.warn(`[useAppEffect] ${toKey} is called more than `
-                + `${THRESHOLD} times in ${millieSecond}ms`);
+                + `${THRESHOLD} times in ${MILLIE_SECOND}ms`);
         }
         return effect();
-    }, deps);
+    };
+    useEffect(toEffect, deps);
 }
 
 export function TestInfinite() {
     const [count, setCount] = useState(0);
+    const [isStopped, setIsStopped] = useState(false);
     useAppEffect(() => {
+        if (isStopped) {
+            return;
+        }
         setTimeout(() => {
             setCount(count + 1);
-        }, 100);
+        }, 10);
     }, [count], 'test');
     return (
-        <h2>Test Infinite {count}</h2>
+        <h2>
+            <button onClick={() => {
+                setIsStopped(true);
+            }} disabled={isStopped}>
+                {isStopped ? 'Stopped' : 'Stop'}
+            </button>
+            Count: {count}
+        </h2>
     );
 }
