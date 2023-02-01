@@ -11,6 +11,8 @@ import { usePBGMEvents } from '../_present/presentEventHelpers';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum, handleDragStart } from '../helper/DragInf';
 
+const bgType = 'video';
+
 export default function BackgroundVideos() {
     const renderCallback = useCallback((fileSources: FileSource[]) => {
         return (
@@ -19,10 +21,11 @@ export default function BackgroundVideos() {
             </div>
         );
     }, []);
-    const dirSource = DirSource.getInstance('video-list-selected-dir');
+    const dirSource = DirSource.getInstance(`${bgType}-list-selected-dir`);
     usePBGMEvents(['update']);
     return (
-        <FileListHandler id='background-video' mimetype='video'
+        <FileListHandler id={`background-${bgType}`}
+            mimetype={bgType}
             dirSource={dirSource}
             bodyHandler={renderCallback} />
     );
@@ -31,11 +34,11 @@ export default function BackgroundVideos() {
 function genBody(fileSource: FileSource) {
     const vRef = createRef<HTMLVideoElement>();
     const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
-        fileSource.src, 'video');
+        fileSource.src, bgType);
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
     return (
         <div key={fileSource.name}
-            className={`video-thumbnail card ${selectedCN}`}
+            className={`${bgType}-thumbnail card ${selectedCN}`}
             title={fileSource.filePath + '\n Show in presents:'
                 + selectedBGSrcList.map(([key]) => key).join(',')}
             draggable
@@ -55,7 +58,7 @@ function genBody(fileSource: FileSource) {
                 }
             }}
             onClick={(event) => {
-                PresentBGManager.bgSrcSelect(fileSource.src, event, 'video');
+                PresentBGManager.bgSrcSelect(fileSource.src, event, bgType);
             }}>
             <div className='card-body'>
                 <RenderPresentIds

@@ -1,5 +1,6 @@
 import './BackgroundImages.scss';
 
+import { useCallback } from 'react';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
@@ -7,9 +8,10 @@ import DirSource from '../helper/DirSource';
 import PresentBGManager from '../_present/PresentBGManager';
 import { RenderPresentIds } from './Background';
 import { usePBGMEvents } from '../_present/presentEventHelpers';
-import { useCallback } from 'react';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum, handleDragStart } from '../helper/DragInf';
+
+const bgType = 'image';
 
 export default function BackgroundImages() {
     const renderCallback = useCallback((fileSources: FileSource[]) => {
@@ -19,10 +21,11 @@ export default function BackgroundImages() {
             </div>
         );
     }, []);
-    const dirSource = DirSource.getInstance('image-list-selected-dir');
+    const dirSource = DirSource.getInstance(`${bgType}-list-selected-dir`);
     usePBGMEvents(['update']);
     return (
-        <FileListHandler id='background-image' mimetype='image'
+        <FileListHandler id={`background-${bgType}`}
+            mimetype={bgType}
             dirSource={dirSource}
             bodyHandler={renderCallback} />
     );
@@ -30,11 +33,11 @@ export default function BackgroundImages() {
 
 function genBody(fileSource: FileSource) {
     const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
-        fileSource.src, 'image');
+        fileSource.src, bgType);
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
     return (
         <div key={fileSource.name}
-            className={`image-thumbnail card ${selectedCN}`}
+            className={`${bgType}-thumbnail card ${selectedCN}`}
             title={fileSource.filePath + '\n Show in presents:'
                 + selectedBGSrcList.map(([key]) => key).join(',')}
             draggable
@@ -42,10 +45,10 @@ function genBody(fileSource: FileSource) {
                 handleDragStart(event, fileSource, DragTypeEnum.BG_IMAGE);
             }}
             onContextMenu={(event) => {
-                showAppContextMenu(event as any, genCommonMenu(fileSource),);
+                showAppContextMenu(event as any, genCommonMenu(fileSource));
             }}
             onClick={(event) => {
-                PresentBGManager.bgSrcSelect(fileSource.src, event, 'image');
+                PresentBGManager.bgSrcSelect(fileSource.src, event, bgType);
             }}>
             <div className='card-body'>
                 <RenderPresentIds
