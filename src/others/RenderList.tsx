@@ -5,6 +5,8 @@ import { useDSEvents } from '../helper/dirSourceHelpers';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelper';
 
+const UNKNOWN = 'unknown';
+
 export default function RenderList({
     dirSource,
     mimetype,
@@ -49,35 +51,27 @@ export default function RenderList({
     }
     const fileSourceColorMap: { [key: string]: FileSource[] } = {};
     fileSources.forEach((fileSource) => {
-        const colorNote = fileSource.colorNote || 'unknown';
+        const colorNote = fileSource.colorNote || UNKNOWN;
         fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
         fileSourceColorMap[colorNote].push(fileSource);
     });
     if (Object.keys(fileSourceColorMap).length === 1) {
         return bodyHandler(fileSources);
     }
-    const keys = Object.keys(fileSourceColorMap);
-    // "unknown" should be at the end
-    keys.sort((a, b) => {
-        if (a === 'unknown') {
-            return 1;
-        }
-        if (b === 'unknown') {
-            return -1;
-        }
-        return 0;
-    });
+    const keys = Object.keys(fileSourceColorMap).filter((key) => {
+        return key !== UNKNOWN;
+    }).sort();
+    keys.push(UNKNOWN);
     return (
         <>{keys.map((colorNote) => {
             const subFileSources = fileSourceColorMap[colorNote];
             return (
                 <div key={colorNote}>
-                    {colorNote === 'unknown' ? <hr /> :
-                        <hr style={{
-                            backgroundColor: colorNote,
-                            height: '1px',
-                            border: 0,
-                        }} />}
+                    <hr style={colorNote === UNKNOWN ? {} : {
+                        backgroundColor: colorNote,
+                        height: '1px',
+                        border: 0,
+                    }} />
                     {bodyHandler(subFileSources)}
                 </div>
             );

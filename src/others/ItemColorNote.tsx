@@ -1,4 +1,4 @@
-import { showAppContextMenu } from './AppContextMenu';
+import { ContextMenuItemType, showAppContextMenu } from './AppContextMenu';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
 
@@ -19,23 +19,26 @@ export default function ItemColorNote({ item }: {
                 colors = colors.filter((value, index, self) => {
                     return self.findIndex((v) => v[0] === value[0]) === index;
                 });
-                showAppContextMenu(event as any, [{
+                const items: ContextMenuItemType[] = [{
                     title: 'no color',
+                    disabled: item.colorNote === null,
                     onClick: () => {
                         item.colorNote = null;
                     },
-                }, ...colors.map(([name, colorCode]) => {
+                }, ...colors.map(([name, colorCode]): ContextMenuItemType => {
                     return {
                         title: name,
+                        disabled: item.colorNote === colorCode,
                         onClick: () => {
                             item.colorNote = colorCode;
                         },
-                        otherChild: (<span style={{ float: 'right' }}>
-                            <i className='bi bi-record-circle'
+                        otherChild: (<div className='flex-fill'>
+                            <i className='bi bi-record-circle float-end'
                                 style={{ color: colorCode }} />
-                        </span>),
+                        </div>),
                     };
-                })]);
+                })];
+                showAppContextMenu(event as any, items);
             }} >
             <i className='bi bi-record-circle'
                 style={item.colorNote ? {
