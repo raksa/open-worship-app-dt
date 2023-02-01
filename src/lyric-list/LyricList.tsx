@@ -10,11 +10,7 @@ import FileSource from '../helper/FileSource';
 export default function LyricList() {
     const dirSource = DirSource.getInstance('lyric-list-selected-dir');
     const onNewFileCallback = useCallback(async (name: string) => {
-        if (await Lyric.create(dirSource.dirPath, name)) {
-            dirSource.fireReloadEvent();
-            return false;
-        }
-        return true;
+        return !await Lyric.create(dirSource.dirPath, name);
     }, [dirSource]);
     const bodyHandlerCallback = useCallback((
         fileSources: FileSource[]) => {

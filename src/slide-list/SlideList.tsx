@@ -40,11 +40,7 @@ export default function SlideList() {
         return false;
     }, [dirSource]);
     const onNewFileCallback = useCallback(async (name: string) => {
-        if (await Slide.create(dirSource.dirPath, name)) {
-            dirSource.fireReloadEvent();
-            return false;
-        }
-        return true;
+        return !await Slide.create(dirSource.dirPath, name);
     }, [dirSource]);
     const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
         return fileSources.map((fileSource, i) => {

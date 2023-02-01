@@ -87,9 +87,6 @@ export default class FileSource extends EventHandler<FSEventType>
     fireRefreshDirEvent() {
         this.dirSource?.fireRefreshEvent();
     }
-    fireReloadDirEvent() {
-        this.dirSource?.fireReloadEvent();
-    }
     fireSelectEvent() {
         this.addPropEvent('select');
         FileSource.addPropEvent('select', this);
@@ -141,7 +138,6 @@ export default class FileSource extends EventHandler<FSEventType>
             await fsDeleteFile(this.filePath);
             this.fireDeleteEvent();
             this.deleteCache();
-            this.fireReloadDirEvent();
             return true;
         } catch (error: any) {
             showSimpleToast('Saving File', error.message);
@@ -214,10 +210,8 @@ export default class FileSource extends EventHandler<FSEventType>
     async duplicate() {
         try {
             await this._duplicate();
-            this.fireReloadDirEvent();
         } catch (error) {
             showSimpleToast('Duplicating File', 'Unable to duplicate file');
-            // TODO: handle error by a function
             handleError(error);
         }
     }

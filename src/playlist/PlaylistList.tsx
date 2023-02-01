@@ -10,11 +10,7 @@ import FileSource from '../helper/FileSource';
 export default function PlaylistList() {
     const dirSource = DirSource.getInstance('playlist-list-selected-dir');
     const onNewFileCallback = useCallback(async (name: string) => {
-        if (await Playlist.create(dirSource.dirPath, name)) {
-            dirSource.fireReloadEvent();
-            return false;
-        }
-        return true;
+        return !await Playlist.create(dirSource.dirPath, name);
     }, [dirSource]);
     const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
         return (

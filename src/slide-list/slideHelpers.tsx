@@ -107,7 +107,6 @@ export async function convertOfficeFile(fileSource: FileSource,
     try {
         await appProvider.pdfUtils.toPdf(filePath, dirPath);
         showSimpleToast(title, `${toHtmlBold(fileName)} is converted to PDF`);
-        dirSource.fireReloadEvent();
     } catch (error: any) {
         if (error.message.includes('Could not find soffice binary')) {
             const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>

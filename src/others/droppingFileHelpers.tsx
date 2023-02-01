@@ -64,7 +64,6 @@ export function genOnDrop({
                     await fsCopyFileToPath(fileSource.filePath,
                         fileSource.fileName, dirSource.dirPath);
                     showSimpleToast(title, 'File has been copied');
-                    dirSource.fireReloadEvent();
                 } catch (error: any) {
                     showSimpleToast(title, error.message);
                 }

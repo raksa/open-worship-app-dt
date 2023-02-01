@@ -9,11 +9,7 @@ import FileSource from '../helper/FileSource';
 
 export default function BibleList() {
     const onNewFileCallback = useCallback(async (name: string) => {
-        if (await Bible.create(dirSource.dirPath, name)) {
-            dirSource.fireReloadEvent();
-            return false;
-        }
-        return true;
+        return !await Bible.create(dirSource.dirPath, name);
     }, []);
     const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
         return (

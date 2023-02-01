@@ -21,7 +21,8 @@ export default abstract class ItemSource<T extends {
         this.fileSource = fileSource;
     }
     get isSelected() {
-        const selectedFS = ItemSource.getSelectedFileSource(this.SELECT_SETTING_NAME);
+        const selectedFS = ItemSource.getSelectedFileSource(
+            this.SELECT_SETTING_NAME);
         return this.fileSource.filePath === selectedFS?.filePath;
     }
     set isSelected(b: boolean) {
@@ -52,7 +53,8 @@ export default abstract class ItemSource<T extends {
             throw new Error('Invalid item source data');
         }
     }
-    static setSelectedFileSource(fileSource: FileSource | null, settingName?: string) {
+    static setSelectedFileSource(fileSource: FileSource | null,
+        settingName?: string) {
         settingName = settingName || this.SELECT_SETTING_NAME;
         if (!settingName) {
             return;
@@ -76,7 +78,6 @@ export default abstract class ItemSource<T extends {
         if (isSuccess) {
             ItemSource._cache.set(this.fileSource.filePath, this);
         }
-        this.fileSource.fireReloadDirEvent();
         return isSuccess;
     }
     static async create(dir: string, name: string, items: AnyObjectType[]) {
@@ -88,7 +89,8 @@ export default abstract class ItemSource<T extends {
             },
             items,
         });
-        const filePath = await createNewFileDetail(dir, name, data, this.mimetype);
+        const filePath = await createNewFileDetail(dir, name, data,
+            this.mimetype);
         if (filePath !== null) {
             return FileSource.getInstance(filePath);
         }
@@ -111,7 +113,8 @@ export default abstract class ItemSource<T extends {
     static deleteCache(key: string) {
         this._cache.delete(key);
     }
-    static async readFileToData(fileSource: FileSource | null, refreshCache?: boolean) {
+    static async readFileToData(fileSource: FileSource | null,
+        refreshCache?: boolean) {
         if (fileSource === null) {
             return null;
         }
