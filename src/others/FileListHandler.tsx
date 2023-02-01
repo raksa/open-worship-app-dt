@@ -23,6 +23,9 @@ const AskingNewName = React.lazy(() => {
 });
 
 function watch(dirSource: DirSource, signal: AbortSignal) {
+    if (!dirSource.dirPath) {
+        return;
+    }
     appProvider.fileUtils.watch(dirSource.dirPath, {
         signal,
     }, (eventType, fileName) => {

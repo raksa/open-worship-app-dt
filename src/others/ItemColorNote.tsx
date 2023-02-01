@@ -1,25 +1,38 @@
-import { ContextMenuItemType, showAppContextMenu } from './AppContextMenu';
+import {
+    ContextMenuItemType,
+    showAppContextMenu,
+} from './AppContextMenu';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
+import { useMemo } from 'react';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
 export default function ItemColorNote({ item }: {
     item: ColorNoteInf,
 }) {
+    const title = useMemo(() => {
+        const reverseColorMap: Record<string, string> =
+            Object.entries({
+                ...colorList.main,
+                ...colorList.extension,
+            }).reduce((acc, [name, colorCode]) => {
+                acc[colorCode] = name;
+                return acc;
+            }, {} as Record<string, string>);
+        return reverseColorMap[item.colorNote || ''] || 'no color';
+    }, [item.colorNote]);
+
     return (
         <span className={`color-note ${item.colorNote ? 'active' : ''}`}
-            title={item.colorNote || 'no color'}
+            title={title}
             onClick={(event) => {
                 event.stopPropagation();
-                let colors = [
-                    ...Object.entries(colorList.main),
-                    ...Object.entries(colorList.extension),
-                ];
-                // unique colors by key
-                colors = colors.filter((value, index, self) => {
-                    return self.findIndex((v) => v[0] === value[0]) === index;
+                const colors = Object.entries({
+                    ...colorList.main,
+                    ...colorList.extension,
                 });
+                // unique colors by key
                 const items: ContextMenuItemType[] = [{
                     title: 'no color',
                     disabled: item.colorNote === null,

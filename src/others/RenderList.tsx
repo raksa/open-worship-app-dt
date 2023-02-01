@@ -49,7 +49,9 @@ export default function RenderList({
         );
 
     }
-    const fileSourceColorMap: { [key: string]: FileSource[] } = {};
+    const fileSourceColorMap: { [key: string]: FileSource[] } = {
+        [UNKNOWN]: [],
+    };
     fileSources.forEach((fileSource) => {
         const colorNote = fileSource.colorNote || UNKNOWN;
         fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
