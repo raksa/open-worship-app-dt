@@ -9,6 +9,7 @@ import BibleItemRender from '../bible-list/BibleItemRender';
 import PlaylistItem from './PlaylistItem';
 import ItemSource from '../helper/ItemSource';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import ItemColorNote from '../others/ItemColorNote';
 
 export default function PlaylistFile({
     index, fileSource,
@@ -78,6 +79,7 @@ function PlaylistPreview({
                 <i className={`bi ${isOpened ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
                 {playlist.fileSource.name}
+                <ItemColorNote item={playlist.fileSource} />
             </div>
             {isOpened && playlist && <div
                 className='card-body d-flex flex-column'>
