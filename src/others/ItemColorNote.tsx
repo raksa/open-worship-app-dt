@@ -9,6 +9,7 @@ export default function ItemColorNote({ item }: {
 }) {
     return (
         <span className={`color-note ${item.colorNote ? 'active' : ''}`}
+            title={item.colorNote || 'no color'}
             onClick={(event) => {
                 event.stopPropagation();
                 let colors = [
