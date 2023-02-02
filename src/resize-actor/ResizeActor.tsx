@@ -1,5 +1,6 @@
 import React, {
-    CSSProperties, Fragment, useCallback, useState,
+    CSSProperties, Fragment,
+    useCallback, useState,
 } from 'react';
 import AppSuspense from '../others/AppSuspense';
 import FlexResizeActor, {

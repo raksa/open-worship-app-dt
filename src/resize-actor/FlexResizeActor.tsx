@@ -142,7 +142,9 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = isFirst ? this.previous.dataset['fs'] : this.next.dataset['fs'];
+        const dataFSizeKey = isFirst ?
+            this.previous.dataset['fs'] :
+            this.next.dataset['fs'];
         if (dataFSizeKey !== undefined) {
             if (isFirst) {
                 this.next.style.flexGrow = `${this.sumGrow}`;
