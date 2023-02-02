@@ -10,6 +10,10 @@ const styleText = `
     overflow-y: auto;
 }
 
+#full-text div {
+    display: inline-block;
+}
+
 #full-text::-webkit-scrollbar {
     width: 0.2em;
 }
@@ -63,6 +67,8 @@ const styleText = `
 
 #full-text td .verse-number {
     -webkit-text-stroke: 0.01em greenyellow;
+    transform: scale(0.8) translateY(-0.3em);
+    opacity: 0.7;
 }
 
 #full-text .header .bible-key {

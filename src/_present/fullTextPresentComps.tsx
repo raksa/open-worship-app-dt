@@ -70,9 +70,9 @@ export function FTBibleTable({
                                             }}>
                                             <span className='highlight'
                                                 data-highlight={i}>
-                                                <span className='verse-number'>
+                                                <div className='verse-number'>
                                                     {num}
-                                                </span>: {text}
+                                                </div>{text}
                                             </span>
                                         </td>
                                     );
@@ -91,9 +91,9 @@ export function FTBibleTable({
                                                     fontFamily: getFontFamilyByLocal(locale),
                                                 }}
                                                 data-highlight={j}>
-                                                <span className='verse-number'>
+                                                <div className='verse-number'>
                                                     {num}
-                                                </span>: {text}
+                                                </div>{text}
                                             </span>
                                         );
                                     })}
@@ -154,9 +154,9 @@ export function FTLyricItem({
                                         <Fragment key={j}>
                                             <span className='highlight'
                                                 data-highlight={j}>
-                                                <span className='verse-number'>
+                                                <div className='verse-number'>
                                                     {num}
-                                                </span>: {text}
+                                                </div>{text}
                                             </span>
                                             <br />
                                         </Fragment>
