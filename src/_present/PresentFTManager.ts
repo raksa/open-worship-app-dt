@@ -33,7 +33,6 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
     readonly presentId: number;
     private _ftItemData: FTItemDataType | null = null;
     private static _textStyle: AnyObjectType = {};
-    static isLineSync = false;
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
     private _divScrollListener;
@@ -65,6 +64,15 @@ export default class PresentFTManager extends EventHandler<PresentFTManagerEvent
             this.scroll = this.div.scrollTop / this.div.scrollHeight;
             this.sendSyncScroll();
         };
+    }
+    get isLineSync() {
+        const settingKey = `${settingName}-line-sync-${this.presentId}`;
+        return getSetting(settingKey) === 'true';
+    }
+    set isLineSync(isLineSync: boolean) {
+        setSetting(`${settingName}-line-sync-${this.presentId}`,
+            `${isLineSync}`);
+        this.ftItemData = this.ftItemData;
     }
     get div() {
         return this._div;

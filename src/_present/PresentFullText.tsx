@@ -29,6 +29,7 @@ const styleText = `
 }
 
 #full-text table {
+    table-layout: fixed;
     width: 100%;
     background-color: #2752ff2a;
     border-radius: 0.1em;
@@ -75,6 +76,13 @@ const styleText = `
     opacity: 0.5;
     font-weight: 100;
     transform: scale(0.7);
+}
+
+#full-text .header .title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
 }
 
 #full-text .highlight {

@@ -129,7 +129,7 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
                     style={{ color: 'red' }} />),
             }] : [],
             ...bibleListFiltered.length > 0 ? [{
-                title: 'Ship Click to Add',
+                title: 'Shift Click to Add',
                 disabled: true,
             }] : [],
             ...bibleListFiltered.map(([bibleKey, isAvailable]) => {
@@ -165,11 +165,11 @@ export function renderPFTManager(presentFTManager: PresentFTManager) {
     if (ftItemData.type === 'bible-item' &&
         ftItemData.bibleItemData !== undefined) {
         newTable = fullTextPresentHelper.genHtmlFromFtBibleItem(
-            ftItemData.bibleItemData.renderedList, PresentFTManager.isLineSync);
+            ftItemData.bibleItemData.renderedList, presentFTManager.isLineSync);
     } else if (ftItemData.type === 'lyric' &&
         ftItemData.lyricData !== undefined) {
         newTable = fullTextPresentHelper.genHtmlFromFtLyric(
-            ftItemData.lyricData.renderedList, PresentFTManager.isLineSync);
+            ftItemData.lyricData.renderedList, presentFTManager.isLineSync);
     }
     if (newTable === null) {
         return;

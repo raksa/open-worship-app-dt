@@ -44,14 +44,15 @@ export function FTBibleTable({
                             return (
                                 <th key={title} className='header'
                                     style={{
-                                        display: 'flex',
                                         fontFamily: getFontFamilyByLocal(locale),
                                     }}>
-                                    <div className='bible highlight bible-name bible-key'
-                                        data-index={i}>
-                                        {bibleKey}
+                                    <div style={{ display: 'flex' }}>
+                                        <div className='bible highlight bible-name bible-key'
+                                            data-index={i}>
+                                            {bibleKey}
+                                        </div>
+                                        <div className='title'>{title}</div>
                                     </div>
-                                    <div className='title'>{title}</div>
                                 </th>
                             );
                         })}

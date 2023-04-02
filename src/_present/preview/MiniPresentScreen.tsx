@@ -16,6 +16,15 @@ import { handleDrop } from '../../helper/DragInf';
 
 function openContextMenu(event: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;
+    const { presentFTManager } = presentManager;
+    const isPresentingFT = !!presentFTManager.ftItemData;
+    const isLineSync = presentFTManager.isLineSync;
+    const extraMenuItems = isPresentingFT ? [{
+        title: `${isLineSync ? 'Un' : ''}Set Line Sync`,
+        onClick() {
+            presentFTManager.isLineSync = !isLineSync;
+        },
+    }] : [];
     showAppContextMenu(event, [
         ...isOne ? [] : [{
             title: 'Solo',
@@ -51,8 +60,7 @@ function openContextMenu(event: any, presentManager: PresentManager) {
                 PresentManager.savePresentManagersSetting();
                 PresentManager.fireInstanceEvent();
             },
-        },
-        ]]);
+        }, ...extraMenuItems]]);
 }
 
 initReceivePresentMessage();
