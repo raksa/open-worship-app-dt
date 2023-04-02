@@ -1,15 +1,17 @@
+import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import DirSource, {
     DirSourceEventType,
 } from './DirSource';
 import FileSource, { FSEventType } from './FileSource';
-import { useRefresh } from './helpers';
 
 export function useDSEvents(events: DirSourceEventType[],
     dirSource?: DirSource,
     callback?: () => void) {
+    const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {
+            setN(n + 1);
             callback?.();
         };
         const instanceEvents = dirSource?.registerEventListener(
@@ -19,16 +21,16 @@ export function useDSEvents(events: DirSourceEventType[],
             dirSource?.unregisterEventListener(instanceEvents);
             DirSource.unregisterEventListener(staticEvents);
         };
-    }, [dirSource]);
+    }, [dirSource, n]);
 }
 
 export function useFSEvents(events: FSEventType[],
     fileSource?: FileSource,
     callback?: () => void) {
-    const refresh = useRefresh();
+    const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {
-            refresh();
+            setN(n + 1);
             callback?.();
         };
         const instanceEvents = fileSource?.registerEventListener(
@@ -39,5 +41,5 @@ export function useFSEvents(events: FSEventType[],
             fileSource?.unregisterEventListener(instanceEvents);
             FileSource.unregisterEventListener(staticEvents);
         };
-    }, [fileSource]);
+    }, [fileSource, n]);
 }

@@ -5,7 +5,7 @@ import { useStateSettingString } from '../../../helper/settingHelper';
 import TabRender, { genTabBody } from '../../../others/TabRender';
 import CanvasController from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
-import { useCCEvents, useCCScale } from '../canvasEventHelpers';
+import { useCanvasControllerEvents, useCCScale } from '../canvasEventHelpers';
 
 const ToolsBox = React.lazy(() => {
     return import('./ToolsBox');
@@ -26,7 +26,7 @@ type TabType = typeof tabTypeList[number][0];
 export default function Tools() {
     const canvasController = CanvasController.getInstance();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
-    useCCEvents(['select']);
+    useCanvasControllerEvents(['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'editor-tools-tab', 't');
     const scale = useCCScale();

@@ -1,12 +1,12 @@
 import CanvasItemRenderer from '../../../slide-presenting/items/CanvasItemRenderer';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import CanvasController from '../CanvasController';
-import { useCCEvents } from '../canvasEventHelpers';
+import { useCanvasControllerEvents } from '../canvasEventHelpers';
 
 export default function ToolCanvasItems() {
     const canvasController = CanvasController.getInstance();
     const canvasItems = canvasController.canvas.canvasItems;
-    useCCEvents(['update']);
+    useCanvasControllerEvents(['update']);
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem, i) => {

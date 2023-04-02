@@ -153,8 +153,3 @@ export function isColor(strColor: string) {
     s.color = strColor;
     return !!s.color;
 }
-
-export function useRefresh() {
-    const [n, setN] = useState(0);
-    return () => setN(n + 1);
-}

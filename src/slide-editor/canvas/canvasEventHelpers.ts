@@ -3,20 +3,19 @@ import { useAppEffect } from '../../helper/debuggerHelpers';
 import CanvasController from './CanvasController';
 import { CCEventType } from './canvasHelpers';
 import CanvasItem from './CanvasItem';
-import { useRefresh } from '../../helper/helpers';
 
-export function useCCEvents(eventTypes: CCEventType[]) {
-    const refresh = useRefresh();
+export function useCanvasControllerEvents(eventTypes: CCEventType[]) {
+    const [n, setN] = useState(0);
     const canvasController = CanvasController.getInstance();
     useAppEffect(() => {
         const regEvents = canvasController.registerEventListener(
             eventTypes, () => {
-                refresh();
+                setN(n + 1);
             });
         return () => {
             canvasController.unregisterEventListener(regEvents);
         };
-    });
+    }, [n]);
 }
 
 export function useCCScale() {

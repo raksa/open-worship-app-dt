@@ -187,6 +187,22 @@ export default class Slide extends ItemSource<SlideItem>{
         items.push(slideItem);
         this.items = items;
     }
+    addNewItem() {
+        const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
+        const { width, height } = Canvas.getDefaultDim();
+        const json = {
+            id: item.id,
+            metadata: {
+                width,
+                height,
+            },
+            canvasItems: [], // TODO: add default canvas item
+        };
+        const newItem = new SlideItem(item.id, this.fileSource, json,
+            this.editingCacheManager);
+        this.itemIdShouldToView = newItem.id;
+        this.addItem(newItem);
+    }
     deleteItem(slideItem: SlideItem) {
         const newItems = this.items.filter((item) => {
             return item.id !== slideItem.id;
@@ -232,22 +248,14 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     showSlideItemContextMenu(event: any) {
         showAppContextMenu(event, [{
+            title: 'Deselect',
+            onClick: () => {
+                this.isSelected = false;
+            },
+        }, {
             title: 'New Slide Item',
             onClick: () => {
-                const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
-                const { width, height } = Canvas.getDefaultDim();
-                const json = {
-                    id: item.id,
-                    metadata: {
-                        width,
-                        height,
-                    },
-                    canvasItems: [], // TODO: add default canvas item
-                };
-                const newItem = new SlideItem(item.id, this.fileSource, json,
-                    this.editingCacheManager);
-                this.itemIdShouldToView = newItem.id;
-                this.addItem(newItem);
+                this.addNewItem();
             },
         }, {
             title: 'Paste',
