@@ -1,3 +1,5 @@
+import './FullTextPreviewer.scss';
+
 import React from 'react';
 import {
     useBibleItemSelecting,
@@ -60,12 +62,12 @@ export default function FullTextPreviewer() {
         }
     });
     return (
-        <div className={'previewer overflow-hidden border-white-round '
+        <div className={'ft-previewer overflow-hidden border-white-round '
             + 'h-100 d-flex flex-column p-1'}
             style={{
                 minWidth: '300px',
             }}>
-            <div className='previewer-header d-flex'>
+            <div className='header d-flex'>
                 <TabRender<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
@@ -73,7 +75,7 @@ export default function FullTextPreviewer() {
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
-            <div className='previewer-header p-2 flex-fill overflow-hidden'>
+            <div className='body p-2 flex-fill overflow-hidden'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

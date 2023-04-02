@@ -14,9 +14,6 @@ const TextShadow = React.lazy(() => {
 export default function CustomStyle() {
     return (
         <div className='custom-style card pointer border-white-round mt-1'>
-            <div className='card-header'>
-                Custom Style
-            </div>
             <Body />
         </div>
     );

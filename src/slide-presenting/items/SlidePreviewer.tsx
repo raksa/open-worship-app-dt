@@ -11,7 +11,9 @@ import {
 } from '../../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
-import { useSlideSelecting } from '../../event/PreviewingEventListener';
+import {
+    useSlideSelecting,
+} from '../../event/PreviewingEventListener';
 import { useCallback, useState } from 'react';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
@@ -49,7 +51,7 @@ export default function SlidePreviewer() {
     return (
         <div id='slide-previewer'
             className='card w-100 h-100'>
-            <PreviewSlide slide={slide} />
+            {previewSlide(slide)}
             <SlidePreviewerFooter
                 thumbnailSize={thumbSize}
                 setThumbnailSize={setThumbnailSizeCallback}
@@ -58,7 +60,7 @@ export default function SlidePreviewer() {
     );
 }
 
-function PreviewSlide({ slide }: { slide: Slide }) {
+function previewSlide(slide: Slide) {
     return (
         <div className='card-body w-100 h-100 overflow-hidden'>
             {!slide.isPdf && <SlideItemsMenu slide={slide} />}

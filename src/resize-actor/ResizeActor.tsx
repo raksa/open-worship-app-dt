@@ -118,7 +118,7 @@ function RenderItem({
                 type={resizeKinds[index - 1]} />}
             <div data-fs={keyToDataFSizeKey(fSizeName, key)}
                 data-fs-default={flexSizeValue[0]}
-                data-min-size={140}
+                data-min-size={40}
                 className={classList}
                 style={{
                     flex: flexSizeValue[0] || 1,
