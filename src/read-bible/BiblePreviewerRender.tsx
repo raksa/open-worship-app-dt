@@ -57,7 +57,7 @@ export default function BiblePreviewerRender({ bibleItem }: {
         <div className='d-flex d-flex-row overflow-hidden h-100'>
             {isAvailable ? bibleItems.map((item, i) => {
                 return (
-                    <BibleView key={item.id}
+                    <BibleView key={item.bibleKey}
                         index={i}
                         bibleItem={item}
                         onBibleChange={onBibleChangeCallback}
