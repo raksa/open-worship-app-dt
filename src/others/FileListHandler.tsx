@@ -17,6 +17,7 @@ import {
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useDSEvents } from '../helper/dirSourceHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 const AskingNewName = React.lazy(() => {
     return import('./AskingNewName');
@@ -63,13 +64,15 @@ export default function FileListHandler({
         });
     }, [onNewFile]);
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    useDSEvents(['path'], dirSource, () => {
+    useAppEffect(() => {
         const abortController = new AbortController();
         watch(dirSource, abortController.signal);
-        dirSource.fireReloadEvent();
         return () => {
             abortController.abort();
         };
+    }, [dirSource.dirPath]);
+    useDSEvents(['path'], dirSource, () => {
+        dirSource.fireReloadEvent();
     });
     return (
         <div className={`${id} card w-100 h-100`}

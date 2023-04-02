@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import PresentTransitionEffect from './PresentTransitionEffect';
-import { useState } from 'react';
 
 export type StyleAnimType = {
     style: string,

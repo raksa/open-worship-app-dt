@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {
@@ -12,7 +13,6 @@ import PresentManager, {
 import PresentSlideManager, {
     PresentSlideManagerEventType,
 } from './PresentSlideManager';
-import { useState } from 'react';
 
 export function usePMEvents(events: PresentManagerEventType[],
     presentManager?: PresentManager,
