@@ -15,10 +15,8 @@ import {
     genOnDrop,
     genOnContextMenu,
 } from './droppingFileHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
 import appProvider from '../server/appProvider';
 import { useDSEvents } from '../helper/dirSourceHelpers';
-import { useRefresh } from '../helper/helpers';
 
 const AskingNewName = React.lazy(() => {
     return import('./AskingNewName');
@@ -55,7 +53,6 @@ export default function FileListHandler({
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
 }) {
-    const refresh = useRefresh();
     const applyNameCallback = useCallback(async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
@@ -66,16 +63,13 @@ export default function FileListHandler({
         });
     }, [onNewFile]);
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    useAppEffect(() => {
+    useDSEvents(['path'], dirSource, () => {
         const abortController = new AbortController();
         watch(dirSource, abortController.signal);
+        dirSource.fireReloadEvent();
         return () => {
             abortController.abort();
         };
-    }, [dirSource.dirPath]);
-    useDSEvents(['path'], dirSource, () => {
-        refresh();
-        dirSource.fireReloadEvent();
     });
     return (
         <div className={`${id} card w-100 h-100`}

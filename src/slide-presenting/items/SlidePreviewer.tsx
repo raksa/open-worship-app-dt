@@ -52,7 +52,8 @@ export default function SlidePreviewer() {
             <PreviewSlide slide={slide} />
             <SlidePreviewerFooter
                 thumbnailSize={thumbSize}
-                setThumbnailSize={setThumbnailSizeCallback} />
+                setThumbnailSize={setThumbnailSizeCallback}
+                slide={slide} />
         </div>
     );
 }
