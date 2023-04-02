@@ -10,20 +10,22 @@ import FileSource from '../helper/FileSource';
 import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
 import {
-    genOnDrag,
+    genOnDragOver,
     genOnDragLeave,
     genOnDrop,
     genOnContextMenu,
 } from './droppingFileHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import appProvider from '../server/appProvider';
+import { useDSEvents } from '../helper/dirSourceHelpers';
+import { useRefresh } from '../helper/helpers';
 
 const AskingNewName = React.lazy(() => {
     return import('./AskingNewName');
 });
 
 function watch(dirSource: DirSource, signal: AbortSignal) {
-    if (!dirSource.dirPath) {
+    if (!dirSource.isDirPathValid) {
         return;
     }
     appProvider.fileUtils.watch(dirSource.dirPath, {
@@ -53,6 +55,7 @@ export default function FileListHandler({
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
 }) {
+    const refresh = useRefresh();
     const applyNameCallback = useCallback(async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
@@ -70,10 +73,14 @@ export default function FileListHandler({
             abortController.abort();
         };
     }, [dirSource.dirPath]);
+    useDSEvents(['path'], dirSource, () => {
+        refresh();
+        dirSource.fireReloadEvent();
+    });
     return (
         <div className={`${id} card w-100 h-100`}
-            onDragOver={genOnDrag(dirSource, mimetype)}
-            onDragLeave={genOnDragLeave(dirSource)}
+            onDragOver={genOnDragOver(dirSource, mimetype)}
+            onDragLeave={genOnDragLeave()}
             onDrop={genOnDrop({
                 dirSource,
                 mimetype,
@@ -93,14 +100,25 @@ export default function FileListHandler({
                 onContextMenu={genOnContextMenu(contextMenu)}>
                 <PathSelector prefix={`path-${id}`}
                     dirSource={dirSource} />
-                <ul className='list-group'>
-                    {onNewFile && isCreatingNew && <AskingNewName
-                        applyName={applyNameCallback} />}
-                    <RenderList dirSource={dirSource}
-                        bodyHandler={bodyHandler}
-                        mimetype={mimetype} />
-                </ul>
+                {!dirSource.dirPath ? noDirSelected : (
+                    <ul className='list-group'>
+                        {onNewFile && isCreatingNew && <AskingNewName
+                            applyName={applyNameCallback} />}
+                        <RenderList dirSource={dirSource}
+                            bodyHandler={bodyHandler}
+                            mimetype={mimetype} />
+                    </ul>
+                )}
             </div>
         </div >
     );
 }
+
+const noDirSelected = (
+    <div className='card-body pb-5'>
+        <div className='alert alert-info'>
+            <i className='bi bi-info-circle' />
+            <span className='ms-2'>No directory selected</span>
+        </div>
+    </div>
+);

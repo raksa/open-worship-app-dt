@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {
@@ -13,14 +12,15 @@ import PresentManager, {
 import PresentSlideManager, {
     PresentSlideManagerEventType,
 } from './PresentSlideManager';
+import { useRefresh } from '../helper/helpers';
 
 export function usePMEvents(events: PresentManagerEventType[],
     presentManager?: PresentManager,
     callback?: () => void) {
-    const [n, setN] = useState(0);
+    const refresh = useRefresh();
     useAppEffect(() => {
         const update = () => {
-            setN(n + 1);
+            refresh();
             callback?.();
         };
         const instanceEvents = presentManager?.
@@ -31,16 +31,16 @@ export function usePMEvents(events: PresentManagerEventType[],
             presentManager?.unregisterEventListener(instanceEvents);
             PresentManager.unregisterEventListener(staticEvents);
         };
-    }, [presentManager, n]);
+    }, [presentManager]);
 }
 
 export function usePBGMEvents(events: PresentBGManagerEventType[],
     presentBGManager?: PresentBGManager,
     callback?: () => void) {
-    const [n, setN] = useState(0);
+    const refresh = useRefresh();
     useAppEffect(() => {
         const update = () => {
-            setN(n + 1);
+            refresh();
             callback?.();
         };
         const instanceEvents = presentBGManager?.
@@ -51,16 +51,16 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
             presentBGManager?.unregisterEventListener(instanceEvents);
             PresentBGManager.unregisterEventListener(staticEvents);
         };
-    }, [presentBGManager, n]);
+    }, [presentBGManager]);
 }
 
 export function usePSlideMEvents(events: PresentSlideManagerEventType[],
     presentSlideManager?: PresentSlideManager,
     callback?: () => void) {
-    const [n, setN] = useState(0);
+    const refresh = useRefresh();
     useAppEffect(() => {
         const update = () => {
-            setN(n + 1);
+            refresh();
             callback?.();
         };
         const instanceEvents = presentSlideManager?.
@@ -71,16 +71,16 @@ export function usePSlideMEvents(events: PresentSlideManagerEventType[],
             presentSlideManager?.unregisterEventListener(instanceEvents);
             PresentSlideManager.unregisterEventListener(staticEvents);
         };
-    }, [presentSlideManager, n]);
+    }, [presentSlideManager]);
 }
 
 export function usePFTMEvents(events: PresentFTManagerEventType[],
     presentFTManager?: PresentFTManager,
     callback?: (args: any) => void) {
-    const [n, setN] = useState(0);
+    const refresh = useRefresh();
     useAppEffect(() => {
         const update = (args: any) => {
-            setN(n + 1);
+            refresh();
             callback?.(args);
         };
         const instanceEvents = presentFTManager?.
@@ -91,7 +91,7 @@ export function usePFTMEvents(events: PresentFTManagerEventType[],
             presentFTManager?.unregisterEventListener(instanceEvents);
             PresentFTManager.unregisterEventListener(staticEvents);
         };
-    }, [presentFTManager, n]);
+    }, [presentFTManager]);
 }
 
 const messageUtils = appProviderPresent.messageUtils;

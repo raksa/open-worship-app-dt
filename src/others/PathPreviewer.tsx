@@ -1,20 +1,25 @@
 import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
 import { useState } from 'react';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useDSEvents } from '../helper/dirSourceHelpers';
 
 export default function PathPreviewer({ dirSource }: {
     dirSource: DirSource,
     prefix: string
 }) {
-    const [text, setText] = useState('');
-    useAppEffect(() => {
+    const [text, setText] = useState(dirSource.dirPath);
+    const [isDirPathValid, setIsDirPathValid] = useState(
+        dirSource.isDirPathValid);
+    useDSEvents(['path'], dirSource, () => {
         setText(dirSource.dirPath);
-    }, [dirSource]);
+        setIsDirPathValid(dirSource.isDirPathValid);
+    });
     const applyNewText = (newText: string) => {
         setText(newText);
         dirSource.dirPath = newText;
     };
+    const dirValidCN = isDirPathValid ? 'is-valid' : (
+        isDirPathValid === null ? '' : 'is-invalid');
     return (
         <div className='input-group mb-3'>
             {dirSource.dirPath &&
@@ -27,7 +32,7 @@ export default function PathPreviewer({ dirSource }: {
                 </button>
             }
             <input type='text'
-                className='form-control'
+                className={`form-control ${dirValidCN}`}
                 value={text}
                 onChange={(event) => {
                     applyNewText(event.target.value);

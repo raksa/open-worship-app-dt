@@ -5,13 +5,14 @@ import {
     MimetypeNameType,
     getAppMimetype,
     fsListFiles,
+    fsCheckDirExist,
 } from '../server/fileHelper';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
-export type DirSourceEventType = 'refresh' | 'reload';
+export type DirSourceEventType = 'refresh' | 'reload' | 'path';
 
 export default class DirSource extends EventHandler<DirSourceEventType> {
     static eventNamePrefix: string = 'dir-source';
@@ -19,6 +20,8 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
     static _objectId = 0;
+    isDirPathValid: boolean | null = null;
+    _dirPath: string = '';
     checkExtraFile: ((fileName: string) => FileMetadataType | null) | null = null;
     constructor(settingName: string) {
         super();
@@ -26,13 +29,30 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             throw new Error('Invalid setting name');
         }
         this.settingName = settingName;
+        this.init();
+    }
+    init() {
+        this.dirPath = getSetting(this.settingName, '');
     }
     get dirPath() {
-        return getSetting(this.settingName, '');
+        return this._dirPath;
     }
     set dirPath(newDirPath: string) {
         setSetting(this.settingName, newDirPath);
-        this.fireReloadEvent();
+        this._dirPath = newDirPath;
+        if (!newDirPath) {
+            this.isDirPathValid = null;
+            this.firePathEvent();
+            return;
+        }
+        fsCheckDirExist(newDirPath).then((isDirExist) => {
+            this.isDirPathValid = isDirExist;
+        }).catch((error) => {
+            handleError(error);
+            this.isDirPathValid = false;
+        }).finally(() => {
+            this.firePathEvent();
+        });
     }
     static toCacheKey(settingName: string) {
         const cacheKey = `${settingName}-${getSetting(settingName, '')}`;
@@ -44,6 +64,9 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             return cacheKey.includes(dirPath);
         }) || null;
     }
+    firePathEvent() {
+        this.addPropEvent('path');
+    }
     fireRefreshEvent() {
         this.addPropEvent('refresh');
     }
@@ -51,7 +74,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         this.addPropEvent('reload');
     }
     fireReloadFileEvent(fileName: string) {
-        if(!this.dirPath) {
+        if (!this.dirPath) {
             return;
         }
         const fileSource = FileSource.getInstance(this.dirPath, fileName);

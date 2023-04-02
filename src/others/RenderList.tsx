@@ -19,6 +19,10 @@ export default function RenderList({
     const [fileSources, setFileSources] = useState<
         FileSource[] | null | undefined>(null);
     const refresh = () => {
+        if (!dirSource.isDirPathValid) {
+            setFileSources(undefined);
+            return;
+        }
         dirSource.getFileSources(mimetype).then((newFileSources) => {
             setFileSources(newFileSources);
         });
