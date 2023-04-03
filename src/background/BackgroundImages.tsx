@@ -6,10 +6,11 @@ import {
 import { RenderPresentIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
+import { DragTypeEnum } from '../helper/DragInf';
 
 export default function BackgroundImages() {
     return (
-        <BackgroundMedia bgType={'image'}
+        <BackgroundMedia dragType={DragTypeEnum.BG_IMAGE}
             rendChild={rendChild} />
     );
 }

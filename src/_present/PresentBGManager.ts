@@ -100,7 +100,13 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');
         if (isValidJson(str, true)) {
-            return JSON.parse(str);
+            const json = JSON.parse(str);
+            const items = Object.values(json);
+            if (items.every((item: any) => {
+                return item.type && item.src;
+            })) {
+                return json;
+            }
         }
         return {};
     }
@@ -201,15 +207,20 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             overflow: 'hidden',
         };
     }
-    async receivePresentDrag(droppedData: DroppedDataType) {
+    async receivePresentDrag({ type, item }: DroppedDataType) {
         const bgTypeMap: { [key: string]: BackgroundType } = {
             [DragTypeEnum.BG_IMAGE]: 'image',
             [DragTypeEnum.BG_VIDEO]: 'video',
         };
-        if (bgTypeMap[droppedData.type] !== undefined) {
+        if (type in bgTypeMap) {
             const bgSrc = await PresentBGManager.initBGSrcDim(
-                droppedData.item.src, bgTypeMap[droppedData.type]);
+                item.src, bgTypeMap[type]);
             this.bgSrc = bgSrc;
+        } else if (type === DragTypeEnum.BG_COLOR) {
+            this.bgSrc = {
+                type: 'color',
+                src: item,
+            };
         }
     }
     delete() {

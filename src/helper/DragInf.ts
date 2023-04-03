@@ -1,4 +1,5 @@
 import BibleItem from '../bible-list/BibleItem';
+import { colorDeserialize } from '../others/color/colorHelpers';
 import SlideItem from '../slide-list/SlideItem';
 import FileSource from './FileSource';
 
@@ -29,7 +30,8 @@ export type DroppedDataType = {
     item: any;
 };
 
-export function handleDragStart(event: any, item: DragInf<any>, type?: DragTypeEnum) {
+export function handleDragStart(event: any, item: DragInf<any>,
+    type?: DragTypeEnum) {
     const data = item.dragSerialize(type);
     event.dataTransfer.setData('text', JSON.stringify(data));
 }
@@ -53,6 +55,8 @@ async function deserializeDragData({
         DragTypeEnum.BG_IMAGE,
     ].includes(type)) {
         item = FileSource.dragDeserialize(data);
+    } else if (type === DragTypeEnum.BG_COLOR) {
+        item = colorDeserialize(data);
     }
     if (item === null) {
         console.log(type, data);

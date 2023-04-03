@@ -1,6 +1,8 @@
 import { showAppContextMenu } from '../AppContextMenu';
 import { copyToClipboard } from '../../server/appHelper';
-import { AppColorType } from './colorHelpers';
+import {
+    AppColorType, serializeForDragging,
+} from './colorHelpers';
 
 function showContextMenu(event: any, color: AppColorType) {
     showAppContextMenu(event, [{
@@ -21,6 +23,10 @@ export default function RenderColor({
 }) {
     return (
         <div title={name}
+            draggable
+            onDragStart={(event) => {
+                serializeForDragging(event, color);
+            }}
             onContextMenu={(event) => {
                 showContextMenu(event, color);
             }}

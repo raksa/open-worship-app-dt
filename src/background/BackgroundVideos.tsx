@@ -7,11 +7,12 @@ import {
 import { RenderPresentIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
+import { DragTypeEnum } from '../helper/DragInf';
 
 
 export default function BackgroundVideos() {
     return (
-        <BackgroundMedia bgType={'video'}
+        <BackgroundMedia dragType={DragTypeEnum.BG_VIDEO}
             rendChild={rendChild} />
     );
 }

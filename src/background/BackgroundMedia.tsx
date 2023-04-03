@@ -14,12 +14,18 @@ import ItemColorNote from '../others/ItemColorNote';
 export type RenderChildType = (fileSource: FileSource,
     selectedBGSrcList: [string, BackgroundSrcType][]) => JSX.Element;
 
-export default function BackgroundMedia({ rendChild, bgType }: {
+const bgTypeMapper: any = {
+    [DragTypeEnum.BG_IMAGE]: 'image',
+    [DragTypeEnum.BG_VIDEO]: 'video',
+};
+
+export default function BackgroundMedia({ rendChild, dragType }: {
     rendChild: RenderChildType,
-    bgType: 'video' | 'image',
+    dragType: DragTypeEnum,
 }) {
+    const bgType = bgTypeMapper[dragType];
     const renderCallback = useCallback((fileSources: FileSource[]) => {
-        const genBodyWithChild = genBody.bind(null, rendChild, bgType);
+        const genBodyWithChild = genBody.bind(null, rendChild, dragType);
         return (
             <div className='d-flex justify-content-start flex-wrap'>
                 {fileSources.map(genBodyWithChild)}
@@ -36,8 +42,9 @@ export default function BackgroundMedia({ rendChild, bgType }: {
     );
 }
 
-function genBody(rendChild: RenderChildType, bgType: 'video' | 'image',
+function genBody(rendChild: RenderChildType, dragType: DragTypeEnum,
     fileSource: FileSource) {
+    const bgType = bgTypeMapper[dragType];
     const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
         fileSource.src, bgType);
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
@@ -48,7 +55,7 @@ function genBody(rendChild: RenderChildType, bgType: 'video' | 'image',
                 + selectedBGSrcList.map(([key]) => key).join(',')}
             draggable
             onDragStart={(event) => {
-                handleDragStart(event, fileSource, DragTypeEnum.BG_VIDEO);
+                handleDragStart(event, fileSource, dragType);
             }}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, genCommonMenu(fileSource));
