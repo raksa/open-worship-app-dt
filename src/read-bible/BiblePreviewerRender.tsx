@@ -26,12 +26,23 @@ export default function BiblePreviewerRender({ bibleItem }: {
         }
         setBibleItems(newBibleItems);
     }, [setBibleItems]);
-    const onBibleChangeCallback = useCallback((
+    const onBibleChangeKeyCallback = useCallback((
         bibleKey: string, index: number) => {
         const targetBibleItem = bibleItems.map((item1) => {
             return item1.clone();
         });
         targetBibleItem[index].bibleKey = bibleKey;
+        applyPresents(targetBibleItem);
+    }, [bibleItems]);
+    const onBibleChangeBibleItemCallback = useCallback((
+        bibleItem: BibleItem, index: number) => {
+        const targetBibleItem = bibleItems.map((item1, i) => {
+            if (i !== index) {
+                return item1.clone();
+            } else {
+                return bibleItem;
+            }
+        });
         applyPresents(targetBibleItem);
     }, [bibleItems]);
     const onCloseCallback = useCallback((index: number) => {
@@ -61,12 +72,16 @@ export default function BiblePreviewerRender({ bibleItem }: {
             <div className='card-body d-flex d-flex-row overflow-hidden h-100'>
                 {isAvailable ? bibleItems.map((item, i) => {
                     return (
-                        <BibleView key={item.bibleKey}
+                        <BibleView key={item.bibleKey + i}
                             index={i}
                             bibleItem={item}
-                            onBibleChange={onBibleChangeCallback}
                             onClose={onCloseCallback}
-                            fontSize={fontSize} />
+                            fontSize={fontSize}
+                            onBibleChangeKey={onBibleChangeKeyCallback}
+                            onBibleChangeBibleItem={
+                                onBibleChangeBibleItemCallback
+                            }
+                        />
                     );
                 }) : 'No Bible Available'}
                 {isAvailable && <ButtonAddMoreBible

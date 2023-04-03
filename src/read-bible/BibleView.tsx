@@ -8,24 +8,49 @@ import BibleItem, {
 import { copyToClipboard } from '../server/appHelper';
 import BibleSelection from '../bible-search/BibleSelection';
 import { useCallback } from 'react';
+import { handleError } from '../helper/errorHelpers';
 
 export default function BibleView({
-    index, bibleItem, onBibleChange, onClose, fontSize,
+    index, bibleItem, onClose, fontSize,
+    onBibleChangeKey, onBibleChangeBibleItem,
 }: {
     index: number,
     bibleItem: BibleItem,
-    onBibleChange: (bibleKey: string, index: number) => void,
     onClose: (index: number) => void,
     fontSize: number,
+    onBibleChangeKey: (bibleKey: string, index: number) => void,
+    onBibleChangeBibleItem: (bibleItem: BibleItem, index: number) => void,
 }) {
     const title = useBibleItemRenderTitle(bibleItem);
     const text = useBibleItemRenderText(bibleItem);
     const onChangeCallback = useCallback((
         oldBibleKey: string, newBibleKey: string) => {
-        onBibleChange(newBibleKey, index);
-    }, [index, onBibleChange]);
+        onBibleChangeKey(newBibleKey, index);
+    }, [index, onBibleChangeKey]);
     return (
         <div className='bible-view card flex-fill'
+            style={{ minWidth: '30%' }}
+            onDragOver={(event) => {
+                event.preventDefault();
+                event.currentTarget.classList.add('receiving-child');
+            }}
+            onDragLeave={(event) => {
+                event.preventDefault();
+                event.currentTarget.classList.remove('receiving-child');
+            }}
+            onDrop={async (event) => {
+                event.currentTarget.classList.remove('receiving-child');
+                const data = event.dataTransfer.getData('text');
+                try {
+                    const json = JSON.parse(data);
+                    if (json.type === 'bibleItem') {
+                        const bibleItem = BibleItem.fromJson(json.data);
+                        onBibleChangeBibleItem(bibleItem, index);
+                    }
+                } catch (error) {
+                    handleError(error);
+                }
+            }}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     {
