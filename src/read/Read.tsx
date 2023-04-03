@@ -13,13 +13,13 @@ export default function Read() {
     return (
         <ResizeActor fSizeName={resizeSettingNames.read}
             flexSizeDefault={{
-                'h1': ['4'],
-                'h2': ['1'],
+                'h1': ['1'],
+                'h2': ['4'],
             }}
             resizeKinds={['h', 'h']}
             dataInput={[
-                [BiblePreviewer, 'h1', 'flex v'],
-                [BibleList, 'h2', 'flex v'],
+                [BibleList, 'h1', 'flex v'],
+                [BiblePreviewer, 'h2', 'flex v'],
             ]} />
     );
 }

@@ -10,18 +10,20 @@ import BibleSelection from '../bible-search/BibleSelection';
 import { useCallback } from 'react';
 
 export default function BibleView({
-    index, bibleItem, onBibleChange, onClose,
+    index, bibleItem, onBibleChange, onClose, fontSize,
 }: {
     index: number,
     bibleItem: BibleItem,
     onBibleChange: (bibleKey: string, index: number) => void,
     onClose: (index: number) => void,
+    fontSize: number,
 }) {
     const title = useBibleItemRenderTitle(bibleItem);
     const text = useBibleItemRenderText(bibleItem);
-    const onChangeCallback = useCallback((bibleKey: string) => {
-        onBibleChange(bibleKey, index);
-    }, []);
+    const onChangeCallback = useCallback((
+        oldBibleKey: string, newBibleKey: string) => {
+        onBibleChange(newBibleKey, index);
+    }, [index, onBibleChange]);
     return (
         <div className='bible-view card flex-fill'
             onContextMenu={(event) => {
@@ -35,20 +37,30 @@ export default function BibleView({
                 ]);
             }}>
             <div className='card-header'>
-                <span className='input-group-text select float-start'>
-                    <BibleSelection value={bibleItem.bibleKey}
-                        onChange={onChangeCallback} />
-                </span>
-                {title}
-                <button className='btn-close float-end'
-                    onClick={() => {
-                        onClose(index);
-                    }} />
+                <div className='d-flex'>
+                    <div className='flex-fill'>
+                        <div>
+                            <span className='input-group-text select float-start'>
+                                <BibleSelection value={bibleItem.bibleKey}
+                                    onChange={onChangeCallback} />
+                            </span>
+                        </div>
+                        <div className='title'>
+                            {title}
+                        </div>
+                    </div>
+                    <div>
+                        <button className='btn-close' onClick={() => {
+                            onClose(index);
+                        }} />
+                    </div>
+                </div>
             </div>
             <div className='card-body p-3'>
-                <p className='selectable-text'>{text}</p>
+                <p className='selectable-text' style={{
+                    fontSize: `${fontSize}px`,
+                }}>{text}</p>
             </div>
         </div>
     );
 }
-
