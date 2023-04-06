@@ -30,36 +30,45 @@ export default function RenderSearchSuggestion({
         startVerse, endVerse,
     } = bibleResult;
 
+    const isChoosing = !book || chapter === null;
     return (
-        <div className='found'>
-            {!book && <RenderBookOption
-                bibleSelected={bibleSelected}
-                inputText={inputText}
-                onSelect={applyBookSelection}
-            />}
-            {book && chapter === null && <RenderChapterOption
-                bibleSelected={bibleSelected}
-                bookSelected={book}
-                inputText={inputText}
-                onSelect={applyChapterSelection}
-            />}
-            {book && chapter !== null && <RenderFound
-                bibleSelected={bibleSelected}
-                book={book}
-                chapter={chapter}
-                startVerse={startVerse}
-                endVerse={endVerse}
-                applyChapterSelection={applyChapterSelection}
-                onVerseChange={onVerseChangeCallback}
-            />}
-            {book && chapter !== null && <Preview
-                bibleSelected={bibleSelected}
-                book={book}
-                chapter={chapter}
-                startVerse={startVerse}
-                endVerse={endVerse}
-            />}
-        </div>
+        <>
+            {isChoosing && <div className='w-100 h-100'
+                style={{ overflow: 'auto' }}>
+                <div className='d-flex flex-wrap justify-content-start'>
+                    {!book && <RenderBookOption
+                        bibleSelected={bibleSelected}
+                        inputText={inputText}
+                        onSelect={applyBookSelection}
+                    />}
+                    {book && chapter === null && <RenderChapterOption
+                        bibleSelected={bibleSelected}
+                        bookSelected={book}
+                        inputText={inputText}
+                        onSelect={applyChapterSelection}
+                    />}
+                </div>
+            </div>}
+            <div className='d-flex flex-column w-100 h-100 overflow-hidden'
+            >
+                {book && chapter !== null && <RenderFound
+                    bibleSelected={bibleSelected}
+                    book={book}
+                    chapter={chapter}
+                    startVerse={startVerse}
+                    endVerse={endVerse}
+                    applyChapterSelection={applyChapterSelection}
+                    onVerseChange={onVerseChangeCallback}
+                />}
+                {book && chapter !== null && <Preview
+                    bibleSelected={bibleSelected}
+                    book={book}
+                    chapter={chapter}
+                    startVerse={startVerse}
+                    endVerse={endVerse}
+                />}
+            </div>
+        </>
     );
 }
 

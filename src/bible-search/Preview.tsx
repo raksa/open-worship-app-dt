@@ -5,6 +5,7 @@ import { bookToKey } from '../server/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { consumeStartVerseEndVerse } from './bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { useStateSettingNumber } from '../helper/settingHelper';
 
 export default function Preview({
     book,
@@ -19,6 +20,8 @@ export default function Preview({
     endVerse: number | null,
     bibleSelected: string,
 }) {
+    const [fontSize, setFontSize] = useStateSettingNumber(
+        'bible-search-font-size', 16);
     const [rendered, setRendered] = useState<{
         title: string, text: string,
     } | null>(null);
@@ -57,32 +60,59 @@ export default function Preview({
     }
     const { title, text } = rendered;
     return (
-        <div className='card border-success mb-3 mx-auto mt-5'
-            style={{ maxHeight: '375px' }}>
+        <div className='card border-success mt-1 flex-fill' style={{
+            height: '10px',
+        }}>
             <div className='card-header bg-transparent border-success'>
                 {title}
                 <div className='btn-group float-end'>
                     <button type='button'
-                        className='btn btn-sm btn-outline-danger'
+                        className='btn btn-sm btn-info'
+                        title='Copy title to clipboard'
                         onClick={() => {
                             copyToClipboard(title);
-                        }}>copy title</button>
+                        }}><i className='bi bi-back ' />title</button>
                     <button type='button'
-                        className='btn btn-sm btn-outline-success'
+                        className='btn btn-sm btn-info'
+                        title='Copy verse text to clipboard'
                         onClick={() => {
                             copyToClipboard(text);
-                        }}>copy verse text</button>
+                        }}>
+                        <i className='bi bi-back' />text</button>
                     <button type='button'
-                        className='btn btn-sm btn-outline-info'
+                        className='btn btn-sm btn-info'
+                        title='Copy all to clipboard'
                         onClick={() => {
                             copyToClipboard(`${title}\n${text}`);
-                        }}>copy all</button>
+                        }}><i className='bi bi-back' />all</button>
                 </div>
             </div>
             <div className={'card-body bg-transparent '
                 + 'border-success selectable-text'}>
-                {text}
+                <p style={{ fontSize: `${fontSize}px` }}>{text}</p>
             </div>
+            <div className='card-footer'>
+                {renderFontSizeController(fontSize, setFontSize)}
+            </div>
+        </div>
+    );
+}
+
+function renderFontSizeController(fontSize: number,
+    setFontSize: (fontSize: number) => void) {
+    return (
+        <div className='form form-inline d-flex'
+            style={{ minWidth: '100px' }}>
+            <label className='form-label' style={{ width: '150px' }}>
+                Font Size:{fontSize}px
+            </label>
+            <input type='range' className='form-range'
+                min={10} max={120}
+                step={2}
+                value={fontSize}
+                onChange={(event) => {
+                    setFontSize(+event.target.value);
+                }} />
         </div>
     );
 }

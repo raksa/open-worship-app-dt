@@ -70,7 +70,7 @@ export default function RenderFound({
     const eVerse = found.eVerse;
     const verseCount = Object.values(found.verses).length;
     return (
-        <div className='render-found card border-success mb-3 mx-auto mt-5'>
+        <div className='render-found card border-success'>
             <div className='card-body'>
                 <div className={'verse-select d-flex '
                     + 'align-content-start flex-wrap'}>

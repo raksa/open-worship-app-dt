@@ -47,25 +47,20 @@ export default function RenderBookOption({
         applyAttemptIndex = 0;
     }
     return <>
-        <span className='input-group-text float-start'>
-            <i className='bi bi-bookmark' />
-        </span>
-        <div className='row w-75 align-items-start g-2'>
-            {(matches === null || bookKVList === null) ?
-                <div>No matched found</div> :
-                matches.map((key, i) => {
-                    return (
-                        <RenderOption key={key}
-                            index={i}
-                            bibleKey={key}
-                            bookKVList={bookKVList}
-                            kjvKeyValue={kjvKeyValue}
-                            onSelect={onSelect}
-                            applyAttemptIndex={applyAttemptIndex}
-                        />
-                    );
-                })}
-        </div>
+        {(matches === null || bookKVList === null) ?
+            <div>No matched found</div> :
+            matches.map((key, i) => {
+                return (
+                    <RenderOption key={key}
+                        index={i}
+                        bibleKey={key}
+                        bookKVList={bookKVList}
+                        kjvKeyValue={kjvKeyValue}
+                        onSelect={onSelect}
+                        applyAttemptIndex={applyAttemptIndex}
+                    />
+                );
+            })}
     </>;
 }
 
@@ -89,7 +84,7 @@ function RenderOption({
         return <div>No matched found</div>;
     }
     return (
-        <div className='col-6'>
+        <div style={{ margin: '2px' }}>
             <button style={{ width: '240px', overflowX: 'auto' }}
                 ref={(self) => {
                     if (self && highlight && !isVisible(self)) {

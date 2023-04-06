@@ -88,27 +88,30 @@ export default function BibleSearchRender({ editingInputText }: {
         );
     }
     return (
-        <div id='bible-search-popup'
-            className='app-modal shadow card'>
+        <div id='bible-search-popup' className='app-modal shadow card'>
             <Header />
-            <div className='body card-body w-100'>
-                <div className='input-group'>
-                    <span className='input-group-text'>
-                        <i className='bi bi-search' />
-                    </span>
-                    <InputHandler
-                        inputText={inputText}
-                        onInputChange={setInputText}
-                        bibleSelected={bibleSelected}
-                        onBibleChange={handleBibleChange} />
+            <div className='body card-body card w-100 h-100 overflow-hidden d-flex'>
+                <div className='header-container w-100'>
+                    <div className='input-group input-group-header'>
+                        <span className='input-group-text'>
+                            <i className='bi bi-search' />
+                        </span>
+                        <InputHandler
+                            inputText={inputText}
+                            onInputChange={setInputText}
+                            bibleSelected={bibleSelected}
+                            onBibleChange={handleBibleChange} />
+                    </div>
                 </div>
-                <RenderSearchSuggestion
-                    inputText={inputText}
-                    bibleSelected={bibleSelected}
-                    bibleResult={bibleResult}
-                    applyChapterSelection={applyChapterSelectionCallback}
-                    applyVerseSelection={applyVerseSelectionCallback}
-                    applyBookSelection={applyBookSelectionCallback} />
+                <div className='found h-100 w-100 overflow-hidden'>
+                    <RenderSearchSuggestion
+                        inputText={inputText}
+                        bibleSelected={bibleSelected}
+                        bibleResult={bibleResult}
+                        applyChapterSelection={applyChapterSelectionCallback}
+                        applyVerseSelection={applyVerseSelectionCallback}
+                        applyBookSelection={applyBookSelectionCallback} />
+                </div>
             </div>
         </div>
     );

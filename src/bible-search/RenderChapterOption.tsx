@@ -78,11 +78,8 @@ export default function RenderChapterOption({
     if (matches === null || attemptChapterIndex > matches.length - 1) {
         applyAttemptIndex = 0;
     }
-    return <>
-        <span className='input-group-text float-start'>
-            <i className='bi bi-box-arrow-in-right' />
-        </span>
-        <div className='row w-75 align-items-start g-2'>
+    return (
+        <>
             {matches === null ? <div>
                 No matched chapters
             </div> :
@@ -92,7 +89,7 @@ export default function RenderChapterOption({
                     const className = 'chapter-select btn btn-outline-success '
                         + activeClass;
                     return (
-                        <div className='col-2' key={chapter}>
+                        <div key={chapter} style={{ margin: '2px' }}>
                             <button type='button' onClick={() => {
                                 onSelect(chapter);
                             }} className={className}>
@@ -103,8 +100,8 @@ export default function RenderChapterOption({
                         </div>
                     );
                 })}
-        </div>
-    </>;
+        </>
+    );
 }
 function RendChapterAsync({ bibleSelected, chapter }: {
     bibleSelected: string, chapter: number,

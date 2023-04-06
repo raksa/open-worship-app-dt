@@ -24,7 +24,7 @@ export default function RenderVerseNumOption({
     select += ` ${inside ? 'selected' : ''}`;
     select += ` ${ended ? 'selected-end' : ''}`;
     return (
-        <div className={`item alert alert-secondary text-center ${select}`}
+        <div className={`item alert pointer text-center ${select}`}
             onMouseDown={(event) => {
                 if (event.shiftKey) {
                     const arr = [ind, sVerse, eVerse]

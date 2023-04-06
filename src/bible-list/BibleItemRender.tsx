@@ -16,6 +16,7 @@ import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useCallback } from 'react';
 import { handleDragStart } from '../helper/DragInf';
+import ItemColorNote from '../others/ItemColorNote';
 
 export default function BibleItemRender({
     index,
@@ -89,6 +90,7 @@ export default function BibleItemRender({
                 }
                 bibleItem.isSelected = !isSelected;
             }}>
+            <ItemColorNote item={bibleItem} />
             <span className={'bible'}
                 onClick={startChangingBible}>
                 {bibleStatus === null ? null : bibleStatus[2]}

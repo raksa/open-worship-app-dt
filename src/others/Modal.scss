@@ -11,8 +11,6 @@
   backdrop-filter: blur(5px);
 
   &>div:first-child {
-    min-width: 600px;
-    margin-top: 20px;
     background-color: var(--bs-gray-800);
   }
 }
