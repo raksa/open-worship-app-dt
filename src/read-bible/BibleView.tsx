@@ -6,9 +6,9 @@ import BibleItem, {
     useBibleItemRenderTitle,
 } from '../bible-list/BibleItem';
 import { copyToClipboard } from '../server/appHelper';
-import BibleSelection from '../bible-search/BibleSelection';
 import { useCallback } from 'react';
 import { handleError } from '../helper/errorHelpers';
+import { BibleSelectionMini } from '../bible-search/BibleSelection';
 
 export default function BibleView({
     index, bibleItem, onClose, fontSize,
@@ -24,7 +24,7 @@ export default function BibleView({
     const title = useBibleItemRenderTitle(bibleItem);
     const text = useBibleItemRenderText(bibleItem);
     const onChangeCallback = useCallback((
-        oldBibleKey: string, newBibleKey: string) => {
+        _: string, newBibleKey: string) => {
         onBibleChangeKey(newBibleKey, index);
     }, [index, onBibleChangeKey]);
     return (
@@ -61,30 +61,40 @@ export default function BibleView({
                     },
                 ]);
             }}>
-            <div className='card-header'>
-                <div className='d-flex'>
-                    <div className='flex-fill'>
-                        <div>
-                            <span className='input-group-text select float-start'>
-                                <BibleSelection value={bibleItem.bibleKey}
-                                    onChange={onChangeCallback} />
-                            </span>
-                        </div>
-                        <div className='title'>
-                            {title}
-                        </div>
-                    </div>
-                    <div>
-                        <button className='btn-close' onClick={() => {
-                            onClose(index);
-                        }} />
-                    </div>
-                </div>
-            </div>
+            {rendHeader(bibleItem.bibleKey, title, onChangeCallback,
+                onClose, index)}
             <div className='card-body p-3'>
                 <p className='selectable-text' style={{
                     fontSize: `${fontSize}px`,
                 }}>{text}</p>
+            </div>
+        </div>
+    );
+}
+
+function rendHeader(
+    key: string, title: string,
+    onChange: (oldBibleKey: string, newBibleKey: string) => void,
+    onClose: (index: number) => void, index: number,
+) {
+    return (
+        <div className='card-header'>
+            <div className='d-flex'>
+                <div className='flex-fill d-flex'>
+                    <div>
+                        <BibleSelectionMini value={key}
+                            onChange={onChange} />
+                    </div>
+                    <div className='title'>
+                        {title}
+                    </div>
+                </div>
+                <div>
+                    <button className='btn-close'
+                        onClick={() => {
+                            onClose(index);
+                        }} />
+                </div>
             </div>
         </div>
     );

@@ -18,10 +18,16 @@ export default function BiblePreviewerRender({ bibleItem }: {
 }) {
     const [fontSize, setFontSize] = useStateSettingNumber(
         'preview-font-S=size', 16);
-    const [bibleItems, setBibleItems] = useState<BibleItem[]>([]);
+    const [bibleItems, _setBibleItems] = useState<BibleItem[]>([]);
+    const setBibleItems = (newBibleItems: BibleItem[]) => {
+        newBibleItems.forEach((item, i) => {
+            item.id = 9999 + i;
+        });
+        _setBibleItems(newBibleItems);
+    };
     const applyPresents = useCallback((newBibleItems: BibleItem[]) => {
         BibleItem.setBiblePresentingSetting(newBibleItems);
-        if (checkIsFtAutoShow()) {
+        if (isWindowPresentingMode() && checkIsFtAutoShow()) {
             previewer.show();
         }
         setBibleItems(newBibleItems);
@@ -72,7 +78,7 @@ export default function BiblePreviewerRender({ bibleItem }: {
             <div className='card-body d-flex d-flex-row overflow-hidden h-100'>
                 {isAvailable ? bibleItems.map((item, i) => {
                     return (
-                        <BibleView key={item.bibleKey + i}
+                        <BibleView key={item.id}
                             index={i}
                             bibleItem={item}
                             onClose={onCloseCallback}
@@ -84,41 +90,50 @@ export default function BiblePreviewerRender({ bibleItem }: {
                         />
                     );
                 }) : 'No Bible Available'}
-                {isAvailable && <ButtonAddMoreBible
-                    bibleItems={bibleItems}
-                    applyPresents={applyPresents} />
-                }
             </div>
-            <div className='card-footer'>
+            <div className='card-footer p-0'>
                 <BibleViewSetting fontSize={fontSize}
-                    setFontSize={setFontSize} />
+                    setFontSize={setFontSize}
+                    bibleItems={bibleItems}
+                    applyPresents={applyPresents}
+                />
             </div>
         </div>
     );
 }
 
 
-function BibleViewSetting({ fontSize, setFontSize }: {
+function BibleViewSetting({
+    fontSize, setFontSize, bibleItems, applyPresents,
+}: {
     fontSize: number,
     setFontSize: (fontSize: number) => void,
+    bibleItems: BibleItem[],
+    applyPresents: (bibleItems: BibleItem[]) => void,
 }) {
     return (
         <div className='bible-view-setting'>
             <div className='input-group d-flex'>
-                <div className='pe-1'>
-                    <label htmlFor="preview-fon-size"
-                        className="form-label">
-                        Font Size ({fontSize}px):
-                    </label>
+                <div className='flex-fill d-flex mx-1'>
+                    <div className='pe-1'>
+                        <label htmlFor="preview-fon-size"
+                            className="form-label">
+                            Font Size ({fontSize}px):
+                        </label>
+                    </div>
+                    <div className='flex-fill'>
+                        <input id="preview-fon-size"
+                            type='range' className='form-range'
+                            min={10} max={100} step={2}
+                            value={fontSize}
+                            onChange={(event) => {
+                                setFontSize(Number(event.target.value));
+                            }} />
+                    </div>
                 </div>
-                <div className='flex-fill'>
-                    <input id="preview-fon-size"
-                        type='range' className='form-range'
-                        min={10} max={100} step={2}
-                        value={fontSize}
-                        onChange={(event) => {
-                            setFontSize(Number(event.target.value));
-                        }} />
+                <div className='px-2'>
+                    <ButtonAddMoreBible bibleItems={bibleItems}
+                        applyPresents={applyPresents} />
                 </div>
             </div>
         </div>

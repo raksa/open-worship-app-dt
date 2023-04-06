@@ -6,8 +6,12 @@ import {
 import Bible from './Bible';
 import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
-import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
-import { previewingEventListener } from '../event/PreviewingEventListener';
+import {
+    getIsPreviewingBible,
+} from '../full-text-present/FullTextPreviewer';
+import {
+    previewingEventListener,
+} from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useCallback } from 'react';
