@@ -16,7 +16,6 @@ import {
     genOnContextMenu,
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
-import { useDSEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 const AskingNewName = React.lazy(() => {
@@ -24,9 +23,6 @@ const AskingNewName = React.lazy(() => {
 });
 
 function watch(dirSource: DirSource, signal: AbortSignal) {
-    if (!dirSource.isDirPathValid) {
-        return;
-    }
     appProvider.fileUtils.watch(dirSource.dirPath, {
         signal,
     }, (eventType, fileName) => {
@@ -71,9 +67,6 @@ export default function FileListHandler({
             abortController.abort();
         };
     }, [dirSource.dirPath]);
-    useDSEvents(['path'], dirSource, () => {
-        dirSource.fireReloadEvent();
-    });
     return (
         <div className={`${id} card w-100 h-100`}
             onDragOver={genOnDragOver(dirSource, mimetype)}

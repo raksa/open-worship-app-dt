@@ -41,16 +41,13 @@ export default function PathSelector({
 }
 
 function RenderTitle({ dirSource }: { dirSource: DirSource }) {
-    const [dirPath, setDirPath] = React.useState(dirSource.dirPath);
-    useDSEvents(['path'], dirSource, () => {
-        setDirPath(dirSource.dirPath);
-    });
+    useDSEvents(['reload'], dirSource);
     if (!dirSource.dirPath) {
         return null;
     }
     return (
         <>
-            {pathPreviewer(dirPath)}
+            {pathPreviewer(dirSource.dirPath)}
             <div className='px-2'
                 onClick={(event) => {
                     event.stopPropagation();

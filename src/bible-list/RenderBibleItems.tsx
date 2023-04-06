@@ -50,7 +50,7 @@ export default function RenderBibleItems({ bible }: {
                     onContextMenu={onContextMenuCallback} />;
             })}
             {bible.isDefault && <div
-                className='p-2 pointer border-white-round'
+                className='btn btn-info p-2 pointer border-white-round'
                 style={{
                     margin: 'auto',
                     fontSize: '0.8rem',

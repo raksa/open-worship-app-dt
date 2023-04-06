@@ -3,7 +3,6 @@ import {
     getBibleInfoWithStatusList,
     useGetBibleWithStatus,
 } from '../server/bible-helpers/bibleHelpers';
-import ItemColorNote from '../others/ItemColorNote';
 import Bible from './Bible';
 import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
@@ -88,12 +87,10 @@ export default function BibleItemRender({
             }}>
             <span className={'bible'}
                 onClick={startChangingBible}>
-                <i className='bi bi-bookmark' />
                 {bibleStatus === null ? null : bibleStatus[2]}
             </span> | {title === null ? 'not found' : title}
             {warningMessage && <span className='float-end'
                 title={warningMessage}>⚠️</span>}
-            <ItemColorNote item={bibleItem} />
         </li >
     );
 }

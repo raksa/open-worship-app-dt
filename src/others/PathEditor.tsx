@@ -2,17 +2,30 @@ import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
 import { useState } from 'react';
 import { useDSEvents } from '../helper/dirSourceHelpers';
+import { fsCheckDirExist } from '../server/fileHelper';
+
+function useCheckValidPath(dirSource: DirSource) {
+    const [isDirPathValid, setIsDirPathValid] = useState<boolean | null>(null);
+    useDSEvents(['reload'], dirSource, () => {
+        if (!dirSource.dirPath) {
+            setIsDirPathValid(null);
+            return;
+        }
+        fsCheckDirExist(dirSource.dirPath).then((isDirPathValid) => {
+            setIsDirPathValid(isDirPathValid);
+        });
+    });
+    return isDirPathValid;
+}
 
 export default function PathEditor({ dirSource }: {
     dirSource: DirSource,
     prefix: string
 }) {
     const [text, setText] = useState(dirSource.dirPath);
-    const [isDirPathValid, setIsDirPathValid] = useState(
-        dirSource.isDirPathValid);
-    useDSEvents(['path'], dirSource, () => {
+    const isDirPathValid = useCheckValidPath(dirSource);
+    useDSEvents(['reload'], dirSource, () => {
         setText(dirSource.dirPath);
-        setIsDirPathValid(dirSource.isDirPathValid);
     });
     const applyNewText = (newText: string) => {
         setText(newText);

@@ -12,6 +12,7 @@ import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
+import ItemColorNote from './ItemColorNote';
 
 const RenderRenaming = React.lazy(() => {
     return import('./RenderRenaming');
@@ -38,7 +39,7 @@ export const genCommonMenu = (fileSource: FileSource) => {
 export default function FileItemHandler({
     data, reload, index, fileSource, className,
     contextMenu, onDrop, onClick, renderChild,
-    isPointer, onDelete,
+    isPointer, onDelete, isDisabledColorNote,
 }: {
     data: ItemSource<any> | null | undefined,
     reload: () => void,
@@ -51,6 +52,7 @@ export default function FileItemHandler({
     renderChild: (lyric: ItemSource<any>) => any,
     isPointer?: boolean,
     onDelete?: () => void,
+    isDisabledColorNote?: boolean,
 }) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFSEvents(['select'], fileSource);
@@ -134,7 +136,15 @@ export default function FileItemHandler({
             {isRenaming ? <RenderRenaming
                 setIsRenaming={setIsRenaming}
                 fileSource={fileSource} /> :
-                renderChild(data)}
+                <>
+                    {renderChild(data)}
+                    {!isDisabledColorNote &&
+                        <div className='color-note-container'>
+                            <ItemColorNote item={data.fileSource} />
+                        </div>
+                    }
+                </>
+            }
         </li>
     );
 }

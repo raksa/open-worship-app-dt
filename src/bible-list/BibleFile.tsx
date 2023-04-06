@@ -63,6 +63,7 @@ export default function BibleFile({
             className={'bible-file'}
             onDrop={onDropCallback}
             renderChild={renderChildCallback}
+            isDisabledColorNote
             contextMenu={[{
                 title: 'Empty',
                 onClick: () => {
@@ -95,6 +96,7 @@ function BiblePreview({ bible }: { bible: Bible }) {
                 <i className={`bi ${bible.isOpened ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
                 <span className='w-100 text-center'>
+                    <i className={`bi bi-book${bible.isOpened ? '-fill' : ''} px-1`} />
                     {bible.fileSource.name}
                 </span>
             </div>
@@ -103,7 +105,7 @@ function BiblePreview({ bible }: { bible: Bible }) {
                 style={{
                     overflow: 'auto',
                 }}>
-                {bible.isOpened && <div className='accordion-body'>
+                {bible.isOpened && <div className='accordion-body p-0'>
                     <AppSuspense>
                         <RenderBibleItems bible={bible} />
                     </AppSuspense>

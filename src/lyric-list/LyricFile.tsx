@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
-import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
@@ -62,7 +61,6 @@ function LyricFilePreview({ lyric }: { lyric: Lyric }) {
             {lyric.fileSource.name}
             {lyric.isChanged && <span
                 style={{ color: 'red' }}>*</span>}
-            <ItemColorNote item={lyric.fileSource} />
         </>
     );
 }
