@@ -39,7 +39,7 @@ export type FileListType = FileSource[] | null | undefined
 export default function FileListHandler({
     id, mimetype, dirSource, header, bodyHandler,
     contextMenu, onNewFile, checkExtraFile,
-    takeDroppedFile,
+    takeDroppedFile, userClassName,
 }: {
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
@@ -49,6 +49,7 @@ export default function FileListHandler({
     contextMenu?: ContextMenuItemType[],
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
+    userClassName?: string,
 }) {
     const applyNameCallback = useCallback(async (name: string | null) => {
         if (name === null) {
@@ -68,7 +69,7 @@ export default function FileListHandler({
         };
     }, [dirSource.dirPath]);
     return (
-        <div className={`${id} card w-100 h-100`}
+        <div className={`${id} card w-100 h-100 ${userClassName}`}
             onDragOver={genOnDragOver(dirSource, mimetype)}
             onDragLeave={genOnDragLeave()}
             onDrop={genOnDrop({

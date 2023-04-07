@@ -150,6 +150,11 @@
     direction: rtl;
     text-align: left;
   }
+  .app-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 
   .drag-receiving {
     background-color: green;

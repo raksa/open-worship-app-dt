@@ -64,6 +64,7 @@ export default function BibleFile({
             onDrop={onDropCallback}
             renderChild={renderChildCallback}
             isDisabledColorNote
+            userClassName='p-0'
             contextMenu={[{
                 title: 'Empty',
                 onClick: () => {

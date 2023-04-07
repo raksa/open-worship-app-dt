@@ -40,6 +40,7 @@ export default function FileItemHandler({
     data, reload, index, fileSource, className,
     contextMenu, onDrop, onClick, renderChild,
     isPointer, onDelete, isDisabledColorNote,
+    userClassName,
 }: {
     data: ItemSource<any> | null | undefined,
     reload: () => void,
@@ -53,6 +54,7 @@ export default function FileItemHandler({
     isPointer?: boolean,
     onDelete?: () => void,
     isDisabledColorNote?: boolean,
+    userClassName?: string,
 }) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFSEvents(['select'], fileSource);
@@ -100,7 +102,7 @@ export default function FileItemHandler({
     const moreClassName = `${data.isSelected ? 'active' : ''} `
         + `${className || ''}`;
     return (
-        <li className={`list-group-item mx-1 ${moreClassName} 
+        <li className={`list-group-item mx-1 ${moreClassName} ${userClassName}
         ${isPointer ? 'pointer' : ''}`}
             onClick={applyClick}
             data-index={index + 1}

@@ -90,13 +90,17 @@ export default function BibleItemRender({
                 }
                 bibleItem.isSelected = !isSelected;
             }}>
-            <ItemColorNote item={bibleItem} />
-            <span className={'bible'}
-                onClick={startChangingBible}>
-                {bibleStatus === null ? null : bibleStatus[2]}
-            </span> | {title === null ? 'not found' : title}
-            {warningMessage && <span className='float-end'
-                title={warningMessage}>⚠️</span>}
+            <div className='d-flex'>
+                <ItemColorNote item={bibleItem} />
+                <span className={'bible ps-1'}
+                    onClick={startChangingBible}>
+                    {bibleStatus === null ? null : bibleStatus[2]}
+                </span> | <span className='app-ellipsis'>
+                    {title === null ? 'not found' : title}
+                </span>
+                {warningMessage && <span className='float-end'
+                    title={warningMessage}>⚠️</span>}
+            </div>
         </li >
     );
 }

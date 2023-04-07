@@ -29,6 +29,7 @@ export default function BibleList() {
             dirSource={dirSource}
             onNewFile={onNewFileCallback}
             header={<span>Bibles</span>}
-            bodyHandler={bodyHandlerCallback} />
+            bodyHandler={bodyHandlerCallback}
+            userClassName='p-0' />
     );
 }
