@@ -79,7 +79,7 @@ export default function RenderBibleDataFound({
                 chapter, bibleSelected,
             })}
             <div className={'card-body bg-transparent '
-                + 'border-success selectable-text p-0'}>
+                + 'border-success p-0'}>
                 <RenderVersesOption
                     bibleSelected={bibleSelected}
                     book={book}
@@ -149,7 +149,7 @@ function renderCopyButton(title: string, text: string) {
 
 function bibleTextPreview(text: string, fontSize: number) {
     return (
-        <p className='p-3'
+        <p className='p-3 selectable-text'
             style={{
                 fontSize: `${fontSize}px`,
             }}>{text}</p>
