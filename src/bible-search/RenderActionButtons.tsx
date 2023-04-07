@@ -24,7 +24,7 @@ const addListEventMapper: KBEventMapper = {
     key: 'Enter',
 };
 
-export default function RenderFoundButtons(props: AddBiblePropsType) {
+export default function RenderActionButtons(props: AddBiblePropsType) {
     const isBibleSelectEditing = !!BibleItem.getSelectedEditingResult();
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
     const isWindowEditing = isWindowEditingMode();
@@ -45,23 +45,24 @@ export default function RenderFoundButtons(props: AddBiblePropsType) {
         return isBibleSelectEditing ? 'Save Bible Item' : 'Add Bible Item';
     };
     return (
-        <div className={'card-footer bg-transparent border-success '
-            + 'd-flex justify-content-evenly'}>
+        <div className='btn-group mx-1'>
             {isWindowEditing && !isSlideSelectEditing ? null :
                 <button type='button'
-                    className='btn btn-sm btn-primary ms-5 me-5'
+                    className='btn btn-sm btn-info'
                     onClick={() => {
                         addBibleItem(props);
                     }}
                     data-tool-tip={KeyboardEventListener
                         .toShortcutKey(addListEventMapper)}>
+                    <i className='bi bi-plus-lg' />
                     {getAddingTitle()}
                 </button>}
             {!isWindowEditing && <button type='button'
-                className='btn btn-sm btn-primary ms-5 me-5'
+                className='btn btn-sm btn-info ms-1'
                 onClick={addBibleItemAndPresent}
                 data-tool-tip={KeyboardEventListener
                     .toShortcutKey(presentEventMapper)}>
+                <i className='bi bi-easel' />
                 {isBibleSelectEditing ? 'Save and Present' : 'Present'}
             </button>}
         </div>

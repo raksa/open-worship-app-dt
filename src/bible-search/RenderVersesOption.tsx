@@ -1,10 +1,9 @@
-import './RenderFound.scss';
+import './RenderVersesOption.scss';
 
 import { useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import RenderFoundButtons from './RenderFoundButtons';
 import {
     ConsumeVerseType,
     consumeStartVerseEndVerse,
@@ -14,7 +13,7 @@ import RenderVerseNumOption, {
 } from './RenderVerseNumOption';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
-export default function RenderFound({
+export default function RenderVersesOption({
     book,
     chapter,
     startVerse,
@@ -70,9 +69,8 @@ export default function RenderFound({
     const eVerse = found.eVerse;
     const verseCount = Object.values(found.verses).length;
     return (
-        <div className='render-found card border-success'>
-            <div className='card-body'>
-                <div className={'verse-select d-flex '
+        <div className='render-found sticky-top'>
+                <div className={'verse-select d-flex p-1 '
                     + 'align-content-start flex-wrap'}>
                     {Array.from({ length: verseCount }, (_, i) => {
                         return (
@@ -84,10 +82,6 @@ export default function RenderFound({
                         );
                     })}
                 </div>
-            </div>
-            <RenderFoundButtons found={found}
-                book={book} chapter={chapter}
-                bibleSelected={bibleSelected} />
         </div>
     );
 }

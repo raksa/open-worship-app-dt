@@ -1,18 +1,18 @@
 .render-found {
+  background-color: var(--bs-gray-800);
   .verse-select {
-    overflow-y: scroll;
-
     .item {
-      width: 40px;
+      min-width: 40px;
       height: 40px;
-      padding: 0;
+      padding: 5px;
       padding-top: 5px;
       margin: 5px 0;
       border-radius: 0;
       font-size: 21px;
       color: var(--bs-gray-400);
 
-      &:hover, &.selected {
+      &:hover,
+      &.selected {
         color: var(--bs-gray-100);
       }
 

@@ -3,23 +3,33 @@ import { toInputText } from '../server/bible-helpers/bibleHelpers2';
 import { useState } from 'react';
 import { bookToKey } from '../server/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
-import { consumeStartVerseEndVerse } from './bibleHelpers';
+import {
+    ConsumeVerseType,
+    consumeStartVerseEndVerse,
+} from './bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useStateSettingNumber } from '../helper/settingHelper';
+import RenderVersesOption from './RenderVersesOption';
+import RenderActionButtons from './RenderActionButtons';
 
-export default function Preview({
+export default function RenderBibleDataFound({
     book,
     chapter,
     startVerse,
     endVerse,
+    applyChapterSelection,
+    onVerseChange,
     bibleSelected,
 }: {
     book: string,
     chapter: number,
     startVerse: number | null,
     endVerse: number | null,
+    applyChapterSelection: (chapter: number) => void,
+    onVerseChange: (startVerse?: number, endVerse?: number) => void,
     bibleSelected: string,
 }) {
+    const [found, setFound] = useState<ConsumeVerseType | null>(null);
     const [fontSize, setFontSize] = useStateSettingNumber(
         'bible-search-font-size', 16);
     const [rendered, setRendered] = useState<{
@@ -33,6 +43,7 @@ export default function Preview({
                 setRendered(null);
                 return;
             }
+            setFound(found);
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
             const newTitle = await toInputText(
@@ -63,38 +74,85 @@ export default function Preview({
         <div className='card border-success mt-1 flex-fill' style={{
             height: '10px',
         }}>
-            <div className='card-header bg-transparent border-success'>
-                {title}
-                <div className='btn-group float-end'>
-                    <button type='button'
-                        className='btn btn-sm btn-info'
-                        title='Copy title to clipboard'
-                        onClick={() => {
-                            copyToClipboard(title);
-                        }}><i className='bi bi-back ' />title</button>
-                    <button type='button'
-                        className='btn btn-sm btn-info'
-                        title='Copy verse text to clipboard'
-                        onClick={() => {
-                            copyToClipboard(text);
-                        }}>
-                        <i className='bi bi-back' />text</button>
-                    <button type='button'
-                        className='btn btn-sm btn-info'
-                        title='Copy all to clipboard'
-                        onClick={() => {
-                            copyToClipboard(`${title}\n${text}`);
-                        }}><i className='bi bi-back' />all</button>
-                </div>
-            </div>
+            {renderHeader({
+                title, text, found, book,
+                chapter, bibleSelected,
+            })}
             <div className={'card-body bg-transparent '
-                + 'border-success selectable-text'}>
-                <p style={{ fontSize: `${fontSize}px` }}>{text}</p>
+                + 'border-success selectable-text p-0'}>
+                <RenderVersesOption
+                    bibleSelected={bibleSelected}
+                    book={book}
+                    chapter={chapter}
+                    startVerse={startVerse}
+                    endVerse={endVerse}
+                    applyChapterSelection={applyChapterSelection}
+                    onVerseChange={onVerseChange}
+                />
+                {bibleTextPreview(text, fontSize)}
             </div>
             <div className='card-footer'>
                 {renderFontSizeController(fontSize, setFontSize)}
             </div>
         </div>
+    );
+}
+
+function renderHeader({
+    title, text, found, book, chapter, bibleSelected,
+}: {
+    title: string, text: string,
+    found: ConsumeVerseType | null,
+    book: string, chapter: number,
+    bibleSelected: string,
+}) {
+    return (
+        <div className='card-header bg-transparent border-success'>
+            <div className='d-flex'>
+                <div className='flex-fill'>{title}</div>
+                <div>
+                    {found !== null && <RenderActionButtons found={found}
+                        book={book} chapter={chapter}
+                        bibleSelected={bibleSelected} />}
+                    {renderCopyButton(title, text)}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function renderCopyButton(title: string, text: string) {
+    return (
+        <div className='btn-group float-end'>
+            <button type='button'
+                className='btn btn-sm btn-info'
+                title='Copy title to clipboard'
+                onClick={() => {
+                    copyToClipboard(title);
+                }}><i className='bi bi-back ' />title</button>
+            <button type='button'
+                className='btn btn-sm btn-info'
+                title='Copy verse text to clipboard'
+                onClick={() => {
+                    copyToClipboard(text);
+                }}>
+                <i className='bi bi-back' />text</button>
+            <button type='button'
+                className='btn btn-sm btn-info'
+                title='Copy all to clipboard'
+                onClick={() => {
+                    copyToClipboard(`${title}\n${text}`);
+                }}><i className='bi bi-back' />all</button>
+        </div>
+    );
+}
+
+function bibleTextPreview(text: string, fontSize: number) {
+    return (
+        <p className='p-3'
+            style={{
+                fontSize: `${fontSize}px`,
+            }}>{text}</p>
     );
 }
 

@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 import {
+    EventMapper,
+    toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import InputHandler from './InputHandler';
-import Header from './Header';
 import {
     ExtractedBibleResult,
     defaultExtractedBible,
@@ -21,6 +22,13 @@ import RenderSearchSuggestion, {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
 import { useAppEffect } from '../helper/debuggerHelpers';
+
+const eventMapper: EventMapper = {
+    wControlKey: ['Ctrl'],
+    mControlKey: ['Ctrl'],
+    lControlKey: ['Ctrl'],
+    key: 'q',
+};
 
 export default function BibleSearchRender({ editingInputText }: {
     editingInputText: string,
@@ -89,20 +97,30 @@ export default function BibleSearchRender({ editingInputText }: {
     }
     return (
         <div id='bible-search-popup' className='app-modal shadow card'>
-            <Header />
-            <div className='body card-body card w-100 h-100 overflow-hidden d-flex'>
-                <div className='header-container w-100'>
-                    <div className='input-group input-group-header'>
-                        <span className='input-group-text'>
-                            <i className='bi bi-search' />
-                        </span>
-                        <InputHandler
-                            inputText={inputText}
-                            onInputChange={setInputText}
-                            bibleSelected={bibleSelected}
-                            onBibleChange={handleBibleChange} />
-                    </div>
+            <div className='card-header text-center w-100'>
+                <div className='input-group input-group-header'>
+                    <span className='input-group-text'>
+                        <i className='bi bi-search' />
+                    </span>
+                    <InputHandler
+                        inputText={inputText}
+                        onInputChange={setInputText}
+                        bibleSelected={bibleSelected}
+                        onBibleChange={handleBibleChange} />
                 </div>
+                <div style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                }}>
+                    <button type='button' onClick={closeBibleSearch}
+                        data-tool-tip={toShortcutKey(eventMapper)}
+                        className='btn btn-outline-danger m-2'>
+                        <i className='bi bi-x-lg' />
+                    </button>
+                </div>
+            </div>
+            <div className='body card-body card w-100 h-100 overflow-hidden d-flex'>
                 <div className='found h-100 w-100 overflow-hidden'>
                     <RenderSearchSuggestion
                         inputText={inputText}

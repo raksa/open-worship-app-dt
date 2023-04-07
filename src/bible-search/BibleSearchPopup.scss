@@ -1,5 +1,3 @@
-@import '../others/variables.scss';
-
 #bible-search-popup {
   width: calc(100% - 20px);
   height: calc(100% - 20px);
@@ -7,22 +5,18 @@
   min-height: 98%;
   margin: auto;
 
-  .header {
-    height: $header-height;
+  &>.card-header {
+    height: 60px;
+  }
+
+  .input-group-header {
+    margin: auto;
+    max-width: 450px;
   }
 
   .body {
     padding: 5px;
 
-    .header-container {
-      background-color: #0000000f;
-      border-radius: 5px 5px 0 0;
-      .input-group-header {
-        margin: auto;
-        max-width: 450px;
-      }
-
-    }
 
 
     .chapter-select {

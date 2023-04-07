@@ -1,11 +1,10 @@
 import RenderBookOption from './RenderBookOption';
 import RenderChapterOption from './RenderChapterOption';
 import Header from './Header';
-import RenderFound from './RenderFound';
 import {
     ExtractedBibleResult,
 } from '../server/bible-helpers/bibleHelpers2';
-import Preview from './Preview';
+import RenderBibleDataFound from './RenderBibleDataFound';
 import { useCallback } from 'react';
 
 export default function RenderSearchSuggestion({
@@ -49,9 +48,8 @@ export default function RenderSearchSuggestion({
                     />}
                 </div>
             </div>}
-            <div className='d-flex flex-column w-100 h-100 overflow-hidden'
-            >
-                {book && chapter !== null && <RenderFound
+            <div className='d-flex flex-column w-100 h-100 overflow-hidden'>
+                {book && chapter !== null && <RenderBibleDataFound
                     bibleSelected={bibleSelected}
                     book={book}
                     chapter={chapter}
@@ -60,17 +58,11 @@ export default function RenderSearchSuggestion({
                     applyChapterSelection={applyChapterSelection}
                     onVerseChange={onVerseChangeCallback}
                 />}
-                {book && chapter !== null && <Preview
-                    bibleSelected={bibleSelected}
-                    book={book}
-                    chapter={chapter}
-                    startVerse={startVerse}
-                    endVerse={endVerse}
-                />}
             </div>
         </>
     );
 }
+
 
 export function BibleNotAvailable() {
     return (
