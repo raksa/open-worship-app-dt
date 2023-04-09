@@ -1,20 +1,20 @@
-import { useState } from 'react';
 import {
     allArrows,
     KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { genInd } from './genInd';
+import {
+    processSelection,
+    userEnteringSelected,
+} from './selectionHelpers';
 import {
     useFromLocaleNumBB, useToLocaleNumBB,
 } from '../server/bible-helpers/bibleHelpers2';
-import {
-    getChapterCount,
-} from '../server/bible-helpers/bibleInfoHelpers';
 import {
     useGetChapterCount,
 } from '../server/bible-helpers/bibleHelpers';
 
 const OPTION_CLASS = 'bible-search-chapter-option';
+const OPTION_SELECTED_CLASS = 'active';
 
 function genMatchedChapters(currentIndexing: number,
     chapterCount: number | null) {
@@ -53,15 +53,9 @@ export default function RenderChapterOption({
         inputText.split(bookSelected)[1]);
     const matches = genMatchedChapters(currentIndexing || 0, chapterCount);
 
-    const [attemptChapterIndex, setAttemptChapterIndex] = useState(0);
     const arrowListener = async (event: KeyboardEvent) => {
-        const newChapterCount = await getChapterCount(
-            bibleSelected, bookSelected);
-        if (newChapterCount !== null) {
-            const ind = genInd(attemptChapterIndex, newChapterCount,
-                event.key as KeyboardType, 6, OPTION_CLASS);
-            setAttemptChapterIndex(ind);
-        }
+        processSelection(OPTION_CLASS, OPTION_SELECTED_CLASS,
+            event.key as KeyboardType);
     };
     const useCallback = (k: KeyboardType) => {
         useKeyboardRegistering({
@@ -69,37 +63,26 @@ export default function RenderChapterOption({
         }, arrowListener);
     };
     allArrows.forEach(useCallback);
-    const enterListener = () => {
-        if (matches !== null) {
-            const chapter = matches[attemptChapterIndex];
-            if (chapter) {
-                onSelect(chapter);
-            }
-        }
-    };
-    useKeyboardRegistering({
-        key: 'Enter',
-    }, enterListener);
-    let applyAttemptIndex = attemptChapterIndex;
-    if (matches === null || attemptChapterIndex > matches.length - 1) {
-        applyAttemptIndex = 0;
-    }
+    userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS, (chapterStr) => {
+        onSelect(Number(chapterStr));
+    });
     return (
         <>
             {matches === null ? <div>
                 No matched chapters
             </div> :
-                matches.map((chapter, i) => {
-                    const highlight = i === applyAttemptIndex;
-                    const activeClass = highlight ? 'active' : '';
-                    const className = 'chapter-select btn btn-outline-success '
-                        + activeClass;
+                matches.map((chapter) => {
+                    const className = 'chapter-select btn btn-outline-success' +
+                        ` ${OPTION_CLASS}`;
                     return (
-                        <div key={chapter} className={OPTION_CLASS}
+                        <div key={chapter}
                             style={{ margin: '2px' }}>
-                            <button type='button' onClick={() => {
-                                onSelect(chapter);
-                            }} className={className}>
+                            <button className={className}
+                                data-option-value={chapter}
+                                type='button'
+                                onClick={() => {
+                                    onSelect(chapter);
+                                }}>
                                 <RendChapterAsync
                                     bibleSelected={bibleSelected}
                                     chapter={chapter} />
@@ -110,6 +93,7 @@ export default function RenderChapterOption({
         </>
     );
 }
+
 function RendChapterAsync({ bibleSelected, chapter }: {
     bibleSelected: string, chapter: number,
 }) {
