@@ -37,17 +37,20 @@ export function openSlideContextMenu(event: any,
     slide: Slide, slideItem: SlideItem) {
     showAppContextMenu(event, [
         {
-            title: 'Copy', onClick: () => {
+            title: 'Copy',
+            onClick: () => {
                 SlideItem.copiedItem = slideItem;
             },
         },
         {
-            title: 'Duplicate', onClick: () => {
+            title: 'Duplicate',
+            onClick: () => {
                 slide.duplicateItem(slideItem);
             },
         },
         {
-            title: 'Quick Edit', onClick: () => {
+            title: 'Quick Edit',
+            onClick: () => {
                 const isEditing = isWindowEditingMode();
                 if (isEditing) {
                     SlideListEventListener.selectSlideItem(slideItem);
@@ -57,7 +60,8 @@ export function openSlideContextMenu(event: any,
             },
         },
         {
-            title: 'Delete', onClick: () => {
+            title: 'Delete',
+            onClick: () => {
                 slide.deleteItem(slideItem);
             },
         },

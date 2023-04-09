@@ -30,7 +30,7 @@ export default function RenderBibleItems({ bible }: {
             {
                 title: 'Delete',
                 onClick: () => {
-                    bible.removeItem(bibleItem);
+                    bible.removeItemAtIndex(index);
                     bible.save();
                 },
             },

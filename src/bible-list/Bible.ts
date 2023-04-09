@@ -107,11 +107,17 @@ export default class Bible extends ItemSource<BibleItem>{
         items.splice(index + 1, 0, newItem);
         this.items = items;
     }
+    removeItemAtIndex(index: number) {
+        const items = this.items;
+        items.splice(index, 1);
+        this.items = items;
+    }
     removeItem(bibleItem: BibleItem) {
         const items = this.items;
         const index = items.indexOf(bibleItem);
-        items.splice(index, 1);
-        this.items = items;
+        if (index !== -1) {
+            this.removeItemAtIndex(index);
+        }
     }
     addItem(item: BibleItem) {
         item.fileSource = this.fileSource;
