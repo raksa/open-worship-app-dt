@@ -6,6 +6,7 @@ import BibleItemRender from './BibleItemRender';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { useCallback } from 'react';
 import BibleItem from './BibleItem';
+import { moveBibleItemTo } from '../bible-search/bibleHelpers';
 
 export default function RenderBibleItems({ bible }: {
     bible: Bible,
@@ -25,6 +26,12 @@ export default function RenderBibleItems({ bible }: {
                 onClick: () => {
                     bible.duplicate(index);
                     bible.save();
+                },
+            },
+            {
+                title: 'Move To',
+                onClick: (event1) => {
+                    moveBibleItemTo(event1, bible, index);
                 },
             },
             {

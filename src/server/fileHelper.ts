@@ -96,9 +96,14 @@ export function isSupportedMimetype(fileMimetype: string,
         return type === fileMimetype;
     });
 }
+
 export function extractExtension(fileName: string) {
     return fileName.substring(fileName.lastIndexOf('.'));
 }
+export function addExtension(name: string, extension: string) {
+    return `${name}${extension}`;
+}
+
 export function isSupportedExt(fileName: string,
     mimetype: MimetypeNameType) {
     const mimetypeList = getAppMimetype(mimetype);

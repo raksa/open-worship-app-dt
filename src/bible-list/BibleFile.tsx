@@ -97,7 +97,8 @@ function BiblePreview({ bible }: { bible: Bible }) {
                 <i className={`bi ${bible.isOpened ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
                 <span className='w-100 text-center'>
-                    <i className={`bi bi-book${bible.isOpened ? '-fill' : ''} px-1`} />
+                    <i className={`bi bi-book${bible.isOpened ?
+                        '-fill' : ''} px-1`} />
                     {bible.fileSource.name}
                 </span>
             </div>

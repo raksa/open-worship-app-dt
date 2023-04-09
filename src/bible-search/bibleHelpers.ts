@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import {
+    getSetting, setSetting,
+} from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import {
     getBookKVList,
@@ -20,8 +22,14 @@ import { closeBibleSearch } from './HandleBibleSearch';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import DirSource from '../helper/DirSource';
+import FileSource from '../helper/FileSource';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import { addExtension } from '../server/fileHelper';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
+export const BIBLE_LIST_SELECTED_DIR = 'bible-list-selected-dir';
+
 async function getSelectedEditingBibleItem() {
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
@@ -163,4 +171,39 @@ export async function consumeStartVerseEndVerse(
         eVerse,
     };
     return result;
+}
+
+export function moveBibleItemTo(event: any, bible: Bible, index: number) {
+    const dirSource = DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
+    dirSource.getFileSources('bible').then((fileSources) => {
+        const targetNames = (fileSources || []).map((fileSource) => {
+            return fileSource.name;
+        }).filter((name) => {
+            return name !== bible.fileSource.name;
+        });
+        if (targetNames.length === 0) {
+            showSimpleToast('Move Bible Item', 'No other bibles found');
+            return;
+        }
+        showAppContextMenu(event, targetNames.map((name) => {
+            return {
+                title: name,
+                onClick: async () => {
+                    const { basePath, extension } = bible.fileSource;
+                    const fileSource = FileSource.getInstance(
+                        basePath, addExtension(name, extension));
+                    const targetBible = await Bible.readFileToData(fileSource);
+                    if (!targetBible) {
+                        showSimpleToast('Move Bible Item',
+                            'Target bible not found');
+                        return;
+                    }
+                    targetBible.addItem(bible.items[index]);
+                    bible.removeItemAtIndex(index);
+                    bible.save();
+                    targetBible.save();
+                },
+            };
+        }));
+    });
 }
