@@ -169,7 +169,9 @@ export async function extractBible(bibleKey: string, str: string) {
         const {
             arr1, chapter, verseCount,
         } = await searchChapter(bibleKey, result.book, arr);
-        result.chapter = chapter;
+        if ((/^.+\s+.+\:.*/).test(str)) {
+            result.chapter = chapter;
+        }
         const {
             arr2, startVerse,
         } = await searchStartVerse(bibleKey, verseCount, arr1);
