@@ -1,63 +1,72 @@
 import { KeyboardType } from '../event/KeyboardEventListener';
 
-function genLeft(index: number, total: number, offset: number) {
-    const preOffset = offset - 1;
-    const mod = index % offset;
-    if (mod === 0) {
-        index = index + preOffset;
-        if (index >= total) {
-            index = total - 1;
+function indexing(listLength: number, index: number, isNext: boolean) {
+    return ((index + (isNext ? 1 : -1)) + listLength) %
+        listLength;
+}
+function calculateIndexer(optionClass: string) {
+    const cordList = Array.from(document.getElementsByClassName(optionClass))
+        .map((element: any) => {
+            const cRect = (element as HTMLDivElement).getBoundingClientRect();
+            return {
+                x: cRect.x,
+                y: cRect.y,
+            };
+        });
+    const indexer = [];
+    let row: null[] = [];
+    let preY = -1;
+    cordList.forEach((cord) => {
+        if (cord.y !== preY) {
+            preY = cord.y;
+            if (row.length) {
+                indexer.push(row);
+            }
+            row = [];
         }
-    } else {
-        index = index - 1;
+        row.push(null);
+    });
+    if (row.length) {
+        indexer.push(row);
     }
-    return index;
-}
-function genRight(index: number, total: number, offset: number) {
-    const preOffset = offset - 1;
-    const mod = index % offset;
-    if (mod === preOffset) {
-        index = index - preOffset;
-    } else {
-        index = index + 1;
-        if (index >= total) {
-            const rowCount = Math.floor(index / offset);
-            index = rowCount * offset;
+    const rotatedIndexer = [];
+    for (let i = 0; i < indexer[0].length; i++) {
+        const row = [];
+        for (const element of indexer) {
+            row.push(element[i]);
         }
+        rotatedIndexer.push(row.filter((e) => {
+            return e === null;
+        }));
     }
-    return index;
+    return { indexer, rotatedIndexer };
 }
-function genUp(index: number, total: number, offset: number) {
-    if (index - offset < 0) {
-        const rowCount = Math.floor(total / offset);
-        index = rowCount * offset + index;
-        if (index >= total) {
-            index -= offset;
-        }
-    } else {
-        index = index - offset;
+function indexToCord(hLength: number, index: number) {
+    const x = index % hLength;
+    const y = Math.floor(index / hLength);
+    return { x, y };
+}
+function cordToIndex(hLength: number, x: number, y: number) {
+    return x + y * hLength;
+}
+export function genInd(preIndex: number, total: number,
+    key: KeyboardType, offset: number, optionClass: string) {
+    const { indexer, rotatedIndexer } = calculateIndexer(optionClass);
+    if (!indexer.length) {
+        return preIndex;
     }
-    return index;
-}
-function genDown(index: number, total: number, offset: number) {
-    if (index + offset >= total) {
-        const rowCount = Math.floor(index / offset);
-        index = index - rowCount * offset;
-    } else {
-        index = index + offset;
-    }
-    return index;
-}
-export function genInd(index: number, total: number,
-    key: KeyboardType, offset: number) {
+    const hLength = indexer[0].length;
+    let { x, y } = indexToCord(hLength, preIndex);
+    const horizontalLength = indexer[y].length;
+    const verticalLength = rotatedIndexer[x].length;
     if (key === 'ArrowLeft') {
-        return genLeft(index, total, offset);
+        x = indexing(horizontalLength, x, false);
     } else if (key === 'ArrowRight') {
-        return genRight(index, total, offset);
+        x = indexing(horizontalLength, x, true);
     } else if (key === 'ArrowUp') {
-        return genUp(index, total, offset);
+        y = indexing(verticalLength, y, false);
     } else if (key === 'ArrowDown') {
-        return genDown(index, total, offset);
+        y = indexing(verticalLength, y, true);
     }
-    return index;
+    return cordToIndex(hLength, x, y);
 }

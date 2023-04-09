@@ -10,6 +10,8 @@ import {
 import { isVisible } from '../helper/helpers';
 import { genInd } from './genInd';
 
+const OPTION_CLASS = 'bible-search-book-option';
+
 export default function RenderBookOption({
     inputText,
     onSelect,
@@ -28,7 +30,7 @@ export default function RenderBookOption({
         useKeyboardRegistering({ key }, (event: KeyboardEvent) => {
             if (matches !== null && matches.length) {
                 const ind = genInd(attemptMatchIndex, matches.length,
-                    event.key as KeyboardType, 2);
+                    event.key as KeyboardType, 2, OPTION_CLASS);
                 setAttemptMatchIndex(ind);
             }
         });
@@ -84,7 +86,8 @@ function RenderOption({
         return <div>No matched found</div>;
     }
     return (
-        <div style={{ margin: '2px' }}>
+        <div className={OPTION_CLASS}
+            style={{ margin: '2px' }}>
             <button style={{ width: '240px', overflowX: 'auto' }}
                 ref={(self) => {
                     if (self && highlight && !isVisible(self)) {

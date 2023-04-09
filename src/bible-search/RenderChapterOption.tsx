@@ -7,8 +7,14 @@ import { genInd } from './genInd';
 import {
     useFromLocaleNumBB, useToLocaleNumBB,
 } from '../server/bible-helpers/bibleHelpers2';
-import { getChapterCount } from '../server/bible-helpers/bibleInfoHelpers';
-import { useGetChapterCount } from '../server/bible-helpers/bibleHelpers';
+import {
+    getChapterCount,
+} from '../server/bible-helpers/bibleInfoHelpers';
+import {
+    useGetChapterCount,
+} from '../server/bible-helpers/bibleHelpers';
+
+const OPTION_CLASS = 'bible-search-chapter-option';
 
 function genMatchedChapters(currentIndexing: number,
     chapterCount: number | null) {
@@ -53,7 +59,7 @@ export default function RenderChapterOption({
             bibleSelected, bookSelected);
         if (newChapterCount !== null) {
             const ind = genInd(attemptChapterIndex, newChapterCount,
-                event.key as KeyboardType, 6);
+                event.key as KeyboardType, 6, OPTION_CLASS);
             setAttemptChapterIndex(ind);
         }
     };
@@ -89,7 +95,8 @@ export default function RenderChapterOption({
                     const className = 'chapter-select btn btn-outline-success '
                         + activeClass;
                     return (
-                        <div key={chapter} style={{ margin: '2px' }}>
+                        <div key={chapter} className={OPTION_CLASS}
+                            style={{ margin: '2px' }}>
                             <button type='button' onClick={() => {
                                 onSelect(chapter);
                             }} className={className}>
