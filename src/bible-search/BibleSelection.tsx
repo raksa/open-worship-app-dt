@@ -58,9 +58,12 @@ export default function BibleSelection({ value, onChange }: {
     );
 }
 
-export function BibleSelectionMini({ value, onChange }: {
+export function BibleSelectionMini({
+    value, onChange, isMinimal,
+}: {
     value: string,
     onChange: (oldValue: string, newValue: string) => void,
+    isMinimal?: boolean,
 }) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
@@ -76,8 +79,10 @@ export function BibleSelectionMini({ value, onChange }: {
         );
     }
     return (
-        <span className='pointer badge rounded-pill text-bg-info'
+        <span className={'pointer ' +
+            (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')}
             onClick={(event) => {
+                event.stopPropagation();
                 showBibleOption(event, [value],
                     (bibleKey: string) => {
                         onChange(value, bibleKey);

@@ -1,10 +1,7 @@
-import { showAppContextMenu } from '../others/AppContextMenu';
-import {
-    getBibleInfoWithStatusList,
-    useGetBibleWithStatus,
-} from '../server/bible-helpers/bibleHelpers';
 import Bible from './Bible';
-import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
+import BibleItem, {
+    useBibleItemRenderTitle,
+} from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import {
     getIsPreviewingBible,
@@ -17,6 +14,9 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useCallback } from 'react';
 import { handleDragStart } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
+import {
+    BibleSelectionMini,
+} from '../bible-search/BibleSelection';
 
 export default function BibleItemRender({
     index,
@@ -35,7 +35,6 @@ export default function BibleItemRender({
 }) {
     useFSEvents(['select'], fileSource);
     const title = useBibleItemRenderTitle(bibleItem);
-    const bibleStatus = useGetBibleWithStatus(bibleItem.bibleKey);
     const onContextMenuCallback = useCallback((
         event: React.MouseEvent<any>) => {
         onContextMenu?.(event, bibleItem, index);
@@ -43,28 +42,6 @@ export default function BibleItemRender({
     const changeBible = (newBibleKey: string) => {
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save();
-    };
-    const startChangingBible = async (event: React.MouseEvent<any>) => {
-        if (!changeBible) {
-            return;
-        }
-        event.stopPropagation();
-        const bibleList = await getBibleInfoWithStatusList();
-        const currentBible = bibleItem.bibleKey;
-        const bibleListFiltered = bibleList.filter(([bibleKey]) => {
-            return currentBible !== bibleKey;
-        });
-        const menuOptions = bibleListFiltered
-            .map(([bibleKey, isAvailable]) => {
-                return {
-                    title: bibleKey,
-                    disabled: !isAvailable,
-                    onClick: () => {
-                        changeBible(bibleKey);
-                    },
-                };
-            });
-        showAppContextMenu(event as any, menuOptions);
     };
     if (bibleItem.isError) {
         return (
@@ -92,10 +69,15 @@ export default function BibleItemRender({
             }}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />
-                <span className={'bible ps-1'}
-                    onClick={startChangingBible}>
-                    {bibleStatus === null ? null : bibleStatus[2]}
-                </span> | <span className='app-ellipsis'>
+                <div className='px-1'>
+                    <BibleSelectionMini
+                        value={bibleItem.bibleKey}
+                        onChange={(_, newValue) => {
+                            changeBible(newValue);
+                        }}
+                        isMinimal />
+                </div>
+                <span className='app-ellipsis'>
                     {title === null ? 'not found' : title}
                 </span>
                 {warningMessage && <span className='float-end'
