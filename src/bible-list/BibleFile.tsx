@@ -21,6 +21,7 @@ export default function BibleFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
+    // FIXME: Drag and Drop conflict with path selection
     const onDropCallback = useCallback(async (event: any) => {
         if (!data) {
             return;
@@ -89,7 +90,7 @@ export default function BibleFile({
 
 function BiblePreview({ bible }: { bible: Bible }) {
     return (
-        <div className='accordion accordion-flush'>
+        <div className='accordion accordion-flush py-1'>
             <div className='accordion-header pointer'
                 onClick={() => {
                     bible.setIsOpened(!bible.isOpened);
