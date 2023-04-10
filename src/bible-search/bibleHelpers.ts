@@ -173,7 +173,7 @@ export async function consumeStartVerseEndVerse(
     return result;
 }
 
-export function moveBibleItemTo(event: any, bible: Bible, index: number) {
+export function moveBibleItemTo(event: any, bible: Bible, index?: number) {
     const dirSource = DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
     dirSource.getFileSources('bible').then((fileSources) => {
         const targetNames = (fileSources || []).map((fileSource) => {
@@ -198,8 +198,7 @@ export function moveBibleItemTo(event: any, bible: Bible, index: number) {
                             'Target bible not found');
                         return;
                     }
-                    const bibleItem = bible.items[index];
-                    targetBible.moveItemFrom(bibleItem, bible.fileSource);
+                    targetBible.moveItemFrom(bible.fileSource, index);
                 },
             };
         }));

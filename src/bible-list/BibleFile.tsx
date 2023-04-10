@@ -2,17 +2,41 @@ import React, { useCallback, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
-import BibleItem from './BibleItem';
 import AppSuspense from '../others/AppSuspense';
-import { isValidJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { showSimpleToast } from '../toast/toastHelpers';
 import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { moveBibleItemTo } from '../bible-search/bibleHelpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
 });
+
+function genContextMenu(data: Bible | null | undefined) {
+    if (!data) {
+        return [];
+    }
+    return [{
+        title: 'Empty',
+        onClick: () => {
+            openConfirm(
+                'Empty Bible List',
+                'Are you sure to empty this bible list?'
+            ).then((isOk) => {
+                if (!isOk) {
+                    return;
+                }
+                data.empty();
+                data.save();
+            });
+        },
+    }, {
+        title: 'Move All Items To',
+        onClick: (event: any) => {
+            moveBibleItemTo(event, data);
+        },
+    }];
+}
 
 export default function BibleFile({
     index, fileSource,
@@ -21,27 +45,6 @@ export default function BibleFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
-    // FIXME: Drag and Drop conflict with path selection
-    const onDropCallback = useCallback(async (event: any) => {
-        if (!data) {
-            return;
-        }
-        const str = event.dataTransfer.getData('text');
-        try {
-            if (!isValidJson(str)) {
-                return;
-            }
-            const json = JSON.parse(str);
-            if (!json.filePath) {
-                throw new Error('Not a bible file');
-            }
-            const fromFileSource = FileSource.getInstance(json.filePath);
-            const bibleItem = BibleItem.fromJson(json, fromFileSource);
-            data.moveItemFrom(bibleItem, fromFileSource);
-        } catch (error: any) {
-            showSimpleToast('Receiving Bible Item', error.message);
-        }
-    }, []);
     useAppEffect(() => {
         if (data === null) {
             Bible.readFileToData(fileSource).then(setData);
@@ -62,28 +65,10 @@ export default function BibleFile({
             reload={reloadCallback}
             fileSource={fileSource}
             className={'bible-file'}
-            onDrop={onDropCallback}
             renderChild={renderChildCallback}
             isDisabledColorNote
             userClassName='p-0'
-            contextMenu={[{
-                title: 'Empty',
-                onClick: () => {
-                    if (!data) {
-                        return;
-                    }
-                    openConfirm(
-                        'Empty Bible List',
-                        'Are you sure to empty this bible list?'
-                    ).then((isOk) => {
-                        if (!isOk) {
-                            return;
-                        }
-                        data.empty();
-                        data.save();
-                    });
-                },
-            }]}
+            contextMenu={genContextMenu(data)}
         />
     );
 }

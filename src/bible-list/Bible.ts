@@ -126,23 +126,36 @@ export default class Bible extends ItemSource<BibleItem>{
         items.push(item);
         this.items = items;
     }
-    async moveItemFrom(bibleItem: BibleItem, fileSource: FileSource) {
+    async moveItemFrom(fileSource: FileSource, index?: number) {
         try {
-            const isSelected = bibleItem.isSelected;
-            const id = bibleItem.id;
-            this.addItem(bibleItem);
-            await this.save();
             const fromBible = await Bible.readFileToData(fileSource);
-            if (fromBible) {
-                const item = fromBible.getItemById(id);
-                if (item !== null) {
-                    fromBible.removeItem(item);
-                    await fromBible.save();
+            if (!fromBible) {
+                showSimpleToast('Moving Bible Item', 'Cannot source Bible');
+                return;
+            }
+            const backupBibleItems = fromBible.items;
+            let targetBibleItems: BibleItem[] = backupBibleItems;
+            if (index !== undefined) {
+                if (!backupBibleItems[index]) {
+                    showSimpleToast('Moving Bible Item', 'Cannot find Bible Item');
+                    return;
                 }
+                targetBibleItems = [backupBibleItems[index]];
             }
-            if (isSelected) {
-                bibleItem.isSelected = true;
-            }
+            const selectedBibleItem = targetBibleItems.filter((item) => {
+                return item.isSelected;
+            });
+            this.items = this.items.concat(targetBibleItems);
+            await this.save();
+
+            fromBible.items = backupBibleItems.filter((item) => {
+                return !targetBibleItems.includes(item);
+            });
+            await fromBible.save();
+
+            selectedBibleItem.forEach((item) => {
+                item.isSelected = true;
+            });
         } catch (error: any) {
             showSimpleToast('Moving Bible Item', error.message);
         }
