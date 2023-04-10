@@ -38,13 +38,14 @@ export default function RenderBookOption({
     return <>
         {(matches === null || bookKVList === null) ?
             <div>No matched found</div> :
-            matches.map((key) => {
+            matches.map((key, i) => {
                 return (
                     <RenderOption key={key}
                         bibleKey={key}
                         bookKVList={bookKVList}
                         kjvKeyValue={kjvKeyValue}
                         onSelect={onSelect}
+                        index={i}
                     />
                 );
             })}
@@ -52,7 +53,7 @@ export default function RenderBookOption({
 }
 
 function RenderOption({
-    bibleKey, bookKVList, kjvKeyValue, onSelect,
+    bibleKey, bookKVList, kjvKeyValue, onSelect, index,
 }: {
     bibleKey: string,
     bookKVList: {
@@ -61,7 +62,8 @@ function RenderOption({
     kjvKeyValue: {
         [key: string]: string;
     },
-    onSelect: (book: string) => void
+    onSelect: (book: string) => void,
+    index: number,
 }) {
     if (bookKVList === null) {
         return <div>No matched found</div>;
@@ -70,7 +72,7 @@ function RenderOption({
     return (
         <div style={{ margin: '2px' }}>
             <button className={'text-nowrap btn-sm btn btn-outline-success' +
-                ' ' + OPTION_CLASS}
+                ` ${OPTION_CLASS} ${index === 0 ? OPTION_SELECTED_CLASS : ''}`}
                 data-option-value={key}
                 style={{
                     width: '240px',

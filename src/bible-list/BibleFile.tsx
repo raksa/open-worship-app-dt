@@ -34,9 +34,9 @@ export default function BibleFile({
             if (!json.filePath) {
                 throw new Error('Not a bible file');
             }
-            const fromFS = FileSource.getInstance(json.filePath);
-            const bibleItem = BibleItem.fromJson(json, fromFS);
-            data.moveItemFrom(bibleItem, fromFS);
+            const fromFileSource = FileSource.getInstance(json.filePath);
+            const bibleItem = BibleItem.fromJson(json, fromFileSource);
+            data.moveItemFrom(bibleItem, fromFileSource);
         } catch (error: any) {
             showSimpleToast('Receiving Bible Item', error.message);
         }

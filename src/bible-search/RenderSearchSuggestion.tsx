@@ -15,10 +15,10 @@ export default function RenderSearchSuggestion({
 }: {
     inputText: string, bibleSelected: string,
     bibleResult: ExtractedBibleResult,
-    applyChapterSelection: (newChapter: number) => void;
+    applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (newStartVerse?: number,
-        newEndVerse?: number) => void;
-    applyBookSelection: (newBook: string) => void;
+        newEndVerse?: number) => void,
+    applyBookSelection: (newBook: string) => void,
 }) {
     const onVerseChangeCallback = useCallback((
         newStartVerse?: number, newEndVerse?: number) => {

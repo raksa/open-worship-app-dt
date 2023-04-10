@@ -198,10 +198,8 @@ export function moveBibleItemTo(event: any, bible: Bible, index: number) {
                             'Target bible not found');
                         return;
                     }
-                    targetBible.addItem(bible.items[index]);
-                    bible.removeItemAtIndex(index);
-                    bible.save();
-                    targetBible.save();
+                    const bibleItem = bible.items[index];
+                    targetBible.moveItemFrom(bibleItem, bible.fileSource);
                 },
             };
         }));

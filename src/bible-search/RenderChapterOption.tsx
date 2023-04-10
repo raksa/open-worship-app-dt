@@ -38,10 +38,7 @@ function genMatchedChapters(currentIndexing: number,
 }
 
 export default function RenderChapterOption({
-    bookSelected,
-    bibleSelected,
-    inputText,
-    onSelect,
+    bookSelected, bibleSelected, inputText, onSelect,
 }: {
     bibleSelected: string,
     bookSelected: string,
@@ -71,9 +68,10 @@ export default function RenderChapterOption({
             {matches === null ? <div>
                 No matched chapters
             </div> :
-                matches.map((chapter) => {
+                matches.map((chapter, i) => {
                     const className = 'chapter-select btn btn-outline-success' +
-                        ` ${OPTION_CLASS}`;
+                        ` ${OPTION_CLASS}` +
+                        ` ${i === 0 ? OPTION_SELECTED_CLASS : ''}`;
                     return (
                         <div key={chapter}
                             style={{ margin: '2px' }}>
