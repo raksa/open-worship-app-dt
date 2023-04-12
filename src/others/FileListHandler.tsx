@@ -17,21 +17,29 @@ import {
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 const AskingNewName = React.lazy(() => {
     return import('./AskingNewName');
 });
 
 function watch(dirSource: DirSource, signal: AbortSignal) {
-    appProvider.fileUtils.watch(dirSource.dirPath, {
-        signal,
-    }, (eventType, fileName) => {
-        if (eventType === 'rename') {
-            dirSource.fireReloadEvent();
-        } else if (eventType === 'change') {
-            dirSource.fireReloadFileEvent(fileName);
-        }
-    });
+    if (!dirSource.dirPath) {
+        return;
+    }
+    try {
+        appProvider.fileUtils.watch(dirSource.dirPath, {
+            signal,
+        }, (eventType, fileName) => {
+            if (eventType === 'rename') {
+                dirSource.fireReloadEvent();
+            } else if (eventType === 'change') {
+                dirSource.fireReloadFileEvent(fileName);
+            }
+        });
+    } catch (error) {
+        handleError(error);
+    }
 }
 
 export type FileListType = FileSource[] | null | undefined

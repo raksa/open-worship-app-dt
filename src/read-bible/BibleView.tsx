@@ -64,7 +64,7 @@ export default function BibleView({
             {rendHeader(bibleItem.bibleKey, title, onChangeCallback,
                 onClose, index)}
             <div className='card-body p-3'>
-                <p className='selectable-text' style={{
+                <p className='app-selectable-text' style={{
                     fontSize: `${fontSize}px`,
                 }}>{text}</p>
             </div>
@@ -85,7 +85,7 @@ function rendHeader(
                         <BibleSelectionMini value={key}
                             onChange={onChange} />
                     </div>
-                    <div className='title'>
+                    <div className='title app-selectable-text'>
                         {title}
                     </div>
                 </div>

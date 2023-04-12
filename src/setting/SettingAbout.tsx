@@ -31,7 +31,7 @@ export default function SettingAbout() {
                     KJV|{title}
                 </div>
                 <div className={'card-body bg-transparent '
-                    + 'border-success selectable-text'}>
+                    + 'border-success app-selectable-text'}>
                     {text}
                 </div>
             </div>

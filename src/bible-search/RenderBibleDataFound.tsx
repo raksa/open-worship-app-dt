@@ -149,7 +149,7 @@ function renderCopyButton(title: string, text: string) {
 
 function bibleTextPreview(text: string, fontSize: number) {
     return (
-        <p className='p-3 selectable-text'
+        <p className='p-3 app-selectable-text'
             style={{
                 fontSize: `${fontSize}px`,
             }}>{text}</p>

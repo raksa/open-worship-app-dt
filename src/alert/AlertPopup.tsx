@@ -26,7 +26,7 @@ export default function AlertPopup({ data }: {
                     </>}
                     onClose={onCloseCallback} />
                 <div className='card-body d-flex flex-column'>
-                    <div className='p-2 flex-fill flex h selectable-text'
+                    <div className='p-2 flex-fill flex h app-selectable-text'
                         dangerouslySetInnerHTML={{
                             __html: data.question,
                         }} />

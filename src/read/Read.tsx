@@ -5,8 +5,8 @@ import ResizeActor from '../resize-actor/ResizeActor';
 const BibleList = React.lazy(() => {
     return import('../bible-list/BibleList');
 });
-const BiblePreviewer = React.lazy(() => {
-    return import('../read-bible/BiblePreviewer');
+const ReadingBiblePreviewer = React.lazy(() => {
+    return import('../read-bible/ReadingBiblePreviewer');
 });
 
 export default function Read() {
@@ -19,7 +19,7 @@ export default function Read() {
             resizeKinds={['h', 'h']}
             dataInput={[
                 [BibleList, 'h1', 'flex v'],
-                [BiblePreviewer, 'h2', 'flex v'],
+                [ReadingBiblePreviewer, 'h2', 'flex v'],
             ]} />
     );
 }

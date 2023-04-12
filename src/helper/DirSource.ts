@@ -19,6 +19,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
     static _objectId = 0;
+    _objectId = ++DirSource._objectId;
     checkExtraFile: ((fileName: string) => FileMetadataType | null) | null = null;
     constructor(settingName: string) {
         super();
@@ -26,6 +27,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             throw new Error('Invalid setting name');
         }
         this.settingName = settingName;
+        // TODO: investigate why drop folder at first time not working
     }
     get dirPath() {
         return getSetting(this.settingName, '');
