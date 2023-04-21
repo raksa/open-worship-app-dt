@@ -11,8 +11,7 @@ import {
 } from './bible-helpers/bibleDownloadHelpers';
 import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { BibleRefsIndexDB } from '../db/dbHelper';
-import { getBibleRef } from '../bible-refs/bibleRefsHelpers';
+import { BibleRefsDbController } from '../db/dbHelper';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -65,7 +64,7 @@ export async function initApp() {
     await initCrypto();
     const downloadedBibleInfoList = await getDownloadedBibleInfoList();
     const promises = [
-        BibleRefsIndexDB.getInstance(),
+        BibleRefsDbController.getInstance(),
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
         getLangAsync(defaultLocal),
@@ -75,5 +74,3 @@ export async function initApp() {
     }
     await Promise.all(promises);
 }
-
-(window as any).getBibleRef = getBibleRef;

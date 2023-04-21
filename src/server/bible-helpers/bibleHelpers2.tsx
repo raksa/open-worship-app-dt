@@ -38,7 +38,7 @@ export async function getBibleLocale(bibleKey: string) {
     if (info === null) {
         return 'en' as LocaleType;
     }
-    return info.locale as LocaleType;
+    return info.locale;
 }
 export async function toLocaleNumBB(bibleKey: string, n: number | null) {
     if (typeof n !== 'number') {

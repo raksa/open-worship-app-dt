@@ -9,6 +9,7 @@ import { copyToClipboard } from '../server/appHelper';
 import { useCallback } from 'react';
 import { handleError } from '../helper/errorHelpers';
 import { BibleSelectionMini } from '../bible-search/BibleSelection';
+import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 
 export default function BibleView({
     index, bibleItem, onClose, fontSize,
@@ -67,6 +68,7 @@ export default function BibleView({
                 <p className='selectable-text' style={{
                     fontSize: `${fontSize}px`,
                 }}>{text}</p>
+                <RefRenderer bibleItem={bibleItem} />
             </div>
         </div>
     );
@@ -96,6 +98,35 @@ function rendHeader(
                         }} />
                 </div>
             </div>
+        </div>
+    );
+}
+
+function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
+    const { book, chapter, startVerse, endVerse } = bibleItem.target;
+    const arr: number[] = [];
+    for (let i = startVerse; i <= endVerse; i++) {
+        arr.push(i);
+    }
+    return (
+        <>
+            {arr.map((verse) => {
+                return (
+                    <RefItemRenderer key={verse} bookKey={book}
+                        chapter={chapter} verse={verse} />
+                );
+            })}
+        </>
+    );
+}
+function RefItemRenderer({ bookKey, chapter, verse }: {
+    bookKey: string, chapter: number, verse: number
+}) {
+    const bibleRef = useGetBibleRef(bookKey, chapter, verse);
+    return (
+        <div>
+            <hr />
+            {bibleRef !== null && <code>{JSON.stringify(bibleRef)}</code>}
         </div>
     );
 }

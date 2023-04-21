@@ -26,3 +26,14 @@ export function version() {
 export function is_dev() {
     return true;
 }
+
+export function bible_ref(text: string) {
+    return JSON.stringify({
+        text,
+        isS: false,
+        isFN: false,
+        isStar: false,
+        isTitle: false,
+        isLXXDSS: false,
+    });
+}
