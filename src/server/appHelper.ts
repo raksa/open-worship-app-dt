@@ -11,7 +11,6 @@ import {
 } from './bible-helpers/bibleDownloadHelpers';
 import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { BibleRefsDbController } from '../db/dbHelper';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
@@ -64,7 +63,6 @@ export async function initApp() {
     await initCrypto();
     const downloadedBibleInfoList = await getDownloadedBibleInfoList();
     const promises = [
-        BibleRefsDbController.getInstance(),
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
         getLangAsync(defaultLocal),

@@ -1,4 +1,14 @@
-const DB_NAME = 'bible';
+export const DB_NAME = 'bible';
+export const DB_VERSION = 3;
+
+interface DbControllerInterface {
+    db: IDBDatabase;
+    isDbOpened: boolean;
+    createObjectStore: () => void;
+    initCallback: <T>(target: any,
+        resolve: (e: T) => void,
+        reject: (e: string) => void) => void;
+};
 
 export type RecordType = {
     id: string;
@@ -6,24 +16,79 @@ export type RecordType = {
     createdAt: Date;
     updatedAt: Date;
 };
-abstract class IndexedDbController {
+
+class InitDBOpeningQueue {
+    request: IDBOpenDBRequest | null = null;
+    promises: {
+        resolve: () => void,
+        reject: (reason: any) => void,
+    }[] = [];
+    resolve() {
+        while (this.promises.length > 0) {
+            const { resolve } = this.promises.shift() as any;
+            resolve();
+        }
+    }
+    reject(reason: any) {
+        while (this.promises.length > 0) {
+            const { reject } = this.promises.shift() as any;
+            reject(reason);
+        }
+    }
+    attemptDbOpening(dbController: DbControllerInterface,
+        resolve: () => void, reject: (reason: any) => void) {
+        if (dbController.isDbOpened) {
+            this.resolve();
+            return;
+        }
+        this.promises.push({ resolve, reject });
+        if (this.request !== null) {
+            return;
+        }
+        const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        this.request = request;
+        request.onupgradeneeded = (event: any) => {
+            dbController.db = event.target.result;
+            dbController.createObjectStore();
+        };
+        dbController.initCallback<Event>(request, (event: any) => {
+            dbController.db = event.target.result;
+            this.request = null;
+            this.resolve();
+        }, () => {
+            this.request = null;
+            this.reject(request.error);
+        });
+    }
+}
+
+abstract class IndexedDbController implements DbControllerInterface {
     static _instance: IndexedDbController | null = null;
-    static DB_VERSION = 3;
     abstract get storeName(): string;
+    private _initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
     static instantiate(): IndexedDbController {
         throw new Error('Not implemented');
     }
     _db: IDBDatabase | null = null;
-    get isDbInitialized() {
+    get isDbOpened() {
         return this._db !== null;
     }
-    get db() {
-        if (this._db === null) {
+    set db(db: IDBDatabase | null) {
+        if (this._db === db) {
+            return;
+        }
+        if (this.isDbOpened) {
+            this._db?.close();
+        }
+        this._db = db;
+    }
+    get db(): IDBDatabase {
+        if (!this.isDbOpened) {
             throw new Error('DB is not initialized');
         }
-        return this._db;
+        return this._db as IDBDatabase;
     }
-    _initCallback<T>(target: any,
+    initCallback<T>(target: any,
         resolve: (e: T) => void,
         reject: (e: string) => void) {
         target.onsuccess = function (event: T) {
@@ -41,9 +106,9 @@ abstract class IndexedDbController {
         const store = transaction.objectStore(this.storeName);
         return { store, transaction };
     }
-    _createObjectStore() {
+    createObjectStore() {
         if (this.db.objectStoreNames.contains(this.storeName)) {
-            this.db.deleteObjectStore(this.storeName);
+            return;
         }
         this.db.createObjectStore(this.storeName, {
             keyPath: 'id',
@@ -52,14 +117,17 @@ abstract class IndexedDbController {
     }
     init() {
         return new Promise<void>((resolve, reject) => {
-            const request = window.indexedDB.open(DB_NAME, 3);
-            request.onupgradeneeded = (event: any) => {
-                this._db = event.target.result;
-                this._createObjectStore();
-            };
-            this._initCallback<Event>(request, (event: any) => {
-                this._db = event.target.result;
-                resolve();
+            this._initQueue.attemptDbOpening(this, resolve, reject);
+        });
+    }
+
+    _asyncOperation<T>(mode: IDBTransactionMode,
+        init: (target: IDBObjectStore) => T) {
+        return new Promise<T>((resolve, reject) => {
+            const { store } = this._getTransaction(mode);
+            const target = init(store);
+            this.initCallback(target, () => {
+                resolve(target);
             }, reject);
         });
     }
@@ -71,51 +139,61 @@ abstract class IndexedDbController {
             }
             await this.deleteItem(id);
         }
-        return new Promise<void>((resolve, reject) => {
-            const { store } = this._getTransaction('readwrite');
-            const request = store.add({
+        await this._asyncOperation('readwrite', (store) => {
+            return store.add({
                 id, data, ...{
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
             });
-            this._initCallback(request, resolve, reject);
         });
     }
-    getItem<T>(id: string) {
-        return new Promise<(RecordType & { data: T }) | null>((resolve, reject) => {
-            const { store } = this._getTransaction('readonly');
-            const request = store.get(id);
-            this._initCallback(request, (event: any) => {
-                resolve(event.target.result || null);
-            }, reject);
+    async getItem<T>(id: string) {
+        const request = await this._asyncOperation('readonly', (store) => {
+            return store.get(id);
+        });
+        if (!request.result) {
+            return null;
+        }
+        return request.result as {
+            id: string;
+            data: T;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    }
+    updateItem(id: string, data: any) {
+        return this._asyncOperation('readwrite', (store) => {
+            return store.put({
+                id, data, ...{
+                    updatedAt: new Date(),
+                },
+            });
         });
     }
     deleteItem(id: string) {
-        return new Promise<void>((resolve, reject) => {
-            const { store } = this._getTransaction('readwrite');
-            const request = store.delete(id);
-            this._initCallback(request, resolve, reject);
+        return this._asyncOperation('readwrite', (store) => {
+            return store.delete(id);
+        });
+    }
+    countAllItems() {
+        return this._asyncOperation('readonly', (store) => {
+            return store.count();
         });
     }
     clearAllItems() {
-        return new Promise<void>((resolve, reject) => {
-            const { store } = this._getTransaction('readwrite');
-            const request = store.clear();
-            this._initCallback(request, resolve, reject);
+        return this._asyncOperation('readwrite', (store) => {
+            return store.clear();
         });
     }
     closeDb() {
-        if (this._db !== null) {
-            this._db.close();
-            this._db = null;
-        }
+        this.db = null;
     }
     static async getInstance() {
         if (this._instance === null) {
             this._instance = this.instantiate();
-            await this._instance.init();
         }
+        await this._instance.init();
         return this._instance;
     }
 }
