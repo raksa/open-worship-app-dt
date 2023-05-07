@@ -1,5 +1,4 @@
 const fs = require('node:fs');
-const tar = require('tar');
 
 const fileUtils = {
     createWriteStream: fs.createWriteStream,
@@ -12,7 +11,10 @@ const fileUtils = {
     rmdir: fs.rmdir,
     readFile: fs.readFile,
     copyFile: fs.copyFile,
-    tarExtract: tar.x,
+    tarExtract: function () {
+        const tar = require('tar');
+        return tar.x(...arguments);
+    },
     watch: fs.watch,
 };
 

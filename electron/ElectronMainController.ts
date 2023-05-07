@@ -41,10 +41,6 @@ export default class ElectronMainController {
         } else {
             win.loadFile(htmlFile);
         }
-        // Open the DevTools.
-        if (isDev) {
-            win.webContents.openDevTools();
-        }
         return win;
     }
     close() {

@@ -1,6 +1,6 @@
 import ElectronAppController from './ElectronAppController';
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const electron = require('electron');
 
 export default class ElectronSettingController {
