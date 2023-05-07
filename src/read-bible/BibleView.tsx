@@ -68,7 +68,8 @@ export default function BibleView({
                 <p className='selectable-text' style={{
                     fontSize: `${fontSize}px`,
                 }}>{text}</p>
-                <RefRenderer bibleItem={bibleItem} />
+                {/* TODO: implement this
+                <RefRenderer bibleItem={bibleItem} /> */}
             </div>
         </div>
     );
@@ -102,7 +103,7 @@ function rendHeader(
     );
 }
 
-function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
+export function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
     const { book, chapter, startVerse, endVerse } = bibleItem.target;
     const arr: number[] = [];
     for (let i = startVerse; i <= endVerse; i++) {
