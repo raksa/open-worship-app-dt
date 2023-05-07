@@ -1,12 +1,12 @@
 import { isDev } from './electronHelpers';
-import {
-    installExtension,
-    REACT_DEVELOPER_TOOLS,
-} from 'electron-extension-installer';
 
-export function initExtensions() {
+export async function initExtensions() {
     if (isDev) {
-        return installExtension(REACT_DEVELOPER_TOOLS, {
+        const {
+            installExtension,
+            REACT_DEVELOPER_TOOLS,
+        } = await import('electron-extension-installer');
+        await installExtension(REACT_DEVELOPER_TOOLS, {
             loadExtensionOptions: {
                 allowFileAccess: true,
             },
