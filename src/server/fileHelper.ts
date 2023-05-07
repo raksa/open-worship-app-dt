@@ -170,6 +170,9 @@ function _fsCopyFile(src: string, dest: string) {
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
 }
 async function _fsCheckExist(isFile: boolean, filePath: string, fileName?: string) {
+    if (!filePath) {
+        return false;
+    }
     if (fileName) {
         filePath = pathJoin(filePath, fileName);
     }
