@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "./",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "./electron-build/electron/index.js",
     "scripts": {
         "react:watch": "env-cmd -f .env react-scripts start",
