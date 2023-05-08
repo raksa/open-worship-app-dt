@@ -3,6 +3,8 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 
+export const INPUT_TEXT_CLASS = 'bible-search-input-text';
+
 function indexing(listLength: number, index: number, isNext: boolean) {
     return ((index + (isNext ? 1 : -1)) + listLength) %
         listLength;
@@ -97,6 +99,14 @@ export function getSelectedElement(optionClass: string, selectedClass: string) {
     });
 }
 
+function blurInputText() {
+    const inputText = document.querySelector<HTMLInputElement>(
+        `.${INPUT_TEXT_CLASS}`);
+    if (inputText) {
+        inputText.blur();
+    }
+}
+
 export function processSelection(optionClass: string,
     selectedClass: string, key: KeyboardType) {
     const { index, elements } = genIndex(optionClass, selectedClass, key);
@@ -107,6 +117,7 @@ export function processSelection(optionClass: string,
         element.classList.remove(selectedClass);
     });
     elements[index].classList.add(selectedClass);
+    blurInputText();
     elements[index].scrollIntoView({
         block: 'end',
         behavior: 'smooth',

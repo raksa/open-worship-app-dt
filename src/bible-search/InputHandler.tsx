@@ -8,6 +8,8 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
+import { useRef } from 'react';
+import { INPUT_TEXT_CLASS } from './selectionHelpers';
 
 export default function InputHandler({
     inputText,
@@ -25,12 +27,19 @@ export default function InputHandler({
     const placeholder = useBibleItemToInputText(
         bibleSelected, bookKey, 1, 1, 2);
     useKeyboardRegistering({ key: 'Escape' }, () => {
-        onInputChange('');
+        if (inputRef.current !== null) {
+            if (document.activeElement !== inputRef.current) {
+                inputRef.current.focus();
+                return;
+            }
+            onInputChange('');
+        }
     });
+    const inputRef = useRef<HTMLInputElement>(null);
     return (
         <>
-            <input type='text'
-                className='form-control'
+            <input ref={inputRef} type='text'
+                className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
                 placeholder={placeholder}

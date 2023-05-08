@@ -37,8 +37,13 @@ export default function BibleSearchRender({ editingInputText }: {
 
     const [bibleSelected, setBibleSelected] = useGetSelectedBibleKey();
 
+    useKeyboardRegistering(eventMapper, () => {
+        closeBibleSearch();
+    });
     useKeyboardRegistering({ key: 'Escape' }, () => {
-        !inputText && closeBibleSearch();
+        if (!inputText) {
+            closeBibleSearch();
+        }
     });
     const [bibleResult, setBibleResult] = useState<ExtractedBibleResult>(
         defaultExtractedBible);
