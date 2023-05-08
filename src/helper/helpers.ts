@@ -3,6 +3,7 @@ import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import ItemSource from './ItemSource';
+import { trace } from './loggerHelpers';
 
 export type AnyObjectType = {
     [key: string]: any;
@@ -142,7 +143,7 @@ export function isValidJson(json: any, isSilent: boolean = false) {
         return JSON.parse(json);
     } catch (error) {
         if (!isSilent && json === '') {
-            console.trace('Invalid Json:', json);
+            trace('Invalid Json:', json);
         }
         return false;
     }

@@ -18,23 +18,35 @@ const OPTION_SELECTED_CLASS = 'active';
 
 function genMatchedChapters(currentIndexing: number,
     chapterCount: number | null) {
-    if (currentIndexing !== null && chapterCount !== null) {
-        const chapterList = Array.from({
-            length: chapterCount,
-        }, (_, i) => {
-            return i + 1;
-        });
-        return currentIndexing ? chapterList.filter((c) => {
-            if (`${c}`.includes(`${currentIndexing}`)) {
-                return true;
-            }
-            if (`${currentIndexing}`.includes(`${c}`)) {
-                return true;
-            }
-            return false;
-        }) : chapterList;
+    if (chapterCount === null) {
+        return null;
     }
-    return null;
+    const chapterList = Array.from({
+        length: chapterCount,
+    }, (_, i) => {
+        return i + 1;
+    });
+    if (!currentIndexing) {
+        return chapterList;
+    }
+    const foundList = chapterList.filter((c) => {
+        if (`${c}`.includes(`${currentIndexing}`)) {
+            return true;
+        }
+        if (`${currentIndexing}`.includes(`${c}`)) {
+            return true;
+        }
+        return false;
+    });
+    foundList.sort((a, b) => {
+        const aDiff = Math.abs(a - currentIndexing);
+        const bDiff = Math.abs(b - currentIndexing);
+        if (aDiff === bDiff) {
+            return a - b;
+        }
+        return aDiff - bDiff;
+    });
+    return foundList;
 }
 
 export default function RenderChapterOption({

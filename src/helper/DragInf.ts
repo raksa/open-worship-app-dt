@@ -59,7 +59,6 @@ async function deserializeDragData({
         item = colorDeserialize(data);
     }
     if (item === null) {
-        console.log(type, data);
         return null;
     }
     return { type, item };

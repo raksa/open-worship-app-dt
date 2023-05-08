@@ -92,7 +92,8 @@ export async function getChapterCount(bibleKey: string, book: string) {
 export async function getBookChapterData(bibleKey: string,
     bookKey: string, chapterNumber: number) {
     const fileName = toFileName(bookKey, chapterNumber);
-    const vInfo = await readBibleData(bibleKey, fileName) as ChapterType | null;
+    const vInfo = await BibleDataReader.getInstance()
+        .readBibleData(bibleKey, fileName) as ChapterType | null;
     if (vInfo === null) {
         return null;
     }
@@ -111,51 +112,92 @@ export async function getVerses(bibleKey: string, bookKey: string, chapter: numb
     return chapterObj.verses;
 }
 
-export async function getWritableBiblePath() {
-    const dirPath = pathJoin(getUserWritablePath(), `bibles${is_dev() ? '-dev' : ''}`);
-    try {
-        await fsCreateDir(dirPath);
-    } catch (error: any) {
-        if (!error.message.includes('file already exists')) {
-            handleError(error);
-            return null;
-        }
+type ReadingBibleDataType = BibleInfoType | null;
+type CallbackType = (data: ReadingBibleDataType) => void;
+export class BibleDataReader {
+    static _instance: BibleDataReader | null = null;
+    _writableBiblePath: string | null = null;
+    _callbackMapper: Map<string, Array<CallbackType>> = new Map();
+    _pushCallback(key: string, callback: CallbackType) {
+        const callbackList = this._callbackMapper.get(key) || [];
+        callbackList.push(callback);
+        this._callbackMapper.set(key, callbackList);
+        return callbackList.length === 1;
     }
-    return pathJoin(getUserWritablePath(), 'bibles');
-}
-
-export async function toBiblePath(bibleKey: string) {
-    const writableBiblePath = await getWritableBiblePath();
-    if (writableBiblePath === null) {
-        return null;
+    _fullfilCallback(key: string, data: ReadingBibleDataType) {
+        const callbackList = this._callbackMapper.get(key) || [];
+        this._callbackMapper.delete(key);
+        callbackList.forEach((callback) => {
+            callback(data);
+        });
     }
-    return pathJoin(writableBiblePath, bibleKey);
-}
-
-export async function readBibleData(bibleKey: string, key: string) {
-    try {
-        const biblePath = await toBiblePath(bibleKey);
+    async _readBibleData(bibleKey: string, key: string,
+        callback: CallbackType) {
+        const biblePath = await this.toBiblePath(bibleKey);
         if (biblePath === null) {
-            return null;
+            return callback(null);
         }
         const filePath = pathJoin(biblePath, key);
-        const data = await fsReadFile(filePath);
-        const rawData = appProvider.appUtils.base64Decode(decrypt(data));
-        return JSON.parse(rawData);
-    } catch (error: any) {
-        if (error.code !== 'ENOENT') {
-            handleError(error);
+        const isFist = this._pushCallback(filePath, callback);
+        if (!isFist) {
+            return;
         }
+        let data: ReadingBibleDataType = null;
+        try {
+            const fileData = await fsReadFile(filePath);
+            const rawData = appProvider.appUtils.base64Decode(decrypt(fileData));
+            data = JSON.parse(rawData);
+        } catch (error: any) {
+            if (error.code !== 'ENOENT') {
+                handleError(error);
+            }
+        }
+        this._fullfilCallback(filePath, data);
     }
-    return null;
+    readBibleData(bibleKey: string, key: string) {
+        return new Promise<ReadingBibleDataType>((resolve) => {
+            this._readBibleData(bibleKey, key, resolve);
+        });
+    }
+    async toBiblePath(bibleKey: string) {
+        const writableBiblePath = await this.getWritableBiblePath();
+        if (writableBiblePath === null) {
+            return null;
+        }
+        return pathJoin(writableBiblePath, bibleKey);
+    }
+    async getWritableBiblePath() {
+        if (this._writableBiblePath === null) {
+            const userWritablePath = getUserWritablePath();
+            const dirPath = pathJoin(userWritablePath,
+                `bibles${is_dev() ? '-dev' : ''}`);
+            try {
+                await fsCreateDir(dirPath);
+            } catch (error: any) {
+                if (!error.message.includes('file already exists')) {
+                    handleError(error);
+                }
+            }
+            this._writableBiblePath = pathJoin(userWritablePath, 'bibles');
+        }
+        return this._writableBiblePath;
+    }
+    static getInstance() {
+        if (BibleDataReader._instance === null) {
+            BibleDataReader._instance = new BibleDataReader();
+        }
+        return BibleDataReader._instance;
+    }
 }
+
 
 export async function getBibleInfo(bibleKey: string, isForce: boolean = false) {
     if (isForce) {
         bibleStorage.infoMapper.delete(bibleKey);
     }
     if (!bibleStorage.infoMapper.get(bibleKey)) {
-        const info: BibleInfoType | null = await readBibleData(bibleKey, '_info');
+        const info = await BibleDataReader.getInstance().readBibleData(
+            bibleKey, '_info');
         bibleStorage.infoMapper.set(bibleKey, info);
     }
     return bibleStorage.infoMapper.get(bibleKey) || null;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { log, warn } from './loggerHelpers';
 
 const THRESHOLD = 10;
 const MILLIE_SECOND = 1000;
@@ -13,7 +14,7 @@ function restore(toKey: string) {
         timeoutId: 0,
     });
     if (store.count === 0) {
-        console.info('[useAppEffect] is called for the first time');
+        log('[useAppEffect] is called for the first time');
     }
     store.count++;
     if (store.timeoutId) {
@@ -39,7 +40,7 @@ export function useAppEffect(
         const store = restore(toKey);
         mapper.set(toKey, store);
         if (store.count > THRESHOLD) {
-            console.warn(`[useAppEffect] ${toKey} is called more than `
+            warn(`[useAppEffect] ${toKey} is called more than `
                 + `${THRESHOLD} times in ${MILLIE_SECOND}ms`);
         }
         return effect();

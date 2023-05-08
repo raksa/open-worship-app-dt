@@ -9,6 +9,7 @@ import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
+import { log } from '../helper/loggerHelpers';
 
 export type SlideItemType = {
     id: number,
@@ -205,7 +206,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             typeof json.metadata.width !== 'number' ||
             typeof json.metadata.height !== 'number' ||
             !(json.canvasItems instanceof Array)) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid slide item data');
         }
     }

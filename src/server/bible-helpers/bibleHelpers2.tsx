@@ -126,11 +126,14 @@ async function searchChapter(bibleKey: string,
     if (bookKey === null) {
         throw err1;
     }
-    const verses = await getVerses(bibleKey, bookKey, chapter);
-    if (!verses) {
-        throw err1;
+    let verseCount = 0;
+    if (arr1.length > 0) {
+        const verses = await getVerses(bibleKey, bookKey, chapter);
+        if (!verses) {
+            throw err1;
+        }
+        verseCount = Object.keys(verses).length;
     }
-    const verseCount = Object.keys(verses).length;
     return { arr1, chapter, verseCount };
 }
 async function searchStartVerse(bibleKey: string,
@@ -169,7 +172,7 @@ export async function extractBible(bibleKey: string, str: string) {
         const {
             arr1, chapter, verseCount,
         } = await searchChapter(bibleKey, result.book, arr);
-        if ((/^.+\s+.+\:.*/).test(str)) {
+        if ((/^.+\s+.+:.*/).test(str)) {
             result.chapter = chapter;
         }
         const {

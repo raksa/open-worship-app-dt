@@ -1,6 +1,7 @@
 import Bible from '../bible-list/Bible';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
+import { log } from '../helper/loggerHelpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 
@@ -83,7 +84,7 @@ export default class PlaylistItem {
             || json.path && typeof json.path !== 'string'
             || (json.type === 'bible-item' && typeof json.id !== 'number')
         ) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid playlist item data');
         }
     }

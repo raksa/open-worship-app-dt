@@ -13,9 +13,8 @@ import {
     fsListDirectories,
 } from '../fileHelper';
 import {
+    BibleDataReader,
     getBibleInfo,
-    getWritableBiblePath,
-    toBiblePath,
 } from './bibleInfoHelpers';
 
 export function httpsRequest(pathName: string,
@@ -100,7 +99,8 @@ export async function startDownloadBible({
     fileName: string,
     options: DownloadOptionsType
 }) {
-    const filePath = await toBiblePath(bibleFileFullName);
+    const filePath = await BibleDataReader.getInstance()
+        .toBiblePath(bibleFileFullName);
     if (filePath === null) {
         return options.onDone(new Error('Invalid file path'));
     }
@@ -128,7 +128,8 @@ export async function downloadBible({
         return options.onDone(new Error('Invalid file path'));
     }
     try {
-        const downloadPath = await getWritableBiblePath();
+        const downloadPath = await BibleDataReader.getInstance()
+            .getWritableBiblePath();
         if (downloadPath === null) {
             return options.onDone(new Error('Cannot create writable path'));
         }
@@ -143,7 +144,8 @@ export async function downloadBible({
 }
 export async function extractDownloadedBible(filePath: string) {
     try {
-        const downloadPath = await getWritableBiblePath();
+        const downloadPath = await BibleDataReader.getInstance()
+            .getWritableBiblePath();
         await appProvider.fileUtils.tarExtract({
             file: filePath,
             cwd: downloadPath as string,
@@ -188,7 +190,8 @@ export async function getOnlineBibleInfoList():
 }
 
 export async function getDownloadedBibleInfoList() {
-    const writableBiblePath = await getWritableBiblePath();
+    const writableBiblePath = await BibleDataReader.getInstance()
+        .getWritableBiblePath();
     if (writableBiblePath === null) {
         return null;
     }

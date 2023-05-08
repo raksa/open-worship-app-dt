@@ -15,6 +15,7 @@ import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
+import { log } from '../../helper/loggerHelpers';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
@@ -99,7 +100,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment)
         ) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid canvas item text data');
         }
     }

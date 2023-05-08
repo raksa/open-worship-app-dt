@@ -1,5 +1,5 @@
 import {
-    toBiblePath,
+    BibleDataReader,
 } from '../../server/bible-helpers/bibleInfoHelpers';
 import {
     fsCheckDirExist,
@@ -22,7 +22,8 @@ export default function DownloadedBibleItem({
     const { key, title } = bibleInfo;
     const onDeleteHandler = async () => {
         try {
-            const bibleDestination = await toBiblePath(key);
+            const bibleDestination = await BibleDataReader.getInstance()
+                .toBiblePath(key);
             if (bibleDestination !== null &&
                 await fsCheckDirExist(bibleDestination)) {
                 await fsDeleteDir(bibleDestination);

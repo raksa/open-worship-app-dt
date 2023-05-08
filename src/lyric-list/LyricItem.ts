@@ -4,6 +4,7 @@ import Lyric from './Lyric';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
+import { log } from '../helper/loggerHelpers';
 
 export type LyricItemType = {
     id: number,
@@ -118,7 +119,7 @@ export default class LyricItem extends ItemBase implements DragInf<LyricItemType
     }
     static validate(json: AnyObjectType) {
         if (!json.title || !json.content) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid lyric item data');
         }
     }

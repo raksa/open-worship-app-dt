@@ -19,6 +19,7 @@ import { getKJVKeyValue } from '../server/bible-helpers/bibleHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { log } from '../helper/loggerHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -154,7 +155,7 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
             typeof json.target.chapter !== 'number' ||
             typeof json.target.startVerse !== 'number' ||
             typeof json.target.endVerse !== 'number') {
-            console.log(json);
+            log(json);
             throw new Error('Invalid bible item data');
         }
     }

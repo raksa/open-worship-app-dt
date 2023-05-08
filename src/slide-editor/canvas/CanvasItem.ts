@@ -14,6 +14,7 @@ import {
     vAlignmentList,
     VAlignmentType,
 } from './canvasHelpers';
+import { log } from '../../helper/loggerHelpers';
 
 export type CanvasItemPropsType = {
     id: number,
@@ -123,7 +124,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
                 && typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
         ) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid canvas item data');
         }
     }
