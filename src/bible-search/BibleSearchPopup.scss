@@ -30,6 +30,12 @@
 
       .btn {
         flex: 1 1 auto;
+
+        &.bible-search-chapter-option {
+          &:hover {
+            font-weight: bold;
+          }
+        }
       }
     }
 
