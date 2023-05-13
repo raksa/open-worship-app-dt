@@ -2,14 +2,14 @@ import {
     useGetBookKVList,
 } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    useBibleItemToInputText,
-} from '../bible-list/BibleItem';
-import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
 import { useRef } from 'react';
 import { INPUT_TEXT_CLASS } from './selectionHelpers';
+import { 
+    useBibleItemToInputText,
+ } from '../helper/bible-helpers/bibleRenderHelpers';
 
 export default function InputHandler({
     inputText,

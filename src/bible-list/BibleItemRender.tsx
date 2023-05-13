@@ -1,7 +1,5 @@
 import Bible from './Bible';
-import BibleItem, {
-    useBibleItemRenderTitle,
-} from './BibleItem';
+import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import {
     getIsPreviewingBible,
@@ -17,8 +15,11 @@ import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
+import {
+    useBibleItemRenderTitle,
+} from '../helper/bible-helpers/bibleRenderHelpers';
 
-export default function     BibleItemRender({
+export default function BibleItemRender({
     index,
     bibleItem,
     warningMessage,

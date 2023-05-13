@@ -1,15 +1,16 @@
 import './BibleView.scss';
 
 import { showAppContextMenu } from '../others/AppContextMenu';
-import BibleItem, {
-    useBibleItemRenderText,
-    useBibleItemRenderTitle,
-} from '../bible-list/BibleItem';
+import BibleItem from '../bible-list/BibleItem';
 import { copyToClipboard } from '../server/appHelper';
 import { useCallback } from 'react';
 import { handleError } from '../helper/errorHelpers';
 import { BibleSelectionMini } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
+import {
+    useBibleItemRenderTitle,
+    useBibleItemRenderText,
+} from '../helper/bible-helpers/bibleRenderHelpers';
 
 export default function BibleView({
     index, bibleItem, onClose, fontSize,

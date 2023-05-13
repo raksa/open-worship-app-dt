@@ -1,20 +1,25 @@
-import { useState } from 'react';
 import {
-    toInputText,
-} from '../helper/bible-helpers/serverBibleHelpers2';
-import { openBibleSearch } from '../bible-search/HandleBibleSearch';
-import { previewingEventListener } from '../event/PreviewingEventListener';
+    openBibleSearch,
+} from '../bible-search/HandleBibleSearch';
+import {
+    previewingEventListener,
+} from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
+import {
+    AnyObjectType, cloneJson, isValidJson,
+} from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
-import { setSetting, getSetting } from '../helper/settingHelper';
+import {
+    setSetting, getSetting,
+} from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
 import { log } from '../helper/loggerHelpers';
-import { bibleRenderHelper } from '../helper/bible-helpers/bibleRenderHelpers';
+import {
+    bibleRenderHelper,
+} from '../helper/bible-helpers/bibleRenderHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -28,7 +33,8 @@ export type BibleItemType = {
     target: BibleTargetType,
     metadata: AnyObjectType,
 }
-export default class BibleItem extends ItemBase implements DragInf<BibleItemType> {
+export default class BibleItem extends ItemBase
+    implements DragInf<BibleItemType> {
     static SELECT_SETTING_NAME = 'bible-item-selected';
     _originalJson: BibleItemType;
     id: number;
@@ -250,29 +256,4 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
         }
         return null;
     }
-}
-
-export function useBibleItemRenderTitle(item: BibleItem) {
-    const [title, setTitle] = useState<string>('');
-    useAppEffect(() => {
-        item.toTitle().then(setTitle);
-    }, [item]);
-    return title;
-}
-export function useBibleItemRenderText(item: BibleItem) {
-    const [text, setText] = useState<string>('');
-    useAppEffect(() => {
-        BibleItem.itemToText(item).then(setText);
-    }, [item]);
-    return text;
-}
-export function useBibleItemToInputText(bibleKey: string, book?: string | null,
-    chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
-    const [text, setText] = useState<string>('');
-    useAppEffect(() => {
-        toInputText(bibleKey, book, chapter, startVerse, endVerse).then((text1) => {
-            setText(text1);
-        });
-    }, [bibleKey, book, chapter, startVerse, endVerse]);
-    return text;
 }

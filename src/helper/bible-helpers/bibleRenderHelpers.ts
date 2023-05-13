@@ -1,7 +1,9 @@
-import { BibleTargetType } from '../../bible-list/BibleItem';
+import { useState } from 'react';
+import BibleItem, { BibleTargetType } from '../../bible-list/BibleItem';
+import { useAppEffect } from '../debuggerHelpers';
 import { keyToBook, getVerses } from './bibleInfoHelpers';
 import { getKJVKeyValue } from './serverBibleHelpers';
-import { toLocaleNumBB } from './serverBibleHelpers2';
+import { toInputText, toLocaleNumBB } from './serverBibleHelpers2';
 
 type CallbackType = (text: string | null) => void;
 class BibleRenderHelper {
@@ -111,3 +113,28 @@ class BibleRenderHelper {
 }
 
 export const bibleRenderHelper = new BibleRenderHelper();
+
+export function useBibleItemRenderTitle(item: BibleItem) {
+    const [title, setTitle] = useState<string>('');
+    useAppEffect(() => {
+        item.toTitle().then(setTitle);
+    }, [item]);
+    return title;
+}
+export function useBibleItemRenderText(item: BibleItem) {
+    const [text, setText] = useState<string>('');
+    useAppEffect(() => {
+        BibleItem.itemToText(item).then(setText);
+    }, [item]);
+    return text;
+}
+export function useBibleItemToInputText(bibleKey: string, book?: string | null,
+    chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
+    const [text, setText] = useState<string>('');
+    useAppEffect(() => {
+        toInputText(bibleKey, book, chapter, startVerse, endVerse).then((text1) => {
+            setText(text1);
+        });
+    }, [bibleKey, book, chapter, startVerse, endVerse]);
+    return text;
+}
