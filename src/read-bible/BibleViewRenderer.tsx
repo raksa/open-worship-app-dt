@@ -1,10 +1,11 @@
-import BibleView from './BibleView';
+import BibleView, { RESIZER_SETTING_NAME } from './BibleView';
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
 import BibleItemViewController, {
     useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
+import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
 
 export default function BibleViewRenderer({
     fontSize, bibleItemViewController,
@@ -28,7 +29,7 @@ export default function BibleViewRenderer({
     }
     return (
         <ResizeActor
-            fSizeName={'bible-previewer-render'}
+            fSizeName={RESIZER_SETTING_NAME}
             flexSizeDefault={Object.fromEntries(bibleItems.map((_, i) => {
                 return [`h${i + 1}`, ['1']];
             }))}
@@ -67,6 +68,7 @@ function NoBibleViewAvailable({ bibleItemViewController }: {
                 try {
                     const json = JSON.parse(data);
                     if (json.type === 'bibleItem') {
+                        clearFlexSizeSetting(RESIZER_SETTING_NAME);
                         const bibleItem = BibleItem.fromJson(json.data);
                         bibleItemViewController.addItem(bibleItem);
                     }

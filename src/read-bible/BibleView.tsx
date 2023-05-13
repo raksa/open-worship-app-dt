@@ -3,13 +3,20 @@ import './BibleView.scss';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
-import { BibleSelectionMini, showBibleOption } from '../bible-search/BibleSelection';
+import {
+    BibleSelectionMini, showBibleOption,
+} from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 import {
     useBibleItemRenderTitle,
     useBibleItemRenderText,
 } from '../helper/bible-helpers/bibleRenderHelpers';
 import BibleItemViewController from './BibleItemViewController';
+import {
+    clearFlexSizeSetting,
+} from '../resize-actor/flexSizeHelpers';
+
+export const RESIZER_SETTING_NAME = 'bible-previewer-render';
 
 export default function BibleView({
     index, bibleItem, fontSize,
@@ -49,11 +56,13 @@ export default function BibleView({
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [{
                     title: 'Split', onClick: () => {
+                        clearFlexSizeSetting(RESIZER_SETTING_NAME);
                         bibleItemViewController.duplicateItemAtIndex(index);
                     },
                 }, {
                     title: 'Split To', onClick: () => {
                         showBibleOption(event, [], (bibleKey: string) => {
+                            clearFlexSizeSetting(RESIZER_SETTING_NAME);
                             bibleItemViewController.duplicateItemAtIndex(
                                 index, bibleKey);
                         });
@@ -99,6 +108,7 @@ function rendHeader(
                 <div>
                     <button className='btn-close'
                         onClick={() => {
+                            clearFlexSizeSetting(RESIZER_SETTING_NAME);
                             onClose(index);
                         }} />
                 </div>

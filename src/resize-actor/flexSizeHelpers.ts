@@ -46,6 +46,11 @@ export const setDisablingSetting = (fSizeName: string,
     return flexSize;
 };
 
+export function clearFlexSizeSetting(fSizeName: string) {
+    const settingString = toSettingString(fSizeName);
+    setSetting(settingString, '');
+}
+
 export const setFlexSizeSetting = (fSizeName: string,
     defaultSize: FlexSizeType) => {
     const selectorString = `[data-fs^="${fSizeName}"]`;
