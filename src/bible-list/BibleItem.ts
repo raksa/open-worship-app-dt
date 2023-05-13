@@ -1,10 +1,5 @@
 import { useState } from 'react';
 import {
-    keyToBook,
-    getVerses,
-} from '../helper/bible-helpers/bibleInfoHelpers';
-import {
-    toLocaleNumBB,
     toInputText,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
@@ -15,11 +10,11 @@ import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
-import { getKJVKeyValue } from '../helper/bible-helpers/serverBibleHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { log } from '../helper/loggerHelpers';
+import { bibleRenderHelper } from '../helper/bible-helpers/bibleRenderHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -216,57 +211,21 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
         return [];
     }
     async toTitleText() {
-        let title = '';
-        try {
-            title = await this.toTitle();
-        } catch (error) {
-            handleError(error);
-            title = `😟Unable to render title for ${this.toKey()}`;
-        }
-        let text = '';
-        try {
-            text = await this.toText();
-        } catch (error) {
-            handleError(error);
-            text = `😟Unable to render text for ${this.toKey()}`;
-        }
+        const title = await this.toTitle();
+        const text = await this.toText();
         return { title, text };
     }
-    toKey(isFull = false) {
-        const { bibleKey: bible, target } = this;
-        const { book, chapter, startVerse, endVerse } = target;
-        const txtV = `${startVerse}${startVerse !== endVerse ? ('-' + endVerse) : ''}`;
-        return `${isFull ? bible + ' | ' : ''}${book} ${chapter}:${txtV}`;
-    }
     async toTitle() {
-        const { bibleKey: bible, target } = this;
-        const { book, chapter, startVerse, endVerse } = target;
-        const chapterLocale = await toLocaleNumBB(bible, chapter);
-        const startVerseLocale = await toLocaleNumBB(bible, startVerse);
-        const endVerseLocale = await toLocaleNumBB(bible, endVerse);
-        const txtV = `${startVerseLocale}${startVerse !== endVerse ? ('-' + endVerseLocale) : ''}`;
-        let bookKey = await keyToBook(bible, book);
-        if (bookKey === null) {
-            bookKey = getKJVKeyValue()[book];
-        }
-        return `${bookKey} ${chapterLocale}:${txtV}`;
+        const bibleVerseKey = bibleRenderHelper
+            .toBibleVersesKey(this.bibleKey, this.target);
+        return await bibleRenderHelper.toTitle(bibleVerseKey)
+            || `😟Unable to render title for ${bibleVerseKey}`;
     }
     async toText() {
-        const { bibleKey: bible, target } = this;
-        let txt = '😟Unable to get bible text, check downloaded bible list '
-            + 'in setting or refresh application!👌';
-        if (target.chapter === null) {
-            return txt;
-        }
-        const verses = await getVerses(bible, target.book, target.chapter);
-        if (verses === null) {
-            return txt;
-        }
-        txt = '';
-        for (let i = target.startVerse; i <= target.endVerse; i++) {
-            txt += ` (${await toLocaleNumBB(bible, i)}): ${verses[i.toString()]}`;
-        }
-        return txt;
+        const bibleVerseKey = bibleRenderHelper
+            .toBibleVersesKey(this.bibleKey, this.target);
+        return await bibleRenderHelper.toText(bibleVerseKey) ||
+            `😟Unable to render text for ${bibleVerseKey}`;
     }
     static itemToText(item: BibleItem) {
         return item.toText();

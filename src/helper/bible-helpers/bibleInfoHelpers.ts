@@ -92,7 +92,7 @@ export async function getChapterCount(bibleKey: string, book: string) {
 export async function getBookChapterData(bibleKey: string,
     bookKey: string, chapterNumber: number) {
     const fileName = toFileName(bookKey, chapterNumber);
-    const vInfo = await BibleDataReader.getInstance()
+    const vInfo = await bibleDataReader
         .readBibleData(bibleKey, fileName) as ChapterType | null;
     if (vInfo === null) {
         return null;
@@ -115,7 +115,6 @@ export async function getVerses(bibleKey: string, bookKey: string, chapter: numb
 type ReadingBibleDataType = BibleInfoType | null;
 type CallbackType = (data: ReadingBibleDataType) => void;
 export class BibleDataReader {
-    static _instance: BibleDataReader | null = null;
     _writableBiblePath: string | null = null;
     _callbackMapper: Map<string, Array<CallbackType>> = new Map();
     _pushCallback(key: string, callback: CallbackType) {
@@ -182,13 +181,8 @@ export class BibleDataReader {
         }
         return this._writableBiblePath;
     }
-    static getInstance() {
-        if (BibleDataReader._instance === null) {
-            BibleDataReader._instance = new BibleDataReader();
-        }
-        return BibleDataReader._instance;
-    }
 }
+export const bibleDataReader = new BibleDataReader();
 
 
 export async function getBibleInfo(bibleKey: string, isForce: boolean = false) {
@@ -196,10 +190,9 @@ export async function getBibleInfo(bibleKey: string, isForce: boolean = false) {
         bibleStorage.infoMapper.delete(bibleKey);
     }
     if (!bibleStorage.infoMapper.get(bibleKey)) {
-        const info = await BibleDataReader.getInstance().readBibleData(
+        const info = await bibleDataReader.readBibleData(
             bibleKey, '_info');
         bibleStorage.infoMapper.set(bibleKey, info);
     }
     return bibleStorage.infoMapper.get(bibleKey) || null;
 }
-

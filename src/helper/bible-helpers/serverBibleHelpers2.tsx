@@ -104,6 +104,7 @@ async function searchBook(bibleKey: string, arr: string[]) {
     }
     throw new Error('Invalid book');
 }
+
 async function searchChapter(bibleKey: string,
     book: string, arr: string[]) {
     const error = new Error('Invalid chapter');
@@ -136,6 +137,7 @@ async function searchChapter(bibleKey: string,
     }
     return { arr1, chapter, verseCount };
 }
+
 async function searchStartVerse(bibleKey: string,
     verseCount: number, arr1: string[]) {
     const error = new Error('Invalid start verse');
@@ -151,6 +153,7 @@ async function searchStartVerse(bibleKey: string,
     arr2.shift();
     return { arr2, startVerse };
 }
+
 async function searchEndVerse(bibleKey: string, verseCount: number,
     startVerse: number, arr2: string[]) {
     const error = new Error('Invalid end verse');
@@ -164,6 +167,7 @@ async function searchEndVerse(bibleKey: string, verseCount: number,
     }
     return endVerse;
 }
+
 export async function extractBible(bibleKey: string, str: string) {
     const result = cloneJson(defaultExtractedBible);
     try {
