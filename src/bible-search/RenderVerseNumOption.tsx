@@ -1,4 +1,4 @@
-import { ConsumeVerseType } from './bibleHelpers';
+import { ConsumeVerseType } from '../helper/bibleHelpers';
 import RendLocalNumberAsync from './RendLocalNumberAsync';
 
 let mouseDownInd: number | null = null;

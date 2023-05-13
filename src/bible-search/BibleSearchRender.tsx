@@ -10,14 +10,14 @@ import {
     defaultExtractedBible,
     extractBible,
     toInputText,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../server/bible-helpers/serverBibleHelpers2';
 import {
     getChapterCount,
 } from '../server/bible-helpers/bibleInfoHelpers';
 import { closeBibleSearch } from './HandleBibleSearch';
 import {
     genInputText, useGetSelectedBibleKey,
-} from './bibleHelpers';
+} from '../helper/bibleHelpers';
 import RenderSearchSuggestion, {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';

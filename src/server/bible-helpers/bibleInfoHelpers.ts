@@ -14,7 +14,7 @@ import {
     getKJVChapterCount,
     toBookKey,
     toFileName,
-} from './bibleHelpers';
+} from './serverBibleHelpers';
 import { handleError } from '../../helper/errorHelpers';
 
 export type BibleInfoType = {

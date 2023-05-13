@@ -6,7 +6,7 @@ import {
 import {
     toLocaleNumBB,
     toInputText,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../server/bible-helpers/serverBibleHelpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
@@ -15,7 +15,7 @@ import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
-import { getKJVKeyValue } from '../server/bible-helpers/bibleHelpers';
+import { getKJVKeyValue } from '../server/bible-helpers/serverBibleHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -215,6 +215,29 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
         }
         return [];
     }
+    async toTitleText() {
+        let title = '';
+        try {
+            title = await this.toTitle();
+        } catch (error) {
+            handleError(error);
+            title = `😟Unable to render title for ${this.toKey()}`;
+        }
+        let text = '';
+        try {
+            text = await this.toText();
+        } catch (error) {
+            handleError(error);
+            text = `😟Unable to render text for ${this.toKey()}`;
+        }
+        return { title, text };
+    }
+    toKey(isFull = false) {
+        const { bibleKey: bible, target } = this;
+        const { book, chapter, startVerse, endVerse } = target;
+        const txtV = `${startVerse}${startVerse !== endVerse ? ('-' + endVerse) : ''}`;
+        return `${isFull ? bible + ' | ' : ''}${book} ${chapter}:${txtV}`;
+    }
     async toTitle() {
         const { bibleKey: bible, target } = this;
         const { book, chapter, startVerse, endVerse } = target;
@@ -228,9 +251,10 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
         }
         return `${bookKey} ${chapterLocale}:${txtV}`;
     }
-    static async itemToText(item: BibleItem) {
-        const { bibleKey: bible, target } = item;
-        let txt = '😟Unable to get bible text, check downloaded bible list in setting or refresh application!👌';
+    async toText() {
+        const { bibleKey: bible, target } = this;
+        let txt = '😟Unable to get bible text, check downloaded bible list '
+            + 'in setting or refresh application!👌';
         if (target.chapter === null) {
             return txt;
         }
@@ -243,6 +267,9 @@ export default class BibleItem extends ItemBase implements DragInf<BibleItemType
             txt += ` (${await toLocaleNumBB(bible, i)}): ${verses[i.toString()]}`;
         }
         return txt;
+    }
+    static itemToText(item: BibleItem) {
+        return item.toText();
     }
     static async clearSelection() {
         const bibleItem = await this.getSelectedItem();

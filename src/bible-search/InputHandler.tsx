@@ -1,6 +1,6 @@
 import {
     useGetBookKVList,
-} from '../server/bible-helpers/bibleHelpers';
+} from '../server/bible-helpers/serverBibleHelpers';
 import {
     useBibleItemToInputText,
 } from '../bible-list/BibleItem';

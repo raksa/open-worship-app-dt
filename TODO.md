@@ -17,5 +17,6 @@
 * improve slide thumb editor
 * ~~Lyric list?~~
 * option all for running on web
-* app info (version number and build number, third party licence) in about
+* app info (version number and build number, third party license) in about
 * check https://www.npmjs.com/package/pptxgenjs
+* add `<span title='Need translation'>(*T)</span>`

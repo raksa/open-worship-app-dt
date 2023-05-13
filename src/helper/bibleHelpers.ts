@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
     getSetting, setSetting,
-} from '../helper/settingHelper';
+} from './settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import {
     getBookKVList,
@@ -12,18 +12,18 @@ import {
 import {
     extractBible,
     toInputText,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../server/bible-helpers/serverBibleHelpers2';
 import {
     getDownloadedBibleInfoList,
 } from '../server/bible-helpers/bibleDownloadHelpers';
 import { isWindowEditingMode } from '../App';
 import Bible from '../bible-list/Bible';
-import { closeBibleSearch } from './HandleBibleSearch';
+import { closeBibleSearch } from '../bible-search/HandleBibleSearch';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import DirSource from '../helper/DirSource';
-import FileSource from '../helper/FileSource';
+import { useAppEffect } from './debuggerHelpers';
+import DirSource from './DirSource';
+import FileSource from './FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { addExtension } from '../server/fileHelper';
 

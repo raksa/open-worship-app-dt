@@ -5,7 +5,7 @@ import Modal from '../others/Modal';
 import BibleItem from '../bible-list/BibleItem';
 import BibleSearchRender from './BibleSearchRender';
 import { setSetting } from '../helper/settingHelper';
-import { SELECTED_BIBLE_SETTING_NAME } from './bibleHelpers';
+import { SELECTED_BIBLE_SETTING_NAME } from '../helper/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BibleSearchPopup() {
@@ -27,7 +27,7 @@ export default function BibleSearchPopup() {
     return (
         <Modal>
             {inputText === null ?
-                <div>Loading...</div> :
+                <div><span title='Need translation'>(*T)</span> Loading...</div> :
                 <BibleSearchRender editingInputText={inputText} />
             }
         </Modal>

@@ -18,7 +18,7 @@ import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
 
-export default function BibleItemRender({
+export default function     BibleItemRender({
     index,
     bibleItem,
     warningMessage,

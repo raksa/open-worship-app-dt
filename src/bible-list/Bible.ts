@@ -32,6 +32,9 @@ export default class Bible extends ItemSource<BibleItem>{
     get metadata() {
         return this._originalJson.metadata;
     }
+    get itemsLength() {
+        return this._originalJson.items.length;
+    }
     get items() {
         return this._originalJson.items.map((json) => {
             try {
@@ -107,10 +110,11 @@ export default class Bible extends ItemSource<BibleItem>{
         items.splice(index + 1, 0, newItem);
         this.items = items;
     }
-    removeItemAtIndex(index: number) {
+    removeItemAtIndex(index: number): BibleItem | null {
         const items = this.items;
-        items.splice(index, 1);
+        const removedItems = items.splice(index, 1);
         this.items = items;
+        return removedItems[0] || null;
     }
     removeItem(bibleItem: BibleItem) {
         const items = this.items;
@@ -124,6 +128,14 @@ export default class Bible extends ItemSource<BibleItem>{
         item.id = this.maxItemId + 1;
         const items = this.items;
         items.push(item);
+        this.items = items;
+    }
+    swapItem(fromIndex: number, toIndex: number) {
+        const items = this.items;
+        const fromItem = items[fromIndex];
+        const toItem = items[toIndex];
+        items[fromIndex] = toItem;
+        items[toIndex] = fromItem;
         this.items = items;
     }
     async moveItemFrom(fileSource: FileSource, index?: number) {

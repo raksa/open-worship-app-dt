@@ -3,7 +3,7 @@ import { getVerses } from '../server/bible-helpers/bibleInfoHelpers';
 import {
     getBibleLocale,
     toLocaleNumBB,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../server/bible-helpers/serverBibleHelpers2';
 import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
 import appProviderPresent from './appProviderPresent';

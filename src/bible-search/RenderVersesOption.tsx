@@ -7,7 +7,7 @@ import {
 import {
     ConsumeVerseType,
     consumeStartVerseEndVerse,
-} from './bibleHelpers';
+} from '../helper/bibleHelpers';
 import RenderVerseNumOption, {
     mouseUp,
 } from './RenderVerseNumOption';

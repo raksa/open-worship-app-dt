@@ -1,12 +1,12 @@
 import { copyToClipboard } from '../server/appHelper';
-import { toInputText } from '../server/bible-helpers/bibleHelpers2';
+import { toInputText } from '../server/bible-helpers/serverBibleHelpers2';
 import { useState } from 'react';
 import { bookToKey } from '../server/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     ConsumeVerseType,
     consumeStartVerseEndVerse,
-} from './bibleHelpers';
+} from '../helper/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVersesOption from './RenderVersesOption';

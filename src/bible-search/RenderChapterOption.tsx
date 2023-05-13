@@ -8,10 +8,10 @@ import {
 } from './selectionHelpers';
 import {
     useFromLocaleNumBB, useToLocaleNumBB,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../server/bible-helpers/serverBibleHelpers2';
 import {
     useGetChapterCount,
-} from '../server/bible-helpers/bibleHelpers';
+} from '../server/bible-helpers/serverBibleHelpers';
 
 const OPTION_CLASS = 'bible-search-chapter-option';
 const OPTION_SELECTED_CLASS = 'active';

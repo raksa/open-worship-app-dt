@@ -6,18 +6,19 @@ import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { moveBibleItemTo } from '../bible-search/bibleHelpers';
+import { moveBibleItemTo } from '../helper/bibleHelpers';
+import { copyToClipboard } from '../server/appHelper';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
 });
 
-function genContextMenu(data: Bible | null | undefined) {
-    if (!data) {
+function genContextMenu(bible: Bible | null | undefined) {
+    if (!bible) {
         return [];
     }
     return [{
-        title: 'Empty',
+        title: '(*T) ' + 'Empty',
         onClick: () => {
             openConfirm(
                 'Empty Bible List',
@@ -26,14 +27,27 @@ function genContextMenu(data: Bible | null | undefined) {
                 if (!isOk) {
                     return;
                 }
-                data.empty();
-                data.save();
+                bible.empty();
+                bible.save();
             });
         },
+    },
+    {
+        title: '(*T) ' + 'Copy All Items',
+        onClick: async () => {
+            const promises = bible.items.map((item) => {
+                return item.toTitleText();
+            });
+            const renderedItems = await Promise.all(promises);
+            const text = renderedItems.map(({ title, text }) => {
+                return `${title}\n${text}`;
+            });
+            copyToClipboard(text.join('\n\n'));
+        },
     }, {
-        title: 'Move All Items To',
+        title: '(*T) ' + 'Move All Items To',
         onClick: (event: any) => {
-            moveBibleItemTo(event, data);
+            moveBibleItemTo(event, bible);
         },
     }];
 }
