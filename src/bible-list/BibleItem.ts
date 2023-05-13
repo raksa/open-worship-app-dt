@@ -14,12 +14,13 @@ import {
 } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
-import DragInf, { DragTypeEnum } from '../helper/DragInf';
+import DragInf from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { log } from '../helper/loggerHelpers';
 import {
     bibleRenderHelper,
 } from '../helper/bible-helpers/bibleRenderHelpers';
+import { DragTypeEnum } from '../helper/DragInf';
 
 export type BibleTargetType = {
     book: string,

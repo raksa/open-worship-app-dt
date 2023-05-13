@@ -8,7 +8,7 @@ import PresentSlideManager, {
 } from '../../_present/PresentSlideManager';
 import { isWindowEditingMode } from '../../App';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
-import { handleDragStart } from '../../helper/DragInf';
+import { handleDragStart } from '../../helper/dragHelpers';
 
 export function RendShowingScreen({ slideItem }: {
     slideItem: SlideItem,

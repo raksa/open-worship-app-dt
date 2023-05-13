@@ -8,8 +8,9 @@ import PresentBGManager, {
 } from '../_present/PresentBGManager';
 import { usePBGMEvents } from '../_present/presentEventHelpers';
 import FileSource from '../helper/FileSource';
-import { DragTypeEnum, handleDragStart } from '../helper/DragInf';
+import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
+import { handleDragStart } from '../helper/dragHelpers';
 
 export type RenderChildType = (fileSource: FileSource,
     selectedBGSrcList: [string, BackgroundSrcType][]) => JSX.Element;

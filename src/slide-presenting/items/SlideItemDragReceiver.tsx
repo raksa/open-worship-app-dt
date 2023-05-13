@@ -2,10 +2,8 @@ import './SlideItemDragReceiver.scss';
 
 import { CSSProperties, useState } from 'react';
 import SlideItem from '../../slide-list/SlideItem';
-import {
-    DragTypeEnum,
-    handleDrop,
-} from '../../helper/DragInf';
+import { handleDrop } from '../../helper/dragHelpers';
+import { DragTypeEnum } from '../../helper/DragInf';
 
 export default function SlideItemDragReceiver({
     width, onDrop, isLeft,

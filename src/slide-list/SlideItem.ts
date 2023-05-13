@@ -8,8 +8,9 @@ import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
-import DragInf, { DragTypeEnum } from '../helper/DragInf';
+import DragInf from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import { DragTypeEnum } from '../helper/DragInf';
 
 export type SlideItemType = {
     id: number,

@@ -3,8 +3,9 @@ import { ItemBase } from '../helper/ItemBase';
 import Lyric from './Lyric';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
-import DragInf, { DragTypeEnum } from '../helper/DragInf';
+import DragInf from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import { DragTypeEnum } from '../helper/DragInf';
 
 export type LyricItemType = {
     id: number,
@@ -13,7 +14,8 @@ export type LyricItemType = {
     metadata: AnyObjectType,
 };
 
-export default class LyricItem extends ItemBase implements DragInf<LyricItemType> {
+export default class LyricItem extends ItemBase
+    implements DragInf<LyricItemType> {
     _originalJson: Readonly<LyricItemType>;
     static SELECT_SETTING_NAME = 'lyric-item-selected';
     id: number;

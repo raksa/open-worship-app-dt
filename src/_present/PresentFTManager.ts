@@ -1,10 +1,11 @@
 import React from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
-import { DroppedDataType, DragTypeEnum } from '../helper/DragInf';
 import {
-    AnyObjectType,
-    isValidJson,
+    DroppedDataType, DragTypeEnum,
+} from '../helper/DragInf';
+import {
+    AnyObjectType, isValidJson,
 } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -27,7 +28,8 @@ import {
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
 
-export default class PresentFTManager extends EventHandler<PresentFTManagerEventType>
+export default class PresentFTManager
+    extends EventHandler<PresentFTManagerEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-ft-m';
     readonly presentId: number;

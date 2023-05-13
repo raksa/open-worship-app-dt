@@ -10,7 +10,7 @@ import {
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useCallback } from 'react';
-import { handleDragStart } from '../helper/DragInf';
+import { handleDragStart } from '../helper/dragHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,

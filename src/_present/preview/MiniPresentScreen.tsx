@@ -12,7 +12,7 @@ import {
 } from '../presentEventHelpers';
 import PTEffectControl from './PTEffectControl';
 import { toMaxId } from '../../helper/helpers';
-import { handleDrop } from '../../helper/DragInf';
+import { handleDrop } from '../../helper/dragHelpers';
 
 function openContextMenu(event: any, presentManager: PresentManager) {
     const isOne = PresentManager.getAllInstances().length === 1;

@@ -1,4 +1,3 @@
-import SlideItem from '../slide-list/SlideItem';
 import DirSource from './DirSource';
 import {
     extractExtension,
@@ -17,11 +16,12 @@ import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
-import DragInf, { DragTypeEnum } from './DragInf';
+import DragInf from './DragInf';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
+import { DragTypeEnum } from './DragInf';
 
 export type SrcData = `data:${string}`;
 
@@ -96,9 +96,6 @@ export default class FileSource extends EventHandler<FSEventType>
     }
     fireUpdateEvent() {
         this.addPropEvent('update');
-    }
-    fireEditEvent(slideItem: SlideItem) {
-        this.addPropEvent('edit', slideItem);
     }
     fireDeleteEvent() {
         this.addPropEvent('delete');
