@@ -18,7 +18,9 @@ export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
 };
 export type DataInputType = [
-    React.LazyExoticComponent<() => JSX.Element | null>,
+    React.LazyExoticComponent<() => JSX.Element | null> | {
+        render: () => JSX.Element | null,
+    },
     string,
     string,
     CSSProperties?,
@@ -79,7 +81,17 @@ function RenderItem({
         setFlexSize(size);
     }, [fSizeName, defaultFlexSize]);
     const [Children, key, classList, style = {}] = data;
-    const flexSizeValue = flexSize[key];
+    const renderChildren = () => {
+        if (typeof Children === 'object' && 'render' in Children) {
+            return Children.render();
+        }
+        return (
+            <AppSuspense>
+                <Children />
+            </AppSuspense>
+        );
+    };
+    const flexSizeValue = flexSize[key] || defaultFlexSize[key] || [];
     const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
     if (flexSizeValue[1]) {
         const onClick = (event: any) => {
@@ -124,9 +136,7 @@ function RenderItem({
                     flex: flexSizeValue[0] || 1,
                     ...style,
                 }}>
-                <AppSuspense>
-                    <Children />
-                </AppSuspense>
+                {renderChildren()}
             </div>
         </Fragment>
     );

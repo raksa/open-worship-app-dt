@@ -2,33 +2,26 @@ import './BibleView.scss';
 
 import { showAppContextMenu } from '../others/AppContextMenu';
 import BibleItem from '../bible-list/BibleItem';
-import { copyToClipboard } from '../server/appHelper';
-import { useCallback } from 'react';
 import { handleError } from '../helper/errorHelpers';
-import { BibleSelectionMini } from '../bible-search/BibleSelection';
+import { BibleSelectionMini, showBibleOption } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 import {
     useBibleItemRenderTitle,
     useBibleItemRenderText,
 } from '../helper/bible-helpers/bibleRenderHelpers';
+import BibleItemViewController from './BibleItemViewController';
 
 export default function BibleView({
-    index, bibleItem, onClose, fontSize,
-    onBibleChangeKey, onBibleChangeBibleItem,
+    index, bibleItem, fontSize,
+    bibleItemViewController,
 }: {
     index: number,
     bibleItem: BibleItem,
-    onClose: (index: number) => void,
     fontSize: number,
-    onBibleChangeKey: (bibleKey: string, index: number) => void,
-    onBibleChangeBibleItem: (bibleItem: BibleItem, index: number) => void,
+    bibleItemViewController: BibleItemViewController,
 }) {
     const title = useBibleItemRenderTitle(bibleItem);
     const text = useBibleItemRenderText(bibleItem);
-    const onChangeCallback = useCallback((
-        _: string, newBibleKey: string) => {
-        onBibleChangeKey(newBibleKey, index);
-    }, [index, onBibleChangeKey]);
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}
@@ -47,24 +40,34 @@ export default function BibleView({
                     const json = JSON.parse(data);
                     if (json.type === 'bibleItem') {
                         const bibleItem = BibleItem.fromJson(json.data);
-                        onBibleChangeBibleItem(bibleItem, index);
+                        bibleItemViewController.changeItemAtIndex(bibleItem, index);
                     }
                 } catch (error) {
                     handleError(error);
                 }
             }}
             onContextMenu={(event) => {
-                showAppContextMenu(event as any, [
-                    {
-                        title: 'Copy', onClick: () => {
-                            const toCopyText = `${title}\n${text}`;
-                            copyToClipboard(toCopyText);
-                        },
+                showAppContextMenu(event as any, [{
+                    title: 'Split', onClick: () => {
+                        bibleItemViewController.duplicateItemAtIndex(index);
                     },
-                ]);
+                }, {
+                    title: 'Split To', onClick: () => {
+                        showBibleOption(event, [], (bibleKey: string) => {
+                            bibleItemViewController.duplicateItemAtIndex(
+                                index, bibleKey);
+                        });
+                    },
+                }]);
             }}>
-            {rendHeader(bibleItem.bibleKey, title, onChangeCallback,
-                onClose, index)}
+            {rendHeader(bibleItem.bibleKey, title,
+                (oldBibleKey: string, newBibleKey: string) => {
+                    bibleItemViewController.changeItemBibleKey(
+                        index, newBibleKey);
+                },
+                () => {
+                    bibleItemViewController.removeItem(index);
+                }, index)}
             <div className='card-body p-3'>
                 <p className='selectable-text' style={{
                     fontSize: `${fontSize}px`,
