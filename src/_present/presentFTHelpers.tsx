@@ -3,7 +3,7 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { getBibleInfoWithStatusList } from '../server/bible-helpers/serverBibleHelpers';
+import { getBibleInfoWithStatusList } from '../helper/bible-helpers/serverBibleHelpers';
 import appProviderPresent from './appProviderPresent';
 import {
     BibleItemRenderedType,

@@ -2,11 +2,11 @@ import { useState } from 'react';
 import {
     keyToBook,
     getVerses,
-} from '../server/bible-helpers/bibleInfoHelpers';
+} from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     toLocaleNumBB,
     toInputText,
-} from '../server/bible-helpers/serverBibleHelpers2';
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
@@ -15,7 +15,7 @@ import { ItemBase } from '../helper/ItemBase';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
-import { getKJVKeyValue } from '../server/bible-helpers/serverBibleHelpers';
+import { getKJVKeyValue } from '../helper/bible-helpers/serverBibleHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';

@@ -3,7 +3,7 @@ import RenderChapterOption from './RenderChapterOption';
 import Header from './Header';
 import {
     ExtractedBibleResult,
-} from '../server/bible-helpers/serverBibleHelpers2';
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
 import { useCallback } from 'react';
 

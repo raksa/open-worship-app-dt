@@ -1,13 +1,13 @@
 import {
     BibleDataReader,
-} from '../../server/bible-helpers/bibleInfoHelpers';
+} from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
     fsCheckDirExist,
     fsDeleteDir,
 } from '../../server/fileHelper';
 import {
     BibleMinimalInfoType,
-} from '../../server/bible-helpers/bibleDownloadHelpers';
+} from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 
 export default function DownloadedBibleItem({

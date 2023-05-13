@@ -5,7 +5,7 @@ import Modal from '../others/Modal';
 import BibleItem from '../bible-list/BibleItem';
 import BibleSearchRender from './BibleSearchRender';
 import { setSetting } from '../helper/settingHelper';
-import { SELECTED_BIBLE_SETTING_NAME } from '../helper/bibleHelpers';
+import { SELECTED_BIBLE_SETTING_NAME } from '../helper/bible-helpers/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BibleSearchPopup() {

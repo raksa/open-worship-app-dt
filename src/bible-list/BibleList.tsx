@@ -6,7 +6,7 @@ import BibleFile from './BibleFile';
 import DirSource from '../helper/DirSource';
 import { useCallback } from 'react';
 import FileSource from '../helper/FileSource';
-import { BIBLE_LIST_SELECTED_DIR } from '../helper/bibleHelpers';
+import { BIBLE_LIST_SELECTED_DIR } from '../helper/bible-helpers/bibleHelpers';
 
 export default function BibleList() {
     const onNewFileCallback = useCallback(async (name: string) => {

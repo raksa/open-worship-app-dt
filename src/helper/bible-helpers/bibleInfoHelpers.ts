@@ -1,11 +1,11 @@
-import appProvider from '../appProvider';
+import appProvider from '../../server/appProvider';
 import {
     fsCreateDir,
     fsReadFile,
     pathJoin,
-} from '../fileHelper';
+} from '../../server/fileHelper';
 import { LocaleType } from '../../lang';
-import { getUserWritablePath } from '../appHelper';
+import { getUserWritablePath } from '../../server/appHelper';
 import {
     is_dev,
     decrypt,
@@ -15,7 +15,7 @@ import {
     toBookKey,
     toFileName,
 } from './serverBibleHelpers';
-import { handleError } from '../../helper/errorHelpers';
+import { handleError } from '../errorHelpers';
 
 export type BibleInfoType = {
     title: string,

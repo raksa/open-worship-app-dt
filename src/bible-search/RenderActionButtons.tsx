@@ -8,7 +8,7 @@ import SlideItem from '../slide-list/SlideItem';
 import {
     addBibleItem,
     AddBiblePropsType,
-} from '../helper/bibleHelpers';
+} from '../helper/bible-helpers/bibleHelpers';
 
 const presentEventMapper: KBEventMapper = {
     wControlKey: ['Ctrl', 'Shift'],

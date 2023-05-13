@@ -4,7 +4,7 @@ import {
     BibleMinimalInfoType,
     downloadBible,
     extractDownloadedBible,
-} from '../../server/bible-helpers/bibleDownloadHelpers';
+} from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 
 export default function OnlineBibleItem({

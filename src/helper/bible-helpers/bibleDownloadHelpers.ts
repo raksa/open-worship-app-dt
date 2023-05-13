@@ -1,17 +1,17 @@
-import { handleError } from '../../helper/errorHelpers';
+import { handleError } from '../errorHelpers';
 import { LocaleType } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
     get_api_url,
     get_api_key,
-} from '../../_owa-crypto';
-import appProvider from '../appProvider';
+} from '../../_owa-crypto/owa_crypto';
+import appProvider from '../../server/appProvider';
 import {
     fsCheckFileExist,
     fsDeleteFile,
     fsCreateWriteStream,
     fsListDirectories,
-} from '../fileHelper';
+} from '../../server/fileHelper';
 import {
     BibleDataReader,
     getBibleInfo,

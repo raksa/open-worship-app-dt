@@ -10,7 +10,7 @@ import {
 import AppSuspense from '../others/AppSuspense';
 import {
     getDownloadedBibleInfoList,
-} from '../server/bible-helpers/bibleDownloadHelpers';
+} from '../helper/bible-helpers/bibleDownloadHelpers';
 import { openSetting } from '../setting/HandleSetting';
 
 const BibleSearchPopup = React.lazy(() => {

@@ -1,12 +1,12 @@
 import { setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { genDuplicatedMessage } from '../server/bible-helpers/serverBibleHelpers';
+import { genDuplicatedMessage } from '../helper/bible-helpers/serverBibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
 import { openBibleSearch } from '../bible-search/HandleBibleSearch';
 import { useCallback } from 'react';
 import BibleItem from './BibleItem';
-import { moveBibleItemTo } from '../helper/bibleHelpers';
+import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
 
 function openBibleItemContextMenu(event: any,
     bible: Bible, bibleItem: BibleItem, index: number) {

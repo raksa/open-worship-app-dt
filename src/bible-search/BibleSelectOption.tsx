@@ -1,6 +1,6 @@
 import {
     useGetBibleWithStatus,
-} from '../server/bible-helpers/serverBibleHelpers';
+} from '../helper/bible-helpers/serverBibleHelpers';
 
 export default function BibleSelectOption({ bibleKey }: {
     bibleKey: string,

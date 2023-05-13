@@ -8,7 +8,7 @@ import {
 import initCrypto from '../_owa-crypto';
 import {
     getDownloadedBibleInfoList,
-} from './bible-helpers/bibleDownloadHelpers';
+} from '../helper/bible-helpers/bibleDownloadHelpers';
 import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 

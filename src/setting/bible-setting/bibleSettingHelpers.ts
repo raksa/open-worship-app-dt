@@ -4,7 +4,7 @@ import {
     BibleMinimalInfoType,
     getDownloadedBibleInfoList,
     getOnlineBibleInfoList,
-} from '../../server/bible-helpers/bibleDownloadHelpers';
+} from '../../helper/bible-helpers/bibleDownloadHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 

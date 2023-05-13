@@ -9,7 +9,7 @@ import { BibleRefsDbController } from '../db/dbHelper';
 import {
     handleError,
 } from '../helper/errorHelpers';
-import { toFileName } from '../server/bible-helpers/serverBibleHelpers';
+import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {

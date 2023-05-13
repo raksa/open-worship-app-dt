@@ -6,7 +6,7 @@ import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { moveBibleItemTo } from '../helper/bibleHelpers';
+import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
 import { copyToClipboard } from '../server/appHelper';
 
 const RenderBibleItems = React.lazy(() => {

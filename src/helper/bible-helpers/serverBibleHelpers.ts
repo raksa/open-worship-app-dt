@@ -8,7 +8,7 @@ import BibleItem from '../../bible-list/BibleItem';
 
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
-import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useAppEffect } from '../debuggerHelpers';
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },

@@ -1,7 +1,7 @@
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     getBibleInfoWithStatusList,
-} from '../server/bible-helpers/serverBibleHelpers';
+} from '../helper/bible-helpers/serverBibleHelpers';
 import {
     useDownloadedBibleInfoList,
 } from '../setting/bible-setting/bibleSettingHelpers';

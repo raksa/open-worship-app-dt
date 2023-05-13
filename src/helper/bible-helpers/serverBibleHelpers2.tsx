@@ -5,14 +5,14 @@ import {
     getChapterCount,
     getVerses,
 } from './bibleInfoHelpers';
-import { cloneJson } from '../../helper/helpers';
+import { cloneJson } from '../helpers';
 import { useState } from 'react';
 import {
     fromLocaleNum,
     LocaleType,
     toLocaleNum,
 } from '../../lang';
-import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useAppEffect } from '../debuggerHelpers';
 
 export async function toInputText(bibleKey: string,
     book?: string | null, chapter?: number | null,

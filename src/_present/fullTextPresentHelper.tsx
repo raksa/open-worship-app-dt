@@ -1,9 +1,9 @@
 import ReactDOMServer from 'react-dom/server';
-import { getVerses } from '../server/bible-helpers/bibleInfoHelpers';
+import { getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     getBibleLocale,
     toLocaleNumBB,
-} from '../server/bible-helpers/serverBibleHelpers2';
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
 import appProviderPresent from './appProviderPresent';

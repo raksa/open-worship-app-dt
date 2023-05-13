@@ -1,7 +1,7 @@
 import {
     getKJVKeyValue,
     useGetBookKVList, useMatch,
-} from '../server/bible-helpers/serverBibleHelpers';
+} from '../helper/bible-helpers/serverBibleHelpers';
 import {
     allArrows,
     KeyboardType, useKeyboardRegistering,
