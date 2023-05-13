@@ -1,7 +1,13 @@
-const isSilent = false;
+const logLevelMapper = {
+    'verbose': ['error', 'warn', 'log', 'trace'],
+    'minimal': ['error', 'warn'],
+    'critical': ['error'],
+};
+const logLevel: 'verbose' | 'minimal' | 'critical' = 'verbose';
+const logLevelList = logLevelMapper[logLevel];
 
 function callConsole(method: string, ...args: any[]) {
-    if (isSilent) {
+    if (!logLevelList.includes(method)) {
         return;
     }
     const callable = (console as any)[method] as Function | undefined;
