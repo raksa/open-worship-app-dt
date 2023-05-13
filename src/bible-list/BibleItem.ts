@@ -1,9 +1,6 @@
 import {
     openBibleSearch,
 } from '../bible-search/HandleBibleSearch';
-import {
-    previewingEventListener,
-} from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import {
     AnyObjectType, cloneJson, isValidJson,
@@ -12,7 +9,6 @@ import { ItemBase } from '../helper/ItemBase';
 import {
     setSetting, getSetting,
 } from '../helper/settingHelper';
-import Lyric from '../lyric-list/Lyric';
 import Bible from './Bible';
 import DragInf from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
@@ -64,34 +60,6 @@ export default class BibleItem extends ItemBase
     }
     set metadata(metadata: AnyObjectType) {
         this._originalJson.metadata = metadata;
-    }
-    get isSelected() {
-        const selected = BibleItem.getSelectedResult();
-        return selected?.fileSource.filePath === this.fileSource?.filePath &&
-            selected?.id === this.id;
-    }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
-            return;
-        }
-        if (b) {
-            previewingEventListener.selectBibleItem(this);
-            BibleItem.setSelectedItem(this);
-            Lyric.clearSelection();
-            previewingEventListener.selectBibleItem(this);
-        } else {
-            BibleItem.setSelectedItem(null);
-            previewingEventListener.selectBibleItem(null);
-        }
-        this.fileSource?.fireSelectEvent();
-    }
-    static async getSelectedItem() {
-        const selected = this.getSelectedResult();
-        if (selected !== null) {
-            const bible = await Bible.readFileToData(selected.fileSource);
-            return bible?.getItemById(selected.id);
-        }
-        return null;
     }
     get isSelectedEditing() {
         const selected = BibleItem.getSelectedEditingResult();
@@ -236,12 +204,6 @@ export default class BibleItem extends ItemBase
     }
     static itemToText(item: BibleItem) {
         return item.toText();
-    }
-    static async clearSelection() {
-        const bibleItem = await this.getSelectedItem();
-        if (bibleItem) {
-            bibleItem.isSelected = false;
-        }
     }
     dragSerialize() {
         return {

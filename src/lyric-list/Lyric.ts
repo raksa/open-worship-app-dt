@@ -1,4 +1,3 @@
-import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
@@ -67,7 +66,6 @@ export default class Lyric extends ItemSource<LyricItem>{
         }
         if (b) {
             Lyric.setSelectedFileSource(this.fileSource);
-            BibleItem.clearSelection();
             previewingEventListener.selectLyric(this);
         } else {
             Lyric.setSelectedFileSource(null);

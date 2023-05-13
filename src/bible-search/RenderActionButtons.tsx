@@ -31,7 +31,7 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
     const addBibleItemAndPresent = async () => {
         const bibleItem = await addBibleItem(props);
         if (bibleItem !== null) {
-            bibleItem.isSelected = true;
+            // TODO: present bible item
         }
     };
     useKeyboardRegistering(addListEventMapper, () => {

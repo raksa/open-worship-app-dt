@@ -5,7 +5,6 @@ import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
 import PresentFTManager from '../_present/PresentFTManager';
-import { checkIsFtAutoShow } from './FTPreviewerUtils';
 import LyricItem from '../lyric-list/LyricItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
@@ -42,9 +41,6 @@ export default function LyricPreviewer() {
                 PresentFTManager.ftLyricSelect(event || null, lyric);
             }
         };
-        if (checkIsFtAutoShow()) {
-            previewer.show();
-        }
         return () => {
             previewer.show = () => void 0;
         };

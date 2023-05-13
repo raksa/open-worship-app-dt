@@ -63,7 +63,7 @@ export default class Bible extends ItemSource<BibleItem>{
         return Bible.checkIsDefault(this.fileSource);
     }
     get isSelected() {
-        return this.items.some((item) => item.isSelected);
+        return false;
     }
     get isOpened() {
         return this.metadata['isOpened'] === true;
@@ -154,9 +154,6 @@ export default class Bible extends ItemSource<BibleItem>{
                 }
                 targetBibleItems = [backupBibleItems[index]];
             }
-            const selectedBibleItem = targetBibleItems.filter((item) => {
-                return item.isSelected;
-            });
             this.items = this.items.concat(targetBibleItems);
             await this.save();
 
@@ -165,9 +162,6 @@ export default class Bible extends ItemSource<BibleItem>{
             });
             await fromBible.save();
 
-            selectedBibleItem.forEach((item) => {
-                item.isSelected = true;
-            });
         } catch (error: any) {
             showSimpleToast('Moving Bible Item', error.message);
         }

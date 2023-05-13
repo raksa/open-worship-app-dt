@@ -1,12 +1,6 @@
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
-import {
-    getIsPreviewingBible,
-} from '../full-text-present/FullTextPreviewer';
-import {
-    previewingEventListener,
-} from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useCallback } from 'react';
@@ -49,25 +43,15 @@ export default function BibleItemRender({
             <ItemReadError onContextMenu={onContextMenuCallback} />
         );
     }
-    const { isSelected } = bibleItem;
     return (
-        <li className={'list-group-item item pointer '
-            + `${isSelected ? 'active' : ''}`}
+        <li className='list-group-item item pointer'
             title={title}
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
-            onContextMenu={onContextMenuCallback}
-            onClick={(event) => {
-                event.stopPropagation();
-                if (isSelected && !getIsPreviewingBible()) {
-                    previewingEventListener.selectBibleItem(bibleItem);
-                    return;
-                }
-                bibleItem.isSelected = !isSelected;
-            }}>
+            onContextMenu={onContextMenuCallback}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />
                 <div className='px-1'>
