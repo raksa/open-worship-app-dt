@@ -2,13 +2,14 @@ import KeyboardEventListener, {
     EventMapper as KBEventMapper,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { isWindowEditingMode } from '../App';
+import { isWindowEditingMode, isWindowPresentingMode } from '../App';
 import BibleItem from '../bible-list/BibleItem';
 import SlideItem from '../slide-list/SlideItem';
 import {
     addBibleItem,
     AddBiblePropsType,
 } from '../helper/bible-helpers/bibleHelpers';
+import PresentFTManager from '../_present/PresentFTManager';
 
 const presentEventMapper: KBEventMapper = {
     wControlKey: ['Ctrl', 'Shift'],
@@ -28,10 +29,13 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
     const isBibleSelectEditing = !!BibleItem.getSelectedEditingResult();
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
     const isWindowEditing = isWindowEditingMode();
-    const addBibleItemAndPresent = async () => {
+    const isWindowPresenting = isWindowPresentingMode();
+    const addBibleItemAndPresent = async (event: any) => {
         const bibleItem = await addBibleItem(props);
         if (bibleItem !== null) {
-            // TODO: present bible item
+            if (isWindowPresenting) {
+                PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+            }
         }
     };
     useKeyboardRegistering(addListEventMapper, () => {
@@ -57,7 +61,7 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
                     <i className='bi bi-plus-lg' />
                     {getAddingTitle()}
                 </button>}
-            {!isWindowEditing && <button type='button'
+            {isWindowPresenting && <button type='button'
                 className='btn btn-sm btn-info ms-1'
                 onClick={addBibleItemAndPresent}
                 data-tool-tip={KeyboardEventListener

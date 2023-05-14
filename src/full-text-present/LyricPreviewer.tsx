@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react';
-import { previewer } from './FullTextPreviewer';
 import LyricView from './LyricView';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
-import PresentFTManager from '../_present/PresentFTManager';
 import LyricItem from '../lyric-list/LyricItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
@@ -36,14 +34,6 @@ export default function LyricPreviewer() {
                 setLyric(lr || undefined);
             });
         }
-        previewer.show = (event?: React.MouseEvent) => {
-            if (lyric) {
-                PresentFTManager.ftLyricSelect(event || null, lyric);
-            }
-        };
-        return () => {
-            previewer.show = () => void 0;
-        };
     }, [lyric]);
     if (!lyric) {
         return (

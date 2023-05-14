@@ -60,11 +60,11 @@ export default class Lyric extends ItemSource<LyricItem>{
         const selectedFS = Lyric.getSelectedFileSource();
         return this.fileSource.filePath === selectedFS?.filePath;
     }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
+    set isSelected(isSelected: boolean) {
+        if (this.isSelected === isSelected) {
             return;
         }
-        if (b) {
+        if (isSelected) {
             Lyric.setSelectedFileSource(this.fileSource);
             previewingEventListener.selectLyric(this);
         } else {
