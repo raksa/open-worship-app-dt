@@ -12,6 +12,9 @@ import {
 import {
     useBibleItemRenderTitle,
 } from '../helper/bible-helpers/bibleRenderHelpers';
+import BibleItemViewController from '../read-bible/BibleItemViewController';
+import { isWindowPresentingMode } from '../App';
+import PresentFTManager from '../_present/PresentFTManager';
 
 export default function BibleItemRender({
     index,
@@ -50,6 +53,12 @@ export default function BibleItemRender({
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
+            }}
+            onDoubleClick={(event) => {
+                BibleItemViewController.getInstance().bibleItems = [bibleItem];
+                if (isWindowPresentingMode()) {
+                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+                }
             }}
             onContextMenu={onContextMenuCallback}>
             <div className='d-flex'>

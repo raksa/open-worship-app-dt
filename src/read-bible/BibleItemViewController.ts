@@ -4,8 +4,10 @@ import EventHandler from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { handleError } from '../helper/errorHelpers';
+import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
 
 export type UpdateEventType = 'update';
+export const RESIZER_SETTING_NAME = 'bible-previewer-render';
 
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
@@ -22,6 +24,9 @@ export default class BibleItemViewController
         return [];
     }
     set bibleItems(newBibleItems: BibleItem[]) {
+        if (newBibleItems.length !== this.bibleItems.length) {
+            clearFlexSizeSetting(RESIZER_SETTING_NAME);
+        }
         setSetting('bibleItems', JSON.stringify(newBibleItems.map((item) => {
             return item.toJson();
         })));

@@ -266,7 +266,8 @@ export default class PresentFTManager
         const { data } = message;
         this.textStyle = data.textStyle;
     }
-    static async ftBibleItemSelect(event: React.MouseEvent | null, bibleItems: BibleItem[]) {
+    static async ftBibleItemSelect(
+        event: React.MouseEvent | null, bibleItems: BibleItem[]) {
         const chosenPresentManagers = await PresentManager.contextChooseInstances(
             genPresentMouseEvent(event) as any,
         );
