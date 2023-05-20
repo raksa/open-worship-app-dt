@@ -16,7 +16,6 @@ import {
 import {
     getDownloadedBibleInfoList,
 } from './bibleDownloadHelpers';
-import { isWindowEditingMode } from '../../App';
 import Bible from '../../bible-list/Bible';
 import { closeBibleSearch } from '../../bible-search/HandleBibleSearch';
 import { showSimpleToast } from '../../toast/toastHelpers';
@@ -26,6 +25,7 @@ import DirSource from '../DirSource';
 import FileSource from '../FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { addExtension } from '../../server/fileHelper';
+import { checkIsWindowEditingMode } from '../../router/routeHelpers';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 export const BIBLE_LIST_SELECTED_DIR = 'bible-list-selected-dir';
@@ -109,7 +109,7 @@ export async function addBibleItem({
     found, book, chapter,
     bibleSelected,
 }: AddBiblePropsType) {
-    const isWindowEditing = isWindowEditingMode();
+    const isWindowEditing = checkIsWindowEditingMode();
     const key = await bookToKey(bibleSelected, book);
     if (key === null) {
         return null;

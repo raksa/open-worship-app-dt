@@ -13,8 +13,8 @@ import {
     useBibleItemRenderTitle,
 } from '../helper/bible-helpers/bibleRenderHelpers';
 import BibleItemViewController from '../read-bible/BibleItemViewController';
-import { isWindowPresentingMode } from '../App';
 import PresentFTManager from '../_present/PresentFTManager';
+import { checkIsWindowPresentingMode } from '../router/routeHelpers';
 
 export default function BibleItemRender({
     index,
@@ -56,7 +56,7 @@ export default function BibleItemRender({
             }}
             onDoubleClick={(event) => {
                 BibleItemViewController.getInstance().bibleItems = [bibleItem];
-                if (isWindowPresentingMode()) {
+                if (checkIsWindowPresentingMode()) {
                     PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
                 }
             }}

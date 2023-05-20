@@ -5,11 +5,12 @@ import Slide from './Slide';
 import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { goEditSlide } from '../App';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { useNavigate } from 'react-router-dom';
+import { goEditingMode } from '../router/routeHelpers';
 
 export default function SlideFile({
     index,
@@ -18,6 +19,7 @@ export default function SlideFile({
     index: number,
     fileSource: FileSource,
 }) {
+    const navigator = useNavigate();
     const [data, setData] = useState<SlideDynamicType>(null);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -73,7 +75,7 @@ export default function SlideFile({
                 onClick: () => {
                     if (data) {
                         data.isSelected = true;
-                        goEditSlide();
+                        goEditingMode(navigator);
                     }
                 },
             }]}

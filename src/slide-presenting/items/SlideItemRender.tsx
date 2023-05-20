@@ -6,9 +6,9 @@ import SlideItemRendererHtml from './SlideItemRendererHtml';
 import PresentSlideManager, {
     SlideItemDataType,
 } from '../../_present/PresentSlideManager';
-import { isWindowEditingMode } from '../../App';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 import { handleDragStart } from '../../helper/dragHelpers';
+import { checkIsWindowEditingMode } from '../../router/routeHelpers';
 
 export function RendShowingScreen({ slideItem }: {
     slideItem: SlideItem,
@@ -53,7 +53,7 @@ export function RendInfo({ index, slideItem }: {
 }
 
 export function toCNHighlight(slideItem: SlideItem) {
-    const isEditing = isWindowEditingMode();
+    const isEditing = checkIsWindowEditingMode();
     const activeCN = isEditing && slideItem.isSelected ? 'active' : '';
     let selectedList: [string, SlideItemDataType][] = [];
     let presentingCN = '';

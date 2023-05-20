@@ -1,6 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
 import { openAlert, openConfirm } from '../alert/alertHelpers';
-import { isWindowEditingMode } from '../App';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
@@ -13,6 +12,7 @@ import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
 import { showSimpleToast } from '../toast/toastHelpers';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
+import { checkIsWindowEditingMode } from '../router/routeHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 0.2;
@@ -51,7 +51,7 @@ export function openSlideContextMenu(event: any,
         {
             title: 'Quick Edit',
             onClick: () => {
-                const isEditing = isWindowEditingMode();
+                const isEditing = checkIsWindowEditingMode();
                 if (isEditing) {
                     SlideListEventListener.selectSlideItem(slideItem);
                 } else {

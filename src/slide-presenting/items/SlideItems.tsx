@@ -5,7 +5,6 @@ import {
 import {
     useSlideItemSizing,
 } from '../../event/SlideListEventListener';
-import { isWindowEditingMode } from '../../App';
 import { Fragment, useCallback, useState } from 'react';
 import SlideItemRender from './SlideItemRender';
 import {
@@ -20,6 +19,7 @@ import PresentSlideManager from '../../_present/PresentSlideManager';
 import { genPresentMouseEvent } from '../../_present/presentHelpers';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemPdfRender from './SlideItemPdfRender';
+import { checkIsWindowEditingMode, useWindowIsEditingMode } from '../../router/routeHelpers';
 
 function getPresentingIndex(slide: Slide) {
     for (let i = 0; i < slide.items.length; i++) {
@@ -32,7 +32,7 @@ function getPresentingIndex(slide: Slide) {
     return -1;
 }
 function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
-    if (isWindowEditingMode()) {
+    if (checkIsWindowEditingMode()) {
         slideItem.isSelected = !slideItem.isSelected;
     } else {
         PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
@@ -74,12 +74,14 @@ const genArrowListener = (slide: Slide, slideItems: SlideItem[]) => {
     };
 };
 export default function SlideItems({ slide }: { slide: Slide }) {
-    const [thumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
-        DEFAULT_THUMBNAIL_SIZE);
+    const [thumbSize] = useSlideItemSizing(
+        THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE
+    );
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+    const isEditingMode = useWindowIsEditingMode();
     useFSEvents(['select', 'edit'], slide.fileSource);
     const slideItems = slide.items;
-    if (!isWindowEditingMode()) {
+    if (!isEditingMode) {
         const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
 
         const useCallback = (key: KeyboardType) => {
