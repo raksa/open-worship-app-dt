@@ -6,22 +6,23 @@
     "version": "0.0.2",
     "main": "./electron-build/electron/index.js",
     "scripts": {
-        "react:watch": "env-cmd -f .env react-scripts start",
-        "react:build": "rm -rf dist && env-cmd -f .env react-scripts build",
-        "dev": "concurrently -k \"npm run react:watch\" \"npm run electron:build && npm run electron\"",
+        "react:build": "rm -rf dist && react-scripts build",
+        "dev": "concurrently -k \"npm run vite:dev\" \"npm run electron:build && npm run electron\"",
         "electron:build": "rm -rf electron-build && tsc -p electron.tsconfig.json",
         "electron:build:watch": "tsc -p electron.tsconfig.json -w",
         "electron": "env-cmd -f .env electron .",
         "electron:watch": "nodemon --exec \"npm run electron\" --watch electron-build",
         "electron:dev": "npm run electron:build && concurrently -k \"npm run electron:build:watch\" \"npm run electron:watch\"",
-        "build": "npm run react:build && npm run electron:build",
+        "build": "npm run vite:build && npm run electron:build",
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
         "pack:mac": "npm run build && electron-builder build --mac",
         "pack:linux": "npm run build && electron-builder build --linux",
         "pack:win": "npm run build && electron-builder build --win --x64",
         "pack:win32": "electron-builder build --win --ia32",
-        "postinstall": "install-app-deps"
+        "postinstall": "install-app-deps",
+        "vite:dev": "vite",
+        "vite:build": "rm -rf dist && vite build"
     },
     "browserslist": {
         "production": [
@@ -89,6 +90,7 @@
         "@types/tar": "^6.1.5",
         "@typescript-eslint/eslint-plugin": "^6.4.0",
         "@typescript-eslint/parser": "^6.4.0",
+        "@vitejs/plugin-react": "^3.0.0",
         "bootstrap": "^5.3.1",
         "bootstrap-icons": "^1.10.5",
         "concurrently": "^8.2.0",
@@ -98,17 +100,17 @@
         "env-cmd": "^10.1.0",
         "eslint": "^8.47.0",
         "nodemon": "^3.0.1",
-        "pdfjs-dist": "^3.9.179",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.15.0",
-        "react-scripts": "^5.0.1",
         "sass": "^1.66.1",
-        "typescript": "^4.9.5"
+        "typescript": "^4.9.5",
+        "vite": "^4.2.1"
     },
     "dependencies": {
         "electron-font-manager": "^0.0.1",
         "libreoffice-convert": "^1.4.1",
+        "pdfjs-dist": "^3.9.179",
         "tar": "^6.1.14"
     }
 }

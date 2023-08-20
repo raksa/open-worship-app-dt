@@ -1,9 +1,9 @@
-import './present.scss';
+import './_present/present.scss';
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import appProviderPresent from './appProviderPresent';
-import PresentApp from './PresentApp';
+import appProviderPresent from './_present/appProviderPresent';
+import PresentApp from './_present/PresentApp';
 
 const container = document.getElementById('root');
 if (container !== null) {

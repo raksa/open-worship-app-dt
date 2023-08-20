@@ -1,10 +1,9 @@
 import { BrowserWindow, shell } from 'electron';
 import { channels, PresentMessageType } from './electronEventListener';
 import { isDev } from './electronHelpers';
+import { genRoutProps } from './helper';
 
-const url = 'http://localhost:3000';
-const htmlFile = `${__dirname}/../../dist/index.html`;
-const mainPreloadFile = `${__dirname}/client/mainPreload.js`;
+const routeProps = genRoutProps('main');
 export default class ElectronMainController {
     win: BrowserWindow;
     static _instance: ElectronMainController | null = null;
@@ -26,7 +25,7 @@ export default class ElectronMainController {
                 webSecurity: !isDev,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: mainPreloadFile,
+                preload: routeProps.preloadFile,
             },
         });
         win.webContents.setWindowOpenHandler(({ url }) => {
@@ -37,9 +36,9 @@ export default class ElectronMainController {
             process.exit(0);
         });
         if (isDev) {
-            win.loadURL(url);
+            win.loadURL(routeProps.url);
         } else {
-            win.loadFile(htmlFile);
+            win.loadFile(routeProps.htmlFile);
         }
         return win;
     }

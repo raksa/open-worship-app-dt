@@ -35,5 +35,5 @@ export function useWindowEvent(eventMapper: EventMapper,
         return () => {
             WindowEventListener.unregisterEventListener(event);
         };
-    });
+    }, [eventMapper]);
 }

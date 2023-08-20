@@ -5,10 +5,9 @@ import {
 } from './electronEventListener';
 import { isDev } from './electronHelpers';
 import ElectronMainController from './ElectronMainController';
+import { genRoutProps } from './helper';
 
-const url = 'http://localhost:3000';
-const htmlFile = `${__dirname}/../../dist/index.html`;
-const presentPreloadFile = `${__dirname}/client/presentPreload.js`;
+const routeProps = genRoutProps('present');
 export default class ElectronPresentController {
     win: BrowserWindow;
     presentId: number;
@@ -28,14 +27,14 @@ export default class ElectronPresentController {
                 webSecurity: !isDev,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: presentPreloadFile,
+                preload: routeProps.preloadFile,
             },
         });
         const query = `?presentId=${this.presentId}`;
         if (isDev) {
-            presentWin.loadURL(`${url}${query}`);
+            presentWin.loadURL(`${routeProps.url}${query}`);
         } else {
-            presentWin.loadURL(`file://${htmlFile}${query}`);
+            presentWin.loadURL(`file://${routeProps.htmlFile}${query}`);
         }
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);

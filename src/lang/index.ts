@@ -34,7 +34,8 @@ export function getLang(lang: string) {
   return cache.get(lang) || null;
 }
 async function importLang(locale: LocaleType) {
-  const langData = await import(`./data/${locale}`);
+  const importPath = `./data/${locale}`;
+  const langData = await import(importPath);
   return langData.default;
 }
 export async function getLangAsync(locale: LocaleType) {

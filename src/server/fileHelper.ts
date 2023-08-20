@@ -4,6 +4,21 @@ import { Stats } from 'fs';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from '../helper/errorHelpers';
 
+import mimeBible from './mime/bible-types.json';
+import mimeLyric from './mime/lyric-types.json';
+import mimeSlide from './mime/slide-types.json';
+import mimeImage from './mime/image-types.json';
+import mimePlaylist from './mime/playlist-types.json';
+import mimeVideo from './mime/video-types.json';
+const mimeTypesMapper = {
+    bible: mimeBible,
+    lyric: mimeLyric,
+    slide: mimeSlide,
+    image: mimeImage,
+    playlist: mimePlaylist,
+    video: mimeVideo,
+};
+
 export type AppMimetypeType = {
     type: string,
     title: string,
@@ -71,7 +86,7 @@ export function getAppMimetype(mimetype: MimetypeNameType) {
     if (mimetype === 'other') {
         return [];
     }
-    const json = require(`./mime/${mimetype}-types.json`);
+    const json = mimeTypesMapper[mimetype];
     json.forEach((data: any) => {
         data.mimetypeName = mimetype;
     });
@@ -251,7 +266,7 @@ export async function fsListFilesWithMimetype(dir: string,
         return [];
     }
     try {
-        const mimetypeList = require(`./mime/${mimetype}-types.json`);
+        const mimetypeList = getAppMimetype(mimetype);
         const files = await fsListFiles(dir);
         const matchedFiles = files.map((fileName) => {
             return getFileMetaData(fileName, mimetypeList);

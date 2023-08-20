@@ -24,7 +24,7 @@ export async function initDevtools(appController: ElectronAppController) {
     if (!isDev) {
         return;
     }
-    await initReactExtension();
+    // await initReactExtension();
     const win = appController.mainController.win;
     win.webContents.openDevTools();
 }
