@@ -32,6 +32,9 @@ async function watch(dirSource: DirSource, signal: AbortSignal) {
         appProvider.fileUtils.watch(dirSource.dirPath, {
             signal,
         }, (eventType, fileName) => {
+            if (fileName === null) {
+                return;
+            }
             if (eventType === 'rename') {
                 dirSource.fireReloadEvent();
             } else if (eventType === 'change') {
