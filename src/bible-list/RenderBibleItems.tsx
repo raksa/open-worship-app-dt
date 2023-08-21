@@ -95,7 +95,10 @@ export default function RenderBibleItems({ bible }: {
                 );
             })}
             {bible.isDefault && <div
-                className='btn btn-info p-2 pointer border-white-round'
+                className={
+                    'btn btn-sm btn-labeled btn-outline-primary p-2 '
+                    + 'pointer border-white-round'
+                }
                 style={{
                     margin: 'auto',
                     fontSize: '0.8rem',
