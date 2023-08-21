@@ -20,7 +20,7 @@ export default function AppLayout() {
     }
     return (
         <WindowModeContext.Provider value={windowMode}>
-            <div className='d-flex flex-column'>
+            <div className='d-flex flex-column w-100 h-100'>
                 {/* <TestInfinite /> */}
                 {getHeader(tabOptionList)}
                 {genBody()}
