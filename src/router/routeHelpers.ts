@@ -76,9 +76,7 @@ function checkIsWindowMode(
     targetMode: WindowModEnum,
     mode?: WindowModEnum | null,
 ) {
-    if (mode === null) {
-        mode = genWindowMode();
-    }
+    mode = mode || genWindowMode();
     return mode === targetMode;
 }
 export function checkIsWindowEditingMode(mode?: WindowModEnum | null) {
