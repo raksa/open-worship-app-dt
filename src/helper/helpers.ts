@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
-import appProvider from '../server/appProvider';
+import { useState } from 'react';
+import { useAppEffect } from './debuggerHelpers';
+import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import ItemSource from './ItemSource';
+import { trace } from './loggerHelpers';
 
 export type AnyObjectType = {
     [key: string]: any;
@@ -85,14 +87,14 @@ export function validateAppMeta(meta: any) {
             return true;
         }
     } catch (error) {
-        appProvider.appUtils.handleError(error);
+        handleError(error);
     }
     return false;
 }
 export function useReadFileToData<T extends ItemSource<any>>(
     fileSource: FileSource | null) {
     const [data, setData] = useState<T | null | undefined>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (fileSource !== null) {
             fileSource.readFileToJsonData().then((itemSource: any) => {
                 setData(itemSource);
@@ -141,8 +143,14 @@ export function isValidJson(json: any, isSilent: boolean = false) {
         return JSON.parse(json);
     } catch (error) {
         if (!isSilent && json === '') {
-            console.trace('Invalid Json:', json);
+            trace('Invalid Json:', json);
         }
         return false;
     }
+}
+
+export function isColor(strColor: string) {
+    const s = new Option().style;
+    s.color = strColor;
+    return !!s.color;
 }

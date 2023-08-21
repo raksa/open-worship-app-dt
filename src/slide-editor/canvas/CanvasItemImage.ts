@@ -9,7 +9,7 @@ import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
-import appProvider from '../../server/appProvider';
+import { handleError } from '../../helper/errorHelpers';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
 export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
@@ -22,13 +22,14 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
         const [mediaWidth, mediaHeight] = await getImageDim(fileSource.src);
+        const srcData = await fileSource.getSrcData();
         const props: CanvasItemImagePropsType = {
-            src: fileSource.src,
+            srcData,
             mediaWidth,
             mediaHeight,
             ...genTextDefaultBoxStyle(),
-            left: x,
-            top: y,
+            left: x - mediaWidth / 2,
+            top: y - mediaHeight / 2,
             width: mediaWidth,
             height: mediaHeight,
             type: 'image',
@@ -37,7 +38,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     }
     toJson(): CanvasItemImagePropsType {
         return {
-            src: this.props.src,
+            srcData: this.props.srcData,
             mediaWidth: this.props.mediaWidth,
             mediaHeight: this.props.mediaHeight,
             ...super.toJson(),
@@ -48,7 +49,7 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
             this.validate(json);
             return new CanvasItemImage(json);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

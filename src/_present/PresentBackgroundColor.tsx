@@ -1,4 +1,4 @@
-import { AppColorType } from '../others/ColorPicker';
+import { AppColorType } from '../others/color/colorHelpers';
 
 export default function PresentBackgroundColor({ color }: {
     color: AppColorType,

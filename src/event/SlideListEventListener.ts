@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     getSetting, useStateSettingNumber,
 } from '../helper/settingHelper';
@@ -7,7 +7,8 @@ import EventHandler, { ListenerType } from './EventHandler';
 
 export type SlideListEventType = 'slide-item-select' | 'slide-item-sizing';
 
-export default class SlideListEventListener extends EventHandler<SlideListEventType> {
+export default class SlideListEventListener extends
+    EventHandler<SlideListEventType> {
     static eventNamePrefix: string = 'slide-list';
     static selectSlideItem(slideItem: SlideItem | null) {
         this.addPropEvent('slide-item-select', slideItem);
@@ -17,8 +18,9 @@ export default class SlideListEventListener extends EventHandler<SlideListEventT
     }
 }
 
-export function useSlideItemSelecting(listener: ListenerType<SlideItem | null>) {
-    useEffect(() => {
+export function useSlideItemSelecting(
+    listener: ListenerType<SlideItem | null>) {
+    useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(
             ['slide-item-select'], listener);
         return () => {
@@ -28,9 +30,11 @@ export function useSlideItemSelecting(listener: ListenerType<SlideItem | null>) 
 }
 export function useSlideItemSizing(settingName: string, defaultSize: number)
     : [number, (s: number) => void] {
-    const getDefaultSize = () => +getSetting(settingName, defaultSize.toString());
-    const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(settingName, getDefaultSize());
-    useEffect(() => {
+    const getDefaultSize = () => +getSetting(
+        settingName, defaultSize.toString());
+    const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(
+        settingName, getDefaultSize());
+    useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(
             ['slide-item-sizing'], () => setThumbnailSize(getDefaultSize()));
         return () => {

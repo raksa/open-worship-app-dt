@@ -1,60 +1,31 @@
 import './BackgroundImages.scss';
 
-import { showAppContextMenu } from '../others/AppContextMenu';
-import FileListHandler from '../others/FileListHandler';
-import { genCommonMenu } from '../others/FileItemHandler';
-import DirSource from '../helper/DirSource';
-import PresentBGManager from '../_present/PresentBGManager';
+import {
+    BackgroundSrcType,
+} from '../_present/PresentBGManager';
 import { RenderPresentIds } from './Background';
-import { usePBGMEvents } from '../_present/presentEventHelpers';
+import FileSource from '../helper/FileSource';
+import BackgroundMedia from './BackgroundMedia';
+import { DragTypeEnum } from '../helper/DragInf';
 
 export default function BackgroundImages() {
-    const dirSource = DirSource.getInstance('image-list-selected-dir');
-    usePBGMEvents(['update']);
     return (
-        <FileListHandler id='background-image' mimetype='image'
-            dirSource={dirSource}
-            body={(fileSources) => {
-                return (
-                    <div className='d-flex justify-content-start flex-wrap'>
-                        {fileSources.map((fileSource, i) => {
-                            const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
-                                fileSource.src, 'image');
-                            const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
-                            return (
-                                <div key={`${i}`}
-                                    className={`image-thumbnail card ${selectedCN}`}
-                                    title={fileSource.filePath + '\n Show in presents:'
-                                        + selectedBGSrcList.map(([key]) => key).join(',')}
-                                    draggable
-                                    onDragStart={(event) => {
-                                        PresentBGManager.startPresentDrag(event, fileSource.src, 'image');
-                                    }}
-                                    onContextMenu={(event) => {
-                                        showAppContextMenu(event as any, genCommonMenu(fileSource),);
-                                    }}
-                                    onClick={(event) => {
-                                        PresentBGManager.bgSrcSelect(fileSource.src, event, 'image');
-                                    }}>
-                                    <div className='card-body'>
-                                        <RenderPresentIds
-                                            ids={selectedBGSrcList.map(([key]) => +key)} />
-                                        <img src={fileSource.src}
-                                            className='card-img-top' alt='...'
-                                            style={{
-                                                pointerEvents: 'none',
-                                            }} />
-                                    </div>
-                                    <div className='card-footer'>
-                                        <p className='ellipsis-left card-text'>
-                                            {fileSource.fileName}
-                                        </p>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                );
-            }} />
+        <BackgroundMedia dragType={DragTypeEnum.BG_IMAGE}
+            rendChild={rendChild} />
+    );
+}
+
+function rendChild(fileSource: FileSource,
+    selectedBGSrcList: [string, BackgroundSrcType][]) {
+    return (
+        <div className='card-body'>
+            <RenderPresentIds
+                ids={selectedBGSrcList.map(([key]) => +key)} />
+            <img src={fileSource.src}
+                className='card-img-top' alt='...'
+                style={{
+                    pointerEvents: 'none',
+                }} />
+        </div>
     );
 }

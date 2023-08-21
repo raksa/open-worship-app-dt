@@ -1,8 +1,9 @@
 import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
+import { useAppEffect } from '../../../helper/debuggerHelpers';
 
 export default function ToolsTextFontControl({ canvasItemText }: {
     canvasItemText: CanvasItemText,
@@ -20,7 +21,7 @@ function FontSize({ canvasItemText }: {
 }) {
     const [localFontSize, setLocalFontSize] = useState(
         canvasItemText.props.fontSize);
-    useEffect(() => {
+    useAppEffect(() => {
         setLocalFontSize(canvasItemText.props.fontSize);
     }, [canvasItemText]);
     const applyFontSize = (fontSize: number) => {
@@ -43,7 +44,7 @@ function FontSize({ canvasItemText }: {
                 <option>--</option>
                 {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
                     .reverse().map((n, i) => {
-                        return <option key={`${i}`}
+                        return <option key={n}
                             value={n}>{n}px</option>;
                     })}
             </select>
@@ -81,8 +82,8 @@ function FontFamily({ canvasItemText }: {
                         applyFontFamily(event.target.value);
                     }} >
                     <option>--</option>
-                    {Object.keys(fontList).map((ff, i) => {
-                        return <option key={i}
+                    {Object.keys(fontList).map((ff) => {
+                        return <option key={ff}
                             value={ff}>{ff}</option>;
                     })}
                 </select>
@@ -105,7 +106,7 @@ function FontWeight({
     canvasItemText: CanvasItemText,
 }) {
     const [localFontWeight, setLocalFontWeight] = useState(fontWeight);
-    useEffect(() => {
+    useAppEffect(() => {
         setLocalFontWeight(fontWeight);
     }, [fontWeight]);
     const applyFontWeight = (newFontWeight: string) => {
@@ -124,9 +125,9 @@ function FontWeight({
                     applyFontWeight(event.target.value);
                 }} >
                 <option>--</option>
-                {fontList[fontFamily].map((fs, i) => {
+                {fontList[fontFamily].map((fs) => {
                     return (
-                        <option key={i}
+                        <option key={fs}
                             value={fs}>{fs}</option>
                     );
                 })}

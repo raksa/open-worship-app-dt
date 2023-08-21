@@ -1,5 +1,6 @@
 import FileSource from '../helper/FileSource';
 import { isValidJson } from '../helper/helpers';
+import { log } from '../helper/loggerHelpers';
 import {
     getSetting, setSetting,
 } from '../helper/settingHelper';
@@ -33,7 +34,7 @@ export default abstract class EditingCacheManager<T1, T2> {
     }
     set _changes(changes: ChangesType<T1>) {
         if (!this.isUsingHistory) {
-            console.log('Saving is disabled');
+            log('Saving is disabled');
             return;
         }
         setSetting(this.settingName, JSON.stringify(changes));

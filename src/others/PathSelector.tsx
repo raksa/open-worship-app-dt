@@ -1,17 +1,15 @@
 import './PathSelector.scss';
 
-import {
-    copyToClipboard,
-    openExplorer,
-} from '../server/appHelper';
-import { showAppContextMenu } from './AppContextMenu';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import DirSource from '../helper/DirSource';
 import React from 'react';
 import AppSuspense from './AppSuspense';
-import appProvider from '../server/appProvider';
+import { useDSEvents } from '../helper/dirSourceHelpers';
+import { pathPreviewer } from './PathPreviewer';
 
-const PathPreviewer = React.lazy(() => import('./PathPreviewer'));
+const PathPreviewer = React.lazy(() => {
+    return import('./PathEditor');
+});
 
 export default function PathSelector({
     dirSource, prefix,
@@ -21,51 +19,42 @@ export default function PathSelector({
 }) {
     const [showing, setShowing] = useStateSettingBoolean(
         `${prefix}-selector-opened`, false);
-    const isShowing = !dirSource.dirPath || showing;
+    const dirPath = dirSource.dirPath;
+    const isShowingEditor = !dirPath || showing;
     return (
-        <div className='path-selector w-100'
-            onContextMenu={(event) => {
-                showAppContextMenu(event as any, [
-                    {
-                        title: 'Copy to Clipboard',
-                        onClick: () => {
-                            copyToClipboard(dirSource.dirPath);
-                        },
-                    },
-                    {
-                        title: `Reveal in ${appProvider.systemUtils.isMac ?
-                            'Finder' : 'File Explorer'}`,
-                        onClick: () => {
-                            openExplorer(dirSource.dirPath);
-                        },
-                    },
-                ]);
-            }}>
+        <div className='path-selector w-100'>
             <div className='d-flex path-previewer pointer'
                 onClick={() => {
                     setShowing(!showing);
                 }}>
-                <i className={`bi ${isShowing ?
+                <i className={`bi ${isShowingEditor ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {dirSource.dirPath && <div
-                    className='ellipsis-left border-white-round px-1 flex-fill'
-                    title={dirSource.dirPath}>
-                    {dirSource.dirPath}</div>}
-                {dirSource.dirPath &&
-                    <div className='px-2'
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            dirSource.fireReloadEvent();
-                        }}>
-                        <i className='bi bi-arrow-clockwise' />
-                    </div>
-                }
+                {!isShowingEditor && <RenderTitle dirSource={dirSource} />}
             </div>
-            {isShowing && <AppSuspense>
+            {isShowingEditor && <AppSuspense>
                 <PathPreviewer
                     dirSource={dirSource}
                     prefix={prefix} />
             </AppSuspense>}
         </div>
+    );
+}
+
+function RenderTitle({ dirSource }: { dirSource: DirSource }) {
+    useDSEvents(['reload'], dirSource);
+    if (!dirSource.dirPath) {
+        return null;
+    }
+    return (
+        <>
+            {pathPreviewer(dirSource.dirPath)}
+            <div className='px-2'
+                onClick={(event) => {
+                    event.stopPropagation();
+                    dirSource.fireReloadEvent();
+                }}>
+                <i className='bi bi-arrow-clockwise' />
+            </div>
+        </>
     );
 }

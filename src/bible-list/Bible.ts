@@ -1,13 +1,17 @@
-import ToastEventListener from '../event/ToastEventListener';
 import {
     fsListFilesWithMimetype,
     MimetypeNameType,
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
-import { AnyObjectType, cloneJson, toMaxId } from '../helper/helpers';
+import {
+    AnyObjectType,
+    cloneJson,
+    toMaxId,
+} from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type BibleType = {
     items: BibleItemType[],
@@ -28,15 +32,15 @@ export default class Bible extends ItemSource<BibleItem>{
     get metadata() {
         return this._originalJson.metadata;
     }
+    get itemsLength() {
+        return this._originalJson.items.length;
+    }
     get items() {
         return this._originalJson.items.map((json) => {
             try {
                 return BibleItem.fromJson(json, this.fileSource);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Bible Item',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Bible Item', error.message);
             }
             return BibleItem.fromJsonError(json, this.fileSource);
         });
@@ -59,7 +63,7 @@ export default class Bible extends ItemSource<BibleItem>{
         return Bible.checkIsDefault(this.fileSource);
     }
     get isSelected() {
-        return this.items.some((item) => item.isSelected);
+        return false;
     }
     get isOpened() {
         return this.metadata['isOpened'] === true;
@@ -82,28 +86,34 @@ export default class Bible extends ItemSource<BibleItem>{
         this.items = newItems;
     }
     static async updateOrToDefault(bibleItem: BibleItem) {
-        const selectedBibleItem = await BibleItem.getSelectedItemEditing();
-        if (selectedBibleItem) {
-            selectedBibleItem.update(bibleItem);
-            if (await selectedBibleItem.save()) {
-                return selectedBibleItem;
-            }
-        } else {
-            const bible = await Bible.getDefault();
-            if (bible) {
-                bible.addItem(bibleItem);
-                if (await bible.save()) {
-                    return bibleItem;
-                }
+        const bible = await Bible.getDefault();
+        if (bible) {
+            bible.addItem(bibleItem);
+            if (await bible.save()) {
+                return bibleItem;
             }
         }
         return null;
     }
+    duplicate(index: number) {
+        const items = this.items;
+        const newItem = items[index].clone();
+        newItem.id = this.maxItemId + 1;
+        items.splice(index + 1, 0, newItem);
+        this.items = items;
+    }
+    removeItemAtIndex(index: number): BibleItem | null {
+        const items = this.items;
+        const removedItems = items.splice(index, 1);
+        this.items = items;
+        return removedItems[0] || null;
+    }
     removeItem(bibleItem: BibleItem) {
         const items = this.items;
         const index = items.indexOf(bibleItem);
-        items.splice(index, 1);
-        this.items = items;
+        if (index !== -1) {
+            this.removeItemAtIndex(index);
+        }
     }
     addItem(item: BibleItem) {
         item.fileSource = this.fileSource;
@@ -112,28 +122,40 @@ export default class Bible extends ItemSource<BibleItem>{
         items.push(item);
         this.items = items;
     }
-    async moveItemFrom(bibleItem: BibleItem, fileSource: FileSource) {
+    swapItem(fromIndex: number, toIndex: number) {
+        const items = this.items;
+        const fromItem = items[fromIndex];
+        const toItem = items[toIndex];
+        items[fromIndex] = toItem;
+        items[toIndex] = fromItem;
+        this.items = items;
+    }
+    async moveItemFrom(fileSource: FileSource, index?: number) {
         try {
-            const isSelected = bibleItem.isSelected;
-            const id = bibleItem.id;
-            this.addItem(bibleItem);
-            await this.save();
             const fromBible = await Bible.readFileToData(fileSource);
-            if (fromBible) {
-                const item = fromBible.getItemById(id);
-                if (item !== null) {
-                    fromBible.removeItem(item);
-                    await fromBible.save();
+            if (!fromBible) {
+                showSimpleToast('Moving Bible Item', 'Cannot source Bible');
+                return;
+            }
+            const backupBibleItems = fromBible.items;
+            let targetBibleItems: BibleItem[] = backupBibleItems;
+            if (index !== undefined) {
+                if (!backupBibleItems[index]) {
+                    showSimpleToast('Moving Bible Item', 'Cannot find Bible Item');
+                    return;
                 }
+                targetBibleItems = [backupBibleItems[index]];
             }
-            if (isSelected) {
-                bibleItem.isSelected = true;
-            }
-        } catch (error: any) {
-            ToastEventListener.showSimpleToast({
-                title: 'Moving Bible Item',
-                message: error.message,
+            this.items = this.items.concat(targetBibleItems);
+            await this.save();
+
+            fromBible.items = backupBibleItems.filter((item) => {
+                return !targetBibleItems.includes(item);
             });
+            await fromBible.save();
+
+        } catch (error: any) {
+            showSimpleToast('Moving Bible Item', error.message);
         }
     }
     static mimetype: MimetypeNameType = 'bible';
@@ -160,10 +182,8 @@ export default class Bible extends ItemSource<BibleItem>{
         const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
         const defaultBible = await Bible.readFileToData(defaultFS);
         if (!defaultBible) {
-            ToastEventListener.showSimpleToast({
-                title: 'Getting Default Bible File',
-                message: 'Fail to get default bible file',
-            });
+            showSimpleToast('Getting Default Bible File',
+                'Fail to get default bible file');
             return null;
         }
         await defaultBible.setIsOpened(true);
@@ -174,5 +194,8 @@ export default class Bible extends ItemSource<BibleItem>{
     }
     clone() {
         return Bible.fromJson(this.fileSource, this.toJson());
+    }
+    empty() {
+        this.items = [];
     }
 }

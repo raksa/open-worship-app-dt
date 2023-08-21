@@ -1,27 +1,19 @@
-import { useEffect } from 'react';
-import BibleItem from '../bible-list/BibleItem';
 import {
-    setIsPreviewingBible, setIsPreviewingLyric,
+    setIsPreviewingLyric,
 } from '../full-text-present/FullTextPreviewer';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type PreviewingType =
-    'select-bible-item'
-    | 'select-lyric'
+    'select-lyric'
     | 'update-lyric'
     | 'select-slide'
     | 'update-slide';
 
 export default class PreviewingEventListener extends EventHandler<PreviewingType> {
     static eventNamePrefix: string = 'previewing';
-    selectBibleItem(bibleItem: BibleItem | null) {
-        if (bibleItem !== null) {
-            setIsPreviewingBible();
-        }
-        this.addPropEvent('select-bible-item', bibleItem);
-    }
     selectLyric(lyric: Lyric | null) {
         if (lyric !== null) {
             setIsPreviewingLyric();
@@ -41,17 +33,8 @@ export default class PreviewingEventListener extends EventHandler<PreviewingType
 
 export const previewingEventListener = new PreviewingEventListener();
 
-export function useBibleItemSelecting(listener: ListenerType<BibleItem | null>) {
-    useEffect(() => {
-        const event = previewingEventListener.registerEventListener(
-            ['select-bible-item'], listener);
-        return () => {
-            previewingEventListener.unregisterEventListener(event);
-        };
-    });
-}
 export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-lyric'], listener);
         return () => {
@@ -60,7 +43,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
     });
 }
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['update-lyric'], listener);
         return () => {
@@ -69,7 +52,7 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
     });
 }
 export function useSlideSelecting(listener: ListenerType<Slide | null>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-slide'], listener);
         return () => {
@@ -78,7 +61,7 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
     });
 }
 export function useSlideUpdating(listener: ListenerType<Slide>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['update-slide'], listener);
         return () => {
@@ -87,14 +70,11 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
     });
 }
 export function useFullTextOpening(listener: ListenerType<void>) {
-    useEffect(() => {
+    useAppEffect(() => {
         const eventLyric = previewingEventListener.registerEventListener(
             ['select-lyric'], listener);
-        const eventBible = previewingEventListener.registerEventListener(
-            ['select-bible-item'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(eventLyric);
-            previewingEventListener.unregisterEventListener(eventBible);
         };
     });
 }

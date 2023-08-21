@@ -1,10 +1,15 @@
 import './SlideItemDragReceiver.scss';
 
-import SlideItem from '../../slide-list/SlideItem';
 import { CSSProperties, useState } from 'react';
+import SlideItem from '../../slide-list/SlideItem';
+import { handleDrop } from '../../helper/dragHelpers';
+import { DragTypeEnum } from '../../helper/DragInf';
 
-export default function SlideItemDragReceiver({ width, onDrop }: {
-    width: number, onDrop: (id: number) => void,
+export default function SlideItemDragReceiver({
+    width, onDrop, isLeft,
+}: {
+    width: number, isLeft?: boolean,
+    onDrop: (id: number, isLeft: boolean) => void,
 }) {
     const [isVertical, setIsVertical] = useState(false);
     const style: CSSProperties = isVertical ? {
@@ -18,7 +23,8 @@ export default function SlideItemDragReceiver({ width, onDrop }: {
             style={style}
             ref={(div) => {
                 if (div) {
-                    const childrenElements = div.parentElement?.querySelectorAll('.slide-item');
+                    const childrenElements = div.parentElement?.
+                        querySelectorAll('.slide-item');
                     const children = Array.from(childrenElements || []);
                     const getLeft = (element: Element) => {
                         return element.getBoundingClientRect().left;
@@ -36,12 +42,13 @@ export default function SlideItemDragReceiver({ width, onDrop }: {
                 event.preventDefault();
                 (event.currentTarget as HTMLDivElement).style.opacity = '0.1';
             }}
-            onDrop={(event) => {
-                const path = event.dataTransfer.getData('text');
-                const result = SlideItem.extractItemSetting(path);
-                if (result !== null) {
-                    onDrop(result.id);
+            onDrop={async (event) => {
+                const droppedData = await handleDrop(event);
+                if (droppedData == null ||
+                    droppedData.type !== DragTypeEnum.SLIDE_ITEM) {
+                    return;
                 }
-            }}></div>
+                onDrop((droppedData.item as SlideItem).id, !!isLeft);
+            }} />
     );
 }

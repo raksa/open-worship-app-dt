@@ -1,18 +1,17 @@
-import ToastEventListener from '../event/ToastEventListener';
-import ColorNoteInf from './ColorNoteInf';
 import {
     MimetypeNameType,
-    createNewItem,
+    createNewFileDetail,
 } from '../server/fileHelper';
 import FileSource from './FileSource';
 import {
     AnyObjectType, validateAppMeta,
 } from './helpers';
 import { setSetting, getSetting } from './settingHelper';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
-}> implements ColorNoteInf {
+}> {
     static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
     static mimetype: MimetypeNameType;
@@ -22,7 +21,8 @@ export default abstract class ItemSource<T extends {
         this.fileSource = fileSource;
     }
     get isSelected() {
-        const selectedFS = ItemSource.getSelectedFileSource(this.SELECT_SETTING_NAME);
+        const selectedFS = ItemSource.getSelectedFileSource(
+            this.SELECT_SETTING_NAME);
         return this.fileSource.filePath === selectedFS?.filePath;
     }
     set isSelected(b: boolean) {
@@ -32,13 +32,6 @@ export default abstract class ItemSource<T extends {
         ItemSource.setSelectedFileSource(b ? this.fileSource : null,
             this.SELECT_SETTING_NAME);
         this.fileSource?.fireSelectEvent();
-    }
-    get colorNote() {
-        return this.metadata['colorNote'] || null;
-    }
-    set colorNote(c: string | null) {
-        this.metadata['colorNote'] = c;
-        this.save();
     }
     abstract get maxItemId(): number;
     abstract get metadata(): AnyObjectType;
@@ -60,7 +53,8 @@ export default abstract class ItemSource<T extends {
             throw new Error('Invalid item source data');
         }
     }
-    static setSelectedFileSource(fileSource: FileSource | null, settingName?: string) {
+    static setSelectedFileSource(fileSource: FileSource | null,
+        settingName?: string) {
         settingName = settingName || this.SELECT_SETTING_NAME;
         if (!settingName) {
             return;
@@ -84,7 +78,6 @@ export default abstract class ItemSource<T extends {
         if (isSuccess) {
             ItemSource._cache.set(this.fileSource.filePath, this);
         }
-        this.fileSource.fireReloadDirEvent();
         return isSuccess;
     }
     static async create(dir: string, name: string, items: AnyObjectType[]) {
@@ -96,7 +89,8 @@ export default abstract class ItemSource<T extends {
             },
             items,
         });
-        const filePath = await createNewItem(dir, name, data, this.mimetype);
+        const filePath = await createNewFileDetail(dir, name, data,
+            this.mimetype);
         if (filePath !== null) {
             return FileSource.getInstance(filePath);
         }
@@ -111,10 +105,7 @@ export default abstract class ItemSource<T extends {
             try {
                 return this.fromJson(fileSource, json);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Data',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Data', error.message);
             }
         }
         return undefined;
@@ -122,7 +113,8 @@ export default abstract class ItemSource<T extends {
     static deleteCache(key: string) {
         this._cache.delete(key);
     }
-    static async readFileToData(fileSource: FileSource | null, refreshCache?: boolean) {
+    static async readFileToData(fileSource: FileSource | null,
+        refreshCache?: boolean) {
         if (fileSource === null) {
             return null;
         }

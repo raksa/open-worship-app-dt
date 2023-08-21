@@ -1,20 +1,22 @@
 import './SlideItemEditorPreviewer.scss';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import { useSlideSelecting } from '../event/PreviewingEventListener';
 import CanvasController from './canvas/CanvasController';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function SlideItemEditorGround() {
-    const [slideItem, setSlideItem] = useState<SlideItem | null | undefined>(null);
+    const [slideItem, setSlideItem] = useState<
+        SlideItem | null | undefined>(null);
     const reloadSlide = async () => {
         const newSlide = await SlideItem.getSelectedItem();
         setSlideItem(newSlide || undefined);
     };
-    useEffect(() => {
+    useAppEffect(() => {
         if (slideItem === null) {
             reloadSlide();
         }

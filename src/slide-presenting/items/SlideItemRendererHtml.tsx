@@ -5,12 +5,12 @@ import SlideItemRenderer from './SlideItemRenderer';
 export default function SlideItemRendererHtml({ slideItem }: {
     slideItem: SlideItem,
 }) {
+    const [parentWidth, setWidth] = useState(0);
     if (slideItem.isError) {
         return (
             <div className='alert alert-danger'>Error</div>
         );
     }
-    const [parentWidth, setWidth] = useState(0);
     const scale = parentWidth / slideItem.width;
     return (
         <div ref={(div) => {
@@ -29,7 +29,8 @@ export default function SlideItemRendererHtml({ slideItem }: {
                 height: `${slideItem.height}px`,
                 transform: 'translate(-50%, -50%)',
             }}>
-                <SlideItemRenderer canvasItemsJson={slideItem.canvasItemsJson}
+                <SlideItemRenderer
+                    canvasItemsJson={slideItem.canvasItemsJson}
                     width={`${slideItem.width}px`}
                     height={`${slideItem.height}px`} />
             </div>

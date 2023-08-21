@@ -1,11 +1,20 @@
-import KeyboardEventListener, {
+import {
     EventMapper as KBEventMapper,
+    toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { tran } from '../lang';
-import { openBibleSearch } from './HandleBibleSearch';
+import LinkToAppModal, {
+    useOpenAppModal,
+} from '../app-modal/LinkToAppModal';
+import { AppModalType } from '../app-modal/helpers';
+
+export function useOpenBibleSearch() {
+    return useOpenAppModal(AppModalType.BIBLE_SEARCH);
+}
 
 export default function BibleSearchHeader() {
+    const openBibleSearch = useOpenBibleSearch();
     const eventMapper: KBEventMapper = {
         wControlKey: ['Ctrl'],
         mControlKey: ['Ctrl'],
@@ -14,17 +23,16 @@ export default function BibleSearchHeader() {
     };
     useKeyboardRegistering(eventMapper, openBibleSearch);
     return (
-        <button className='btn btn-labeled btn-primary'
-            style={{
-                width: '220px',
-            }}
-            onClick={openBibleSearch}
-            data-tool-tip={KeyboardEventListener.toShortcutKey(eventMapper)}
-            type='button'>
-            <span className='btn-label'>
-                <i className='bi bi-book'></i>
-            </span>
-            {tran('bible-search')}
-        </button>
+        <LinkToAppModal modalType={AppModalType.BIBLE_SEARCH}>
+            <button className='btn btn-labeled btn-primary'
+                style={{ width: '220px' }}
+                data-tool-tip={toShortcutKey(eventMapper)}
+                type='button'>
+                <span className='btn-label'>
+                    <i className='bi bi-book' />
+                </span>
+                {tran('bible-search')}
+            </button>
+        </LinkToAppModal>
     );
 }

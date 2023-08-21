@@ -1,15 +1,21 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, shell } from 'electron';
 import { channels, PresentMessageType } from './electronEventListener';
 import { isDev } from './electronHelpers';
+import { genRoutProps } from './helper';
 
-const url = 'http://localhost:3000';
-const htmlFile = `${__dirname}/../../dist/index.html`;
-const mainPreloadFile = `${__dirname}/client/mainPreload.js`;
+const routeProps = genRoutProps('main');
 export default class ElectronMainController {
     win: BrowserWindow;
     static _instance: ElectronMainController | null = null;
     constructor() {
         this.win = this.createMainWindow();
+    }
+    previewPdf(pdfFilePath: string) {
+        const mainWin = this.win;
+        const pdfWin = new BrowserWindow({
+            parent: mainWin,
+        });
+        pdfWin.loadURL(pdfFilePath);
     }
     createMainWindow() {
         const win = new BrowserWindow({
@@ -19,20 +25,20 @@ export default class ElectronMainController {
                 webSecurity: !isDev,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: mainPreloadFile,
+                preload: routeProps.preloadFile,
             },
+        });
+        win.webContents.setWindowOpenHandler(({ url }) => {
+            shell.openExternal(url);
+            return { action: 'deny' };
         });
         win.on('closed', () => {
             process.exit(0);
         });
         if (isDev) {
-            win.loadURL(url);
+            win.loadURL(routeProps.url);
         } else {
-            win.loadFile(htmlFile);
-        }
-        // Open the DevTools.
-        if (isDev) {
-            win.webContents.openDevTools();
+            win.loadFile(routeProps.htmlFile);
         }
         return win;
     }

@@ -1,6 +1,7 @@
+import './FullTextPreviewer.scss';
+
 import React from 'react';
 import {
-    useBibleItemSelecting,
     useLyricSelecting,
 } from '../event/PreviewingEventListener';
 import {
@@ -21,11 +22,6 @@ const LyricPreviewer = React.lazy(() => {
     return import('./LyricPreviewer');
 });
 
-export const previewer: {
-    show: (_?: React.MouseEvent) => void;
-} = {
-    show: () => void 0,
-};
 const FT_TAB_SETTING_NAME = 'full-text-previewer';
 export function getIsPreviewingBible() {
     return getIsShowingFTPreviewer() &&
@@ -47,24 +43,20 @@ const tabTypeList = [
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function FullTextPreviewer() {
-    const [tabType, setTabType] = useStateSettingString<TabType>(FT_TAB_SETTING_NAME, 'b');
-    useBibleItemSelecting((item) => {
-        if (item !== null) {
-            setTabType('b');
-        }
-    });
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        FT_TAB_SETTING_NAME, 'b');
     useLyricSelecting((item) => {
         if (item !== null) {
             setTabType('l');
         }
     });
     return (
-        <div className={'previewer overflow-hidden border-white-round '
+        <div className={'ft-previewer overflow-hidden border-white-round '
             + 'h-100 d-flex flex-column p-1'}
             style={{
                 minWidth: '300px',
             }}>
-            <div className='previewer-header d-flex'>
+            <div className='header d-flex'>
                 <TabRender<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
@@ -72,7 +64,7 @@ export default function FullTextPreviewer() {
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
-            <div className='previewer-header p-2 flex-fill overflow-hidden'>
+            <div className='body p-2 flex-fill overflow-hidden'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

@@ -7,7 +7,11 @@ import Slide from '../../slide-list/Slide';
 import PresentManager from '../../_present/PresentManager';
 import MenuIsModifying from './MenuIsModifying';
 
-export default function SlideItemsMenu({ slide }: { slide: Slide }) {
+export default function SlideItemsMenu({
+    slide,
+}: {
+    slide: Slide,
+}) {
     const presentDisplay = PresentManager.getDefaultPresentDisplay();
     useFSEvents(['update'], slide.fileSource);
     const eventMapper: KBEventMapper = {
@@ -16,7 +20,9 @@ export default function SlideItemsMenu({ slide }: { slide: Slide }) {
         lControlKey: ['Ctrl'],
         key: 's',
     };
-    useKeyboardRegistering(eventMapper, () => slide.save());
+    useKeyboardRegistering(eventMapper, () => {
+        return slide.save();
+    });
     const foundWrongDimension = slide.checkIsWrongDimension(presentDisplay);
     const editCacheManager = slide.editingCacheManager;
     const undo = editCacheManager.undoQueue;
@@ -34,25 +40,33 @@ export default function SlideItemsMenu({ slide }: { slide: Slide }) {
                     onClick={() => {
                         editCacheManager.popUndo();
                     }}>
-                    undo <i className='bi bi-arrow-90deg-left'></i>
+                    undo
+                    <i className='bi bi-arrow-90deg-left' />
                 </button>
-                <button type='button' className='btn btn-sm btn-info'
-                    title='clear background' disabled={redo.length === 0}
+                <button type='button'
+                    className='btn btn-sm btn-info'
+                    title='clear background'
+                    disabled={redo.length === 0}
                     onClick={() => {
                         editCacheManager.popRedo();
                     }}>
-                    redo <i className='bi bi-arrow-90deg-right'></i>
+                    redo
+                    <i className='bi bi-arrow-90deg-right' />
                 </button>
-                <MenuIsModifying slide={slide}
+                <MenuIsModifying
+                    slide={slide}
                     isHavingHistories={isHavingHistories}
                     eventMapper={eventMapper} />
                 {foundWrongDimension !== null &&
-                    <button type='button' className='btn btn-sm btn-warning'
-                        title={Slide.toWrongDimensionString(foundWrongDimension)}
+                    <button type='button'
+                        className='btn btn-sm btn-warning'
+                        title={Slide.toWrongDimensionString(
+                            foundWrongDimension)}
                         onClick={() => {
                             slide.fixSlideDimension(presentDisplay);
                         }}>
-                        Fix Slide Dimension</button>
+                        Fix Slide Dimension
+                    </button>
                 }
             </div>
         </div>

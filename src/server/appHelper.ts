@@ -1,28 +1,23 @@
-import ToastEventListener from '../event/ToastEventListener';
-import { genRandomString } from '../helper/helpers';
 import appProvider from './appProvider';
 import { pathJoin } from './fileHelper';
-import bibleHelper from './bible-helpers/bibleHelpers';
-import { initBibleInfo } from './bible-helpers/bibleHelpers1';
 import {
     defaultLocal,
     getCurrentLangAsync,
     getLangAsync,
-    LocaleType,
 } from '../lang';
+import initCrypto from '../_owa-crypto';
+import {
+    getDownloadedBibleInfoList,
+} from '../helper/bible-helpers/bibleDownloadHelpers';
+import FileSourceMetaManager from '../helper/FileSourceMetaManager';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export function openExplorer(dir: string) {
     appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
 }
-export function openLink(link: string) {
-    appProvider.browserUtils.openLink(link);
-}
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
-    ToastEventListener.showSimpleToast({
-        title: 'Copy',
-        message: 'Text has been copied to clip',
-    });
+    showSimpleToast('Copy', 'Text has been copied to clip');
     return true;
 }
 
@@ -63,41 +58,17 @@ export function getUserWritablePath() {
     return appProvider.messageUtils.
         sendDataSync('main:app:get-data-path');
 }
-export function sqlite3ReadValue(dbFilePath: string, table: string, key: string) {
-    return new Promise<string | null>((resolve) => {
-        const waitingEventName = `main:app:db-read-reply-${genRandomString(5)}`;
-        appProvider.messageUtils.
-            listenOnceForData(waitingEventName,
-                (_event, data: string | null) => {
-                    resolve(data);
-                });
-        appProvider.messageUtils.
-            sendData('main:app:db-read', {
-                dbFilePath,
-                table,
-                key,
-                waitingEventName,
-            });
-    });
-}
 
 export async function initApp() {
-    await getCurrentLangAsync();
-    await getLangAsync(defaultLocal);
-    // Bibles
-    if (!bibleHelper.getBibleList().length) {
-        await bibleHelper.getBibleListOnline();
+    await initCrypto();
+    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+    const promises = [
+        FileSourceMetaManager.checkAllColorNotes(),
+        getCurrentLangAsync(),
+        getLangAsync(defaultLocal),
+    ];
+    for (const bibleInfo of downloadedBibleInfoList || []) {
+        promises.push(getLangAsync(bibleInfo.locale));
     }
-    const list = await bibleHelper.getDownloadedBibleList();
-    for (const bibleName of list) {
-        const info = await initBibleInfo(bibleName);
-        if (info !== null) {
-            const isExist = await bibleHelper.checkExist(bibleName);
-            if (isExist) {
-                await getLangAsync(info.locale as LocaleType);
-            }
-        }
-    }
-
-
+    await Promise.all(promises);
 }

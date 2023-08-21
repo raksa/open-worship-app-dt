@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePMEvents } from './presentEventHelpers';
 import PresentManager from './PresentManager';
 
@@ -10,7 +11,7 @@ export default function PresentSlide({ presentManager }: {
     });
     const div = useRef<HTMLDivElement>(null);
     const { presentSlideManager } = presentManager;
-    useEffect(() => {
+    useAppEffect(() => {
         if (div.current) {
             presentSlideManager.div = div.current;
         }

@@ -1,19 +1,25 @@
 import EventHandler from '../../event/EventHandler';
 import Canvas from './Canvas';
-import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
+import CanvasItem, {
+    CanvasItemPropsType,
+} from './CanvasItem';
 import {
-    getSetting, setSetting,
+    getSetting,
+    setSetting,
 } from '../../helper/settingHelper';
 import FileSource from '../../helper/FileSource';
-import ToastEventListener from '../../event/ToastEventListener';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBible from './CanvasItemBible';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
-import { CanvasItemMediaPropsType, CCEventType } from './canvasHelpers';
+import {
+    CanvasItemMediaPropsType,
+    CCEventType,
+} from './canvasHelpers';
 import CanvasItemVideo from './CanvasItemVideo';
-import appProvider from '../../server/appProvider';
+import { showSimpleToast } from '../../toast/toastHelpers';
+import { handleError } from '../../helper/errorHelpers';
 
 export default class CanvasController extends EventHandler<CCEventType> {
     static eventNamePrefix: string = 'canvas-c';
@@ -120,10 +126,8 @@ export default class CanvasController extends EventHandler<CCEventType> {
         try {
             const mediaType = fileSource.metadata?.appMimetype.mimetypeName || '';
             if (!['image', 'video'].includes(mediaType)) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Insert Medias',
-                    message: 'Only image and video files are supported',
-                });
+                showSimpleToast('Insert Medias',
+                    'Only image and video files are supported');
                 return;
             }
             const rect = (event.target as HTMLDivElement).getBoundingClientRect();
@@ -135,12 +139,9 @@ export default class CanvasController extends EventHandler<CCEventType> {
             this.addNewItem(newItem);
             return;
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
         }
-        ToastEventListener.showSimpleToast({
-            title: 'Insert Image or Video',
-            message: 'Fail to insert medias',
-        });
+        showSimpleToast('Insert Image or Video', 'Fail to insert medias');
     }
     async addNewBibleItem(bibleItem: BibleItem) {
         const id = this.canvas.maxItemId + 1;

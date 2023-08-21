@@ -1,12 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { AppColorType } from '../others/ColorPicker';
 import { BackgroundSrcType } from './PresentBGManager';
 import PresentManager from './PresentManager';
 import PresentBackgroundColor from './PresentBackgroundColor';
 import PresentBackgroundImage from './PresentBackgroundImage';
 import PresentBackgroundVideo from './PresentBackgroundVideo';
 import { usePMEvents } from './presentEventHelpers';
+import { AppColorType } from '../others/color/colorHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function PresentBackground({ presentManager }: {
     presentManager: PresentManager;
@@ -16,7 +17,7 @@ export default function PresentBackground({ presentManager }: {
     });
     const div = useRef<HTMLDivElement>(null);
     const { presentBGManager } = presentManager;
-    useEffect(() => {
+    useAppEffect(() => {
         if (div.current) {
             presentBGManager.div = div.current;
         }

@@ -3,6 +3,7 @@ import {
     initApp, initPresent,
 } from './electronEventListener';
 import { initMenu } from './electronMenu';
+import { initDevtools } from './devtools';
 
 const electron = require('electron');
 
@@ -11,5 +12,5 @@ electron.app.whenReady().then(() => {
     initApp(appController);
     initPresent(appController);
     initMenu(appController);
+    initDevtools(appController);
 });
-

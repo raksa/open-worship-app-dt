@@ -1,90 +1,100 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import InputHandler from './InputHandler';
-import Header from './Header';
 import {
     ExtractedBibleResult,
     defaultExtractedBible,
     extractBible,
     toInputText,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import {
     getChapterCount,
-} from '../server/bible-helpers/bibleHelpers1';
-import BibleItem from '../bible-list/BibleItem';
-import { closeBibleSearch } from './HandleBibleSearch';
+} from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    useGetDefaultInputText,
-    useGetSelectedBibleItem,
-    getSelectedEditingBibleItem,
-    genInputText,
-} from './bibleHelpers';
+    genInputText, useGetSelectedBibleKey,
+} from '../helper/bible-helpers/bibleHelpers';
 import RenderSearchSuggestion, {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
-export default function BibleSearchRender({ bibleItem }: {
-    bibleItem: BibleItem | null,
+export default function BibleSearchRender({
+    editingInputText, closeBibleSearch,
+}: {
+    editingInputText: string,
+    closeBibleSearch: () => void,
 }) {
-    const [inputText, setInputText] = useGetDefaultInputText(bibleItem);
-    const [bibleSelected, setBibleSelected] = useGetSelectedBibleItem(bibleItem);
+    const [inputText, setInputText] = useState<string>(editingInputText);
+    const [bibleSelected, setBibleSelected] = useGetSelectedBibleKey();
+
     useKeyboardRegistering({ key: 'Escape' }, () => {
-        !inputText && closeBibleSearch();
+        if (!inputText) {
+            closeBibleSearch();
+        }
     });
     const [bibleResult, setBibleResult] = useState<ExtractedBibleResult>(
         defaultExtractedBible);
-    useEffect(() => {
+    useAppEffect(() => {
         if (bibleSelected !== null) {
             extractBible(bibleSelected, inputText).then((result) => {
                 setBibleResult(result);
             });
         }
     }, [bibleSelected, inputText]);
-    if (bibleSelected === null) {
-        return (
-            <BibleNotAvailable />
-        );
-    }
-    const applyBookSelection = async (newBook: string) => {
+    const applyBookSelectionCallback = useCallback(async (
+        newBook: string) => {
+        if (bibleSelected === null) {
+            return;
+        }
         const count = await getChapterCount(bibleSelected, newBook);
         if (count !== null) {
             setInputText(await toInputText(bibleSelected, newBook));
             return;
         }
         alert('Fail to generate input text');
-    };
-    const applyChapterSelection = async (newChapter: number) => {
+    }, [bibleSelected, setInputText]);
+    const applyChapterSelectionCallback = useCallback(async (
+        newChapter: number) => {
+        if (bibleSelected === null) {
+            return;
+        }
         const newText = await toInputText(bibleSelected,
             bibleResult.book, newChapter);
         setInputText(`${newText}:`);
-    };
-    const applyVerseSelection = async (newStartVerse?: number, newEndVerse?: number) => {
+    }, [bibleSelected, bibleResult.book, setInputText]);
+    const applyVerseSelectionCallback = useCallback(async (
+        newStartVerse?: number, newEndVerse?: number) => {
+        if (bibleSelected === null) {
+            return;
+        }
         const txt = await toInputText(bibleSelected, bibleResult.book,
             bibleResult.chapter, newStartVerse, newEndVerse);
         setInputText(txt);
-    };
-    const handleBibleChange = async (preBible: string) => {
-        const bibleName = await getSelectedEditingBibleItem(null);
-        if (bibleName === null) {
-            return;
-        }
-        setBibleSelected(bibleName);
-        const newText = await genInputText(preBible, bibleName, inputText);
+    }, [
+        bibleSelected, bibleResult.book,
+        bibleResult.chapter, setInputText,
+    ]);
+    const handleBibleChange = useCallback(async (
+        oldBibleKey: string, newBibleKey: string) => {
+        const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
+        setBibleSelected(newBibleKey);
         if (newText !== null) {
             setInputText(newText);
         }
-    };
-
+    }, [inputText]);
+    if (bibleSelected === null) {
+        return (
+            <BibleNotAvailable />
+        );
+    }
     return (
-        <div id='bible-search-popup'
-            className='app-modal shadow card'>
-            <Header />
-            <div className='body card-body w-100'>
-                <div className='input-group'>
+        <div id='bible-search-popup' className='app-modal shadow card'>
+            <div className='card-header text-center w-100'>
+                <div className='input-group input-group-header'>
                     <span className='input-group-text'>
-                        <i className='bi bi-search'></i>
+                        <i className='bi bi-search' />
                     </span>
                     <InputHandler
                         inputText={inputText}
@@ -92,13 +102,17 @@ export default function BibleSearchRender({ bibleItem }: {
                         bibleSelected={bibleSelected}
                         onBibleChange={handleBibleChange} />
                 </div>
-                <RenderSearchSuggestion
-                    inputText={inputText}
-                    bibleSelected={bibleSelected}
-                    bibleResult={bibleResult}
-                    applyChapterSelection={applyChapterSelection}
-                    applyVerseSelection={applyVerseSelection}
-                    applyBookSelection={applyBookSelection} />
+            </div>
+            <div className='body card-body card w-100 h-100 overflow-hidden d-flex'>
+                <div className='found h-100 w-100 overflow-hidden'>
+                    <RenderSearchSuggestion
+                        inputText={inputText}
+                        bibleSelected={bibleSelected}
+                        bibleResult={bibleResult}
+                        applyChapterSelection={applyChapterSelectionCallback}
+                        applyVerseSelection={applyVerseSelectionCallback}
+                        applyBookSelection={applyBookSelectionCallback} />
+                </div>
             </div>
         </div>
     );

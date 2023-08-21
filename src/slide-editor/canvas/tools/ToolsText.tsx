@@ -1,4 +1,3 @@
-import ColorPicker from '../../../others/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
 import CanvasItemText, {
@@ -6,9 +5,33 @@ import CanvasItemText, {
 } from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
+import ColorPicker from '../../../others/color/ColorPicker';
+import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsText() {
+    const onDataCallback = useCallback((newData: any) => {
+        const textData: ToolingTextType = {};
+        if (newData.horizontalAlignment !== undefined) {
+            textData.textHorizontalAlignment = newData.horizontalAlignment;
+        }
+        if (newData.verticalAlignment !== undefined) {
+            textData.textVerticalAlignment = newData.verticalAlignment;
+        }
+        applyTextData(textData);
+    }, []);
+    const onNoColorCallback = useCallback((
+        newColor: AppColorType) => {
+        applyTextData({
+            color: newColor,
+        });
+    }, []);
+    const onColorChangedCallback = useCallback((
+        newColor: AppColorType) => {
+        applyTextData({
+            color: newColor,
+        });
+    }, []);
     const canvasItem = useContext(CanvasItemContext);
     if (canvasItem === null) {
         return null;
@@ -26,24 +49,13 @@ export default function ToolsText() {
                     maxWidth: '300px',
                 }}>
                     <ColorPicker color={canvasItem.props.color}
-                        onColorChange={(newColor) => {
-                            applyTextData({
-                                color: newColor || '#ffffff',
-                            });
-                        }} />
+                        defaultColor='#ffffff'
+                        onNoColor={onNoColorCallback}
+                        onColorChange={onColorChangedCallback} />
                 </div>
             </Tool>
             <Tool title='Text Alignment'>
-                <ToolAlign isText onData={(newData) => {
-                    const textData: ToolingTextType = {};
-                    if (newData.horizontalAlignment !== undefined) {
-                        textData.textHorizontalAlignment = newData.horizontalAlignment;
-                    }
-                    if (newData.verticalAlignment !== undefined) {
-                        textData.textVerticalAlignment = newData.verticalAlignment;
-                    }
-                    applyTextData(textData);
-                }} />
+                <ToolAlign isText onData={onDataCallback} />
             </Tool>
             <ToolsTextFontControl
                 canvasItemText={canvasItem} />

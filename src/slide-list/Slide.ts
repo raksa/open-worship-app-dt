@@ -3,18 +3,22 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
+    checkIsPdf,
     MAX_THUMBNAIL_SCALE,
     MIN_THUMBNAIL_SCALE,
     openSlideContextMenu,
+    readPdfToSlide,
+    SlideDynamicType,
     THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import ToastEventListener from '../event/ToastEventListener';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import { DisplayType } from '../_present/presentHelpers';
+import { PdfImageDataType } from '../pdf/PdfController';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],
@@ -31,16 +35,26 @@ export default class Slide extends ItemSource<SlideItem>{
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editingCacheManager: SlideEditingCacheManager;
+    _pdfImageDataList: PdfImageDataType[] | null = null;
+    itemIdShouldToView = -1;
     constructor(fileSource: FileSource, json: SlideType) {
         super(fileSource);
         this.editingCacheManager = new SlideEditingCacheManager(
             this.fileSource, json);
     }
+    get isPdf() {
+        return this._pdfImageDataList !== null;
+    }
     get isChanged() {
+        if (this.isPdf) {
+            return false;
+        }
         return this.editingCacheManager.isChanged;
     }
     get copiedItem() {
-        return this.items.find((item) => item.isCopied) || null;
+        return this.items.find((item) => {
+            return item.isCopied;
+        }) || null;
     }
     set copiedItem(newItem: SlideItem | null) {
         this.items.forEach((item) => {
@@ -51,7 +65,9 @@ export default class Slide extends ItemSource<SlideItem>{
         }
     }
     get selectedIndex() {
-        const foundItem = this.items.find((item) => item.isSelected) || null;
+        const foundItem = this.items.find((item) => {
+            return item.isSelected;
+        }) || null;
         if (foundItem) {
             return this.items.indexOf(foundItem);
         }
@@ -66,26 +82,45 @@ export default class Slide extends ItemSource<SlideItem>{
         }
     }
     get metadata() {
+        if (this.isPdf) {
+            return {};
+        }
         return this.editingCacheManager.presentJson.metadata;
     }
+    set metadata(metadata: AnyObjectType) {
+        this.editingCacheManager.pushMetadata(metadata);
+    }
     get items() {
+        if (this.isPdf) {
+            return (this._pdfImageDataList || []).map((pdfImageData, i) => {
+                const slideItem = new SlideItem(i, this.fileSource, {
+                    id: i,
+                    canvasItems: [],
+                    pdfImageData,
+                    metadata: {
+                        width: pdfImageData.width,
+                        height: pdfImageData.height,
+                    },
+                });
+                return slideItem;
+            });
+        }
         const latestHistory = this.editingCacheManager.presentJson;
         return latestHistory.items.map((json) => {
             try {
                 return SlideItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Bible Item',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Bible Item', error.message);
             }
             return SlideItem.fromJsonError(json, this.fileSource,
                 this.editingCacheManager);
         });
     }
     set items(newItems: SlideItem[]) {
-        const slideItems = newItems.map((item) => item.toJson());
+        const slideItems = newItems.map((item) => {
+            return item.toJson();
+        });
         this.editingCacheManager.pushSlideItems(slideItems);
     }
     get maxItemId() {
@@ -108,11 +143,18 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     duplicateItem(slideItem: SlideItem) {
         const items = this.items;
+        const index = items.findIndex((item) => {
+            return item.id === slideItem.id;
+        });
+        if (index === -1) {
+            showSimpleToast('Duplicate Item', 'Unable to find item');
+            return;
+        }
         const newItem = slideItem.clone();
         if (newItem !== null) {
             newItem.id = this.maxItemId + 1;
-            const index = this.items.indexOf(slideItem);
             items.splice(index + 1, 0, newItem);
+            this.itemIdShouldToView = newItem.id;
             this.items = items;
         }
     }
@@ -127,10 +169,13 @@ export default class Slide extends ItemSource<SlideItem>{
             this.items = newItems;
         }
     }
-    moveItem(id: number, toIndex: number) {
+    moveItem(id: number, toIndex: number, isLeft: boolean) {
         const fromIndex: number = this.items.findIndex((item) => {
             return item.id === id;
         });
+        if (fromIndex > toIndex && !isLeft) {
+            toIndex++;
+        }
         const items = this.items;
         const target = items.splice(fromIndex, 1)[0];
         items.splice(toIndex, 0, target);
@@ -142,6 +187,22 @@ export default class Slide extends ItemSource<SlideItem>{
         items.push(slideItem);
         this.items = items;
     }
+    addNewItem() {
+        const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
+        const { width, height } = Canvas.getDefaultDim();
+        const json = {
+            id: item.id,
+            metadata: {
+                width,
+                height,
+            },
+            canvasItems: [], // TODO: add default canvas item
+        };
+        const newItem = new SlideItem(item.id, this.fileSource, json,
+            this.editingCacheManager);
+        this.itemIdShouldToView = newItem.id;
+        this.addItem(newItem);
+    }
     deleteItem(slideItem: SlideItem) {
         const newItems = this.items.filter((item) => {
             return item.id !== slideItem.id;
@@ -152,58 +213,53 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         this.items = newItems;
     }
-    static toWrongDimensionString({ slide, display }: {
-        slide: { width: number, height: number },
+    static toWrongDimensionString({ slideItem, display }: {
+        slideItem: { width: number, height: number },
         display: { width: number, height: number },
     }) {
-        return `⚠️ slide:${slide.width}x${slide.height} `
+        return `⚠️ slide:${slideItem.width}x${slideItem.height} `
             + `display:${display.width}x${display.height}`;
     }
-    checkIsWrongDimension({ bounds }: DisplayType) {
-        const found = this.items.map((item) => {
-            return {
-                width: item.width,
-                height: item.height,
-            };
-        }).find(({ width, height }: {
-            width: number,
-            height: number,
-        }) => {
-            return bounds.width !== width || bounds.height !== height;
+    checkIsWrongDimension(display: DisplayType) {
+        const found = this.items.find((item) => {
+            return item.checkIsWrongDimension(display);
         });
         if (found) {
             return {
-                slide: found,
+                slideItem: found,
                 display: {
-                    width: bounds.width,
-                    height: bounds.height,
+                    width: display.bounds.width,
+                    height: display.bounds.height,
                 },
             };
         }
         return null;
     }
-    async fixSlideDimension({ bounds }: DisplayType) {
-        this.items.forEach((item) => {
-            item.width = bounds.width;
-            item.height = bounds.height;
+    async fixSlideDimension(display: DisplayType) {
+        const newItemsJson = this.items.map((item) => {
+            const json = item.toJson();
+            if (item.checkIsWrongDimension(display)) {
+                json.metadata.width = display.bounds.width;
+                json.metadata.height = display.bounds.height;
+            }
+            return json;
         });
-        this.editingCacheManager.pushSlideItems(this.items.map((item) => {
-            return item.toJson();
-        }));
+        this.editingCacheManager.pushSlideItems(newItemsJson);
     }
     showSlideItemContextMenu(event: any) {
-        showAppContextMenu(event as any, [{
-            title: 'New Slide Item', onClick: () => {
-                const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
-                const { width, height } = Canvas.getDefaultDim();
-                this.addItem(new SlideItem(item.id, this.fileSource, {
-                    id: item.id,
-                    metadata: { width, height },
-                    canvasItems: [], // TODO: add default canvas item
-                }, this.editingCacheManager));
+        showAppContextMenu(event, [{
+            title: 'Deselect',
+            onClick: () => {
+                this.isSelected = false;
             },
         }, {
-            title: 'Paste', disabled: SlideItem.copiedItem === null,
+            title: 'New Slide Item',
+            onClick: () => {
+                this.addNewItem();
+            },
+        }, {
+            title: 'Paste',
+            disabled: SlideItem.copiedItem === null,
             onClick: () => this.pasteItem(),
         }]);
     }
@@ -245,14 +301,20 @@ export default class Slide extends ItemSource<SlideItem>{
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    static async readFileToDataNoCache(fileSource: FileSource | null, isOrigin?: boolean) {
-        const slide = await super.readFileToDataNoCache(fileSource) as Slide | null | undefined;
+    static async readFileToDataNoCache(fileSource: FileSource | null,
+        isOrigin?: boolean) {
+        if (fileSource?.src && checkIsPdf(fileSource.extension)) {
+            return readPdfToSlide(fileSource);
+        }
+        const data = await super.readFileToDataNoCache(fileSource);
+        const slide = data as SlideDynamicType;
         if (isOrigin && slide) {
             slide.editingCacheManager.isUsingHistory = false;
         }
         return slide;
     }
-    static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
+    static async readFileToData(fileSource: FileSource | null,
+        isForceCache?: boolean) {
         const slide = super.readFileToData(fileSource, isForceCache);
         return slide as Promise<Slide | undefined | null>;
     }
@@ -268,6 +330,10 @@ export default class Slide extends ItemSource<SlideItem>{
             [SlideItem.defaultSlideItemData(0)]);
     }
     openContextMenu(event: any, slideItem: SlideItem) {
+        if (this.isPdf) {
+            event.stopPropagation();
+            return;
+        }
         openSlideContextMenu(event, this, slideItem);
     }
     clone() {

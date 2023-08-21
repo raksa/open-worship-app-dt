@@ -1,13 +1,28 @@
 import './TextShadow.scss';
 
-import { useEffect } from 'react';
-import { AppColorType } from '../others/ColorPicker';
 import PresentFTManager from '../_present/PresentFTManager';
+import { AppColorType } from '../others/color/colorHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
+function genShadow1(color1: string, color2: string) {
+    const style = `color: ${color1}; text-shadow: 2px 2px 0 ${color2}, `
+        + `2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 `
+        + `${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px `
+        + `0 ${color2}, 0px -2px 0 ${color2};`;
+    return `
+    <div class="ow-outline-demo" style="color: #ffffff">
+        None
+    </div>
+    <div class="ow-outline-demo" style="${style}">
+        Outline1
+    </div>
+`;
+}
 
 export default function TextShadow() {
-    useEffect(() => {
-        const divList = document.querySelectorAll<HTMLDivElement>('.ow-outline-demo');
+    useAppEffect(() => {
+        const divList = document.querySelectorAll<HTMLDivElement>(
+            '.ow-outline-demo');
         const listenList = Array.from(divList).map((d) => {
             const listener = () => {
                 PresentFTManager.applyTextStyle({
@@ -29,11 +44,8 @@ export default function TextShadow() {
     return (
         <div className='card-body'>
             <div className='text-shadow' dangerouslySetInnerHTML={{
-                __html: `
-            <div class="ow-outline-demo" style="color: ${color1}; text-shadow: 2px 2px 0 ${color2}, 2px -2px 0 ${color2}, -2px 2px 0 ${color2}, -2px -2px 0 ${color2}, 2px 0px 0 ${color2}, 0px 2px 0 ${color2}, -2px 0px 0 ${color2}, 0px -2px 0 ${color2};">
-                Outline1
-            </div>
-        `}}>
+                __html: genShadow1(color1, color2),
+            }}>
             </div>
         </div>
     );

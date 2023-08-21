@@ -1,4 +1,5 @@
-import KeyboardEventListener, {
+import {
+    toShortcutKey,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { usePMEvents } from '../presentEventHelpers';
@@ -22,7 +23,7 @@ export default function ShowHidePresent({
             onClick={() => {
                 presentManager.isShowing = !isShowing;
             }}
-            data-tool-tip={KeyboardEventListener.toShortcutKey({ key: 'F5' })}>
+            data-tool-tip={toShortcutKey({ key: 'F5' })}>
             <input className='form-check-input pointer' type='checkbox'
                 checked={isShowing}
                 onChange={() => false} />

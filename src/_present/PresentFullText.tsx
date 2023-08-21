@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePFTMEvents, usePMEvents } from './presentEventHelpers';
 import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
@@ -7,6 +8,10 @@ const styleText = `
 #full-text {
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+#full-text div {
+    display: inline-block;
 }
 
 #full-text::-webkit-scrollbar {
@@ -24,6 +29,7 @@ const styleText = `
 }
 
 #full-text table {
+    table-layout: fixed;
     width: 100%;
     background-color: #2752ff2a;
     border-radius: 0.1em;
@@ -62,6 +68,21 @@ const styleText = `
 
 #full-text td .verse-number {
     -webkit-text-stroke: 0.01em greenyellow;
+    transform: scale(0.8) translateY(-0.3em);
+    opacity: 0.7;
+}
+
+#full-text .header .bible-key {
+    opacity: 0.5;
+    font-weight: 100;
+    transform: scale(0.7);
+}
+
+#full-text .header .title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
 }
 
 #full-text .highlight {
@@ -88,7 +109,7 @@ export default function PresentFullText({ presentManager }: {
     usePFTMEvents(['text-style']);
     const div = useRef<HTMLDivElement>(null);
     const { presentFTManager } = presentManager;
-    useEffect(() => {
+    useAppEffect(() => {
         if (div.current) {
             presentFTManager.div = div.current;
         }

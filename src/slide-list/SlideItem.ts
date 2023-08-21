@@ -6,15 +6,21 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditingCacheManager from './SlideEditingCacheManager';
 import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
+import { DisplayType } from '../_present/presentHelpers';
+import { PdfImageDataType } from '../pdf/PdfController';
+import DragInf from '../helper/DragInf';
+import { log } from '../helper/loggerHelpers';
+import { DragTypeEnum } from '../helper/DragInf';
 
 export type SlideItemType = {
     id: number,
     canvasItems: CanvasItemPropsType[],
+    pdfImageData?: PdfImageDataType,
     metadata: AnyObjectType,
 };
 
-export default class SlideItem extends ItemBase {
-    _originalJson: Readonly<SlideItemType>;
+export default class SlideItem extends ItemBase implements DragInf<string> {
+    _json: SlideItemType;
     static SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     fileSource: FileSource;
@@ -22,37 +28,60 @@ export default class SlideItem extends ItemBase {
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     editingCacheManager: SlideEditingCacheManager;
-    _width: number;
-    _height: number;
     static _cache = new Map<string, SlideItem>();
     constructor(id: number, fileSource: FileSource,
         json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager) {
         super();
         this.id = id;
-        this._width = json.metadata.width;
-        this._height = json.metadata.height;
-        this._originalJson = Object.freeze(cloneJson(json));
+        this._json = cloneJson(json);
         this.fileSource = fileSource;
         if (editingCacheManager !== undefined) {
             this.editingCacheManager = editingCacheManager;
         } else {
-            this.editingCacheManager = new SlideEditingCacheManager(this.fileSource, {
+            this.editingCacheManager = new SlideEditingCacheManager(
+                this.fileSource, {
                 items: [json],
                 metadata: {},
             });
             this.editingCacheManager.isUsingHistory = false;
         }
         this.isCopied = false;
-        const key = SlideItem.genKeyByFileSource(fileSource, id);
-        SlideItem._cache.set(key, this);
+        SlideItem._cache.set(this.key, this);
+    }
+    get key() {
+        return SlideItem.genKeyByFileSource(this.fileSource, this.id);
+    }
+    get pdfImageData() {
+        return this.originalJson.pdfImageData || null;
+    }
+    get isPdf() {
+        return this.pdfImageData !== null;
+    }
+    get originalJson() {
+        return this._json;
+    }
+    set originalJson(json: SlideItemType) {
+        this._json = json;
+        const items = this.editingCacheManager.presentJson.items;
+        const newItems = items.map((item) => {
+            if (item.id === this.id) {
+                return this.toJson();
+            }
+            return item;
+        });
+        this.editingCacheManager.pushSlideItems(newItems);
     }
     get metadata() {
-        const json = this.editingCacheManager.getSlideItemById(this.id);
-        return json?.metadata || this._originalJson.metadata;
+        return this.originalJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this.editingCacheManager.pushMetadata(metadata);
+        const json = cloneJson(this.originalJson);
+        json.metadata = metadata;
+        this.originalJson = json;
+    }
+    get pdfImageSrc() {
+        return this.pdfImageData?.src || '';
     }
     get canvas() {
         return Canvas.fromJson({
@@ -61,41 +90,36 @@ export default class SlideItem extends ItemBase {
         });
     }
     set canvas(canvas: Canvas) {
-        this.canvasItemsJson = canvas.canvasItems.map(item => {
+        this.canvasItemsJson = canvas.canvasItems.map((item) => {
             return item.toJson();
         });
     }
     get canvasItemsJson() {
-        const items = this.editingCacheManager.presentJson.items;
-        const slideItemJson = items.find((item) => {
-            return item.id === this.id;
-        });
-        return slideItemJson?.canvasItems ||
-            this._originalJson.canvasItems;
+        return this.originalJson.canvasItems;
     }
     set canvasItemsJson(canvasItemsJson: CanvasItemPropsType[]) {
-        const items = this.editingCacheManager.presentJson.items;
-        items.forEach((item) => {
-            if (item.id === this.id) {
-                item.canvasItems = canvasItemsJson;
-            }
-        });
-        this.editingCacheManager.pushSlideItems(items);
+        const json = cloneJson(this.originalJson);
+        json.canvasItems = canvasItemsJson;
+        this.originalJson = json;
     }
     get width() {
-        return this._width;
+        if (this.isPdf) {
+            return Math.floor(this.pdfImageData?.width || 0);
+        }
+        return this.metadata.width;
     }
     set width(width: number) {
-        this._width = width;
         const metadata = this.metadata;
         metadata.width = width;
         this.metadata = metadata;
     }
     get height() {
-        return this._height;
+        if (this.isPdf) {
+            return Math.floor(this.pdfImageData?.height || 0);
+        }
+        return this.metadata.height;
     }
     set height(height: number) {
-        this._height = height;
         const metadata = this.metadata;
         metadata.height = height;
         this.metadata = metadata;
@@ -150,21 +174,19 @@ export default class SlideItem extends ItemBase {
     }
     static fromJson(json: SlideItemType, fileSource: FileSource,
         editingCacheManager?: SlideEditingCacheManager) {
-        const key = SlideItem.genKeyByFileSource(fileSource, json.id);
-        if (SlideItem._cache.has(key)) {
-            return SlideItem._cache.get(key) as SlideItem;
-        }
         return new SlideItem(json.id, fileSource, json,
             editingCacheManager);
     }
     static fromJsonError(json: AnyObjectType,
         fileSource: FileSource,
         editingCacheManager?: SlideEditingCacheManager) {
-        const item = new SlideItem(-1, fileSource, {
+        const newJson = {
             id: -1,
             metadata: {},
             canvasItems: [],
-        }, editingCacheManager);
+        };
+        const item = new SlideItem(-1, fileSource, newJson,
+            editingCacheManager);
         item.jsonError = json;
         return item;
     }
@@ -175,6 +197,7 @@ export default class SlideItem extends ItemBase {
         return {
             id: this.id,
             canvasItems: this.canvasItemsJson,
+            pdfImageData: this.pdfImageData || undefined,
             metadata: this.metadata,
         };
     }
@@ -184,7 +207,7 @@ export default class SlideItem extends ItemBase {
             typeof json.metadata.width !== 'number' ||
             typeof json.metadata.height !== 'number' ||
             !(json.canvasItems instanceof Array)) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid slide item data');
         }
     }
@@ -195,10 +218,48 @@ export default class SlideItem extends ItemBase {
         }
         return slideItem;
     }
+    static async fromKey(key: string) {
+        const extracted = this.extractKey(key);
+        if (extracted === null) {
+            return null;
+        }
+        const { filePath, id } = extracted;
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        const slide = await Slide.readFileToData(FileSource.getInstance(filePath));
+        if (!slide) {
+            return null;
+        }
+        return slide.getItemById(id);
+    }
     static genKeyByFileSource(fileSource: FileSource, id: number) {
         return `${fileSource.filePath}:${id}`;
     }
+    static extractKey(key: string) {
+        const [filePath, id] = key.split(':');
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        return {
+            filePath,
+            id: parseInt(id),
+        };
+    }
     static clearCache() {
         this._cache = new Map();
+    }
+    checkIsWrongDimension({ bounds }: DisplayType) {
+        return bounds.width !== this.width ||
+            bounds.height !== this.height;
+    }
+    dragSerialize() {
+        return {
+            type: DragTypeEnum.SLIDE_ITEM,
+            data: this.key,
+        };
+    }
+    static dragDeserialize(data: any) {
+        return this.fromKey(data);
     }
 }

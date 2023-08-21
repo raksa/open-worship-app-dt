@@ -10,7 +10,7 @@ import {
 function openContextMenu(event: any,
     ptEffect: PresentTransitionEffect) {
     const ptEffectList = Object.entries(transitionEffect);
-    showAppContextMenu(event as any, ptEffectList.map(([effect, [icon]]) => {
+    showAppContextMenu(event, ptEffectList.map(([effect, [icon]]) => {
         const isSelected = effect === ptEffect.effectType;
         return {
             title: effect,

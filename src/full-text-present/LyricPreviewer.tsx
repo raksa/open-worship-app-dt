@@ -1,32 +1,39 @@
-import { useEffect, useState } from 'react';
-import { previewer } from './FullTextPreviewer';
+import { useCallback, useState } from 'react';
 import LyricView from './LyricView';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
-import PresentFTManager from '../_present/PresentFTManager';
-import { checkIsFtAutoShow } from './FTPreviewerUtils';
+import LyricItem from '../lyric-list/LyricItem';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricPreviewer() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
     useLyricSelecting(setLyric);
-    useEffect(() => {
+    const onLyricChangeCallback = useCallback((
+        newLyricItem: LyricItem, index: number) => {
+        if (!lyric) {
+            return;
+        }
+        const newLyric = lyric.clone();
+        newLyric.items[index] = newLyricItem;
+        setLyric(newLyric);
+    }, [lyric]);
+    const onCloseCallback = useCallback((index: number) => {
+        if (!lyric) {
+            return;
+        }
+        const newLyric = lyric.clone();
+        newLyric.items = newLyric.items.filter((_, i) => {
+            return i !== index;
+        });
+        setLyric(newLyric);
+    }, [lyric]);
+    useAppEffect(() => {
         if (lyric === null) {
             Lyric.getSelected().then((lr) => {
                 setLyric(lr || undefined);
             });
         }
-        previewer.show = (event?: React.MouseEvent) => {
-            if (lyric) {
-                PresentFTManager.ftLyricSelect(event || null, lyric);
-            }
-        };
-        if (checkIsFtAutoShow()) {
-            previewer.show();
-        }
-        return () => {
-            previewer.show = () => void 0;
-        };
     }, [lyric]);
     if (!lyric) {
         return (
@@ -53,21 +60,12 @@ export default function LyricPreviewer() {
             </button>}
             {lyricItems.map((lyricItem, i) => {
                 return (
-                    <LyricView key={i}
+                    <LyricView key={lyricItem.id}
+                        index={i}
                         lyricItem={lyricItem}
                         lyricItems={lyricItems}
-                        onLyricChange={(newLyricItem) => {
-                            const newLyric = lyric.clone();
-                            newLyric.items[i] = newLyricItem;
-                            setLyric(newLyric);
-                        }}
-                        onClose={() => {
-                            const newLyric = lyric.clone();
-                            newLyric.items = newLyric.items.filter((_, i1) => {
-                                return i1 !== i;
-                            });
-                            setLyric(newLyric);
-                        }} />
+                        onLyricChange={onLyricChangeCallback}
+                        onClose={onCloseCallback} />
                 );
             })}
             <button className='btn btn-info'

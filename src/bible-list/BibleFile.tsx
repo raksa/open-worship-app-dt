@@ -1,15 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
-import BibleItem from './BibleItem';
-import ToastEventListener from '../event/ToastEventListener';
 import AppSuspense from '../others/AppSuspense';
-import { isValidJson } from '../helper/helpers';
+import ItemSource from '../helper/ItemSource';
+import { openConfirm } from '../alert/alertHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
+import { copyToClipboard } from '../server/appHelper';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
 });
+
+function genContextMenu(bible: Bible | null | undefined) {
+    if (!bible) {
+        return [];
+    }
+    return [{
+        title: '(*T) ' + 'Empty',
+        onClick: () => {
+            openConfirm(
+                'Empty Bible List',
+                'Are you sure to empty this bible list?'
+            ).then((isOk) => {
+                if (!isOk) {
+                    return;
+                }
+                bible.empty();
+                bible.save();
+            });
+        },
+    },
+    {
+        title: '(*T) ' + 'Copy All Items',
+        onClick: async () => {
+            const promises = bible.items.map((item) => {
+                return item.toTitleText();
+            });
+            const renderedItems = await Promise.all(promises);
+            const text = renderedItems.map(({ title, text }) => {
+                return `${title}\n${text}`;
+            });
+            copyToClipboard(text.join('\n\n'));
+        },
+    }, {
+        title: '(*T) ' + 'Move All Items To',
+        onClick: (event: any) => {
+            moveBibleItemTo(event, bible);
+        },
+    }];
+}
 
 export default function BibleFile({
     index, fileSource,
@@ -18,66 +59,60 @@ export default function BibleFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (data === null) {
             Bible.readFileToData(fileSource).then(setData);
         }
     }, [data]);
+    const renderChildCallback = useCallback((bible: ItemSource<any>) => {
+        return (
+            <BiblePreview bible={bible as Bible} />
+        );
+    }, []);
+    const reloadCallback = useCallback(() => {
+        setData(null);
+    }, [setData]);
     return (
         <FileItemHandler
             index={index}
             data={data}
-            reload={() => {
-                setData(null);
-            }}
+            reload={reloadCallback}
             fileSource={fileSource}
             className={'bible-file'}
-            onDrop={async (event) => {
-                if (!data) {
-                    return;
-                }
-                const str = event.dataTransfer.getData('text');
-                try {
-                    if (!isValidJson(str)) {
-                        return;
-                    }
-                    const json = JSON.parse(str);
-                    if (!json.filePath) {
-                        throw new Error('Not a bible file');
-                    }
-                    const fromFS = FileSource.getInstance(json.filePath);
-                    const bibleItem = BibleItem.fromJson(json, fromFS);
-                    data.moveItemFrom(bibleItem, fromFS);
-                } catch (error: any) {
-                    ToastEventListener.showSimpleToast({
-                        title: 'Receiving Bible Item',
-                        message: error.message,
-                    });
-                }
-            }}
-            child={data && <div className='accordion accordion-flush'>
-                <div className='accordion-header pointer'
-                    onClick={() => {
-                        if (data) {
-                            data.setIsOpened(!data.isOpened);
-                        }
-                    }}>
-                    <i className={`bi ${data.isOpened ? 'bi-chevron-down' : 'bi-chevron-right'}`} />
-                    <span className='w-100 text-center'>
-                        {fileSource.name}
-                    </span>
-                </div>
-                <div className={`accordion-collapse collapse ${data.isOpened ? 'show' : ''}`}
-                    style={{
-                        overflow: 'auto',
-                    }}>
-                    {data.isOpened && <div className='accordion-body'>
-                        <AppSuspense>
-                            <RenderBibleItems bible={data} />
-                        </AppSuspense>
-                    </div>}
-                </div>
-            </div>}
+            renderChild={renderChildCallback}
+            isDisabledColorNote
+            userClassName='p-0'
+            contextMenu={genContextMenu(data)}
         />
+    );
+}
+
+function BiblePreview({ bible }: { bible: Bible }) {
+    return (
+        <div className='accordion accordion-flush py-1'>
+            <div className='accordion-header pointer'
+                onClick={() => {
+                    bible.setIsOpened(!bible.isOpened);
+                }}>
+                <i className={`bi ${bible.isOpened ?
+                    'bi-chevron-down' : 'bi-chevron-right'}`} />
+                <span className='w-100 text-center'>
+                    <i className={`bi bi-book${bible.isOpened ?
+                        '-fill' : ''} px-1`} />
+                    {bible.fileSource.name}
+                </span>
+            </div>
+            <div className={`accordion-collapse collapse ${bible.isOpened ?
+                'show' : ''}`}
+                style={{
+                    overflow: 'auto',
+                }}>
+                {bible.isOpened && <div className='accordion-body p-0'>
+                    <AppSuspense>
+                        <RenderBibleItems bible={bible} />
+                    </AppSuspense>
+                </div>}
+            </div>
+        </div>
     );
 }

@@ -1,66 +1,45 @@
-import { useEffect, useState } from 'react';
-import BibleView from './BibleView';
-import {
-    previewer,
-} from '../full-text-present/FullTextPreviewer';
-import ButtonAddMoreBible from './ButtonAddMoreBible';
-import BibleItem from '../bible-list/BibleItem';
-import PresentFTManager from '../_present/PresentFTManager';
-import {
-    checkIsFtAutoShow,
-} from '../full-text-present/FTPreviewerUtils';
-import { isWindowPresentingMode } from '../App';
+import { useStateSettingNumber } from '../helper/settingHelper';
+import BibleViewSetting from './BibleViewSetting';
+import BibleItemViewController from './BibleItemViewController';
+import BibleViewRenderer from './BibleViewRenderer';
 
-export default function BiblePreviewerRender({ bibleItem }: {
-    bibleItem: BibleItem,
-}) {
-    const [bibleItems, setBibleItems] = useState<BibleItem[]>([]);
-    const applyPresents = (newBibleItems: BibleItem[]) => {
-        BibleItem.setBiblePresentingSetting(newBibleItems);
-        if (checkIsFtAutoShow()) {
-            previewer.show();
+const MIN_FONT_SIZE = 5;
+const MAX_FONT_SIZE = 150;
+const STEP_FONT_SIZE = 2;
+
+export default function BiblePreviewerRender() {
+    const [fontSize, _setFontSize] = useStateSettingNumber(
+        'preview-font-S=size', 16);
+    const setFontSize = (fontSize: number) => {
+        if (fontSize < MIN_FONT_SIZE) {
+            fontSize = MIN_FONT_SIZE;
         }
-        setBibleItems(newBibleItems);
+        if (fontSize > MAX_FONT_SIZE) {
+            fontSize = MAX_FONT_SIZE;
+        }
+        _setFontSize(fontSize);
     };
-    useEffect(() => {
-        setBibleItems(BibleItem.convertPresent(bibleItem,
-            BibleItem.getBiblePresentingSetting()));
-        previewer.show = (event?: React.MouseEvent) => {
-            const convertedItems = BibleItem.convertPresent(bibleItem,
-                BibleItem.getBiblePresentingSetting());
-            PresentFTManager.ftBibleItemSelect(event || null, convertedItems);
-        };
-        if (isWindowPresentingMode() && checkIsFtAutoShow()) {
-            previewer.show();
-        }
-        return () => {
-            previewer.show = () => void 0;
-        };
-    }, [bibleItem]);
-    const isAvailable = bibleItems.length > 0;
+    const bibleItemViewController = BibleItemViewController.getInstance();
     return (
-        <div className='d-flex d-flex-row overflow-hidden h-100'>
-            {isAvailable ? bibleItems.map((item, i) => {
-                return (
-                    <BibleView key={`${i}`} bibleItem={item}
-                        onBibleChange={(bibleName: string) => {
-                            const bibleItem1 = bibleItems.map((item1) => {
-                                return item1.clone();
-                            });
-                            bibleItem1[i].bibleName = bibleName;
-                            applyPresents(bibleItem1);
-                        }}
-                        onClose={() => {
-                            const newBibleItems = bibleItems.filter((_, i1) => {
-                                return i1 !== i;
-                            });
-                            applyPresents(newBibleItems);
-                        }} />
-                );
-            }) : 'No Bible Available'}
-            {isAvailable && <ButtonAddMoreBible bibleItems={bibleItems}
-                applyPresents={applyPresents} />
-            }
+        <div className='card h-100'
+            onWheel={(event) => {
+                if (event.ctrlKey) {
+                    setFontSize(Math.round(fontSize + event.deltaY / 10));
+                }
+            }}>
+            <div className='card-body d-flex d-flex-row overflow-hidden h-100'>
+                <BibleViewRenderer fontSize={fontSize}
+                    bibleItemViewController={bibleItemViewController} />
+            </div>
+            <div className='card-footer p-0'>
+                <BibleViewSetting
+                    minFontSize={MIN_FONT_SIZE}
+                    maxFontSize={MAX_FONT_SIZE}
+                    stepFontSize={STEP_FONT_SIZE}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                />
+            </div>
         </div>
     );
 }

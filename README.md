@@ -1,7 +1,5 @@
 # OpenWorship app (PSA.150.6, Praise the Lord)
 
-![OpenWorship app 06/12/22](./docs/images/openworship-2022-06-12.png.png)
-
 Open source and always free for worship presenter.
 
 ## Tech Stack
@@ -18,8 +16,8 @@ Special thanks for others frameworks and tools in [npm package](./package.json)
 * copy .env.example to .env
 
 ```bash
-$ cp src-binding.gyp/owa.cc-example src-binding.gyp/owa.cc
 $ npm i
+$ cp node_modules/pdfjs-dist/build/pdf.worker.js public/js
 ```
 
 ## Run

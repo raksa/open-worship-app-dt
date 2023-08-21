@@ -10,7 +10,7 @@ import CanvasItemBible from '../CanvasItemBible';
 import BENViewError from './BENViewError';
 import BENViewVideoMode from './BENViewVideoMode';
 import CanvasItemVideo from '../CanvasItemVideo';
-import { useCCEvents } from '../canvasEventHelpers';
+import { useCanvasControllerEvents } from '../canvasEventHelpers';
 
 export default function BoxEditorNormalMode({
     canvasItem,
@@ -21,7 +21,7 @@ export default function BoxEditorNormalMode({
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
     };
-    useCCEvents(['text-edit', 'update']);
+    useCanvasControllerEvents(['text-edit', 'update']);
     switch (canvasItem.type) {
         case 'image':
             return (

@@ -1,6 +1,6 @@
+import { handleError } from '../helper/errorHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
-import appProvider from '../server/appProvider';
 
 export const locales = ['km', 'en'] as const;
 export type LocaleType = typeof locales[number];
@@ -34,7 +34,8 @@ export function getLang(lang: string) {
   return cache.get(lang) || null;
 }
 async function importLang(locale: LocaleType) {
-  const langData = await import(`./data/${locale}`);
+  const importPath = `./data/${locale}`;
+  const langData = await import(importPath);
   return langData.default;
 }
 export async function getLangAsync(locale: LocaleType) {
@@ -43,7 +44,7 @@ export async function getLangAsync(locale: LocaleType) {
       const langData = await importLang(locale);
       cache.set(locale, langData);
     } catch (error) {
-      appProvider.appUtils.handleError(error);
+      handleError(error);
     }
   }
   return getLang(locale);
@@ -73,7 +74,9 @@ export const toLocaleNum = (locale: LocaleType, n: number): string => {
     return `${n}`;
   }
   const numList = langData.numList;
-  return `${n}`.split('').map(n1 => numList[+n1]).join('');
+  return `${n}`.split('').map((n1) => {
+    return numList[+n1];
+  }).join('');
 };
 
 export function fromLocaleNum(locale: LocaleType, localeNum: string) {
@@ -82,7 +85,7 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
     return null;
   }
   const numList = langData.numList;
-  const nString = `${localeNum}`.split('').map(n => {
+  const nString = `${localeNum}`.split('').map((n) => {
     const ind = numList.indexOf(n);
     if (ind > -1) {
       return ind;
@@ -93,11 +96,4 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
     return null;
   }
   return Number(nString);
-}
-
-export function getFontFamilyByLocal(locale: LocaleType) {
-  if (locale === 'km') {
-    return 'Battambang';
-  }
-  return 'Arial';
 }

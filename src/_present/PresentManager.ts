@@ -1,4 +1,5 @@
 import EventHandler from '../event/EventHandler';
+import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { getWindowDim, isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -6,7 +7,6 @@ import PresentAlertManager from './PresentAlertManager';
 import PresentBGManager from './PresentBGManager';
 import PresentFTManager from './PresentFTManager';
 import {
-    PresentDragTargetType,
     getAllDisplays,
     getAllShowingPresentIds,
     hidePresent,
@@ -238,14 +238,15 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
                 return resolve(selectedPresentManagers);
             }
             const allPresentManagers = PresentManager.getAllInstances();
-            showAppContextMenu(event as any, allPresentManagers.map((presentManager) => {
-                return {
-                    title: presentManager.name,
-                    onClick: () => {
-                        resolve([presentManager]);
-                    },
-                };
-            })).then(() => resolve([]));
+            showAppContextMenu(event as any,
+                allPresentManagers.map((presentManager) => {
+                    return {
+                        title: presentManager.name,
+                        onClick: () => {
+                            resolve([presentManager]);
+                        },
+                    };
+                })).then(() => resolve([]));
         });
     }
     static getPresentManagersSetting() {
@@ -283,17 +284,22 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         });
         setSetting(`${settingName}instances`, JSON.stringify(json));
     }
-    receivePresentDrag(presentData: {
-        target: PresentDragTargetType,
-    }) {
-        if (presentData.target === 'background') {
-            this.presentBGManager.receivePresentDrag(presentData);
-        } else if (presentData.target === 'slide') {
-            this.presentSlideManager.receivePresentDrag(presentData);
-        } else if (presentData.target === 'full-text') {
-            this.presentFTManager.receivePresentDrag(presentData);
+    receivePresentDrag(droppedData: DroppedDataType) {
+        if ([
+            DragTypeEnum.BG_COLOR,
+            DragTypeEnum.BG_IMAGE,
+            DragTypeEnum.BG_VIDEO,
+        ].includes(droppedData.type)) {
+            this.presentBGManager.receivePresentDrag(droppedData);
+        } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
+            this.presentSlideManager.receivePresentDrag(droppedData);
+        } else if ([
+            DragTypeEnum.BIBLE_ITEM,
+            DragTypeEnum.LYRIC_ITEM,
+        ].includes(droppedData.type)) {
+            this.presentFTManager.receivePresentDrag(droppedData);
         } else {
-            console.log(presentData);
+            console.log(droppedData);
         }
     }
 }

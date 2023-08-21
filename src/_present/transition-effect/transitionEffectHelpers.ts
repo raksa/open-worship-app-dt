@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 import PresentTransitionEffect from './PresentTransitionEffect';
 
 export type StyleAnimType = {
@@ -132,9 +133,11 @@ function move(): StyleAnimType {
                 if (targetElement.parentElement === null) {
                     return;
                 }
-                const rect = targetElement.parentElement.getBoundingClientRect();
+                const rect = targetElement.parentElement
+                    .getBoundingClientRect();
                 const from = -rect.width;
-                const styleLst = (targetElement.previousSibling as HTMLElement)?.style || {
+                const styleLst = (targetElement.previousSibling as
+                    HTMLElement)?.style || {
                     left: '0px',
                 };
                 const styleTarget = targetElement.style;
@@ -158,7 +161,8 @@ function move(): StyleAnimType {
                 if (targetElement.parentElement === null) {
                     return;
                 }
-                const rect = targetElement.parentElement.getBoundingClientRect();
+                const rect = targetElement.parentElement
+                    .getBoundingClientRect();
                 movingMaker({
                     from: 0,
                     to: rect.width,
@@ -197,12 +201,13 @@ export function usePTEEvents(events: PTFEventType[],
     ptEffect: PresentTransitionEffect,
     callback?: () => void) {
     const [n, setN] = useState(0);
-    useEffect(() => {
+    useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = ptEffect.registerEventListener(events, update) || [];
+        const instanceEvents = ptEffect.registerEventListener(
+            events, update) || [];
         return () => {
             ptEffect.unregisterEventListener(instanceEvents);
         };

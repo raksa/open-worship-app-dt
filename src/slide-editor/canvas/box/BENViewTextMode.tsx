@@ -42,10 +42,12 @@ export function BENTextRender({ props }: {
             <BENViewErrorRender />
         );
     }
+    const htmlText = props.text.replace(/\n/g, '<br />');
     return (
         <div className='w-100 h-100'
-            style={CanvasItemText.genStyle(props)}>
-            {props.text}
-        </div>
+            style={CanvasItemText.genStyle(props)}
+            dangerouslySetInnerHTML={{
+                __html: htmlText,
+            }} />
     );
 }

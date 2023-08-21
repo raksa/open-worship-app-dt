@@ -1,16 +1,20 @@
-import { showAppContextMenu } from '../others/AppContextMenu';
-import bibleHelper, {
-    useGetBibleWithStatus,
-} from '../server/bible-helpers/bibleHelpers';
-import ItemColorNote from '../others/ItemColorNote';
 import Bible from './Bible';
-import BibleItem, { useBibleItemRenderTitle } from './BibleItem';
+import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
-import { getIsPreviewingBible } from '../full-text-present/FullTextPreviewer';
-import { previewingEventListener } from '../event/PreviewingEventListener';
 import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useCallback } from 'react';
+import { handleDragStart } from '../helper/dragHelpers';
+import ItemColorNote from '../others/ItemColorNote';
+import {
+    BibleSelectionMini,
+} from '../bible-search/BibleSelection';
+import {
+    useBibleItemRenderTitle,
+} from '../helper/bible-helpers/bibleRenderHelpers';
+import BibleItemViewController from '../read-bible/BibleItemViewController';
 import PresentFTManager from '../_present/PresentFTManager';
+import { checkIsWindowPresentingMode } from '../router/routeHelpers';
 
 export default function BibleItemRender({
     index,
@@ -23,74 +27,56 @@ export default function BibleItemRender({
     bibleItem: BibleItem,
     bible?: Bible;
     warningMessage?: string,
-    onContextMenu?: (_: React.MouseEvent<any>) => void,
+    onContextMenu?: (event: React.MouseEvent<any>,
+        bibleItem: BibleItem, index: number) => void,
     fileSource?: FileSource,
 }) {
     useFSEvents(['select'], fileSource);
     const title = useBibleItemRenderTitle(bibleItem);
-    const bibleStatus = useGetBibleWithStatus(bibleItem.bibleName);
-    const changeBible = (newBibleName: string) => {
-        console.log('changeBible', newBibleName);
-
-        bibleItem.bibleName = newBibleName;
+    const onContextMenuCallback = useCallback((
+        event: React.MouseEvent<any>) => {
+        onContextMenu?.(event, bibleItem, index);
+    }, [onContextMenu, bibleItem, index]);
+    const changeBible = (newBibleKey: string) => {
+        bibleItem.bibleKey = newBibleKey;
         bibleItem.save();
-    };
-    const startChangingBible = async (event: React.MouseEvent<any>) => {
-        if (!changeBible) {
-            return;
-        }
-        event.stopPropagation();
-        const bibleList = await bibleHelper.getBibleListWithStatus();
-        const currentBible = bibleItem.bibleName;
-        const bibleListFiltered = bibleList.filter(([bibleName]) => {
-            return currentBible !== bibleName;
-        });
-        const menuOptions = bibleListFiltered.map(([bibleName, isAvailable]) => {
-            return {
-                title: bibleName,
-                disabled: !isAvailable,
-                onClick: () => {
-                    changeBible(bibleName);
-                },
-            };
-        });
-        showAppContextMenu(event as any, menuOptions);
     };
     if (bibleItem.isError) {
         return (
-            <ItemReadError onContextMenu={onContextMenu || (() => false)} />
+            <ItemReadError onContextMenu={onContextMenuCallback} />
         );
     }
-    const { isSelected } = bibleItem;
     return (
-        <li className={`list-group-item item pointer ${isSelected ? 'active' : ''}`}
+        <li className='list-group-item item pointer'
+            title={title}
             data-index={index + 1}
             draggable
             onDragStart={(event) => {
-                const bibleItemJson = bibleItem.toJson();
-                PresentFTManager.startPresentDrag(bibleItemJson);
-                const filePath = bibleItem.fileSource?.filePath;
-                (bibleItemJson as any).filePath = filePath;
-                event.dataTransfer.setData('text/plain',
-                    JSON.stringify(bibleItemJson));
+                handleDragStart(event, bibleItem);
             }}
-            onContextMenu={onContextMenu || (() => false)}
-            onClick={(event) => {
-                event.stopPropagation();
-                if (isSelected && !getIsPreviewingBible()) {
-                    previewingEventListener.selectBibleItem(bibleItem);
-                    return;
+            onDoubleClick={(event) => {
+                BibleItemViewController.getInstance().bibleItems = [bibleItem];
+                if (checkIsWindowPresentingMode()) {
+                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
                 }
-                bibleItem.isSelected = !isSelected;
-            }}>
-            <span className={'bible'}
-                onClick={startChangingBible}>
-                <i className='bi bi-bookmark' />
-                {bibleStatus === null ? null : bibleStatus[2]}
-            </span> | {title === null ? 'not found' : title}
-            {warningMessage && <span className='float-end'
-                title={warningMessage}>⚠️</span>}
-            <ItemColorNote item={bibleItem} />
+            }}
+            onContextMenu={onContextMenuCallback}>
+            <div className='d-flex'>
+                <ItemColorNote item={bibleItem} />
+                <div className='px-1'>
+                    <BibleSelectionMini
+                        value={bibleItem.bibleKey}
+                        onChange={(_, newValue) => {
+                            changeBible(newValue);
+                        }}
+                        isMinimal />
+                </div>
+                <span className='app-ellipsis'>
+                    {title === null ? 'not found' : title}
+                </span>
+                {warningMessage && <span className='float-end'
+                    title={warningMessage}>⚠️</span>}
+            </div>
         </li >
     );
 }

@@ -4,15 +4,16 @@ import { useStateSettingString } from '../helper/settingHelper';
 import React from 'react';
 import TabRender, { genTabBody } from '../others/TabRender';
 
-const Appearance = React.lazy(() => import('./Appearance'));
-const TextShadow = React.lazy(() => import('./TextShadow'));
+const Appearance = React.lazy(() => {
+    return import('./Appearance');
+});
+const TextShadow = React.lazy(() => {
+    return import('./TextShadow');
+});
 
 export default function CustomStyle() {
     return (
         <div className='custom-style card pointer border-white-round mt-1'>
-            <div className='card-header'>
-                Custom Style
-            </div>
             <Body />
         </div>
     );

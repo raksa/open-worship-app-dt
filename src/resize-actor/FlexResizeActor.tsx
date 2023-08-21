@@ -142,7 +142,9 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = isFirst ? this.previous.dataset['fs'] : this.next.dataset['fs'];
+        const dataFSizeKey = isFirst ?
+            this.previous.dataset['fs'] :
+            this.next.dataset['fs'];
         if (dataFSizeKey !== undefined) {
             if (isFirst) {
                 this.next.style.flexGrow = `${this.sumGrow}`;
@@ -167,6 +169,15 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
     render() {
         return (
             <div className={`flex-resize-actor ${this.props.type}`}
+                onDoubleClick={() => {
+                    const prevGrowNew = this.previous.dataset['fsDefault'] || 1;
+                    const nextGrowNew = this.next.dataset['fsDefault'] || 1;
+                    this.previous.style.flex = `${prevGrowNew}`;
+                    this.previous.style.flexGrow = '';
+                    this.next.style.flex = `${nextGrowNew}`;
+                    this.next.style.flexGrow = '';
+                    this.props.checkSize();
+                }}
                 ref={this.myRef}>
                 <div className='mover'>
                     {[
@@ -176,7 +187,8 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
                         ['down', 'chevron-down'],
                     ].map(([type, icon], i) => {
                         return (
-                            <i key={i} title={`Disable ${type}`}
+                            <i key={type}
+                                title={`Disable ${type}`}
                                 className={`${type} bi bi-${icon}`}
                                 onClick={(event) => {
                                     event.stopPropagation();

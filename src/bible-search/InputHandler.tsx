@@ -1,24 +1,15 @@
-import bibleHelper, {
-    useGetBibleWithStatus,
+import {
     useGetBookKVList,
-} from '../server/bible-helpers/bibleHelpers';
-import { useBibleItemToInputText } from '../bible-list/BibleItem';
+} from '../helper/bible-helpers/serverBibleHelpers';
 import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { setSetting } from '../helper/settingHelper';
-
-export function BibleSelectOption({ bibleName }: { bibleName: string }) {
-    const bibleStatus = useGetBibleWithStatus(bibleName);
-    if (bibleStatus === null) {
-        return null;
-    }
-    const [bible1, isAvailable, bibleName1] = bibleStatus;
-    return (
-        <option disabled={!isAvailable}
-            value={bible1}>{bibleName1}</option>
-    );
-}
+import BibleSelection from './BibleSelection';
+import { useRef } from 'react';
+import { INPUT_TEXT_CLASS } from './selectionHelpers';
+import { 
+    useBibleItemToInputText,
+ } from '../helper/bible-helpers/bibleRenderHelpers';
 
 export default function InputHandler({
     inputText,
@@ -28,33 +19,38 @@ export default function InputHandler({
 }: {
     inputText: string
     onInputChange: (str: string) => void
-    onBibleChange: (preBible: string) => void,
+    onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
     bibleSelected: string;
 }) {
     const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = useBibleItemToInputText(bibleSelected, bookKey, 1, 1, 2);
-
-    useKeyboardRegistering({ key: 'Escape' }, () => onInputChange(''));
-
-    const bibleList = bibleHelper.getBibleList();
+    const placeholder = useBibleItemToInputText(
+        bibleSelected, bookKey, 1, 1, 2);
+    useKeyboardRegistering({ key: 'Escape' }, () => {
+        if (inputRef.current !== null) {
+            if (document.activeElement !== inputRef.current) {
+                inputRef.current.focus();
+                return;
+            }
+            onInputChange('');
+        }
+    });
+    const inputRef = useRef<HTMLInputElement>(null);
     return (
         <>
-            <input type='text' className='form-control' value={inputText}
-                autoFocus placeholder={placeholder} onChange={(event) => {
+            <input ref={inputRef} type='text'
+                className={`form-control ${INPUT_TEXT_CLASS}`}
+                value={inputText}
+                autoFocus
+                placeholder={placeholder}
+                onChange={(event) => {
                     const value = event.target.value;
                     onInputChange(value);
                 }} />
             <span className='input-group-text select'>
-                <i className='bi bi-journal-bookmark'></i>
-                <select className='form-select bible' value={bibleSelected}
-                    onChange={(event) => {
-                        const value = event.target.value;
-                        setSetting('selected-bible', value);
-                        onBibleChange(bibleSelected);
-                    }}>
-                    {bibleList.map((b, i) => <BibleSelectOption key={`${i}`} bibleName={b} />)}
-                </select>
+                <i className='bi bi-journal-bookmark' />
+                <BibleSelection value={bibleSelected}
+                    onChange={onBibleChange} />
             </span>
         </>
     );

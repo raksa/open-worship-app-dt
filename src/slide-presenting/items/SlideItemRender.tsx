@@ -6,8 +6,68 @@ import SlideItemRendererHtml from './SlideItemRendererHtml';
 import PresentSlideManager, {
     SlideItemDataType,
 } from '../../_present/PresentSlideManager';
-import { isWindowEditingMode } from '../../App';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
+import { handleDragStart } from '../../helper/dragHelpers';
+import { checkIsWindowEditingMode } from '../../router/routeHelpers';
+
+export function RendShowingScreen({ slideItem }: {
+    slideItem: SlideItem,
+}) {
+    const { selectedList } = toCNHighlight(slideItem);
+    if (selectedList.length === 0) {
+        return null;
+    }
+    return (
+        <span
+            title={`Showing on screens: ${selectedList
+                .map(([key]) => key).join(', ')}`}>
+            ({selectedList.map(([key]) => key).join(', ')})
+        </span>
+    );
+}
+
+export function RendInfo({ index, slideItem }: {
+    index: number,
+    slideItem: SlideItem,
+}) {
+    return (
+        <>
+            <div>
+                <span title={`Id: ${index + 1}`}>{index + 1} </span>
+                {slideItem.isSelected && <span title='Selected'>
+                    <i className='bi bi-collection' />
+                </span>}
+            </div>
+            <div className='flex-fill d-flex justify-content-end'>
+                <span title={`width:${slideItem.width}, `
+                    + `height:${slideItem.height}`}>
+                    <small className='pe-2'>
+                        {slideItem.width}x{slideItem.height}
+                    </small>
+                </span>
+                {slideItem.isChanged && <span
+                    style={{ color: 'red' }}>*</span>}
+            </div>
+        </>
+    );
+}
+
+export function toCNHighlight(slideItem: SlideItem) {
+    const isEditing = checkIsWindowEditingMode();
+    const activeCN = isEditing && slideItem.isSelected ? 'active' : '';
+    let selectedList: [string, SlideItemDataType][] = [];
+    let presentingCN = '';
+    if (!isEditing) {
+        selectedList = PresentSlideManager.getDataList(
+            slideItem.fileSource.filePath, slideItem.id);
+        presentingCN = selectedList.length > 0 ? 'highlight-selected' : '';
+    }
+    return {
+        selectedList,
+        activeCN,
+        presentingCN,
+    };
+}
 
 export default function SlideItemRender({
     slideItem, width, index,
@@ -25,23 +85,16 @@ export default function SlideItemRender({
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }) {
     usePSlideMEvents(['update']);
-    const isEditing = isWindowEditingMode();
-    const activeCN = isEditing && slideItem.isSelected ? 'active' : '';
-    let selectedList: [string, SlideItemDataType][] = [];
-    let presentingCN = '';
-    if (!isEditing) {
-        selectedList = PresentSlideManager.getDataList(
-            slideItem.fileSource.filePath, slideItem.id);
-        presentingCN = selectedList.length > 0 ? 'highlight-selected' : '';
-    }
+    const {
+        activeCN,
+        presentingCN,
+    } = toCNHighlight(slideItem);
     return (
         <div className={`slide-item card pointer ${activeCN} ${presentingCN}`}
+            data-slide-item-id={slideItem.id}
             draggable
             onDragStart={(event) => {
-                PresentSlideManager.startPresentDrag(event, {
-                    slideFilePath: slideItem.fileSource.filePath,
-                    slideItemJson: slideItem.toJson(),
-                });
+                handleDragStart(event, slideItem);
                 onDragStart(event);
             }}
             onDragEnd={(event) => {
@@ -56,21 +109,9 @@ export default function SlideItemRender({
             }}
             onCopy={onCopy}>
             <div className='card-header d-flex'>
-                <div>
-                    {index + 1} {slideItem.isSelected && <span>
-                        <i className='bi bi-collection' />
-                    </span>}
-                </div>
-                <div className='flex-fill d-flex justify-content-end'>
-                    <small className='pe-2'>
-                        {slideItem.width}x{slideItem.height}
-                    </small>
-                    {slideItem.isChanged && <span
-                        style={{ color: 'red' }}>*</span>}
-                </div>
-                {!!(!isEditing && selectedList.length) && <span>
-                    ({selectedList.map(([key]) => key).join(', ')})
-                </span>}
+                <RendInfo index={index}
+                    slideItem={slideItem} />
+                <RendShowingScreen slideItem={slideItem} />
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >

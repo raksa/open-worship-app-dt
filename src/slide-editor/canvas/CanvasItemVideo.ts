@@ -9,7 +9,7 @@ import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
-import appProvider from '../../server/appProvider';
+import { handleError } from '../../helper/errorHelpers';
 
 export type CanvasItemVideoPropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
 export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType> {
@@ -22,13 +22,14 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     static async genFromInsertion(x: number, y: number,
         fileSource: FileSource) {
         const [mediaWidth, mediaHeight] = await getVideoDim(fileSource.src);
+        const srcData = await fileSource.getSrcData();
         const props: CanvasItemVideoPropsType = {
-            src: fileSource.src,
+            srcData,
             mediaWidth: mediaWidth,
             mediaHeight: mediaHeight,
             ...genTextDefaultBoxStyle(),
-            left: x,
-            top: y,
+            left: x - mediaWidth / 2,
+            top: y - mediaHeight / 2,
             width: mediaWidth,
             height: mediaHeight,
             type: 'video',
@@ -37,7 +38,7 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
     }
     toJson(): CanvasItemVideoPropsType {
         return {
-            src: this.props.src,
+            srcData: this.props.srcData,
             mediaWidth: this.props.mediaWidth,
             mediaHeight: this.props.mediaHeight,
             ...super.toJson(),
@@ -48,7 +49,7 @@ export default class CanvasItemVideo extends CanvasItem<CanvasItemVideoPropsType
             this.validate(json);
             return new CanvasItemVideo(json);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }

@@ -1,33 +1,50 @@
-import { useState, useEffect } from 'react';
-import ToastEventListener from '../event/ToastEventListener';
+import { useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { handleError } from '../helper/errorHelpers';
+import { LocaleType } from '../lang';
+import { showSimpleToast } from '../toast/toastHelpers';
 import appProvider, {
     FontListType,
 } from './appProvider';
 
 export function useFontList() {
     const [fontList, setFontList] = useState<FontListType | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (fontList === null) {
             appProvider.fontUtils.getFonts().then((fonts) => {
                 setFontList(fonts);
             }).catch((error) => {
-                appProvider.appUtils.handleError(error);
-                ToastEventListener.showSimpleToast({
-                    title: 'Loading Fonts',
-                    message: 'Fail to load font list',
-                });
+                handleError(error);
+                showSimpleToast('Loading Fonts', 'Fail to load font list');
             });
         }
     });
     return fontList;
 }
 
-export function getFontData(fontName: string) {
-    const fontBR = require('../fonts/Battambang/Battambang-Regular.ttf') as { default: string };
-    const fontBB = require('../fonts/Battambang/Battambang-Bold.ttf') as { default: string };
-    const font = {
-        'Battambang-Regular': fontBR.default,
-        'Battambang-Bold': fontBB.default,
-    }[fontName];
-    return `${location.origin}${font}`;
+export function getFontFace(locale: LocaleType) {
+    if (locale === 'km') {
+        const fontBR = '/fonts/km/Battambang/Battambang-Regular.ttf';
+        const fontBB = '/fonts/km/Battambang/Battambang-Bold.ttf';
+        return `
+        @font-face {
+            font-family: Battambang;
+            src: url(${fontBR}) format("truetype");
+        }
+        @font-face {
+            font-family: Battambang;
+            src: url(${fontBB}) format("truetype");
+            font-weight: bold;
+        }
+        `;
+    } else {
+        return '';
+    }
+}
+
+export function getFontFamilyByLocal(locale: LocaleType) {
+    if (locale === 'km') {
+        return 'Battambang';
+    }
+    return 'Arial';
 }

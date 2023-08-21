@@ -1,13 +1,18 @@
-import { useState } from 'react';
-import bibleHelper, {
+import {
+    getKJVKeyValue,
     useGetBookKVList, useMatch,
-} from '../server/bible-helpers/bibleHelpers';
+} from '../helper/bible-helpers/serverBibleHelpers';
 import {
     allArrows,
     KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import { isVisible } from '../helper/helpers';
-import { genInd } from './genInd';
+import {
+    processSelection,
+    userEnteringSelected,
+} from './selectionHelpers';
+
+const OPTION_CLASS = 'bible-search-book-option';
+const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderBookOption({
     inputText,
@@ -18,57 +23,72 @@ export default function RenderBookOption({
     onSelect: (book: string) => void,
     bibleSelected: string,
 }) {
-    const kjvKeyValue = bibleHelper.getKJVKeyValue();
+    const kjvKeyValue = getKJVKeyValue();
     const bookKVList = useGetBookKVList(bibleSelected);
-    const [attemptMatchIndex, setAttemptMatchIndex] = useState(0);
     const matches = useMatch(bibleSelected, inputText);
 
     const useCallback = (key: KeyboardType) => {
         useKeyboardRegistering({ key }, (event: KeyboardEvent) => {
-            if (matches !== null && matches.length) {
-                const ind = genInd(attemptMatchIndex, matches.length,
-                    event.key as KeyboardType, 2);
-                setAttemptMatchIndex(ind);
-            }
+            processSelection(OPTION_CLASS, OPTION_SELECTED_CLASS,
+                event.key as KeyboardType);
         });
     };
     allArrows.forEach(useCallback);
-    useKeyboardRegistering({ key: 'Enter' }, () => {
-        if (matches !== null && bookKVList !== null && matches[attemptMatchIndex]) {
-            const k = matches[attemptMatchIndex];
-            onSelect(bookKVList[k]);
-        }
-    });
-    let applyAttemptIndex = attemptMatchIndex;
-    if (matches !== null && matches.length && attemptMatchIndex >= matches.length) {
-        applyAttemptIndex = 0;
-    }
+    userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS, onSelect);
     return <>
-        <span className='input-group-text float-start'>
-            <i className='bi bi-bookmark'></i>
-        </span>
-        <div className='row w-75 align-items-start g-2'>
-            {(matches === null || bookKVList === null) ?
-                <div>No matched found</div> :
-                matches.map((k, i) => {
-                    const highlight = i === applyAttemptIndex;
-                    return (
-                        <div key={`${i}`} className='col-6'>
-                            <button ref={(self) => {
-                                if (self && highlight && !isVisible(self)) {
-                                    self.scrollIntoView({ block: 'end', behavior: 'smooth' });
-                                }
-                            }} type='button' onClick={() => {
-                                onSelect(bookKVList[k]);
-                            }} style={{ width: '240px', overflowX: 'auto' }}
-                                className={`text-nowrap btn-sm btn btn-outline-success ${highlight ? 'active' : ''}`}>
-                                <span>{bookKVList[k]}</span>
-                                {bookKVList[k] !== kjvKeyValue[k] &&
-                                    <>(<small className='text-muted'>{kjvKeyValue[k]}</small>)</>}
-                            </button>
-                        </div>
-                    );
-                })}
-        </div>
+        {(matches === null || bookKVList === null) ?
+            <div>No matched found</div> :
+            matches.map((key, i) => {
+                return (
+                    <RenderOption key={key}
+                        bibleKey={key}
+                        bookKVList={bookKVList}
+                        kjvKeyValue={kjvKeyValue}
+                        onSelect={onSelect}
+                        index={i}
+                    />
+                );
+            })}
     </>;
+}
+
+function RenderOption({
+    bibleKey, bookKVList, kjvKeyValue, onSelect, index,
+}: {
+    bibleKey: string,
+    bookKVList: {
+        [key: string]: string;
+    } | null,
+    kjvKeyValue: {
+        [key: string]: string;
+    },
+    onSelect: (book: string) => void,
+    index: number,
+}) {
+    if (bookKVList === null) {
+        return <div>No matched found</div>;
+    }
+    const key = bookKVList[bibleKey];
+    return (
+        <div style={{ margin: '2px' }}>
+            <button className={'text-nowrap btn-sm btn btn-outline-success' +
+                ` ${OPTION_CLASS} ${index === 0 ? OPTION_SELECTED_CLASS : ''}`}
+                data-option-value={key}
+                style={{
+                    width: '240px',
+                    overflowX: 'auto',
+                }}
+                type='button'
+                onClick={() => {
+                    onSelect(key);
+                }}>
+                <span>{key}</span>
+                {key !== kjvKeyValue[bibleKey] && <>
+                    (<small className='text-muted'>
+                        {kjvKeyValue[bibleKey]}
+                    </small>)
+                </>}
+            </button>
+        </div>
+    );
 }

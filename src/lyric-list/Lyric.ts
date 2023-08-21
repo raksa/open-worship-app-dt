@@ -1,12 +1,11 @@
-import BibleItem from '../bible-list/BibleItem';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import ToastEventListener from '../event/ToastEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 import LyricItem, { LyricItemType } from './LyricItem';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type LyricEditingHistoryType = {
     items?: LyricItemType[],
@@ -40,10 +39,7 @@ export default class Lyric extends ItemSource<LyricItem>{
                 return LyricItem.fromJson(json as any,
                     this.fileSource, this.editingCacheManager);
             } catch (error: any) {
-                ToastEventListener.showSimpleToast({
-                    title: 'Instantiating Bible Item',
-                    message: error.message,
-                });
+                showSimpleToast('Instantiating Bible Item', error.message);
             }
             return LyricItem.fromJsonError(json, this.fileSource,
                 this.editingCacheManager);
@@ -64,13 +60,12 @@ export default class Lyric extends ItemSource<LyricItem>{
         const selectedFS = Lyric.getSelectedFileSource();
         return this.fileSource.filePath === selectedFS?.filePath;
     }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
+    set isSelected(isSelected: boolean) {
+        if (this.isSelected === isSelected) {
             return;
         }
-        if (b) {
+        if (isSelected) {
             Lyric.setSelectedFileSource(this.fileSource);
-            BibleItem.clearSelection();
             previewingEventListener.selectLyric(this);
         } else {
             Lyric.setSelectedFileSource(null);

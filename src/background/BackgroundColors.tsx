@@ -1,17 +1,27 @@
-import { useEffect, useState } from 'react';
-import ColorPicker, {
-    AppColorType,
-} from '../others/ColorPicker';
+    import { useCallback, useState } from 'react';
+import ColorPicker from '../others/color/ColorPicker';
+import { AppColorType } from '../others/color/colorHelpers';
 import PresentBGManager, {
     BackgroundSrcType,
 } from '../_present/PresentBGManager';
 import { usePBGMEvents } from '../_present/presentEventHelpers';
 import { RenderPresentIds } from './Background';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BackgroundColors() {
     const [selectedBGSrcList, setSelectedBGSrcList] = useState<
         [string, BackgroundSrcType][] | null>(null);
-    useEffect(() => {
+    const onNoColorCallback = useCallback(async (
+        newColor: AppColorType, event: any) => {
+        setSelectedBGSrcList(null);
+        PresentBGManager.bgSrcSelect(null, event, 'color');
+    }, []);
+    const onColorChangeCallback = useCallback(async (
+        newColor: AppColorType, event: any) => {
+        setSelectedBGSrcList(null);
+        PresentBGManager.bgSrcSelect(newColor, event, 'color');
+    }, []);
+    useAppEffect(() => {
         if (selectedBGSrcList === null) {
             setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
         }
@@ -30,15 +40,13 @@ export default function BackgroundColors() {
                     <RenderPresentIds
                         ids={selectedBGSrcList.map(([key]) => +key)} />
                 </div>
-                {selectedBGSrcList.map(([_, bgSrc], i) => {
-                    const onColorChange = async (newColor: AppColorType | null, event: any) => {
-                        setSelectedBGSrcList(null);
-                        PresentBGManager.bgSrcSelect(newColor || bgSrc.src, event, 'color');
-                    };
+                {selectedBGSrcList.map(([_, bgSrc]) => {
                     return (
-                        <ColorPicker key={i}
+                        <ColorPicker key={bgSrc.src}
                             color={bgSrc.src as AppColorType}
-                            onColorChange={onColorChange} />
+                            defaultColor={bgSrc.src as AppColorType}
+                            onNoColor={onNoColorCallback}
+                            onColorChange={onColorChangeCallback} />
                     );
                 })}
             </>
@@ -46,11 +54,8 @@ export default function BackgroundColors() {
     }
     return (
         <ColorPicker color={null}
-            onColorChange={(newColor, e) => {
-                if (newColor !== null) {
-                    setSelectedBGSrcList(null);
-                    PresentBGManager.bgSrcSelect(newColor, e as any, 'color');
-                }
-            }} />
+            defaultColor={'#000000'}
+            onNoColor={onNoColorCallback}
+            onColorChange={onColorChangeCallback} />
     );
 }

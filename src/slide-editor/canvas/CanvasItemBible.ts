@@ -10,10 +10,10 @@ import {
     HAlignmentType,
     VAlignmentType,
 } from './canvasHelpers';
-import appProvider from '../../server/appProvider';
+import { handleError } from '../../helper/errorHelpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
-    bibleNames: string[];
+    bibleKeys: string[];
     bibleItemTarget: BibleTargetType,
     bibleRenderedList: {
         title: string,
@@ -34,19 +34,19 @@ export default class CanvasItemBible extends CanvasItemText {
             this.validate(json);
             return new CanvasItemBible(json);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }
     static async fromBibleItem(id: number, bibleItem: BibleItem) {
-        const title = await BibleItem.itemToTitle(bibleItem);
+        const title = await bibleItem.toTitle();
         const text = await BibleItem.itemToText(bibleItem);
         const newTextItem = super.genDefaultItem();
         const props = newTextItem.toJson();
         props.id = id;
         const json: CanvasItemBiblePropsType = {
             ...props,
-            bibleNames: [bibleItem.bibleName],
+            bibleKeys: [bibleItem.bibleKey],
             bibleItemTarget: bibleItem.toJson().target,
             bibleRenderedList: [{
                 title, text,
@@ -64,7 +64,7 @@ export default class CanvasItemBible extends CanvasItemText {
         BibleItem.validate({
             id: -1,
             target: json.bibleItemTarget,
-            bibleName: json.bibleNames[0],
+            bibleKey: json.bibleKeys[0],
         });
     }
 }

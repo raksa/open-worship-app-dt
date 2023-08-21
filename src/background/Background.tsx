@@ -14,9 +14,15 @@ import {
     usePBGMEvents,
 } from '../_present/presentEventHelpers';
 
-const BackgroundColors = React.lazy(() => import('./BackgroundColors'));
-const BackgroundImages = React.lazy(() => import('./BackgroundImages'));
-const BackgroundVideos = React.lazy(() => import('./BackgroundVideos'));
+const BackgroundColors = React.lazy(() => {
+    return import('./BackgroundColors');
+});
+const BackgroundImages = React.lazy(() => {
+    return import('./BackgroundImages');
+});
+const BackgroundVideos = React.lazy(() => {
+    return import('./BackgroundVideos');
+});
 
 
 const tabTypeList = [
@@ -26,11 +32,12 @@ const tabTypeList = [
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Background() {
-    const [tabType, setTabType] = useStateSettingString<TabType>('background-tab', 'image');
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'background-tab', 'image');
     usePBGMEvents(['update']);
     const bgSrcList = PresentBGManager.getBGSrcList();
     const toHLS = (type: BackgroundType) => {
-        const b = Object.values(bgSrcList).some(src => {
+        const b = Object.values(bgSrcList).some((src) => {
             return src.type === type;
         });
         return b ? 'nav-highlight-selected' : undefined;

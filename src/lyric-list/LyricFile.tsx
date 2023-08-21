@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
-import ItemColorNote from '../others/ItemColorNote';
 import ItemSource from '../helper/ItemSource';
 import { getIsPreviewingLyric } from '../full-text-present/FullTextPreviewer';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
     index, fileSource,
@@ -15,7 +15,24 @@ export default function LyricFile({
     fileSource: FileSource,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
-    useEffect(() => {
+    const reloadCallback = useCallback(() => {
+        setData(null);
+    }, [setData]);
+    const onClickCallback = useCallback(() => {
+        if (data) {
+            if (data.isSelected && !getIsPreviewingLyric()) {
+                previewingEventListener.selectLyric(data);
+                return;
+            }
+            data.isSelected = !data.isSelected;
+        }
+    }, [data]);
+    const renderChildCallback = useCallback((lyric: ItemSource<any>) => {
+        return (
+            <LyricFilePreview lyric={lyric as Lyric} />
+        );
+    }, []);
+    useAppEffect(() => {
         if (data === null) {
             Lyric.readFileToData(fileSource).then(setData);
         }
@@ -28,27 +45,22 @@ export default function LyricFile({
         <FileItemHandler
             index={index}
             data={data}
-            reload={() => {
-                setData(null);
-            }}
+            reload={reloadCallback}
             fileSource={fileSource}
             isPointer
-            onClick={() => {
-                if (data) {
-                    if (data.isSelected && !getIsPreviewingLyric()) {
-                        previewingEventListener.selectLyric(data);
-                        return;
-                    }
-                    data.isSelected = !data.isSelected;
-                }
-            }}
-            child={<>
-                <i className='bi bi-music-note' />
-                {fileSource.name}
-                {data && data.isChanged && <span
-                    style={{ color: 'red' }}>*</span>}
-                <ItemColorNote item={data as ItemSource<any>} />
-            </>}
+            onClick={onClickCallback}
+            renderChild={renderChildCallback}
         />
+    );
+}
+
+function LyricFilePreview({ lyric }: { lyric: Lyric }) {
+    return (
+        <>
+            <i className='bi bi-music-note' />
+            {lyric.fileSource.name}
+            {lyric.isChanged && <span
+                style={{ color: 'red' }}>*</span>}
+        </>
     );
 }

@@ -11,14 +11,14 @@ export abstract class ItemBase implements ColorNoteInf {
     get isError() {
         return !!this.jsonError;
     }
+    abstract get metadata(): AnyObjectType;
+    abstract set metadata(metadata: AnyObjectType);
     get colorNote() {
         if (this.metadata && this.metadata['colorNote']) {
             return this.metadata['colorNote'];
         }
         return null;
     }
-    abstract get metadata(): AnyObjectType;
-    abstract set metadata(metadata: AnyObjectType);
     set colorNote(c: string | null) {
         const metadata = cloneJson(this.metadata);
         metadata['colorNote'] = c;
@@ -29,12 +29,6 @@ export abstract class ItemBase implements ColorNoteInf {
         throw new Error('Method not implemented.');
     }
     set isSelectedEditing(_b: boolean) {
-        throw new Error('Method not implemented.');
-    }
-    get isSelected() {
-        throw new Error('Method not implemented.');
-    }
-    set isSelected(_b: boolean) {
         throw new Error('Method not implemented.');
     }
     async save(): Promise<boolean> {
@@ -102,9 +96,6 @@ export abstract class ItemBase implements ColorNoteInf {
     }
     static setSelectedEditingItem(item: ItemBase | null) {
         return this._setItemSetting(`${this.SELECT_SETTING_NAME}-editing`, item);
-    }
-    static getSelectedEditingResult() {
-        return this._getSettingResult(`${this.SELECT_SETTING_NAME}-editing`);
     }
     static async getSelectedItem(): Promise<ItemBase | null | undefined> {
         throw new Error('Method not implemented.');

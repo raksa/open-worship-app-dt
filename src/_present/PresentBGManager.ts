@@ -1,6 +1,6 @@
 import EventHandler from '../event/EventHandler';
+import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
-    AnyObjectType,
     getImageDim,
     getVideoDim,
     isValidJson,
@@ -100,7 +100,13 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');
         if (isValidJson(str, true)) {
-            return JSON.parse(str);
+            const json = JSON.parse(str);
+            const items = Object.values(json);
+            if (items.every((item: any) => {
+                return item.type && item.src;
+            })) {
+                return json;
+            }
         }
         return {};
     }
@@ -132,20 +138,22 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         }
         return bgSrc;
     }
-    static async bgSrcSelect(src: string,
+    static async bgSrcSelect(src: string | null,
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         bgType: BackgroundType) {
-        const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
-        if (selectedBGSrcList.length > 0) {
-            selectedBGSrcList.forEach(([key]) => {
-                PresentManager.getInstanceByKey(key)
-                    .presentBGManager.bgSrc = null;
-            });
-            return;
+        if (src !== null) {
+            const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
+            if (selectedBGSrcList.length > 0) {
+                selectedBGSrcList.forEach(([key]) => {
+                    PresentManager.getInstanceByKey(key)
+                        .presentBGManager.bgSrc = null;
+                });
+                return;
+            }
         }
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
         chosenPresentManagers.forEach(async (presentManager) => {
-            const bgSrc = await this.initBGSrcDim(src, bgType);
+            const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
             presentManager.presentBGManager.bgSrc = bgSrc;
         });
         this.fireUpdateEvent();
@@ -199,24 +207,20 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             overflow: 'hidden',
         };
     }
-    static startPresentDrag(event: React.DragEvent<HTMLDivElement>,
-        src: string, type: string) {
-        const data = {
-            present: {
-                target: 'background',
-                type,
-                src,
-            },
+    async receivePresentDrag({ type, item }: DroppedDataType) {
+        const bgTypeMap: { [key: string]: BackgroundType } = {
+            [DragTypeEnum.BG_IMAGE]: 'image',
+            [DragTypeEnum.BG_VIDEO]: 'video',
         };
-        event.dataTransfer.setData('text/plain',
-            JSON.stringify(data));
-    }
-    async receivePresentDrag(presentData: AnyObjectType) {
-        if (['image', 'video'].includes(presentData.type)
-            && presentData.src !== '') {
+        if (type in bgTypeMap) {
             const bgSrc = await PresentBGManager.initBGSrcDim(
-                presentData.src, presentData.type);
+                item.src, bgTypeMap[type]);
             this.bgSrc = bgSrc;
+        } else if (type === DragTypeEnum.BG_COLOR) {
+            this.bgSrc = {
+                type: 'color',
+                src: item,
+            };
         }
     }
     delete() {

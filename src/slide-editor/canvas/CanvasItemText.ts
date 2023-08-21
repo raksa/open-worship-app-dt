@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
+import { handleError } from '../../helper/errorHelpers';
 import { AnyObjectType } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
+import { AppColorType } from '../../others/color/colorHelpers';
 import appProvider from '../../server/appProvider';
 import {
     CanvasItemKindType,
@@ -14,6 +15,7 @@ import CanvasItem, {
     CanvasItemError,
     CanvasItemPropsType,
 } from './CanvasItem';
+import { log } from '../../helper/loggerHelpers';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
@@ -59,6 +61,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             color: props.color,
             alignItems: props.textVerticalAlignment,
             justifyContent: props.textHorizontalAlignment,
+            padding: `${props.fontSize / 10}px`,
         };
         return style;
     }
@@ -83,7 +86,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             this.validate(json);
             return new CanvasItemText(json);
         } catch (error) {
-            appProvider.appUtils.handleError(error);
+            handleError(error);
             return CanvasItemError.fromJsonError(json);
         }
     }
@@ -97,7 +100,7 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment)
         ) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid canvas item text data');
         }
     }

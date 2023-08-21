@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import {
     AnyObjectType, cloneJson,
 } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
+import { AppColorType } from '../../others/color/colorHelpers';
 import {
     ToolingBoxType,
     tooling2BoxProps,
@@ -14,6 +14,7 @@ import {
     vAlignmentList,
     VAlignmentType,
 } from './canvasHelpers';
+import { log } from '../../helper/loggerHelpers';
 
 export type CanvasItemPropsType = {
     id: number,
@@ -103,7 +104,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         });
     }
     clone() {
-        const newItem = CanvasItem.fromJson(this.toJson());
+        const newItem = (this.constructor as typeof CanvasItem<any>).fromJson(this.toJson());
         newItem.props.id = -1;
         return newItem;
     }
@@ -123,7 +124,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
                 && typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
         ) {
-            console.log(json);
+            log(json);
             throw new Error('Invalid canvas item data');
         }
     }

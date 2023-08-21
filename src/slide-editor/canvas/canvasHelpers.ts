@@ -1,17 +1,18 @@
+import { SrcData } from '../../helper/FileSource';
 import { AnyObjectType } from '../../helper/helpers';
-import { AppColorType } from '../../others/ColorPicker';
+import { AppColorType } from '../../others/color/colorHelpers';
 
 export type CCEventType = 'select' | 'control' |
     'text-edit' | 'update' | 'scale';
 
 export type CanvasItemMediaPropsType = {
-    src: string,
+    srcData: SrcData,
     mediaWidth: number;
     mediaHeight: number;
 };
 
 export function validateMediaProps(props: AnyObjectType) {
-    if (typeof props.src !== 'string' ||
+    if (typeof props.srcData !== 'string' ||
         typeof props.mediaWidth !== 'number' ||
         typeof props.mediaHeight !== 'number'
     ) {

@@ -1,32 +1,20 @@
 import ReactDOMServer from 'react-dom/server';
-import { Fragment } from 'react';
-import { getVerses } from '../server/bible-helpers/bibleHelpers1';
+import { getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     getBibleLocale,
     toLocaleNumBB,
-} from '../server/bible-helpers/bibleHelpers2';
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
-import { getFontFamilyByLocal, LocaleType } from '../lang';
 import appProviderPresent from './appProviderPresent';
+import {
+    BibleItemRenderedType,
+    FTBibleTable,
+    LyricRenderedType,
+    FTLyricItem,
+    BibleRenderVerseType,
+} from './fullTextPresentComps';
 
-type BibleRenderVerseType = {
-    num: string,
-    text: string,
-};
-export type BibleItemRenderedType = {
-    locale: LocaleType,
-    bibleName: string,
-    title: string,
-    verses: BibleRenderVerseType[]
-};
-export type LyricRenderedType = {
-    title: string,
-    items: {
-        num: number,
-        text: string,
-    }[]
-};
 const fullTextPresentHelper = {
     genHtmlFromFtBibleItem(bibleRenderedList: BibleItemRenderedType[],
         isLineSync: boolean) {
@@ -34,64 +22,10 @@ const fullTextPresentHelper = {
             return document.createElement('table');
         }
         const versesCount = bibleRenderedList[0].verses.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(<table>
-            <thead><tr>
-                {bibleRenderedList.map(({ locale, bibleName, title }, i) => {
-                    return (
-                        <th key={i} style={{
-                            fontFamily: getFontFamilyByLocal(locale),
-                        }}>
-                            <span className='bible highlight bible-name'
-                                data-index={i}>
-                                {bibleName}
-                            </span>
-                            |<span className='title'>{title}</span >
-                        </th>
-                    );
-                })}
-            </tr>
-            </thead>
-            <tbody>
-                {isLineSync ? Array.from({ length: versesCount }).map((_, i) => {
-                    return (
-                        <tr key={i}>
-                            {bibleRenderedList.map(({ locale, verses }, j) => {
-                                const { num, text } = verses[i];
-                                return (
-                                    <td key={j} style={{
-                                        fontFamily: getFontFamilyByLocal(locale),
-                                    }}>
-                                        <span className='highlight' data-highlight={i}>
-                                            <span className='verse-number'>{num}</span>
-                                            : {text}
-                                        </span>
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    );
-                }) : <tr>
-                    {bibleRenderedList.map(({ locale, verses }, i) => {
-                        return (
-                            <td key={i}>
-                                {verses.map(({ num, text }, j) => {
-                                    return (
-                                        <span key={j} className='highlight'
-                                            style={{
-                                                fontFamily: getFontFamilyByLocal(locale),
-                                            }}
-                                            data-highlight={j}>
-                                            <span className='verse-number'>{num}</span>
-                                            : {text}
-                                        </span>
-                                    );
-                                })}
-                            </td>
-                        );
-                    })}
-                </tr>}
-            </tbody>
-        </table>);
+        const htmlString = ReactDOMServer.renderToStaticMarkup(<FTBibleTable
+            bibleRenderedList={bibleRenderedList}
+            isLineSync={isLineSync}
+            versesCount={versesCount} />);
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         return div.firstChild as HTMLTableElement;
@@ -102,55 +36,10 @@ const fullTextPresentHelper = {
             return document.createElement('table');
         }
         const itemsCount = lyricRenderedList[0].items.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(<table>
-            <thead><tr>
-                {lyricRenderedList.map(({ title }, i) => {
-                    return (
-                        <th key={i}>
-                            <span className='title'>{title}</span >
-                        </th>
-                    );
-                })}
-            </tr>
-            </thead>
-            <tbody>
-                {isLineSync ? Array.from({ length: itemsCount }).map((_, i) => {
-                    return (
-                        <tr key={i}>
-                            {lyricRenderedList.map(({ items }, j) => {
-                                const { num, text } = items[i];
-                                return (
-                                    <td key={j}>
-                                        <span data-highlight={num}>
-                                            {text}
-                                        </span>
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    );
-                }) : <tr>
-                    {lyricRenderedList.map(({ items }, i) => {
-                        return (
-                            <td key={i}>
-                                {items.map(({ num, text }, j) => {
-                                    return (
-                                        <Fragment key={j}>
-                                            <span className='highlight'
-                                                data-highlight={j}>
-                                                <span className='verse-number'>{num}</span>
-                                                : {text}
-                                            </span>
-                                            <br />
-                                        </Fragment>
-                                    );
-                                })}
-                            </td>
-                        );
-                    })}
-                </tr>}
-            </tbody>
-        </table>);
+        const htmlString = ReactDOMServer.renderToStaticMarkup(<FTLyricItem
+            lyricRenderedList={lyricRenderedList}
+            isLineSync={isLineSync}
+            itemsCount={itemsCount} />);
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         return div.firstChild as HTMLTableElement;
@@ -180,16 +69,16 @@ const fullTextPresentHelper = {
         onBibleSelect: (event: MouseEvent, index: number) => void,
     }) {
         if (!appProviderPresent.isPresent) {
-            const spanBibleNames = table.querySelectorAll<HTMLSpanElement>('span.bible-name');
-            Array.from(spanBibleNames).forEach((spanBibleName) => {
-                spanBibleName.addEventListener('mouseover', () => {
-                    spanBibleName.classList.add('hover');
+            const divBibleKeys = table.querySelectorAll<HTMLSpanElement>('div.bible-name');
+            Array.from(divBibleKeys).forEach((divBibleKey) => {
+                divBibleKey.addEventListener('mouseover', () => {
+                    divBibleKey.classList.add('hover');
                 });
-                spanBibleName.addEventListener('mouseout', () => {
-                    spanBibleName.classList.remove('hover');
+                divBibleKey.addEventListener('mouseout', () => {
+                    divBibleKey.classList.remove('hover');
                 });
-                spanBibleName.addEventListener('click', (event) => {
-                    const index = Number(spanBibleName.getAttribute('data-index'));
+                divBibleKey.addEventListener('click', (event) => {
+                    const index = Number(divBibleKey.getAttribute('data-index'));
                     onBibleSelect(event, index);
                 });
             });
@@ -216,12 +105,14 @@ const fullTextPresentHelper = {
     genBibleItemRenderList(bibleItems: BibleItem[]) {
         return Promise.all(bibleItems.map((bibleItem) => {
             return new Promise<BibleItemRenderedType>(async (resolve, _) => {
-                const bibleTitle = await BibleItem.itemToTitle(bibleItem);
-                const verses = await getVerses(bibleItem.bibleName, bibleItem.target.book, bibleItem.target.chapter);
+                const bibleTitle = await bibleItem.toTitle();
+                const verses = await getVerses(bibleItem.bibleKey,
+                    bibleItem.target.book, bibleItem.target.chapter);
                 const verseList: BibleRenderVerseType[] = [];
                 if (verses !== null) {
-                    for (let i = bibleItem.target.startVerse; i <= bibleItem.target.endVerse; i++) {
-                        const verseNumb = await toLocaleNumBB(bibleItem.bibleName, i);
+                    for (let i = bibleItem.target.startVerse;
+                        i <= bibleItem.target.endVerse; i++) {
+                        const verseNumb = await toLocaleNumBB(bibleItem.bibleKey, i);
                         if (verseNumb !== null) {
                             verseList.push({
                                 num: verseNumb,
@@ -230,10 +121,10 @@ const fullTextPresentHelper = {
                         }
                     }
                 }
-                const locale = await getBibleLocale(bibleItem.bibleName);
+                const locale = await getBibleLocale(bibleItem.bibleKey);
                 resolve({
                     locale,
-                    bibleName: bibleItem.bibleName,
+                    bibleKey: bibleItem.bibleKey,
                     title: bibleTitle,
                     verses: verseList,
                 });

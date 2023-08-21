@@ -1,15 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import MiniPresentScreen from './_present/preview/MiniPresentScreen';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import PresentManager from './_present/PresentManager';
+import { useAppEffect } from './helper/debuggerHelpers';
 
-const BibleList = React.lazy(() => import('./bible-list/BibleList'));
-const LyricList = React.lazy(() => import('./lyric-list/LyricList'));
+const BibleList = React.lazy(() => {
+    return import('./bible-list/BibleList');
+});
+const LyricList = React.lazy(() => {
+    return import('./lyric-list/LyricList');
+});
 
 export default function AppPresentingRight() {
-    useEffect(() => {
-        PresentManager.getAllInstances().forEach(presentManager => {
+    useAppEffect(() => {
+        PresentManager.getAllInstances().forEach((presentManager) => {
             presentManager.fireResizeEvent();
         });
     });

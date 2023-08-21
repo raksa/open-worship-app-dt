@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useAppEffect } from './debuggerHelpers';
 import DirSource, {
     DirSourceEventType,
 } from './DirSource';
@@ -8,12 +9,13 @@ export function useDSEvents(events: DirSourceEventType[],
     dirSource?: DirSource,
     callback?: () => void) {
     const [n, setN] = useState(0);
-    useEffect(() => {
+    useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = dirSource?.registerEventListener(events, update) || [];
+        const instanceEvents = dirSource?.registerEventListener(
+            events, update) || [];
         const staticEvents = DirSource.registerEventListener(events, update);
         return () => {
             dirSource?.unregisterEventListener(instanceEvents);
@@ -26,13 +28,15 @@ export function useFSEvents(events: FSEventType[],
     fileSource?: FileSource,
     callback?: () => void) {
     const [n, setN] = useState(0);
-    useEffect(() => {
+    useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = fileSource?.registerEventListener(events, update) || [];
-        const staticEvents = FileSource.registerEventListener(events, update);
+        const instanceEvents = fileSource?.registerEventListener(
+            events, update) || [];
+        const staticEvents = FileSource.registerEventListener(
+            events, update);
         return () => {
             fileSource?.unregisterEventListener(instanceEvents);
             FileSource.unregisterEventListener(staticEvents);

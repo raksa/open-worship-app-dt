@@ -11,8 +11,8 @@ import Slide from '../../slide-list/Slide';
 export default function SlideItemsPreviewer({ slide }: {
     slide: Slide,
 }) {
-    const [thumbSize, setThumbSize] = useSlideItemSizing(THUMBNAIL_WIDTH_SETTING_NAME,
-        DEFAULT_THUMBNAIL_SIZE);
+    const [thumbSize, setThumbSize] = useSlideItemSizing(
+        THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
     return (
         <div className='w-100 h-100 pb-5'
             style={{ overflow: 'auto' }}
@@ -21,7 +21,8 @@ export default function SlideItemsPreviewer({ slide }: {
                     return;
                 }
                 const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE);
-                const newScale = Slide.toScaleThumbSize(event.deltaY > 0, currentScale);
+                const newScale = Slide.toScaleThumbSize(
+                    event.deltaY > 0, currentScale);
                 setThumbSize(newScale * DEFAULT_THUMBNAIL_SIZE);
             }}
             onContextMenu={(event) => {

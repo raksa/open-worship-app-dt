@@ -10,15 +10,23 @@ import { BENTextRender } from './BENViewTextMode';
 import { BENBibleRender } from './BENViewBibleMode';
 import CanvasController from '../CanvasController';
 import { BENVideoRender } from './BENViewVideoMode';
-import { useCCEvents } from '../canvasEventHelpers';
+import { useCanvasControllerEvents } from '../canvasEventHelpers';
 import { BENViewErrorRender } from './BENViewError';
+import {
+    useKeyboardRegistering,
+} from '../../../event/KeyboardEventListener';
 
 export default function BoxEditorControllingMode({ canvasItem }: {
     canvasItem: CanvasItem<any>,
 }) {
     // TODO: move box by left right up down key, shift&ctl
-    useCCEvents(['update']);
+    useCanvasControllerEvents(['update']);
     const canvasController = CanvasController.getInstance();
+    useKeyboardRegistering({
+        key: 'Delete',
+    }, () => {
+        canvasController.deleteItem(canvasItem);
+    });
     return (
         <div className='editor-controller-box-wrapper'
             ref={(div) => {
@@ -57,7 +65,8 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                     }
                 }}
                 style={{
-                    border: canvasItem.isSelected ? '2px dashed green' : undefined,
+                    border: canvasItem.isSelected ?
+                        '2px dashed green' : undefined,
                     transform: 'translate(-50%, -50%)',
                     width: `${canvasItem.props.width}px`,
                     height: `${canvasItem.props.height}px`,
@@ -65,11 +74,16 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                 }}>
                 <BECRender canvasItem={canvasItem} />
                 <div className='tools'>
-                    <div className={`object ${boxEditorController.rotatorCN}`} />
+                    <div className={
+                        `object ${boxEditorController.rotatorCN}`
+                    } />
                     <div className='rotate-link' />
                     {Object.keys(boxEditorController.resizeActorList)
-                        .map((cn, i) => <div key={`${i}`}
-                            className={`object ${cn}`} />)
+                        .map((cn) => {
+                            return (
+                                <div key={cn} className={`object ${cn}`} />
+                            );
+                        })
                     }
                 </div>
             </div>

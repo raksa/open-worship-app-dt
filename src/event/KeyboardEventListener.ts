@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import { getLastItem } from '../helper/helpers';
 import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
@@ -24,17 +24,22 @@ export interface RegisteredEventMapper extends EventMapper {
     listener: ListenerType;
 }
 export type ListenerType = ((event: KeyboardEvent) => void) | (() => void);
+
+export function toShortcutKey(eventMapper: EventMapper) {
+    return KeyboardEventListener.toShortcutKey(eventMapper);
+}
+
 export default class KeyboardEventListener extends EventHandler<string> {
     static eventNamePrefix: string = 'keyboard';
     static _layers: AppWidgetType[] = ['root'];
     static getLastLayer() {
         return getLastItem(this._layers);
     }
-    static addLayer(l: AppWidgetType) {
-        this._layers.push(l);
+    static addLayer(layer: AppWidgetType) {
+        this._layers.push(layer);
     }
-    static removeLayer(l: AppWidgetType) {
-        this._layers = this._layers.filter((l1) => l1 !== l);
+    static removeLayer(layer: AppWidgetType) {
+        this._layers = this._layers.filter((l1) => l1 !== layer);
     }
     static fireEvent(event: KeyboardEvent) {
         const option = {
@@ -62,40 +67,42 @@ export default class KeyboardEventListener extends EventHandler<string> {
             event.shiftKey && option.lControlKey.push('Shift');
         }
     }
-    static toControlKey(controlType: WindowsControlType[] | MacControlType[] | LinuxControlType[]) {
+    static toControlKey(controlType: WindowsControlType[] |
+        MacControlType[] | LinuxControlType[]) {
         return controlType.sort().join(' + ');
     }
     static toShortcutKey(eventMapper: EventMapper) {
-        let k = eventMapper.key;
-        if (!k) {
+        let key = eventMapper.key;
+        if (!key) {
             return '';
         }
-        if (k.length === 1) {
-            k = k.toUpperCase();
+        if (key.length === 1) {
+            key = key.toUpperCase();
         }
         if (appProvider.systemUtils.isWindows &&
             eventMapper.wControlKey &&
             eventMapper.wControlKey.length) {
-            k = `${this.toControlKey(eventMapper.wControlKey)} + ${k}`;
+            key = `${this.toControlKey(eventMapper.wControlKey)} + ${key}`;
         } else if (appProvider.systemUtils.isMac &&
             eventMapper.mControlKey &&
             eventMapper.mControlKey.length) {
-            k = `${this.toControlKey(eventMapper.mControlKey)} + ${k}`;
+            key = `${this.toControlKey(eventMapper.mControlKey)} + ${key}`;
         } else if (appProvider.systemUtils.isLinux &&
             eventMapper.lControlKey &&
             eventMapper.lControlKey.length) {
-            k = `${this.toControlKey(eventMapper.lControlKey)} + ${k}`;
+            key = `${this.toControlKey(eventMapper.lControlKey)} + ${key}`;
         }
-        return k;
+        return key;
     }
     static toEventMapperKey(eventMapper: EventMapper) {
-        const k = this.toShortcutKey(eventMapper);
-        return `${this.getLastLayer()}:${k}`;
+        const key = toShortcutKey(eventMapper);
+        return `${this.getLastLayer()}:${key}`;
     }
 }
 
-export function useKeyboardRegistering(eventMapper: EventMapper, listener: ListenerType) {
-    useEffect(() => {
+export function useKeyboardRegistering(
+    eventMapper: EventMapper, listener: ListenerType) {
+    useAppEffect(() => {
         const eventName = KeyboardEventListener.toEventMapperKey(eventMapper);
         const registeredEvent = KeyboardEventListener.registerEventListener(
             [eventName], listener);

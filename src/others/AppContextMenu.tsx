@@ -2,7 +2,9 @@ import './AppContextMenu.scss';
 
 import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
+import WindowEventListener from '../event/WindowEventListener';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
@@ -25,11 +27,13 @@ export function createMouseEvent(clientX: number, clientY: number) {
 const setPositionMenu = (menu: HTMLElement,
     event: MouseEvent) => {
     if (menu !== null) {
-        menu.style.display = 'block';
-        menu.style.left = '';
-        menu.style.right = '';
-        menu.style.top = '';
-        menu.style.bottom = '';
+        Object.assign(menu.style, {
+            display: 'block',
+            left: '',
+            right: '',
+            top: '',
+            bottom: '',
+        });
         event.preventDefault();
         event.stopPropagation();
         const x = event.clientX;
@@ -78,23 +82,22 @@ export function showAppContextMenu(
                 KeyboardEventListener.unregisterEventListener(escEvent);
                 resolve();
             });
-        const listener = (event: MouseEvent) => {
-            event.stopPropagation();
-            setDataDelegator?.(null);
-            document.body.removeEventListener('click', listener);
-            KeyboardEventListener.unregisterEventListener(escEvent);
-            resolve();
-        };
-        document.body.addEventListener('click', listener);
     });
 }
 
 export default function AppContextMenu() {
-    const [data, setData] = useState<{
+    const [data, _setData] = useState<{
         event: MouseEvent,
         items: ContextMenuItemType[]
     } | null>(null);
-    useEffect(() => {
+    const setData = (newData: PropsType | null) => {
+        WindowEventListener.fireEvent({
+            widget: 'context-menu',
+            state: newData === null ? 'close' : 'open',
+        });
+        _setData(newData);
+    };
+    useAppEffect(() => {
         setDataDelegator = (newData) => {
             setData(newData);
         };
@@ -106,27 +109,43 @@ export default function AppContextMenu() {
         return null;
     }
     return (
-        <div ref={(self) => {
-            if (self !== null) {
-                setPositionMenu(self, data.event);
-            }
-        }} className='app-context-menu'>
-            {data.items.map((item, i) => {
-                return (
-                    <div key={`${i}`}
-                        className={'app-context-menu-item'
-                            + ` ${item.disabled ? 'disabled' : ''}`}
-                        onClick={(event) => {
-                            if (item.disabled) {
-                                return;
-                            }
-                            item.onClick?.(event as any);
-                        }}>
-                        {item.title}
-                        {item.otherChild || null}
-                    </div>
-                );
-            })}
+        <div id="context-menu-container"
+            onClick={(event) => {
+                event.stopPropagation();
+                setDataDelegator?.(null);
+            }}>
+            <div ref={(self) => {
+                if (self !== null) {
+                    setPositionMenu(self, data.event);
+                }
+            }} className='app-context-menu'>
+                {data.items.map((item) => {
+                    return (
+                        <ContextMenuItem key={item.title}
+                            item={item} />
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+function ContextMenuItem({ item }: {
+    item: ContextMenuItemType,
+}) {
+    return (
+        <div className={'app-context-menu-item'
+            + ` ${item.disabled ? 'disabled' : ''}`}
+            onClick={(event) => {
+                if (item.disabled) {
+                    return;
+                }
+                setTimeout(() => {
+                    item.onClick?.(event as any);
+                }, 0);
+            }}>
+            {item.title}
+            {item.otherChild || null}
         </div>
     );
 }

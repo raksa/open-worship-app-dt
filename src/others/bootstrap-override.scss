@@ -22,6 +22,8 @@
 
   .list-group-item {
 
+    border: 1px solid var(--bs-gray-700);
+
     &:before {
       display: block;
       position: absolute;
@@ -35,8 +37,7 @@
     }
 
     &:not(.active):hover {
-      border: 1px solid var(--bs-gray-800);
-      border-color: #0d6dfd83;
+      border: 1px solid #0d6dfd83;
     }
 
     &:hover {
@@ -46,12 +47,18 @@
 
     }
 
-    .color-note {
-      float: right;
-      opacity: 0.1;
+    .color-note-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding-right: 2px;
 
-      &.active {
-        opacity: 0.4;
+      .color-note {
+        opacity: 0.1;
+
+        &.active {
+          opacity: 0.4;
+        }
       }
     }
 

@@ -1,6 +1,7 @@
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import tar from 'tar';
 
 export type MessageEventType = {
     returnValue: any,
@@ -22,12 +23,15 @@ export type FileUtilsType = {
     createWriteStream: typeof fs.createWriteStream,
     readdir: typeof fs.readdir,
     stat: typeof fs.stat,
-    mkdirSync: typeof fs.mkdirSync,
-    writeFileSync: typeof fs.writeFileSync,
-    renameSync: typeof fs.renameSync,
-    unlinkSync: typeof fs.unlinkSync,
-    readFileSync: typeof fs.readFileSync,
-    copyFileSync: typeof fs.copyFileSync,
+    mkdir: typeof fs.mkdir,
+    writeFile: typeof fs.writeFile,
+    rename: typeof fs.rename,
+    unlink: typeof fs.unlink,
+    rmdir: typeof fs.rmdir,
+    readFile: typeof fs.readFile,
+    copyFile: typeof fs.copyFile,
+    tarExtract: typeof tar.x,
+    watch: typeof fs.watch,
 };
 
 export type PathUtilsType = {
@@ -55,7 +59,12 @@ export type FontListType = {
 };
 export type AppUtilsType = {
     handleError: (error: any) => void,
+    base64Encode: (str: string) => string,
+    base64Decode: (str: string) => string,
 };
+export type PdfUtilsType = {
+    toPdf: (filePath: string, outputDir: string) => Promise<void>,
+}
 
 const appProvider = (window as any).provider as {
     isMain: boolean,
@@ -69,7 +78,6 @@ const appProvider = (window as any).provider as {
     };
     browserUtils: {
         openExplorer: (dir: string) => void,
-        openLink: (link: string) => void,
         copyToClipboard: (str: string) => void,
         urlPathToFileURL: (urlPath: string) => string,
     };
@@ -83,6 +91,7 @@ const appProvider = (window as any).provider as {
     appInfo: AppInfoType,
     reload: () => void,
     appUtils: AppUtilsType,
+    pdfUtils: PdfUtilsType,
 };
 
 export default appProvider;

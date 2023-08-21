@@ -1,15 +1,22 @@
+import React, { useCallback, useState } from 'react';
 import FileReadError from './FileReadError';
 import {
-    ContextMenuItemType, showAppContextMenu,
+    ContextMenuItemType,
+    showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
     copyToClipboard, openExplorer,
 } from '../server/appHelper';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
-import { openConfirm } from '../alert/HandleAlert';
 import appProvider from '../server/appProvider';
 import { useFSEvents } from '../helper/dirSourceHelpers';
+import { openConfirm } from '../alert/alertHelpers';
+import ItemColorNote from './ItemColorNote';
+
+const RenderRenaming = React.lazy(() => {
+    return import('./RenderRenaming');
+});
 
 export const genCommonMenu = (fileSource: FileSource) => {
     return [
@@ -27,10 +34,13 @@ export const genCommonMenu = (fileSource: FileSource) => {
         },
     ];
 };
+
+
 export default function FileItemHandler({
     data, reload, index, fileSource, className,
-    contextMenu, onDrop, onClick,
-    child, isPointer, onDelete,
+    contextMenu, onDrop, onClick, renderChild,
+    isPointer, onDelete, isDisabledColorNote,
+    userClassName,
 }: {
     data: ItemSource<any> | null | undefined,
     reload: () => void,
@@ -40,41 +50,60 @@ export default function FileItemHandler({
     contextMenu?: ContextMenuItemType[],
     onDrop?: (event: any) => void,
     onClick?: () => void,
-    child: any,
+    renderChild: (lyric: ItemSource<any>) => any,
     isPointer?: boolean,
     onDelete?: () => void,
+    isDisabledColorNote?: boolean,
+    userClassName?: string,
 }) {
+    const [isRenaming, setIsRenaming] = useState(false);
     useFSEvents(['select'], fileSource);
     const applyClick = () => {
         fileSource.fireSelectEvent();
-        onClick && onClick();
+        onClick?.();
     };
     const selfContextMenu = [
         {
-            title: 'Reload', onClick: () => {
+            title: 'Duplicate',
+            onClick: () => {
+                fileSource.duplicate();
+            },
+        }, {
+            title: 'Rename',
+            onClick: () => {
+                setIsRenaming(true);
+            },
+        }, {
+            title: 'Reload',
+            onClick: () => {
                 reload();
             },
         }, {
-            title: 'Delete', onClick: async () => {
-                const isOk = await openConfirm(`Deleting "${fileSource.fileName}"`,
+            title: 'Delete',
+            onClick: async () => {
+                const isOk = await openConfirm(
+                    `Deleting "${fileSource.fileName}"`,
                     'Are you sure to delete this file?');
                 if (isOk) {
                     await fileSource.delete();
-                    onDelete && onDelete();
+                    onDelete?.();
                 }
             },
         }];
+    const callContextMenu = useCallback((event: any) => {
+        showAppContextMenu(event, selfContextMenu);
+    }, [selfContextMenu]);
     if (data === null) {
         return null;
     }
     if (data === undefined) {
-        return <FileReadError onContextMenu={(event) => {
-            showAppContextMenu(event as any, selfContextMenu);
-        }} />;
+        return <FileReadError onContextMenu={callContextMenu} />;
     }
-    const moreClassName = `${data.isSelected ? 'active' : ''} ${className || ''}`;
+    const moreClassName = `${data.isSelected ? 'active' : ''} `
+        + `${className || ''}`;
     return (
-        <li className={`list-group-item mx-1 ${moreClassName} ${isPointer ? 'pointer' : ''}`}
+        <li className={`list-group-item mx-1 ${moreClassName} ${userClassName}
+        ${isPointer ? 'pointer' : ''}`}
             onClick={applyClick}
             data-index={index + 1}
             title={fileSource.filePath}
@@ -106,7 +135,18 @@ export default function FileItemHandler({
                     onDrop(event);
                 }
             }}>
-            {child}
+            {isRenaming ? <RenderRenaming
+                setIsRenaming={setIsRenaming}
+                fileSource={fileSource} /> :
+                <>
+                    {renderChild(data)}
+                    {!isDisabledColorNote &&
+                        <div className='color-note-container'>
+                            <ItemColorNote item={data.fileSource} />
+                        </div>
+                    }
+                </>
+            }
         </li>
     );
 }
