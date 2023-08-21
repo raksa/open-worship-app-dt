@@ -18,8 +18,8 @@ export function useCloseAppModal() {
 export function useOpenAppModal(modalType: string) {
     const appNav = useNavigate();
     const location = useLocation();
-    return (data: string = '') => {
-        const queryData = toAppModalTypeData(modalType, data);
+    return () => {
+        const queryData = toAppModalTypeData(modalType, '');
         appNav(`${APP_MODAL_ROUTE_PATH}${queryData}`, {
             state: { backgroundLocation: location },
         });
