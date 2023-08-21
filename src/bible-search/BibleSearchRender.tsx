@@ -1,7 +1,5 @@
 import { useCallback, useState } from 'react';
 import {
-    EventMapper,
-    toShortcutKey,
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import InputHandler from './InputHandler';
@@ -14,7 +12,6 @@ import {
 import {
     getChapterCount,
 } from '../helper/bible-helpers/bibleInfoHelpers';
-import { closeBibleSearch } from './HandleBibleSearch';
 import {
     genInputText, useGetSelectedBibleKey,
 } from '../helper/bible-helpers/bibleHelpers';
@@ -23,23 +20,15 @@ import RenderSearchSuggestion, {
 } from './RenderSearchSuggestion';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
-const eventMapper: EventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
-    key: 'q',
-};
-
-export default function BibleSearchRender({ editingInputText }: {
+export default function BibleSearchRender({
+    editingInputText, closeBibleSearch,
+}: {
     editingInputText: string,
+    closeBibleSearch: () => void,
 }) {
     const [inputText, setInputText] = useState<string>(editingInputText);
-
     const [bibleSelected, setBibleSelected] = useGetSelectedBibleKey();
 
-    useKeyboardRegistering(eventMapper, () => {
-        closeBibleSearch();
-    });
     useKeyboardRegistering({ key: 'Escape' }, () => {
         if (!inputText) {
             closeBibleSearch();
@@ -112,17 +101,6 @@ export default function BibleSearchRender({ editingInputText }: {
                         onInputChange={setInputText}
                         bibleSelected={bibleSelected}
                         onBibleChange={handleBibleChange} />
-                </div>
-                <div style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0,
-                }}>
-                    <button type='button' onClick={closeBibleSearch}
-                        data-tool-tip={toShortcutKey(eventMapper)}
-                        className='btn btn-outline-danger m-2'>
-                        <i className='bi bi-x-lg' />
-                    </button>
                 </div>
             </div>
             <div className='body card-body card w-100 h-100 overflow-hidden d-flex'>

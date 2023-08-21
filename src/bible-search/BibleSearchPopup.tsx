@@ -1,34 +1,44 @@
 import './BibleSearchPopup.scss';
 
-import { useState } from 'react';
-import Modal from '../others/Modal';
-import BibleItem from '../bible-list/BibleItem';
 import BibleSearchRender from './BibleSearchRender';
-import { setSetting } from '../helper/settingHelper';
-import { SELECTED_BIBLE_SETTING_NAME } from '../helper/bible-helpers/bibleHelpers';
+import { useModal } from '../app-modal/Modal';
+import BibleItem from '../bible-list/BibleItem';
+import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import {
+    SELECTED_BIBLE_SETTING_NAME,
+} from '../helper/bible-helpers/bibleHelpers';
+import { setSetting } from '../helper/settingHelper';
+import { useModalTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {
-    const [inputText, setInputText] = useState<string | null>(null);
+    const { closeModal, Modal } = useModal();
+    const { data } = useModalTypeData();
+    const bibleItem = BibleItem.parseBibleSearchData(data);
+    const [inputText, setInputText] = useState<string | null>(
+        bibleItem !== null ? null : '',
+    );
     useAppEffect(() => {
-        if (inputText !== null) {
+        if (bibleItem === null || inputText !== null) {
             return;
         }
-        BibleItem.getSelectedItemEditing().then(async (item) => {
-            if (!item) {
-                setInputText('');
-                return;
-            }
-            setSetting(SELECTED_BIBLE_SETTING_NAME, item.bibleKey);
-            const title = await item.toTitle();
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleItem.bibleKey);
+        bibleItem.toTitle().then((title) => {
             setInputText(title);
         });
-    }, [inputText]);
+    }, [data, inputText]);
     return (
         <Modal>
-            {inputText === null ?
-                <div><span title='Need translation'>(*T)</span> Loading...</div> :
-                <BibleSearchRender editingInputText={inputText} />
+            {inputText === null ? (
+                <div>
+                    <span title='Need translation'>(*T)</span>
+                    Loading...
+                </div>
+            ) : (
+                <BibleSearchRender
+                    editingInputText={inputText}
+                    closeBibleSearch={closeModal} />
+            )
             }
         </Modal>
     );

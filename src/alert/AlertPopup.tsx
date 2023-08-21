@@ -1,6 +1,6 @@
+import { useModal } from '../app-modal/Modal';
 import './AlertPopup.scss';
 
-import Modal from '../others/Modal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     AlertDataType,
@@ -11,6 +11,7 @@ import { useCallback } from 'react';
 export default function AlertPopup({ data }: {
     data: AlertDataType,
 }) {
+    const { Modal } = useModal(false);
     const onCloseCallback = useCallback(() => {
         data.onClose();
         closeAlert();

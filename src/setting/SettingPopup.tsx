@@ -1,10 +1,9 @@
 import './SettingPopup.scss';
 
-import HeaderEditorPopup from './HeaderSettingPopup';
-import Modal from '../others/Modal';
 import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, { genTabBody } from '../others/TabRender';
 import React from 'react';
+import { useModal } from '../app-modal/Modal';
 
 const SettingGeneral = React.lazy(() => {
     return import('./SettingGeneral');
@@ -17,11 +16,17 @@ const SettingAbout = React.lazy(() => {
 });
 
 export default function SettingPopup() {
+    const { Modal } = useModal();
     return (
         <Modal>
             <div id='setting-popup'
                 className='app-modal shadow card'>
-                <HeaderEditorPopup />
+                <div className='card-header text-center w-100'>
+                    <span>
+                        <i className='bi bi-gear-wide-connected' />
+                        Setting
+                    </span>
+                </div>
                 <Setting />
             </div>
         </Modal>

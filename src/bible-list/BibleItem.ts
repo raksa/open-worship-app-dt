@@ -1,6 +1,3 @@
-import {
-    openBibleSearch,
-} from '../bible-search/HandleBibleSearch';
 import FileSource from '../helper/FileSource';
 import {
     AnyObjectType, cloneJson, isValidJson,
@@ -17,6 +14,7 @@ import {
     bibleRenderHelper,
 } from '../helper/bible-helpers/bibleRenderHelpers';
 import { DragTypeEnum } from '../helper/DragInf';
+import { AddBiblePropsType } from '../helper/bible-helpers/bibleHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -60,31 +58,6 @@ export default class BibleItem extends ItemBase
     }
     set metadata(metadata: AnyObjectType) {
         this._originalJson.metadata = metadata;
-    }
-    get isSelectedEditing() {
-        const selected = BibleItem.getSelectedEditingResult();
-        return selected?.fileSource.filePath === this.fileSource?.filePath &&
-            selected?.id === this.id;
-    }
-    set isSelectedEditing(b: boolean) {
-        if (this.isSelectedEditing === b) {
-            return;
-        }
-        if (b) {
-            BibleItem.setSelectedEditingItem(this);
-            openBibleSearch();
-        } else {
-            BibleItem.setSelectedEditingItem(null);
-        }
-        this.fileSource?.fireRefreshDirEvent();
-    }
-    static async getSelectedItemEditing() {
-        const selected = this.getSelectedEditingResult();
-        if (selected !== null) {
-            const bible = await Bible.readFileToData(selected.fileSource);
-            return bible?.getItemById(selected.id);
-        }
-        return null;
     }
     static fromJson(json: BibleItemType, fileSource?: FileSource) {
         this.validate(json);
@@ -218,5 +191,25 @@ export default class BibleItem extends ItemBase
             handleError(error);
         }
         return null;
+    }
+    static genBibleSearchData(bibleItem: BibleItem) {
+        if (bibleItem.fileSource) {
+            const json = bibleItem.toJson() as any;
+            json.filePath = bibleItem.fileSource.filePath;
+            return JSON.stringify(json);
+        }
+    }
+    static parseBibleSearchData(data?: string) {
+        if (!data) {
+            return null;
+        }
+        const json = JSON.parse(data) as any;
+        const fileSource = FileSource.getInstance(json.filePath);
+        return BibleItem.fromJson(json, fileSource);
+    }
+    static saveFromBibleSearch(props: AddBiblePropsType, data?: string) {
+        // TODO: save to bible
+        const oldBibleItem = this.parseBibleSearchData(data);
+        console.log(props, oldBibleItem);
     }
 }

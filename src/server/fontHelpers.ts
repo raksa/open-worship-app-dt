@@ -24,16 +24,16 @@ export function useFontList() {
 
 export function getFontFace(locale: LocaleType) {
     if (locale === 'km') {
-        const fontBR = require('../fonts/Battambang/Battambang-Regular.ttf');
-        const fontBB = require('../fonts/Battambang/Battambang-Bold.ttf');
+        const fontBR = '/fonts/km/Battambang/Battambang-Regular.ttf';
+        const fontBB = '/fonts/km/Battambang/Battambang-Bold.ttf';
         return `
         @font-face {
             font-family: Battambang;
-            src: url(${fontBR.default || fontBR}) format("truetype");
+            src: url(${fontBR}) format("truetype");
         }
         @font-face {
             font-family: Battambang;
-            src: url(${fontBB.default || fontBB}) format("truetype");
+            src: url(${fontBB}) format("truetype");
             font-weight: bold;
         }
         `;

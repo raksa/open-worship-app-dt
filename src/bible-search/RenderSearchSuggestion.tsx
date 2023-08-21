@@ -1,6 +1,5 @@
 import RenderBookOption from './RenderBookOption';
 import RenderChapterOption from './RenderChapterOption';
-import Header from './Header';
 import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
@@ -67,7 +66,6 @@ export default function RenderSearchSuggestion({
 export function BibleNotAvailable() {
     return (
         <div id='bible-search-popup' className='app-modal shadow card'>
-            <Header />
             <div className='body card-body w-100'>
                 Bible not available!
             </div>

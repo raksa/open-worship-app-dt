@@ -17,7 +17,6 @@ import {
     getDownloadedBibleInfoList,
 } from './bibleDownloadHelpers';
 import Bible from '../../bible-list/Bible';
-import { closeBibleSearch } from '../../bible-search/HandleBibleSearch';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import CanvasController from '../../slide-editor/canvas/CanvasController';
 import { useAppEffect } from '../debuggerHelpers';
@@ -128,12 +127,10 @@ export async function addBibleItem({
     if (isWindowEditing) {
         const canvasController = CanvasController.getInstance();
         canvasController.addNewBibleItem(bibleItem);
-        closeBibleSearch();
         return null;
     }
     const savedBibleItem = await Bible.updateOrToDefault(bibleItem);
     if (savedBibleItem !== null) {
-        closeBibleSearch();
         return savedBibleItem;
     } else {
         showSimpleToast('Adding bible', 'Fail to add bible to list');

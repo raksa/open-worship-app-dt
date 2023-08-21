@@ -1,7 +1,7 @@
 import {
-    Routes, Route, BrowserRouter,
+    Routes, Route, BrowserRouter, useLocation,
 } from 'react-router-dom';
-import NotFound404 from './router/NotFound404';
+import NotFound404, { goHomeBack } from './router/NotFound404';
 import AppPresenting from './AppPresenting';
 import {
     DefaultTabContext, editingTab,
@@ -13,12 +13,14 @@ import AppReading from './AppReading';
 import HandleAlert from './alert/HandleAlert';
 import AppContextMenu from './others/AppContextMenu';
 import Toast from './toast/Toast';
+import AppModal, {
+    APP_MODAL_QUERY_ROUTE_PATH,
+} from './app-modal/AppModal';
 
 function checkHome() {
     const url = new URL(window.location.href);
     if (url.pathname === '/') {
-        url.pathname = presentingTab.routePath;
-        window.location.href = url.href;
+        goHomeBack();
     }
 }
 
@@ -33,22 +35,40 @@ export default function App() {
         <>
             <DefaultTabContext.Provider value={tabProps}>
                 <BrowserRouter>
-                    <Routes>
-                        <Route element={<AppLayout />}>
-                            <Route path={editingTab.routePath}
-                                element={<AppEditing />} />
-                            <Route path={presentingTab.routePath}
-                                element={<AppPresenting />} />
-                            <Route path={readingTab.routePath}
-                                element={<AppReading />} />
-                        </Route>
-                        <Route path="*" element={<NotFound404 />} />
-                    </Routes>
+                    <AppRouteRender />
                 </BrowserRouter>
             </DefaultTabContext.Provider>
             <Toast />
             <AppContextMenu />
             <HandleAlert />
         </>
+    );
+}
+
+function AppRouteRender() {
+    const location = useLocation();
+    const state = location.state as {
+        backgroundLocation?: Location,
+    };
+    return (
+        <div id='app' className='dark'>
+            <Routes location={state?.backgroundLocation || location}>
+                <Route element={<AppLayout />}>
+                    <Route path={editingTab.routePath}
+                        element={<AppEditing />} />
+                    <Route path={presentingTab.routePath}
+                        element={<AppPresenting />} />
+                    <Route path={readingTab.routePath}
+                        element={<AppReading />} />
+                </Route>
+                <Route path='*' element={<NotFound404 />} />
+            </Routes>
+            {state?.backgroundLocation && (
+                <Routes>
+                    <Route path={APP_MODAL_QUERY_ROUTE_PATH}
+                        element={<AppModal />} />
+                </Routes>
+            )}
+        </div>
     );
 }

@@ -1,6 +1,6 @@
+import { useModal } from '../app-modal/Modal';
 import './ConfirmPopup.scss';
 
-import Modal from '../others/Modal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     closeAlert,
@@ -11,6 +11,7 @@ import { useCallback } from 'react';
 export default function ConfirmPopup({ data }: {
     data: ConfirmDataType,
 }) {
+    const { Modal } = useModal();
     const onCloseCallback = useCallback(() => {
         data.onConfirm(false);
         closeAlert();
