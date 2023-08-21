@@ -1,5 +1,6 @@
-import { useModal } from '../app-modal/Modal';
 import './ConfirmPopup.scss';
+
+import PrimitiveModal from '../app-modal/PrimitiveModal';
 
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
@@ -11,13 +12,12 @@ import { useCallback } from 'react';
 export default function ConfirmPopup({ data }: {
     data: ConfirmDataType,
 }) {
-    const { Modal } = useModal();
     const onCloseCallback = useCallback(() => {
         data.onConfirm(false);
         closeAlert();
     }, [data]);
     return (
-        <Modal>
+        <PrimitiveModal>
             <div id='confirm-popup'
                 className='app-modal shadow card'>
                 <HeaderAlertPopup header={<>
@@ -42,6 +42,6 @@ export default function ConfirmPopup({ data }: {
                     </div>
                 </div>
             </div>
-        </Modal>
+        </PrimitiveModal>
     );
 }

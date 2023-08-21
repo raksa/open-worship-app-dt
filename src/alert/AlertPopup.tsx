@@ -1,5 +1,6 @@
-import { useModal } from '../app-modal/Modal';
 import './AlertPopup.scss';
+
+import PrimitiveModal from '../app-modal/PrimitiveModal';
 
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
@@ -11,13 +12,12 @@ import { useCallback } from 'react';
 export default function AlertPopup({ data }: {
     data: AlertDataType,
 }) {
-    const { Modal } = useModal(false);
     const onCloseCallback = useCallback(() => {
         data.onClose();
         closeAlert();
     }, [closeAlert, data]);
     return (
-        <Modal>
+        <PrimitiveModal>
             <div id='alert-popup'
                 className='app-modal shadow card'>
                 <HeaderAlertPopup
@@ -33,6 +33,6 @@ export default function AlertPopup({ data }: {
                         }} />
                 </div>
             </div>
-        </Modal>
+        </PrimitiveModal>
     );
 }

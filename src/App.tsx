@@ -32,7 +32,7 @@ export default function App() {
     ];
     checkHome();
     return (
-        <>
+        <div id='app' className='dark'>
             <DefaultTabContext.Provider value={tabProps}>
                 <BrowserRouter>
                     <AppRouteRender />
@@ -41,7 +41,7 @@ export default function App() {
             <Toast />
             <AppContextMenu />
             <HandleAlert />
-        </>
+        </div>
     );
 }
 
@@ -51,7 +51,7 @@ function AppRouteRender() {
         backgroundLocation?: Location,
     };
     return (
-        <div id='app' className='dark'>
+        <>
             <Routes location={state?.backgroundLocation || location}>
                 <Route element={<AppLayout />}>
                     <Route path={editingTab.routePath}
@@ -69,6 +69,6 @@ function AppRouteRender() {
                         element={<AppModal />} />
                 </Routes>
             )}
-        </div>
+        </>
     );
 }
