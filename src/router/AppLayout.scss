@@ -15,8 +15,8 @@
     user-select: none;
   }
 
-  & .selectable-text,
-  & .selectable-text * {
+  & .app-selectable-text,
+  & .app-selectable-text * {
     user-select: text !important;
   }
 

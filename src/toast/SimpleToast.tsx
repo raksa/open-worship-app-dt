@@ -32,7 +32,7 @@ export default function SimpleToast({
                     aria-label='Close'
                     onClick={onClose} />
             </div>
-            <div className='toast-body selectable-text'
+            <div className='toast-body app-selectable-text'
                 dangerouslySetInnerHTML={{
                     __html: toast.message,
                 }} />

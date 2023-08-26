@@ -71,7 +71,7 @@ export default function BibleView({
                     bibleItemViewController.removeItem(index);
                 }, index)}
             <div className='card-body p-3'>
-                <p className='selectable-text' style={{
+                <p className='app-selectable-text' style={{
                     fontSize: `${fontSize}px`,
                 }}>{text}</p>
                 {/* TODO: implement this
@@ -94,7 +94,7 @@ function rendHeader(
                         <BibleSelectionMini value={key}
                             onChange={onChange} />
                     </div>
-                    <div className='title'>
+                    <div className='title app-selectable-text'>
                         {title}
                     </div>
                 </div>
