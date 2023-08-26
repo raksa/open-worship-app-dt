@@ -22,7 +22,7 @@
         "pack:win32": "electron-builder build --win --ia32",
         "postinstall": "install-app-deps",
         "vite:dev": "vite",
-        "vite:build": "rm -rf dist && vite build"
+        "vite:build": "vite build"
     },
     "browserslist": {
         "production": [
@@ -96,7 +96,6 @@
         "concurrently": "^8.2.0",
         "electron": "^26.0.0",
         "electron-builder": "^24.6.3",
-        "electron-extension-installer": "^1.2.0",
         "env-cmd": "^10.1.0",
         "eslint": "^8.47.0",
         "nodemon": "^3.0.1",
