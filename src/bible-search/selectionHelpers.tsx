@@ -17,6 +17,9 @@ function getElements(optionClass: string) {
 
 function calculateIndexer(optionClass: string, selectedClass: string) {
     const elements = getElements(optionClass);
+    if (!elements.length) {
+        return { elements, indexer: [], rotatedIndexer: [], preIndex: -1 };
+    }
     const preIndex = elements.findIndex((element) => {
         return element.classList.contains(selectedClass);
     });
@@ -70,11 +73,11 @@ function genIndex(optionClass: string,
     selectedClass: string, key: KeyboardType) {
     const { elements, indexer, rotatedIndexer, preIndex } = calculateIndexer(
         optionClass, selectedClass);
-    if (preIndex === -1) {
-        return { index: 0, elements };
-    }
     if (!indexer.length) {
         return { index: -1, elements: [] };
+    }
+    if (preIndex === -1) {
+        return { index: 0, elements };
     }
     const hLength = indexer[0].length;
     let { x, y } = indexToCord(hLength, preIndex);
