@@ -1,25 +1,24 @@
 import { BrowserWindow } from 'electron';
 
-import { scheme, serveProc } from './fsServe';
+import { rootUrl as fsServeRootUrl, registerScheme } from './fsServe';
 import { isDev } from './electronHelpers';
 
 
-const registerHandler = !isDev ? serveProc() : () => { };
+const registerHandler = !isDev ? registerScheme() : () => { };
 
-export function genRoutProps(routeType: string) {
-    const preloadFile = `${__dirname}/client/${routeType}Preload.js`;
+export function genRoutProps(name: string) {
+    const preloadFile = `${__dirname}/client/${name}Preload.js`;
+    const loadURL = (browserWindow: BrowserWindow, query: string = '') => {
+        const urlPathname = name !== 'index' ? `${name}.html` : '';
+        let rootUrl = 'http://localhost:3000';
+        if (!isDev) {
+            registerHandler();
+            rootUrl = fsServeRootUrl;
+        }
+        browserWindow.loadURL(`${rootUrl}/${urlPathname}${query}`);
+    };
     return {
-        loadURL: (browserWindow: BrowserWindow, query: string = '') => {
-            const urlPathname = routeType !== 'index' ? `/${routeType}.html` : '';
-            const fullUrl = `${urlPathname}${query}`;
-            if (isDev) {
-                const rootUrl = 'http://localhost:3000';
-                browserWindow.loadURL(`${rootUrl}${fullUrl}`);
-            } else {
-                registerHandler();
-                browserWindow.loadURL(`${scheme}://-${fullUrl}`);
-            }
-        },
+        loadURL,
         preloadFile,
     };
 }

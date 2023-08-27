@@ -1,3 +1,4 @@
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './AppLayout.scss';
 import '../others/bootstrap-override.scss';
 import '../others/scrollbar.scss';
