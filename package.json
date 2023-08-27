@@ -95,7 +95,6 @@
         "concurrently": "^8.2.0",
         "electron": "^26.0.0",
         "electron-builder": "^24.6.3",
-        "electron-serve": "^1.1.0",
         "env-cmd": "^10.1.0",
         "eslint": "^8.47.0",
         "nodemon": "^3.0.1",
