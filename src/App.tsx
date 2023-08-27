@@ -4,7 +4,7 @@ import {
 import NotFound404, { goHomeBack } from './router/NotFound404';
 import AppPresenting from './AppPresenting';
 import {
-    DefaultTabContext, editingTab,
+    DefaultTabContext, editingTab, home,
     presentingTab, readingTab,
 } from './router/routeHelpers';
 import AppLayout from './router/AppLayout';
@@ -16,6 +16,7 @@ import Toast from './toast/Toast';
 import AppModal, {
     APP_MODAL_QUERY_ROUTE_PATH,
 } from './app-modal/AppModal';
+import RedirectTo from './others/RedirectTo';
 
 function checkHome() {
     const url = new URL(window.location.href);
@@ -54,6 +55,8 @@ function AppRouteRender() {
         <>
             <Routes location={state?.backgroundLocation || location}>
                 <Route element={<AppLayout />}>
+                    <Route path={home.routePath}
+                        element={<RedirectTo to={presentingTab.title} />} />
                     <Route path={editingTab.routePath}
                         element={<AppEditing />} />
                     <Route path={presentingTab.routePath}

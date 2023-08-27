@@ -5,7 +5,7 @@ import {
 } from './electronEventListener';
 import { isDev } from './electronHelpers';
 import ElectronMainController from './ElectronMainController';
-import { genRoutProps } from './helper';
+import { genRoutProps } from './protocolHelpers';
 
 const routeProps = genRoutProps('present');
 export default class ElectronPresentController {
@@ -24,18 +24,14 @@ export default class ElectronPresentController {
             x: 0, y: 0,
             frame: false,
             webPreferences: {
-                webSecurity: !isDev,
+                webSecurity: false,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFile,
             },
         });
         const query = `?presentId=${this.presentId}`;
-        if (isDev) {
-            presentWin.loadURL(`${routeProps.url}${query}`);
-        } else {
-            presentWin.loadURL(`file://${routeProps.htmlFile}${query}`);
-        }
+        routeProps.loadURL(presentWin, query);
         if (isPresentCanFullScreen) {
             presentWin.setFullScreen(true);
         }

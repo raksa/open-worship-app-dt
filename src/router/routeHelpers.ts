@@ -40,6 +40,10 @@ function genTabItem(title: string, routePath: string): TabOptionType {
     };
 }
 
+export const home:TabOptionType = {
+    title: 'Home',
+    routePath: '/',
+};
 export const editingTab = genTabItem('Editing', '/edit');
 export const presentingTab = genTabItem('Presenting', '/present');
 export const readingTab = genTabItem('Read', '/reading');

@@ -18,7 +18,9 @@ const htmlPlugin = () => {
                 '<!-- CONTENT_SECURITY_POLICY -->',
                 // eslint-disable-next-line quotes
                 `<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">`,
-            ).replace('<script src="http://localhost:8097"></script>', '');
+            ).replace(
+                '<script src="http://localhost:8097"></script>', ''
+            );
         },
     };
 };
@@ -34,6 +36,7 @@ export default defineConfig({
             ...bootstrapIcons,
         },
     },
+    base: './',
     build: {
         rollupOptions: {
             input: ['index.html', 'present.html'],

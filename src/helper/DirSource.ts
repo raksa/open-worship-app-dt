@@ -26,6 +26,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             throw new Error('Invalid setting name');
         }
         this.settingName = settingName;
+        // TODO: investigate why drop folder at first time not working
     }
     get dirPath() {
         return getSetting(this.settingName, '');

@@ -1,9 +1,9 @@
 import { BrowserWindow, shell } from 'electron';
 import { channels, PresentMessageType } from './electronEventListener';
 import { isDev } from './electronHelpers';
-import { genRoutProps } from './helper';
+import { genRoutProps } from './protocolHelpers';
 
-const routeProps = genRoutProps('main');
+const routeProps = genRoutProps('index');
 export default class ElectronMainController {
     win: BrowserWindow;
     static _instance: ElectronMainController | null = null;
@@ -22,7 +22,7 @@ export default class ElectronMainController {
             backgroundColor: '#000000',
             x: 0, y: 0,
             webPreferences: {
-                webSecurity: !isDev,
+                webSecurity: false,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFile,
@@ -35,11 +35,7 @@ export default class ElectronMainController {
         win.on('closed', () => {
             process.exit(0);
         });
-        if (isDev) {
-            win.loadURL(routeProps.url);
-        } else {
-            win.loadFile(routeProps.htmlFile);
-        }
+        routeProps.loadURL(win);
         return win;
     }
     close() {
