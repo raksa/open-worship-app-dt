@@ -62,14 +62,18 @@ async function handler(dirPath: string, request: GlobalRequest) {
     let filePath = path.join(dirPath, url);
     const fallback = path.join(dirPath, indexHtml);
     filePath = toFileFullPath(filePath) ?? fallback;
-    const isFallback = filePath === fallback;
     return new Response(fs.readFileSync(filePath), {
         headers: { 'content-type': contentType(filePath) },
     });
 };
 
+let registered = false;
 export function registerScheme() {
     const registerHandler = () => {
+        if (registered) {
+            return;
+        }
+        registered = true;
         const directory = path.resolve(app.getAppPath(), 'dist');
         protocol.handle(scheme, handler.bind(null, directory));
     };
