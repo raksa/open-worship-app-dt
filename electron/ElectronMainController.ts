@@ -22,7 +22,7 @@ export default class ElectronMainController {
             backgroundColor: '#000000',
             x: 0, y: 0,
             webPreferences: {
-                webSecurity: !isDev,
+                webSecurity: false, //TODO: change this to true
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFile,

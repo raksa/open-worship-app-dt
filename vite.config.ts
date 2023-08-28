@@ -20,7 +20,6 @@ export default defineConfig({
     server: {
         port: 3000,
     },
-    base: './',
     build: {
         rollupOptions: {
             input: ['index.html', 'present.html'],

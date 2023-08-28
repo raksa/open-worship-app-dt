@@ -24,7 +24,7 @@ export default class ElectronPresentController {
             x: 0, y: 0,
             frame: false,
             webPreferences: {
-                webSecurity: !isDev,
+                webSecurity: false,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFile,
