@@ -1,6 +1,7 @@
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
+import pdfjsLibType from 'pdfjs-dist';
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 import tar from 'tar';
 
 export type MessageEventType = {
@@ -64,6 +65,7 @@ export type AppUtilsType = {
 };
 export type PdfUtilsType = {
     toPdf: (filePath: string, outputDir: string) => Promise<void>,
+    pdfjsLib: typeof pdfjsLibType,
 }
 
 const appProvider = (window as any).provider as {

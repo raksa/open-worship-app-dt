@@ -1,12 +1,9 @@
 import path from 'node:path';
 import fs from 'node:fs';
+const pdfjsLib = require('pdfjs-dist/build/pdf');
 
 const ext = '.pdf';
-
-function toFuturePdfPath(filePath: string, outputDir: string) {
-    const fileName = path.basename(filePath);
-    return path.join(outputDir, `${fileName}${ext}`);
-}
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js';
 
 function toPdf(filePath: string, outputDir: string) {
     return new Promise<void>((resolve, reject) => {
@@ -36,5 +33,5 @@ function toPdf(filePath: string, outputDir: string) {
 
 export default {
     toPdf,
-    toFuturePdfPath,
+    pdfjsLib,
 };
