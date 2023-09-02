@@ -1,6 +1,7 @@
+import { Stats } from 'node:fs';
+
 import appProvider from './appProvider';
 import FileSource from '../helper/FileSource';
-import { Stats } from 'fs';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from '../helper/errorHelpers';
 
