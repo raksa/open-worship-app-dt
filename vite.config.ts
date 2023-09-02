@@ -1,5 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+
+const resolveAlias = {
+    '/js/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
+};
 
 const htmlPlugin = () => {
     return {
@@ -16,9 +21,24 @@ const htmlPlugin = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react(), htmlPlugin()],
+    plugins: [
+        viteStaticCopy({
+            targets: Object.entries(resolveAlias).map(([from, to]) => {
+                const regex = new RegExp(/^\/(\w+)\//);
+                return {
+                    src: to,
+                    dest: regex.exec(from)?.[1] ?? '',
+                };
+            }).filter((target) => target.dest !== ''),
+        }),
+        react(),
+        htmlPlugin(),
+    ],
     server: {
         port: 3000,
+    },
+    resolve: {
+        alias: resolveAlias,
     },
     build: {
         rollupOptions: {
