@@ -1,4 +1,4 @@
-const path = require('node:path');
+import path from 'node:path';
 
 const pathUtils = {
     sep: path.sep,

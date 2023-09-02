@@ -1,6 +1,6 @@
 import ElectronMainController from './ElectronMainController';
 import ElectronSettingController from './ElectronSettingController';
-const electron = require('electron');
+import electron from 'electron';
 
 export default class ElectronAppController {
     private static _instance: ElectronAppController | null = null;

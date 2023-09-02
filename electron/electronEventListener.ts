@@ -1,7 +1,6 @@
 import ElectronAppController from './ElectronAppController';
 import ElectronPresentController from './ElectronPresentController';
-
-const electron = require('electron');
+import electron from 'electron';
 
 const { dialog, ipcMain, app } = electron;
 
