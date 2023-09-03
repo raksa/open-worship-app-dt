@@ -74,7 +74,7 @@ export default abstract class ItemSource<T extends {
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
-        const isSuccess = await this.fileSource.saveData(this);
+        const isSuccess = await this.fileSource.saveDataFromItem(this);
         if (isSuccess) {
             ItemSource._cache.set(this.fileSource.filePath, this);
         }

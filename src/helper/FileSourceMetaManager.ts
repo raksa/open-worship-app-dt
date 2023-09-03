@@ -1,8 +1,25 @@
-import { fsCheckFileExist } from '../server/fileHelper';
+import ToastEventListener from '../event/ToastEventListener';
+import appProvider from '../server/appProvider';
+import { checkIsAppFile, fsCheckFileExist } from '../server/fileHelper';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { isColor } from './helpers';
 import { SettingManager } from './settingHelper';
+
+
+async function readJsonData(fileSource: FileSource) {
+    const json = await fileSource.readFileToJsonData();
+    if (json === null) {
+        appProvider.appUtils.handleError(
+            new Error(`Unable to read file from ${fileSource.filePath}}`)
+        );
+        ToastEventListener.showSimpleToast({
+            title: 'Color Note',
+            message: 'Unable to read file',
+        });
+    }
+    return json;
+}
 
 export default class FileSourceMetaManager {
     static settingManager = new SettingManager<{ [key: string]: string }>({
@@ -21,7 +38,7 @@ export default class FileSourceMetaManager {
         serialize: (json) => JSON.stringify(json),
         deserialize: (jsonString) => JSON.parse(jsonString),
     });
-    static getColorNote(fileSource: FileSource): string | null {
+    private static getColorNoteSetting(fileSource: FileSource): string | null {
         const setting = this.settingManager.getSetting();
         const color = setting[fileSource.filePath];
         if (isColor(color)) {
@@ -29,7 +46,7 @@ export default class FileSourceMetaManager {
         }
         return null;
     }
-    static setColorNote(fileSource: FileSource, color: string | null) {
+    private static setColorNoteSetting(fileSource: FileSource, color: string | null) {
         const setting = this.settingManager.getSetting();
         const key = fileSource.filePath;
         if (color === null) {
@@ -39,7 +56,42 @@ export default class FileSourceMetaManager {
         }
         this.settingManager.setSetting(setting);
     }
-    static unsetColorNote(fileSource: FileSource) {
+    static async getColorNote(fileSource: FileSource) {
+        const isAppFile = checkIsAppFile(fileSource.fileName);
+        if (!isAppFile) {
+            return this.getColorNoteSetting(fileSource);
+        }
+        const json = await readJsonData(fileSource);
+        if (json === null) {
+            return;
+        }
+        const color = json.metadata?.colorNote;
+        if (isColor(color)) {
+            return color;
+        }
+        return null;
+    }
+    static async setColorNote(
+        fileSource: FileSource, color: string | null,
+    ) {
+        const isAppFile = checkIsAppFile(fileSource.fileName);
+        if (!isAppFile) {
+            this.setColorNoteSetting(fileSource, color);
+            return;
+        }
+        const json = await readJsonData(fileSource);
+        if (json === null) {
+            return;
+        }
+        json.metadata = json.metadata ?? {};
+        json.metadata.colorNote = color;
+        return fileSource.saveData(JSON.stringify(json));
+    }
+    static unsetColorNote(fileSource: FileSource, isSetting = false) {
+        if (isSetting) {
+            this.setColorNoteSetting(fileSource, null);
+            return;
+        }
         this.setColorNote(fileSource, null);
     }
     static async checkAllColorNotes() {
@@ -56,5 +108,4 @@ export default class FileSourceMetaManager {
         }
         this.settingManager.setSetting(setting);
     }
-
 }

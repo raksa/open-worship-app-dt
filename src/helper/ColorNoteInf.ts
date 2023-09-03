@@ -1,6 +1,6 @@
 interface ColorNoteInf {
-    get colorNote(): string | null;
-    set colorNote(c: string | null);
+    getColorNote(): Promise<string | null>;
+    setColorNote(c: string | null): Promise<void>;
 }
 
 export default ColorNoteInf;

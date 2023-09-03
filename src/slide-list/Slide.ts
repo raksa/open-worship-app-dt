@@ -54,7 +54,7 @@ export default class Slide extends ItemSource<SlideItem>{
     get copiedItem() {
         return this.items.find((item) => {
             return item.isCopied;
-        }) || null;
+        }) ?? null;
     }
     set copiedItem(newItem: SlideItem | null) {
         this.items.forEach((item) => {

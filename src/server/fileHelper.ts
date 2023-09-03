@@ -11,6 +11,22 @@ import mimeSlide from './mime/slide-types.json';
 import mimeImage from './mime/image-types.json';
 import mimePlaylist from './mime/playlist-types.json';
 import mimeVideo from './mime/video-types.json';
+
+const appMimeTypesMapper = {
+    bible: mimeBible,
+    lyric: mimeLyric,
+    slide: mimeSlide,
+};
+const _mimeTypes = Object.values(appMimeTypesMapper) as AppMimetypeType[][];
+const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
+    const exts = cur.map((mimeType) => {
+        return mimeType.extensions;
+    }).reduce((acc1, cur1) => {
+        return acc1.concat(cur1);
+    }, []);
+    return acc.concat(exts);
+}, []);
+
 const mimeTypesMapper = {
     bible: mimeBible,
     lyric: mimeLyric,
@@ -32,6 +48,12 @@ export type FileMetadataType = {
     fileName: string,
     appMimetype: AppMimetypeType,
 };
+
+export function checkIsAppFile(fileName: string) {
+    const ext = extractExtension(fileName);
+    const isAppFile = appExtensions.includes(ext);
+    return isAppFile;
+}
 
 export const pathSeparator = appProvider.pathUtils.sep;
 export function pathJoin(filePath: string, fileName: string) {
@@ -64,7 +86,7 @@ export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 
 export function getFileMetaData(fileName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
-    mimetypeList = mimetypeList || getAllAppMimetype();
+    mimetypeList = mimetypeList ?? getAllAppMimetype();
     const ext = extractExtension(fileName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);
@@ -291,9 +313,6 @@ export function fsCreateDir(dirPath: string) {
 export async function fsWriteFile(filePath: string, txt: string) {
     if (await fsCheckDirExist(filePath)) {
         throw new Error(`${filePath} is not a directory`);
-    }
-    if (await fsCheckFileExist(filePath)) {
-        throw new Error('File exist');
     }
     await _fsWriteFile(filePath, txt, {
         encoding: 'utf8',

@@ -1,11 +1,13 @@
 import DirSource from './DirSource';
 import {
+    checkIsAppFile,
     extractExtension,
     fsCheckFileExist,
     fsCreateFile,
     fsDeleteFile,
     fsReadFile,
     fsRenameFile,
+    fsWriteFile,
     getFileMetaData,
     pathBasename,
     pathJoin,
@@ -16,12 +18,11 @@ import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
-import DragInf from './DragInf';
+import DragInf, { DragTypeEnum } from './DragInf';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
-import { DragTypeEnum } from './DragInf';
 
 export type SrcData = `data:${string}`;
 
@@ -36,6 +37,7 @@ export default class FileSource extends EventHandler<FSEventType>
     fileName: string;
     filePath: string;
     src: string;
+    colorNote: string | null = null;
     static _cache = new Map<string, FileSource>();
     constructor(basePath: string, fileName: string,
         filePath: string, src: string) {
@@ -44,6 +46,9 @@ export default class FileSource extends EventHandler<FSEventType>
         this.fileName = fileName;
         this.filePath = filePath;
         this.src = src;
+    }
+    get isAppFile() {
+        return !checkIsAppFile(this.fileName);
     }
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
@@ -64,10 +69,10 @@ export default class FileSource extends EventHandler<FSEventType>
             });
         });
     }
-    get colorNote() {
+    getColorNote() {
         return FileSourceMetaManager.getColorNote(this);
     }
-    set colorNote(color: string | null) {
+    async setColorNote(color: string | null) {
         FileSourceMetaManager.setColorNote(this, color);
         this.fireRefreshDirEvent();
     }
@@ -119,16 +124,24 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return null;
     }
-    async saveData(data: ItemSource<any>) {
+    async saveData(data: string) {
         try {
-            const content = JSON.stringify(data.toJson());
-            await fsCreateFile(this.filePath, content, true);
+            const isFileExist = await fsCheckFileExist(this.filePath);
+            if (isFileExist) {
+                await fsWriteFile(this.filePath, data);
+            } else {
+                await fsCreateFile(this.filePath, data, true);
+            }
             this.fireUpdateEvent();
             return true;
         } catch (error: any) {
             showSimpleToast('Saving File', error.message);
         }
         return false;
+    }
+    async saveDataFromItem(item: ItemSource<any>) {
+        const content = JSON.stringify(item.toJson());
+        return this.saveData(content);
     }
     async delete() {
         try {

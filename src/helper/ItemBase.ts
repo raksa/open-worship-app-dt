@@ -13,13 +13,13 @@ export abstract class ItemBase implements ColorNoteInf {
     }
     abstract get metadata(): AnyObjectType;
     abstract set metadata(metadata: AnyObjectType);
-    get colorNote() {
-        if (this.metadata && this.metadata['colorNote']) {
+    async getColorNote() {
+        if (this.metadata?.['colorNote']) {
             return this.metadata['colorNote'];
         }
         return null;
     }
-    set colorNote(c: string | null) {
+    async setColorNote(c: string | null) {
         const metadata = cloneJson(this.metadata);
         metadata['colorNote'] = c;
         this.metadata = metadata;

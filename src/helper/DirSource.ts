@@ -14,8 +14,8 @@ import { getSetting, setSetting } from './settingHelper';
 export type DirSourceEventType = 'refresh' | 'reload';
 
 export default class DirSource extends EventHandler<DirSourceEventType> {
-    static eventNamePrefix: string = 'dir-source';
     settingName: string;
+    static eventNamePrefix: string = 'dir-source';
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
     static _objectId = 0;
@@ -45,6 +45,9 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             return cacheKey.includes(dirPath);
         }) || null;
     }
+    getFileSourceInstance(fileName: string) {
+        return FileSource.getInstance(this.dirPath, fileName);
+    }
     fireRefreshEvent() {
         this.addPropEvent('refresh');
     }
@@ -55,7 +58,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         if (!this.dirPath) {
             return;
         }
-        const fileSource = FileSource.getInstance(this.dirPath, fileName);
+        const fileSource = this.getFileSourceInstance(fileName);
         fileSource.fireUpdateEvent();
     }
     async getFileSources(mimetype: MimetypeNameType) {
@@ -75,8 +78,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
                 return fileMetadata !== null;
             }) as FileMetadataType[];
             return matchedFiles.map((fileMetadata) => {
-                return FileSource.getInstance(
-                    this.dirPath, fileMetadata.fileName);
+                return this.getFileSourceInstance(fileMetadata.fileName);
             });
         } catch (error) {
             handleError(error);

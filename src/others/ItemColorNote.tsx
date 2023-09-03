@@ -4,13 +4,23 @@ import {
 } from './AppContextMenu';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
 export default function ItemColorNote({ item }: {
     item: ColorNoteInf,
 }) {
+    const [colorNote, _setColorNote] = useState('');
+    useEffect(() => {
+        item.getColorNote().then((colorNote) => {
+            _setColorNote(colorNote ?? '');
+        });
+    }, [item]);
+    const setColorNote = (colorNote: string | null) => {
+        _setColorNote(colorNote ?? '');
+        item.setColorNote(colorNote);
+    };
     const title = useMemo(() => {
         const reverseColorMap: Record<string, string> =
             Object.entries({
@@ -20,11 +30,11 @@ export default function ItemColorNote({ item }: {
                 acc[colorCode] = name;
                 return acc;
             }, {} as Record<string, string>);
-        return reverseColorMap[item.colorNote || ''] || 'no color';
-    }, [item.colorNote]);
+        return reverseColorMap[colorNote ?? ''] ?? 'no color';
+    }, [colorNote]);
 
     return (
-        <span className={`color-note ${item.colorNote ? 'active' : ''}`}
+        <span className={`color-note ${colorNote ? 'active' : ''}`}
             title={title}
             onClick={(event) => {
                 event.stopPropagation();
@@ -35,16 +45,16 @@ export default function ItemColorNote({ item }: {
                 // unique colors by key
                 const items: ContextMenuItemType[] = [{
                     title: 'no color',
-                    disabled: item.colorNote === null,
+                    disabled: colorNote === null,
                     onClick: () => {
-                        item.colorNote = null;
+                        setColorNote(null);
                     },
                 }, ...colors.map(([name, colorCode]): ContextMenuItemType => {
                     return {
                         title: name,
-                        disabled: item.colorNote === colorCode,
+                        disabled: colorNote === colorCode,
                         onClick: () => {
-                            item.colorNote = colorCode;
+                            setColorNote(colorCode);
                         },
                         otherChild: (<div className='flex-fill'>
                             <i className='bi bi-record-circle float-end'
@@ -55,8 +65,8 @@ export default function ItemColorNote({ item }: {
                 showAppContextMenu(event as any, items);
             }} >
             <i className='bi bi-record-circle'
-                style={item.colorNote ? {
-                    color: item.colorNote,
+                style={colorNote ? {
+                    color: colorNote,
                 } : {}} />
         </span>
     );

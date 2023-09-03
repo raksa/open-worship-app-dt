@@ -19,7 +19,14 @@ export default function RenderList({
     const [fileSources, setFileSources] = useState<
         FileSource[] | null | undefined>(null);
     const refresh = () => {
-        dirSource.getFileSources(mimetype).then((newFileSources) => {
+        dirSource.getFileSources(mimetype).then(async (newFileSources) => {
+            if (newFileSources !== undefined) {
+                const promises = newFileSources.map(async (fileSource) => {
+                    const color = await fileSource.getColorNote();
+                    fileSource.colorNote = color;
+                });
+                await Promise.all(promises);
+            }
             setFileSources(newFileSources);
         });
     };
@@ -62,7 +69,7 @@ export default function RenderList({
     }
     const keys = Object.keys(fileSourceColorMap).filter((key) => {
         return key !== UNKNOWN;
-    }).sort();
+    }).sort((a, b) => a.localeCompare(b));
     keys.push(UNKNOWN);
     return (
         <>{keys.map((colorNote) => {
