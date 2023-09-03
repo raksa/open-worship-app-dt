@@ -21,7 +21,7 @@ export default function PlaylistSlideItem({ playlistItem }: {
     const item = !slide ? null :
         (slide.items.find((newItem) => {
             return newItem.id === id;
-        }) || null);
+        }) ?? null);
     if (item === null) {
         return (
             <FileReadError />

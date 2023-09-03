@@ -111,7 +111,7 @@ export default class BibleItem extends ItemBase
         if (this.fileSource === null) {
             return false;
         }
-        const bible = await Bible.readFileToData(this.fileSource || null);
+        const bible = await Bible.readFileToData(this.fileSource ?? null);
         if (bible) {
             const bibleItem = bible.getItemById(this.id);
             if (bibleItem !== null) {
@@ -125,7 +125,7 @@ export default class BibleItem extends ItemBase
     update(bibleItem: BibleItem) {
         this.bibleKey = bibleItem.bibleKey;
         this.target = bibleItem.target;
-        this.metadata = bibleItem.metadata || this.metadata;
+        this.metadata = bibleItem.metadata ?? this.metadata;
     }
     static convertPresent(bibleItem: BibleItem, presentingBibleItems: BibleItem[]) {
         let list;
@@ -167,7 +167,7 @@ export default class BibleItem extends ItemBase
         const bibleVerseKey = bibleRenderHelper
             .toBibleVersesKey(this.bibleKey, this.target);
         return await bibleRenderHelper.toTitle(bibleVerseKey)
-            || `😟Unable to render title for ${bibleVerseKey}`;
+            ?? `😟Unable to render title for ${bibleVerseKey}`;
     }
     async toText() {
         const bibleVerseKey = bibleRenderHelper
@@ -203,7 +203,7 @@ export default class BibleItem extends ItemBase
         if (!data) {
             return null;
         }
-        const json = JSON.parse(data) as any;
+        const json = JSON.parse(data);
         const fileSource = FileSource.getInstance(json.filePath);
         return BibleItem.fromJson(json, fileSource);
     }

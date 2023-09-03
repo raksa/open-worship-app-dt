@@ -30,7 +30,8 @@ export type BGSrcListType = {
 export type PresentBGManagerEventType = 'update';
 
 const settingName = 'present-bg-';
-export default class PresentBGManager extends EventHandler<PresentBGManagerEventType>
+export default class PresentBGManager
+    extends EventHandler<PresentBGManagerEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-bg-m';
     readonly presentId: number;
@@ -42,7 +43,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
         this.presentId = presentId;
         if (appProviderPresent.isMain) {
             const allBGSrcList = PresentBGManager.getBGSrcList();
-            this._bgSrc = allBGSrcList[this.key] || null;
+            this._bgSrc = allBGSrcList[this.key] ?? null;
         }
     }
     get div() {
@@ -152,9 +153,12 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             }
         }
         const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
-        chosenPresentManagers.forEach(async (presentManager) => {
+        const setSrc = async (presentManager: PresentManager) => {
             const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
             presentManager.presentBGManager.bgSrc = bgSrc;
+        };
+        chosenPresentManagers.forEach((presentManager) => {
+            setSrc(presentManager);
         });
         this.fireUpdateEvent();
     }
@@ -189,13 +193,11 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
                     child.remove();
                 });
             });
-        } else {
-            if (this.div.lastChild !== null) {
-                const targetDiv = this.div.lastChild as HTMLDivElement;
-                aminData.animOut(targetDiv).then(() => {
-                    targetDiv.remove();
-                });
-            }
+        } else if (this.div.lastChild !== null) {
+            const targetDiv = this.div.lastChild as HTMLDivElement;
+            aminData.animOut(targetDiv).then(() => {
+                targetDiv.remove();
+            });
         }
     }
     get containerStyle(): React.CSSProperties {

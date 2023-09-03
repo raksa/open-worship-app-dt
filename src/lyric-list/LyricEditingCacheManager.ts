@@ -33,15 +33,15 @@ export default class LyricEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            items: newItems || this.cloneItems,
-            metadata: newMetadata || this.cloneMetadata,
+            items: newItems ?? this.cloneItems,
+            metadata: newMetadata ?? this.cloneMetadata,
         };
     }
     getLyricItemById(id: number) {
         const latestHistory = this.presentJson;
         return latestHistory.items.find((item) => {
             return item.id === id;
-        }) || null;
+        }) ?? null;
     }
     checkIsLyricItemChanged(id: number) {
         const newItem = this.getLyricItemById(id);

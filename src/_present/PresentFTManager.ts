@@ -43,7 +43,7 @@ export default class PresentFTManager
         this.presentId = presentId;
         if (appProviderPresent.isMain) {
             const allFTList = getFTList();
-            this._ftItemData = allFTList[this.key] || null;
+            this._ftItemData = allFTList[this.key] ?? null;
 
             const str = getSetting(`${settingName}-style-text`, '');
             try {
@@ -74,7 +74,6 @@ export default class PresentFTManager
     set isLineSync(isLineSync: boolean) {
         setSetting(`${settingName}-line-sync-${this.presentId}`,
             `${isLineSync}`);
-        this.ftItemData = this.ftItemData;
     }
     get div() {
         return this._div;
@@ -272,7 +271,7 @@ export default class PresentFTManager
             genPresentMouseEvent(event) as any,
         );
         const ftItemData = await bibleItemToFtData(bibleItems);
-        chosenPresentManagers.forEach(async (presentManager) => {
+        chosenPresentManagers.forEach((presentManager) => {
             const { presentFTManager } = presentManager;
             presentFTManager.ftItemData = ftItemData;
         });
@@ -290,7 +289,7 @@ export default class PresentFTManager
             scroll: 0,
             selectedIndex: null,
         };
-        chosenPresentManagers.forEach(async (presentManager) => {
+        chosenPresentManagers.forEach((presentManager) => {
             const { presentFTManager } = presentManager;
             presentFTManager.ftItemData = ftItemData;
         });

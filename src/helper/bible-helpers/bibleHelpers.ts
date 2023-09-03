@@ -30,10 +30,10 @@ export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 export const BIBLE_LIST_SELECTED_DIR = 'bible-list-selected-dir';
 
 async function getSelectedEditingBibleItem() {
-    let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
+    let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) ?? null;
     if (bibleKey === null) {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
-        if (!downloadedBibleInfoList || !downloadedBibleInfoList.length) {
+        if (!downloadedBibleInfoList?.length) {
             showSimpleToast('Getting Selected Bible',
                 'Unable to get selected bible');
             return null;
@@ -47,7 +47,7 @@ export function useGetSelectedBibleKey() {
     const [bibleKeySelected, _setBibleKeySelected] = useState<string | null>(
         null);
     const setBibleKeySelected = (bibleKey: string | null) => {
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
         _setBibleKeySelected(bibleKey);
     };
     useAppEffect(() => {
@@ -160,8 +160,8 @@ export async function consumeStartVerseEndVerse(
         return null;
     }
     const verseCount = Object.keys(verses).length;
-    const sVerse = startVerse !== null ? startVerse : 1;
-    const eVerse = endVerse !== null ? endVerse : verseCount;
+    const sVerse = startVerse ?? 1;
+    const eVerse = endVerse ?? verseCount;
     const result: ConsumeVerseType = {
         verses,
         sVerse,
@@ -173,7 +173,7 @@ export async function consumeStartVerseEndVerse(
 export function moveBibleItemTo(event: any, bible: Bible, index?: number) {
     const dirSource = DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
     dirSource.getFileSources('bible').then((fileSources) => {
-        const targetNames = (fileSources || []).map((fileSource) => {
+        const targetNames = (fileSources ?? []).map((fileSource) => {
             return fileSource.name;
         }).filter((name) => {
             return name !== bible.fileSource.name;

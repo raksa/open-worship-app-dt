@@ -60,8 +60,8 @@ export default function RenderList({
         [UNKNOWN]: [],
     };
     fileSources.forEach((fileSource) => {
-        const colorNote = fileSource.colorNote || UNKNOWN;
-        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
+        const colorNote = fileSource.colorNote ?? UNKNOWN;
+        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] ?? [];
         fileSourceColorMap[colorNote].push(fileSource);
     });
     if (Object.keys(fileSourceColorMap).length === 1) {

@@ -17,6 +17,7 @@ import AppModal, {
     APP_MODAL_QUERY_ROUTE_PATH,
 } from './app-modal/AppModal';
 import RedirectTo from './others/RedirectTo';
+import { useMemo } from 'react';
 
 function checkHome() {
     const url = new URL(window.location.href);
@@ -26,14 +27,16 @@ function checkHome() {
 }
 
 export default function App() {
-    const tabProps = [
-        editingTab,
-        presentingTab,
-        readingTab,
-    ];
+    const tabProps = useMemo(() => {
+        return [
+            editingTab,
+            presentingTab,
+            readingTab,
+        ];
+    }, []);
     checkHome();
     return (
-        <div id='app' className='dark'>
+        <div id='app' className='dark' data-bs-theme="dark">
             <DefaultTabContext.Provider value={tabProps}>
                 <BrowserRouter>
                     <AppRouteRender />
@@ -53,7 +56,7 @@ function AppRouteRender() {
     };
     return (
         <>
-            <Routes location={state?.backgroundLocation || location}>
+            <Routes location={state?.backgroundLocation ?? location}>
                 <Route element={<AppLayout />}>
                     <Route path={home.routePath}
                         element={<RedirectTo to={presentingTab.title} />} />

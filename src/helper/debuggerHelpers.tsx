@@ -9,7 +9,7 @@ type StoreType = {
     timeoutId: any,
 };
 function restore(toKey: string) {
-    const store = (mapper.get(toKey) || {
+    const store = (mapper.get(toKey) ?? {
         count: 0,
         timeoutId: 0,
     });
@@ -35,7 +35,7 @@ export function useAppEffect(
     deps?: React.DependencyList,
     key?: string,
 ) {
-    const toKey = key || effect.toString();
+    const toKey = key ?? effect.toString();
     const toEffect = () => {
         const store = restore(toKey);
         mapper.set(toKey, store);

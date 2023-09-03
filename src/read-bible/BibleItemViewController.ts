@@ -7,14 +7,14 @@ import { handleError } from '../helper/errorHelpers';
 import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
 
 export type UpdateEventType = 'update';
-export const RESIZER_SETTING_NAME = 'bible-previewer-render';
+export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
     static _instance: BibleItemViewController | null = null;
     get bibleItems() {
         try {
-            const bibleItems = JSON.parse(getSetting('bibleItems') || '[]');
+            const bibleItems = JSON.parse(getSetting('bibleItems') ?? '[]');
             return bibleItems.map((item: any) => {
                 return BibleItem.fromJson(item);
             });
@@ -25,7 +25,7 @@ export default class BibleItemViewController
     }
     set bibleItems(newBibleItems: BibleItem[]) {
         if (newBibleItems.length !== this.bibleItems.length) {
-            clearFlexSizeSetting(RESIZER_SETTING_NAME);
+            clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
         setSetting('bibleItems', JSON.stringify(newBibleItems.map((item) => {
             return item.toJson();
@@ -97,7 +97,8 @@ export function useBIVCUpdateEvent(
             setBibleItems(bibleItemViewController.bibleItems);
         };
         const instanceEvents = bibleItemViewController.registerEventListener(
-            ['update'], update) || [];
+            ['update'], update,
+        ) ?? [];
         return () => {
             bibleItemViewController.unregisterEventListener(instanceEvents);
         };

@@ -24,7 +24,7 @@ export function usePMEvents(events: PresentManagerEventType[],
             callback?.();
         };
         const instanceEvents = presentManager?.
-            registerEventListener(events, update) || [];
+            registerEventListener(events, update) ?? [];
         const staticEvents = PresentManager.
             registerEventListener(events, update);
         return () => {
@@ -44,7 +44,7 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
             callback?.();
         };
         const instanceEvents = presentBGManager?.
-            registerEventListener(events, update) || [];
+            registerEventListener(events, update) ?? [];
         const staticEvents = PresentBGManager.
             registerEventListener(events, update);
         return () => {
@@ -64,7 +64,7 @@ export function usePSlideMEvents(events: PresentSlideManagerEventType[],
             callback?.();
         };
         const instanceEvents = presentSlideManager?.
-            registerEventListener(events, update) || [];
+            registerEventListener(events, update) ?? [];
         const staticEvents = PresentSlideManager.
             registerEventListener(events, update);
         return () => {
@@ -84,7 +84,7 @@ export function usePFTMEvents(events: PresentFTManagerEventType[],
             callback?.(args);
         };
         const instanceEvents = presentFTManager?.
-            registerEventListener(events, update) || [];
+            registerEventListener(events, update) ?? [];
         const staticEvents = PresentFTManager.
             registerEventListener(events, update);
         return () => {

@@ -6,7 +6,7 @@ export type AppColorType = `#${string}`;
 
 export const colorToTransparent = (color: AppColorType): number => {
     const hexStr = `${color[7]}${color[8]}`;
-    return parseInt(hexStr, 16) || 255;
+    return parseInt(hexStr, 16) ?? 255;
 };
 
 export const transparentColor = (n: number): string => {
@@ -14,7 +14,9 @@ export const transparentColor = (n: number): string => {
     return hex.length === 1 ? `0${hex}` : hex;
 };
 
-export function compareColor(color1: AppColorType, color2: AppColorType): boolean {
+export function compareColor(
+    color1: AppColorType, color2: AppColorType,
+): boolean {
     return color1.substring(0, 7).toLowerCase() ===
         color2.substring(0, 7).toLocaleLowerCase();
 }

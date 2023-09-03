@@ -40,7 +40,7 @@ function genTabItem(title: string, routePath: string): TabOptionType {
     };
 }
 
-export const home:TabOptionType = {
+export const home: TabOptionType = {
     title: 'Home',
     routePath: '/',
 };
@@ -80,7 +80,7 @@ function checkIsWindowMode(
     targetMode: WindowModEnum,
     mode?: WindowModEnum | null,
 ) {
-    mode = mode || genWindowMode();
+    mode = mode ?? genWindowMode();
     return mode === targetMode;
 }
 export function checkIsWindowEditingMode(mode?: WindowModEnum | null) {

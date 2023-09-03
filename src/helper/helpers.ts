@@ -38,13 +38,14 @@ export function isVisible(elem: any) {
     if (elemCenter.x < 0) {
         return false;
     }
-    if (elemCenter.x > (document.documentElement.clientWidth || window.innerWidth)) {
+    const { documentElement } = document;
+    if (elemCenter.x > (documentElement.clientWidth || window.innerWidth)) {
         return false;
     }
     if (elemCenter.y < 0) {
         return false;
     }
-    if (elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)) {
+    if (elemCenter.y > (documentElement.clientHeight || window.innerHeight)) {
         return false;
     }
     let pointContainer = document.elementFromPoint(elemCenter.x, elemCenter.y);
@@ -53,7 +54,7 @@ export function isVisible(elem: any) {
             return true;
         }
         pointContainer = pointContainer?.parentNode as any;
-    } while (!!pointContainer);
+    } while (pointContainer);
     return false;
 }
 
@@ -75,9 +76,10 @@ export function genRandomString(length: number = 5) {
 }
 
 export function getWindowDim() {
-    const width = window.innerWidth || document.documentElement.clientWidth ||
+    const { documentElement } = document;
+    const width = window.innerWidth || documentElement.clientWidth ||
         document.body.clientWidth;
-    const height = window.innerHeight || document.documentElement.clientHeight ||
+    const height = window.innerHeight || documentElement.clientHeight ||
         document.body.clientHeight;
     return { width, height };
 }
@@ -105,7 +107,7 @@ export function useReadFileToData<T extends ItemSource<any>>(
 }
 
 export function getLastItem<T>(arr: T[]) {
-    return arr[arr.length - 1] || null;
+    return arr[arr.length - 1] ?? null;
 }
 
 export function getImageDim(src: string) {
@@ -135,7 +137,7 @@ export function getVideoDim(src: string) {
 }
 
 export function toMaxId(ids: number[]) {
-    return Math.max.apply(Math, ids);
+    return Math.max(...ids);
 }
 
 export function isValidJson(json: any, isSilent: boolean = false) {

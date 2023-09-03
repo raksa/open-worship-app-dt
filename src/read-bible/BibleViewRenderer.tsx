@@ -2,7 +2,7 @@ import BibleView from './BibleView';
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
 import BibleItemViewController, {
-    RESIZER_SETTING_NAME,
+    RESIZE_SETTING_NAME,
     useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
@@ -29,7 +29,7 @@ export default function BibleViewRenderer({
     }
     return (
         <ResizeActor
-            fSizeName={RESIZER_SETTING_NAME}
+            fSizeName={RESIZE_SETTING_NAME}
             flexSizeDefault={Object.fromEntries(bibleItems.map((_, i) => {
                 return [`h${i + 1}`, ['1']];
             }))}

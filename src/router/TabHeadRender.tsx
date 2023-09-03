@@ -29,12 +29,9 @@ function renderItem(
         routePath, checkIsActive,
     }: TabOptionType,
 ) {
-    const pathArray = location.pathname.split('/').filter((item) => {
-        return item !== '';
-    });
     const isActive = !!checkIsActive?.(routeProps);
     return (<li key={title}
-        className={'nav-item ' + (tabClassName || '')}>
+        className={'nav-item ' + (tabClassName ?? '')}>
         <button
             className={`btn btn-link nav-link ${isActive ? 'active' : ''}`}
             onClick={() => {

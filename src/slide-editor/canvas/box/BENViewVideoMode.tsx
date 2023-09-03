@@ -59,7 +59,7 @@ export function BENVideoRender({ props }: {
             alignItems: 'center',
             pointerEvents: 'none',
         }}>
-            <video src={props.srcData || img404}
+            <video src={props.srcData ?? img404}
                 width={width}
                 loop muted playsInline />
             <div style={{

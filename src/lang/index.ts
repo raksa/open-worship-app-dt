@@ -39,7 +39,7 @@ export function getCurrentLocale() {
 
 const cache = new Map<string, LanguageType>();
 export function getLang(lang: string) {
-    return cache.get(lang) || null;
+    return cache.get(lang) ?? null;
 }
 
 export async function getLangAsync(locale: LocaleType) {
@@ -66,7 +66,7 @@ export function tran(text: string) {
         return text;
     }
     const dictionary = langData.dictionary;
-    return dictionary[text] || text;
+    return dictionary[text] ?? text;
 }
 
 export const toLocaleNum = (locale: LocaleType, n: number): string => {

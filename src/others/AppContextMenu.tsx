@@ -145,7 +145,7 @@ function ContextMenuItem({ item }: {
                 }, 0);
             }}>
             {item.title}
-            {item.otherChild || null}
+            {item.otherChild ?? null}
         </div>
     );
 }

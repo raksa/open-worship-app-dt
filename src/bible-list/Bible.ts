@@ -106,7 +106,7 @@ export default class Bible extends ItemSource<BibleItem>{
         const items = this.items;
         const removedItems = items.splice(index, 1);
         this.items = items;
-        return removedItems[0] || null;
+        return removedItems[0] ?? null;
     }
     removeItem(bibleItem: BibleItem) {
         const items = this.items;

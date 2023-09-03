@@ -164,18 +164,18 @@ export type FileResultType = {
     filePath: string,
 };
 
-function fsFilePromise<T>(fn: Function, ...args: any[]): Promise<T> {
+function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        args = args || [];
-        args.push(function (error: any, ...args1: any[]) {
+        args = args ?? [];
+        args.push(function (error: any, ...args1: any) {
             if (error) {
                 reject(error);
             } else {
-                args1 = args1 || [];
-                resolve.apply(null, args1 as any);
+                args1 = args1 ?? [];
+                (resolve as any)(...args1);
             }
         });
-        fn.apply(null, args);
+        fn(...args);
     });
 }
 function _fsStat(filePath: string) {
@@ -193,10 +193,14 @@ function _fsReaddir(dirPath: string) {
     return fsFilePromise<string[]>(appProvider.fileUtils.readdir, dirPath);
 }
 function _fsReadFile(filePath: string, options?: any) {
-    return fsFilePromise<string>(appProvider.fileUtils.readFile, filePath, options);
+    return fsFilePromise<string>(
+        appProvider.fileUtils.readFile, filePath, options,
+    );
 }
 function _fsWriteFile(filePath: string, data: string, options?: any) {
-    return fsFilePromise<void>(appProvider.fileUtils.writeFile, filePath, data, options);
+    return fsFilePromise<void>(
+        appProvider.fileUtils.writeFile, filePath, data, options,
+    );
 }
 function _fsRename(oldPath: string, newPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
@@ -207,7 +211,9 @@ function _fsUnlink(filePath: string) {
 function _fsCopyFile(src: string, dest: string) {
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
 }
-async function _fsCheckExist(isFile: boolean, filePath: string, fileName?: string) {
+async function _fsCheckExist(
+    isFile: boolean, filePath: string, fileName?: string,
+) {
     if (!filePath) {
         return false;
     }

@@ -67,7 +67,7 @@ export default class Slide extends ItemSource<SlideItem>{
     get selectedIndex() {
         const foundItem = this.items.find((item) => {
             return item.isSelected;
-        }) || null;
+        }) ?? null;
         if (foundItem) {
             return this.items.indexOf(foundItem);
         }
@@ -92,7 +92,7 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     get items() {
         if (this.isPdf) {
-            return (this._pdfImageDataList || []).map((pdfImageData, i) => {
+            return (this._pdfImageDataList ?? []).map((pdfImageData, i) => {
                 const slideItem = new SlideItem(i, this.fileSource, {
                     id: i,
                     canvasItems: [],
@@ -131,7 +131,7 @@ export default class Slide extends ItemSource<SlideItem>{
         return 0;
     }
     getItemByIndex(index: number) {
-        return this.items[index] || null;
+        return this.items[index] ?? null;
     }
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
@@ -299,7 +299,7 @@ export default class Slide extends ItemSource<SlideItem>{
         this.fileSource.fireSelectEvent();
     }
     getItemById(id: number) {
-        return this.items.find((item) => item.id === id) || null;
+        return this.items.find((item) => item.id === id) ?? null;
     }
     static async readFileToDataNoCache(fileSource: FileSource | null,
         isOrigin?: boolean) {

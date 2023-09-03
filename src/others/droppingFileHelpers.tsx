@@ -18,7 +18,9 @@ function changeDragEventStyle(event: React.DragEvent<HTMLDivElement>,
     (event.currentTarget.style as any)[key] = value;
 }
 
-export function genOnDragOver(dirSource: DirSource, mimetype: MimetypeNameType) {
+export function genOnDragOver(
+    dirSource: DirSource, mimetype: MimetypeNameType,
+) {
     return (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         if (!dirSource.dirPath) {
@@ -66,48 +68,52 @@ export function genOnDrop({
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
 }) {
+    const handleDroppedFolder = async (droppedPath: string) => {
+        if (!dirSource.dirPath) {
+            dirSource.dirPath = droppedPath;
+            if (droppedPath === null) {
+                showSimpleToast('Open Folder', 'Unable to open folder');
+            }
+            return true;
+        } else if (dirSource.dirPath !== droppedPath) {
+            const isOk = await openConfirm('Open Folder',
+                'Are you sure to open a new folder?');
+            if (isOk) {
+                dirSource.dirPath = droppedPath;
+            }
+        }
+    };
+    const handleDroppedFiles = async (file: File) => {
+        const fileSource = FileSource.getInstance((file as any).path);
+        if (takeDroppedFile?.(fileSource)) {
+            return;
+        }
+        const title = 'Copying File';
+        if (checkExtraFile?.(fileSource) ||
+            !isSupportedExt(fileSource.fileName, mimetype)) {
+            showSimpleToast(title, 'Unsupported file type!');
+        } else {
+            try {
+                await fsCopyFileToPath(fileSource.filePath,
+                    fileSource.fileName, dirSource.dirPath);
+                showSimpleToast(title, 'File has been copied');
+            } catch (error: any) {
+                showSimpleToast(title, error.message);
+            }
+        }
+    };
     return async (event: React.DragEvent<HTMLDivElement>) => {
         changeDragEventStyle(event, 'opacity', '1');
         event.preventDefault();
         const droppedPath = await getDroppingFolder(event);
         if (droppedPath !== null) {
-            if (!dirSource.dirPath) {
-                dirSource.dirPath = droppedPath;
-                if (droppedPath !== null) {
-                } else {
-                    showSimpleToast('Open Folder', 'Unable to open folder');
-                }
-                return true;
-            } else if (dirSource.dirPath !== droppedPath) {
-                const isOk = await openConfirm('Open Folder',
-                    'Are you sure to open a new folder?');
-                if (isOk) {
-                    dirSource.dirPath = droppedPath;
-                }
-            }
+            handleDroppedFolder(droppedPath);
             return;
         } else if (!dirSource.dirPath) {
             showSimpleToast('Open Folder', 'Unable to open folder');
         }
-
-        Array.from(event.dataTransfer.files).forEach(async (file) => {
-            const fileSource = FileSource.getInstance((file as any).path);
-            if (takeDroppedFile && takeDroppedFile(fileSource)) {
-                return;
-            }
-            const title = 'Copying File';
-            if (checkExtraFile?.(fileSource) ||
-                !isSupportedExt(fileSource.fileName, mimetype)) {
-                showSimpleToast(title, 'Unsupported file type!');
-            } else {
-                try {
-                    await fsCopyFileToPath(fileSource.filePath,
-                        fileSource.fileName, dirSource.dirPath);
-                    showSimpleToast(title, 'File has been copied');
-                } catch (error: any) {
-                    showSimpleToast(title, error.message);
-                }
-            }
+        Array.from(event.dataTransfer.files).forEach((file) => {
+            handleDroppedFiles(file);
         });
     };
 }
@@ -116,16 +122,19 @@ export function genOnContextMenu(contextMenu?: ContextMenuItemType[]) {
     return (event: React.MouseEvent<any>) => {
         showAppContextMenu(event as any, [
             {
-                title: 'Delete All', onClick: async () => {
-                    const isOk = await openConfirm('Not implemented',
-                        'Read mode is not implemented yet.');
-                    if (isOk) {
-                        showSimpleToast('Deleting All',
-                            'Not implemented, need input "delete all"');
-                    }
+                title: 'Delete All',
+                onClick: () => {
+                    (async () => {
+                        const isOk = await openConfirm('Not implemented',
+                            'Read mode is not implemented yet.');
+                        if (isOk) {
+                            showSimpleToast('Deleting All',
+                                'Not implemented, need input "delete all"');
+                        }
+                    })();
                 },
             },
-            ...(contextMenu || []),
+            ...(contextMenu ?? []),
         ]);
     };
 }

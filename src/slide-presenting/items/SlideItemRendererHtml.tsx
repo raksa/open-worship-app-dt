@@ -15,7 +15,7 @@ export default function SlideItemRendererHtml({ slideItem }: {
     return (
         <div ref={(div) => {
             if (div !== null) {
-                setWidth(div.parentElement?.clientWidth || 0);
+                setWidth(div.parentElement?.clientWidth ?? 0);
             }
         }}
             style={{

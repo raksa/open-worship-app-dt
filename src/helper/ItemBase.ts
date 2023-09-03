@@ -47,7 +47,9 @@ export abstract class ItemBase implements ColorNoteInf {
     static validate(_json: AnyObjectType) {
         throw new Error('Method not implemented.');
     }
-    static _toSelectedItemSetting(fileSource: FileSource | null, id: number | string | null) {
+    static _toSelectedItemSetting(
+        fileSource: FileSource | null, id: number | string | null,
+    ) {
         if (fileSource === null || id === null) {
             return null;
         }

@@ -1,4 +1,5 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/css/bootstrap.css';
 import './AppLayout.scss';
 import '../others/bootstrap-override.scss';
 import '../others/scrollbar.scss';
@@ -33,7 +34,7 @@ export default function AppLayout() {
 function getHeader(tabOptionList: TabOptionType[]) {
     return (
         <div className='app-header d-flex'>
-            <TabHeadRender tabs={tabOptionList || []} />
+            <TabHeadRender tabs={tabOptionList ?? []} />
             <div className={
                 'highlight-border-bottom d-flex'
                 + ' justify-content-center flex-fill'

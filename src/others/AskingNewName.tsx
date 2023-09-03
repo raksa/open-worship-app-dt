@@ -4,10 +4,10 @@ export default function AskingNewName({
     defaultName, applyName, customIcon,
 }: {
     defaultName?: string,
-    customIcon?: JSX.Element,
+    customIcon?: React.JSX.Element,
     applyName: (newName: string | null) => void,
 }) {
-    const [creatingNewName, setCreatingNewName] = useState(defaultName || '');
+    const [creatingNewName, setCreatingNewName] = useState(defaultName ?? '');
     return (
         <div className='input-group' onClick={(event) => {
             event.stopPropagation();
@@ -34,7 +34,7 @@ export default function AskingNewName({
                 id='button-addon2'
                 className='btn btn-outline-success'
                 onClick={() => {
-                    applyName(creatingNewName || null);
+                    applyName(creatingNewName ?? null);
                 }}>
                 {customIcon ?? <i className='bi bi-check' />}
             </button>

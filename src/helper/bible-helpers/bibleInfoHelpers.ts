@@ -60,7 +60,7 @@ export async function keyToBook(bibleKey: string, bookKey: string) {
     if (bookKVList === null) {
         return null;
     }
-    return bookKVList[bookKey] || null;
+    return bookKVList[bookKey] ?? null;
 }
 export async function getBookVKList(bibleKey: string) {
     const bibleVKList = await getBookKVList(bibleKey);
@@ -76,7 +76,7 @@ export async function bookToKey(bibleKey: string, book: string) {
     if (bookVKList === null) {
         return null;
     }
-    return bookVKList[book] || null;
+    return bookVKList[book] ?? null;
 }
 export async function getChapterCount(bibleKey: string, book: string) {
     if (!bibleStorage.chapterCountMapper.has(book)) {
@@ -87,7 +87,7 @@ export async function getChapterCount(bibleKey: string, book: string) {
         const chapterCount = getKJVChapterCount(bookKey);
         bibleStorage.chapterCountMapper.set(book, chapterCount);
     }
-    return bibleStorage.chapterCountMapper.get(book) || null;
+    return bibleStorage.chapterCountMapper.get(book) ?? null;
 }
 export async function getBookChapterData(bibleKey: string,
     bookKey: string, chapterNumber: number) {
@@ -99,7 +99,9 @@ export async function getBookChapterData(bibleKey: string,
     }
     return vInfo;
 }
-export async function getVerses(bibleKey: string, bookKey: string, chapter: number) {
+export async function getVerses(
+    bibleKey: string, bookKey: string, chapter: number,
+) {
     const key = `${bibleKey} => ${bookKey} ${chapter}`;
     if (!bibleStorage.chapterMapper.has(key)) {
         const chapterData = await getBookChapterData(bibleKey, bookKey, chapter);;
@@ -118,13 +120,13 @@ export class BibleDataReader {
     _writableBiblePath: string | null = null;
     _callbackMapper: Map<string, Array<CallbackType>> = new Map();
     _pushCallback(key: string, callback: CallbackType) {
-        const callbackList = this._callbackMapper.get(key) || [];
+        const callbackList = this._callbackMapper.get(key) ?? [];
         callbackList.push(callback);
         this._callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
     _fullfilCallback(key: string, data: ReadingBibleDataType) {
-        const callbackList = this._callbackMapper.get(key) || [];
+        const callbackList = this._callbackMapper.get(key) ?? [];
         this._callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(data);
@@ -194,5 +196,5 @@ export async function getBibleInfo(bibleKey: string, isForce: boolean = false) {
             bibleKey, '_info');
         bibleStorage.infoMapper.set(bibleKey, info);
     }
-    return bibleStorage.infoMapper.get(bibleKey) || null;
+    return bibleStorage.infoMapper.get(bibleKey) ?? null;
 }

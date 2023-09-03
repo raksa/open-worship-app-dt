@@ -58,8 +58,8 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         }
         current.classList.add('active');
 
-        this.previousMinSize = +(this.previous.dataset['minSize'] || '');
-        this.nextMinSize = +(this.next.dataset['minSize'] || '');
+        this.previousMinSize = +(this.previous.dataset['minSize'] ?? '');
+        this.nextMinSize = +(this.next.dataset['minSize'] ?? '');
         this.previousSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
         this.sumSize = this.previousSize + this.nextSize;
@@ -170,8 +170,8 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         return (
             <div className={`flex-resize-actor ${this.props.type}`}
                 onDoubleClick={() => {
-                    const prevGrowNew = this.previous.dataset['fsDefault'] || 1;
-                    const nextGrowNew = this.next.dataset['fsDefault'] || 1;
+                    const prevGrowNew = this.previous.dataset['fsDefault'] ?? 1;
+                    const nextGrowNew = this.next.dataset['fsDefault'] ?? 1;
                     this.previous.style.flex = `${prevGrowNew}`;
                     this.previous.style.flexGrow = '';
                     this.next.style.flex = `${nextGrowNew}`;
@@ -185,7 +185,7 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
                         ['right', 'chevron-right'],
                         ['up', 'chevron-up'],
                         ['down', 'chevron-down'],
-                    ].map(([type, icon], i) => {
+                    ].map(([type, icon]) => {
                         return (
                             <i key={type}
                                 title={`Disable ${type}`}

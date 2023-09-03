@@ -15,7 +15,7 @@ export function useDSEvents(events: DirSourceEventType[],
             callback?.();
         };
         const instanceEvents = dirSource?.registerEventListener(
-            events, update) || [];
+            events, update) ?? [];
         const staticEvents = DirSource.registerEventListener(events, update);
         return () => {
             dirSource?.unregisterEventListener(instanceEvents);
@@ -34,7 +34,7 @@ export function useFSEvents(events: FSEventType[],
             callback?.();
         };
         const instanceEvents = fileSource?.registerEventListener(
-            events, update) || [];
+            events, update) ?? [];
         const staticEvents = FileSource.registerEventListener(
             events, update);
         return () => {

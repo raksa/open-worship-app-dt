@@ -14,7 +14,7 @@ export default function SlideItemEditorGround() {
         SlideItem | null | undefined>(null);
     const reloadSlide = async () => {
         const newSlide = await SlideItem.getSelectedItem();
-        setSlideItem(newSlide || undefined);
+        setSlideItem(newSlide ?? undefined);
     };
     useAppEffect(() => {
         if (slideItem === null) {
@@ -27,7 +27,7 @@ export default function SlideItemEditorGround() {
         });
     useSlideSelecting(() => setSlideItem(null));
     useSlideItemSelecting(setSlideItem);
-    CanvasController.getInstance().init(slideItem || null);
+    CanvasController.getInstance().init(slideItem ?? null);
     if (!slideItem) {
         return (
             <div className='slide-item-editor empty'

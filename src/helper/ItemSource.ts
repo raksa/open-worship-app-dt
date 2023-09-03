@@ -55,14 +55,14 @@ export default abstract class ItemSource<T extends {
     }
     static setSelectedFileSource(fileSource: FileSource | null,
         settingName?: string) {
-        settingName = settingName || this.SELECT_SETTING_NAME;
+        settingName = settingName ?? this.SELECT_SETTING_NAME;
         if (!settingName) {
             return;
         }
         setSetting(settingName, fileSource === null ? '' : fileSource.filePath);
     }
     static getSelectedFileSource(settingName?: string) {
-        settingName = settingName || this.SELECT_SETTING_NAME;
+        settingName = settingName ?? this.SELECT_SETTING_NAME;
         if (!settingName) {
             return null;
         }

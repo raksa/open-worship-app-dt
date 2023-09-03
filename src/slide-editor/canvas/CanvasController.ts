@@ -34,14 +34,14 @@ export default class CanvasController extends EventHandler<CCEventType> {
     constructor() {
         super();
         this._canvas = Canvas.genDefaultCanvas();
-        const defaultData = +(getSetting('editor-scale') || NaN);
+        const defaultData = +(getSetting('editor-scale') ?? NaN);
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }
     }
     init(slideItem: SlideItem | null) {
         this._slideItem = slideItem;
-        this._canvas = slideItem?.canvas || Canvas.genDefaultCanvas();
+        this._canvas = slideItem?.canvas ?? Canvas.genDefaultCanvas();
     }
     get canvas() {
         return this._canvas;
@@ -124,7 +124,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     async addNewMediaItem(fileSource: FileSource, event: any) {
         try {
-            const mediaType = fileSource.metadata?.appMimetype.mimetypeName || '';
+            const mediaType = fileSource.metadata?.appMimetype.mimetypeName ?? '';
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast('Insert Medias',
                     'Only image and video files are supported');

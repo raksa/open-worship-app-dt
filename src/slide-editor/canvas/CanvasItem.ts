@@ -61,7 +61,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             width: `${props.width}px`,
             height: `${props.height}px`,
             position: 'absolute',
-            backgroundColor: props.backgroundColor || 'transparent',
+            backgroundColor: props.backgroundColor ?? 'transparent',
         };
         return style;
     }
@@ -104,7 +104,8 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         });
     }
     clone() {
-        const newItem = (this.constructor as typeof CanvasItem<any>).fromJson(this.toJson());
+        const newItem = (this.constructor as typeof CanvasItem<any>)
+            .fromJson(this.toJson());
         newItem.props.id = -1;
         return newItem;
     }

@@ -46,7 +46,8 @@ export type ToolingTextType = {
     textHorizontalAlignment?: HAlignmentType,
     textVerticalAlignment?: VAlignmentType,
 };
-export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
+export default class CanvasItemText
+    extends CanvasItem<CanvasItemTextPropsType> {
     get type(): CanvasItemKindType {
         return 'text';
     }
@@ -56,8 +57,8 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             width: '100%',
             height: '100%',
             fontSize: `${props.fontSize}px`,
-            fontFamily: props.fontFamily || '',
-            fontWeight: props.fontWeight || '',
+            fontFamily: props.fontFamily ?? '',
+            fontWeight: props.fontWeight ?? '',
             color: props.color,
             alignItems: props.textVerticalAlignment,
             justifyContent: props.textHorizontalAlignment,

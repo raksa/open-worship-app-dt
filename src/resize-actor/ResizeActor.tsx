@@ -18,8 +18,8 @@ export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
 };
 export type DataInputType = [
-    React.LazyExoticComponent<() => JSX.Element | null> | {
-        render: () => JSX.Element | null,
+    React.LazyExoticComponent<() => React.JSX.Element | null> | {
+        render: () => React.JSX.Element | null,
     },
     string,
     string,
@@ -91,7 +91,7 @@ function RenderItem({
             </AppSuspense>
         );
     };
-    const flexSizeValue = flexSize[key] || defaultFlexSize[key] || [];
+    const flexSizeValue = (flexSize[key] ?? defaultFlexSize[key]) ?? [];
     const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
     if (flexSizeValue[1]) {
         const onClick = (event: any) => {
@@ -133,7 +133,7 @@ function RenderItem({
                 data-min-size={40}
                 className={classList}
                 style={{
-                    flex: flexSizeValue[0] || 1,
+                    flex: flexSizeValue[0] ?? 1,
                     ...style,
                 }}>
                 {renderChildren()}

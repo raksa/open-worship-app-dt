@@ -3,9 +3,8 @@ import { ItemBase } from '../helper/ItemBase';
 import Lyric from './Lyric';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
-import DragInf from '../helper/DragInf';
+import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
-import { DragTypeEnum } from '../helper/DragInf';
 
 export type LyricItemType = {
     id: number,
@@ -47,14 +46,14 @@ export default class LyricItem extends ItemBase
     }
     get metadata() {
         const json = this.editingCacheManager.getLyricItemById(this.id);
-        return json?.metadata || this._originalJson.metadata;
+        return json?.metadata ?? this._originalJson.metadata;
     }
     get lyricItemJson() {
         const items = this.editingCacheManager.presentJson.items;
         const lyricItemJson = items.find((item) => {
             return item.id === this.id;
         });
-        return lyricItemJson || this._originalJson;
+        return lyricItemJson ?? this._originalJson;
     }
     get title() {
         return this.lyricItemJson.title;

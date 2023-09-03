@@ -14,8 +14,12 @@ export function getSetting(key: string, defaultValue?: string): string {
     return value;
 }
 
-export function useStateSettingBoolean(settingName: string, defaultValue?: boolean) {
-    const defaultData = (getSetting(settingName) || 'false') !== 'false' || !!defaultValue;
+export function useStateSettingBoolean(
+    settingName: string, defaultValue?: boolean,
+) {
+    const defaultData = (
+        (getSetting(settingName) ?? 'false') !== 'false' || !!defaultValue
+    );
     const [data, setData] = useState(defaultData);
     const setDataSetting = (b: boolean) => {
         setData(b);
@@ -23,8 +27,10 @@ export function useStateSettingBoolean(settingName: string, defaultValue?: boole
     };
     return [data, setDataSetting] as [boolean, (b: boolean) => void];
 }
-export function useStateSettingString<T extends string>(settingName: string, defaultString: T) {
-    const defaultData = getSetting(settingName) || defaultString || '';
+export function useStateSettingString<T extends string>(
+    settingName: string, defaultString: T,
+) {
+    const defaultData = (getSetting(settingName) ?? defaultString) ?? '';
     const [data, setData] = useState<T>(defaultData as T);
     const setDataSetting = (b: string) => {
         setData(b as T);
@@ -34,8 +40,10 @@ export function useStateSettingString<T extends string>(settingName: string, def
 }
 export function useStateSettingNumber(settingName: string
     , defaultNumber: number): [number, (n: number) => void] {
-    const defaultData = +(getSetting(settingName) || NaN);
-    const [data, setData] = useState(isNaN(defaultData) ? defaultNumber : defaultData);
+    const defaultData = +(getSetting(settingName) ?? NaN);
+    const [data, setData] = useState(
+        isNaN(defaultData) ? defaultNumber : defaultData,
+    );
     const setDataSetting = (b: number) => {
         setData(b);
         setSetting(settingName, `${b}`);
@@ -67,13 +75,13 @@ export class SettingManager<T> {
     }) {
         this.settingName = settingName;
         this.defaultValue = defaultValue;
-        this.isErrorToDefault = isErrorToDefault || false;
-        this.validate = validate || (() => true);
-        this.serialize = serialize || ((value) => value);
-        this.deserialize = deserialize || ((value) => value);
+        this.isErrorToDefault = isErrorToDefault ?? false;
+        this.validate = validate ?? (() => true);
+        this.serialize = serialize ?? ((value) => value);
+        this.deserialize = deserialize ?? ((value) => value);
     }
     getSetting(defaultValue?: T): T {
-        defaultValue = defaultValue || this.defaultValue;
+        defaultValue = defaultValue ?? this.defaultValue;
         const value = getSetting(this.settingName,
             this.serialize(defaultValue));
         if (!this.validate(value)) {

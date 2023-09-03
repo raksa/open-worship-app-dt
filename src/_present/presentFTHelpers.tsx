@@ -178,7 +178,7 @@ export function renderPFTManager(presentFTManager: PresentFTManager) {
         onSelectIndex: (selectedIndex) => {
             onSelectIndex(presentFTManager, selectedIndex);
         },
-        onBibleSelect: async (event: any, index) => {
+        onBibleSelect: (event: any, index) => {
             onBibleSelect(presentFTManager, event, index, ftItemData);
         },
     });

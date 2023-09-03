@@ -24,8 +24,8 @@ const fontUtils = {
                     }
                     const arr = font.split('-');
                     const fontFamily = arr[0];
-                    availableFonts[fontFamily] = availableFonts[fontFamily] || [];
-                    const fontStyle = (arr[1] || '').toLowerCase();
+                    availableFonts[fontFamily] = availableFonts[fontFamily] ?? [];
+                    const fontStyle = (arr[1] ?? '').toLowerCase();
                     if (fontStyleMapper[fontStyle]) {
                         availableFonts[fontFamily].push(
                             fontStyleMapper[fontStyle]);

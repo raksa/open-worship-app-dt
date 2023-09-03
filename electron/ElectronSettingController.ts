@@ -32,7 +32,7 @@ export default class ElectronSettingController {
         return path.join(useDataPath, 'setting.json');
     }
     get mainWinBounds() {
-        return this._setting.mainWinBounds || this.primaryDisplay.bounds;
+        return this._setting.mainWinBounds ?? this.primaryDisplay.bounds;
     }
     set mainWinBounds(bounds) {
         this._setting.mainWinBounds = bounds;

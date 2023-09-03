@@ -14,7 +14,7 @@ import {
 initReceivePresentMessage();
 export default function PresentApp() {
     const urlParams = new URLSearchParams(window.location.search);
-    const presentId = +(urlParams.get('presentId') || '') || 0;
+    const presentId = +(urlParams.get('presentId') ?? '0');
     const presentManager = PresentManager.getInstance(presentId);
     if (appProviderPresent.isPresent) {
         sendPresentMessage({
