@@ -1,4 +1,3 @@
-import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import EditingCacheManager from '../others/EditingCacheManager';
 import { SlideEditingHistoryType, SlideType } from './Slide';
@@ -7,8 +6,8 @@ import { SlideItemType } from './SlideItem';
 export default class SlideEditingCacheManager
     extends EditingCacheManager<SlideEditingHistoryType, SlideType> {
     _originalJson: Readonly<SlideType>;
-    constructor(fileSource: FileSource, json: SlideType) {
-        super(fileSource, 'slide');
+    constructor(filePath: string, json: SlideType) {
+        super(filePath, 'slide');
         this._originalJson = Object.freeze(cloneJson(json));
     }
     get cloneItems() {

@@ -26,9 +26,8 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FSEventType = 'select' | 'update'
-    | 'history-update' | 'edit' | 'delete'
-    | 'delete-cache' | 'refresh-dir';
+export type FSEventType = 'select' | 'update' | 'history-update' | 'edit'
+    | 'delete' | 'delete-cache';
 
 export default class FileSource extends EventHandler<FSEventType>
     implements DragInf<string>, ColorNoteInf {
@@ -70,11 +69,11 @@ export default class FileSource extends EventHandler<FSEventType>
         });
     }
     getColorNote() {
-        return FileSourceMetaManager.getColorNote(this);
+        return FileSourceMetaManager.getColorNote(this.filePath);
     }
     async setColorNote(color: string | null) {
-        FileSourceMetaManager.setColorNote(this, color);
-        this.fireRefreshDirEvent();
+        FileSourceMetaManager.setColorNote(this.filePath, color);
+        this.dirSource?.fireReloadEvent();
     }
     get metadata() {
         return getFileMetaData(this.fileName);
@@ -88,25 +87,6 @@ export default class FileSource extends EventHandler<FSEventType>
     }
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
-    }
-    fireRefreshDirEvent() {
-        this.dirSource?.fireRefreshEvent();
-    }
-    fireSelectEvent() {
-        this.addPropEvent('select');
-        FileSource.addPropEvent('select', this);
-    }
-    fireHistoryUpdateEvent() {
-        this.addPropEvent('history-update');
-    }
-    fireUpdateEvent() {
-        this.addPropEvent('update');
-    }
-    fireDeleteEvent() {
-        this.addPropEvent('delete');
-    }
-    fireDeleteCacheEvent() {
-        this.addPropEvent('delete-cache');
     }
     deleteCache() {
         FileSource._cache.delete(this.filePath);
@@ -224,5 +204,35 @@ export default class FileSource extends EventHandler<FSEventType>
             showSimpleToast('Duplicating File', 'Unable to duplicate file');
             handleError(error);
         }
+    }
+    static registerFSEventListener(
+        events: FSEventType[], callback: () => void, filePath?: string,
+    ) {
+        const newEvents = events.map((event) => {
+            return filePath ? `${event}:${filePath}` : event;
+        });
+        return super.registerEventListener(newEvents, callback);
+    }
+    static addFSPropEvent(
+        eventName: FSEventType, filePath: string, data?: any,
+    ): void {
+        const newEventName = `${eventName}:${filePath}` as FSEventType;
+        super.addPropEvent(eventName, data);
+        super.addPropEvent(newEventName, data);
+    }
+    fireSelectEvent() {
+        FileSource.addFSPropEvent('select', this.filePath);
+    }
+    fireHistoryUpdateEvent() {
+        FileSource.addFSPropEvent('history-update', this.filePath);
+    }
+    fireUpdateEvent() {
+        FileSource.addFSPropEvent('update', this.filePath);
+    }
+    fireDeleteEvent() {
+        FileSource.addFSPropEvent('delete', this.filePath);
+    }
+    fireDeleteCacheEvent() {
+        FileSource.addFSPropEvent('delete-cache', this.filePath);
     }
 }

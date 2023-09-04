@@ -24,7 +24,7 @@ import { checkIsWindowEditingMode, useWindowIsEditingMode } from '../../router/r
 function getPresentingIndex(slide: Slide) {
     for (let i = 0; i < slide.items.length; i++) {
         const selectedList = PresentSlideManager.getDataList(
-            slide.fileSource.filePath, slide.items[i].id);
+            slide.filePath, slide.items[i].id);
         if (selectedList.length > 0) {
             return i;
         }
@@ -35,7 +35,7 @@ function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
     if (checkIsWindowEditingMode()) {
         slideItem.isSelected = !slideItem.isSelected;
     } else {
-        PresentSlideManager.slideSelect(slideItem.fileSource.filePath,
+        PresentSlideManager.slideSelect(slideItem.filePath,
             slideItem.toJson(), event);
     }
 }
@@ -79,7 +79,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
     );
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const isEditingMode = useWindowIsEditingMode();
-    useFSEvents(['select', 'edit'], slide.fileSource);
+    useFSEvents(['select', 'edit'], slide.filePath);
     const slideItems = slide.items;
     if (!isEditingMode) {
         const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];

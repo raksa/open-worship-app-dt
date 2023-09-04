@@ -59,7 +59,8 @@ export function toCNHighlight(slideItem: SlideItem) {
     let presentingCN = '';
     if (!isEditing) {
         selectedList = PresentSlideManager.getDataList(
-            slideItem.fileSource.filePath, slideItem.id);
+            slideItem.filePath, slideItem.id,
+        );
         presentingCN = selectedList.length > 0 ? 'highlight-selected' : '';
     }
     return {

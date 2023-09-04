@@ -172,11 +172,12 @@ export async function consumeStartVerseEndVerse(
 
 export async function moveBibleItemTo(event: any, bible: Bible, index?: number) {
     const dirSource = await DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
-    dirSource.getFileSources('bible').then((fileSources) => {
-        const targetNames = (fileSources ?? []).map((fileSource) => {
-            return fileSource.name;
+    dirSource.getFilePaths('bible').then((filePaths) => {
+        const targetNames = (filePaths ?? []).map((filePath) => {
+            return FileSource.getInstance(filePath).name;
         }).filter((name) => {
-            return name !== bible.fileSource.name;
+            const fileSource = FileSource.getInstance(bible.filePath);
+            return name !== fileSource.name;
         });
         if (targetNames.length === 0) {
             showSimpleToast('Move Bible Item', 'No other bibles found');
@@ -186,16 +187,22 @@ export async function moveBibleItemTo(event: any, bible: Bible, index?: number) 
             return {
                 title: name,
                 onClick: async () => {
-                    const { basePath, extension } = bible.fileSource;
+                    const bibleFileSource = FileSource.getInstance(
+                        bible.filePath,
+                    );
+                    const { basePath, extension } = bibleFileSource;
                     const fileSource = FileSource.getInstance(
-                        basePath, addExtension(name, extension));
-                    const targetBible = await Bible.readFileToData(fileSource);
+                        basePath, addExtension(name, extension),
+                    );
+                    const targetBible = await Bible.readFileToData(
+                        fileSource.filePath,
+                    );
                     if (!targetBible) {
                         showSimpleToast('Move Bible Item',
                             'Target bible not found');
                         return;
                     }
-                    targetBible.moveItemFrom(bible.fileSource, index);
+                    targetBible.moveItemFrom(bible.filePath, index);
                 },
             };
         }));

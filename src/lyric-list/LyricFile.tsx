@@ -9,10 +9,10 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
-    index, fileSource,
+    index, filePath,
 }: {
     index: number,
-    fileSource: FileSource,
+    filePath: string,
 }) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
     const reloadCallback = useCallback(() => {
@@ -34,19 +34,18 @@ export default function LyricFile({
     }, []);
     useAppEffect(() => {
         if (data === null) {
-            Lyric.readFileToData(fileSource).then(setData);
+            Lyric.readFileToData(filePath).then(setData);
         }
     }, [data]);
-    useFSEvents(['update', 'history-update', 'edit'],
-        fileSource, () => {
-            setData(null);
-        });
+    useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
+        setData(null);
+    });
     return (
         <FileItemHandler
             index={index}
             data={data}
             reload={reloadCallback}
-            fileSource={fileSource}
+            filePath={filePath}
             isPointer
             onClick={onClickCallback}
             renderChild={renderChildCallback}
@@ -55,10 +54,11 @@ export default function LyricFile({
 }
 
 function LyricFilePreview({ lyric }: { lyric: Lyric }) {
+    const fileSource = FileSource.getInstance(lyric.filePath);
     return (
         <>
             <i className='bi bi-music-note' />
-            {lyric.fileSource.name}
+            {fileSource.name}
             {lyric.isChanged && <span
                 style={{ color: 'red' }}>*</span>}
         </>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
-import { useDSEvents } from '../helper/dirSourceHelpers';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelper';
 
@@ -14,31 +13,30 @@ export default function RenderList({
 }: {
     dirSource: DirSource,
     mimetype: MimetypeNameType,
-    bodyHandler: (fileSources: FileSource[]) => any,
+    bodyHandler: (_: string[]) => any,
 }) {
-    const [fileSources, setFileSources] = useState<
-        FileSource[] | null | undefined>(null);
+    const [filePaths, setFilePaths] = useState<string[] | null | undefined>(
+        null,
+    );
     const refresh = () => {
-        dirSource.getFileSources(mimetype).then(async (newFileSources) => {
-            if (newFileSources !== undefined) {
-                const promises = newFileSources.map(async (fileSource) => {
+        dirSource.getFilePaths(mimetype).then(async (newFilePaths) => {
+            if (newFilePaths !== undefined) {
+                const promises = newFilePaths.map(async (filePath) => {
+                    const fileSource = FileSource.getInstance(filePath);
                     const color = await fileSource.getColorNote();
                     fileSource.colorNote = color;
                 });
                 await Promise.all(promises);
             }
-            setFileSources(newFileSources);
+            setFilePaths(newFilePaths);
         });
     };
     useAppEffect(() => {
-        if (fileSources === null) {
+        if (filePaths === null) {
             refresh();
         }
-    }, [fileSources]);
-    useDSEvents(['refresh', 'reload'], dirSource, () => {
-        setFileSources(null);
-    });
-    if (fileSources === undefined) {
+    }, [filePaths]);
+    if (filePaths === undefined) {
         return (
             <div className='alert alert-warning pointer'
                 onClick={() => {
@@ -48,7 +46,7 @@ export default function RenderList({
             </div>
         );
     }
-    if (fileSources === null) {
+    if (filePaths === null) {
         return (
             <div className='alert alert-info'>
                 Getting File List
@@ -56,16 +54,17 @@ export default function RenderList({
         );
 
     }
-    const fileSourceColorMap: { [key: string]: FileSource[] } = {
+    const fileSourceColorMap: { [key: string]: string[] } = {
         [UNKNOWN]: [],
     };
-    fileSources.forEach((fileSource) => {
+    filePaths.forEach((filePath) => {
+        const fileSource = FileSource.getInstance(filePath);
         const colorNote = fileSource.colorNote ?? UNKNOWN;
         fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] ?? [];
-        fileSourceColorMap[colorNote].push(fileSource);
+        fileSourceColorMap[colorNote].push(filePath);
     });
     if (Object.keys(fileSourceColorMap).length === 1) {
-        return bodyHandler(fileSources);
+        return bodyHandler(filePaths);
     }
     const keys = Object.keys(fileSourceColorMap).filter((key) => {
         return key !== UNKNOWN;

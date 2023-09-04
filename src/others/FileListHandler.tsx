@@ -1,4 +1,6 @@
-import React, { createContext, useCallback, useState } from 'react';
+import React, {
+    createContext, useCallback, useState,
+} from 'react';
 import PathSelector from '../others/PathSelector';
 import {
     MimetypeNameType, fsCheckDirExist,
@@ -58,11 +60,11 @@ export default function FileListHandler({
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
     header?: any,
-    bodyHandler: (fileSources: FileSource[]) => any,
+    bodyHandler: (filePaths: string[]) => any,
     onNewFile?: (dirPath: string, newName: string) => Promise<boolean>,
     contextMenu?: ContextMenuItemType[],
-    checkExtraFile?: (fileSource: FileSource) => boolean,
-    takeDroppedFile?: (file: FileSource) => boolean,
+    checkExtraFile?: (filePath: string) => boolean,
+    takeDroppedFile?: (filePath: string) => boolean,
     userClassName?: string,
 }) {
     const applyNameCallback = useCallback(async (name: string | null) => {
@@ -125,7 +127,9 @@ const noDirSelected = (
     <div className='card-body pb-5'>
         <div className='alert alert-info'>
             <i className='bi bi-info-circle' />
-            <span className='ms-2'>No directory selected</span>
+            <span className='ms-2'>
+                No directory selected
+            </span>
         </div>
     </div>
 );

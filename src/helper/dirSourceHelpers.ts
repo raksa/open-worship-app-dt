@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import DirSource, {
     DirSourceEventType,
@@ -7,7 +7,7 @@ import FileSource, { FSEventType } from './FileSource';
 
 export function useGenDS(settingName: string) {
     const [dirSource, setDirSource] = useState<DirSource | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         if (dirSource !== null) {
             return;
         }
@@ -40,22 +40,20 @@ export function useDSEvents(events: DirSourceEventType[],
     }, [dirSource, n]);
 }
 
-export function useFSEvents(events: FSEventType[],
-    fileSource?: FileSource,
-    callback?: () => void) {
+export function useFSEvents(
+    events: FSEventType[], filePath?: string, callback?: () => void,
+) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = fileSource?.registerEventListener(
-            events, update) ?? [];
-        const staticEvents = FileSource.registerEventListener(
-            events, update);
+        const staticEvents = FileSource.registerFSEventListener(
+            events, update, filePath,
+        );
         return () => {
-            fileSource?.unregisterEventListener(instanceEvents);
             FileSource.unregisterEventListener(staticEvents);
         };
-    }, [fileSource, n]);
+    }, [filePath, n]);
 }

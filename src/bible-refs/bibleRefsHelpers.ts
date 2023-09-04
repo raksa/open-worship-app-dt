@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     get_api_url,
     get_api_key,
@@ -10,6 +10,7 @@ import {
     handleError,
 } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {
@@ -99,7 +100,7 @@ export async function getBibleRef(key: string) {
 export function useGetBibleRef(bookKey: string, chapter: number,
     verseNum: number) {
     const [bibleRef, setBibleRef] = useState<BibleRefType[][] | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
         getBibleRef(key).then((data) => {
             setBibleRef(data);

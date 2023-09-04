@@ -21,10 +21,11 @@ export default class Lyric extends ItemSource<LyricItem>{
     static SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
     editingCacheManager: LyricEditingCacheManager;
-    constructor(fileSource: FileSource, json: LyricType) {
-        super(fileSource);
+    constructor(filePath: string, json: LyricType) {
+        super(filePath);
         this.editingCacheManager = new LyricEditingCacheManager(
-            this.fileSource, json);
+            this.filePath, json,
+        );
     }
     get isChanged() {
         return this.editingCacheManager.isChanged;
@@ -36,13 +37,15 @@ export default class Lyric extends ItemSource<LyricItem>{
         const latestHistory = this.editingCacheManager.presentJson;
         return latestHistory.items.map((json) => {
             try {
-                return LyricItem.fromJson(json as any,
-                    this.fileSource, this.editingCacheManager);
+                return LyricItem.fromJson(
+                    json as any, this.filePath, this.editingCacheManager,
+                );
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
-            return LyricItem.fromJsonError(json, this.fileSource,
-                this.editingCacheManager);
+            return LyricItem.fromJsonError(
+                json, this.filePath, this.editingCacheManager,
+            );
         });
     }
     set items(newItems: LyricItem[]) {
@@ -57,34 +60,38 @@ export default class Lyric extends ItemSource<LyricItem>{
         return 0;
     }
     get isSelected() {
-        const selectedFS = Lyric.getSelectedFileSource();
-        return this.fileSource.filePath === selectedFS?.filePath;
+        const selectedFilePath = Lyric.getSelectedFilePath();
+        return this.filePath === selectedFilePath;
     }
     set isSelected(isSelected: boolean) {
         if (this.isSelected === isSelected) {
             return;
         }
         if (isSelected) {
-            Lyric.setSelectedFileSource(this.fileSource);
+            Lyric.setSelectedFileSource(this.filePath);
             previewingEventListener.selectLyric(this);
         } else {
             Lyric.setSelectedFileSource(null);
             previewingEventListener.selectLyric(null);
         }
-        this.fileSource.fireSelectEvent();
+        FileSource.getInstance(this.filePath).fireSelectEvent();
     }
-    static fromJson(fileSource: FileSource, json: any) {
+    static fromJson(filePath: string, json: any) {
         this.validate(json);
-        return new Lyric(fileSource, json);
+        return new Lyric(filePath, json);
     }
-    static async readFileToDataNoCache(fileSource: FileSource | null) {
-        return super.readFileToDataNoCache(fileSource) as Promise<Lyric | null | undefined>;
+    static async readFileToDataNoCache(filePath: string | null) {
+        return super.readFileToDataNoCache(
+            filePath,
+        ) as Promise<Lyric | null | undefined>;
     }
-    static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        return super.readFileToData(fileSource, isForceCache) as Promise<Lyric | null | undefined>;
+    static async readFileToData(filePath: string | null, isForceCache?: boolean) {
+        return super.readFileToData(
+            filePath, isForceCache,
+        ) as Promise<Lyric | null | undefined>;
     }
     static async getSelected() {
-        const fileSource = this.getSelectedFileSource();
+        const fileSource = this.getSelectedFilePath();
         if (fileSource !== null) {
             return Lyric.readFileToData(fileSource);
         }
@@ -125,6 +132,6 @@ export default class Lyric extends ItemSource<LyricItem>{
         return isSuccess;
     }
     clone() {
-        return Lyric.fromJson(this.fileSource, this.toJson());
+        return Lyric.fromJson(this.filePath, this.toJson());
     }
 }

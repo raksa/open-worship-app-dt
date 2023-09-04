@@ -39,8 +39,8 @@ export default function SlidePreviewer() {
             reloadSlide();
         }
     }, [slide]);
-    useFSEvents(['delete', 'update', 'refresh-dir'],
-        slide?.fileSource, () => {
+    useFSEvents(['delete', 'update'],
+        slide?.filePath, () => {
             setSlide(null);
         });
     if (!slide) {

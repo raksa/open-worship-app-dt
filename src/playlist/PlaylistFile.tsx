@@ -4,20 +4,20 @@ import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
 import FileItemHandler from '../others/FileItemHandler';
 import Playlist from './Playlist';
-import FileSource from '../helper/FileSource';
 import BibleItemRender from '../bible-list/BibleItemRender';
 import PlaylistItem from './PlaylistItem';
 import ItemSource from '../helper/ItemSource';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import FileSource from '../helper/FileSource';
 
 export default function PlaylistFile({
-    index, fileSource,
+    index, filePath,
 }: {
     index: number,
-    fileSource: FileSource,
+    filePath: string,
 }) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
-    const settingName = `opened-${fileSource.filePath}`;
+    const settingName = `opened-${filePath}`;
     const [isOpened, setIsOpened] = useStateSettingBoolean(settingName);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -43,7 +43,7 @@ export default function PlaylistFile({
     }, [isOpened]);
     useAppEffect(() => {
         if (data === null) {
-            Playlist.readFileToData(fileSource).then(setData);
+            Playlist.readFileToData(filePath).then(setData);
         }
     }, [data]);
     return (
@@ -51,7 +51,7 @@ export default function PlaylistFile({
             index={index}
             data={data}
             reload={reloadCallback}
-            fileSource={fileSource}
+            filePath={filePath}
             className={'playlist-file'}
             onClick={onClickCallback}
             onDrop={onDropCallback}
@@ -69,6 +69,7 @@ function PlaylistPreview({
     setIsOpened: (isOpened: boolean) => void,
     playlist: Playlist,
 }) {
+    const fileSource = FileSource.getInstance(playlist.filePath);
     return (
         <div className='card pointer mt-1 ps-2'>
             <div className='card-header'
@@ -77,14 +78,14 @@ function PlaylistPreview({
                 }}>
                 <i className={`bi ${isOpened ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {playlist.fileSource.name}
+                {fileSource.name}
             </div>
             {isOpened && playlist && <div
                 className='card-body d-flex flex-column'>
                 {playlist.items.map((playlistItem, i) => {
                     return (
                         <RenderPlaylistItem
-                            key={playlistItem.fileSource.fileName}
+                            key={fileSource.fileName}
                             index={i}
                             playlistItem={playlistItem} />
                     );

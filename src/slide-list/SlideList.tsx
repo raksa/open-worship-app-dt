@@ -27,28 +27,31 @@ export default function SlideList() {
             return null;
         };
     }
-    const checkExtraFileCallback = useCallback((fileSource: FileSource) => {
+    const checkExtraFileCallback = useCallback((filePath: string) => {
+        const fileSource = FileSource.getInstance(filePath);
         if (checkIsPdf(fileSource.extension)) {
             return true;
         }
         return false;
     }, [dirSource]);
-    const takeDropFileCallback = useCallback((fileSource: FileSource) => {
+    const takeDropFileCallback = useCallback((filePath: string) => {
         if (dirSource === null) {
             return false;
         }
+        const fileSource = FileSource.getInstance(filePath);
         const ext = fileSource.extension.toLocaleLowerCase();
         if (supportOfficeFE.includes(ext)) {
-            convertOfficeFile(fileSource, dirSource);
+            convertOfficeFile(filePath, dirSource);
             return true;
         }
         return false;
     }, [dirSource]);
-    const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
-        return fileSources.map((fileSource, i) => {
+    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+        return filePaths.map((filePath, i) => {
+            const fileSource = FileSource.getInstance(filePath);
             return <SlideFile key={fileSource.fileName}
                 index={i}
-                fileSource={fileSource} />;
+                filePath={filePath} />;
         });
     }, []);
     if (dirSource === null) {

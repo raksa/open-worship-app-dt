@@ -12,8 +12,10 @@ import ItemColorNote from '../others/ItemColorNote';
 import { handleDragStart } from '../helper/dragHelpers';
 import { useGenDS } from '../helper/dirSourceHelpers';
 
-export type RenderChildType = (fileSource: FileSource,
-    selectedBGSrcList: [string, BackgroundSrcType][]) => JSX.Element;
+export type RenderChildType = (
+    filePath: string,
+    selectedBGSrcList: [string, BackgroundSrcType][],
+) => React.JSX.Element;
 
 const bgTypeMapper: any = {
     [DragTypeEnum.BG_IMAGE]: 'image',
@@ -26,11 +28,11 @@ export default function BackgroundMedia({ rendChild, dragType }: {
 }) {
     const bgType = bgTypeMapper[dragType];
     const dirSource = useGenDS(`${bgType}-list-selected-dir`);
-    const renderCallback = useCallback((fileSources: FileSource[]) => {
+    const renderCallback = useCallback((filePaths: string[]) => {
         const genBodyWithChild = genBody.bind(null, rendChild, dragType);
         return (
             <div className='d-flex justify-content-start flex-wrap'>
-                {fileSources.map(genBodyWithChild)}
+                {filePaths.map(genBodyWithChild)}
             </div>
         );
     }, []);
@@ -46,28 +48,31 @@ export default function BackgroundMedia({ rendChild, dragType }: {
     );
 }
 
-function genBody(rendChild: RenderChildType, dragType: DragTypeEnum,
-    fileSource: FileSource) {
+function genBody(
+    rendChild: RenderChildType, dragType: DragTypeEnum, filePath: string,
+) {
+    const fileSource = FileSource.getInstance(filePath);
     const bgType = bgTypeMapper[dragType];
     const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
-        fileSource.src, bgType);
+        fileSource.src, bgType,
+    );
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
     return (
         <div key={fileSource.name}
             className={`${bgType}-thumbnail card ${selectedCN}`}
-            title={fileSource.filePath + '\n Show in presents:'
+            title={filePath + '\n Show in presents:'
                 + selectedBGSrcList.map(([key]) => key).join(',')}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, fileSource, dragType);
             }}
             onContextMenu={(event) => {
-                showAppContextMenu(event as any, genCommonMenu(fileSource));
+                showAppContextMenu(event as any, genCommonMenu(filePath));
             }}
             onClick={(event) => {
                 PresentBGManager.bgSrcSelect(fileSource.src, event, bgType);
             }}>
-            {rendChild(fileSource, selectedBGSrcList)}
+            {rendChild(filePath, selectedBGSrcList)}
             <div style={{
                 position: 'absolute',
                 right: 0,

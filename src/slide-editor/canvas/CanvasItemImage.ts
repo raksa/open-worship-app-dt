@@ -19,8 +19,10 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
     getStyle() {
         return CanvasItemImage.gegStyle(this.props);
     }
-    static async genFromInsertion(x: number, y: number,
-        fileSource: FileSource) {
+    static async genFromInsertion(
+        x: number, y: number, filePath: string,
+    ) {
+        const fileSource = FileSource.getInstance(filePath);
         const [mediaWidth, mediaHeight] = await getImageDim(fileSource.src);
         const srcData = await fileSource.getSrcData();
         const props: CanvasItemImagePropsType = {

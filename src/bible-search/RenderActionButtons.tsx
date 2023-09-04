@@ -15,6 +15,7 @@ import {
 import { useModalTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
+import { useCallback } from 'react';
 
 const presentEventMapper: KBEventMapper = {
     wControlKey: ['Ctrl', 'Shift'],
@@ -38,7 +39,7 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
     const isWindowEditing = useWindowIsEditingMode();
     const isWindowPresenting = useWindowIsPresentingMode();
-    const addOrBibleItem = async (props: AddBiblePropsType) => {
+    const addOrUpdateBibleItem = useCallback(async () => {
         closeModal();
         if (isBibleEditing) {
             BibleItem.saveFromBibleSearch(props, data);
@@ -47,21 +48,21 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
             const bibleItem = await addBibleItem(props);
             return bibleItem;
         }
-    };
-    const addBibleItemAndPresent = (event: any) => {
-        (async () => {
-            const bibleItem = await addOrBibleItem(props);
-            if (bibleItem !== null) {
-                if (isWindowPresenting) {
-                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
-                }
+    }, [props, data, isBibleEditing, closeModal]);
+    const addBibleItemAndPresent = useCallback(async (event: any) => {
+        const bibleItem = await addOrUpdateBibleItem();
+        if (bibleItem !== null) {
+            if (isWindowPresenting) {
+                PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
             }
-        })();
-    };
+        }
+    }, [addOrUpdateBibleItem, isWindowPresenting]);
     useKeyboardRegistering(addListEventMapper, () => {
-        addOrBibleItem(props);
+        addOrUpdateBibleItem();
     });
-    useKeyboardRegistering(presentEventMapper, addBibleItemAndPresent);
+    useKeyboardRegistering(presentEventMapper, (event) => {
+        addBibleItemAndPresent(event);
+    });
     const getAddingTitle = () => {
         if (isWindowEditing) {
             return 'Add to Slide';
@@ -73,9 +74,7 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
             {isWindowEditing && !isSlideSelectEditing ? null :
                 <button type='button'
                     className='btn btn-sm btn-info'
-                    onClick={() => {
-                        addOrBibleItem(props);
-                    }}
+                    onClick={addOrUpdateBibleItem}
                     data-tool-tip={KeyboardEventListener
                         .toShortcutKey(addListEventMapper)}>
                     <i className='bi bi-plus-lg' />

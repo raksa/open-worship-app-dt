@@ -4,7 +4,8 @@ import {
 } from './AppContextMenu';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
@@ -12,7 +13,7 @@ export default function ItemColorNote({ item }: {
     item: ColorNoteInf,
 }) {
     const [colorNote, _setColorNote] = useState('');
-    useEffect(() => {
+    useAppEffect(() => {
         item.getColorNote().then((colorNote) => {
             _setColorNote(colorNote ?? '');
         });

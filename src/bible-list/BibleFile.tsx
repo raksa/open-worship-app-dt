@@ -53,15 +53,15 @@ function genContextMenu(bible: Bible | null | undefined) {
 }
 
 export default function BibleFile({
-    index, fileSource,
+    index, filePath,
 }: {
     index: number,
-    fileSource: FileSource,
+    filePath: string,
 }) {
     const [data, setData] = useState<Bible | null | undefined>(null);
     useAppEffect(() => {
         if (data === null) {
-            Bible.readFileToData(fileSource).then(setData);
+            Bible.readFileToData(filePath).then(setData);
         }
     }, [data]);
     const renderChildCallback = useCallback((bible: ItemSource<any>) => {
@@ -77,7 +77,7 @@ export default function BibleFile({
             index={index}
             data={data}
             reload={reloadCallback}
-            fileSource={fileSource}
+            filePath={filePath}
             className={'bible-file'}
             renderChild={renderChildCallback}
             isDisabledColorNote
@@ -88,6 +88,7 @@ export default function BibleFile({
 }
 
 function BiblePreview({ bible }: { bible: Bible }) {
+    const fileSource = FileSource.getInstance(bible.filePath);
     return (
         <div className='accordion accordion-flush py-1'>
             <div className='accordion-header pointer'
@@ -99,7 +100,7 @@ function BiblePreview({ bible }: { bible: Bible }) {
                 <span className='w-100 text-center'>
                     <i className={`bi bi-book${bible.isOpened ?
                         '-fill' : ''} px-1`} />
-                    {bible.fileSource.name}
+                    {fileSource.name}
                 </span>
             </div>
             <div className={`accordion-collapse collapse ${bible.isOpened ?

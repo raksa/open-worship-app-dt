@@ -234,7 +234,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
             const slideItem = droppedData.item as SlideItem;
             this.slideItemData = {
-                slideFilePath: slideItem.fileSource.filePath,
+                slideFilePath: slideItem.filePath,
                 slideItemJson: slideItem.toJson(),
             };
         }

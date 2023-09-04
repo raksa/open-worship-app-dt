@@ -289,8 +289,9 @@ export async function fsListDirectories(dirPath: string) {
     });
 }
 
-export async function fsListFilesWithMimetype(dir: string,
-    mimetype: MimetypeNameType) {
+export async function fsListFilesWithMimetype(
+    dir: string, mimetype: MimetypeNameType,
+) {
     if (!dir) {
         return [];
     }
@@ -303,7 +304,7 @@ export async function fsListFilesWithMimetype(dir: string,
             return !!d;
         }) as FileMetadataType[];
         return matchedFiles.map((fileMetadata) => {
-            return FileSource.getInstance(dir, fileMetadata.fileName);
+            return FileSource.getInstance(dir, fileMetadata.fileName).filePath;
         });
     } catch (error) {
         handleError(error);

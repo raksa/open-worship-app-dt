@@ -12,7 +12,7 @@ import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
-export type DirSourceEventType = 'refresh' | 'reload';
+export type DirSourceEventType = 'reload';
 
 export default class DirSource extends EventHandler<DirSourceEventType> {
     settingName: string;
@@ -59,9 +59,6 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     getFileSourceInstance(fileName: string) {
         return FileSource.getInstance(this.dirPath, fileName);
     }
-    fireRefreshEvent() {
-        this.addPropEvent('refresh');
-    }
     fireReloadEvent() {
         this.addPropEvent('reload');
     }
@@ -72,7 +69,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         const fileSource = this.getFileSourceInstance(fileName);
         fileSource.fireUpdateEvent();
     }
-    async getFileSources(mimetype: MimetypeNameType) {
+    async getFilePaths(mimetype: MimetypeNameType) {
         if (!this.dirPath) {
             return [];
         }
@@ -88,14 +85,17 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             }).filter((fileMetadata) => {
                 return fileMetadata !== null;
             }) as FileMetadataType[];
-            return matchedFiles.map((fileMetadata) => {
-                return this.getFileSourceInstance(fileMetadata.fileName);
+            const filePaths = matchedFiles.map((fileMetadata) => {
+                const fileSource = this.getFileSourceInstance(
+                    fileMetadata.fileName,
+                );
+                return fileSource.filePath;
             });
+            return filePaths;
         } catch (error) {
             handleError(error);
             showSimpleToast('Getting File List',
                 'Error occurred during listing file');
-            return undefined;
         }
     }
     static async getInstance(settingName: string) {

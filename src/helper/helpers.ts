@@ -94,15 +94,17 @@ export function validateAppMeta(meta: any) {
     return false;
 }
 export function useReadFileToData<T extends ItemSource<any>>(
-    fileSource: FileSource | null) {
+    filePath: string | null,
+) {
     const [data, setData] = useState<T | null | undefined>(null);
     useAppEffect(() => {
-        if (fileSource !== null) {
+        if (filePath !== null) {
+            const fileSource = FileSource.getInstance(filePath);
             fileSource.readFileToJsonData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }
-    }, [fileSource]);
+    }, [filePath]);
     return data;
 }
 

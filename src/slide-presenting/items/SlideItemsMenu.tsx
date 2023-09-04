@@ -13,7 +13,7 @@ export default function SlideItemsMenu({
     slide: Slide,
 }) {
     const presentDisplay = PresentManager.getDefaultPresentDisplay();
-    useFSEvents(['update'], slide.fileSource);
+    useFSEvents(['update'], slide.filePath);
     const eventMapper: KBEventMapper = {
         wControlKey: ['Ctrl'],
         mControlKey: ['Ctrl'],

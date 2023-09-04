@@ -18,18 +18,18 @@ const RenderRenaming = React.lazy(() => {
     return import('./RenderRenaming');
 });
 
-export const genCommonMenu = (fileSource: FileSource) => {
+export const genCommonMenu = (filePath: string) => {
     return [
         {
             title: 'Copy Path to Clipboard', onClick: () => {
-                copyToClipboard(fileSource.filePath);
+                copyToClipboard(filePath);
             },
         },
         {
             title: `Reveal in ${appProvider.systemUtils.isMac ?
                 'Finder' : 'File Explorer'}`,
             onClick: () => {
-                openExplorer(fileSource.filePath);
+                openExplorer(filePath);
             },
         },
     ];
@@ -37,7 +37,7 @@ export const genCommonMenu = (fileSource: FileSource) => {
 
 
 export default function FileItemHandler({
-    data, reload, index, fileSource, className,
+    data, reload, index, filePath, className,
     contextMenu, onDrop, onClick, renderChild,
     isPointer, onDelete, isDisabledColorNote,
     userClassName,
@@ -45,7 +45,7 @@ export default function FileItemHandler({
     data: ItemSource<any> | null | undefined,
     reload: () => void,
     index: number,
-    fileSource: FileSource,
+    filePath: string,
     className?: string
     contextMenu?: ContextMenuItemType[],
     onDrop?: (event: any) => void,
@@ -57,16 +57,16 @@ export default function FileItemHandler({
     userClassName?: string,
 }) {
     const [isRenaming, setIsRenaming] = useState(false);
-    useFSEvents(['select'], fileSource);
+    useFSEvents(['select'], filePath);
     const applyClick = () => {
-        fileSource.fireSelectEvent();
+        FileSource.getInstance(filePath).fireSelectEvent();
         onClick?.();
     };
     const selfContextMenu = [
         {
             title: 'Duplicate',
             onClick: () => {
-                fileSource.duplicate();
+                FileSource.getInstance(filePath).duplicate();
             },
         }, {
             title: 'Rename',
@@ -81,6 +81,7 @@ export default function FileItemHandler({
         }, {
             title: 'Delete',
             onClick: async () => {
+                const fileSource = FileSource.getInstance(filePath);
                 const isOk = await openConfirm(
                     `Deleting "${fileSource.fileName}"`,
                     'Are you sure to delete this file?');
@@ -101,16 +102,17 @@ export default function FileItemHandler({
     }
     const moreClassName = `${data.isSelected ? 'active' : ''} `
         + `${className ?? ''}`;
+    const fileSource = FileSource.getInstance(filePath);
     return (
         <li className={`list-group-item mx-1 ${moreClassName} ${userClassName}
         ${isPointer ? 'pointer' : ''}`}
             onClick={applyClick}
             data-index={index + 1}
-            title={fileSource.filePath}
+            title={filePath}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     ...(contextMenu ?? []),
-                    ...genCommonMenu(fileSource),
+                    ...genCommonMenu(filePath),
                     ...selfContextMenu,
                 ]);
             }}
@@ -137,12 +139,12 @@ export default function FileItemHandler({
             }}>
             {isRenaming ? <RenderRenaming
                 setIsRenaming={setIsRenaming}
-                fileSource={fileSource} /> :
+                filePath={filePath} /> :
                 <>
                     {renderChild(data)}
                     {!isDisabledColorNote &&
                         <div className='color-note-container'>
-                            <ItemColorNote item={data.fileSource} />
+                            <ItemColorNote item={fileSource} />
                         </div>
                     }
                 </>

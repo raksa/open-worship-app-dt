@@ -22,7 +22,7 @@ export default function SlideItemEditorGround() {
         }
     }, [slideItem]);
     useFSEvents(['select', 'history-update', 'delete'],
-        slideItem?.fileSource, () => {
+        slideItem?.filePath, () => {
             setSlideItem(null);
         });
     useSlideSelecting(() => setSlideItem(null));

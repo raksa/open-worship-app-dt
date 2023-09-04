@@ -9,15 +9,15 @@ import SlideListEventListener from '../event/SlideListEventListener';
 export default function PlaylistSlideItem({ playlistItem }: {
     playlistItem: PlaylistItem,
 }) {
-    const filePath = playlistItem.fileSource.filePath;
-    const result = SlideItem.extractItemSetting(filePath);
+    const playlistFilePath = playlistItem.filePath;
+    const result = SlideItem.extractItemSetting(playlistFilePath);
     if (result === null) {
         return (
             <FileReadError />
         );
     }
-    const { id, fileSource } = result;
-    const slide = useReadFileToData<Slide>(fileSource);
+    const { id, filePath } = result;
+    const slide = useReadFileToData<Slide>(filePath);
     const item = !slide ? null :
         (slide.items.find((newItem) => {
             return newItem.id === id;

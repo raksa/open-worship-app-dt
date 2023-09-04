@@ -14,10 +14,10 @@ import { goEditingMode } from '../router/routeHelpers';
 
 export default function SlideFile({
     index,
-    fileSource,
+    filePath,
 }: {
     index: number,
-    fileSource: FileSource,
+    filePath: string,
 }) {
     const navigator = useNavigate();
     const [data, setData] = useState<SlideDynamicType>(null);
@@ -40,19 +40,19 @@ export default function SlideFile({
             <SlideFilePreviewNormal slide={slide1} />;
     }, []);
     const onDeleteCallback = useCallback(() => {
-        const filePath = Slide.getSelectedFileSource()?.filePath;
-        if (filePath === fileSource.filePath) {
+        const selectedFilePath = Slide.getSelectedFilePath();
+        if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
         }
         data?.editingCacheManager.delete();
-    }, [data, fileSource]);
+    }, [data, filePath]);
     useAppEffect(() => {
         if (data === null) {
-            Slide.readFileToData(fileSource).then(setData);
+            Slide.readFileToData(filePath).then(setData);
         }
     }, [data]);
     useFSEvents(['update', 'history-update', 'edit'],
-        fileSource, () => {
+        filePath, () => {
             setData(null);
         });
     return (
@@ -60,15 +60,17 @@ export default function SlideFile({
             index={index}
             data={data}
             reload={reloadCallback}
-            fileSource={fileSource}
+            filePath={filePath}
             isPointer
             onClick={onClickCallback}
             renderChild={renderChildCallback}
             contextMenu={data?.isPdf ? [{
                 title: 'Preview PDF',
                 onClick: () => {
-                    appProvider.messageUtils.sendData('app:preview-pdf',
-                        data.fileSource.src);
+                    const fileSource = FileSource.getInstance(data.filePath);
+                    appProvider.messageUtils.sendData(
+                        'app:preview-pdf', fileSource.src,
+                    );
                 },
             }] : [{
                 title: 'Edit',
@@ -86,10 +88,11 @@ export default function SlideFile({
 
 
 function SlideFilePreviewNormal({ slide }: { slide: Slide }) {
+    const fileSource = FileSource.getInstance(slide.filePath);
     return (
         <>
             <i className='bi bi-file-earmark-slides' />
-            {slide.fileSource.name}
+            {fileSource.name}
             {slide.isChanged && <span
                 style={{ color: 'red' }}>*</span>}
         </>
@@ -97,10 +100,11 @@ function SlideFilePreviewNormal({ slide }: { slide: Slide }) {
 }
 
 function SlideFilePreviewPdf({ slide }: { slide: Slide }) {
+    const fileSource = FileSource.getInstance(slide.filePath);
     return (
         <>
             <i className='bi bi-filetype-pdf' />
-            {slide.fileSource.name}
+            {fileSource.name}
         </>
     );
 }

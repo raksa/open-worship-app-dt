@@ -15,28 +15,31 @@ export default abstract class ItemSource<T extends {
     static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
     static mimetype: MimetypeNameType;
-    fileSource: FileSource;
+    filePath: string;
     static _cache = new Map<string, ItemSource<any>>();
-    constructor(fileSource: FileSource) {
-        this.fileSource = fileSource;
+    constructor(filePath: string) {
+        this.filePath = filePath;
     }
     get isSelected() {
-        const selectedFS = ItemSource.getSelectedFileSource(
-            this.SELECT_SETTING_NAME);
-        return this.fileSource.filePath === selectedFS?.filePath;
+        const selectedFilePath = ItemSource.getSelectedFilePath(
+            this.SELECT_SETTING_NAME,
+        );
+        return this.filePath === selectedFilePath;
     }
     set isSelected(b: boolean) {
         if (this.isSelected === b) {
             return;
         }
-        ItemSource.setSelectedFileSource(b ? this.fileSource : null,
-            this.SELECT_SETTING_NAME);
-        this.fileSource?.fireSelectEvent();
+        ItemSource.setSelectedFileSource(
+            b ? this.filePath : null, this.SELECT_SETTING_NAME,
+        );
+        const fileSource = FileSource.getInstance(this.filePath);
+        fileSource.fireSelectEvent();
     }
     abstract get maxItemId(): number;
     abstract get metadata(): AnyObjectType;
     abstract get items(): T[];
-    static fromJson(_fileSource: FileSource, _json: any): ItemSource<any> {
+    static fromJson(_filePath: string, _json: any): ItemSource<any> {
         throw new Error('Method not implemented.');
     }
     toJson() {
@@ -53,30 +56,28 @@ export default abstract class ItemSource<T extends {
             throw new Error('Invalid item source data');
         }
     }
-    static setSelectedFileSource(fileSource: FileSource | null,
+    static setSelectedFileSource(filePath: string | null,
         settingName?: string) {
         settingName = settingName ?? this.SELECT_SETTING_NAME;
         if (!settingName) {
             return;
         }
-        setSetting(settingName, fileSource === null ? '' : fileSource.filePath);
+        setSetting(settingName, filePath ?? '');
     }
-    static getSelectedFileSource(settingName?: string) {
+    static getSelectedFilePath(settingName?: string) {
         settingName = settingName ?? this.SELECT_SETTING_NAME;
         if (!settingName) {
             return null;
         }
         const selected = getSetting(settingName, '');
-        if (selected) {
-            return FileSource.getInstance(selected);
-        }
-        return null;
+        return selected ?? null;
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
-        const isSuccess = await this.fileSource.saveDataFromItem(this);
+        const fileSource = FileSource.getInstance(this.filePath);
+        const isSuccess = await fileSource.saveDataFromItem(this);
         if (isSuccess) {
-            ItemSource._cache.set(this.fileSource.filePath, this);
+            ItemSource._cache.set(this.filePath, this);
         }
         return isSuccess;
     }
@@ -96,14 +97,15 @@ export default abstract class ItemSource<T extends {
         }
         return null;
     }
-    static async readFileToDataNoCache(fileSource: FileSource | null) {
-        if (fileSource === null) {
+    static async readFileToDataNoCache(filePath: string | null) {
+        if (filePath === null) {
             return null;
         }
+        const fileSource = FileSource.getInstance(filePath);
         const json = await fileSource.readFileToJsonData();
         if (json !== null) {
             try {
-                return this.fromJson(fileSource, json);
+                return this.fromJson(filePath, json);
             } catch (error: any) {
                 showSimpleToast('Instantiating Data', error.message);
             }
@@ -113,22 +115,23 @@ export default abstract class ItemSource<T extends {
     static deleteCache(key: string) {
         this._cache.delete(key);
     }
-    static async readFileToData(fileSource: FileSource | null,
-        refreshCache?: boolean) {
-        if (fileSource === null) {
+    static async readFileToData(
+        filePath: string | null, refreshCache?: boolean,
+    ) {
+        if (filePath === null) {
             return null;
         }
         if (refreshCache) {
-            this.deleteCache(fileSource.filePath);
+            this.deleteCache(filePath);
         }
-        if (this._cache.has(fileSource.filePath)) {
-            return this._cache.get(fileSource.filePath);
+        if (this._cache.has(filePath)) {
+            return this._cache.get(filePath);
         }
-        const data = await this.readFileToDataNoCache(fileSource);
+        const data = await this.readFileToDataNoCache(filePath);
         if (data) {
-            this._cache.set(fileSource.filePath, data);
+            this._cache.set(filePath, data);
         } else {
-            this.deleteCache(fileSource.filePath);
+            this.deleteCache(filePath);
         }
         return data;
     }

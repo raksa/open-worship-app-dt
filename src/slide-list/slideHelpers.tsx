@@ -90,16 +90,17 @@ export const supportOfficeFE = [
     '.odp',
 ];
 
-export async function convertOfficeFile(fileSource: FileSource,
-    dirSource: DirSource) {
+export async function convertOfficeFile(
+    filePath: string, dirSource: DirSource,
+) {
     const toHtmlBold = (text: string) => {
         return `<b>${text}</b>`;
     };
-    const { filePath, fileName } = fileSource;
+    const fileSource = FileSource.getInstance(filePath);
     const { dirPath } = dirSource;
     const title = 'Converting to PDF';
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
-        <b>{fileName}</b>
+        <b>{fileSource.fileName}</b>
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);
@@ -110,9 +111,11 @@ export async function convertOfficeFile(fileSource: FileSource,
     showSimpleToast(title, `${toHtmlBold(filePath)}, do not close application`);
     try {
         await appProvider.pdfUtils.toPdf(filePath, dirPath);
-        showSimpleToast(title, `${toHtmlBold(fileName)} is converted to PDF`);
+        showSimpleToast(
+            title, `${toHtmlBold(fileSource.fileName)} is converted to PDF`,
+        );
     } catch (error: any) {
-        if (error.message.includes('Could not find soffice binary')) {
+        if (error.message.includes('Could not find office binary')) {
             const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
                 <b>LibreOffice</b>
                 {' is required to convert Office file to PDF.'}
@@ -126,15 +129,16 @@ export async function convertOfficeFile(fileSource: FileSource,
             return;
         }
         handleError(error);
-        showSimpleToast(title, `Fail to convert ${toHtmlBold(fileName)}`);
+        showSimpleToast(title, `Fail to convert ${toHtmlBold(filePath)}`);
     }
 }
 
-export async function readPdfToSlide(fileSource: FileSource) {
+export async function readPdfToSlide(filePath: string) {
     const pdfManager = PdfController.getInstance();
     try {
+        const fileSource = FileSource.getInstance(filePath);
         const imageDataList = await pdfManager.genPdfImages(fileSource.src);
-        const slide = new Slide(fileSource, {
+        const slide = new Slide(filePath, {
             items: [],
             metadata: {},
         });

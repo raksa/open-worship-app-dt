@@ -18,7 +18,7 @@ export default function SlidePreviewerFooter({
     return (
         <div className='card-footer w-100'>
             <div className='d-flex w-100 h-100'>
-                {pathPreviewer(slide.fileSource.filePath)}
+                {pathPreviewer(slide.filePath)}
                 <div className='form form-inline d-flex flex-row-reverse'
                     style={{ minWidth: '100px' }}>
                     <label className='form-label'>

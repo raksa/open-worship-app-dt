@@ -1,7 +1,6 @@
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
-import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useCallback } from 'react';
 import { handleDragStart } from '../helper/dragHelpers';
@@ -21,17 +20,18 @@ export default function BibleItemRender({
     bibleItem,
     warningMessage,
     onContextMenu,
-    fileSource,
+    filePath: filePath,
 }: {
     index: number,
     bibleItem: BibleItem,
     bible?: Bible;
     warningMessage?: string,
-    onContextMenu?: (event: React.MouseEvent<any>,
-        bibleItem: BibleItem, index: number) => void,
-    fileSource?: FileSource,
+    onContextMenu?: (
+        event: React.MouseEvent<any>, bibleItem: BibleItem, index: number,
+    ) => void,
+    filePath?: string,
 }) {
-    useFSEvents(['select'], fileSource);
+    useFSEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
     const onContextMenuCallback = useCallback((
         event: React.MouseEvent<any>) => {
@@ -72,7 +72,7 @@ export default function BibleItemRender({
                         isMinimal />
                 </div>
                 <span className='app-ellipsis'>
-                    {title === null ? 'not found' : title}
+                    {title ?? 'not found'}
                 </span>
                 {warningMessage && <span className='float-end'
                     title={warningMessage}>⚠️</span>}

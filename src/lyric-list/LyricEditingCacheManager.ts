@@ -1,4 +1,3 @@
-import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import EditingCacheManager from '../others/EditingCacheManager';
 import { LyricEditingHistoryType, LyricType } from './Lyric';
@@ -7,8 +6,8 @@ import { LyricItemType } from './LyricItem';
 export default class LyricEditingCacheManager
     extends EditingCacheManager<LyricEditingHistoryType, LyricType> {
     _originalJson: Readonly<LyricType>;
-    constructor(fileSource: FileSource, json: LyricType) {
-        super(fileSource, 'lyric');
+    constructor(filePath: string, json: LyricType) {
+        super(filePath, 'lyric');
         this._originalJson = Object.freeze(cloneJson(json));
     }
     get cloneItems() {

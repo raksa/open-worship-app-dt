@@ -122,8 +122,9 @@ export default class CanvasController extends EventHandler<CCEventType> {
         const newItem = CanvasItemText.genDefaultItem();
         this.addNewItem(newItem);
     }
-    async addNewMediaItem(fileSource: FileSource, event: any) {
+    async addNewMediaItem(filePath: string, event: any) {
         try {
+            const fileSource = FileSource.getInstance(filePath);
             const mediaType = fileSource.metadata?.appMimetype.mimetypeName ?? '';
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast('Insert Medias',
@@ -134,8 +135,8 @@ export default class CanvasController extends EventHandler<CCEventType> {
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
             const newItem = await (mediaType === 'image' ?
-                CanvasItemImage.genFromInsertion(x, y, fileSource) :
-                CanvasItemVideo.genFromInsertion(x, y, fileSource));
+                CanvasItemImage.genFromInsertion(x, y, filePath) :
+                CanvasItemVideo.genFromInsertion(x, y, filePath));
             this.addNewItem(newItem);
             return;
         } catch (error) {

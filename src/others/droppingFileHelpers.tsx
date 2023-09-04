@@ -65,8 +65,8 @@ export function genOnDrop({
 }: {
     dirSource: DirSource,
     mimetype: MimetypeNameType,
-    checkExtraFile?: (fileSource: FileSource) => boolean,
-    takeDroppedFile?: (file: FileSource) => boolean,
+    checkExtraFile?: (filePath: string) => boolean,
+    takeDroppedFile?: (filePath: string) => boolean,
 }) {
     const handleDroppedFolder = async (droppedPath: string) => {
         if (!dirSource.dirPath) {
@@ -84,17 +84,18 @@ export function genOnDrop({
         }
     };
     const handleDroppedFiles = async (file: File) => {
-        const fileSource = FileSource.getInstance((file as any).path);
-        if (takeDroppedFile?.(fileSource)) {
+        const filePath = (file as any).path as string;
+        if (takeDroppedFile?.(filePath)) {
             return;
         }
+        const fileSource = FileSource.getInstance(filePath);
         const title = 'Copying File';
-        if (checkExtraFile?.(fileSource) ||
+        if (checkExtraFile?.(filePath) ||
             !isSupportedExt(fileSource.fileName, mimetype)) {
             showSimpleToast(title, 'Unsupported file type!');
         } else {
             try {
-                await fsCopyFileToPath(fileSource.filePath,
+                await fsCopyFileToPath(filePath,
                     fileSource.fileName, dirSource.dirPath);
                 showSimpleToast(title, 'File has been copied');
             } catch (error: any) {

@@ -1,5 +1,4 @@
 import Bible from '../bible-list/Bible';
-import FileSource from '../helper/FileSource';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
 import Lyric from '../lyric-list/Lyric';
@@ -15,10 +14,10 @@ export type PlaylistItemType = {
 
 export default class PlaylistItem {
     _originalJson: Readonly<PlaylistItemType>;
-    fileSource: FileSource;
+    filePath: string;
     jsonError: any;
-    constructor(fileSource: FileSource, json: PlaylistItemType) {
-        this.fileSource = fileSource;
+    constructor(filePath: string, json: PlaylistItemType) {
+        this.filePath = filePath;
         this._originalJson = Object.freeze(cloneJson(json));
     }
     get isError() {
@@ -34,14 +33,14 @@ export default class PlaylistItem {
         if (!this.isSlide) {
             return null;
         }
-        return Slide.readFileToData(this.fileSource);
+        return Slide.readFileToData(this.filePath);
     }
     get isBibleItem() {
         return this.type === 'bible-item';
     }
     async getBibleItem() {
         if (this.isBibleItem) {
-            const bible = await Bible.readFileToData(this.fileSource);
+            const bible = await Bible.readFileToData(this.filePath);
             if (bible) {
                 return bible.getItemById(this._originalJson.id as number);
             }
@@ -55,14 +54,14 @@ export default class PlaylistItem {
         if (!this.isLyric) {
             return null;
         }
-        return Lyric.readFileToData(this.fileSource);
+        return Lyric.readFileToData(this.filePath);
     }
-    static fromJson(fileSource: FileSource, json: PlaylistItemType) {
+    static fromJson(filePath: string, json: PlaylistItemType) {
         this.validate(json);
-        return new PlaylistItem(fileSource, json);
+        return new PlaylistItem(filePath, json);
     }
-    static fromJsonError(fileSource: FileSource, json: AnyObjectType) {
-        const item = new PlaylistItem(fileSource, {
+    static fromJsonError(filePath: string, json: AnyObjectType) {
+        const item = new PlaylistItem(filePath, {
             type: 'error',
             filePath: '',
         });
@@ -89,6 +88,6 @@ export default class PlaylistItem {
         }
     }
     clone() {
-        return PlaylistItem.fromJson(this.fileSource, this.toJson());
+        return PlaylistItem.fromJson(this.filePath, this.toJson());
     }
 }
