@@ -9,7 +9,10 @@ export default function DisplayControl({ presentManager }: {
     usePMEvents(['display-id'], presentManager);
     const displayId = presentManager.displayId;
     return (
-        <div className='d-flex justify-content-center align-items-center'
+        <div className={
+            'display-control d-flex justify-content-center '
+            + 'align-items-center'
+        }
             title={'Present:' + presentManager.name + ', id:' +
                 presentManager.presentId +
                 ', display id:' + displayId}>

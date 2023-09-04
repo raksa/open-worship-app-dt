@@ -45,7 +45,7 @@ export default function MiniScreenClearControl({ presentManager }: {
     return (
         <div className='btn-group control'>
             <button type='button'
-                className={`btn btn-sm btn-${isPresenting ?
+                className={`btn btn-${isPresenting ?
                     '' : 'outline-'}danger`}
                 disabled={!isPresenting}
                 title='clear all'
@@ -55,7 +55,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 onClick={clearAll}>All</button>
 
             <button type='button'
-                className={'btn btn-sm '
+                className={'btn '
                     + `btn-${isPresentingBG ? '' : 'outline-'}secondary`}
                 disabled={!isPresentingBG}
                 title='clear background'
@@ -64,7 +64,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 })}
                 onClick={clearBG}>BG</button>
 
-            <button type='button' className={'btn btn-sm '
+            <button type='button' className={'btn '
                 + `btn-${isPresentingFG ? '' : 'outline-'}info`}
                 disabled={!isPresentingFG}
                 title='clear foreground'
@@ -73,7 +73,7 @@ export default function MiniScreenClearControl({ presentManager }: {
                 })}
                 onClick={clearFG}>FG</button>
 
-            <button type='button' className={'btn btn-sm '
+            <button type='button' className={'btn '
                 + `btn-${isPresentingFT ? '' : 'outline-'}primary`}
                 disabled={!isPresentingFT}
                 title='clear full text'

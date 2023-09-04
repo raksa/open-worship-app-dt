@@ -113,9 +113,9 @@ function RenderManager({ presentManager }: {
             <div className='card-header pb-2' style={{
                 overflowX: 'auto',
                 overflowY: 'hidden',
-                height: '52px',
+                height: '35px',
             }}>
-                <div className={'d-flex justify-content-around align-content-start'}
+                <div className={'d-flex align-content-start'}
                     style={{
                         minWidth: '500px',
                     }}>
