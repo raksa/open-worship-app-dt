@@ -18,7 +18,7 @@ export function useStateSettingBoolean(
     settingName: string, defaultValue?: boolean,
 ) {
     const defaultData = (
-        (getSetting(settingName) ?? 'false') !== 'false' || !!defaultValue
+        (getSetting(settingName) || 'false') !== 'false' || !!defaultValue
     );
     const [data, setData] = useState(defaultData);
     const setDataSetting = (b: boolean) => {
@@ -28,9 +28,9 @@ export function useStateSettingBoolean(
     return [data, setDataSetting] as [boolean, (b: boolean) => void];
 }
 export function useStateSettingString<T extends string>(
-    settingName: string, defaultString: T,
+    settingName: string, defaultString: T = '' as T,
 ) {
-    const defaultData = (getSetting(settingName) ?? defaultString) ?? '';
+    const defaultData = getSetting(settingName) || defaultString;
     const [data, setData] = useState<T>(defaultData as T);
     const setDataSetting = (b: string) => {
         setData(b as T);
@@ -40,7 +40,7 @@ export function useStateSettingString<T extends string>(
 }
 export function useStateSettingNumber(settingName: string
     , defaultNumber: number): [number, (n: number) => void] {
-    const defaultData = +(getSetting(settingName) ?? NaN);
+    const defaultData = +(getSetting(settingName) || NaN);
     const [data, setData] = useState(
         isNaN(defaultData) ? defaultNumber : defaultData,
     );

@@ -70,12 +70,13 @@ export default function RenderBibleItems({ bible }: {
     bible: Bible,
 }) {
     const openBibleSearch = useOpenBibleSearch();
-    const onContextMenuCallback = useCallback((event: any,
-        bibleItem: BibleItem, index: number) => {
-        openBibleItemContextMenu(event, bible, index, () => {
-            openBibleSearch(BibleItem.genBibleSearchData(bibleItem));
-        });
-    }, [bible]);
+    const onContextMenuCallback = useCallback(
+        (event: any, _: BibleItem, index: number) => {
+            openBibleItemContextMenu(event, bible, index, () => {
+                openBibleSearch();
+            });
+        }, [bible]
+    );
     const items = bible.items;
     return (
         <ul className='list-group' style={{
@@ -84,7 +85,7 @@ export default function RenderBibleItems({ bible }: {
         }}>
             {items.map((bibleItem, i1) => {
                 return (
-                    <BibleItemRender key={`${bibleItem.id}-${i1}`}
+                    <BibleItemRender key={`${bibleItem.id}`}
                         index={i1}
                         warningMessage={
                             genDuplicatedMessage(items, bibleItem, i1)

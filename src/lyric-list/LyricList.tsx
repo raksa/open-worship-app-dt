@@ -3,17 +3,13 @@ import './LyricList.scss';
 import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';
-import DirSource from '../helper/DirSource';
 import { useCallback } from 'react';
 import FileSource from '../helper/FileSource';
+import { useGenDS } from '../helper/dirSourceHelpers';
 
 export default function LyricList() {
-    const dirSource = DirSource.getInstance('lyric-list-selected-dir');
-    const onNewFileCallback = useCallback(async (name: string) => {
-        return !await Lyric.create(dirSource.dirPath, name);
-    }, [dirSource]);
-    const bodyHandlerCallback = useCallback((
-        fileSources: FileSource[]) => {
+    const dirSource = useGenDS('lyric-list-selected-dir');
+    const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
         return (
             <>
                 {fileSources.map((fileSource, i) => {
@@ -24,11 +20,16 @@ export default function LyricList() {
             </>
         );
     }, []);
+    if (dirSource === null) {
+        return null;
+    }
     return (
         <FileListHandler id={'lyric-list'}
             mimetype={'lyric'}
             dirSource={dirSource}
-            onNewFile={onNewFileCallback}
+            onNewFile={async (dirPath: string, name: string) => {
+                return !await Lyric.create(dirPath, name);
+            }}
             header={<span>Lyrics</span>}
             bodyHandler={bodyHandlerCallback} />
     );

@@ -30,7 +30,7 @@ export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 export const BIBLE_LIST_SELECTED_DIR = 'bible-list-selected-dir';
 
 async function getSelectedEditingBibleItem() {
-    let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) ?? null;
+    let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
         if (!downloadedBibleInfoList?.length) {
@@ -170,8 +170,8 @@ export async function consumeStartVerseEndVerse(
     return result;
 }
 
-export function moveBibleItemTo(event: any, bible: Bible, index?: number) {
-    const dirSource = DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
+export async function moveBibleItemTo(event: any, bible: Bible, index?: number) {
+    const dirSource = await DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
     dirSource.getFileSources('bible').then((fileSources) => {
         const targetNames = (fileSources ?? []).map((fileSource) => {
             return fileSource.name;

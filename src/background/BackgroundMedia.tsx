@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
-import DirSource from '../helper/DirSource';
 import PresentBGManager, {
     BackgroundSrcType,
 } from '../_present/PresentBGManager';
@@ -11,6 +10,7 @@ import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
 import { handleDragStart } from '../helper/dragHelpers';
+import { useGenDS } from '../helper/dirSourceHelpers';
 
 export type RenderChildType = (fileSource: FileSource,
     selectedBGSrcList: [string, BackgroundSrcType][]) => JSX.Element;
@@ -25,6 +25,7 @@ export default function BackgroundMedia({ rendChild, dragType }: {
     dragType: DragTypeEnum,
 }) {
     const bgType = bgTypeMapper[dragType];
+    const dirSource = useGenDS(`${bgType}-list-selected-dir`);
     const renderCallback = useCallback((fileSources: FileSource[]) => {
         const genBodyWithChild = genBody.bind(null, rendChild, dragType);
         return (
@@ -33,8 +34,10 @@ export default function BackgroundMedia({ rendChild, dragType }: {
             </div>
         );
     }, []);
-    const dirSource = DirSource.getInstance(`${bgType}-list-selected-dir`);
     usePBGMEvents(['update']);
+    if (dirSource === null) {
+        return null;
+    }
     return (
         <FileListHandler id={`background-${bgType}`}
             mimetype={bgType}

@@ -41,7 +41,6 @@ export default function PathSelector({
 }
 
 function RenderTitle({ dirSource }: { dirSource: DirSource }) {
-    useDSEvents(['reload'], dirSource);
     if (!dirSource.dirPath) {
         return null;
     }

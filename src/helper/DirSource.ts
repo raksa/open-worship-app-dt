@@ -5,6 +5,7 @@ import {
     MimetypeNameType,
     getAppMimetype,
     fsListFiles,
+    fsCheckDirExist,
 } from '../server/fileHelper';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
@@ -19,14 +20,24 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
     static _objectId = 0;
-    checkExtraFile: ((fileName: string) => FileMetadataType | null) | null = null;
+    checkExtraFile: ((fName: string) => FileMetadataType | null) | null = null;
+    private _isDirPathValid: boolean | null = null;
     constructor(settingName: string) {
         super();
         if (!settingName) {
             throw new Error('Invalid setting name');
         }
         this.settingName = settingName;
-        // TODO: investigate why drop folder at first time not working
+    }
+    async init() {
+        if (!this.dirPath) {
+            return;
+        }
+        const isDirectory = await fsCheckDirExist(this.dirPath);
+        this._isDirPathValid = isDirectory;
+    }
+    get isDirPathValid() {
+        return this._isDirPathValid;
     }
     get dirPath() {
         return getSetting(this.settingName, '');
@@ -43,7 +54,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     static getCacheKeyByDirPath(dirPath: string) {
         return this._fileCacheKeys.find((cacheKey) => {
             return cacheKey.includes(dirPath);
-        }) || null;
+        }) ?? null;
     }
     getFileSourceInstance(fileName: string) {
         return FileSource.getInstance(this.dirPath, fileName);
@@ -87,10 +98,11 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             return undefined;
         }
     }
-    static getInstance(settingName: string) {
+    static async getInstance(settingName: string) {
         const cacheKey = this.toCacheKey(settingName);
         if (!this._cache.has(cacheKey)) {
             const dirSource = new DirSource(settingName);
+            await dirSource.init();
             this._cache.set(cacheKey, dirSource);
         }
         return this._cache.get(cacheKey) as DirSource;

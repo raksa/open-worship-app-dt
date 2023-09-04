@@ -3,7 +3,6 @@ import './SlideList.scss';
 import FileListHandler from '../others/FileListHandler';
 import SlideFile from './SlideFile';
 import Slide from './Slide';
-import DirSource from '../helper/DirSource';
 import {
     checkIsPdf,
     convertOfficeFile,
@@ -13,34 +12,37 @@ import {
 import { extractExtension } from '../server/fileHelper';
 import { useCallback } from 'react';
 import FileSource from '../helper/FileSource';
+import { useGenDS } from '../helper/dirSourceHelpers';
 
 export default function SlideList() {
-    const dirSource = DirSource.getInstance('slide-list-selected-dir');
-    dirSource.checkExtraFile = (fileName: string) => {
-        if (checkIsPdf(extractExtension(fileName))) {
-            return {
-                fileName,
-                appMimetype: pdfMimetype,
-            };
-        }
-        return null;
-    };
+    const dirSource = useGenDS('slide-list-selected-dir');
+    if (dirSource !== null) {
+        dirSource.checkExtraFile = (fileName: string) => {
+            if (checkIsPdf(extractExtension(fileName))) {
+                return {
+                    fileName,
+                    appMimetype: pdfMimetype,
+                };
+            }
+            return null;
+        };
+    }
     const checkExtraFileCallback = useCallback((fileSource: FileSource) => {
         if (checkIsPdf(fileSource.extension)) {
             return true;
         }
         return false;
-    }, []);
+    }, [dirSource]);
     const takeDropFileCallback = useCallback((fileSource: FileSource) => {
+        if (dirSource === null) {
+            return false;
+        }
         const ext = fileSource.extension.toLocaleLowerCase();
         if (supportOfficeFE.includes(ext)) {
             convertOfficeFile(fileSource, dirSource);
             return true;
         }
         return false;
-    }, [dirSource]);
-    const onNewFileCallback = useCallback(async (name: string) => {
-        return !await Slide.create(dirSource.dirPath, name);
     }, [dirSource]);
     const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
         return fileSources.map((fileSource, i) => {
@@ -49,13 +51,18 @@ export default function SlideList() {
                 fileSource={fileSource} />;
         });
     }, []);
+    if (dirSource === null) {
+        return null;
+    }
     return (
         <FileListHandler id={'slide-list'}
             mimetype={'slide'}
             dirSource={dirSource}
             checkExtraFile={checkExtraFileCallback}
             takeDroppedFile={takeDropFileCallback}
-            onNewFile={onNewFileCallback}
+            onNewFile={async (dirPath: string, name: string) => {
+                return !await Slide.create(dirPath, name);
+            }}
             header={<span>Slides</span>}
             bodyHandler={bodyHandlerCallback} />
     );

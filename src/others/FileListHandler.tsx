@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { createContext, useCallback, useState } from 'react';
 import PathSelector from '../others/PathSelector';
 import {
     MimetypeNameType, fsCheckDirExist,
@@ -46,6 +46,8 @@ async function watch(dirSource: DirSource, signal: AbortSignal) {
     }
 }
 
+export const DirSourceContext = createContext<DirSource | null>(null);
+
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
@@ -57,7 +59,7 @@ export default function FileListHandler({
     dirSource: DirSource,
     header?: any,
     bodyHandler: (fileSources: FileSource[]) => any,
-    onNewFile?: (newName: string) => Promise<boolean>,
+    onNewFile?: (dirPath: string, newName: string) => Promise<boolean>,
     contextMenu?: ContextMenuItemType[],
     checkExtraFile?: (fileSource: FileSource) => boolean,
     takeDroppedFile?: (file: FileSource) => boolean,
@@ -68,7 +70,7 @@ export default function FileListHandler({
             setIsCreatingNew(false);
             return;
         }
-        onNewFile?.(name).then((isSuccess) => {
+        onNewFile?.(dirSource.dirPath, name).then((isSuccess) => {
             setIsCreatingNew(isSuccess);
         });
     }, [onNewFile]);
@@ -81,39 +83,41 @@ export default function FileListHandler({
         };
     }, [dirSource.dirPath]);
     return (
-        <div className={`${id} card w-100 h-100 ${userClassName}`}
-            onDragOver={genOnDragOver(dirSource, mimetype)}
-            onDragLeave={genOnDragLeave()}
-            onDrop={genOnDrop({
-                dirSource,
-                mimetype,
-                checkExtraFile,
-                takeDroppedFile,
-            })}>
-            {header && <div className='card-header'>{header}
-                {onNewFile && dirSource.dirPath &&
-                    <button className='btn btn-sm btn-outline-info float-end'
-                        title='New File'
-                        onClick={() => setIsCreatingNew(true)}>
-                        <i className='bi bi-file-earmark-plus' />
-                    </button>
-                }
-            </div>}
-            <div className='card-body pb-5'
-                onContextMenu={genOnContextMenu(contextMenu)}>
-                <PathSelector prefix={`path-${id}`}
-                    dirSource={dirSource} />
-                {!dirSource.dirPath ? noDirSelected : (
-                    <ul className='list-group'>
-                        {onNewFile && isCreatingNew && <AskingNewName
-                            applyName={applyNameCallback} />}
-                        <RenderList dirSource={dirSource}
-                            bodyHandler={bodyHandler}
-                            mimetype={mimetype} />
-                    </ul>
-                )}
-            </div>
-        </div >
+        <DirSourceContext.Provider value={dirSource}>
+            <div className={`${id} card w-100 h-100 ${userClassName}`}
+                onDragOver={genOnDragOver(dirSource, mimetype)}
+                onDragLeave={genOnDragLeave()}
+                onDrop={genOnDrop({
+                    dirSource,
+                    mimetype,
+                    checkExtraFile,
+                    takeDroppedFile,
+                })}>
+                {header && <div className='card-header'>{header}
+                    {onNewFile && dirSource.dirPath &&
+                        <button className='btn btn-sm btn-outline-info float-end'
+                            title='New File'
+                            onClick={() => setIsCreatingNew(true)}>
+                            <i className='bi bi-file-earmark-plus' />
+                        </button>
+                    }
+                </div>}
+                <div className='card-body pb-5'
+                    onContextMenu={genOnContextMenu(contextMenu)}>
+                    <PathSelector prefix={`path-${id}`}
+                        dirSource={dirSource} />
+                    {!dirSource.dirPath ? noDirSelected : (
+                        <ul className='list-group'>
+                            {onNewFile && isCreatingNew && <AskingNewName
+                                applyName={applyNameCallback} />}
+                            <RenderList dirSource={dirSource}
+                                bodyHandler={bodyHandler}
+                                mimetype={mimetype} />
+                        </ul>
+                    )}
+                </div>
+            </div >
+        </DirSourceContext.Provider>
     );
 }
 

@@ -1,9 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import DirSource, {
     DirSourceEventType,
 } from './DirSource';
 import FileSource, { FSEventType } from './FileSource';
+
+export function useGenDS(settingName: string) {
+    const [dirSource, setDirSource] = useState<DirSource | null>(null);
+    useEffect(() => {
+        if (dirSource !== null) {
+            return;
+        }
+        DirSource.getInstance(settingName).then((newDirSource) => {
+            newDirSource.registerEventListener(['reload'], () => {
+                setDirSource(null);
+            });
+            setDirSource(newDirSource);
+        });
+    }, [dirSource]);
+    return dirSource;
+}
 
 export function useDSEvents(events: DirSourceEventType[],
     dirSource?: DirSource,
