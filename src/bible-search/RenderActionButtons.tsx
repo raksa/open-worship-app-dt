@@ -48,13 +48,15 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
             return bibleItem;
         }
     };
-    const addBibleItemAndPresent = async (event: any) => {
-        const bibleItem = await addOrBibleItem(props);
-        if (bibleItem !== null) {
-            if (isWindowPresenting) {
-                PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+    const addBibleItemAndPresent = (event: any) => {
+        (async () => {
+            const bibleItem = await addOrBibleItem(props);
+            if (bibleItem !== null) {
+                if (isWindowPresenting) {
+                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+                }
             }
-        }
+        })();
     };
     useKeyboardRegistering(addListEventMapper, () => {
         addOrBibleItem(props);

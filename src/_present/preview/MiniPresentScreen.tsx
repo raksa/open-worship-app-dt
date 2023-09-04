@@ -115,18 +115,19 @@ function RenderManager({ presentManager }: {
                 overflowY: 'hidden',
                 height: '35px',
             }}>
-                <div className={'d-flex align-content-start'}
-                    style={{
-                        minWidth: '500px',
-                    }}>
-                    <ShowHidePresent
-                        presentManager={presentManager} />
-                    <MiniScreenClearControl
-                        presentManager={presentManager} />
-                    <DisplayControl
-                        presentManager={presentManager} />
-                    <PTEffectControl
-                        presentManager={presentManager} />
+                <div className={'d-flex'}>
+                    <div className='d-flex justify-content-start'>
+                        <ShowHidePresent
+                            presentManager={presentManager} />
+                        <MiniScreenClearControl
+                            presentManager={presentManager} />
+                    </div>
+                    <div className='flex-fill d-flex justify-content-end'>
+                        <DisplayControl
+                            presentManager={presentManager} />
+                        <PTEffectControl
+                            presentManager={presentManager} />
+                    </div>
                 </div>
             </div>
             <div>
