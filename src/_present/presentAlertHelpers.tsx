@@ -14,7 +14,7 @@ const classNameMapper = {
 export function genHtmlAlertMarquee(marqueeData: { text: string }
     , presentManager: PresentManager) {
     const { text } = marqueeData;
-    const duration = (text.length ?? 0) / 6;
+    const duration = (text.length || 0) / 6;
     const scale = presentManager.height / 768;
     const fontSize = 75 * scale;
     const actorClass = classNameMapper.marquee;

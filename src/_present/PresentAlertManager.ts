@@ -168,7 +168,8 @@ export default class PresentAlertManager
     }
     static async setData(event: React.MouseEvent<HTMLElement, MouseEvent>,
         callback: (presentManager: PresentAlertManager) => void) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(event);
         const callbackSave = async (presentManager: PresentManager) => {
             callback(presentManager.presentAlertManager);
             presentManager.presentAlertManager.saveAlertData();

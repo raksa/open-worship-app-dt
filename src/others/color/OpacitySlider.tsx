@@ -4,7 +4,7 @@ export default function OpacitySlider({ value, onOpacityChanged }: {
     value: number,
     onOpacityChanged: (value: number, event: MouseEvent) => void,
 }) {
-    const [localValue, setLocalValue] = useState(value ?? 1);
+    const [localValue, setLocalValue] = useState(value || 1);
     return (
         <input type='range' value={localValue}
             className='form-range'
