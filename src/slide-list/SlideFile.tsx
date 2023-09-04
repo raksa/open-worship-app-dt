@@ -51,10 +51,9 @@ export default function SlideFile({
             Slide.readFileToData(filePath).then(setData);
         }
     }, [data]);
-    useFSEvents(['update', 'history-update', 'edit'],
-        filePath, () => {
-            setData(null);
-        });
+    useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
+        setData(null);
+    });
     return (
         <FileItemHandler
             index={index}

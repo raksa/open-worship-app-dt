@@ -16,11 +16,7 @@ import PresentFTManager from '../_present/PresentFTManager';
 import { checkIsWindowPresentingMode } from '../router/routeHelpers';
 
 export default function BibleItemRender({
-    index,
-    bibleItem,
-    warningMessage,
-    onContextMenu,
-    filePath: filePath,
+    index, bibleItem, warningMessage, onContextMenu, filePath,
 }: {
     index: number,
     bibleItem: BibleItem,

@@ -8,6 +8,7 @@ import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
 import { copyToClipboard } from '../server/appHelper';
+import { useFSEvents } from '../helper/dirSourceHelpers';
 
 const RenderBibleItems = React.lazy(() => {
     return import('./RenderBibleItems');
@@ -72,6 +73,7 @@ export default function BibleFile({
     const reloadCallback = useCallback(() => {
         setData(null);
     }, [setData]);
+    useFSEvents(['update'], filePath, reloadCallback);
     return (
         <FileItemHandler
             index={index}
