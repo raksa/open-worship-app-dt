@@ -14,7 +14,7 @@ export default class BibleItemViewController
     static _instance: BibleItemViewController | null = null;
     get bibleItems() {
         try {
-            const bibleItems = JSON.parse(getSetting('bibleItems') ?? '[]');
+            const bibleItems = JSON.parse(getSetting('bibleItems') || '[]');
             return bibleItems.map((item: any) => {
                 return BibleItem.fromJson(item);
             });
