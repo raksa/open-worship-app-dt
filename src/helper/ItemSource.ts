@@ -70,7 +70,7 @@ export default abstract class ItemSource<T extends {
             return null;
         }
         const selected = getSetting(settingName, '');
-        return selected ?? null;
+        return selected || null;
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
