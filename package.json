@@ -16,6 +16,7 @@
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
         "pack:mac": "npm run build && electron-builder build --mac",
+        "pack:mac:uni": "npm run build && electron-builder build --mac --x64 --universal",
         "pack:linux": "npm run build && electron-builder build --linux",
         "pack:win": "npm run build && electron-builder build --win --x64",
         "pack:win32": "electron-builder build --win --ia32",
