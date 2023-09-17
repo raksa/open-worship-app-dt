@@ -35,34 +35,12 @@ export const genCommonMenu = (filePath: string) => {
     ];
 };
 
+function genContextMenu(
+    filePath: string, setIsRenaming: (value: boolean) => void,
+    reload: () => void, onDelete?: () => void,
 
-export default function FileItemHandler({
-    data, reload, index, filePath, className,
-    contextMenu, onDrop, onClick, renderChild,
-    isPointer, onDelete, isDisabledColorNote,
-    userClassName,
-}: {
-    data: ItemSource<any> | null | undefined,
-    reload: () => void,
-    index: number,
-    filePath: string,
-    className?: string
-    contextMenu?: ContextMenuItemType[],
-    onDrop?: (event: any) => void,
-    onClick?: () => void,
-    renderChild: (lyric: ItemSource<any>) => any,
-    isPointer?: boolean,
-    onDelete?: () => void,
-    isDisabledColorNote?: boolean,
-    userClassName?: string,
-}) {
-    const [isRenaming, setIsRenaming] = useState(false);
-    useFSEvents(['select'], filePath);
-    const applyClick = () => {
-        FileSource.getInstance(filePath).fireSelectEvent();
-        onClick?.();
-    };
-    const selfContextMenu = [
+) {
+    return [
         {
             title: 'Duplicate',
             onClick: () => {
@@ -90,7 +68,41 @@ export default function FileItemHandler({
                     onDelete?.();
                 }
             },
-        }];
+        },
+    ];
+}
+
+
+export default function FileItemHandler({
+    data, reload, index, filePath, className,
+    contextMenu, onDrop, onClick, renderChild,
+    isPointer, onDelete, isDisabledColorNote,
+    userClassName,
+}: {
+    data: ItemSource<any> | null | undefined,
+    reload: () => void,
+    index: number,
+    filePath: string,
+    className?: string
+    contextMenu?: ContextMenuItemType[],
+    onDrop?: (event: any) => void,
+    onClick?: () => void,
+    renderChild: (lyric: ItemSource<any>) => any,
+    isPointer?: boolean,
+    onDelete?: () => void,
+    isDisabledColorNote?: boolean,
+    userClassName?: string,
+}) {
+    const [isRenaming, setIsRenaming] = useState(false);
+    useFSEvents(['select']);
+    const applyClick = () => {
+        FileSource.getInstance(filePath).fireSelectEvent();
+        onClick?.();
+    };
+    const selfContextMenu = genContextMenu(
+        filePath, setIsRenaming, reload, onDelete,
+    );
+
     const callContextMenu = useCallback((event: any) => {
         showAppContextMenu(event, selfContextMenu);
     }, [selfContextMenu]);
