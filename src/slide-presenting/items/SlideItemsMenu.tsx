@@ -28,11 +28,13 @@ export default function SlideItemsMenu({
     const undo = editCacheManager.undoQueue;
     const redo = editCacheManager.redoQueue;
     const isHavingHistories = !!undo.length || !!redo.length;
+    const isShowingMenu = undo.length || redo.length || foundWrongDimension;
     return (
         <div style={{
             borderBottom: '1px solid #00000024',
             backgroundColor: '#00000020',
             minHeight: (isHavingHistories || slide.isChanged) ? '35px' : '0px',
+            display: isShowingMenu ? 'block' : 'none',
         }}>
             <div className='btn-group control d-flex justify-content-center'>
                 <button type='button' className='btn btn-sm btn-info'

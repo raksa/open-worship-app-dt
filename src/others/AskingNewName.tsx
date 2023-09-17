@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export default function AskingNewName({
     defaultName, applyName, customIcon,
@@ -7,7 +8,8 @@ export default function AskingNewName({
     customIcon?: React.JSX.Element,
     applyName: (newName: string | null) => void,
 }) {
-    const [creatingNewName, setCreatingNewName] = useState(defaultName || '');
+    const [newName, setCreatingNewName] = useState(defaultName || '');
+    const isValid = /^[^\\\/:\*\?"<>\|]+$/.test(newName);
     return (
         <div className='input-group' onClick={(event) => {
             event.stopPropagation();
@@ -15,26 +17,33 @@ export default function AskingNewName({
             <input type='text'
                 className='form-control'
                 placeholder='title'
-                value={creatingNewName}
+                value={newName}
                 aria-label='file name'
                 aria-describedby='button-addon2'
                 autoFocus
                 onKeyDown={(event) => {
-                    if (event.key === 'Enter' && creatingNewName) {
-                        applyName(creatingNewName);
+                    if (event.key === 'Enter' && newName) {
+                        applyName(newName);
                     } else if (event.key === 'Escape') {
                         applyName(null);
                     }
                 }}
                 onChange={(event) => {
-                    // TODO: validate name
                     setCreatingNewName(event.target.value);
                 }} />
             <button type='button'
                 id='button-addon2'
-                className='btn btn-outline-success'
+                className={`btn btn-outline-${isValid ? 'success' : 'danger'}`}
                 onClick={() => {
-                    applyName(creatingNewName || null);
+                    if (!isValid) {
+                        showSimpleToast(
+                            'Invalid file name',
+                            'File name cannot contain any of the following ' +
+                            'characters: \\ / : * ? " < > |',
+                        );
+                        return;
+                    }
+                    applyName(newName || null);
                 }}>
                 {customIcon || <i className='bi bi-check' />}
             </button>

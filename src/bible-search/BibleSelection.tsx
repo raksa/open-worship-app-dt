@@ -1,3 +1,5 @@
+import './BibleSelection.scss';
+
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     getBibleInfoWithStatusList,
@@ -79,8 +81,10 @@ export function BibleSelectionMini({
         );
     }
     return (
-        <span className={'pointer ' +
-            (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')}
+        <span className={
+            'bible-selector pointer ' +
+            (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')
+        }
             onClick={(event) => {
                 event.stopPropagation();
                 showBibleOption(event, [value],

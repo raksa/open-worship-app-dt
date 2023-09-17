@@ -18,6 +18,7 @@ export default function RenderRenaming({
         const isSuccess = await fileSource.renameTo(name);
         setIsRenaming(!isSuccess);
     }, [setIsRenaming, filePath]);
-    return <AskingNewName defaultName={FileSource.name}
+    const fileSource = FileSource.getInstance(filePath);
+    return <AskingNewName defaultName={fileSource.name}
         applyName={applyNameCallback} />;
 }
