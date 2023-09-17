@@ -58,14 +58,14 @@ export default class PresentManager
         const { displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id === displayId;
-        })?.id ?? 0;
+        })?.id || 0;
     }
     static getDisplayByPresentId(presentId: number) {
         const displayId = this.getDisplayIdByPresentId(presentId);
         const { displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id === displayId;
-        }) ?? this.getDefaultPresentDisplay();
+        }) || this.getDefaultPresentDisplay();
     }
     static getDisplayIdByPresentId(presentId: number) {
         const defaultDisplay = PresentManager.getDefaultPresentDisplay();
@@ -78,7 +78,7 @@ export default class PresentManager
         const { displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id === id;
-        })?.id ?? defaultDisplay.id;
+        })?.id || defaultDisplay.id;
     }
     get displayId() {
         return PresentManager.getDisplayIdByPresentId(this.presentId);
@@ -139,7 +139,7 @@ export default class PresentManager
         const { primaryDisplay, displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id !== primaryDisplay.id;
-        }) ?? primaryDisplay;
+        }) || primaryDisplay;
     }
     fireUpdateEvent() {
         this.addPropEvent('update');

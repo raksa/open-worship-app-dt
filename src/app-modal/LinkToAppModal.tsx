@@ -34,7 +34,7 @@ export default function LinkToAppModal({
     data?: string,
 }) {
     const location = useLocation();
-    const modalTypeData = toAppModalTypeData(modalType, data ?? '');
+    const modalTypeData = toAppModalTypeData(modalType, data || '');
     const routePath = `${APP_MODAL_ROUTE_PATH}${modalTypeData}`;
     return (
         <Link

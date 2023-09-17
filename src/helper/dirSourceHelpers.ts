@@ -31,7 +31,7 @@ export function useDSEvents(events: DirSourceEventType[],
             callback?.();
         };
         const instanceEvents = dirSource?.registerEventListener(
-            events, update) ?? [];
+            events, update) || [];
         const staticEvents = DirSource.registerEventListener(events, update);
         return () => {
             dirSource?.unregisterEventListener(instanceEvents);

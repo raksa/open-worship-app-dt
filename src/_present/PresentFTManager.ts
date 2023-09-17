@@ -43,7 +43,7 @@ export default class PresentFTManager
         this.presentId = presentId;
         if (appProviderPresent.isMain) {
             const allFTList = getFTList();
-            this._ftItemData = allFTList[this.key] ?? null;
+            this._ftItemData = allFTList[this.key] || null;
 
             const str = getSetting(`${settingName}-style-text`, '');
             try {

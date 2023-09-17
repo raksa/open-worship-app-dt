@@ -58,16 +58,15 @@ function genBody({
     const onDropHandler = async (event: any) => {
         const dragEvent = event as DragEvent;
         dragEvent.preventDefault();
-        const style = (dragEvent.currentTarget as any)?.style ?? {};
+        const style = (dragEvent.currentTarget as any)?.style || {};
         style.opacity = '1';
-        const files = dragEvent.dataTransfer?.files ?? [];
+        const files = dragEvent.dataTransfer?.files || [];
         for (const file of Array.from(files)) {
             if (!isSupportType(file.type)) {
                 showSimpleToast('Insert Image or Video',
                     'Unsupported file type!');
             } else {
-                const fileSource = FileSource.getInstance((file as any).path);
-                canvasController.addNewMediaItem(fileSource, event);
+                canvasController.addNewMediaItem((file as any).path, event);
             }
         }
     };

@@ -101,7 +101,7 @@ export default function FileItemHandler({
         return <FileReadError onContextMenu={callContextMenu} />;
     }
     const moreClassName = `${data.isSelected ? 'active' : ''} `
-        + `${className ?? ''}`;
+        + `${className || ''}`;
     const fileSource = FileSource.getInstance(filePath);
     return (
         <li className={`list-group-item mx-1 ${moreClassName} ${userClassName}
@@ -111,7 +111,7 @@ export default function FileItemHandler({
             title={filePath}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
-                    ...(contextMenu ?? []),
+                    ...(contextMenu || []),
                     ...genCommonMenu(filePath),
                     ...selfContextMenu,
                 ]);

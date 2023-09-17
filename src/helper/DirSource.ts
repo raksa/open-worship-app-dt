@@ -54,7 +54,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     static getCacheKeyByDirPath(dirPath: string) {
         return this._fileCacheKeys.find((cacheKey) => {
             return cacheKey.includes(dirPath);
-        }) ?? null;
+        }) || null;
     }
     getFileSourceInstance(fileName: string) {
         return FileSource.getInstance(this.dirPath, fileName);

@@ -32,15 +32,15 @@ export default class SlideEditingCacheManager
             return history.metadata !== undefined;
         })?.items;
         return {
-            items: newItems ?? this.cloneItems,
-            metadata: newMetadata ?? this.cloneMetadata,
+            items: newItems || this.cloneItems,
+            metadata: newMetadata || this.cloneMetadata,
         };
     }
     getSlideItemById(id: number) {
         const latestHistory = this.presentJson;
         return latestHistory.items.find((item) => {
             return item.id === id;
-        }) ?? null;
+        }) || null;
     }
     checkIsSlideItemChanged(id: number) {
         const newItem = this.getSlideItemById(id);

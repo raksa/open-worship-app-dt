@@ -36,7 +36,7 @@ export default function Toast() {
     };
     useToastSimpleShowing((toast: SimpleToastType) => {
         setSimpleToast(toast);
-        initTimeout(toast.timeout ?? 4e3);
+        initTimeout(toast.timeout || 4e3);
     });
     return (
         <>

@@ -7,6 +7,6 @@ export default function RendLocalNumberAsync({
 }) {
     const str = useToLocaleNumBB(bibleSelected, ind);
     return (
-        <span>{str ?? ''}</span>
+        <span>{str || ''}</span>
     );
 }

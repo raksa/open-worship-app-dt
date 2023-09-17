@@ -15,11 +15,11 @@ export default function ItemColorNote({ item }: {
     const [colorNote, _setColorNote] = useState('');
     useAppEffect(() => {
         item.getColorNote().then((colorNote) => {
-            _setColorNote(colorNote ?? '');
+            _setColorNote(colorNote || '');
         });
     }, [item]);
     const setColorNote = (colorNote: string | null) => {
-        _setColorNote(colorNote ?? '');
+        _setColorNote(colorNote || '');
         item.setColorNote(colorNote);
     };
     const title = useMemo(() => {
@@ -31,7 +31,7 @@ export default function ItemColorNote({ item }: {
                 acc[colorCode] = name;
                 return acc;
             }, {} as Record<string, string>);
-        return reverseColorMap[colorNote ?? ''] ?? 'no color';
+        return reverseColorMap[colorNote] || 'no color';
     }, [colorNote]);
 
     return (

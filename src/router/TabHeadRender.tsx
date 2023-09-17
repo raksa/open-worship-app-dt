@@ -31,7 +31,7 @@ function renderItem(
 ) {
     const isActive = !!checkIsActive?.(routeProps);
     return (<li key={title}
-        className={'nav-item ' + (tabClassName ?? '')}>
+        className={'nav-item ' + (tabClassName || '')}>
         <button
             className={`btn btn-link nav-link ${isActive ? 'active' : ''}`}
             onClick={() => {

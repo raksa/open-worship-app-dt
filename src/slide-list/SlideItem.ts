@@ -53,7 +53,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         return SlideItem.genKeyByFileSource(this.filePath, this.id);
     }
     get pdfImageData() {
-        return this.originalJson.pdfImageData ?? null;
+        return this.originalJson.pdfImageData || null;
     }
     get isPdf() {
         return this.pdfImageData !== null;
@@ -81,7 +81,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         this.originalJson = json;
     }
     get pdfImageSrc() {
-        return this.pdfImageData?.src ?? '';
+        return this.pdfImageData?.src || '';
     }
     get canvas() {
         return Canvas.fromJson({
@@ -104,7 +104,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
     get width() {
         if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.width ?? 0);
+            return Math.floor(this.pdfImageData?.width || 0);
         }
         return this.metadata.width;
     }
@@ -115,7 +115,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
     get height() {
         if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.height ?? 0);
+            return Math.floor(this.pdfImageData?.height || 0);
         }
         return this.metadata.height;
     }
@@ -199,7 +199,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         return {
             id: this.id,
             canvasItems: this.canvasItemsJson,
-            pdfImageData: this.pdfImageData ?? undefined,
+            pdfImageData: this.pdfImageData || undefined,
             metadata: this.metadata,
         };
     }

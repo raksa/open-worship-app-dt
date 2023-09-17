@@ -41,7 +41,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     init(slideItem: SlideItem | null) {
         this._slideItem = slideItem;
-        this._canvas = slideItem?.canvas ?? Canvas.genDefaultCanvas();
+        this._canvas = slideItem?.canvas || Canvas.genDefaultCanvas();
     }
     get canvas() {
         return this._canvas;
@@ -125,7 +125,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     async addNewMediaItem(filePath: string, event: any) {
         try {
             const fileSource = FileSource.getInstance(filePath);
-            const mediaType = fileSource.metadata?.appMimetype.mimetypeName ?? '';
+            const mediaType = fileSource.metadata?.appMimetype.mimetypeName || '';
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast('Insert Medias',
                     'Only image and video files are supported');

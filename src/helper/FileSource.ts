@@ -161,7 +161,7 @@ export default class FileSource extends EventHandler<FSEventType>
     }
     dragSerialize(type?: DragTypeEnum) {
         return {
-            type: type ?? DragTypeEnum.UNKNOWN,
+            type: type || DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
     }

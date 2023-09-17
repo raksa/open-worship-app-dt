@@ -107,7 +107,7 @@ export default class Bible extends ItemSource<BibleItem>{
         const items = this.items;
         const removedItems = items.splice(index, 1);
         this.items = items;
-        return removedItems[0] ?? null;
+        return removedItems[0] || null;
     }
     removeItem(bibleItem: BibleItem) {
         const items = this.items;
@@ -179,7 +179,7 @@ export default class Bible extends ItemSource<BibleItem>{
         if (!dir) {
             return null;
         }
-        const filePaths = await fsListFilesWithMimetype(dir, 'bible') ?? [];
+        const filePaths = await fsListFilesWithMimetype(dir, 'bible') || [];
         if (filePaths === null) {
             return null;
         }
@@ -190,7 +190,7 @@ export default class Bible extends ItemSource<BibleItem>{
         }
         const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
         const defaultBible = await Bible.readFileToData(
-            defaultFS?.filePath ?? null,
+            defaultFS?.filePath || null,
         );
         if (!defaultBible) {
             showSimpleToast('Getting Default Bible File',

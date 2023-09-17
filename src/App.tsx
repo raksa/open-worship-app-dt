@@ -56,7 +56,7 @@ function AppRouteRender() {
     };
     return (
         <>
-            <Routes location={state?.backgroundLocation ?? location}>
+            <Routes location={state?.backgroundLocation || location}>
                 <Route element={<AppLayout />}>
                     <Route path={home.routePath}
                         element={<RedirectTo to={presentingTab.title} />} />

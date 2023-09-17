@@ -110,7 +110,7 @@ function move(): StyleAnimType {
         callback: (n: number, isDone?: boolean) => void,
     }) => {
         const distDiff = to - from;
-        const easeFn = easingFunctions[easing ?? 'ease-in'];
+        const easeFn = easingFunctions[easing || 'ease-in'];
         const startTime = Date.now();
         const step = () => {
             const timeNow = Date.now();
@@ -137,7 +137,7 @@ function move(): StyleAnimType {
                     .getBoundingClientRect();
                 const from = -rect.width;
                 const styleLst = (targetElement.previousSibling as
-                    HTMLElement)?.style ?? {
+                    HTMLElement)?.style || {
                     left: '0px',
                 };
                 const styleTarget = targetElement.style;
@@ -202,7 +202,7 @@ export function usePTEEvents(events: PTFEventType[],
             callback?.();
         };
         const instanceEvents = ptEffect.registerEventListener(
-            events, update) ?? [];
+            events, update) || [];
         return () => {
             ptEffect.unregisterEventListener(instanceEvents);
         };

@@ -50,7 +50,7 @@ export default class EventHandler<T extends string> {
 
     _checkOnEvent(eventName: T, data?: any) {
         this._guardEventName(eventName);
-        const listeners = this._eventListenersMapper.get(eventName) ?? [];
+        const listeners = this._eventListenersMapper.get(eventName) || [];
         listeners.forEach((listener: ListenerType<any>) => {
             listener(data);
         });
@@ -58,14 +58,14 @@ export default class EventHandler<T extends string> {
 
     _addOnEventListener(eventName: T, listener: ListenerType<any>) {
         this._guardEventName(eventName);
-        const listeners = this._eventListenersMapper.get(eventName) ?? [];
+        const listeners = this._eventListenersMapper.get(eventName) || [];
         listeners.push(listener);
         this._eventListenersMapper.set(eventName, listeners);
     }
 
     _removeOnEventListener(eventName: T, listener: ListenerType<any>) {
         this._guardEventName(eventName);
-        const listeners = this._eventListenersMapper.get(eventName) ?? [];
+        const listeners = this._eventListenersMapper.get(eventName) || [];
         const index = listeners.indexOf(listener);
         if (index > -1) {
             listeners.splice(index, 1);

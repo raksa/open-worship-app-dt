@@ -61,7 +61,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             width: `${props.width}px`,
             height: `${props.height}px`,
             position: 'absolute',
-            backgroundColor: props.backgroundColor ?? 'transparent',
+            backgroundColor: props.backgroundColor || 'transparent',
         };
         return style;
     }

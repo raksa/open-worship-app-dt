@@ -41,12 +41,12 @@ export default abstract class EditingCacheManager<T1, T2> {
     }
     get _changedObject(): ChangeObjectType<T1> {
         const changes = this._changes;
-        const changedObject = changes[this.filePath] ?? {
+        const changedObject = changes[this.filePath] || {
             undoQueue: [],
             redoQueue: [],
         };
-        changedObject.undoQueue = changedObject.undoQueue ?? [];
-        changedObject.redoQueue = changedObject.redoQueue ?? [];
+        changedObject.undoQueue = changedObject.undoQueue || [];
+        changedObject.redoQueue = changedObject.redoQueue || [];
         return changedObject;
     }
     set _changedObject(changedObject: ChangeObjectType<T1>) {

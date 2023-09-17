@@ -98,7 +98,7 @@ export function useBIVCUpdateEvent(
         };
         const instanceEvents = bibleItemViewController.registerEventListener(
             ['update'], update,
-        ) ?? [];
+        ) || [];
         return () => {
             bibleItemViewController.unregisterEventListener(instanceEvents);
         };

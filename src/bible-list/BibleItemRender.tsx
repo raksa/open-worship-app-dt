@@ -68,7 +68,7 @@ export default function BibleItemRender({
                         isMinimal />
                 </div>
                 <span className='app-ellipsis'>
-                    {title ?? 'not found'}
+                    {title || 'not found'}
                 </span>
                 {warningMessage && <span className='float-end'
                     title={warningMessage}>⚠️</span>}

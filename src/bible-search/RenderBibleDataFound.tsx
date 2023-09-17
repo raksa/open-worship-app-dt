@@ -52,7 +52,7 @@ export default function RenderBibleDataFound({
                 id: -1,
                 bibleKey: bibleSelected,
                 target: {
-                    book: await bookToKey(bibleSelected, book) ?? '',
+                    book: await bookToKey(bibleSelected, book) || '',
                     chapter,
                     startVerse: sVerse,
                     endVerse: eVerse,

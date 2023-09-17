@@ -32,7 +32,7 @@ export default function SlideItemsMenu({
         <div style={{
             borderBottom: '1px solid #00000024',
             backgroundColor: '#00000020',
-            minHeight: (isHavingHistories ?? slide.isChanged) ? '35px' : '0px',
+            minHeight: (isHavingHistories || slide.isChanged) ? '35px' : '0px',
         }}>
             <div className='btn-group control d-flex justify-content-center'>
                 <button type='button' className='btn btn-sm btn-info'

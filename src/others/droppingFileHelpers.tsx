@@ -135,7 +135,7 @@ export function genOnContextMenu(contextMenu?: ContextMenuItemType[]) {
                     })();
                 },
             },
-            ...(contextMenu ?? []),
+            ...(contextMenu || []),
         ]);
     };
 }

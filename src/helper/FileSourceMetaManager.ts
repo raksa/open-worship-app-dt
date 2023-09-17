@@ -90,7 +90,7 @@ export default class FileSourceMetaManager {
         if (json === null) {
             return;
         }
-        json.metadata = json.metadata ?? {};
+        json.metadata = json.metadata || {};
         json.metadata.colorNote = color;
         return fileSource.saveData(JSON.stringify(json));
     }

@@ -56,11 +56,11 @@ function FontFamily({ canvasItemText }: {
 }) {
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(
-        canvasItemText.props.fontFamily ?? '');
+        canvasItemText.props.fontFamily || '');
     const applyFontFamily = (fontFamily: string) => {
         setLocalFontFamily(fontFamily);
         canvasItemText.applyTextData({
-            fontFamily: fontFamily ?? null,
+            fontFamily: fontFamily || null,
         });
     };
     if (fontList === null) {
@@ -112,7 +112,7 @@ function FontWeight({
     const applyFontWeight = (newFontWeight: string) => {
         setLocalFontWeight(newFontWeight);
         canvasItemText.applyTextData({
-            fontWeight: newFontWeight ?? null,
+            fontWeight: newFontWeight || null,
         });
     };
     return (

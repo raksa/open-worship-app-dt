@@ -34,7 +34,7 @@ export default function AppLayout() {
 function getHeader(tabOptionList: TabOptionType[]) {
     return (
         <div className='app-header d-flex'>
-            <TabHeadRender tabs={tabOptionList ?? []} />
+            <TabHeadRender tabs={tabOptionList || []} />
             <div className={
                 'highlight-border-bottom d-flex'
                 + ' justify-content-center flex-fill'

@@ -43,7 +43,7 @@ export default class PresentBGManager
         this.presentId = presentId;
         if (appProviderPresent.isMain) {
             const allBGSrcList = PresentBGManager.getBGSrcList();
-            this._bgSrc = allBGSrcList[this.key] ?? null;
+            this._bgSrc = allBGSrcList[this.key] || null;
         }
     }
     get div() {

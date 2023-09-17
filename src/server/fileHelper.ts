@@ -86,7 +86,7 @@ export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 
 export function getFileMetaData(fileName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
-    mimetypeList = mimetypeList ?? getAllAppMimetype();
+    mimetypeList = mimetypeList || getAllAppMimetype();
     const ext = extractExtension(fileName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);
@@ -166,12 +166,12 @@ export type FileResultType = {
 
 function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        args = args ?? [];
+        args = args || [];
         args.push(function (error: any, ...args1: any) {
             if (error) {
                 reject(error);
             } else {
-                args1 = args1 ?? [];
+                args1 = args1 || [];
                 (resolve as any)(...args1);
             }
         });

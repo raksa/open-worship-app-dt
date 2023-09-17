@@ -47,14 +47,14 @@ export default class LyricItem extends ItemBase
     }
     get metadata() {
         const json = this.editingCacheManager.getLyricItemById(this.id);
-        return json?.metadata ?? this._originalJson.metadata;
+        return json?.metadata || this._originalJson.metadata;
     }
     get lyricItemJson() {
         const items = this.editingCacheManager.presentJson.items;
         const lyricItemJson = items.find((item) => {
             return item.id === this.id;
         });
-        return lyricItemJson ?? this._originalJson;
+        return lyricItemJson || this._originalJson;
     }
     get title() {
         return this.lyricItemJson.title;

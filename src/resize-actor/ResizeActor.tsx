@@ -91,7 +91,7 @@ function RenderItem({
             </AppSuspense>
         );
     };
-    const flexSizeValue = (flexSize[key] ?? defaultFlexSize[key]) ?? [];
+    const flexSizeValue = (flexSize[key] || defaultFlexSize[key]) || [];
     const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
     if (flexSizeValue[1]) {
         const onClick = (event: any) => {
@@ -133,7 +133,7 @@ function RenderItem({
                 data-min-size={40}
                 className={classList}
                 style={{
-                    flex: flexSizeValue[0] ?? 1,
+                    flex: flexSizeValue[0] || 1,
                     ...style,
                 }}>
                 {renderChildren()}

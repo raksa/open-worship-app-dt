@@ -47,7 +47,7 @@ export function useGetSelectedBibleKey() {
     const [bibleKeySelected, _setBibleKeySelected] = useState<string | null>(
         null);
     const setBibleKeySelected = (bibleKey: string | null) => {
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
         _setBibleKeySelected(bibleKey);
     };
     useAppEffect(() => {
@@ -160,8 +160,8 @@ export async function consumeStartVerseEndVerse(
         return null;
     }
     const verseCount = Object.keys(verses).length;
-    const sVerse = startVerse ?? 1;
-    const eVerse = endVerse ?? verseCount;
+    const sVerse = startVerse || 1;
+    const eVerse = endVerse || verseCount;
     const result: ConsumeVerseType = {
         verses,
         sVerse,
@@ -173,7 +173,7 @@ export async function consumeStartVerseEndVerse(
 export async function moveBibleItemTo(event: any, bible: Bible, index?: number) {
     const dirSource = await DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
     dirSource.getFilePaths('bible').then((filePaths) => {
-        const targetNames = (filePaths ?? []).map((filePath) => {
+        const targetNames = (filePaths || []).map((filePath) => {
             return FileSource.getInstance(filePath).name;
         }).filter((name) => {
             const fileSource = FileSource.getInstance(bible.filePath);

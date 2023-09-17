@@ -52,8 +52,8 @@ export default class PresentAlertManager
                     marqueeData,
                     countdownData,
                 } = allAlertDataList[this.key];
-                this.alertData.marqueeData = marqueeData ?? null;
-                this.alertData.countdownData = countdownData ?? null;
+                this.alertData.marqueeData = marqueeData;
+                this.alertData.countdownData = countdownData;
             }
         }
     }
@@ -105,8 +105,8 @@ export default class PresentAlertManager
         }
     }
     setCountdownData(countdownData: { dateTime: Date } | null) {
-        if (!checkIsCountdownDatesEq(countdownData?.dateTime ?? null,
-            this.alertData.countdownData?.dateTime ?? null)) {
+        if (!checkIsCountdownDatesEq(countdownData?.dateTime || null,
+            this.alertData.countdownData?.dateTime || null)) {
             this.cleanRender(this.divCountdown);
             this.alertData.countdownData = countdownData;
             this.renderCountdown();
@@ -182,7 +182,7 @@ export default class PresentAlertManager
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
         this.setData(event, (presentAlertManager) => {
             const { alertData } = presentAlertManager;
-            const { text: dataText } = alertData.marqueeData ?? {};
+            const { text: dataText } = alertData.marqueeData || {};
             const marqueeData = dataText === text ? null : { text };
             presentAlertManager.setMarqueeData(marqueeData);
         });
@@ -191,9 +191,10 @@ export default class PresentAlertManager
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
         this.setData(event, (presentAlertManager) => {
             const { alertData } = presentAlertManager;
-            const { dateTime: dateTimeData } = alertData.countdownData ?? {};
+            const { dateTime: dateTimeData } = alertData.countdownData || {};
             const countdownData = dateTimeData !== undefined
-                && checkIsCountdownDatesEq(dateTimeData, dateTime) ? null : { dateTime };
+                && checkIsCountdownDatesEq(dateTimeData, dateTime) ?
+                null : { dateTime };
             presentAlertManager.setCountdownData(countdownData);
         });
     }

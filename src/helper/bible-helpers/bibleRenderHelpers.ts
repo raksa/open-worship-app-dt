@@ -9,13 +9,13 @@ type CallbackType = (text: string | null) => void;
 class BibleRenderHelper {
     _callbackMapper: Map<string, Array<CallbackType>> = new Map();
     _pushCallback(key: string, callback: CallbackType) {
-        const callbackList = this._callbackMapper.get(key) ?? [];
+        const callbackList = this._callbackMapper.get(key) || [];
         callbackList.push(callback);
         this._callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
     _fullfilCallback(key: string, text: string | null) {
-        const callbackList = this._callbackMapper.get(key) ?? [];
+        const callbackList = this._callbackMapper.get(key) || [];
         this._callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(text);

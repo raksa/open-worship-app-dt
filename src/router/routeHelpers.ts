@@ -73,7 +73,7 @@ export function genWindowMode(props?: TabCheckPropsType): WindowModEnum | null {
 }
 export function useWindowMode(): WindowModEnum | null {
     let location = useLocation();
-    location = location.state?.backgroundLocation ?? location;
+    location = location.state?.backgroundLocation || location;
     const props = {
         location,
         navigate: useNavigate(),
@@ -85,7 +85,7 @@ function checkIsWindowMode(
     targetMode: WindowModEnum,
     mode?: WindowModEnum | null,
 ) {
-    mode = mode ?? genWindowMode();
+    mode = mode || genWindowMode();
     return mode === targetMode;
 }
 export function checkIsWindowEditingMode(mode?: WindowModEnum | null) {

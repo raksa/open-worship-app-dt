@@ -6,7 +6,7 @@ export type AppColorType = `#${string}`;
 
 export const colorToTransparent = (color: AppColorType): number => {
     const hexStr = `${color[7]}${color[8]}`;
-    return parseInt(hexStr, 16) ?? 255;
+    return parseInt(hexStr, 16) || 255;
 };
 
 export const transparentColor = (n: number): string => {

@@ -60,7 +60,7 @@ export default function RenderChapterOption({
     const chapterCount = useGetChapterCount(bibleSelected, bookSelected);
     const currentIndexing = useFromLocaleNumBB(bibleSelected,
         inputText.split(bookSelected)[1]);
-    const matches = genMatchedChapters(currentIndexing ?? 0, chapterCount);
+    const matches = genMatchedChapters(currentIndexing || 0, chapterCount);
 
     const arrowListener = (event: KeyboardEvent) => {
         processSelection(OPTION_CLASS, OPTION_SELECTED_CLASS,
