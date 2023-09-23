@@ -24,10 +24,11 @@ import DirSource from '../DirSource';
 import FileSource from '../FileSource';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { addExtension } from '../../server/fileHelper';
-import { checkIsWindowEditingMode } from '../../router/routeHelpers';
+import {
+    WindowModEnum, checkIsWindowEditingMode,
+} from '../../router/routeHelpers';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
-export const BIBLE_LIST_SELECTED_DIR = 'bible-list-selected-dir';
 
 async function getSelectedEditingBibleItem() {
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
@@ -107,7 +108,7 @@ export type AddBiblePropsType = {
 export async function addBibleItem({
     found, book, chapter,
     bibleSelected,
-}: AddBiblePropsType) {
+}: AddBiblePropsType, windowMode: WindowModEnum | null) {
     const isWindowEditing = checkIsWindowEditingMode();
     const key = await bookToKey(bibleSelected, book);
     if (key === null) {
@@ -129,7 +130,7 @@ export async function addBibleItem({
         canvasController.addNewBibleItem(bibleItem);
         return null;
     }
-    const savedBibleItem = await Bible.updateOrToDefault(bibleItem);
+    const savedBibleItem = await Bible.updateOrToDefault(bibleItem, windowMode);
     if (savedBibleItem !== null) {
         return savedBibleItem;
     } else {
@@ -170,8 +171,13 @@ export async function consumeStartVerseEndVerse(
     return result;
 }
 
-export async function moveBibleItemTo(event: any, bible: Bible, index?: number) {
-    const dirSource = await DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
+export async function moveBibleItemTo(
+    event: any, bible: Bible, windowMode: WindowModEnum | null,
+    index?: number,
+) {
+    const dirSource = await DirSource.getInstance(
+        Bible.getSelectDirSetting(windowMode),
+    );
     dirSource.getFilePaths('bible').then((filePaths) => {
         const targetNames = (filePaths || []).map((filePath) => {
             return FileSource.getInstance(filePath).name;

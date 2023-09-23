@@ -11,6 +11,7 @@ import PresentFTManager from '../_present/PresentFTManager';
 import {
     useWindowIsEditingMode,
     useWindowIsPresentingMode,
+    useWindowMode,
 } from '../router/routeHelpers';
 import { useModalTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
@@ -34,6 +35,7 @@ const addListEventMapper: KBEventMapper = {
 export default function RenderActionButtons(props: AddBiblePropsType) {
     const closeModal = useCloseAppModal();
     const { data } = useModalTypeData();
+    const windowMode = useWindowMode();
     const isBibleEditing = !!data;
     // TODO: fix slide select editing
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
@@ -45,10 +47,10 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
             BibleItem.saveFromBibleSearch(props, data);
             return null;
         } else {
-            const bibleItem = await addBibleItem(props);
+            const bibleItem = await addBibleItem(props, windowMode);
             return bibleItem;
         }
-    }, [props, data, isBibleEditing, closeModal]);
+    }, [props, data, isBibleEditing, closeModal, windowMode]);
     const addBibleItemAndPresent = useCallback(async (event: any) => {
         const bibleItem = await addOrUpdateBibleItem();
         if (bibleItem !== null) {

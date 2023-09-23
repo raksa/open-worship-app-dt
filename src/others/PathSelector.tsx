@@ -4,7 +4,6 @@ import { useStateSettingBoolean } from '../helper/settingHelper';
 import DirSource from '../helper/DirSource';
 import React from 'react';
 import AppSuspense from './AppSuspense';
-import { useDSEvents } from '../helper/dirSourceHelpers';
 import { pathPreviewer } from './PathPreviewer';
 
 const PathPreviewer = React.lazy(() => {
@@ -18,7 +17,8 @@ export default function PathSelector({
     prefix: string
 }) {
     const [showing, setShowing] = useStateSettingBoolean(
-        `${prefix}-selector-opened`, false);
+        `${prefix}-selector-opened`, false,
+    );
     const dirPath = dirSource.dirPath;
     const isShowingEditor = !dirPath || showing;
     return (

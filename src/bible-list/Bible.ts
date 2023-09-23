@@ -12,18 +12,30 @@ import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
+import {
+    checkIsWindowReadingMode, WindowModEnum,
+} from '../router/routeHelpers';
 
 export type BibleType = {
     items: BibleItemType[],
     metadata: AnyObjectType,
 }
+const SELECT_DIR_SETTING = 'bible-list-selected-dir';
 export default class Bible extends ItemSource<BibleItem>{
-    static SELECT_DIR_SETTING = 'bible-list-selected-dir';
     static DEFAULT_FILE_NAME = 'Default';
     _originalJson: BibleType;
     constructor(filePath: string, json: BibleType) {
         super(filePath);
         this._originalJson = cloneJson(json);
+    }
+    static getSettingPrefix(windowMode: WindowModEnum | null) {
+        const isReading = checkIsWindowReadingMode(windowMode);
+        const prefixSetting = isReading ? 'reading-' : '';
+        return prefixSetting;
+    }
+    static getSelectDirSetting(windowMode: WindowModEnum | null) {
+        const prefixSetting = Bible.getSettingPrefix(windowMode);
+        return getSetting(`${prefixSetting}${SELECT_DIR_SETTING}`);
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
@@ -86,8 +98,10 @@ export default class Bible extends ItemSource<BibleItem>{
         });
         this.items = newItems;
     }
-    static async updateOrToDefault(bibleItem: BibleItem) {
-        const bible = await Bible.getDefault();
+    static async updateOrToDefault(
+        bibleItem: BibleItem, windowMode: WindowModEnum | null,
+    ) {
+        const bible = await Bible.getDefault(windowMode);
         if (bible) {
             bible.addItem(bibleItem);
             if (await bible.save()) {
@@ -174,8 +188,8 @@ export default class Bible extends ItemSource<BibleItem>{
             filePath, isForceCache,
         ) as Promise<Bible | null | undefined>;
     }
-    static async getDefault() {
-        const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
+    static async getDefault(windowMode: WindowModEnum | null) {
+        const dir = getSetting(Bible.getSelectDirSetting(windowMode), '');
         if (!dir) {
             return null;
         }

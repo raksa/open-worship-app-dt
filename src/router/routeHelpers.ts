@@ -16,7 +16,7 @@ export type TabOptionType = {
     checkIsActive?: (_: TabCheckPropsType) => boolean,
 }
 
-enum WindowModEnum {
+export enum WindowModEnum {
     'editing' = 0,
     'presenting' = 1,
     'reading' = 2,

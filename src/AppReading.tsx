@@ -16,7 +16,7 @@ export default function AppReading() {
                 'h1': ['1'],
                 'h2': ['4'],
             }}
-            resizeKinds={['h', 'h']}
+            resizeKinds={['h']}
             dataInput={[
                 [BibleList, 'h1', 'flex v'],
                 [BiblePreviewer, 'h2', 'flex v'],

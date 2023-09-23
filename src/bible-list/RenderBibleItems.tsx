@@ -8,9 +8,10 @@ import { useCallback } from 'react';
 import BibleItem from './BibleItem';
 import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
 import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
+import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
 
 function openBibleItemContextMenu(
-    event: any, bible: Bible, index: number,
+    event: any, bible: Bible, index: number, windowMode: WindowModEnum | null,
     onQuickEdit?: () => void,
 ) {
     const menuItem = [
@@ -33,7 +34,7 @@ function openBibleItemContextMenu(
             {
                 title: '(*T) ' + 'Move To',
                 onClick: (event1: any) => {
-                    moveBibleItemTo(event1, bible, index);
+                    moveBibleItemTo(event1, bible, windowMode, index);
                 },
             },
             {
@@ -69,10 +70,11 @@ function openBibleItemContextMenu(
 export default function RenderBibleItems({ bible }: {
     bible: Bible,
 }) {
+    const windowMode = useWindowMode();
     const openBibleSearch = useOpenBibleSearch();
     const onContextMenuCallback = useCallback(
         (event: any, _: BibleItem, index: number) => {
-            openBibleItemContextMenu(event, bible, index, () => {
+            openBibleItemContextMenu(event, bible, index, windowMode, () => {
                 openBibleSearch();
             });
         }, [bible]

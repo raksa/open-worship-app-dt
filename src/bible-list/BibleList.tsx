@@ -4,13 +4,12 @@ import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useCallback } from 'react';
-import {
-    BIBLE_LIST_SELECTED_DIR,
-} from '../helper/bible-helpers/bibleHelpers';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import { useWindowMode } from '../router/routeHelpers';
 
 export default function BibleList() {
-    const dirSource = useGenDS(BIBLE_LIST_SELECTED_DIR);
+    const windowMode = useWindowMode();
+    const dirSource = useGenDS(Bible.getSelectDirSetting(windowMode));
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>
@@ -25,9 +24,10 @@ export default function BibleList() {
     if (dirSource === null) {
         return null;
     }
-    Bible.getDefault();
+    Bible.getDefault(windowMode);
+    const settingPrefix = Bible.getSelectDirSetting(windowMode);
     return (
-        <FileListHandler id={'bible-list'}
+        <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype={'bible'}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
