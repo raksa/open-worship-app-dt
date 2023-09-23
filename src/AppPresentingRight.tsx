@@ -1,8 +1,6 @@
 import React from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
-import PresentManager from './_present/PresentManager';
-import { useAppEffect } from './helper/debuggerHelpers';
 
 const BibleList = React.lazy(() => {
     return import('./bible-list/BibleList');
@@ -15,11 +13,6 @@ const MiniPresentScreen = React.lazy(() => {
 });
 
 export default function AppPresentingRight() {
-    useAppEffect(() => {
-        PresentManager.getAllInstances().forEach((presentManager) => {
-            presentManager.fireResizeEvent();
-        });
-    });
     return (
         <div className='flex v h-100'>
             <ResizeActor fSizeName={resizeSettingNames.appPresentingRight}

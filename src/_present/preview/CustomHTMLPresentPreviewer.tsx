@@ -41,6 +41,9 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             this.mountPoint.style.height = `${height}px`;
             if (this.presentId > -1) {
                 const presentManager = PresentManager.getInstance(this.presentId);
+                if (presentManager === null) {
+                    return;
+                }
                 presentManager.width = width;
                 presentManager.height = height;
             }
@@ -56,6 +59,9 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
         if (idStr !== null) {
             this.presentId = +idStr;
             const presentManager = PresentManager.getInstance(this.presentId);
+            if (presentManager === null) {
+                return;
+            }
             presentManager.registerEventListener(['resize'], () => {
                 this.resize();
             });

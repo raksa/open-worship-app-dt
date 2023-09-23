@@ -114,6 +114,9 @@ export default class PresentAlertManager
     }
     static receiveSyncPresent(message: PresentMessageType) {
         const presentManager = PresentManager.getInstance(message.presentId);
+        if (presentManager === null) {
+            return;
+        }
         const { presentAlertManager } = presentManager;
         const data: AlertDataType = message.data;
         presentAlertManager.setMarqueeData(data.marqueeData);
@@ -199,9 +202,12 @@ export default class PresentAlertManager
         });
     }
     renderMarquee() {
-        if (this.alertData.marqueeData !== null) {
-            const newDiv = genHtmlAlertMarquee(this.alertData.marqueeData,
-                this.presentManager);
+        if (
+            this.presentManager !== null && this.alertData.marqueeData !== null
+        ) {
+            const newDiv = genHtmlAlertMarquee(
+                this.alertData.marqueeData, this.presentManager,
+            );
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
                 if (element.offsetWidth < element.scrollWidth) {
@@ -211,9 +217,13 @@ export default class PresentAlertManager
         }
     }
     renderCountdown() {
-        if (this.alertData.countdownData !== null) {
-            const newDiv = genHtmlAlertCountdown(this.alertData.countdownData,
-                this.presentManager);
+        if (
+            this.presentManager !== null &&
+            this.alertData.countdownData !== null
+        ) {
+            const newDiv = genHtmlAlertCountdown(
+                this.alertData.countdownData, this.presentManager,
+            );
             this.divCountdown.appendChild(newDiv);
         }
     }
@@ -228,11 +238,15 @@ export default class PresentAlertManager
         });
     }
     get containerStyle(): React.CSSProperties {
+        const {presentManager} = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflow: 'hidden',
         };
     }

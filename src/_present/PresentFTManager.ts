@@ -123,10 +123,14 @@ export default class PresentFTManager
         }
     }
     get containerStyle(): React.CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflowX: 'hidden',
             overflowY: 'auto',
         };
@@ -163,6 +167,9 @@ export default class PresentFTManager
     static receiveSyncScroll(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
+        if (presentFTManager === null) {
+            return;
+        }
         if (presentFTManager._syncScrollTimeout !== null) {
             clearTimeout(presentFTManager._syncScrollTimeout);
         }
@@ -186,6 +193,9 @@ export default class PresentFTManager
     static receiveSyncSelectedIndex(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
+        if (presentFTManager === null) {
+            return;
+        }
         presentFTManager.selectedIndex = data.selectedIndex;
     }
     sendSyncData() {
@@ -198,6 +208,9 @@ export default class PresentFTManager
     static receiveSyncData(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
+        if (presentFTManager === null) {
+            return;
+        }
         presentFTManager.ftItemData = data;
     }
     fireUpdate() {
@@ -329,6 +342,9 @@ export default class PresentFTManager
     }
     static getInstanceByPresentId(presentId: number) {
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return null;
+        }
         return presentManager.presentFTManager;
     }
     sendSyncPresent() {

@@ -7,6 +7,9 @@ import { RendStyle } from '../transition-effect/RenderTransitionEffect';
 
 export default function MiniPresentApp({ id }: { id: number }) {
     const presentManager = PresentManager.getInstance(id);
+    if (presentManager === null) {
+        return null;
+    }
     return (
         <>
             <RendStyle ptEffectTarget='background'

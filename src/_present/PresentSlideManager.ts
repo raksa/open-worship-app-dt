@@ -83,6 +83,9 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return;
+        }
         presentManager.presentSlideManager.slideItemData = data;
     }
     fireUpdate() {
@@ -143,14 +146,15 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         PresentSlideManager.fireUpdateEvent();
     }
     renderPdf(pdfImageData: PdfImageDataType) {
-        if (this.div === null) {
+        const { presentManager } = this;
+        if (presentManager === null || this.div === null) {
             return;
         }
         Array.from(this.div.children).forEach((child) => {
             child.remove();
         });
         const { src: pdfImageSrc } = pdfImageData;
-        const parentWidth = this.presentManager.width;
+        const parentWidth = presentManager.width;
         const content = genPdfSlideItem(parentWidth, pdfImageSrc);
         const divContainer = document.createElement('div');
         Object.assign(divContainer.style, {
@@ -167,7 +171,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         }
         const aminData = this.ptEffect.styleAnim;
         const slideItemData = this.slideItemData;
-        if (slideItemData !== null) {
+        if (this.presentManager !== null && slideItemData !== null) {
             if (slideItemData.slideItemJson.pdfImageData) {
                 this.renderPdf(slideItemData.slideItemJson.pdfImageData);
                 return;
@@ -223,10 +227,14 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         }
     }
     get containerStyle(): React.CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflow: 'hidden',
         };
     }

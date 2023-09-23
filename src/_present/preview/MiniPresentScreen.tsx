@@ -1,139 +1,71 @@
 import './MiniPresentScreen.scss';
 
 import './CustomHTMLPresentPreviewer';
-import ShowHidePresent from './ShowHidePresent';
-import MiniScreenClearControl from './MiniScreenClearControl';
 import PresentManager from '../PresentManager';
-import DisplayControl from './DisplayControl';
-import { showAppContextMenu } from '../../others/AppContextMenu';
 import {
     initReceivePresentMessage,
     usePMEvents,
 } from '../presentEventHelpers';
-import PTEffectControl from './PTEffectControl';
+import PresentPreviewerItem from './PresentPreviewerItem';
+import MiniPresentScreenFooter, {
+    DEFAULT_PREVIEW_SIZE,
+} from './MiniPresentScreenFooter';
+import { useStateSettingNumber } from '../../helper/settingHelper';
 import { toMaxId } from '../../helper/helpers';
-import { handleDrop } from '../../helper/dragHelpers';
+import { showAppContextMenu } from '../../others/AppContextMenu';
+(window as any).PresentManager = PresentManager;
 
-function openContextMenu(event: any, presentManager: PresentManager) {
-    const isOne = PresentManager.getAllInstances().length === 1;
-    const { presentFTManager } = presentManager;
-    const isPresentingFT = !!presentFTManager.ftItemData;
-    const isLineSync = presentFTManager.isLineSync;
-    const extraMenuItems = isPresentingFT ? [{
-        title: `${isLineSync ? 'Un' : ''}Set Line Sync`,
-        onClick() {
-            presentFTManager.isLineSync = !isLineSync;
-        },
-    }] : [];
+function openContextMenu(event: any) {
     showAppContextMenu(event, [
-        ...isOne ? [] : [{
-            title: 'Solo',
-            onClick() {
-                PresentManager.getSelectedInstances()
-                    .forEach((presentManager1) => {
-                        presentManager1.isSelected = false;
-                    });
-                presentManager.isSelected = true;
-            },
-        }],
-        ...[{
-            title: presentManager.isSelected ? 'Unselect' : 'Select',
-            onClick() {
-                presentManager.isSelected = !presentManager.isSelected;
-            },
-        }],
-        ...isOne ? [] : [{
-            title: 'Delete',
-            onClick() {
-                presentManager.delete();
-            },
-        }],
-        ...[{
+        {
             title: 'Add New Present',
             onClick() {
                 const instances = PresentManager.getAllInstances();
-                const ids = instances.map((presentManager1) => {
-                    return presentManager1.presentId;
+                const ids = instances.map((presentManager) => {
+                    return presentManager.presentId;
                 });
                 const maxId = toMaxId(ids);
-                PresentManager.getInstance(maxId + 1);
-                PresentManager.savePresentManagersSetting();
+                PresentManager.createInstance(maxId + 1);
                 PresentManager.fireInstanceEvent();
             },
-        }, ...extraMenuItems]]);
+        },
+    ]);
 }
 
 initReceivePresentMessage();
 export default function MiniPresentScreen() {
+    const [previewWith, _setPreviewWidth] = useStateSettingNumber(
+        'mini-present-previewer', DEFAULT_PREVIEW_SIZE,
+    );
+    const setPreviewWidth = (size: number) => {
+        _setPreviewWidth(size);
+        PresentManager.getAllInstances().forEach((presentManager) => {
+            presentManager.fireResizeEvent();
+        });
+    };
     usePMEvents(['instance']);
     const presentManagers = PresentManager.getPresentManagersSetting();
     return (
-        <div>
-            {presentManagers.map((presentManager) => {
-                return (
-                    <RenderManager key={presentManager.key}
-                        presentManager={presentManager} />
-                );
-            })}
-        </div>
-    );
-}
-
-function RenderManager({ presentManager }: {
-    presentManager: PresentManager;
-}) {
-    const selectedCN = presentManager.isSelected ? 'highlight-selected' : '';
-    return (
-        <div key={presentManager.key}
-            className={`mini-present-screen card ${selectedCN}`}
-            style={{
-                overflow: 'hidden',
-            }}
-            onContextMenu={(event) => {
-                openContextMenu(event, presentManager);
-            }}
-            onDragOver={(event) => {
-                event.preventDefault();
-                event.currentTarget.classList
-                    .add('receiving-child');
-            }}
-            onDragLeave={(event) => {
-                event.preventDefault();
-                event.currentTarget.classList
-                    .remove('receiving-child');
-            }}
-            onDrop={async (event) => {
-                event.currentTarget.classList.remove('receiving-child');
-                const droppedData = await handleDrop(event);
-                if (droppedData === null) {
-                    return;
-                }
-                presentManager.receivePresentDrag(droppedData);
-            }}>
-            <div className='card-header pb-2' style={{
-                overflowX: 'auto',
-                overflowY: 'hidden',
-                height: '35px',
-            }}>
-                <div className={'d-flex'}>
-                    <div className='d-flex justify-content-start'>
-                        <ShowHidePresent
-                            presentManager={presentManager} />
-                        <MiniScreenClearControl
-                            presentManager={presentManager} />
-                    </div>
-                    <div className='flex-fill d-flex justify-content-end'>
-                        <DisplayControl
-                            presentManager={presentManager} />
-                        <PTEffectControl
-                            presentManager={presentManager} />
-                    </div>
-                </div>
+        <div className='card w-100 h-100'>
+            <div className={'card-body'}
+                onContextMenu={(event) => {
+                    openContextMenu(event);
+                }}
+                style={{
+                    overflow: 'auto',
+                }}>
+                {presentManagers.map((presentManager) => {
+                    return (
+                        <PresentPreviewerItem key={presentManager.key}
+                            presentManager={presentManager}
+                            width={previewWith} />
+                    );
+                })}
             </div>
-            <div>
-                <mini-present-previewer
-                    presentId={presentManager.presentId} />
-            </div>
+            <MiniPresentScreenFooter
+                previewSize={previewWith}
+                setPreviewSize={setPreviewWidth}
+            />
         </div>
     );
 }

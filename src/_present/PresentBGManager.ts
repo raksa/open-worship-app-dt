@@ -89,6 +89,9 @@ export default class PresentBGManager
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return;
+        }
         presentManager.presentBGManager.bgSrc = data;
     }
     fireUpdate() {
@@ -146,8 +149,11 @@ export default class PresentBGManager
             const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
             if (selectedBGSrcList.length > 0) {
                 selectedBGSrcList.forEach(([key]) => {
-                    PresentManager.getInstanceByKey(key)
-                        .presentBGManager.bgSrc = null;
+                    const presentManager = PresentManager.getInstanceByKey(key);
+                    if (presentManager === null) {
+                        return;
+                    }
+                    presentManager.presentBGManager.bgSrc = null;
                 });
                 return;
             }
@@ -184,7 +190,7 @@ export default class PresentBGManager
             return;
         }
         const aminData = this.ptEffect.styleAnim;
-        if (this.bgSrc !== null) {
+        if (this.presentManager !== null && this.bgSrc !== null) {
             const newDiv = genHtmlBG(this.bgSrc, this.presentManager);
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
@@ -201,11 +207,15 @@ export default class PresentBGManager
         }
     }
     get containerStyle(): React.CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflow: 'hidden',
         };
     }
