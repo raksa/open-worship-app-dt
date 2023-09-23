@@ -68,14 +68,14 @@ export default function MiniPresentScreen() {
     usePMEvents(['instance']);
     const presentManagers = PresentManager.getPresentManagersSetting();
     return (
-        <>
+        <div>
             {presentManagers.map((presentManager) => {
                 return (
                     <RenderManager key={presentManager.key}
                         presentManager={presentManager} />
                 );
             })}
-        </>
+        </div>
     );
 }
 

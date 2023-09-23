@@ -104,12 +104,12 @@ export default function FileListHandler({
                         </button>
                     }
                 </div>}
-                <div className='card-body pb-5'
+                <div className='card-body d-flex flex-column'
                     onContextMenu={genOnContextMenu(contextMenu)}>
                     <PathSelector prefix={`path-${id}`}
                         dirSource={dirSource} />
                     {!dirSource.dirPath ? noDirSelected : (
-                        <ul className='list-group h-100 d-flex'>
+                        <ul className='list-group flex-fill d-flex'>
                             {onNewFile && isCreatingNew && <AskingNewName
                                 applyName={applyNameCallback} />}
                             <RenderList dirSource={dirSource}

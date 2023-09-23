@@ -34,6 +34,9 @@ export default function ResizeActor({
     resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
 }) {
+    if (resizeKinds.length !== dataInput.length - 1) {
+        throw new Error('resizeKinds and dataInput length not match');
+    }
     const defaultFlexSize = getFlexSizeSetting(fSizeName, flexSizeDefault);
     const [flexSize, setFlexSize] = useState(defaultFlexSize);
     return (

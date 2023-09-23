@@ -1,5 +1,4 @@
 import React from 'react';
-import MiniPresentScreen from './_present/preview/MiniPresentScreen';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import PresentManager from './_present/PresentManager';
@@ -11,6 +10,9 @@ const BibleList = React.lazy(() => {
 const LyricList = React.lazy(() => {
     return import('./lyric-list/LyricList');
 });
+const MiniPresentScreen = React.lazy(() => {
+    return import('./_present/preview/MiniPresentScreen');
+});
 
 export default function AppPresentingRight() {
     useAppEffect(() => {
@@ -19,22 +21,19 @@ export default function AppPresentingRight() {
         });
     });
     return (
-        <>
-            <div className='flex-fill flex v h-100'>
-                <ResizeActor fSizeName={resizeSettingNames.appPresentingRight}
-                    flexSizeDefault={{
-                        'v1': ['1'],
-                        'v2': ['1'],
-                    }}
-                    resizeKinds={['v']}
-                    dataInput={[
-                        [BibleList, 'v1', 'flex-item'],
-                        [LyricList, 'v2', 'flex-item'],
-                    ]} />
-            </div>
-            <div>
-                <MiniPresentScreen />
-            </div>
-        </>
+        <div className='flex v h-100'>
+            <ResizeActor fSizeName={resizeSettingNames.appPresentingRight}
+                flexSizeDefault={{
+                    'v1': ['1'],
+                    'v2': ['1'],
+                    'v3': ['1'],
+                }}
+                resizeKinds={['v', 'v']}
+                dataInput={[
+                    [BibleList, 'v1', 'flex-item'],
+                    [LyricList, 'v2', 'flex-item'],
+                    [MiniPresentScreen, 'v3', 'flex-item'],
+                ]} />
+        </div>
     );
 }

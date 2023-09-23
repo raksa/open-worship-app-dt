@@ -2,192 +2,201 @@
 @import '../others/variables.scss';
 
 #app {
-  width: 100vw !important;
-  height: 100vh !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden;
-  box-sizing: border-box;
-  background-color: var(--bs-gray-800);
-  color: var(--bs-white);
-
-  & * {
-    user-select: none;
-  }
-
-  & .app-selectable-text,
-  & .app-selectable-text * {
-    user-select: text !important;
-  }
-
-  &>.app-header {
-    height: $header-height;
-
-    .highlight-border-bottom {
-      border-bottom: 1px solid var(--bs-gray-600);
-    }
-  }
-
-  &>.app-body {
-    background-color: var(--bs-gray-700);
-    padding: 2px;
-  }
-
-  &>.footer {
-    height: 5px;
-    background-color: var(--bs-dark);
-  }
-
-  .flex {
-    display: flex;
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    margin: 0 !important;
     overflow: hidden;
-
-    &.h {
-      flex-direction: row;
-    }
-
-    &.v {
-      flex-direction: column;
-    }
-  }
-
-  .flex-item {
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    min-width: 120px;
-  }
-
-  * {
     box-sizing: border-box;
-  }
+    background-color: var(--bs-gray-800);
+    color: var(--bs-white);
 
-  .right {
-    padding: 0;
-
-    .card-body,
-    .card-footer {
-      padding: 0;
+    & * {
+        user-select: none;
     }
-  }
 
-  .pointer {
-    cursor: pointer;
-  }
-
-  .background-blank {
-    background-image: linear-gradient(45deg,
-        rgba(204, 204, 204, 0.5) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(204, 204, 204, 0.5) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-  }
-
-  .rotating {
-    i:before {
-      animation: rotating-hover 1s linear infinite;
-
-      @keyframes rotating-hover {
-        from {
-          transform: rotate(0deg);
-        }
-
-        to {
-          transform: rotate(360deg);
-        }
-      }
+    & .app-selectable-text,
+    & .app-selectable-text * {
+        user-select: text !important;
     }
-  }
 
-  .rotating-hover:hover {
-    i:before {
-      animation: rotating-hover 1s linear infinite;
+    &>.app-header {
+        height: $header-height;
 
-      @keyframes rotating-hover {
-        from {
-          transform: rotate(0deg);
+        .highlight-border-bottom {
+            border-bottom: 1px solid var(--bs-gray-600);
         }
-
-        to {
-          transform: rotate(360deg);
-        }
-      }
     }
-  }
 
-  .overflow-hidden {
-    overflow: hidden;
-  }
+    &>.app-body {
+        background-color: var(--bs-gray-700);
+        padding: 2px;
+    }
 
-  .border-white-round {
-    border: 1px solid var(--bs-gray-600);
-    border-radius: 5px;
-  }
+    &>.footer {
+        height: 5px;
+        background-color: var(--bs-dark);
+    }
 
-  $bg-color1: var(--bs-gray-700);
-  $bg-color2: var(--bs-gray-800);
-  $bg-width: 60px;
+    .flex {
+        display: flex;
+        overflow: hidden;
 
-  .blank-bg {
-    background-image: linear-gradient(45deg,
-        $bg-color1 25%, $bg-color2 25%),
-      linear-gradient(-45deg, $bg-color1 25%, $bg-color2 25%),
-      linear-gradient(45deg, $bg-color2 75%, $bg-color1 75%),
-      linear-gradient(-45deg, $bg-color2 75%, $bg-color1 75%);
-    background-size: $bg-width $bg-width;
-    background-position: 0 0,
-    0 #{math.div($bg-width,2)},
-    #{math.div($bg-width,2)} -#{math.div($bg-width,2)},
-    -#{math.div($bg-width,2)} 0px;
-  }
+        &.h {
+            flex-direction: row;
+        }
 
-  .ellipsis-left {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    direction: rtl;
-    text-align: left;
-  }
-  .app-ellipsis {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
+        &.v {
+            flex-direction: column;
+        }
+    }
 
-  .drag-receiving {
-    background-color: green;
-  }
-
-  .highlight-selected {
-    border: 1px dashed $hight-light-color;
-  }
-
-  .hidden-widget {
-    $bg-color: var(--bs-gray-700);
-    $bg-color-hover: var(--bs-gray-600);
-    $color: var(--bs-gray-800);
-
-    padding: 3px;
-    border-radius: 5px;
-    background-color: $bg-color;
-    background: repeating-linear-gradient(45deg,
-        $color,
-        $color 4px,
-        $bg-color 2px,
-        $bg-color 8px);
-
-    &:hover {
-      background: repeating-linear-gradient(45deg,
-          $color,
-          $color 4px,
-          $bg-color-hover 2px,
-          $bg-color-hover 8px);
+    .flex-item {
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        min-width: 120px;
     }
 
     * {
-      display: none;
+        box-sizing: border-box;
     }
-  }
+
+    .right {
+        padding: 0;
+
+        .card-body,
+        .card-footer {
+            padding: 0;
+        }
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    .background-blank {
+        background-image: linear-gradient(45deg,
+                rgba(204, 204, 204, 0.5) 25%, transparent 25%),
+            linear-gradient(-45deg, rgba(204, 204, 204, 0.5) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%),
+            linear-gradient(-45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+
+    .rotating {
+        i:before {
+            animation: rotating-hover 1s linear infinite;
+
+            @keyframes rotating-hover {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+    }
+
+    .rotating-hover:hover {
+        i:before {
+            animation: rotating-hover 1s linear infinite;
+
+            @keyframes rotating-hover {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+    }
+
+    .overflow-hidden {
+        overflow: hidden;
+    }
+
+    .overflow-hidden-x {
+        overflow-x: hidden;
+    }
+
+    .overflow-hidden-y {
+        overflow-y: hidden;
+    }
+
+    .border-white-round {
+        border: 1px solid var(--bs-gray-600);
+        border-radius: 5px;
+    }
+
+    $bg-color1: var(--bs-gray-700);
+    $bg-color2: var(--bs-gray-800);
+    $bg-width: 60px;
+
+    .blank-bg {
+        background-image: linear-gradient(45deg,
+                $bg-color1 25%, $bg-color2 25%),
+            linear-gradient(-45deg, $bg-color1 25%, $bg-color2 25%),
+            linear-gradient(45deg, $bg-color2 75%, $bg-color1 75%),
+            linear-gradient(-45deg, $bg-color2 75%, $bg-color1 75%);
+        background-size: $bg-width $bg-width;
+        background-position: 0 0,
+        0 #{math.div($bg-width,2)},
+        #{math.div($bg-width,2)} -#{math.div($bg-width,2)},
+        -#{math.div($bg-width,2)} 0px;
+    }
+
+    .ellipsis-left {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        direction: rtl;
+        text-align: left;
+    }
+
+    .app-ellipsis {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .drag-receiving {
+        background-color: green;
+    }
+
+    .highlight-selected {
+        border: 1px dashed $hight-light-color;
+    }
+
+    .hidden-widget {
+        $bg-color: var(--bs-gray-700);
+        $bg-color-hover: var(--bs-gray-600);
+        $color: var(--bs-gray-800);
+
+        padding: 3px;
+        border-radius: 5px;
+        background-color: $bg-color;
+        background: repeating-linear-gradient(45deg,
+                $color,
+                $color 4px,
+                $bg-color 2px,
+                $bg-color 8px);
+
+        &:hover {
+            background: repeating-linear-gradient(45deg,
+                    $color,
+                    $color 4px,
+                    $bg-color-hover 2px,
+                    $bg-color-hover 8px);
+        }
+
+        * {
+            display: none;
+        }
+    }
 }
