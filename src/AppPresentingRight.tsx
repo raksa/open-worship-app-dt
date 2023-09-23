@@ -5,9 +5,6 @@ import ResizeActor from './resize-actor/ResizeActor';
 const BibleList = React.lazy(() => {
     return import('./bible-list/BibleList');
 });
-const LyricList = React.lazy(() => {
-    return import('./lyric-list/LyricList');
-});
 const MiniPresentScreen = React.lazy(() => {
     return import('./_present/preview/MiniPresentScreen');
 });
@@ -19,13 +16,11 @@ export default function AppPresentingRight() {
                 flexSizeDefault={{
                     'v1': ['1'],
                     'v2': ['1'],
-                    'v3': ['1'],
                 }}
-                resizeKinds={['v', 'v']}
+                resizeKinds={['v']}
                 dataInput={[
                     [BibleList, 'v1', 'flex-item'],
-                    [LyricList, 'v2', 'flex-item'],
-                    [MiniPresentScreen, 'v3', 'flex-item'],
+                    [MiniPresentScreen, 'v2', 'flex-item'],
                 ]} />
         </div>
     );
