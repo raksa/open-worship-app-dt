@@ -218,17 +218,18 @@ export default class PresentManager
             return cachedInstances;
         }
         return getAllShowingPresentIds().map((presentId) => {
-            this.createInstance(presentId);
-            return this.getInstance(presentId) as PresentManager;
+            return this.createInstance(presentId);
         });
     }
     static createInstance(presentId: number) {
         const key = presentId.toString();
-        if (!this._cache.has(key)) {
-            const presentManager = new PresentManager(presentId);
-            this._cache.set(key, presentManager);
-            PresentManager.savePresentManagersSetting();
+        if (this._cache.has(key)) {
+            return this._cache.get(key) as PresentManager;
         }
+        const presentManager = new PresentManager(presentId);
+        this._cache.set(key, presentManager);
+        PresentManager.savePresentManagersSetting();
+        return presentManager;
     }
     static getInstance(presentId: number) {
         const key = presentId.toString();
@@ -270,10 +271,7 @@ export default class PresentManager
             }
             json.forEach(({ presentId, isSelected }: any) => {
                 if (typeof presentId === 'number') {
-                    this.createInstance(presentId);
-                    const presentManager = (
-                        this.getInstance(presentId) as PresentManager
-                    );
+                    const presentManager = this.createInstance(presentId);
                     presentManager._isSelected = !!isSelected;
                 }
             });
