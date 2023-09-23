@@ -1,11 +1,9 @@
 import BibleView from './BibleView';
-import BibleItem from '../bible-list/BibleItem';
-import { handleError } from '../helper/errorHelpers';
 import BibleItemViewController, {
-    RESIZE_SETTING_NAME,
-    useBIVCUpdateEvent,
+    RESIZE_SETTING_NAME, useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
+import NoBibleViewAvailable from './NoBibleViewAvailable';
 
 export default function BibleViewRenderer({
     fontSize, bibleItemViewController,
@@ -33,7 +31,9 @@ export default function BibleViewRenderer({
             flexSizeDefault={Object.fromEntries(bibleItems.map((_, i) => {
                 return [`h${i + 1}`, ['1']];
             }))}
-            resizeKinds={['h']}
+            resizeKinds={Array.from({
+                length: bibleItems.length - 1,
+            }).map(() => 'h')}
             dataInput={bibleItems.map((bibleItem, i) => {
                 return [{
                     render: () => {
@@ -45,37 +45,5 @@ export default function BibleViewRenderer({
                     },
                 }, `h${i + 1}`, 'flex-item'];
             })} />
-    );
-}
-
-function NoBibleViewAvailable({ bibleItemViewController }: {
-    bibleItemViewController: BibleItemViewController,
-}) {
-    return (
-        <div className='bible-view card flex-fill'
-            style={{ minWidth: '30%' }}
-            onDragOver={(event) => {
-                event.preventDefault();
-                event.currentTarget.classList.add('receiving-child');
-            }}
-            onDragLeave={(event) => {
-                event.preventDefault();
-                event.currentTarget.classList.remove('receiving-child');
-            }}
-            onDrop={async (event) => {
-                event.currentTarget.classList.remove('receiving-child');
-                const data = event.dataTransfer.getData('text');
-                try {
-                    const json = JSON.parse(data);
-                    if (json.type === 'bibleItem') {
-                        const bibleItem = BibleItem.fromJson(json.data);
-                        bibleItemViewController.addItem(bibleItem);
-                    }
-                } catch (error) {
-                    handleError(error);
-                }
-            }}>
-            '(*T) ' + 'No Bible Available'
-        </div>
     );
 }

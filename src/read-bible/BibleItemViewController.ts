@@ -70,14 +70,24 @@ export default class BibleItemViewController
         newBibleItems.push(bibleItem);
         this.bibleItems = newBibleItems;
     }
-    duplicateItemAtIndex(index: number, bibleKey?: string) {
+    private addItemAtIndex(index: number, bibleItem: BibleItem) {
+        const bibleItems = this.bibleItems;
+        bibleItems.splice(index, 0, bibleItem);
+        this.bibleItems = bibleItems;
+    }
+    addItemAtIndexLeft(index: number, bibleItem: BibleItem) {
+        this.addItemAtIndex(index, bibleItem);
+    }
+    addItemAtIndexRight(index: number, bibleItem: BibleItem) {
+        this.addItemAtIndex(index + 1, bibleItem);
+    }
+    duplicateItemAtIndexRight(index: number, bibleKey?: string) {
         const bibleItems = this.bibleItems;
         const duplicatedBibleItem = bibleItems[index].clone();
         if (bibleKey) {
             duplicatedBibleItem.bibleKey = bibleKey;
         }
-        bibleItems.splice(index + 1, 0, duplicatedBibleItem);
-        this.bibleItems = bibleItems;
+        this.addItemAtIndexRight(index, duplicatedBibleItem);
     }
 
     static getInstance() {

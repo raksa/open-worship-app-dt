@@ -1,5 +1,7 @@
 @import './variables.scss';
 
+$dragging-color: greenyellow;
+
 #app {
 
     // Start: Boootstrap
@@ -14,7 +16,23 @@
     }
 
     .receiving-child {
-        border: 1px solid greenyellow;
+        border: 1px solid $dragging-color;
+    }
+
+    .receiving-child-left {
+        border-left: 1px solid $dragging-color;
+    }
+
+    .receiving-child-right {
+        border-right: 1px solid $dragging-color;
+    }
+
+    .receiving-child-top {
+        border-top: 1px solid $dragging-color;
+    }
+
+    .receiving-child-bottom {
+        border-bottom: 1px solid $dragging-color;
     }
 
     .list-group-item {

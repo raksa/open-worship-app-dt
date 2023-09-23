@@ -2,12 +2,16 @@ import { useStateSettingNumber } from '../helper/settingHelper';
 import BibleViewSetting from './BibleViewSetting';
 import BibleItemViewController from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
+import { useState } from 'react';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
 const STEP_FONT_SIZE = 2;
 
 export default function BiblePreviewerRender() {
+    const [isFullScreen, setIsFullScreen] = useState(
+        !!document.fullscreenElement,
+    );
     const [fontSize, _setFontSize] = useStateSettingNumber(
         'preview-font-S=size', 16);
     const setFontSize = (fontSize: number) => {
@@ -21,7 +25,7 @@ export default function BiblePreviewerRender() {
     };
     const bibleItemViewController = BibleItemViewController.getInstance();
     return (
-        <div className='card h-100'
+        <div className={`card h-100 ${isFullScreen ? 'app-popup-full' : ''}`}
             onWheel={(event) => {
                 if (event.ctrlKey) {
                     setFontSize(Math.round(fontSize + event.deltaY / 10));
@@ -32,14 +36,45 @@ export default function BiblePreviewerRender() {
                     bibleItemViewController={bibleItemViewController} />
             </div>
             <div className='card-footer p-0'>
-                <BibleViewSetting
-                    minFontSize={MIN_FONT_SIZE}
-                    maxFontSize={MAX_FONT_SIZE}
-                    stepFontSize={STEP_FONT_SIZE}
-                    fontSize={fontSize}
-                    setFontSize={setFontSize}
-                />
+                <div className='d-flex w-100'>
+                    <div className='flex-fill'>
+                        <BibleViewSetting
+                            minFontSize={MIN_FONT_SIZE}
+                            maxFontSize={MAX_FONT_SIZE}
+                            stepFontSize={STEP_FONT_SIZE}
+                            fontSize={fontSize}
+                            setFontSize={setFontSize}
+                        />
+                    </div>
+                    <FullScreenBtn
+                        isFullScreen={isFullScreen}
+                        setIsFullScreen={setIsFullScreen}
+                    />
+                </div>
             </div>
         </div>
+    );
+}
+
+function FullScreenBtn({ isFullScreen: isFull, setIsFullScreen }: {
+    isFullScreen: boolean,
+    setIsFullScreen: (isFullScreen: boolean) => void,
+}) {
+    return (
+        <button className='btn btn-info btn-sm'
+            onClick={() => {
+                if (!isFull) {
+                    setIsFullScreen(true);
+                    document.documentElement.requestFullscreen();
+                } else if (document.exitFullscreen) {
+                    setIsFullScreen(false);
+                    document.exitFullscreen();
+                }
+            }}>
+            <i className={
+                `bi bi-${isFull ? 'fullscreen-exit' : 'arrows-fullscreen'}`
+            } />
+            {isFull ? 'Exit ' : ''}Full
+        </button>
     );
 }
