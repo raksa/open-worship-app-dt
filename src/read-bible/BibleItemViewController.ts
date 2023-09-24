@@ -179,30 +179,41 @@ export default class BibleItemViewController
     ) {
         const {
             indices: newIndices,
-            isHorizontal: newIsHorizontal,
         } = this.transformToVertical(indices, isHorizontal);
-        this.addItemAtIndexLeft(newIndices, bibleItem, newIsHorizontal);
+        this.addItemAtIndex(newIndices, bibleItem);
     }
     addItemAtIndexBottom(
         indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
     ) {
         const {
             indices: newIndices,
-            isHorizontal: newIsHorizontal,
         } = this.transformToVertical(indices, isHorizontal);
-        this.addItemAtIndexBottom(newIndices, bibleItem, newIsHorizontal);
+        newIndices[newIndices.length - 1] += 1;
+        this.addItemAtIndex(newIndices, bibleItem);
     }
-    duplicateItemAtIndexRight(
-        indices: number[], isHorizontal: boolean, bibleKey?: string,
+    private cloneAtIndex(
+        indices: number[], bibleKey?: string,
     ) {
         const { bibleItems, index } = this.walkBibleItems(
             this.bibleItems, indices,
         );
-        const duplicatedBibleItem = bibleItems[index].clone();
+        const clonedBibleItem = bibleItems[index].clone();
         if (bibleKey) {
-            duplicatedBibleItem.bibleKey = bibleKey;
+            clonedBibleItem.bibleKey = bibleKey;
         }
+        return clonedBibleItem;
+    }
+    duplicateItemAtIndexRight(
+        indices: number[], isHorizontal: boolean, bibleKey?: string,
+    ) {
+        const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
         this.addItemAtIndexRight(indices, duplicatedBibleItem, isHorizontal);
+    }
+    duplicateItemAtIndexBottom(
+        indices: number[], isHorizontal: boolean, bibleKey?: string,
+    ) {
+        const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
+        this.addItemAtIndexBottom(indices, duplicatedBibleItem, isHorizontal);
     }
 
     static getInstance() {

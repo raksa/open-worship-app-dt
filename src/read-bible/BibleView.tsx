@@ -20,19 +20,38 @@ function openContextMenu(
     bibleItemViewCtl: BibleItemViewController, event: React.MouseEvent,
     indices: number[], isHorizontal: boolean,
 ) {
-    showAppContextMenu(event as any, [{
-        title: 'Split', onClick: () => {
-            bibleItemViewCtl.duplicateItemAtIndexRight(indices, isHorizontal);
-        },
-    }, {
-        title: 'Split To', onClick: () => {
-            showBibleOption(event, [], (bibleKey: string) => {
+    showAppContextMenu(event as any, [
+        {
+            title: 'Split Right', onClick: () => {
                 bibleItemViewCtl.duplicateItemAtIndexRight(
-                    indices, isHorizontal, bibleKey,
+                    indices, isHorizontal,
                 );
-            });
+            },
+        }, {
+            title: 'Split Right To', onClick: () => {
+                showBibleOption(event, [], (bibleKey: string) => {
+                    bibleItemViewCtl.duplicateItemAtIndexRight(
+                        indices, isHorizontal, bibleKey,
+                    );
+                });
+            },
         },
-    }]);
+        {
+            title: 'Split Bottom', onClick: () => {
+                bibleItemViewCtl.duplicateItemAtIndexBottom(
+                    indices, isHorizontal,
+                );
+            },
+        }, {
+            title: 'Split Bottom To', onClick: () => {
+                showBibleOption(event, [], (bibleKey: string) => {
+                    bibleItemViewCtl.duplicateItemAtIndexBottom(
+                        indices, isHorizontal, bibleKey,
+                    );
+                });
+            },
+        },
+    ]);
 }
 
 export default function BibleView({

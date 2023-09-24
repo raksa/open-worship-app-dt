@@ -24,9 +24,24 @@ export default function BibleViewRenderer({
         );
     }
     if (bibleItems.length === 1) {
+        const bibleItem = bibleItems[0];
+        const newIndices = [...indices, 0];
+        if (bibleItem instanceof Array) {
+            return (
+                <BibleViewRenderer
+                    bibleItems={bibleItem}
+                    fontSize={fontSize}
+                    bibleItemViewController={
+                        bibleItemViewController
+                    }
+                    indices={newIndices}
+                    isHorizontal={!isHorizontal}
+                />
+            );
+        }
         return (
-            <BibleView indices={[...indices, 0]}
-                bibleItem={bibleItems[0]}
+            <BibleView indices={newIndices}
+                bibleItem={bibleItem}
                 fontSize={fontSize}
                 bibleItemViewController={bibleItemViewController}
                 isHorizontal={isHorizontal}

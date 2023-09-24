@@ -77,7 +77,9 @@ export function applyDragged(
                         indices, bibleItem, isHorizontal,
                     );
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
-                    // TODO: implement
+                    bibleItemViewCtl.addItemAtIndexBottom(
+                        indices, bibleItem, isHorizontal,
+                    );
                 }
             }
         }
