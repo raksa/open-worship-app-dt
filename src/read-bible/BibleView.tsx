@@ -71,11 +71,11 @@ export default function BibleView({
                     bibleItem.bibleKey, title,
                     (_oldBibleKey: string, newBibleKey: string) => {
                         bibleItemViewCtl.changeItemBibleKey(
-                            indices, newBibleKey, isHorizontal,
+                            indices, newBibleKey,
                         );
                     },
                     () => {
-                        bibleItemViewCtl.removeItem(indices, isHorizontal);
+                        bibleItemViewCtl.removeItem(indices);
                     },
                     indices,
                 )

@@ -62,7 +62,7 @@ export function applyDragged(
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
                     bibleItemViewCtl.changeItemAtIndex(
-                        bibleItem, indices, isHorizontal,
+                        bibleItem, indices,
                     );
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
                     bibleItemViewCtl.addItemAtIndexLeft(
