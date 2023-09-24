@@ -5,6 +5,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { handleError } from '../helper/errorHelpers';
 import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
+import { WindowModEnum, checkIsWindowReadingMode } from '../router/routeHelpers';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -40,13 +41,24 @@ function cleanBibleItems(item: any): any {
     }
     return item;
 }
-
+const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
     static _instance: BibleItemViewController | null = null;
+    static getSettingPrefix(windowMode: WindowModEnum | null) {
+        const isReading = checkIsWindowReadingMode(windowMode);
+        const prefixSetting = isReading ? 'reading-' : '';
+        return prefixSetting;
+    }
+    static getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
+        const prefixSetting = this.getSettingPrefix(windowMode);
+        return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
+    }
     get bibleItems(): any {
         try {
-            const jsonStr = getSetting('bibleItems') || '[]';
+            const settingName = BibleItemViewController.
+                getBibleItemsPreviewSettingName(null);
+            const jsonStr = getSetting(settingName) || '[]';
             const json = JSON.parse(jsonStr);
             return parseBibleItem(json);
         } catch (error) {
@@ -60,7 +72,9 @@ export default class BibleItemViewController
             clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
         const jsonStr = JSON.stringify(stringifyBibleItem(newBibleItems));
-        setSetting('bibleItems', jsonStr);
+        const settingName = BibleItemViewController.
+            getBibleItemsPreviewSettingName(null);
+        setSetting(settingName, jsonStr);
         this.fireUpdateEvent();
     }
 

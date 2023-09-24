@@ -34,7 +34,7 @@ export default class Bible extends ItemSource<BibleItem>{
         return prefixSetting;
     }
     static getSelectDirSettingName(windowMode: WindowModEnum | null) {
-        const prefixSetting = Bible.getSettingPrefix(windowMode);
+        const prefixSetting = this.getSettingPrefix(windowMode);
         return `${prefixSetting}${SELECT_DIR_SETTING}`;
     }
     static fromJson(filePath: string, json: any) {
