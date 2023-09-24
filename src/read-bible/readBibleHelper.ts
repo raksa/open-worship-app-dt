@@ -48,8 +48,10 @@ export function removeDraggingClass(event: DragDropEventType) {
 }
 
 export function applyDragged(
-    event: DragDropEventType, bibleItemViewCtl: BibleItemViewController,
-    index: number,
+    event: DragDropEventType,
+    bibleItemViewCtl: BibleItemViewController,
+    indices: number[],
+    isHorizontal: boolean
 ) {
     const allPos = removeDraggingClass(event);
     const data = event.dataTransfer.getData('text');
@@ -59,13 +61,21 @@ export function applyDragged(
             const bibleItem = BibleItem.fromJson(json.data);
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
-                    bibleItemViewCtl.changeItemAtIndex(bibleItem, index);
+                    bibleItemViewCtl.changeItemAtIndex(
+                        bibleItem, indices, isHorizontal,
+                    );
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
-                    bibleItemViewCtl.addItemAtIndexLeft(index, bibleItem);
+                    bibleItemViewCtl.addItemAtIndexLeft(
+                        indices, bibleItem, isHorizontal,
+                    );
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {
-                    bibleItemViewCtl.addItemAtIndexRight(index, bibleItem);
+                    bibleItemViewCtl.addItemAtIndexRight(
+                        indices, bibleItem, isHorizontal,
+                    );
                 } else if (pos === DraggingPosEnum.TOP.toString()) {
-                    // TODO: implement
+                    bibleItemViewCtl.addItemAtIndexTop(
+                        indices, bibleItem, isHorizontal,
+                    );
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
                     // TODO: implement
                 }

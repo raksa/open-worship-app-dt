@@ -1,6 +1,8 @@
 import { useStateSettingNumber } from '../helper/settingHelper';
 import BibleViewSetting from './BibleViewSetting';
-import BibleItemViewController from './BibleItemViewController';
+import BibleItemViewController, {
+    useBIVCUpdateEvent,
+} from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
 import { useState } from 'react';
 
@@ -32,8 +34,9 @@ export default function BiblePreviewerRender() {
                 }
             }}>
             <div className='card-body d-flex d-flex-row overflow-hidden h-100'>
-                <BibleViewRenderer fontSize={fontSize}
-                    bibleItemViewController={bibleItemViewController} />
+                <Render fontSize={fontSize}
+                    bibleItemViewController={bibleItemViewController}
+                />
             </div>
             <div className='card-footer p-0'>
                 <div className='d-flex w-100'>
@@ -76,5 +79,23 @@ function FullScreenBtn({ isFullScreen: isFull, setIsFullScreen }: {
             } />
             {isFull ? 'Exit ' : ''}Full
         </button>
+    );
+}
+
+function Render({
+    fontSize, bibleItemViewController,
+}: {
+    fontSize: number,
+    bibleItemViewController: BibleItemViewController,
+}) {
+    const bibleItems = useBIVCUpdateEvent(bibleItemViewController);
+    return (
+        <BibleViewRenderer
+            fontSize={fontSize}
+            bibleItemViewController={bibleItemViewController}
+            bibleItems={bibleItems}
+            isHorizontal={true}
+            indices={[]}
+        />
     );
 }

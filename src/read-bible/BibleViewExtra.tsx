@@ -7,7 +7,8 @@ import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 export function rendHeader(
     key: string, title: string,
     onChange: (oldBibleKey: string, newBibleKey: string) => void,
-    onClose: (index: number) => void, index: number,
+    onClose: (indices: number[]) => void,
+    indices: number[],
 ) {
     return (
         <div className='card-header'>
@@ -22,9 +23,9 @@ export function rendHeader(
                     </div>
                 </div>
                 <div>
-                    <button className='btn-close'
+                    <button className='btn-close me-3'
                         onClick={() => {
-                            onClose(index);
+                            onClose(indices);
                         }} />
                 </div>
             </div>

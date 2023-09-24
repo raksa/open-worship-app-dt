@@ -18,17 +18,17 @@ import { rendHeader } from './BibleViewExtra';
 
 function openContextMenu(
     bibleItemViewCtl: BibleItemViewController, event: React.MouseEvent,
-    index: number,
+    indices: number[], isHorizontal: boolean,
 ) {
     showAppContextMenu(event as any, [{
         title: 'Split', onClick: () => {
-            bibleItemViewCtl.duplicateItemAtIndexRight(index);
+            bibleItemViewCtl.duplicateItemAtIndexRight(indices, isHorizontal);
         },
     }, {
         title: 'Split To', onClick: () => {
             showBibleOption(event, [], (bibleKey: string) => {
                 bibleItemViewCtl.duplicateItemAtIndexRight(
-                    index, bibleKey,
+                    indices, isHorizontal, bibleKey,
                 );
             });
         },
@@ -36,13 +36,14 @@ function openContextMenu(
 }
 
 export default function BibleView({
-    index, bibleItem, fontSize,
-    bibleItemViewController: bibleItemViewCtl,
+    indices, bibleItem, fontSize, bibleItemViewController: bibleItemViewCtl,
+    isHorizontal,
 }: {
-    index: number,
+    indices: number[],
     bibleItem: BibleItem,
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
+    isHorizontal: boolean,
 }) {
     const title = useBibleItemRenderTitle(bibleItem);
     const text = useBibleItemRenderText(bibleItem);
@@ -60,22 +61,23 @@ export default function BibleView({
                 removeDraggingClass(event);
             }}
             onDrop={async (event) => {
-                applyDragged(event, bibleItemViewCtl, index);
+                applyDragged(event, bibleItemViewCtl, indices, isHorizontal);
             }}
             onContextMenu={(event) => {
-                openContextMenu(bibleItemViewCtl, event, index);
+                openContextMenu(bibleItemViewCtl, event, indices, isHorizontal);
             }}>
             {
                 rendHeader(
                     bibleItem.bibleKey, title,
                     (_oldBibleKey: string, newBibleKey: string) => {
                         bibleItemViewCtl.changeItemBibleKey(
-                            index, newBibleKey);
+                            indices, newBibleKey, isHorizontal,
+                        );
                     },
                     () => {
-                        bibleItemViewCtl.removeItem(index);
+                        bibleItemViewCtl.removeItem(indices, isHorizontal);
                     },
-                    index,
+                    indices,
                 )
             }
             <div className='card-body p-3'>
