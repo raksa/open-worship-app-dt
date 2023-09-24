@@ -2,10 +2,12 @@ import { useState } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import {
+    getSetting, getSettingPrefix, setSetting,
+} from '../helper/settingHelper';
 import { handleError } from '../helper/errorHelpers';
 import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
-import { WindowModEnum, checkIsWindowReadingMode } from '../router/routeHelpers';
+import { WindowModEnum } from '../router/routeHelpers';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -45,13 +47,8 @@ const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
     static _instance: BibleItemViewController | null = null;
-    static getSettingPrefix(windowMode: WindowModEnum | null) {
-        const isReading = checkIsWindowReadingMode(windowMode);
-        const prefixSetting = isReading ? 'reading-' : '';
-        return prefixSetting;
-    }
     static getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
-        const prefixSetting = this.getSettingPrefix(windowMode);
+        const prefixSetting = getSettingPrefix(windowMode);
         return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
     }
     get bibleItems(): any {

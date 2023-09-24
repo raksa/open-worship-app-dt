@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import {
+    WindowModEnum, checkIsWindowReadingMode,
+} from '../router/routeHelpers';
 
 export function setSetting(key: string, value: string) {
     localStorage.setItem(key, value);
@@ -98,4 +101,10 @@ export class SettingManager<T> {
         }
         setSetting(this.settingName, this.serialize(value));
     }
+}
+
+export function getSettingPrefix(windowMode: WindowModEnum | null) {
+    const isReading = checkIsWindowReadingMode(windowMode);
+    const prefixSetting = isReading ? 'reading-' : '';
+    return prefixSetting;
 }

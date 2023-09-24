@@ -4,17 +4,13 @@ import {
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import {
-    AnyObjectType,
-    cloneJson,
-    toMaxId,
+    AnyObjectType, cloneJson, toMaxId,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { getSetting } from '../helper/settingHelper';
+import { getSetting, getSettingPrefix } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
-import {
-    checkIsWindowReadingMode, WindowModEnum,
-} from '../router/routeHelpers';
+import { WindowModEnum } from '../router/routeHelpers';
 
 export type BibleType = {
     items: BibleItemType[],
@@ -28,13 +24,8 @@ export default class Bible extends ItemSource<BibleItem>{
         super(filePath);
         this._originalJson = cloneJson(json);
     }
-    static getSettingPrefix(windowMode: WindowModEnum | null) {
-        const isReading = checkIsWindowReadingMode(windowMode);
-        const prefixSetting = isReading ? 'reading-' : '';
-        return prefixSetting;
-    }
     static getSelectDirSettingName(windowMode: WindowModEnum | null) {
-        const prefixSetting = this.getSettingPrefix(windowMode);
+        const prefixSetting = getSettingPrefix(windowMode);
         return `${prefixSetting}${SELECT_DIR_SETTING}`;
     }
     static fromJson(filePath: string, json: any) {

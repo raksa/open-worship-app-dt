@@ -6,6 +6,7 @@ import BibleFile from './BibleFile';
 import { useCallback } from 'react';
 import { useGenDS } from '../helper/dirSourceHelpers';
 import { useWindowMode } from '../router/routeHelpers';
+import { getSettingPrefix } from '../helper/settingHelper';
 
 export default function BibleList() {
     const windowMode = useWindowMode();
@@ -25,7 +26,7 @@ export default function BibleList() {
         return null;
     }
     Bible.getDefault(windowMode);
-    const settingPrefix = Bible.getSettingPrefix(windowMode);
+    const settingPrefix = getSettingPrefix(windowMode);
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype={'bible'}
