@@ -176,7 +176,7 @@ export async function moveBibleItemTo(
     index?: number,
 ) {
     const dirSource = await DirSource.getInstance(
-        Bible.getSelectDirSetting(windowMode),
+        Bible.getSelectDirSettingName(windowMode),
     );
     dirSource.getFilePaths('bible').then((filePaths) => {
         const targetNames = (filePaths || []).map((filePath) => {

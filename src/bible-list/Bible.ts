@@ -33,9 +33,9 @@ export default class Bible extends ItemSource<BibleItem>{
         const prefixSetting = isReading ? 'reading-' : '';
         return prefixSetting;
     }
-    static getSelectDirSetting(windowMode: WindowModEnum | null) {
+    static getSelectDirSettingName(windowMode: WindowModEnum | null) {
         const prefixSetting = Bible.getSettingPrefix(windowMode);
-        return getSetting(`${prefixSetting}${SELECT_DIR_SETTING}`);
+        return `${prefixSetting}${SELECT_DIR_SETTING}`;
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
@@ -189,7 +189,7 @@ export default class Bible extends ItemSource<BibleItem>{
         ) as Promise<Bible | null | undefined>;
     }
     static async getDefault(windowMode: WindowModEnum | null) {
-        const dir = getSetting(Bible.getSelectDirSetting(windowMode), '');
+        const dir = getSetting(Bible.getSelectDirSettingName(windowMode), '');
         if (!dir) {
             return null;
         }

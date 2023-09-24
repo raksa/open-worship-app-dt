@@ -9,7 +9,7 @@ import { useWindowMode } from '../router/routeHelpers';
 
 export default function BibleList() {
     const windowMode = useWindowMode();
-    const dirSource = useGenDS(Bible.getSelectDirSetting(windowMode));
+    const dirSource = useGenDS(Bible.getSelectDirSettingName(windowMode));
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>
@@ -25,7 +25,7 @@ export default function BibleList() {
         return null;
     }
     Bible.getDefault(windowMode);
-    const settingPrefix = Bible.getSelectDirSetting(windowMode);
+    const settingPrefix = Bible.getSettingPrefix(windowMode);
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype={'bible'}
