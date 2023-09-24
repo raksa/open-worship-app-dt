@@ -1,6 +1,13 @@
 #slide-previewer {
 
-  &>.card-footer {
-    height: 40px;
-  }
+    &>.card-footer {
+        height: 40px;
+
+        .history {
+            max-width: 100px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+    }
 }

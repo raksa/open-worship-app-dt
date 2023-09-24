@@ -30,12 +30,19 @@ export function useDSEvents(events: DirSourceEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = dirSource?.registerEventListener(
-            events, update) || [];
-        const staticEvents = DirSource.registerEventListener(events, update);
+        let registeredEvents: any;
+        const isGlobal = dirSource === undefined;
+        if (isGlobal) {
+            registeredEvents = DirSource.registerEventListener(events, update);
+        } else {
+            registeredEvents = dirSource.registerEventListener(events, update);
+        }
         return () => {
-            dirSource?.unregisterEventListener(instanceEvents);
-            DirSource.unregisterEventListener(staticEvents);
+            if (isGlobal) {
+                DirSource.unregisterEventListener(registeredEvents);
+            } else {
+                dirSource.unregisterEventListener(registeredEvents);
+            }
         };
     }, [dirSource, n]);
 }

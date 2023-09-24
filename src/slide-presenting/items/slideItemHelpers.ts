@@ -2,7 +2,7 @@ import Slide from '../../slide-list/Slide';
 import PresentSlideManager from '../../_present/PresentSlideManager';
 import { genPresentMouseEvent } from '../../_present/presentHelpers';
 import SlideItem from '../../slide-list/SlideItem';
-import {checkIsWindowEditingMode} from '../../router/routeHelpers';
+import { checkIsWindowEditingMode } from '../../router/routeHelpers';
 
 export function getPresentingIndex(slide: Slide) {
     for (let i = 0; i < slide.items.length; i++) {
@@ -19,7 +19,8 @@ export function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
         slideItem.isSelected = !slideItem.isSelected;
     } else {
         PresentSlideManager.slideSelect(slideItem.filePath,
-            slideItem.toJson(), event);
+            slideItem.toJson(), event,
+        );
     }
 }
 

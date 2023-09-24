@@ -25,7 +25,8 @@ export type SlideListType = {
 export type PresentSlideManagerEventType = 'update';
 
 const settingName = 'present-slide-';
-export default class PresentSlideManager extends EventHandler<PresentSlideManagerEventType>
+export default class PresentSlideManager extends
+    EventHandler<PresentSlideManagerEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-slide-m';
     readonly presentId: number;
@@ -90,9 +91,9 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     }
     fireUpdate() {
         this.addPropEvent('update');
-        PresentSlideManager.fireUpdateEvent();
+        PresentSlideManager.fireUpdate();
     }
-    static fireUpdateEvent() {
+    static fireUpdate() {
         this.addPropEvent('update');
     }
     static getSlideList(): SlideListType {
@@ -118,22 +119,35 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         const str = JSON.stringify(slideList);
         setSetting(settingName, str);
     }
-    static getDataList(slideFilePath: string, slideItemId: number) {
+    static getDataList(slideFilePath?: string, slideItemId?: number) {
         const dataList = this.getSlideList();
         return Object.entries(dataList).filter(([_, data]) => {
-            return data.slideFilePath === slideFilePath &&
-                data.slideItemJson.id === slideItemId;
+            if (
+                slideFilePath !== undefined &&
+                data.slideFilePath !== slideFilePath
+            ) {
+                return false;
+            }
+            if (
+                slideItemId !== undefined &&
+                data.slideItemJson.id !== slideItemId
+            ) {
+                return false;
+            }
+            return true;
         });
     }
     static async slideSelect(slideFilePath: string,
         slideItemJson: SlideItemType,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(event);
         chosenPresentManagers.forEach((presentManager) => {
             const { presentSlideManager } = presentManager;
             const { slideItemData } = presentSlideManager;
             const willSelected = `${slideFilePath}:${slideItemJson.id}`;
-            const selected = `${slideItemData?.slideFilePath}:${slideItemData?.slideItemJson.id}`;
+            const slideItemId = slideItemData?.slideItemJson.id;
+            const selected = `${slideItemData?.slideFilePath}:${slideItemId}`;
             if (selected !== willSelected) {
                 presentSlideManager.slideItemData = {
                     slideFilePath,
@@ -143,7 +157,6 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                 presentSlideManager.slideItemData = null;
             }
         });
-        PresentSlideManager.fireUpdateEvent();
     }
     renderPdf(pdfImageData: PdfImageDataType) {
         const { presentManager } = this;
@@ -217,13 +230,11 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                     });
                 }
             });
-        } else {
-            if (this.div.lastChild !== null) {
-                const targetDiv = this.div.lastChild as HTMLDivElement;
-                aminData.animOut(targetDiv).then(() => {
-                    targetDiv.remove();
-                });
-            }
+        } else if (this.div.lastChild !== null) {
+            const targetDiv = this.div.lastChild as HTMLDivElement;
+            aminData.animOut(targetDiv).then(() => {
+                targetDiv.remove();
+            });
         }
     }
     get containerStyle(): React.CSSProperties {
