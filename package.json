@@ -83,6 +83,9 @@
             "license": "LICENSE.txt"
         }
     },
+    "engines": {
+        "node": ">=18.16.0"
+    },
     "devDependencies": {
         "@types/node": "^20.5.1",
         "@types/react": "^18.2.20",
