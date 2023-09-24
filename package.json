@@ -110,7 +110,7 @@
     "dependencies": {
         "electron-font-manager": "^0.0.1",
         "libreoffice-convert": "^1.4.1",
-        "pdfjs-dist": "^3.10.111",
+        "pdfjs-dist": "^2.16.105",
         "tar": "^6.1.14"
     }
 }
