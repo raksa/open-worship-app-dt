@@ -32,8 +32,7 @@ export function showCanvasContextMenu(event: any) {
                     },
                 ]);
                 filePaths.forEach((filePath) => {
-                    const fileSource = FileSource.getInstance(filePath);
-                    canvasController.addNewMediaItem(fileSource, event);
+                    canvasController.addNewMediaItem(filePath, event);
                 });
             },
         },
