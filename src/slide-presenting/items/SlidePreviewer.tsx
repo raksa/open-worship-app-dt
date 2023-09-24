@@ -1,19 +1,13 @@
 import './SlidePreviewer.scss';
 
 import SlideItemsPreviewer from './SlideItemsPreviewer';
+import { useSlideItemSizing } from '../../event/SlideListEventListener';
 import {
-    useSlideItemSizing,
-} from '../../event/SlideListEventListener';
-import {
-    THUMBNAIL_WIDTH_SETTING_NAME,
-    DEFAULT_THUMBNAIL_SIZE,
-    SlideDynamicType,
+    THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE, SlideDynamicType,
 } from '../../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
-import {
-    useSlideSelecting,
-} from '../../event/PreviewingEventListener';
+import { useSlideSelecting } from '../../event/PreviewingEventListener';
 import { useCallback, useState } from 'react';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';

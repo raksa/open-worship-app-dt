@@ -1,13 +1,9 @@
 import './SlideItemRender.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
+import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 import {
-    usePSlideMEvents,
-} from '../../_present/presentEventHelpers';
-import {
-    RendInfo,
-    RendShowingScreen,
-    toCNHighlight,
+    RendInfo, RendShowingScreen, toCNHighlight,
 } from './SlideItemRender';
 import ReactDOMServer from 'react-dom/server';
 

@@ -2,19 +2,15 @@ import './Presenting.scss';
 
 import React from 'react';
 import {
-    useFullTextOpening,
-    useSlideSelecting,
+    useFullTextOpening, useSlideSelecting,
 } from '../event/PreviewingEventListener';
 import {
     useSlideItemSelecting,
 } from '../event/SlideListEventListener';
 import {
-    getSetting,
-    useStateSettingString,
+    getSetting, useStateSettingString,
 } from '../helper/settingHelper';
-import TabRender, {
-    genTabBody,
-} from '../others/TabRender';
+import TabRender, { genTabBody } from '../others/TabRender';
 
 const SlidePreviewer = React.lazy(() => {
     return import('./items/SlidePreviewer');
