@@ -1,13 +1,13 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
 
-const SlideItemEditorCanvas = React.lazy(() => {
+const SlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
 });
-const Tools = React.lazy(() => {
+const Tools = lazy(() => {
     return import('./canvas/tools/Tools');
 });
 

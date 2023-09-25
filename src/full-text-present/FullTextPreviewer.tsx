@@ -1,12 +1,11 @@
 import './FullTextPreviewer.scss';
 
-import React from 'react';
+import { lazy } from 'react';
 import {
     useLyricSelecting,
 } from '../event/PreviewingEventListener';
 import {
-    getSetting, setSetting,
-    useStateSettingString,
+    getSetting, setSetting, useStateSettingString,
 } from '../helper/settingHelper';
 import TabRender, {
     genTabBody,
@@ -15,10 +14,10 @@ import {
     getIsShowingFTPreviewer,
 } from '../slide-presenting/Presenting';
 
-const BiblePreviewer = React.lazy(() => {
+const BiblePreviewer = lazy(() => {
     return import('../read-bible/BiblePreviewer');
 });
-const LyricPreviewer = React.lazy(() => {
+const LyricPreviewer = lazy(() => {
     return import('./LyricPreviewer');
 });
 

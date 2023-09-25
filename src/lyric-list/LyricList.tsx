@@ -1,9 +1,9 @@
 import './LyricList.scss';
 
+import { useCallback } from 'react';
 import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';
-import { useCallback } from 'react';
 import { useGenDS } from '../helper/dirSourceHelpers';
 
 export default function LyricList() {

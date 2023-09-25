@@ -1,11 +1,10 @@
+import { useState } from 'react';
 import { copyToClipboard } from '../server/appHelper';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
-import { useState } from 'react';
 import { bookToKey } from '../helper/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
-    ConsumeVerseType,
-    consumeStartVerseEndVerse,
+    ConsumeVerseType, consumeStartVerseEndVerse,
 } from '../helper/bible-helpers/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useStateSettingNumber } from '../helper/settingHelper';

@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import {
-    BibleMinimalInfoType,
-    getDownloadedBibleInfoList,
-    getOnlineBibleInfoList,
+    BibleMinimalInfoType, getDownloadedBibleInfoList, getOnlineBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;

@@ -1,13 +1,13 @@
 import './CustomStyle.scss';
 
-import { useStateSettingString } from '../helper/settingHelper';
-import React from 'react';
-import TabRender, { genTabBody } from '../others/TabRender';
+import { lazy } from 'react';
+import { useStateSettingString } from '../../helper/settingHelper';
+import TabRender, { genTabBody } from '../../others/TabRender';
 
-const Appearance = React.lazy(() => {
+const Appearance = lazy(() => {
     return import('./Appearance');
 });
-const TextShadow = React.lazy(() => {
+const TextShadow = lazy(() => {
     return import('./TextShadow');
 });
 

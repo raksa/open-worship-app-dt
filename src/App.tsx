@@ -1,11 +1,11 @@
+import { useMemo } from 'react';
 import {
     Routes, Route, BrowserRouter, useLocation,
 } from 'react-router-dom';
 import NotFound404, { goHomeBack } from './router/NotFound404';
 import AppPresenting from './AppPresenting';
 import {
-    DefaultTabContext, editingTab, home,
-    presentingTab, readingTab,
+    DefaultTabContext, editingTab, home, presentingTab, readingTab,
 } from './router/routeHelpers';
 import AppLayout from './router/AppLayout';
 import AppEditing from './AppEditing';
@@ -17,7 +17,6 @@ import AppModal, {
     APP_MODAL_QUERY_ROUTE_PATH,
 } from './app-modal/AppModal';
 import RedirectTo from './others/RedirectTo';
-import { useMemo } from 'react';
 
 function checkHome() {
     const url = new URL(window.location.href);

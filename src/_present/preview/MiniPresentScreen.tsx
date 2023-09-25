@@ -13,6 +13,7 @@ import MiniPresentScreenFooter, {
 import { useStateSettingNumber } from '../../helper/settingHelper';
 import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
+import PresentPreviewerTools from './PresentPreviewerTools';
 (window as any).PresentManager = PresentManager;
 
 function openContextMenu(event: any) {
@@ -47,20 +48,23 @@ export default function MiniPresentScreen() {
     const presentManagers = PresentManager.getPresentManagersSetting();
     return (
         <div className='card w-100 h-100'>
-            <div className={'card-body'}
+            <div className={'card-body d-flex flex-column'}
                 onContextMenu={(event) => {
                     openContextMenu(event);
                 }}
                 style={{
                     overflow: 'auto',
                 }}>
-                {presentManagers.map((presentManager) => {
-                    return (
-                        <PresentPreviewerItem key={presentManager.key}
-                            presentManager={presentManager}
-                            width={previewWith} />
-                    );
-                })}
+                <PresentPreviewerTools />
+                <div className='w-100'>
+                    {presentManagers.map((presentManager) => {
+                        return (
+                            <PresentPreviewerItem key={presentManager.key}
+                                presentManager={presentManager}
+                                width={previewWith} />
+                        );
+                    })}
+                </div>
             </div>
             <MiniPresentScreenFooter
                 previewSize={previewWith}

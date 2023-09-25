@@ -1,6 +1,6 @@
 import './Modal.scss';
 
-import { ReactNode } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 
 interface MyProps {
     children?: ReactNode
@@ -8,7 +8,7 @@ interface MyProps {
 
 export default function PrimitiveModal({
     children,
-}: React.PropsWithChildren<MyProps>) {
+}: PropsWithChildren<MyProps>) {
     return (
         <div id='modal-container'>
             {children}

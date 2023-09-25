@@ -1,11 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const Presenting = React.lazy(() => {
+const Presenting = lazy(() => {
     return import('./slide-presenting/Presenting');
 });
-const Background = React.lazy(() => {
+const Background = lazy(() => {
     return import('./background/Background');
 });
 

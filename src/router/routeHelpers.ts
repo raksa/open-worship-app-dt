@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 import {
-    useLocation, useNavigate,
-    NavigateFunction, Location,
+    useLocation, useNavigate, NavigateFunction, Location,
 } from 'react-router-dom';
 
 export type TabCheckPropsType = {

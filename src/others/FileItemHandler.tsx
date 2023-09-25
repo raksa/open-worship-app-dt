@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { lazy, useCallback, useState } from 'react';
 import FileReadError from './FileReadError';
 import {
     ContextMenuItemType,
@@ -14,7 +14,7 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
 import ItemColorNote from './ItemColorNote';
 
-const RenderRenaming = React.lazy(() => {
+const RenderRenaming = lazy(() => {
     return import('./RenderRenaming');
 });
 

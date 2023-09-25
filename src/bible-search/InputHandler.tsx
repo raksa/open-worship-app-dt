@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
     useGetBookKVList,
 } from '../helper/bible-helpers/serverBibleHelpers';
@@ -5,7 +6,6 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
-import { useRef } from 'react';
 import { INPUT_TEXT_CLASS } from './selectionHelpers';
 import { 
     useBibleItemToInputText,

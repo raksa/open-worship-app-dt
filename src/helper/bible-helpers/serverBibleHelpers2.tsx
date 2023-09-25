@@ -1,12 +1,8 @@
+import { useState } from 'react';
 import {
-    bookToKey,
-    getBibleInfo,
-    getBookVKList,
-    getChapterCount,
-    getVerses,
+    bookToKey, getBibleInfo, getBookVKList, getChapterCount, getVerses,
 } from './bibleInfoHelpers';
 import { cloneJson } from '../helpers';
-import { useState } from 'react';
 import {
     fromLocaleNum,
     LocaleType,

@@ -4,15 +4,15 @@ import './AppLayout.scss';
 import '../others/bootstrap-override.scss';
 import '../others/scrollbar.scss';
 
+import { useContext } from 'react';
+import { Outlet } from 'react-router-dom';
 import SettingHeader from '../setting/SettingHeader';
 import BibleSearchHeader from '../bible-search/BibleSearchHeader';
 import TabHeadRender from './TabHeadRender';
-import { Outlet } from 'react-router-dom';
 import {
     DefaultTabContext,
     TabOptionType, WindowModeContext, useWindowMode,
 } from './routeHelpers';
-import { useContext } from 'react';
 
 export default function AppLayout() {
     const tabOptionList = useContext(DefaultTabContext);

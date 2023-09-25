@@ -5,8 +5,7 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import {
-    ConsumeVerseType,
-    consumeStartVerseEndVerse,
+    ConsumeVerseType, consumeStartVerseEndVerse,
 } from '../helper/bible-helpers/bibleHelpers';
 import RenderVerseNumOption, {
     mouseUp,
@@ -70,18 +69,18 @@ export default function RenderVersesOption({
     const verseCount = Object.values(found.verses).length;
     return (
         <div className='render-found sticky-top'>
-                <div className={'verse-select d-flex p-1 '
-                    + 'align-content-start flex-wrap'}>
-                    {Array.from({ length: verseCount }, (_, i) => {
-                        return (
-                            <RenderVerseNumOption key={i}
-                                index={i}
-                                onVerseChange={onVerseChange}
-                                bibleSelected={bibleSelected}
-                                found={found} />
-                        );
-                    })}
-                </div>
+            <div className={'verse-select d-flex p-1 '
+                + 'align-content-start flex-wrap'}>
+                {Array.from({ length: verseCount }, (_, i) => {
+                    return (
+                        <RenderVerseNumOption key={i}
+                            index={i}
+                            onVerseChange={onVerseChange}
+                            bibleSelected={bibleSelected}
+                            found={found} />
+                    );
+                })}
+            </div>
         </div>
     );
 }

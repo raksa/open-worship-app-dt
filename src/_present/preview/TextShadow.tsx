@@ -1,8 +1,8 @@
 import './TextShadow.scss';
 
-import PresentFTManager from '../_present/PresentFTManager';
-import { AppColorType } from '../others/color/colorHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import PresentFTManager from '../PresentFTManager';
+import { AppColorType } from '../../others/color/colorHelpers';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
 function genShadow1(color1: string, color2: string) {
     const style = `color: ${color1}; text-shadow: 2px 2px 0 ${color2}, `

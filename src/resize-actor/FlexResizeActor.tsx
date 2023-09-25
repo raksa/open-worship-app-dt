@@ -1,6 +1,6 @@
 import './FlexResizeActor.scss';
 
-import React from 'react';
+import { Component, RefObject, createRef } from 'react';
 import { DisabledType } from './flexSizeHelpers';
 
 export type ResizeKindType = 'v' | 'h';
@@ -10,8 +10,8 @@ export interface Props {
     disable: (dataFSizeKey: string,
         target: DisabledType) => void,
 }
-export default class FlexResizeActor extends React.Component<Props, {}> {
-    myRef: React.RefObject<HTMLDivElement>;
+export default class FlexResizeActor extends Component<Props, {}> {
+    myRef: RefObject<HTMLDivElement>;
     lastPos: number = 0;
     previousMinSize: number = 0;
     nextMinSize: number = 0;
@@ -25,7 +25,7 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
     mouseUpListener: (mm: MouseEvent) => void;
     constructor(props: Props) {
         super(props);
-        this.myRef = React.createRef();
+        this.myRef = createRef();
         this.mouseMoveListener = (mm: MouseEvent) => this.onMouseMove(mm);
         this.mouseUpListener = (event) => {
             this.onMouseUp(event);

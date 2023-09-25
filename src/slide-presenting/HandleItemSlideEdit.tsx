@@ -1,11 +1,10 @@
-import React, { Suspense, useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import WindowEventListener, {
-    useWindowEvent,
-    EventMapper as WEventMapper,
+    useWindowEvent, EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import SlideItem from '../slide-list/SlideItem';
 
-const SlideItemEditorPopup = React.lazy(() => {
+const SlideItemEditorPopup = lazy(() => {
     return import('../slide-editor/SlideItemEditorPopup');
 });
 

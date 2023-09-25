@@ -1,7 +1,7 @@
+import { useCallback } from 'react';
 import DownloadedBibleItem from './DownloadedBibleItem';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
-import { useCallback } from 'react';
 
 type BibleInfoType = {
     isUpdatable: boolean;
@@ -33,11 +33,11 @@ export default function SettingDownloadedBible({
     }
     const bibleInfoList = downloadedBibleInfoList
         .map<BibleInfoType>((bibleInfo) => {
-            const foundBibleInfo = onlineBibleInfoList &&
+            const foundBibleInfo = onlineBibleInfoList ?
                 onlineBibleInfoList.find((bible1) => {
                     return bible1.key === bibleInfo.key &&
                         bible1.version >= bibleInfo.version;
-                });
+                }) : undefined;
             return {
                 isDownloading: false,
                 ...bibleInfo,

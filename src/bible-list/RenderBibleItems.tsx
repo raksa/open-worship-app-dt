@@ -1,10 +1,10 @@
+import { useCallback } from 'react';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     genDuplicatedMessage,
 } from '../helper/bible-helpers/serverBibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
-import { useCallback } from 'react';
 import BibleItem from './BibleItem';
 import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
 import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';

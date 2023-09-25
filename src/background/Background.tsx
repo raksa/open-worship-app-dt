@@ -1,6 +1,6 @@
 import './Background.scss';
 
-import React from 'react';
+import { lazy } from 'react';
 import {
     useStateSettingString,
 } from '../helper/settingHelper';
@@ -14,13 +14,13 @@ import {
     usePBGMEvents,
 } from '../_present/presentEventHelpers';
 
-const BackgroundColors = React.lazy(() => {
+const BackgroundColors = lazy(() => {
     return import('./BackgroundColors');
 });
-const BackgroundImages = React.lazy(() => {
+const BackgroundImages = lazy(() => {
     return import('./BackgroundImages');
 });
-const BackgroundVideos = React.lazy(() => {
+const BackgroundVideos = lazy(() => {
     return import('./BackgroundVideos');
 });
 

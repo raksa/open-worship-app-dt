@@ -1,12 +1,12 @@
 import './PathSelector.scss';
 
+import { lazy } from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import DirSource from '../helper/DirSource';
-import React from 'react';
 import AppSuspense from './AppSuspense';
 import { pathPreviewer } from './PathPreviewer';
 
-const PathPreviewer = React.lazy(() => {
+const PathPreviewer = lazy(() => {
     return import('./PathEditor');
 });
 

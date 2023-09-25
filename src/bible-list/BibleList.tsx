@@ -1,9 +1,9 @@
 import './BibleList.scss';
 
+import { useCallback } from 'react';
 import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
-import { useCallback } from 'react';
 import { useGenDS } from '../helper/dirSourceHelpers';
 import { useWindowMode } from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelper';

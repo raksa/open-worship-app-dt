@@ -1,10 +1,10 @@
+import { useCallback } from 'react';
 import RenderBookOption from './RenderBookOption';
 import RenderChapterOption from './RenderChapterOption';
 import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
-import { useCallback } from 'react';
 
 export default function RenderSearchSuggestion({
     bibleResult, inputText, bibleSelected,

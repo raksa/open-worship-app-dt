@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
@@ -206,7 +207,7 @@ export default class PresentBGManager
             });
         }
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
         const { presentManager } = this;
         if (presentManager === null) {
             return {};

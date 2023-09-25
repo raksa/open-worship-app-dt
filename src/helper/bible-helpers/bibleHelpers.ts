@@ -4,14 +4,10 @@ import {
 } from '../settingHelper';
 import BibleItem from '../../bible-list/BibleItem';
 import {
-    getBookKVList,
-    bookToKey,
-    VerseList,
-    getVerses,
+    getBookKVList, bookToKey, VerseList, getVerses,
 } from './bibleInfoHelpers';
 import {
-    extractBible,
-    toInputText,
+    extractBible, toInputText,
 } from './serverBibleHelpers2';
 import {
     getDownloadedBibleInfoList,

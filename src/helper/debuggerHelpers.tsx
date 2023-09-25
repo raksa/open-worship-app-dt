@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import {
+    DependencyList, EffectCallback, useEffect, useState,
+} from 'react';
 import { log, warn } from './loggerHelpers';
 
 const THRESHOLD = 10;
@@ -31,8 +33,8 @@ function restore(toKey: string) {
 
 const mapper = new Map<string, StoreType>();
 export function useAppEffect(
-    effect: React.EffectCallback,
-    deps?: React.DependencyList,
+    effect: EffectCallback,
+    deps?: DependencyList,
     key?: string,
 ) {
     const toKey = key || effect.toString();

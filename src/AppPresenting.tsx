@@ -1,14 +1,14 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const AppPresentingLeft = React.lazy(() => {
+const AppPresentingLeft = lazy(() => {
     return import('./AppPresentingLeft');
 });
-const AppPresentingMiddle = React.lazy(() => {
+const AppPresentingMiddle = lazy(() => {
     return import('./AppPresentingMiddle');
 });
-const AppPresentingRight = React.lazy(() => {
+const AppPresentingRight = lazy(() => {
     return import('./AppPresentingRight');
 });
 

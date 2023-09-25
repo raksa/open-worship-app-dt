@@ -1,11 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const BibleList = React.lazy(() => {
+const BibleList = lazy(() => {
     return import('./bible-list/BibleList');
 });
-const MiniPresentScreen = React.lazy(() => {
+const MiniPresentScreen = lazy(() => {
     return import('./_present/preview/MiniPresentScreen');
 });
 

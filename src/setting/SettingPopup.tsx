@@ -1,18 +1,18 @@
 import './SettingPopup.scss';
 
+import { lazy } from 'react';
 import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, { genTabBody } from '../others/TabRender';
-import React from 'react';
 import { useModal } from '../app-modal/Modal';
 import HeaderSettingPopup from './HeaderSettingPopup';
 
-const SettingGeneral = React.lazy(() => {
+const SettingGeneral = lazy(() => {
     return import('./SettingGeneral');
 });
-const SettingBible = React.lazy(() => {
+const SettingBible = lazy(() => {
     return import('./bible-setting/SettingBible');
 });
-const SettingAbout = React.lazy(() => {
+const SettingAbout = lazy(() => {
     return import('./SettingAbout');
 });
 

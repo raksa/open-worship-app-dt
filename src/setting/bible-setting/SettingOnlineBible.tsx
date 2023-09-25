@@ -54,7 +54,7 @@ export default function SettingOnlineBible({
                 {getRefresher()}
             </div>
             <ul className='list-group d-flex flex-fill'>
-                {bibleInfoList.map((bibleInfo, i) => {
+                {bibleInfoList.map((bibleInfo) => {
                     return (
                         <OnlineBibleItem key={bibleInfo.key}
                             bibleInfo={bibleInfo}

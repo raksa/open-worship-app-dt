@@ -1,8 +1,8 @@
 import './AppContextMenu.scss';
 
+import { ReactElement, useState } from 'react';
 import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
-import { ReactElement, useState } from 'react';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
 

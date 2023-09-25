@@ -1,9 +1,9 @@
 import './BibleSearchPopup.scss';
 
+import { useState } from 'react';
 import BibleSearchRender from './BibleSearchRender';
 import { useModal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';
-import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     SELECTED_BIBLE_SETTING_NAME,

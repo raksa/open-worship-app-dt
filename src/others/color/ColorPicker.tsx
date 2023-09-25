@@ -3,9 +3,7 @@ import './ColorPicker.scss';
 import { useCallback, useState } from 'react';
 import colorList from '../color-list.json';
 import {
-    AppColorType,
-    transparentColor,
-    colorToTransparent,
+    AppColorType, transparentColor, colorToTransparent,
 } from './colorHelpers';
 import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';

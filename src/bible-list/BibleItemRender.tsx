@@ -1,8 +1,8 @@
+import { useCallback } from 'react';
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import { useFSEvents } from '../helper/dirSourceHelpers';
-import { useCallback } from 'react';
 import { handleDragStart } from '../helper/dragHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import {

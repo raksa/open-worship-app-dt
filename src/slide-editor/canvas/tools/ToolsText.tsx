@@ -1,3 +1,4 @@
+import { useCallback, useContext } from 'react';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
 import CanvasItemText, {
@@ -5,7 +6,6 @@ import CanvasItemText, {
 } from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
-import { useCallback, useContext } from 'react';
 import ColorPicker from '../../../others/color/ColorPicker';
 import { AppColorType } from '../../../others/color/colorHelpers';
 

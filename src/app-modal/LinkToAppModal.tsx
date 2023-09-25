@@ -1,6 +1,11 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+    Link, useLocation, useNavigate,
+} from 'react-router-dom';
 import { goHomeBack } from '../router/NotFound404';
-import { APP_MODAL_ROUTE_PATH, toAppModalTypeData } from './helpers';
+import {
+    APP_MODAL_ROUTE_PATH, toAppModalTypeData,
+} from './helpers';
+import { ReactNode } from 'react';
 
 export function useCloseAppModal() {
     const location = useLocation();
@@ -29,7 +34,7 @@ export function useOpenAppModal(modalType: string) {
 export default function LinkToAppModal({
     children, modalType, data,
 }: {
-    children: React.ReactNode,
+    children: ReactNode,
     modalType: string,
     data?: string,
 }) {

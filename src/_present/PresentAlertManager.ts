@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -237,8 +238,8 @@ export default class PresentAlertManager
             removeAlert(child);
         });
     }
-    get containerStyle(): React.CSSProperties {
-        const {presentManager} = this;
+    get containerStyle(): CSSProperties {
+        const { presentManager } = this;
         if (presentManager === null) {
             return {};
         }

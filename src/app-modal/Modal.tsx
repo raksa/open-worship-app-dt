@@ -1,12 +1,11 @@
 import './Modal.scss';
 
+import { PropsWithChildren, ReactNode } from 'react';
 import {
-    EventMapper, toShortcutKey,
-    useKeyboardRegistering,
+    EventMapper, toShortcutKey, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { useCloseAppModal } from './LinkToAppModal';
 
-import { ReactNode } from 'react';
 
 interface MyProps {
     children?: ReactNode
@@ -28,7 +27,7 @@ export function useModal(isHandlingClose: boolean = true) {
     });
     function Modal({
         children,
-    }: React.PropsWithChildren<MyProps>) {
+    }: PropsWithChildren<MyProps>) {
         return (
             <div id='modal-container'>
                 {children}

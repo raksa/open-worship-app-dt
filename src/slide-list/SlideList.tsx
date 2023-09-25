@@ -1,5 +1,6 @@
 import './SlideList.scss';
 
+import { useCallback } from 'react';
 import FileListHandler from '../others/FileListHandler';
 import SlideFile from './SlideFile';
 import Slide from './Slide';
@@ -10,7 +11,6 @@ import {
     supportOfficeFE,
 } from './slideHelpers';
 import { extractExtension } from '../server/fileHelper';
-import { useCallback } from 'react';
 import FileSource from '../helper/FileSource';
 import { useGenDS } from '../helper/dirSourceHelpers';
 

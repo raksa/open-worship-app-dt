@@ -1,6 +1,5 @@
-import React, {
-    CSSProperties, Fragment,
-    useCallback, useState,
+import {
+    CSSProperties, Fragment, LazyExoticComponent, useCallback, useState,
 } from 'react';
 import AppSuspense from '../others/AppSuspense';
 import FlexResizeActor, {
@@ -18,7 +17,7 @@ export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
 };
 export type DataInputType = [
-    React.LazyExoticComponent<() => React.JSX.Element | null> | {
+    LazyExoticComponent<() => React.JSX.Element | null> | {
         render: () => React.JSX.Element | null,
     },
     string,

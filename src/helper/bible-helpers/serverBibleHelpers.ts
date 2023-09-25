@@ -1,9 +1,7 @@
-import {
-    getBibleInfo,
-    getBookKVList,
-    getChapterCount,
-} from './bibleInfoHelpers';
 import { useState } from 'react';
+import {
+    getBibleInfo, getBookKVList, getChapterCount,
+} from './bibleInfoHelpers';
 import BibleItem from '../../bible-list/BibleItem';
 
 import bibleJson from './bible.json';

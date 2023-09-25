@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { isValidJson } from '../helper/helpers';
@@ -237,7 +238,7 @@ export default class PresentSlideManager extends
             });
         }
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
         const { presentManager } = this;
         if (presentManager === null) {
             return {};

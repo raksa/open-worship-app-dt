@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import BibleViewSetting from './BibleViewSetting';
 import BibleItemViewController, {
     useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
-import { useState } from 'react';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;

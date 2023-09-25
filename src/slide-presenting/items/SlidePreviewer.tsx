@@ -1,5 +1,6 @@
 import './SlidePreviewer.scss';
 
+import { useCallback, useState } from 'react';
 import SlideItemsPreviewer from './SlideItemsPreviewer';
 import { useSlideItemSizing } from '../../event/SlideListEventListener';
 import {
@@ -8,7 +9,6 @@ import {
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
 import { useSlideSelecting } from '../../event/PreviewingEventListener';
-import { useCallback, useState } from 'react';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
 import { useFSEvents } from '../../helper/dirSourceHelpers';

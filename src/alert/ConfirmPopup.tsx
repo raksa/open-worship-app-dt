@@ -1,13 +1,11 @@
 import './ConfirmPopup.scss';
 
+import { useCallback } from 'react';
 import PrimitiveModal from '../app-modal/PrimitiveModal';
-
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
-    closeAlert,
-    ConfirmDataType,
+    closeAlert, ConfirmDataType,
 } from './alertHelpers';
-import { useCallback } from 'react';
 
 export default function ConfirmPopup({ data }: {
     data: ConfirmDataType,

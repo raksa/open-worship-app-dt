@@ -1,11 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const SlideList = React.lazy(() => {
+const SlideList = lazy(() => {
     return import('./slide-list/SlideList');
 });
-const SlidePreviewer = React.lazy(() => {
+const SlidePreviewer = lazy(() => {
     return import('./slide-presenting/items/SlidePreviewer');
 });
 

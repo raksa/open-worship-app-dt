@@ -1,4 +1,3 @@
-import React from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import BibleItemViewController from './BibleItemViewController';
 import { handleError } from '../helper/errorHelpers';

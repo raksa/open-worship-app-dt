@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { lazy, useCallback, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
@@ -11,7 +11,7 @@ import { copyToClipboard } from '../server/appHelper';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
 
-const RenderBibleItems = React.lazy(() => {
+const RenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
 });
 

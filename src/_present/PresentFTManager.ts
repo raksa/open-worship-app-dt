@@ -1,4 +1,4 @@
-import React from 'react';
+import { CSSProperties } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import {
@@ -122,7 +122,7 @@ export default class PresentFTManager
             }
         }
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
         const { presentManager } = this;
         if (presentManager === null) {
             return {};

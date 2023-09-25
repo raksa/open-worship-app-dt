@@ -1,10 +1,9 @@
+import { useMemo, useState } from 'react';
 import {
-    ContextMenuItemType,
-    showAppContextMenu,
+    ContextMenuItemType, showAppContextMenu,
 } from './AppContextMenu';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useMemo, useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords

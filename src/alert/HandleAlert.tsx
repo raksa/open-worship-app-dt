@@ -1,12 +1,10 @@
-import React, { Suspense, useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import {
-    AlertDataType,
-    alertManager,
-    ConfirmDataType,
+    AlertDataType, alertManager, ConfirmDataType,
 } from './alertHelpers';
 import AlertPopup from './AlertPopup';
 
-const ConfirmPopup = React.lazy(() => {
+const ConfirmPopup = lazy(() => {
     return import('./ConfirmPopup');
 });
 

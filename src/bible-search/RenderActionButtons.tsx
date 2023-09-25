@@ -1,22 +1,18 @@
+import { useCallback } from 'react';
 import KeyboardEventListener, {
-    EventMapper as KBEventMapper,
-    useKeyboardRegistering,
+    EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import {
-    addBibleItem,
-    AddBiblePropsType,
+    addBibleItem, AddBiblePropsType,
 } from '../helper/bible-helpers/bibleHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
 import {
-    useWindowIsEditingMode,
-    useWindowIsPresentingMode,
-    useWindowMode,
+    useWindowIsEditingMode, useWindowIsPresentingMode, useWindowMode,
 } from '../router/routeHelpers';
 import { useModalTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
-import { useCallback } from 'react';
 
 const presentEventMapper: KBEventMapper = {
     wControlKey: ['Ctrl', 'Shift'],

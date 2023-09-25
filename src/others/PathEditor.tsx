@@ -1,7 +1,6 @@
+import { useState } from 'react';
 import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
-import { useState } from 'react';
-import { useDSEvents } from '../helper/dirSourceHelpers';
 export default function PathEditor({ dirSource }: {
     dirSource: DirSource,
     prefix: string

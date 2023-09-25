@@ -1,5 +1,5 @@
-import { createMouseEvent } from '../AppContextMenu';
 import { useRef, useState } from 'react';
+import { createMouseEvent } from '../AppContextMenu';
 import { AppColorType } from './colorHelpers';
 
 export default function SelectCustomColor({ color, onColorSelected }: {

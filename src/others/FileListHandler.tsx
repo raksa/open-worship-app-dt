@@ -1,5 +1,5 @@
-import React, {
-    createContext, useCallback, useState,
+import {
+    createContext, lazy, useCallback, useState,
 } from 'react';
 import PathSelector from '../others/PathSelector';
 import {
@@ -12,16 +12,13 @@ import FileSource from '../helper/FileSource';
 import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
 import {
-    genOnDragOver,
-    genOnDragLeave,
-    genOnDrop,
-    genOnContextMenu,
+    genOnDragOver, genOnDragLeave, genOnDrop, genOnContextMenu,
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 
-const AskingNewName = React.lazy(() => {
+const AskingNewName = lazy(() => {
     return import('./AskingNewName');
 });
 

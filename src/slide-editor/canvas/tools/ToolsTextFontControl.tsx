@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
-import { useState } from 'react';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';

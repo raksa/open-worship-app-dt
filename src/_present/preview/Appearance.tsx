@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { AppColorType } from '../others/color/colorHelpers';
-import { usePFTMEvents } from '../_present/presentEventHelpers';
-import PresentFTManager from '../_present/PresentFTManager';
+import { AppColorType } from '../../others/color/colorHelpers';
+import { usePFTMEvents } from '../presentEventHelpers';
+import PresentFTManager from '../PresentFTManager';
 
 export default function Appearance() {
     const [color, setColor] = useState(

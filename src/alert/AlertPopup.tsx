@@ -1,13 +1,11 @@
 import './AlertPopup.scss';
 
+import { useCallback } from 'react';
 import PrimitiveModal from '../app-modal/PrimitiveModal';
-
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
-    AlertDataType,
-    closeAlert,
+    AlertDataType, closeAlert,
 } from './alertHelpers';
-import { useCallback } from 'react';
 
 export default function AlertPopup({ data }: {
     data: AlertDataType,

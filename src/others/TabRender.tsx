@@ -1,4 +1,4 @@
-import React from 'react';
+import { LazyExoticComponent } from 'react';
 import { tran } from '../lang';
 import AppSuspense from './AppSuspense';
 
@@ -32,7 +32,7 @@ export default function TabRender<T extends string>({
 }
 
 export function genTabBody<T>(tabTab: T,
-    data: [T, React.LazyExoticComponent<() => React.JSX.Element | null>]) {
+    data: [T, LazyExoticComponent<() => React.JSX.Element | null>]) {
     const Element = data[1];
     return (
         <AppSuspense key={data[0] as any}>
