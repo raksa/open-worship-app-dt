@@ -10,7 +10,7 @@ import PresentPreviewerItem from './PresentPreviewerItem';
 import MiniPresentScreenFooter, {
     DEFAULT_PREVIEW_SIZE,
 } from './MiniPresentScreenFooter';
-import { useStateSettingNumber } from '../../helper/settingHelper';
+import { useStateSettingBoolean, useStateSettingNumber } from '../../helper/settingHelper';
 import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import PresentPreviewerTools from './PresentPreviewerTools';
@@ -35,6 +35,9 @@ function openContextMenu(event: any) {
 
 initReceivePresentMessage();
 export default function MiniPresentScreen() {
+    const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
+        'mini-present-previewer-tool', true,
+    );
     const [previewWith, _setPreviewWidth] = useStateSettingNumber(
         'mini-present-previewer', DEFAULT_PREVIEW_SIZE,
     );
@@ -55,7 +58,7 @@ export default function MiniPresentScreen() {
                 style={{
                     overflow: 'auto',
                 }}>
-                <PresentPreviewerTools />
+                {isShowingTools && <PresentPreviewerTools />}
                 <div className='w-100'>
                     {presentManagers.map((presentManager) => {
                         return (
@@ -69,6 +72,8 @@ export default function MiniPresentScreen() {
             <MiniPresentScreenFooter
                 previewSize={previewWith}
                 setPreviewSize={setPreviewWidth}
+                isShowingTools={isShowingTools}
+                setIsShowingTools={setIsShowingTools}
             />
         </div>
     );
