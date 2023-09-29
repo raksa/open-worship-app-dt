@@ -76,7 +76,7 @@ export default class Bible extends ItemSource<BibleItem>{
         this.metadata['isOpened'] = b;
         this.save();
     }
-    getItemById(id: number) {
+    getItemById(id: number): BibleItem | null {
         return this.items.find((item) => item.id === id) || null;
     }
     setItemById(id: number, item: BibleItem) {

@@ -20,11 +20,11 @@ export function useCloseAppModal() {
     };
 }
 
-export function useOpenAppModal(modalType: string) {
+export function useOpenAppModal(modalType: string, data?: string) {
     const appNav = useNavigate();
     const location = useLocation();
     return () => {
-        const queryData = toAppModalTypeData(modalType, '');
+        const queryData = toAppModalTypeData(modalType, data ?? '');
         appNav(`${APP_MODAL_ROUTE_PATH}${queryData}`, {
             state: { backgroundLocation: location },
         });

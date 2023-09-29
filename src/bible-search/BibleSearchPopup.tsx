@@ -26,7 +26,7 @@ export default function BibleSearchPopup() {
         bibleItem.toTitle().then((title) => {
             setInputText(title);
         });
-    }, [data, inputText]);
+    }, [bibleItem, inputText]);
     return (
         <Modal>
             {inputText === null ? (

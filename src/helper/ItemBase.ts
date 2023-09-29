@@ -30,7 +30,7 @@ export abstract class ItemBase implements ColorNoteInf {
     set isSelectedEditing(_b: boolean) {
         throw new Error('Method not implemented.');
     }
-    async save(): Promise<boolean> {
+    async save(_?: any): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
     abstract clone(): ItemBase;

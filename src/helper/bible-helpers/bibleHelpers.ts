@@ -23,6 +23,7 @@ import { addExtension } from '../../server/fileHelper';
 import {
     WindowModEnum, checkIsWindowEditingMode,
 } from '../../router/routeHelpers';
+import { u } from 'tar';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
@@ -101,11 +102,9 @@ export type AddBiblePropsType = {
     bibleSelected: string,
 };
 
-export async function addBibleItem({
-    found, book, chapter,
-    bibleSelected,
-}: AddBiblePropsType, windowMode: WindowModEnum | null) {
-    const isWindowEditing = checkIsWindowEditingMode();
+export async function bibleItemFromProp({
+    found, book, chapter, bibleSelected,
+}: AddBiblePropsType) {
     const key = await bookToKey(bibleSelected, book);
     if (key === null) {
         return null;
@@ -121,6 +120,39 @@ export async function addBibleItem({
         },
         metadata: {},
     });
+    return bibleItem;
+};
+
+export async function updateBibleItem(props: AddBiblePropsType, data: string) {
+    const messageTitle = 'Saving Bible Item Failed';
+    const newBibleItem = await bibleItemFromProp(props);
+    if (newBibleItem === null) {
+        showSimpleToast(messageTitle, 'Fail to recreate bible item');
+        return null;
+    }
+    const oldBibleItem = BibleItem.parseBibleSearchData(data);
+    if (oldBibleItem === null || oldBibleItem.filePath === undefined) {
+        showSimpleToast(messageTitle, 'Invalid bible item data');
+        return null;
+    }
+    const bible = await Bible.readFileToData(oldBibleItem.filePath);
+    if (!bible) {
+        showSimpleToast(messageTitle, 'Fail to read bible file');
+        return null;
+    }
+    BibleItem.saveFromBibleSearch(bible, oldBibleItem, newBibleItem);
+    return newBibleItem;
+};
+
+export async function addBibleItem(
+    props: AddBiblePropsType, windowMode: WindowModEnum | null,
+) {
+    const isWindowEditing = checkIsWindowEditingMode();
+    const bibleItem = await bibleItemFromProp(props);
+    if (bibleItem === null) {
+        showSimpleToast('Creating Bible Item', 'Fail to create bible item');
+        return null;
+    }
     if (isWindowEditing) {
         const canvasController = CanvasController.getInstance();
         canvasController.addNewBibleItem(bibleItem);

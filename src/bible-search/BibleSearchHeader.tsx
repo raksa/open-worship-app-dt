@@ -8,9 +8,11 @@ import LinkToAppModal, {
     useOpenAppModal,
 } from '../app-modal/LinkToAppModal';
 import { AppModalType } from '../app-modal/helpers';
+import BibleItem from '../bible-list/BibleItem';
 
-export function useOpenBibleSearch() {
-    return useOpenAppModal(AppModalType.BIBLE_SEARCH);
+export function useOpenBibleSearch(bibleItem?: BibleItem) {
+    const data = bibleItem && BibleItem.genBibleSearchData(bibleItem);
+    return useOpenAppModal(AppModalType.BIBLE_SEARCH, data);
 }
 
 export default function BibleSearchHeader() {

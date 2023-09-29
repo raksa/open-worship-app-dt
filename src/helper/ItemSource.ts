@@ -42,6 +42,12 @@ export default abstract class ItemSource<T extends {
     static fromJson(_filePath: string, _json: any): ItemSource<any> {
         throw new Error('Method not implemented.');
     }
+    getItemById(_: number): any {
+        return null;
+    }
+    setItemById(_1: number, _2: any) {
+        return;
+    }
     toJson() {
         const json = {
             metadata: this.metadata,

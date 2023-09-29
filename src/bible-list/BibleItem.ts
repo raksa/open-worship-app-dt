@@ -5,7 +5,6 @@ import { ItemBase } from '../helper/ItemBase';
 import {
     setSetting, getSetting,
 } from '../helper/settingHelper';
-import Bible from './Bible';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { log } from '../helper/loggerHelpers';
@@ -13,6 +12,8 @@ import {
     bibleRenderHelper,
 } from '../helper/bible-helpers/bibleRenderHelpers';
 import { AddBiblePropsType } from '../helper/bible-helpers/bibleHelpers';
+import ItemSource from '../helper/ItemSource';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type BibleTargetType = {
     book: string,
@@ -105,18 +106,15 @@ export default class BibleItem extends ItemBase
         bibleItem.id = -1;
         return bibleItem;
     }
-    async save() {
+    async save(bible: ItemSource<any>) {
         if (this.filePath === null) {
             return false;
         }
-        const bible = await Bible.readFileToData(this.filePath || null);
-        if (bible) {
-            const bibleItem = bible.getItemById(this.id);
-            if (bibleItem !== null) {
-                bibleItem.update(this);
-                bible.setItemById(this.id, bibleItem);
-                return bible.save();
-            }
+        const bibleItem = bible.getItemById(this.id) as BibleItem | null;
+        if (bibleItem !== null) {
+            bibleItem.update(this);
+            bible.setItemById(this.id, bibleItem);
+            return bible.save();
         }
         return false;
     }
@@ -204,9 +202,12 @@ export default class BibleItem extends ItemBase
         const json = JSON.parse(data);
         return BibleItem.fromJson(json, json.filePath);
     }
-    static saveFromBibleSearch(props: AddBiblePropsType, data?: string) {
-        // TODO: save to bible
-        const oldBibleItem = this.parseBibleSearchData(data);
-        console.log(props, oldBibleItem);
+    static saveFromBibleSearch(
+        bible: ItemSource<any>, oldBibleItem: BibleItem,
+        newBibleItem: BibleItem,
+    ) {
+        oldBibleItem.bibleKey = newBibleItem.bibleKey;
+        oldBibleItem.target = newBibleItem.target;
+        oldBibleItem.save(bible);
     }
 }

@@ -1,5 +1,4 @@
 import { ItemBase } from '../helper/ItemBase';
-import Lyric from './Lyric';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
@@ -82,14 +81,6 @@ export default class LyricItem extends ItemBase
     }
     get isChanged() {
         return this.editingCacheManager.checkIsLyricItemChanged(this.id);
-    }
-    static getSelectedEditingResult() {
-        const selected = this.getSelectedResult();
-        const selectedFilePath = Lyric.getSelectedFilePath();
-        if (selected?.filePath === selectedFilePath) {
-            return selected;
-        }
-        return null;
     }
     static fromJson(json: LyricItemType, filePath: string,
         editingCacheManager?: LyricEditingCacheManager) {

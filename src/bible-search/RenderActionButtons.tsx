@@ -4,14 +4,13 @@ import KeyboardEventListener, {
 } from '../event/KeyboardEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import {
-    addBibleItem, AddBiblePropsType,
+    addBibleItem, AddBiblePropsType, updateBibleItem,
 } from '../helper/bible-helpers/bibleHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
 import {
     useWindowIsEditingMode, useWindowIsPresentingMode, useWindowMode,
 } from '../router/routeHelpers';
 import { useModalTypeData } from '../app-modal/helpers';
-import BibleItem from '../bible-list/BibleItem';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
 
 const presentEventMapper: KBEventMapper = {
@@ -40,11 +39,9 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
     const addOrUpdateBibleItem = useCallback(async () => {
         closeModal();
         if (isBibleEditing) {
-            BibleItem.saveFromBibleSearch(props, data);
-            return null;
+            return updateBibleItem(props, data);
         } else {
-            const bibleItem = await addBibleItem(props, windowMode);
-            return bibleItem;
+            return addBibleItem(props, windowMode);
         }
     }, [props, data, isBibleEditing, closeModal, windowMode]);
     const addBibleItemAndPresent = useCallback(async (event: any) => {

@@ -1,84 +1,14 @@
-import { useCallback } from 'react';
-import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     genDuplicatedMessage,
 } from '../helper/bible-helpers/serverBibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
-import BibleItem from './BibleItem';
-import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
 import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
-import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
-
-function openBibleItemContextMenu(
-    event: any, bible: Bible, index: number, windowMode: WindowModEnum | null,
-    onQuickEdit?: () => void,
-) {
-    const menuItem = [
-        ...onQuickEdit ? [
-            {
-                title: '(*T) ' + 'Quick Edit',
-                onClick: () => {
-                    onQuickEdit();
-                },
-            },
-        ] : [],
-        ...[
-            {
-                title: '(*T) ' + 'Duplicate',
-                onClick: () => {
-                    bible.duplicate(index);
-                    bible.save();
-                },
-            },
-            {
-                title: '(*T) ' + 'Move To',
-                onClick: (event1: any) => {
-                    moveBibleItemTo(event1, bible, windowMode, index);
-                },
-            },
-            {
-                title: '(*T) ' + 'Delete',
-                onClick: () => {
-                    bible.removeItemAtIndex(index);
-                    bible.save();
-                },
-            },
-        ],
-    ];
-    if (index !== 0) {
-        menuItem.push({
-            title: '(*T) ' + 'Move up',
-            onClick: () => {
-                bible.swapItem(index, index - 1);
-                bible.save();
-            },
-        });
-    }
-    if (index !== bible.itemsLength - 1) {
-        menuItem.push({
-            title: '(*T) ' + 'Move down',
-            onClick: () => {
-                bible.swapItem(index, index + 1);
-                bible.save();
-            },
-        });
-    }
-    showAppContextMenu(event, menuItem);
-}
 
 export default function RenderBibleItems({ bible }: {
     bible: Bible,
 }) {
-    const windowMode = useWindowMode();
     const openBibleSearch = useOpenBibleSearch();
-    const onContextMenuCallback = useCallback(
-        (event: any, _: BibleItem, index: number) => {
-            openBibleItemContextMenu(event, bible, index, windowMode, () => {
-                openBibleSearch();
-            });
-        }, [bible]
-    );
     const items = bible.items;
     return (
         <ul className='list-group' style={{
@@ -92,9 +22,7 @@ export default function RenderBibleItems({ bible }: {
                         warningMessage={
                             genDuplicatedMessage(items, bibleItem, i1)
                         }
-                        bibleItem={bibleItem}
-                        bible={bible}
-                        onContextMenu={onContextMenuCallback} />
+                        bibleItem={bibleItem} />
                 );
             })}
             {bible.isDefault && <div

@@ -13,29 +13,40 @@ import {
 } from '../helper/bible-helpers/bibleRenderHelpers';
 import BibleItemViewController from '../read-bible/BibleItemViewController';
 import PresentFTManager from '../_present/PresentFTManager';
-import { checkIsWindowPresentingMode } from '../router/routeHelpers';
+import {
+    checkIsWindowPresentingMode, useWindowMode,
+} from '../router/routeHelpers';
+import { openBibleItemContextMenu } from './bibleItemHelpers';
+import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
 
 export default function BibleItemRender({
-    index, bibleItem, warningMessage, onContextMenu, filePath,
+    index, bibleItem, warningMessage, filePath,
 }: {
     index: number,
     bibleItem: BibleItem,
-    bible?: Bible;
     warningMessage?: string,
-    onContextMenu?: (
-        event: React.MouseEvent<any>, bibleItem: BibleItem, index: number,
-    ) => void,
     filePath?: string,
 }) {
+    const openBibleSearch = useOpenBibleSearch(bibleItem);
+    const windowMode = useWindowMode();
     useFSEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
-    const onContextMenuCallback = useCallback((
-        event: React.MouseEvent<any>) => {
-        onContextMenu?.(event, bibleItem, index);
-    }, [onContextMenu, bibleItem, index]);
-    const changeBible = (newBibleKey: string) => {
+    const onContextMenuCallback = useCallback(
+        (event: React.MouseEvent<any>) => {
+            openBibleItemContextMenu(
+                event, bibleItem, index, windowMode, openBibleSearch,
+            );
+        },
+        [bibleItem, index],
+    );
+    const changeBible = async (newBibleKey: string) => {
+        const bible = bibleItem.filePath ?
+            await Bible.readFileToData(bibleItem.filePath) : null;
+        if (!bible) {
+            return;
+        }
         bibleItem.bibleKey = newBibleKey;
-        bibleItem.save();
+        bibleItem.save(bible);
     };
     if (bibleItem.isError) {
         return (

@@ -1,5 +1,6 @@
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
+// TODO: remove Slide
 import Slide from './Slide';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
