@@ -20,8 +20,11 @@ export function getSetting(key: string, defaultValue?: string): string {
 export function useStateSettingBoolean(
     settingName: string, defaultValue?: boolean,
 ) {
+    const originalSettingName = getSetting(settingName);
     const defaultData = (
-        (getSetting(settingName) || 'false') !== 'false' || !!defaultValue
+        originalSettingName === '' ?
+            !!defaultValue :
+            originalSettingName === 'true'
     );
     const [data, setData] = useState(defaultData);
     const setDataSetting = (b: boolean) => {

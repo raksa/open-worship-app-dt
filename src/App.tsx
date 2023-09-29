@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import {
     Routes, Route, BrowserRouter, useLocation,
 } from 'react-router-dom';
-import NotFound404, { goHomeBack } from './router/NotFound404';
+import NotFound404 from './router/NotFound404';
 import AppPresenting from './AppPresenting';
 import {
-    DefaultTabContext, editingTab, home, presentingTab, readingTab,
+    DefaultTabContext, checkHome, editingTab, home, presentingTab, readingTab,
+    savePathname,
 } from './router/routeHelpers';
 import AppLayout from './router/AppLayout';
 import AppEditing from './AppEditing';
@@ -17,13 +18,6 @@ import AppModal, {
     APP_MODAL_QUERY_ROUTE_PATH,
 } from './app-modal/AppModal';
 import RedirectTo from './others/RedirectTo';
-
-function checkHome() {
-    const url = new URL(window.location.href);
-    if (url.pathname === '/') {
-        goHomeBack();
-    }
-}
 
 export default function App() {
     const tabProps = useMemo(() => {
@@ -53,6 +47,8 @@ function AppRouteRender() {
     const state = location.state as {
         backgroundLocation?: Location,
     };
+    const targetLocation = state?.backgroundLocation ?? location;
+    savePathname(targetLocation);
     return (
         <>
             <Routes location={state?.backgroundLocation || location}>

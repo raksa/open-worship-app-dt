@@ -13,6 +13,8 @@ import pdfUtils from './pdfUtils';
 const provider = {
     isMain: true,
     isPresent: false,
+    appType: 'desktop',
+    isDesktop: true,
     fontUtils,
     cryptoUtils,
     browserUtils,

@@ -68,9 +68,17 @@ export type PdfUtilsType = {
     pdfjsLib: typeof pdfjsLibType,
 }
 
+export enum AppTypeEnum {
+    Desktop = 'desktop',
+    Web = 'web',
+    Mobile = 'mobile',
+}
+
 const appProvider = (window as any).provider as {
     isMain: boolean,
     isPresent: boolean,
+    appType: AppTypeEnum,
+    isDesktop: boolean,
     fontUtils: {
         getFonts: () => Promise<FontListType>,
     };

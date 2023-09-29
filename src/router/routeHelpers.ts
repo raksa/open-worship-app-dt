@@ -2,6 +2,8 @@ import { createContext } from 'react';
 import {
     useLocation, useNavigate, NavigateFunction, Location,
 } from 'react-router-dom';
+import { getSetting, setSetting } from '../helper/settingHelper';
+import appProvider from '../server/appProvider';
 
 export type TabCheckPropsType = {
     navigate: NavigateFunction,
@@ -107,4 +109,34 @@ export function checkIsWindowReadingMode(mode?: WindowModEnum | null) {
 export function useWindowIsReadingMode() {
     const windowType = useWindowMode();
     return checkIsWindowReadingMode(windowType);
+}
+
+export function goToPath(pathname: string) {
+    const url = new URL(window.location.href);
+    url.pathname = pathname;
+    window.location.href = url.href;
+}
+export function goHomeBack() {
+    goToPath(presentingTab.routePath);
+}
+
+const ROUTE_PATHNAME_KEY = 'route-pathname';
+
+export function checkHome() {
+    const url = new URL(window.location.href);
+    if (url.pathname === '/') {
+        if (appProvider.isDesktop) {
+            const savePathname = getSetting(ROUTE_PATHNAME_KEY);
+            if (savePathname !== '') {
+                return goToPath(savePathname);
+            }
+        }
+        goHomeBack();
+    }
+}
+
+export function savePathname(location: { pathname: string }) {
+    if (appProvider.isDesktop) {
+        setSetting(ROUTE_PATHNAME_KEY, location.pathname);
+    }
 }
