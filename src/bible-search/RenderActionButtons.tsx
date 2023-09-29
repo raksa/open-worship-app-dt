@@ -12,6 +12,9 @@ import {
 } from '../router/routeHelpers';
 import { useModalTypeData } from '../app-modal/helpers';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
+import RenderKeepWindowOpen, {
+    getIsKeepWindowOpen,
+} from './RenderKeepWindowOpen';
 
 const presentEventMapper: KBEventMapper = {
     wControlKey: ['Ctrl', 'Shift'],
@@ -37,7 +40,10 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
     const isWindowEditing = useWindowIsEditingMode();
     const isWindowPresenting = useWindowIsPresentingMode();
     const addOrUpdateBibleItem = useCallback(async () => {
-        closeModal();
+        const isKeepWindowOpen = getIsKeepWindowOpen();
+        if (!isKeepWindowOpen) {
+            closeModal();
+        }
         if (isBibleEditing) {
             return updateBibleItem(props, data);
         } else {
@@ -65,24 +71,28 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
         return isBibleEditing ? 'Save Bible Item' : 'Add Bible Item';
     };
     return (
-        <div className='btn-group mx-1'>
-            {isWindowEditing && !isSlideSelectEditing ? null :
-                <button type='button'
-                    className='btn btn-sm btn-info'
-                    onClick={addOrUpdateBibleItem}
+        <>
+            {isBibleEditing ? null :
+                <RenderKeepWindowOpen />}
+            <div className='btn-group mx-1'>
+                {isWindowEditing && !isSlideSelectEditing ? null :
+                    <button type='button'
+                        className='btn btn-sm btn-info'
+                        onClick={addOrUpdateBibleItem}
+                        data-tool-tip={KeyboardEventListener
+                            .toShortcutKey(addListEventMapper)}>
+                        <i className='bi bi-plus-lg' />
+                        {getAddingTitle()}
+                    </button>}
+                {isWindowPresenting && <button type='button'
+                    className='btn btn-sm btn-info ms-1'
+                    onClick={addBibleItemAndPresent}
                     data-tool-tip={KeyboardEventListener
-                        .toShortcutKey(addListEventMapper)}>
-                    <i className='bi bi-plus-lg' />
-                    {getAddingTitle()}
+                        .toShortcutKey(presentEventMapper)}>
+                    <i className='bi bi-easel' />
+                    {isBibleEditing ? 'Save and Present' : 'Present'}
                 </button>}
-            {isWindowPresenting && <button type='button'
-                className='btn btn-sm btn-info ms-1'
-                onClick={addBibleItemAndPresent}
-                data-tool-tip={KeyboardEventListener
-                    .toShortcutKey(presentEventMapper)}>
-                <i className='bi bi-easel' />
-                {isBibleEditing ? 'Save and Present' : 'Present'}
-            </button>}
-        </div>
+            </div>
+        </>
     );
 }

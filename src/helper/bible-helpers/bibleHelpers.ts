@@ -158,8 +158,11 @@ export async function addBibleItem(
         canvasController.addNewBibleItem(bibleItem);
         return null;
     }
-    const savedBibleItem = await Bible.updateOrToDefault(bibleItem, windowMode);
+    const savedBibleItem = await Bible.addBibleItemToDefault(
+        bibleItem, windowMode,
+    );
     if (savedBibleItem !== null) {
+        showSimpleToast('Adding bible', 'Bible item is added');
         return savedBibleItem;
     } else {
         showSimpleToast('Adding bible', 'Fail to add bible to list');

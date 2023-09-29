@@ -89,7 +89,7 @@ export default class Bible extends ItemSource<BibleItem>{
         });
         this.items = newItems;
     }
-    static async updateOrToDefault(
+    static async addBibleItemToDefault(
         bibleItem: BibleItem, windowMode: WindowModEnum | null,
     ) {
         const bible = await Bible.getDefault(windowMode);
