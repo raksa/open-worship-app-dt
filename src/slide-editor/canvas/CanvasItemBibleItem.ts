@@ -5,11 +5,12 @@ import CanvasItemText, {
 import { AnyObjectType, cloneJson } from '../../helper/helpers';
 import { CanvasItemError } from './CanvasItem';
 import {
-    HAlignmentType,
-    VAlignmentType,
+    HAlignmentType, VAlignmentType,
 } from './canvasHelpers';
 import { handleError } from '../../helper/errorHelpers';
-import { BibleTargetType } from '../../bible-list/bibleItemHelpers';
+import {
+    BibleTargetType, bibleRenderHelper,
+} from '../../bible-list/bibleRenderHelpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleKeys: string[];
@@ -39,7 +40,9 @@ export default class CanvasItemBibleItem extends CanvasItemText {
     }
     static async fromBibleItem(id: number, bibleItem: BibleItem) {
         const title = await bibleItem.toTitle();
-        const text = await BibleItem.bibleItemToText(bibleItem);
+        const text = await bibleRenderHelper.bibleItemToText(
+            bibleItem.bibleKey, bibleItem.target,
+        );
         const newTextItem = super.genDefaultItem();
         const props = newTextItem.toJson();
         props.id = id;

@@ -1,12 +1,19 @@
-import { useState } from 'react';
-import BibleItem from './BibleItem';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import { keyToBook, getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
-import { getKJVKeyValue } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    toInputText, toLocaleNumBB,
+    keyToBook, getVerses,
+} from '../helper/bible-helpers/bibleInfoHelpers';
+import {
+    getKJVKeyValue,
+} from '../helper/bible-helpers/serverBibleHelpers';
+import {
+    toLocaleNumBB,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import { BibleTargetType } from './bibleItemHelpers';
+
+export type BibleTargetType = {
+    book: string,
+    chapter: number,
+    startVerse: number,
+    endVerse: number,
+};
 
 type CallbackType = (text: string | null) => void;
 class BibleRenderHelper {
@@ -114,34 +121,14 @@ class BibleRenderHelper {
             });
         });
     }
+    async bibleItemToText(bibleKey: string, target: BibleTargetType) {
+        const bibleVerseKey = bibleRenderHelper
+            .toBibleVersesKey(bibleKey, target);
+        return (
+            await this.toText(bibleVerseKey) ||
+            `😟Unable to render text for ${bibleVerseKey}`
+        );
+    }
 }
 
 export const bibleRenderHelper = new BibleRenderHelper();
-
-export function useBibleItemRenderTitle(item: BibleItem) {
-    const [title, setTitle] = useState<string>('');
-    useAppEffect(() => {
-        item.toTitle().then(setTitle);
-    }, [item]);
-    return title;
-}
-export function useBibleItemRenderText(item: BibleItem) {
-    const [text, setText] = useState<string>('');
-    useAppEffect(() => {
-        BibleItem.bibleItemToText(item).then(setText);
-    }, [item]);
-    return text;
-}
-export function useBibleItemToInputText(
-    bibleKey: string, book?: string | null, chapter?: number | null,
-    startVerse?: number | null, endVerse?: number | null,
-) {
-    const [text, setText] = useState<string>('');
-    useAppEffect(() => {
-        toInputText(bibleKey, book, chapter, startVerse, endVerse)
-            .then((text1) => {
-                setText(text1);
-            });
-    }, [bibleKey, book, chapter, startVerse, endVerse]);
-    return text;
-}

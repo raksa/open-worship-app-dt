@@ -5,16 +5,11 @@ import BibleItem from '../bible-list/BibleItem';
 import {
     showBibleOption,
 } from '../bible-search/BibleSelection';
-import {
-    useBibleItemRenderTitle,
-    useBibleItemRenderText,
-} from '../bible-list/bibleRenderHelpers';
 import BibleItemViewController from './BibleItemViewController';
 import {
-    applyDragged,
-    genDraggingClass, removeDraggingClass,
+    applyDragged, genDraggingClass, removeDraggingClass,
 } from './readBibleHelper';
-import { rendHeader } from './BibleViewExtra';
+import { BibleViewText, rendHeader } from './BibleViewExtra';
 
 function openContextMenu(
     bibleItemViewCtl: BibleItemViewController, event: React.MouseEvent,
@@ -64,8 +59,6 @@ export default function BibleView({
     bibleItemViewController: BibleItemViewController,
     isHorizontal: boolean,
 }) {
-    const title = useBibleItemRenderTitle(bibleItem);
-    const text = useBibleItemRenderText(bibleItem);
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}
@@ -87,7 +80,7 @@ export default function BibleView({
             }}>
             {
                 rendHeader(
-                    bibleItem.bibleKey, title,
+                    bibleItem,
                     (_oldBibleKey: string, newBibleKey: string) => {
                         bibleItemViewCtl.changeItemBibleKey(
                             indices, newBibleKey,
@@ -100,9 +93,9 @@ export default function BibleView({
                 )
             }
             <div className='card-body p-3'>
-                <p className='app-selectable-text' style={{
-                    fontSize: `${fontSize}px`,
-                }}>{text}</p>
+                <BibleViewText
+                    bibleItem={bibleItem}
+                    fontSize={fontSize} />
                 {/* TODO: implement this
                 <RefRenderer bibleItem={bibleItem} /> */}
             </div>

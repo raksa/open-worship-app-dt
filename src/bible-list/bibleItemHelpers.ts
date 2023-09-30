@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Bible from './Bible';
 import { WindowModEnum } from '../router/routeHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -5,13 +6,14 @@ import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import {
+    BibleTargetType, bibleRenderHelper,
+} from './bibleRenderHelpers';
+import {
+    toInputText,
+} from '../helper/bible-helpers/serverBibleHelpers2';
 
-export type BibleTargetType = {
-    book: string,
-    chapter: number,
-    startVerse: number,
-    endVerse: number,
-};
 export type BibleItemType = {
     id: number,
     bibleKey: string,
@@ -91,4 +93,48 @@ export function genDuplicatedMessage(list: BibleItem[],
         warningMessage = `Duplicated with item number ${itemNum}`;
     }
     return warningMessage;
+}
+
+
+function useBibleItemRender(
+    item: BibleItem, convertCallback: () => Promise<string>, htmlID?: string,
+) {
+    const [text, setText] = useState<string>('');
+    useAppEffect(() => {
+        const htmlContainer = htmlID ? document.getElementById(htmlID) : null;
+        if (htmlContainer !== null) {
+            htmlContainer.innerHTML = 'Loading...';
+        }
+        convertCallback().then((text1) => {
+            setText(text1);
+            if (htmlContainer !== null) {
+                htmlContainer.innerHTML = text1;
+            }
+        });
+    }, [item]);
+    return text;
+}
+export function useBibleItemRenderTitle(item: BibleItem, htmlID?: string) {
+    return useBibleItemRender(item, () => {
+        return item.toTitle();
+    }, htmlID);
+}
+export function useBibleItemRenderText(item: BibleItem, htmlID?: string) {
+    return useBibleItemRender(item, () => {
+        return item.toText();
+    }, htmlID);
+}
+
+export function useBibleItemPropsToInputText(
+    bibleKey: string, book?: string | null, chapter?: number | null,
+    startVerse?: number | null, endVerse?: number | null,
+) {
+    const [text, setText] = useState<string>('');
+    useAppEffect(() => {
+        toInputText(bibleKey, book, chapter, startVerse, endVerse)
+            .then((text1) => {
+                setText(text1);
+            });
+    }, [bibleKey, book, chapter, startVerse, endVerse]);
+    return text;
 }

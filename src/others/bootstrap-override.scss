@@ -1,5 +1,6 @@
 @import './variables.scss';
 
+$dragging-color-full: rgb(0, 174, 162);
 $dragging-color: greenyellow;
 
 #app {
@@ -16,23 +17,24 @@ $dragging-color: greenyellow;
     }
 
     .receiving-child {
-        border: 1px solid $dragging-color;
+        border: 1px solid $dragging-color-full;
+        box-sizing: content-box;
     }
 
     .receiving-child-left {
-        border-left: 1px solid $dragging-color;
+        border-left: 1px dashed $dragging-color;
     }
 
     .receiving-child-right {
-        border-right: 1px solid $dragging-color;
+        border-right: 1px dashed $dragging-color;
     }
 
     .receiving-child-top {
-        border-top: 1px solid $dragging-color;
+        border-top: 1px dashed $dragging-color;
     }
 
     .receiving-child-bottom {
-        border-bottom: 1px solid $dragging-color;
+        border-bottom: 1px dotted $dragging-color;
     }
 
     .list-group-item {

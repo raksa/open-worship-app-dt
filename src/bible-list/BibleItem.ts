@@ -9,10 +9,10 @@ import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { log } from '../helper/loggerHelpers';
 import {
-    bibleRenderHelper,
+    BibleTargetType, bibleRenderHelper,
 } from './bibleRenderHelpers';
 import ItemSource from '../helper/ItemSource';
-import { BibleItemType, BibleTargetType } from './bibleItemHelpers';
+import { BibleItemType } from './bibleItemHelpers';
 
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
@@ -157,9 +157,6 @@ export default class BibleItem extends ItemBase
             .toBibleVersesKey(this.bibleKey, this.target);
         return await bibleRenderHelper.toText(bibleVerseKey) ||
             `😟Unable to render text for ${bibleVerseKey}`;
-    }
-    static bibleItemToText(item: BibleItem) {
-        return item.toText();
     }
     dragSerialize() {
         return {

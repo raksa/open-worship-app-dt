@@ -9,6 +9,11 @@ export type AnyObjectType = {
     [key: string]: any;
 };
 
+export function getRandomUUID() {
+    return Math.random().toString(36).substring(2) +
+        (new Date()).getTime().toString(36);
+}
+
 export function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -27,8 +32,11 @@ export function isVisible(elem: any) {
     if (style.display === 'none') { return false; }
     if (style.visibility !== 'visible') { return false; }
     if (+style.opacity < 0.1) { return false; }
-    if (elem.offsetWidth + elem.offsetHeight + elem.getBoundingClientRect().height +
-        elem.getBoundingClientRect().width === 0) {
+    if (
+        elem.offsetWidth + elem.offsetHeight +
+        elem.getBoundingClientRect().height +
+        elem.getBoundingClientRect().width === 0
+    ) {
         return false;
     }
     const elemCenter = {
@@ -66,7 +74,9 @@ export const removePX = (str: string) => +str.replace('px', '');
 
 export function genRandomString(length: number = 5) {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = (
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    );
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() *

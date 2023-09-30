@@ -7,9 +7,9 @@ import {
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
 import { INPUT_TEXT_CLASS } from './selectionHelpers';
-import { 
-    useBibleItemToInputText,
- } from '../bible-list/bibleRenderHelpers';
+import {
+    useBibleItemPropsToInputText,
+} from '../bible-list/bibleItemHelpers';
 
 export default function InputHandler({
     inputText,
@@ -24,7 +24,7 @@ export default function InputHandler({
 }) {
     const books = useGetBookKVList(bibleSelected);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = useBibleItemToInputText(
+    const placeholder = useBibleItemPropsToInputText(
         bibleSelected, bookKey, 1, 1, 2);
     useKeyboardRegistering({ key: 'Escape' }, () => {
         if (inputRef.current !== null) {

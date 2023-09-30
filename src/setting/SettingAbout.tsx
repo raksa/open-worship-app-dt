@@ -1,8 +1,7 @@
 import BibleItem from '../bible-list/BibleItem';
 import {
-    useBibleItemRenderText,
-    useBibleItemToInputText,
-} from '../bible-list/bibleRenderHelpers';
+    useBibleItemPropsToInputText, useBibleItemRenderText,
+} from '../bible-list/bibleItemHelpers';
 
 export default function SettingAbout() {
     const bookKey = 'PSA';
@@ -16,7 +15,7 @@ export default function SettingAbout() {
         },
         metadata: {},
     }));
-    const title = useBibleItemToInputText('KJV', bookKey, 150, 6, 6);
+    const title = useBibleItemPropsToInputText('KJV', bookKey, 150, 6, 6);
     const onClick = () => {
         const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
         window.open(url, '_blank');

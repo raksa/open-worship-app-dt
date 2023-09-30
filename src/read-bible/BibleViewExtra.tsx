@@ -3,9 +3,13 @@ import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
+import {
+    useBibleItemRenderText, useBibleItemRenderTitle,
+} from '../bible-list/bibleItemHelpers';
+import { getRandomUUID } from '../helper/helpers';
 
 export function rendHeader(
-    key: string, title: string,
+    bibleItem: BibleItem,
     onChange: (oldBibleKey: string, newBibleKey: string) => void,
     onClose: (indices: number[]) => void,
     indices: number[],
@@ -15,12 +19,11 @@ export function rendHeader(
             <div className='d-flex'>
                 <div className='flex-fill d-flex'>
                     <div>
-                        <BibleSelectionMini value={key}
+                        <BibleSelectionMini
+                            value={bibleItem.bibleKey}
                             onChange={onChange} />
                     </div>
-                    <div className='title app-selectable-text'>
-                        {title}
-                    </div>
+                    <BibleViewTitle bibleItem={bibleItem} />
                 </div>
                 <div>
                     <button className='btn-close me-3'
@@ -32,6 +35,38 @@ export function rendHeader(
         </div>
     );
 }
+
+export function BibleViewTitle({
+    bibleItem,
+}: {
+    bibleItem: BibleItem,
+}) {
+    const uuid = getRandomUUID();
+    const title = useBibleItemRenderTitle(bibleItem, uuid);
+    return (
+        <div id={uuid} className='title app-selectable-text'>
+            {title}
+        </div>
+    );
+}
+
+export function BibleViewText({
+    bibleItem, fontSize,
+}: {
+    bibleItem: BibleItem,
+    fontSize: number,
+}) {
+    const uuid = getRandomUUID();
+    const text = useBibleItemRenderText(bibleItem, uuid);
+    return (
+        <p id={uuid}
+            className='app-selectable-text'
+            style={{ fontSize: `${fontSize}px` }}>
+            {text}
+        </p>
+    );
+}
+
 
 export function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
     const { book, chapter, startVerse, endVerse } = bibleItem.target;

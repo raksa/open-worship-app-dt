@@ -10,6 +10,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVersesOption from './RenderVersesOption';
 import RenderActionButtons from './RenderActionButtons';
+import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
 
 export default function RenderBibleDataFound({
     book,
@@ -46,8 +47,9 @@ export default function RenderBibleDataFound({
             const sVerse = found.sVerse;
             const eVerse = found.eVerse;
             const newTitle = await toInputText(
-                bibleSelected, book, chapter, sVerse, eVerse);
-            const newText = await BibleItem.bibleItemToText(BibleItem.fromJson({
+                bibleSelected, book, chapter, sVerse, eVerse,
+            );
+            const newBibleItem = BibleItem.fromJson({
                 id: -1,
                 bibleKey: bibleSelected,
                 target: {
@@ -57,7 +59,10 @@ export default function RenderBibleDataFound({
                     endVerse: eVerse,
                 },
                 metadata: {},
-            }));
+            });
+            const newText = await bibleRenderHelper.bibleItemToText(
+                newBibleItem.bibleKey, newBibleItem.target,
+            );
             if (newTitle !== null && newText !== null) {
                 setRendered({ title: newTitle, text: newText });
             } else {

@@ -8,15 +8,14 @@ import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
-import {
-    useBibleItemRenderTitle,
-} from './bibleRenderHelpers';
 import BibleItemViewController from '../read-bible/BibleItemViewController';
 import PresentFTManager from '../_present/PresentFTManager';
 import {
     checkIsWindowPresentingMode, useWindowMode,
 } from '../router/routeHelpers';
-import { openBibleItemContextMenu } from './bibleItemHelpers';
+import {
+    openBibleItemContextMenu, useBibleItemRenderTitle,
+} from './bibleItemHelpers';
 import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
 
 export default function BibleItemRender({
