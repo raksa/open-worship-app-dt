@@ -2,10 +2,10 @@ import { useState } from 'react';
 import {
     get_api_url, get_api_key, decrypt, bible_ref,
 } from '../_owa-crypto';
-import { BibleRefsDbController } from '../db/dbHelper';
 import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { IndexedDbController } from '../db/dbHelper';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {
@@ -16,6 +16,16 @@ export type BibleRefType = {
     isTitle: boolean;
     isLXXDSS: boolean;
 };
+
+
+export class BibleRefsDbController extends IndexedDbController {
+    get storeName() {
+        return 'bible_refs';
+    }
+    static instantiate() {
+        return new this();
+    }
+}
 
 async function downloadBibleRef(key: string) {
     try {

@@ -61,7 +61,7 @@ class InitDBOpeningQueue {
     }
 }
 
-abstract class IndexedDbController implements DbControllerInterface {
+export abstract class IndexedDbController implements DbControllerInterface {
     static _instance: IndexedDbController | null = null;
     abstract get storeName(): string;
     private _initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
@@ -140,7 +140,8 @@ abstract class IndexedDbController implements DbControllerInterface {
         }
         await this._asyncOperation('readwrite', (store) => {
             return store.add({
-                id, data, ...{
+                id, data,
+                ...{
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
@@ -194,14 +195,5 @@ abstract class IndexedDbController implements DbControllerInterface {
         }
         await this._instance.init();
         return this._instance;
-    }
-}
-
-export class BibleRefsDbController extends IndexedDbController {
-    get storeName() {
-        return 'bible_refs';
-    }
-    static instantiate() {
-        return new this();
     }
 }

@@ -76,7 +76,7 @@ const getDownloadHandler = (filePath: string, fileName: string,
             });
             response.on('end', async () => {
                 writeStream.close();
-                await getBibleInfo(fileName, true);
+                await getBibleInfo(fileName);
                 options.onDone(null, filePath);
             });
         } catch (error2) {

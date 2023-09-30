@@ -4,9 +4,7 @@ import {
 } from './bibleInfoHelpers';
 import { cloneJson } from '../helpers';
 import {
-    fromLocaleNum,
-    LocaleType,
-    toLocaleNum,
+    fromLocaleNum, LocaleType, toLocaleNum,
 } from '../../lang';
 import { useAppEffect } from '../debuggerHelpers';
 
