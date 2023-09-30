@@ -94,41 +94,8 @@ export async function genInputText(preBible: string,
     return '';
 }
 
-export type AddBiblePropsType = {
-    found: ConsumeVerseType,
-    book: string,
-    chapter: number,
-    bibleSelected: string,
-};
-
-export async function bibleItemFromProp({
-    found, book, chapter, bibleSelected,
-}: AddBiblePropsType) {
-    const key = await bookToKey(bibleSelected, book);
-    if (key === null) {
-        return null;
-    }
-    const bibleItem = BibleItem.fromJson({
-        id: -1,
-        bibleKey: bibleSelected,
-        target: {
-            book: key,
-            chapter,
-            startVerse: found.sVerse,
-            endVerse: found.eVerse,
-        },
-        metadata: {},
-    });
-    return bibleItem;
-};
-
-export async function updateBibleItem(props: AddBiblePropsType, data: string) {
+export async function updateBibleItem(bibleItem: BibleItem, data: string) {
     const messageTitle = 'Saving Bible Item Failed';
-    const newBibleItem = await bibleItemFromProp(props);
-    if (newBibleItem === null) {
-        showSimpleToast(messageTitle, 'Fail to recreate bible item');
-        return null;
-    }
     const oldBibleItem = BibleItem.parseBibleSearchData(data);
     if (oldBibleItem === null || oldBibleItem.filePath === undefined) {
         showSimpleToast(messageTitle, 'Invalid bible item data');
@@ -139,19 +106,14 @@ export async function updateBibleItem(props: AddBiblePropsType, data: string) {
         showSimpleToast(messageTitle, 'Fail to read bible file');
         return null;
     }
-    BibleItem.saveFromBibleSearch(bible, oldBibleItem, newBibleItem);
-    return newBibleItem;
+    BibleItem.saveFromBibleSearch(bible, oldBibleItem, bibleItem);
+    return bibleItem;
 };
 
 export async function addBibleItem(
-    props: AddBiblePropsType, windowMode: WindowModEnum | null,
+    bibleItem: BibleItem, windowMode: WindowModEnum | null,
 ) {
     const isWindowEditing = checkIsWindowEditingMode();
-    const bibleItem = await bibleItemFromProp(props);
-    if (bibleItem === null) {
-        showSimpleToast('Creating Bible Item', 'Fail to create bible item');
-        return null;
-    }
     if (isWindowEditing) {
         const canvasController = CanvasController.getInstance();
         canvasController.addNewBibleItem(bibleItem);
@@ -175,18 +137,23 @@ export type ConsumeVerseType = {
     eVerse: number,
     verses: VerseList,
 };
-export async function consumeStartVerseEndVerse(
-    book: string,
+export async function consumeStartVerseEndVerse({
+    chapter, startVerse, endVerse, bibleSelected, book, bookKey,
+}: {
     chapter: number,
     startVerse: number | null,
     endVerse: number | null,
     bibleSelected: string,
-) {
-    const bookKey = await bookToKey(bibleSelected, book);
-    if (bookKey === null) {
+    book?: string,
+    bookKey?: string,
+}) {
+    const newBookKey = bookKey ?? (
+        book ? await bookToKey(bibleSelected, book) : null
+    );
+    if (newBookKey === null) {
         return null;
     }
-    const verses = await getVerses(bibleSelected, bookKey, chapter);
+    const verses = await getVerses(bibleSelected, newBookKey, chapter);
     if (verses === null) {
         return null;
     }

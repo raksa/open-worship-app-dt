@@ -110,7 +110,9 @@ export default class BibleItem extends ItemBase
         this.target = bibleItem.target;
         this.metadata = bibleItem.metadata;
     }
-    static convertPresent(bibleItem: BibleItem, presentingBibleItems: BibleItem[]) {
+    static convertPresent(
+        bibleItem: BibleItem, presentingBibleItems: BibleItem[],
+    ) {
         let list;
         if (presentingBibleItems.length < 2) {
             list = [bibleItem.clone()];
@@ -124,9 +126,10 @@ export default class BibleItem extends ItemBase
         return list.filter((item) => item !== null);
     }
     static setBiblePresentingSetting(bibleItems: BibleItem[]) {
-        setSetting('bible-present', JSON.stringify(bibleItems.map((bibleItem) => {
+        const jsonData = bibleItems.map((bibleItem) => {
             return bibleItem.toJson();
-        })));
+        });
+        setSetting('bible-present', JSON.stringify(jsonData));
     }
     static getBiblePresentingSetting() {
         try {

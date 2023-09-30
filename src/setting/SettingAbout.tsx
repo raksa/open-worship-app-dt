@@ -5,7 +5,7 @@ import {
 
 export default function SettingAbout() {
     const bookKey = 'PSA';
-    const text = useBibleItemRenderText(BibleItem.fromJson({
+    const bibleItem = BibleItem.fromJson({
         id: -1,
         bibleKey: 'KJV',
         target: {
@@ -14,7 +14,8 @@ export default function SettingAbout() {
             endVerse: 6,
         },
         metadata: {},
-    }));
+    });
+    const text = useBibleItemRenderText(bibleItem);
     const title = useBibleItemPropsToInputText('KJV', bookKey, 150, 6, 6);
     const onClick = () => {
         const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';

@@ -4,7 +4,7 @@ import KeyboardEventListener, {
 } from '../event/KeyboardEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import {
-    addBibleItem, AddBiblePropsType, updateBibleItem,
+    addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
 import {
@@ -15,6 +15,7 @@ import { useCloseAppModal } from '../app-modal/LinkToAppModal';
 import RenderKeepWindowOpen, {
     getIsKeepWindowOpen,
 } from './RenderKeepWindowOpen';
+import BibleItem from '../bible-list/BibleItem';
 
 const presentEventMapper: KBEventMapper = {
     wControlKey: ['Ctrl', 'Shift'],
@@ -30,7 +31,9 @@ const addListEventMapper: KBEventMapper = {
     key: 'Enter',
 };
 
-export default function RenderActionButtons(props: AddBiblePropsType) {
+export default function RenderActionButtons({
+    bibleItem,
+}: { bibleItem: BibleItem }) {
     const closeModal = useCloseAppModal();
     const { data } = useModalTypeData();
     const windowMode = useWindowMode();
@@ -45,11 +48,11 @@ export default function RenderActionButtons(props: AddBiblePropsType) {
             closeModal();
         }
         if (isBibleEditing) {
-            return updateBibleItem(props, data);
+            return updateBibleItem(bibleItem, data);
         } else {
-            return addBibleItem(props, windowMode);
+            return addBibleItem(bibleItem, windowMode);
         }
-    }, [props, data, isBibleEditing, closeModal, windowMode]);
+    }, [bibleItem, data, isBibleEditing, closeModal, windowMode]);
     const addBibleItemAndPresent = useCallback(async (event: any) => {
         const bibleItem = await addOrUpdateBibleItem();
         if (bibleItem !== null) {

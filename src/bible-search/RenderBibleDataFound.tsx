@@ -1,26 +1,19 @@
 import { useState } from 'react';
 import { copyToClipboard } from '../server/appHelper';
-import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { bookToKey } from '../helper/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
-    ConsumeVerseType, consumeStartVerseEndVerse,
+    consumeStartVerseEndVerse,
 } from '../bible-list/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVersesOption from './RenderVersesOption';
 import RenderActionButtons from './RenderActionButtons';
-import { bibleRenderHelper } from '../bible-list/bibleRenderHelpers';
+import {
+    BibleViewText, BibleViewTitle,
+} from '../read-bible/BibleViewExtra';
 
-export default function RenderBibleDataFound({
-    book,
-    chapter,
-    startVerse,
-    endVerse,
-    applyChapterSelection,
-    onVerseChange,
-    bibleSelected,
-}: {
+type RendPropsType = {
     book: string,
     chapter: number,
     startVerse: number | null,
@@ -28,72 +21,66 @@ export default function RenderBibleDataFound({
     applyChapterSelection: (chapter: number) => void,
     onVerseChange: (startVerse?: number, endVerse?: number) => void,
     bibleSelected: string,
-}) {
-    const [found, setFound] = useState<ConsumeVerseType | null>(null);
-    const [fontSize, setFontSize] = useStateSettingNumber(
-        'bible-search-font-size', 16);
-    const [rendered, setRendered] = useState<{
-        title: string, text: string,
-    } | null>(null);
-    useAppEffect(() => {
-        (async () => {
-            const found = await consumeStartVerseEndVerse(book, chapter,
-                startVerse, endVerse, bibleSelected);
-            if (found === null) {
-                setRendered(null);
-                return;
-            }
-            setFound(found);
-            const sVerse = found.sVerse;
-            const eVerse = found.eVerse;
-            const newTitle = await toInputText(
-                bibleSelected, book, chapter, sVerse, eVerse,
-            );
-            const newBibleItem = BibleItem.fromJson({
-                id: -1,
-                bibleKey: bibleSelected,
-                target: {
-                    book: await bookToKey(bibleSelected, book) || '',
-                    chapter,
-                    startVerse: sVerse,
-                    endVerse: eVerse,
-                },
-                metadata: {},
-            });
-            const newText = await bibleRenderHelper.bibleItemToText(
-                newBibleItem.bibleKey, newBibleItem.target,
-            );
-            if (newTitle !== null && newText !== null) {
-                setRendered({ title: newTitle, text: newText });
-            } else {
-                setRendered(null);
-            }
-        })();
-    }, [bibleSelected, book, chapter, startVerse, endVerse]);
-    if (rendered === null) {
+};
+
+async function buildBibleItem({
+    book, chapter, startVerse, endVerse, bibleSelected,
+}: RendPropsType) {
+    const found = await consumeStartVerseEndVerse({
+        book, chapter, startVerse, endVerse, bibleSelected,
+    });
+    if (found === null) {
         return null;
     }
-    const { title, text } = rendered;
+    const bookKey = await bookToKey(bibleSelected, book);
+    if (bookKey === null) {
+        return null;
+    }
+    const sVerse = found.sVerse;
+    const eVerse = found.eVerse;
+    return BibleItem.fromJson({
+        id: -1,
+        bibleKey: bibleSelected,
+        target: {
+            book: bookKey,
+            chapter,
+            startVerse: sVerse,
+            endVerse: eVerse,
+        },
+        metadata: {},
+    });
+};
+
+export default function RenderBibleDataFound(props: RendPropsType) {
+    const [fontSize, setFontSize] = useStateSettingNumber(
+        'bible-search-font-size', 16,
+    );
+    const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
+    useAppEffect(() => {
+        buildBibleItem(props).then((newBibleItem) => {
+            setBibleItem(newBibleItem);
+        });
+    }, [props]);
+    if (bibleItem === null) {
+        return (
+            <div>
+                No Bible Item Found
+            </div>
+        );
+    }
     return (
         <div className='card border-success mt-1 flex-fill' style={{
             height: '10px',
         }}>
-            {renderHeader({
-                title, text, found, book,
-                chapter, bibleSelected,
-            })}
+            {renderHeader(bibleItem)}
             <div className={'card-body bg-transparent '
                 + 'border-success p-0'}>
                 <RenderVersesOption
-                    bibleSelected={bibleSelected}
-                    book={book}
-                    chapter={chapter}
-                    startVerse={startVerse}
-                    endVerse={endVerse}
-                    applyChapterSelection={applyChapterSelection}
-                    onVerseChange={onVerseChange}
+                    bibleItem={bibleItem}
+                    onVersesChange={props.onVerseChange}
                 />
-                {bibleTextPreview(text, fontSize)}
+                <BibleViewText bibleItem={bibleItem}
+                    fontSize={fontSize} />
             </div>
             <div className='card-footer'>
                 {renderFontSizeController(fontSize, setFontSize)}
@@ -102,66 +89,60 @@ export default function RenderBibleDataFound({
     );
 }
 
-function renderHeader({
-    title, text, found, book, chapter, bibleSelected,
-}: {
-    title: string, text: string,
-    found: ConsumeVerseType | null,
-    book: string, chapter: number,
-    bibleSelected: string,
-}) {
+function renderHeader(bibleItem: BibleItem) {
     return (
         <div className='card-header bg-transparent border-success'>
             <div className='d-flex'>
-                <div className='flex-fill'>{title}</div>
+                <div className='flex-fill'>
+                    <BibleViewTitle bibleItem={bibleItem} />
+                </div>
                 <div>
-                    {found !== null && <RenderActionButtons found={found}
-                        book={book} chapter={chapter}
-                        bibleSelected={bibleSelected} />}
-                    {renderCopyButton(title, text)}
+                    <RenderActionButtons bibleItem={bibleItem} />
+                    <RenderCopyButton bibleItem={bibleItem} />
                 </div>
             </div>
         </div>
     );
 }
 
-function renderCopyButton(title: string, text: string) {
+function RenderCopyButton({ bibleItem }: { bibleItem: BibleItem }) {
     return (
         <div className='btn-group float-end'>
             <button type='button'
                 className='btn btn-sm btn-info'
                 title='Copy title to clipboard'
                 onClick={() => {
-                    copyToClipboard(title);
+                    bibleItem.toTitle().then((title) => {
+                        copyToClipboard(title);
+                    });
                 }}><i className='bi bi-back ' />title</button>
             <button type='button'
                 className='btn btn-sm btn-info'
                 title='Copy verse text to clipboard'
                 onClick={() => {
-                    copyToClipboard(text);
+                    bibleItem.toText().then((text) => {
+                        copyToClipboard(text);
+                    });
                 }}>
                 <i className='bi bi-back' />text</button>
             <button type='button'
                 className='btn btn-sm btn-info'
                 title='Copy all to clipboard'
                 onClick={() => {
-                    copyToClipboard(`${title}\n${text}`);
+                    Promise.all([
+                        bibleItem.toTitle(),
+                        bibleItem.toText(),
+                    ]).then(([title, text]) => {
+                        copyToClipboard(`${title}\n${text}`);
+                    });
                 }}><i className='bi bi-back' />all</button>
         </div>
     );
 }
 
-function bibleTextPreview(text: string, fontSize: number) {
-    return (
-        <p className='p-3 app-selectable-text'
-            style={{
-                fontSize: `${fontSize}px`,
-            }}>{text}</p>
-    );
-}
-
-function renderFontSizeController(fontSize: number,
-    setFontSize: (fontSize: number) => void) {
+function renderFontSizeController(
+    fontSize: number, setFontSize: (fontSize: number) => void,
+) {
     return (
         <div className='form form-inline d-flex'
             style={{ minWidth: '100px' }}>

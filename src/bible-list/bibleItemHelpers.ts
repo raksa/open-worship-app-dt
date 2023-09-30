@@ -8,7 +8,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    BibleTargetType, bibleRenderHelper,
+    BibleTargetType,
 } from './bibleRenderHelpers';
 import {
     toInputText,
