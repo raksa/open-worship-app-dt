@@ -2,7 +2,7 @@ import BibleItem from '../bible-list/BibleItem';
 import {
     useBibleItemRenderText,
     useBibleItemToInputText,
-} from '../helper/bible-helpers/bibleRenderHelpers';
+} from '../bible-list/bibleRenderHelpers';
 
 export default function SettingAbout() {
     const bookKey = 'PSA';

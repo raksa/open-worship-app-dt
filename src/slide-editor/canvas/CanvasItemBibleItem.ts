@@ -1,6 +1,4 @@
-import BibleItem, {
-    BibleTargetType,
-} from '../../bible-list/BibleItem';
+import BibleItem from '../../bible-list/BibleItem';
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from './CanvasItemText';
@@ -11,6 +9,7 @@ import {
     VAlignmentType,
 } from './canvasHelpers';
 import { handleError } from '../../helper/errorHelpers';
+import { BibleTargetType } from '../../bible-list/bibleItemHelpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleKeys: string[];
@@ -20,7 +19,7 @@ export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
         text: string,
     }[],
 };
-export default class CanvasItemBible extends CanvasItemText {
+export default class CanvasItemBibleItem extends CanvasItemText {
     props: CanvasItemBiblePropsType;
     constructor(props: CanvasItemBiblePropsType) {
         super(props);
@@ -32,7 +31,7 @@ export default class CanvasItemBible extends CanvasItemText {
     static fromJson(json: CanvasItemBiblePropsType) {
         try {
             this.validate(json);
-            return new CanvasItemBible(json);
+            return new CanvasItemBibleItem(json);
         } catch (error) {
             handleError(error);
             return CanvasItemError.fromJsonError(json);
@@ -40,7 +39,7 @@ export default class CanvasItemBible extends CanvasItemText {
     }
     static async fromBibleItem(id: number, bibleItem: BibleItem) {
         const title = await bibleItem.toTitle();
-        const text = await BibleItem.itemToText(bibleItem);
+        const text = await BibleItem.bibleItemToText(bibleItem);
         const newTextItem = super.genDefaultItem();
         const props = newTextItem.toJson();
         props.id = id;
@@ -57,7 +56,7 @@ export default class CanvasItemBible extends CanvasItemText {
             textVerticalAlignment: 'top' as VAlignmentType,
             type: 'bible',
         };
-        return CanvasItemBible.fromJson(json);
+        return CanvasItemBibleItem.fromJson(json);
     }
     static validate(json: AnyObjectType) {
         super.validate(json);

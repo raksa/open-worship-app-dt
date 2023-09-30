@@ -1,9 +1,23 @@
 import Bible from './Bible';
 import { WindowModEnum } from '../router/routeHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
+import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { AnyObjectType } from '../helper/helpers';
+
+export type BibleTargetType = {
+    book: string,
+    chapter: number,
+    startVerse: number,
+    endVerse: number,
+};
+export type BibleItemType = {
+    id: number,
+    bibleKey: string,
+    target: BibleTargetType,
+    metadata: AnyObjectType,
+}
 
 export async function openBibleItemContextMenu(
     event: any, bibleItem: BibleItem, index: number,
@@ -61,4 +75,20 @@ export async function openBibleItemContextMenu(
         });
     }
     showAppContextMenu(event, menuItem);
+}
+
+export function genDuplicatedMessage(list: BibleItem[],
+    { target }: BibleItem, i: number) {
+    let warningMessage;
+    const duplicated = list.find(({ target: target1 }, i1) => {
+        return target.book === target1.book &&
+            target.chapter === target1.chapter &&
+            target.startVerse === target1.startVerse &&
+            target.endVerse === target1.endVerse && i !== i1;
+    });
+    if (duplicated) {
+        const itemNum = list.indexOf(duplicated) + 1;
+        warningMessage = `Duplicated with item number ${itemNum}`;
+    }
+    return warningMessage;
 }

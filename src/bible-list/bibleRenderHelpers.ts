@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import BibleItem, { BibleTargetType } from '../../bible-list/BibleItem';
-import { useAppEffect } from '../debuggerHelpers';
-import { keyToBook, getVerses } from './bibleInfoHelpers';
-import { getKJVKeyValue } from './serverBibleHelpers';
-import { toInputText, toLocaleNumBB } from './serverBibleHelpers2';
+import BibleItem from './BibleItem';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { keyToBook, getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
+import { getKJVKeyValue } from '../helper/bible-helpers/serverBibleHelpers';
+import {
+    toInputText, toLocaleNumBB,
+} from '../helper/bible-helpers/serverBibleHelpers2';
+import { BibleTargetType } from './bibleItemHelpers';
 
 type CallbackType = (text: string | null) => void;
 class BibleRenderHelper {
@@ -99,7 +102,8 @@ class BibleRenderHelper {
         }
         let txt = '';
         for (let i = startVerse; i <= endVerse; i++) {
-            txt += ` (${await toLocaleNumBB(bible, i)}): ${verses[i.toString()]}`;
+            const localNum = await toLocaleNumBB(bible, i);
+            txt += ` (${localNum}): ${verses[i.toString()]}`;
         }
         return this._fullfilCallback(cacheKey, txt);
     }
@@ -124,17 +128,20 @@ export function useBibleItemRenderTitle(item: BibleItem) {
 export function useBibleItemRenderText(item: BibleItem) {
     const [text, setText] = useState<string>('');
     useAppEffect(() => {
-        BibleItem.itemToText(item).then(setText);
+        BibleItem.bibleItemToText(item).then(setText);
     }, [item]);
     return text;
 }
-export function useBibleItemToInputText(bibleKey: string, book?: string | null,
-    chapter?: number | null, startVerse?: number | null, endVerse?: number | null) {
+export function useBibleItemToInputText(
+    bibleKey: string, book?: string | null, chapter?: number | null,
+    startVerse?: number | null, endVerse?: number | null,
+) {
     const [text, setText] = useState<string>('');
     useAppEffect(() => {
-        toInputText(bibleKey, book, chapter, startVerse, endVerse).then((text1) => {
-            setText(text1);
-        });
+        toInputText(bibleKey, book, chapter, startVerse, endVerse)
+            .then((text1) => {
+                setText(text1);
+            });
     }, [bibleKey, book, chapter, startVerse, endVerse]);
     return text;
 }

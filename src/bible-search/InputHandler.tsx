@@ -9,7 +9,7 @@ import BibleSelection from './BibleSelection';
 import { INPUT_TEXT_CLASS } from './selectionHelpers';
 import { 
     useBibleItemToInputText,
- } from '../helper/bible-helpers/bibleRenderHelpers';
+ } from '../bible-list/bibleRenderHelpers';
 
 export default function InputHandler({
     inputText,

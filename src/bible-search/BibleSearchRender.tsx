@@ -14,7 +14,7 @@ import {
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     genInputText, useGetSelectedBibleKey,
-} from '../helper/bible-helpers/bibleHelpers';
+} from '../bible-list/bibleHelpers';
 import RenderSearchSuggestion, {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';

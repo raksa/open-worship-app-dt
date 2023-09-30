@@ -6,7 +6,7 @@ import BENViewImageMode from './BENViewImageMode';
 import BENTextEditMode from './BENTextEditMode';
 import BENViewTextMode from './BENViewTextMode';
 import BENViewBibleMode from './BENViewBibleMode';
-import CanvasItemBible from '../CanvasItemBible';
+import CanvasItemBibleItem from '../CanvasItemBibleItem';
 import BENViewError from './BENViewError';
 import BENViewVideoMode from './BENViewVideoMode';
 import CanvasItemVideo from '../CanvasItemVideo';
@@ -57,7 +57,7 @@ export default function BoxEditorNormalMode({
             return (
                 <BENViewBibleMode
                     canvasItemBible={
-                        canvasItem as CanvasItemBible
+                        canvasItem as CanvasItemBibleItem
                     }
                     style={style} />
             );

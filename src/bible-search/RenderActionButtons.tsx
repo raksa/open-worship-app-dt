@@ -5,7 +5,7 @@ import KeyboardEventListener, {
 import SlideItem from '../slide-list/SlideItem';
 import {
     addBibleItem, AddBiblePropsType, updateBibleItem,
-} from '../helper/bible-helpers/bibleHelpers';
+} from '../bible-list/bibleHelpers';
 import PresentFTManager from '../_present/PresentFTManager';
 import {
     useWindowIsEditingMode, useWindowIsPresentingMode, useWindowMode,

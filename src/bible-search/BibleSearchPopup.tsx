@@ -7,7 +7,7 @@ import BibleItem from '../bible-list/BibleItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     SELECTED_BIBLE_SETTING_NAME,
-} from '../helper/bible-helpers/bibleHelpers';
+} from '../bible-list/bibleHelpers';
 import { setSetting } from '../helper/settingHelper';
 import { useModalTypeData } from '../app-modal/helpers';
 

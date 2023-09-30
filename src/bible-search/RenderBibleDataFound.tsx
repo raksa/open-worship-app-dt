@@ -5,7 +5,7 @@ import { bookToKey } from '../helper/bible-helpers/bibleInfoHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     ConsumeVerseType, consumeStartVerseEndVerse,
-} from '../helper/bible-helpers/bibleHelpers';
+} from '../bible-list/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVersesOption from './RenderVersesOption';
@@ -47,7 +47,7 @@ export default function RenderBibleDataFound({
             const eVerse = found.eVerse;
             const newTitle = await toInputText(
                 bibleSelected, book, chapter, sVerse, eVerse);
-            const newText = await BibleItem.itemToText(BibleItem.fromJson({
+            const newText = await BibleItem.bibleItemToText(BibleItem.fromJson({
                 id: -1,
                 bibleKey: bibleSelected,
                 target: {

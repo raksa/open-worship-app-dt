@@ -3,14 +3,14 @@ import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import { useFSEvents } from '../helper/dirSourceHelpers';
-import { handleDragStart } from '../helper/dragHelpers';
+import { handleDragStart } from './dragHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
 import {
     useBibleItemRenderTitle,
-} from '../helper/bible-helpers/bibleRenderHelpers';
+} from './bibleRenderHelpers';
 import BibleItemViewController from '../read-bible/BibleItemViewController';
 import PresentFTManager from '../_present/PresentFTManager';
 import {

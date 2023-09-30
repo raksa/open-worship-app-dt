@@ -2,7 +2,7 @@ import { AnyObjectType, toMaxId } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
 import PresentManager from '../../_present/PresentManager';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
-import CanvasItemBible from './CanvasItemBible';
+import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemVideo from './CanvasItemVideo';
@@ -67,7 +67,7 @@ export default class Canvas {
                 case 'text':
                     return CanvasItemText.fromJson(json);
                 case 'bible':
-                    return CanvasItemBible.fromJson(json);
+                    return CanvasItemBibleItem.fromJson(json);
                 default:
                     return CanvasItemError.fromJsonError(json);
             }

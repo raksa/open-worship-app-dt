@@ -6,7 +6,7 @@ import {
 } from '../event/KeyboardEventListener';
 import {
     ConsumeVerseType, consumeStartVerseEndVerse,
-} from '../helper/bible-helpers/bibleHelpers';
+} from '../bible-list/bibleHelpers';
 import RenderVerseNumOption, {
     mouseUp,
 } from './RenderVerseNumOption';

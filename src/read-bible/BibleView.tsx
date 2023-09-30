@@ -8,7 +8,7 @@ import {
 import {
     useBibleItemRenderTitle,
     useBibleItemRenderText,
-} from '../helper/bible-helpers/bibleRenderHelpers';
+} from '../bible-list/bibleRenderHelpers';
 import BibleItemViewController from './BibleItemViewController';
 import {
     applyDragged,

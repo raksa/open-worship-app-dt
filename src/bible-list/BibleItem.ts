@@ -10,23 +10,10 @@ import { handleError } from '../helper/errorHelpers';
 import { log } from '../helper/loggerHelpers';
 import {
     bibleRenderHelper,
-} from '../helper/bible-helpers/bibleRenderHelpers';
-import { AddBiblePropsType } from '../helper/bible-helpers/bibleHelpers';
+} from './bibleRenderHelpers';
 import ItemSource from '../helper/ItemSource';
-import { showSimpleToast } from '../toast/toastHelpers';
+import { BibleItemType, BibleTargetType } from './bibleItemHelpers';
 
-export type BibleTargetType = {
-    book: string,
-    chapter: number,
-    startVerse: number,
-    endVerse: number,
-};
-export type BibleItemType = {
-    id: number,
-    bibleKey: string,
-    target: BibleTargetType,
-    metadata: AnyObjectType,
-}
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
     static SELECT_SETTING_NAME = 'bible-item-selected';
@@ -171,7 +158,7 @@ export default class BibleItem extends ItemBase
         return await bibleRenderHelper.toText(bibleVerseKey) ||
             `😟Unable to render text for ${bibleVerseKey}`;
     }
-    static itemToText(item: BibleItem) {
+    static bibleItemToText(item: BibleItem) {
         return item.toText();
     }
     dragSerialize() {

@@ -1,5 +1,4 @@
 export const DB_NAME = 'bible';
-export const DB_VERSION = 3;
 
 interface DbControllerInterface {
     db: IDBDatabase;
@@ -45,7 +44,7 @@ class InitDBOpeningQueue {
         if (this.request !== null) {
             return;
         }
-        const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        const request = window.indexedDB.open(DB_NAME);
         this.request = request;
         request.onupgradeneeded = (event: any) => {
             dbController.db = event.target.result;

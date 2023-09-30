@@ -1,29 +1,28 @@
 import { useState } from 'react';
 import {
     getSetting, setSetting,
-} from '../settingHelper';
-import BibleItem from '../../bible-list/BibleItem';
+} from '../helper/settingHelper';
+import BibleItem from './BibleItem';
 import {
     getBookKVList, bookToKey, VerseList, getVerses,
-} from './bibleInfoHelpers';
+} from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     extractBible, toInputText,
-} from './serverBibleHelpers2';
+} from '../helper/bible-helpers/serverBibleHelpers2';
 import {
     getDownloadedBibleInfoList,
-} from './bibleDownloadHelpers';
-import Bible from '../../bible-list/Bible';
-import { showSimpleToast } from '../../toast/toastHelpers';
-import CanvasController from '../../slide-editor/canvas/CanvasController';
-import { useAppEffect } from '../debuggerHelpers';
-import DirSource from '../DirSource';
-import FileSource from '../FileSource';
-import { showAppContextMenu } from '../../others/AppContextMenu';
-import { addExtension } from '../../server/fileHelper';
+} from '../helper/bible-helpers/bibleDownloadHelpers';
+import Bible from './Bible';
+import { showSimpleToast } from '../toast/toastHelpers';
+import CanvasController from '../slide-editor/canvas/CanvasController';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import DirSource from '../helper/DirSource';
+import FileSource from '../helper/FileSource';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import { addExtension } from '../server/fileHelper';
 import {
     WindowModEnum, checkIsWindowEditingMode,
-} from '../../router/routeHelpers';
-import { u } from 'tar';
+} from '../router/routeHelpers';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 

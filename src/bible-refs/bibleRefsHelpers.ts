@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import {
-    get_api_url,
-    get_api_key,
-    decrypt,
-    bible_ref,
+    get_api_url, get_api_key, decrypt, bible_ref,
 } from '../_owa-crypto';
 import { BibleRefsDbController } from '../db/dbHelper';
-import {
-    handleError,
-} from '../helper/errorHelpers';
+import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
@@ -59,7 +54,7 @@ async function getCacheBibleRef(key: string) {
         if (record.updatedAt.getTime() - Date.now() > MAX_CACHE_MILLISECONDS) {
             return null;
         }
-        return record.data as RawBibleRefListType;
+        return record.data;
     } catch (error) {
         handleError(error);
     }

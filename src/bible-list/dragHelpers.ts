@@ -1,10 +1,10 @@
-import BibleItem from '../bible-list/BibleItem';
+import BibleItem from './BibleItem';
 import SlideItem from '../slide-list/SlideItem';
 import { colorDeserialize } from '../others/color/colorHelpers';
 import DragInf, {
     DragDataType, DragTypeEnum, DroppedDataType,
-} from './DragInf';
-import FileSource from './FileSource';
+} from '../helper/DragInf';
+import FileSource from '../helper/FileSource';
 
 export function handleDragStart(event: any, item: DragInf<any>,
     type?: DragTypeEnum) {

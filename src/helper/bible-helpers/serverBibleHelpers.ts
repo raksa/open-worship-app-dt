@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
     getBibleInfo, getBookKVList, getChapterCount,
 } from './bibleInfoHelpers';
-import BibleItem from '../../bible-list/BibleItem';
 
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
@@ -87,20 +86,6 @@ export function useGetChapterCount(bibleSelected: string, bookSelected: string) 
         });
     });
     return chapterCount;
-}
-export function genDuplicatedMessage(list: BibleItem[],
-    { target }: BibleItem, i: number) {
-    let warningMessage;
-    const duplicated = list.find(({ target: target1 }, i1) => {
-        return target.book === target1.book &&
-            target.chapter === target1.chapter &&
-            target.startVerse === target1.startVerse &&
-            target.endVerse === target1.endVerse && i !== i1;
-    });
-    if (duplicated) {
-        warningMessage = `Duplicated with item number ${list.indexOf(duplicated) + 1}`;
-    }
-    return warningMessage;
 }
 
 export function getKJVKeyValue() {

@@ -1,5 +1,5 @@
 import { DragTypeEnum } from '../../helper/DragInf';
-import { handleDragStart } from '../../helper/dragHelpers';
+import { handleDragStart } from '../../bible-list/dragHelpers';
 
 export const BLACK_COLOR = '#000000';
 export type AppColorType = `#${string}`;

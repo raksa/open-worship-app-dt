@@ -6,7 +6,7 @@ import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
+import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelper';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { WindowModEnum, useWindowMode } from '../router/routeHelpers';

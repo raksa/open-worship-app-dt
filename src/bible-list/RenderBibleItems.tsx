@@ -1,9 +1,7 @@
-import {
-    genDuplicatedMessage,
-} from '../helper/bible-helpers/serverBibleHelpers';
 import Bible from './Bible';
 import BibleItemRender from './BibleItemRender';
 import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
+import { genDuplicatedMessage } from './bibleItemHelpers';
 
 export default function RenderBibleItems({ bible }: {
     bible: Bible,

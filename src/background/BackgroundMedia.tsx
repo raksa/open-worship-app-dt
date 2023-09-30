@@ -9,7 +9,7 @@ import { usePBGMEvents } from '../_present/presentEventHelpers';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
-import { handleDragStart } from '../helper/dragHelpers';
+import { handleDragStart } from '../bible-list/dragHelpers';
 import { useGenDS } from '../helper/dirSourceHelpers';
 
 export type RenderChildType = (

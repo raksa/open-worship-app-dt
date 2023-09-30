@@ -5,7 +5,7 @@ import MiniScreenClearControl from './MiniScreenClearControl';
 import PresentManager from '../PresentManager';
 import DisplayControl from './DisplayControl';
 import PTEffectControl from './PTEffectControl';
-import { handleDrop } from '../../helper/dragHelpers';
+import { handleDrop } from '../../bible-list/dragHelpers';
 import { openContextMenu } from './presentPreviewerHelpers';
 
 export default function PresentPreviewerItem({ presentManager, width }: {

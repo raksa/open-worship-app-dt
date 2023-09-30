@@ -10,7 +10,7 @@ import {
 import FileSource from '../../helper/FileSource';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
-import CanvasItemBible from './CanvasItemBible';
+import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 import {
@@ -146,7 +146,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     async addNewBibleItem(bibleItem: BibleItem) {
         const id = this.canvas.maxItemId + 1;
-        const newItem = await CanvasItemBible.fromBibleItem(id, bibleItem);
+        const newItem = await CanvasItemBibleItem.fromBibleItem(id, bibleItem);
         this.addNewItem(newItem);
     }
     applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {
