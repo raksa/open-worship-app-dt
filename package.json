@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "./",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "main": "./electron-build/electron/index.js",
     "scripts": {
         "dev": "concurrently -k \"npm run vite:dev\" \"npm run electron:build && npm run electron\"",
