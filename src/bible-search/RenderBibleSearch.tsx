@@ -1,24 +1,25 @@
 import { useCallback, useState } from 'react';
 import InputHandler from './InputHandler';
 import {
-    ExtractedBibleResult, genExtractedBible, extractBibleTitle, toInputText,
-} from '../helper/bible-helpers/serverBibleHelpers2';
-import {
     genInputText, useGetSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
-import RenderSearchSuggestion, {
+import {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
+import { setBibleSearchInputFocus } from './selectionHelpers';
+import RenderBibleSearchBody from './RenderBibleSearchBody';
 
 export default function RenderBibleSearch({
     editingInputText,
 }: {
     editingInputText: string,
 }) {
-    const [inputText, setInputText] = useState<string>(editingInputText);
+    const [inputText, _setInputText] = useState<string>(editingInputText);
     const [bibleKeySelected, setBibleKeySelected] = useGetSelectedBibleKey();
+    const setInputText = (newText: string) => {
+        _setInputText(newText);
+        setBibleSearchInputFocus();
+    };
 
     const handleBibleChange = useCallback(async (
         oldBibleKey: string, newBibleKey: string) => {
@@ -58,68 +59,5 @@ export default function RenderBibleSearch({
                 </div>
             </div>
         </div>
-    );
-}
-
-function RenderBibleSearchBody({
-    bibleKey, inputText, setInputText,
-}: {
-    bibleKey: string,
-    inputText: string,
-    setInputText: (newText: string) => void,
-}) {
-    const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
-        genExtractedBible(),
-    );
-    useAppEffect(() => {
-        extractBibleTitle(bibleKey, inputText).then((result) => {
-            console.log(bibleKey, inputText, result);
-
-            setExtractedInput(result);
-        });
-    }, [bibleKey, inputText]);
-    const applyBookSelectionCallback = useCallback(
-        async (_: string, newBook: string) => {
-            const newText = await toInputText(bibleKey, newBook);
-            setInputText(newText);
-        },
-        [bibleKey, setInputText],
-    );
-    const applyChapterSelectionCallback = useCallback(
-        async (newChapter: number) => {
-            if (bibleKey === null || extractedInput.bookKey === null) {
-                return;
-            }
-            const book = await keyToBook(bibleKey, extractedInput.bookKey);
-            const newText = await toInputText(
-                bibleKey, book, newChapter,
-            );
-            setInputText(`${newText}:`);
-        },
-        [bibleKey, extractedInput.bookKey, setInputText],
-    );
-    const applyVerseSelectionCallback = useCallback(async (
-        newStartVerse?: number, newEndVerse?: number) => {
-        if (bibleKey === null || extractedInput.bookKey === null) {
-            return;
-        }
-        const book = await keyToBook(bibleKey, extractedInput.bookKey);
-        const txt = await toInputText(
-            bibleKey, book, extractedInput.chapter,
-            newStartVerse, newEndVerse,
-        );
-        setInputText(txt);
-    }, [
-        bibleKey, extractedInput.bookKey,
-        extractedInput.chapter, setInputText,
-    ]);
-    return (
-        <RenderSearchSuggestion
-            inputText={inputText}
-            bibleKey={bibleKey}
-            bibleResult={extractedInput}
-            applyChapterSelection={applyChapterSelectionCallback}
-            applyVerseSelection={applyVerseSelectionCallback}
-            applyBookSelection={applyBookSelectionCallback} />
     );
 }

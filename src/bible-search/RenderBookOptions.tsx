@@ -49,7 +49,7 @@ function BookOptions({
         });
     };
     allArrows.forEach(useKeyEvent);
-    userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS, onSelect);
+    userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
 
     if (matches === null) {
         return (
@@ -90,8 +90,6 @@ function genBookOption({
                 'text-nowrap btn-sm btn btn-outline-success' +
                 ` ${OPTION_CLASS} ${index === 0 ? OPTION_SELECTED_CLASS : ''}`
             }
-                data-option-book-key={bookKey}
-                data-option-book={book}
                 style={{
                     width: '240px',
                     overflowX: 'auto',

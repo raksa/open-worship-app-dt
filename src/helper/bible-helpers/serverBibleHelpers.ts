@@ -48,8 +48,11 @@ export async function genChapterMatches(
     if (guessingChapter === null) {
         return newFilteredList;
     }
-    return newFilteredList.filter(([_, chapterNumStr]) => {
+    return newFilteredList.filter(([chapter, chapterNumStr]) => {
+        const chapterStr = `${chapter}`;
         return (
+            chapterStr.includes(guessingChapter) ||
+            guessingChapter.includes(chapterStr) ||
             chapterNumStr.includes(guessingChapter) ||
             guessingChapter.includes(chapterNumStr)
         );

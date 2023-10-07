@@ -3,9 +3,7 @@ import {
 } from '../event/KeyboardEventListener';
 
 const openSettingEventMapper: KBEventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+    allControlKey: ['Ctrl'],
     key: 'q',
 };
 export default function HeaderSettingPopup({

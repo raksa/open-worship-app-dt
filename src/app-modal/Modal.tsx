@@ -12,9 +12,7 @@ interface MyProps {
 }
 
 const quittingEventMap: EventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+    allControlKey: ['Ctrl'],
     key: 'q',
 };
 

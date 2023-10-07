@@ -16,9 +16,7 @@ export function useOpenBibleSearch(bibleItem?: BibleItem) {
 }
 
 const openBibleEventMap: KBEventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+    allControlKey: ['Ctrl'],
     key: 'b',
 };
 export default function BibleSearchHeader() {

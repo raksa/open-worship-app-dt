@@ -13,11 +13,13 @@ export const allArrows: KeyboardType[] = [
 export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Command';
+export type AllControlType = 'Ctrl' | 'Shift';
 
 export interface EventMapper {
     wControlKey?: WindowsControlType[];
     mControlKey?: MacControlType[];
     lControlKey?: LinuxControlType[];
+    allControlKey?: AllControlType[];
     key: KeyboardType | string;
 }
 export interface RegisteredEventMapper extends EventMapper {
@@ -67,10 +69,6 @@ export default class KeyboardEventListener extends EventHandler<string> {
             event.shiftKey && option.lControlKey.push('Shift');
         }
     }
-    static toControlKey(controlType: WindowsControlType[] |
-        MacControlType[] | LinuxControlType[]) {
-        return controlType.sort().join(' + ');
-    }
     static toShortcutKey(eventMapper: EventMapper) {
         let key = eventMapper.key;
         if (!key) {
@@ -79,18 +77,20 @@ export default class KeyboardEventListener extends EventHandler<string> {
         if (key.length === 1) {
             key = key.toUpperCase();
         }
-        if (appProvider.systemUtils.isWindows &&
-            eventMapper.wControlKey &&
-            eventMapper.wControlKey.length) {
-            key = `${this.toControlKey(eventMapper.wControlKey)} + ${key}`;
-        } else if (appProvider.systemUtils.isMac &&
-            eventMapper.mControlKey &&
-            eventMapper.mControlKey.length) {
-            key = `${this.toControlKey(eventMapper.mControlKey)} + ${key}`;
-        } else if (appProvider.systemUtils.isLinux &&
-            eventMapper.lControlKey &&
-            eventMapper.lControlKey.length) {
-            key = `${this.toControlKey(eventMapper.lControlKey)} + ${key}`;
+        const {
+            wControlKey, mControlKey, lControlKey, allControlKey,
+        } = eventMapper;
+        const allControls: string[] = allControlKey || [];
+        if (appProvider.systemUtils.isWindows) {
+            allControls.push(...(wControlKey || []));
+        } else if (appProvider.systemUtils.isMac) {
+            allControls.push(...(mControlKey || []));
+        } else if (appProvider.systemUtils.isLinux) {
+            allControls.push(...(lControlKey || []));
+        }
+        if (allControls.length > 0) {
+            const sorted = [...allControls].sort();
+            key = `${sorted.join(' + ')} + ${key}`;
         }
         return key;
     }

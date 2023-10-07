@@ -7,9 +7,7 @@ import {
 } from '../slide-presenting/HandleItemSlideEdit';
 
 const closeEventMapper: KBEventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+    allControlKey: ['Ctrl'],
     key: 'q',
 };
 export default function SlideItemEditorPopupHeader() {

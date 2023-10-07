@@ -109,8 +109,15 @@ function blurInputText() {
     }
 }
 
-export function processSelection(optionClass: string,
-    selectedClass: string, key: KeyboardType) {
+export function processSelection(
+    optionClass: string, selectedClass: string, key: KeyboardType,
+) {
+    if (
+        (key === 'ArrowLeft' || key === 'ArrowRight') &&
+        checkIsBibleSearchInputFocused() && getBibleSearchInputText() !== ''
+    ) {
+        return;
+    }
     const { index, elements } = genIndex(optionClass, selectedClass, key);
     if (index === -1) {
         return;
@@ -129,16 +136,37 @@ export function processSelection(optionClass: string,
 export type SelectBookType = (newBookKey: string, newBook: string) => void;
 
 export function userEnteringSelected(
-    optionClass: string, selectedClass: string, callback: SelectBookType
+    optionClass: string, selectedClass: string,
 ) {
     useKeyboardRegistering([{ key: 'Enter' }], () => {
         const selectedElement = getSelectedElement(optionClass, selectedClass);
-        if (
-            selectedElement?.dataset.optionBookKey &&
-            selectedElement?.dataset.optionBook
-        ) {
-            const { optionBookKey, optionBook } = selectedElement.dataset;
-            callback(optionBookKey, optionBook);
-        }
+        selectedElement?.click();
     });
+}
+
+export const INPUT_ID = 'app-bible-search-input';
+
+export function getBibleSearchInputElement(): HTMLInputElement | null {
+    return document.getElementById(INPUT_ID) as HTMLInputElement;
+}
+export function getBibleSearchInputText() {
+    const inputElement = getBibleSearchInputElement();
+    if (inputElement === null) {
+        return '';
+    }
+    return inputElement.value;
+}
+export function checkIsBibleSearchInputFocused(): boolean {
+    const inputElement = getBibleSearchInputElement();
+    if (inputElement === null) {
+        return false;
+    }
+    return document.activeElement === inputElement;
+}
+export function setBibleSearchInputFocus() {
+    const inputElement = getBibleSearchInputElement();
+    if (inputElement === null) {
+        return;
+    }
+    inputElement.focus();
 }

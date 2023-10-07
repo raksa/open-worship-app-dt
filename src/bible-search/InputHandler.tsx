@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import {
     useGetBookKVList,
 } from '../helper/bible-helpers/serverBibleHelpers';
@@ -6,7 +5,10 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
-import { INPUT_TEXT_CLASS } from './selectionHelpers';
+import {
+    INPUT_ID, INPUT_TEXT_CLASS, checkIsBibleSearchInputFocused,
+    setBibleSearchInputFocus,
+} from './selectionHelpers';
 import {
     useBibleItemPropsToInputText,
 } from '../bible-list/bibleItemHelpers';
@@ -24,18 +26,21 @@ export default function InputHandler({
     const placeholder = useBibleItemPropsToInputText(
         bibleKey, bookKey, 1, 1, 2);
     useKeyboardRegistering([{ key: 'Escape' }], () => {
-        if (inputRef.current !== null) {
-            if (document.activeElement !== inputRef.current) {
-                inputRef.current.focus();
-                return;
-            }
-            onInputChange('');
+        if (!checkIsBibleSearchInputFocused()) {
+            setBibleSearchInputFocus();
+            return;
         }
+        const arr = inputText.split(' ').filter((str) => str !== '');
+        if (arr.length === 1) {
+            onInputChange('');
+            return;
+        }
+        arr.pop();
+        onInputChange(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
     });
-    const inputRef = useRef<HTMLInputElement>(null);
     return (
         <>
-            <input ref={inputRef} type='text'
+            <input id={INPUT_ID} type='text'
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus

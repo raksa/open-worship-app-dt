@@ -50,9 +50,7 @@ function ChapterOptions({
         useKeyboardRegistering([{ key }], arrowListener);
     };
     allArrows.forEach(useCallback);
-    userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS, (chapterStr) => {
-        onSelect(Number(chapterStr));
-    });
+    userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
     if (matches === null) {
         return (
             <div>
@@ -72,12 +70,18 @@ function ChapterOptions({
                         title={isDiff ? `Chapter ${chapter}` : undefined}
                         style={{ margin: '2px' }}>
                         <button className={className}
-                            data-option-value={chapter}
                             type='button'
                             onClick={() => {
                                 onSelect(chapter);
                             }}>
-                            <span>{chapterNumStr}</span>
+                            <span>
+                                {chapterNumStr}
+                                {isDiff ?
+                                    <small className='text-muted'>
+                                        ({chapter})
+                                    </small> : null
+                                }
+                            </span>
                         </button>
                     </div>
                 );

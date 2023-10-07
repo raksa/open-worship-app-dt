@@ -7,9 +7,7 @@ import PresentManager from '../../_present/PresentManager';
 import MenuIsModifying from './MenuIsModifying';
 
 const savingEventMapper: KBEventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+    allControlKey: ['Ctrl'],
     key: 's',
 };
 export default function SlideItemsMenu({ slide }: {

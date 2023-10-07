@@ -85,6 +85,17 @@ export function genExtractedBible(): ExtractedBibleResult {
     };
 }
 
+export async function parseChapterFromGuessing(
+    bibleKey: string, bookKey: string, chapter: string,
+) {
+    const chapterNum = await fromLocaleNumBB(bibleKey, chapter);
+    const chapterCount = getKJVChapterCount(bookKey);
+    if (chapterNum === null || chapterNum < 1 || chapterNum > chapterCount) {
+        return null;
+    }
+    return chapterNum;
+}
+
 async function transformExtracted(
     bibleKey: string, book: string, chapter: string | null,
     startVerse: string | null, endVerse: string | null,
@@ -107,10 +118,13 @@ async function transformExtracted(
     if (chapter.endsWith(':')) {
         chapter = chapter.replace(':', '');
         result.guessingChapter = chapter;
+    } else if (startVerse === null && endVerse === null) {
+        return result;
     }
-    const chapterNum = await fromLocaleNumBB(bibleKey, chapter);
-    const chapterCount = getKJVChapterCount(bookKey);
-    if (chapterNum === null || chapterNum < 1 || chapterNum > chapterCount) {
+    const chapterNum = await parseChapterFromGuessing(
+        bibleKey, bookKey, chapter,
+    );
+    if (chapterNum === null) {
         return result;
     }
     const verses = await getVerses(bibleKey, bookKey, chapterNum);

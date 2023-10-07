@@ -18,16 +18,12 @@ import RenderKeepWindowOpen, {
 import BibleItem from '../bible-list/BibleItem';
 
 const presentEventMapper: KBEventMapper = {
-    wControlKey: ['Ctrl', 'Shift'],
-    mControlKey: ['Ctrl', 'Shift'],
-    lControlKey: ['Ctrl', 'Shift'],
+    allControlKey: ['Ctrl', 'Shift'],
     key: 'Enter',
 };
 
 const addListEventMapper: KBEventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+    allControlKey: ['Ctrl'],
     key: 'Enter',
 };
 
