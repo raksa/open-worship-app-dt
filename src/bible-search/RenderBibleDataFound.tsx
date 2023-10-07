@@ -31,9 +31,11 @@ export default function RenderBibleDataFound({
                         bibleItem={bibleItem}
                         onVersesChange={onVerseChange} />
                 }
-                <BibleViewText
-                    bibleItem={bibleItem}
-                    fontSize={fontSize} />
+                <div className='p-2'>
+                    <BibleViewText
+                        bibleItem={bibleItem}
+                        fontSize={fontSize} />
+                </div>
             </div>
             <div className='card-footer'>
                 {renderFontSizeController(fontSize, setFontSize)}
