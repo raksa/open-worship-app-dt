@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import {
-    ExtractedBibleResult, genExtractedBible, extractBibleTitle,
-    toInputText, fromLocaleNumBB, parseChapterFromGuessing,
+    ExtractedBibleResult, genExtractedBible, extractBibleTitle, toInputText,
+    parseChapterFromGuessing,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderSearchSuggestion from './RenderSearchSuggestion';
 import { useAppEffect } from '../helper/debuggerHelpers';

@@ -5,10 +5,7 @@ import FileListHandler from '../others/FileListHandler';
 import SlideFile from './SlideFile';
 import Slide from './Slide';
 import {
-    checkIsPdf,
-    convertOfficeFile,
-    pdfMimetype,
-    supportOfficeFE,
+    checkIsPdf, convertOfficeFile, pdfMimetype, supportOfficeFE,
 } from './slideHelpers';
 import { extractExtension } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';

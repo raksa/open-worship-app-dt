@@ -15,8 +15,10 @@ declare global {
     namespace React.JSX {
         // eslint-disable-next-line no-unused-vars
         interface IntrinsicElements {
-            ['mini-present-previewer']: CustomElement<CustomHTMLPresentPreviewer,
-                'FTScroll' | 'VerseHover' | 'VerseSelect'>;
+            ['mini-present-previewer']: CustomElement<
+                CustomHTMLPresentPreviewer, 'FTScroll' |
+                'VerseHover' | 'VerseSelect'
+            >;
         }
     }
 }
@@ -40,7 +42,9 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.presentId > -1) {
-                const presentManager = PresentManager.getInstance(this.presentId);
+                const presentManager = PresentManager.getInstance(
+                    this.presentId,
+                );
                 if (presentManager === null) {
                     return;
                 }

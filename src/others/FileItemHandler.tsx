@@ -1,8 +1,7 @@
 import { lazy, useCallback, useState } from 'react';
 import FileReadError from './FileReadError';
 import {
-    ContextMenuItemType,
-    showAppContextMenu,
+    ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
     copyToClipboard, openExplorer,

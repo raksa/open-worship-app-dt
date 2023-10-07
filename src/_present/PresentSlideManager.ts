@@ -12,7 +12,8 @@ import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect
+    from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 export type SlideItemDataType = {

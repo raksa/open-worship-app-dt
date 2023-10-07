@@ -13,17 +13,11 @@ import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
 import {
-    PresentFTManagerEventType,
-    FTItemDataType,
-    settingName,
-    getFTList,
-    setFTList,
-    renderPFTManager,
-    bibleItemToFtData,
+    PresentFTManagerEventType, FTItemDataType, settingName, getFTList,
+    setFTList, renderPFTManager, bibleItemToFtData,
 } from './presentFTHelpers';
 import {
-    genPresentMouseEvent,
-    PresentMessageType,
+    genPresentMouseEvent, PresentMessageType,
 } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
@@ -235,11 +229,13 @@ export default class PresentFTManager
     }
     static get textStyleTextColor(): string {
         const textStyle = this.textStyle;
-        return typeof textStyle.color !== 'string' ? '#ffffff' : textStyle.color;
+        return typeof textStyle.color !== 'string' ?
+            '#ffffff' : textStyle.color;
     }
     static get textStyleTextTextShadow(): string {
         const textStyle = this.textStyle;
-        return typeof textStyle.textShadow !== 'string' ? 'none' : textStyle.textShadow;
+        return typeof textStyle.textShadow !== 'string' ?
+            'none' : textStyle.textShadow;
     }
     static get textStyleText(): string {
         return `
@@ -280,9 +276,8 @@ export default class PresentFTManager
     }
     static async ftBibleItemSelect(
         event: React.MouseEvent | null, bibleItems: BibleItem[]) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(
-            genPresentMouseEvent(event) as any,
-        );
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(genPresentMouseEvent(event) as any);
         const ftItemData = await bibleItemToFtData(bibleItems);
         chosenPresentManagers.forEach((presentManager) => {
             const { presentFTManager } = presentManager;
@@ -290,9 +285,8 @@ export default class PresentFTManager
         });
     }
     static async ftLyricSelect(event: React.MouseEvent | null, lyric: Lyric) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(
-            genPresentMouseEvent(event) as any,
-        );
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(genPresentMouseEvent(event) as any);
         const renderedList = fullTextPresentHelper.genLyricRenderList(lyric);
         const ftItemData: FTItemDataType = {
             type: 'lyric',

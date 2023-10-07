@@ -1,6 +1,7 @@
+import './PresentAlert.scss';
+
 import { useRef } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import './PresentAlert.scss';
 import { usePMEvents } from './presentEventHelpers';
 import PresentManager from './PresentManager';
 

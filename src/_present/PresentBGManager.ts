@@ -13,7 +13,8 @@ import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect
+    from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 const backgroundTypeList = ['color', 'image', 'video'] as const;
@@ -159,7 +160,8 @@ export default class PresentBGManager
                 return;
             }
         }
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(event);
         const setSrc = async (presentManager: PresentManager) => {
             const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
             presentManager.presentBGManager.bgSrc = bgSrc;
