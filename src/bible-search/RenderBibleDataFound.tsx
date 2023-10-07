@@ -6,32 +6,33 @@ import {
     BibleViewText, BibleViewTitle,
 } from '../read-bible/BibleViewExtra';
 
-type RendPropsType = {
-    bibleItem: BibleItem,
-    applyChapterSelection: (chapter: number) => void,
-    onVerseChange: (startVerse?: number, endVerse?: number) => void,
-};
-
 export default function RenderBibleDataFound({
-    bibleItem, onVerseChange,
-}: RendPropsType) {
+    bibleItem, onVerseChange, onPinning,
+}: {
+    bibleItem: BibleItem,
+    onVerseChange?: (startVerse?: number, endVerse?: number) => void,
+    onPinning: () => void,
+}) {
     const [fontSize, setFontSize] = useStateSettingNumber(
         'bible-search-font-size', 16,
     );
+    const isSearching = onVerseChange !== undefined;
     return (
-        <div className='card border-success mt-1 flex-fill'
+        <div className='card border-success mt-1 w-100 h-100'
             style={{
                 height: '10px',
             }}>
-            {renderHeader(bibleItem)}
+            {renderHeader(bibleItem, isSearching, onPinning)}
             <div className={
                 'card-body bg-transparent border-success p-0'
             }>
-                <RenderVerseOptions
+                {!isSearching ? null :
+                    <RenderVerseOptions
+                        bibleItem={bibleItem}
+                        onVersesChange={onVerseChange} />
+                }
+                <BibleViewText
                     bibleItem={bibleItem}
-                    onVersesChange={onVerseChange}
-                />
-                <BibleViewText bibleItem={bibleItem}
                     fontSize={fontSize} />
             </div>
             <div className='card-footer'>
@@ -41,25 +42,30 @@ export default function RenderBibleDataFound({
     );
 }
 
-function renderHeader(bibleItem: BibleItem) {
+function renderHeader(
+    bibleItem: BibleItem, isSearching: boolean, onPinning: () => void,
+) {
     return (
         <div className='card-header bg-transparent border-success'>
-            <div className='d-flex'>
+            <div className='d-flex w-100 h-100' style={{
+                overflowX: 'auto',
+            }}>
                 <div className='flex-fill'>
                     <BibleViewTitle bibleItem={bibleItem} />
                 </div>
                 <div>
                     <RenderActionButtons bibleItem={bibleItem} />
-                    <RenderCopyButton bibleItem={bibleItem} />
+                    {genCopyButtons(bibleItem)}
+                    {genPinButton(isSearching, onPinning)}
                 </div>
             </div>
         </div>
     );
 }
 
-function RenderCopyButton({ bibleItem }: { bibleItem: BibleItem }) {
+function genCopyButtons(bibleItem: BibleItem) {
     return (
-        <div className='btn-group float-end'>
+        <div className='btn-group'>
             <button type='button'
                 className='btn btn-sm btn-info'
                 title='Copy title to clipboard'
@@ -79,6 +85,29 @@ function RenderCopyButton({ bibleItem }: { bibleItem: BibleItem }) {
                 onClick={() => {
                     bibleItem.copyToClipboard();
                 }}><i className='bi bi-back' />all</button>
+        </div>
+    );
+}
+
+function genPinButton(
+    isSearching: boolean, onClick: () => void,
+) {
+    return (
+        <div className='btn-group float-end'>
+            {isSearching ?
+                <button type='button'
+                    className='btn btn-sm btn-outline-warning'
+                    title='Pin this verse'
+                    onClick={onClick}>
+                    <i className='bi bi-pin' />
+                </button> :
+                <button type='button'
+                    className='btn btn-sm btn-outline-warning'
+                    title='Pin this verse'
+                    onClick={onClick}>
+                    <i className='bi bi-x-lg' />
+                </button>
+            }
         </div>
     );
 }

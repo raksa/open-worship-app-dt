@@ -5,10 +5,11 @@ import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
+import BibleItem from '../bible-list/BibleItem';
 
 export default function RenderSearchSuggestion({
     applyChapterSelection, applyVerseSelection, applyBookSelection,
-    bibleResult, bibleKey,
+    bibleResult, bibleKey, pinningBibleItem,
 }: {
     applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (
@@ -18,6 +19,7 @@ export default function RenderSearchSuggestion({
     inputText: string,
     bibleKey: string,
     bibleResult: ExtractedBibleResult,
+    pinningBibleItem: (bibleItem: BibleItem) => void,
 }) {
     const onVerseChangeCallback = useCallback(
         (newStartVerse?: number, newEndVerse?: number) => {
@@ -31,11 +33,11 @@ export default function RenderSearchSuggestion({
 
     if (bibleItem !== null) {
         return (
-            <div className='d-flex flex-column w-100 h-100 overflow-hidden'>
+            <div className='d-flex w-100 h-100'>
                 <RenderBibleDataFound
                     bibleItem={bibleItem}
-                    applyChapterSelection={applyChapterSelection}
                     onVerseChange={onVerseChangeCallback}
+                    onPinning={() => pinningBibleItem(bibleItem)}
                 />
             </div>
         );
@@ -61,7 +63,6 @@ export default function RenderSearchSuggestion({
         </div>
     );
 }
-
 
 export function BibleNotAvailable() {
     return (

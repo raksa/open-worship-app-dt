@@ -25,16 +25,24 @@ export type DataInputType = [
     CSSProperties?,
 ];
 export default function ResizeActor({
-    fSizeName, flexSizeDefault,
-    resizeKinds, dataInput,
+    fSizeName, flexSizeDefault, resizeKinds, dataInput, isDisableQuickResize,
 }: {
     fSizeName: string,
     flexSizeDefault: FlexSizeType,
     resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
+    isDisableQuickResize?: boolean,
 }) {
     if (resizeKinds.length !== dataInput.length - 1) {
         throw new Error('resizeKinds and dataInput length not match');
+    }
+    for (const [_, key, __] of dataInput) {
+        if (flexSizeDefault[key] === undefined) {
+            throw new Error(
+                `key ${key} not found in flexSizeDefault:` +
+                JSON.stringify(flexSizeDefault)
+            );
+        }
     }
     const defaultFlexSize = getFlexSizeSetting(fSizeName, flexSizeDefault);
     const [flexSize, setFlexSize] = useState(defaultFlexSize);
@@ -51,6 +59,7 @@ export default function ResizeActor({
                         fSizeName={fSizeName}
                         dataInput={dataInput}
                         resizeKinds={resizeKinds}
+                        isDisableQuickResize={isDisableQuickResize || false}
                     />
                 );
             })}
@@ -59,9 +68,8 @@ export default function ResizeActor({
 }
 
 function RenderItem({
-    data, index, flexSize, setFlexSize,
-    defaultFlexSize, fSizeName, dataInput,
-    resizeKinds,
+    data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName, dataInput,
+    resizeKinds, isDisableQuickResize,
 }: {
     data: DataInputType,
     index: number,
@@ -71,6 +79,7 @@ function RenderItem({
     fSizeName: string,
     dataInput: DataInputType[],
     resizeKinds: ResizeKindType[],
+    isDisableQuickResize: boolean,
 }) {
     const disableCallback = useCallback((
         targetDataFSizeKey: string, target: DisabledType) => {
@@ -127,6 +136,7 @@ function RenderItem({
     return (
         <Fragment key={index}>
             {isShowingFSizeActor && <FlexResizeActor
+                isDisableQuickResize={isDisableQuickResize}
                 disable={disableCallback}
                 checkSize={checkSizeCallback}
                 type={resizeKinds[index - 1]} />}

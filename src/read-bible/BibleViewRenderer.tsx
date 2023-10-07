@@ -53,6 +53,7 @@ export default function BibleViewRenderer({
     return (
         <ResizeActor
             fSizeName={RESIZE_SETTING_NAME}
+            isDisableQuickResize={true}
             flexSizeDefault={Object.fromEntries(bibleItems.map((_, i) => {
                 return [`${typeText}${i + 1}`, ['1']];
             }))}

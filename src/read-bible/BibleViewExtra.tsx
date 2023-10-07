@@ -26,7 +26,7 @@ export function rendHeader(
                     <BibleViewTitle bibleItem={bibleItem} />
                 </div>
                 <div>
-                    <button className='btn-close me-3'
+                    <button className='btn-close'
                         onClick={() => {
                             onClose(indices);
                         }} />

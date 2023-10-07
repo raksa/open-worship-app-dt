@@ -7,6 +7,9 @@ import RenderSearchSuggestion from './RenderSearchSuggestion';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
+import BibleItem from '../bible-list/BibleItem';
+import { toMaxId } from '../helper/helpers';
+import RenderPinnedBibleItems from './RenderPinnedBibleItems';
 
 
 export default function RenderBibleSearchBody({
@@ -16,6 +19,7 @@ export default function RenderBibleSearchBody({
     inputText: string,
     setInputText: (newText: string) => void,
 }) {
+    const [pinnedBibleItems, setPinnedBibleItems] = useState<BibleItem[]>([]);
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
@@ -76,13 +80,32 @@ export default function RenderBibleSearchBody({
         bibleKey, extractedInput.bookKey,
         extractedInput.chapter, setInputText,
     ]);
+    const pinningBibleItem = useCallback((currentBibleItem: BibleItem) => {
+        const newBibleItem = currentBibleItem.clone();
+        const maxId = toMaxId(
+            pinnedBibleItems.map((bibleItem) => {
+                return bibleItem.id;
+            }),
+        );
+        newBibleItem.id = maxId + 1;
+        setPinnedBibleItems([...pinnedBibleItems, newBibleItem]);
+    }, [extractedInput.bibleItem, pinnedBibleItems]);
     return (
-        <RenderSearchSuggestion
-            inputText={inputText}
-            bibleKey={bibleKey}
-            bibleResult={extractedInput}
-            applyChapterSelection={applyChapterSelectionCallback}
-            applyVerseSelection={applyVerseSelectionCallback}
-            applyBookSelection={applyBookSelectionCallback} />
+        <div className='d-flex w-100 h-100'>
+            {pinnedBibleItems.length > 0 ?
+                <RenderPinnedBibleItems
+                    pinnedBibleItems={pinnedBibleItems}
+                    setPinnedBibleItems={setPinnedBibleItems}
+                /> : null
+            }
+            <RenderSearchSuggestion
+                inputText={inputText}
+                bibleKey={bibleKey}
+                bibleResult={extractedInput}
+                applyChapterSelection={applyChapterSelectionCallback}
+                applyVerseSelection={applyVerseSelectionCallback}
+                applyBookSelection={applyBookSelectionCallback}
+                pinningBibleItem={pinningBibleItem} />
+        </div>
     );
 }

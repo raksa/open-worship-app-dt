@@ -149,6 +149,9 @@ export function getVideoDim(src: string) {
 }
 
 export function toMaxId(ids: number[]) {
+    if (ids.length === 0) {
+        return 0;
+    };
     return Math.max(...ids);
 }
 

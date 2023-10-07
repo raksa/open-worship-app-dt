@@ -8,12 +8,16 @@ import {
 } from './RenderSearchSuggestion';
 import { setBibleSearchInputFocus } from './selectionHelpers';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
+import RenderKeepWindowOpen from './RenderKeepWindowOpen';
+import { useModalTypeData } from '../app-modal/helpers';
 
 export default function RenderBibleSearch({
     editingInputText,
 }: {
     editingInputText: string,
 }) {
+    const { data } = useModalTypeData();
+    const isBibleEditing = !!data;
     const [inputText, _setInputText] = useState<string>(editingInputText);
     const [bibleKeySelected, setBibleKeySelected] = useGetSelectedBibleKey();
     const setInputText = (newText: string) => {
@@ -37,6 +41,9 @@ export default function RenderBibleSearch({
     return (
         <div id='bible-search-popup' className='app-modal shadow card'>
             <div className='card-header text-center w-100'>
+                {isBibleEditing ? null : <div className='float-start'>
+                    <RenderKeepWindowOpen />
+                </div>}
                 <div className='input-group input-group-header'>
                     <span className='input-group-text'>
                         <i className='bi bi-search' />
