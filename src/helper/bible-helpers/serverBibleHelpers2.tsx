@@ -88,7 +88,7 @@ export function genExtractedBible(): ExtractedBibleResult {
 async function transformExtracted(
     bibleKey: string, book: string, chapter: string | null,
     startVerse: string | null, endVerse: string | null,
-): Promise<ExtractedBibleResult> {
+): Promise<ExtractedBibleResult | null> {
     const result = genExtractedBible();
     result.guessingBook = book;
     result.guessingChapter = chapter;
@@ -97,7 +97,7 @@ async function transformExtracted(
     }
     const bookKey = await bookToKey(bibleKey, book);
     if (bookKey === null) {
-        return result;
+        return null;
     }
     result.bookKey = bookKey;
     result.guessingBook = null;
@@ -214,5 +214,7 @@ export async function extractBibleTitle(bibleKey: string, inputText: string) {
             return result;
         }
     };
-    return genExtractedBible();
+    const result = genExtractedBible();
+    result.guessingBook = cleanText;
+    return result;
 }
