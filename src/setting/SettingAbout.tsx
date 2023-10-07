@@ -5,16 +5,7 @@ import {
 
 export default function SettingAbout() {
     const bookKey = 'PSA';
-    const bibleItem = BibleItem.fromJson({
-        id: -1,
-        bibleKey: 'KJV',
-        target: {
-            book: bookKey, chapter: 150,
-            startVerse: 6,
-            endVerse: 6,
-        },
-        metadata: {},
-    });
+    const bibleItem = BibleItem.fromData('KJV', bookKey, 150, 6, 6);
     const text = useBibleItemRenderText(bibleItem);
     const title = useBibleItemPropsToInputText('KJV', bookKey, 150, 6, 6);
     const onClick = () => {

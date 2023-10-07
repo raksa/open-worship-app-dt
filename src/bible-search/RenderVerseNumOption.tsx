@@ -1,5 +1,4 @@
-import { ConsumeVerseType } from '../bible-list/bibleHelpers';
-import RendLocalNumberAsync from './RendLocalNumberAsync';
+import BibleItem from '../bible-list/BibleItem';
 
 let mouseDownInd: number | null = null;
 export function mouseUp() {
@@ -7,15 +6,16 @@ export function mouseUp() {
 }
 
 export default function RenderVerseNumOption({
-    index, bibleSelected, onVerseChange, found,
+    index, verseNumText, bibleItem, onVerseChange,
 }: {
     index: number,
-    onVerseChange: (sv?: number, ev?: number) => void,
-    bibleSelected: string,
-    found: ConsumeVerseType,
+    verseNumText: string,
+    bibleItem: BibleItem,
+    onVerseChange: (startVerse?: number, endVerse?: number) => void,
 }) {
-    const sVerse = found.sVerse;
-    const eVerse = found.eVerse;
+    const { target } = bibleItem;
+    const sVerse = target.startVerse;
+    const eVerse = target.endVerse;
     const ind = index + 1;
     const started = sVerse === ind;
     const inside = sVerse <= ind && ind <= eVerse;
@@ -43,8 +43,7 @@ export default function RenderVerseNumOption({
                         Math.max(mouseDownInd, ind));
                 }
             }}>
-            <RendLocalNumberAsync ind={ind}
-                bibleSelected={bibleSelected} />
+            <span>{verseNumText}</span>
         </div>
     );
 }

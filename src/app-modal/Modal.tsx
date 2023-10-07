@@ -11,7 +11,7 @@ interface MyProps {
     children?: ReactNode
 }
 
-const eventMapper: EventMapper = {
+const quittingEventMap: EventMapper = {
     wControlKey: ['Ctrl'],
     mControlKey: ['Ctrl'],
     lControlKey: ['Ctrl'],
@@ -20,7 +20,7 @@ const eventMapper: EventMapper = {
 
 export function useModal(isHandlingClose: boolean = true) {
     const closeModal = useCloseAppModal();
-    useKeyboardRegistering(eventMapper, () => {
+    useKeyboardRegistering([quittingEventMap], () => {
         if (isHandlingClose) {
             closeModal();
         }
@@ -41,7 +41,7 @@ export function useModal(isHandlingClose: boolean = true) {
                             onClick={() => {
                                 closeModal();
                             }}
-                            data-tool-tip={toShortcutKey(eventMapper)}
+                            data-tool-tip={toShortcutKey(quittingEventMap)}
                             className='btn btn-outline-danger m-2'>
                             <i className='bi bi-x-lg' />
                         </button>

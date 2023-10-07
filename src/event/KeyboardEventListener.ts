@@ -101,13 +101,16 @@ export default class KeyboardEventListener extends EventHandler<string> {
 }
 
 export function useKeyboardRegistering(
-    eventMapper: EventMapper, listener: ListenerType) {
+    eventMappers: EventMapper[], listener: ListenerType) {
     useAppEffect(() => {
-        const eventName = KeyboardEventListener.toEventMapperKey(eventMapper);
-        const registeredEvent = KeyboardEventListener.registerEventListener(
-            [eventName], listener);
+        const eventNames = eventMappers.map((eventMapper) => {
+            return KeyboardEventListener.toEventMapperKey(eventMapper);
+        });
+        const registeredEvents = KeyboardEventListener.registerEventListener(
+            eventNames, listener,
+        );
         return () => {
-            KeyboardEventListener.unregisterEventListener(registeredEvent);
+            KeyboardEventListener.unregisterEventListener(registeredEvents);
         };
     });
 }

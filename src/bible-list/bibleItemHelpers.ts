@@ -83,7 +83,7 @@ export function genDuplicatedMessage(list: BibleItem[],
     { target }: BibleItem, i: number) {
     let warningMessage;
     const duplicated = list.find(({ target: target1 }, i1) => {
-        return target.book === target1.book &&
+        return target.bookKey === target1.bookKey &&
             target.chapter === target1.chapter &&
             target.startVerse === target1.startVerse &&
             target.endVerse === target1.endVerse && i !== i1;

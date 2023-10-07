@@ -69,7 +69,7 @@ export function BibleViewText({
 
 
 export function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
-    const { book, chapter, startVerse, endVerse } = bibleItem.target;
+    const { bookKey: book, chapter, startVerse, endVerse } = bibleItem.target;
     const arr: number[] = [];
     for (let i = startVerse; i <= endVerse; i++) {
         arr.push(i);

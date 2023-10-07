@@ -1,64 +1,65 @@
 import { useCallback } from 'react';
-import RenderBookOption from './RenderBookOption';
-import RenderChapterOption from './RenderChapterOption';
+import RenderBookOptions from './RenderBookOptions';
+import RenderChapterOptions from './RenderChapterOptions';
 import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
 
 export default function RenderSearchSuggestion({
-    bibleResult, inputText, bibleSelected,
-    applyChapterSelection,
-    applyVerseSelection,
-    applyBookSelection,
+    applyChapterSelection, applyVerseSelection, applyBookSelection,
+    bibleResult, bibleKey,
 }: {
-    inputText: string, bibleSelected: string,
-    bibleResult: ExtractedBibleResult,
     applyChapterSelection: (newChapter: number) => void,
-    applyVerseSelection: (newStartVerse?: number,
-        newEndVerse?: number) => void,
+    applyVerseSelection: (
+        newStartVerse?: number, newEndVerse?: number,
+    ) => void,
     applyBookSelection: (newBook: string) => void,
+    inputText: string,
+    bibleKey: string,
+    bibleResult: ExtractedBibleResult,
 }) {
-    const onVerseChangeCallback = useCallback((
-        newStartVerse?: number, newEndVerse?: number) => {
-        applyVerseSelection(newStartVerse, newEndVerse);
-    }, [applyVerseSelection]);
+    const onVerseChangeCallback = useCallback(
+        (newStartVerse?: number, newEndVerse?: number) => {
+            applyVerseSelection(newStartVerse, newEndVerse);
+        },
+        [applyVerseSelection],
+    );
     const {
-        book, chapter,
-        startVerse, endVerse,
+        bookKey, guessingBook, chapter, guessingChapter, bibleItem,
     } = bibleResult;
 
-    const isChoosing = !book || chapter === null;
-    return (
-        <>
-            {isChoosing && <div className='w-100 h-100'
-                style={{ overflow: 'auto' }}>
-                <div className='d-flex flex-wrap justify-content-start'>
-                    {!book && <RenderBookOption
-                        bibleSelected={bibleSelected}
-                        inputText={inputText}
-                        onSelect={applyBookSelection}
-                    />}
-                    {book && chapter === null && <RenderChapterOption
-                        bibleSelected={bibleSelected}
-                        bookSelected={book}
-                        inputText={inputText}
-                        onSelect={applyChapterSelection}
-                    />}
-                </div>
-            </div>}
+    if (bibleItem !== null) {
+        return (
             <div className='d-flex flex-column w-100 h-100 overflow-hidden'>
-                {book && chapter !== null && <RenderBibleDataFound
-                    bibleSelected={bibleSelected}
-                    book={book}
-                    chapter={chapter}
-                    startVerse={startVerse}
-                    endVerse={endVerse}
+                <RenderBibleDataFound
+                    bibleItem={bibleItem}
                     applyChapterSelection={applyChapterSelection}
                     onVerseChange={onVerseChangeCallback}
-                />}
+                />
             </div>
-        </>
+        );
+    }
+
+    return (
+        <div className='w-100 h-100'
+            style={{ overflow: 'auto' }}>
+            <div className='d-flex flex-wrap justify-content-start'>
+                <RenderBookOptions
+                    bibleKey={bibleKey}
+                    bookKey={bookKey}
+                    guessingBook={guessingBook}
+                    onSelect={applyBookSelection}
+                />
+                <RenderChapterOptions
+                    bibleKey={bibleKey}
+                    bookKey={bookKey}
+                    chapter={chapter}
+                    guessingChapter={guessingChapter}
+                    onSelect={applyChapterSelection}
+                />
+            </div>
+        </div>
     );
 }
 

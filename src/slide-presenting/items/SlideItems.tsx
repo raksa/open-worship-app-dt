@@ -26,7 +26,7 @@ export default function SlideItems({ slide }: { slide: Slide }) {
 
         const useCallback = (key: KeyboardType) => {
             useKeyboardRegistering(
-                { key }, genArrowListener(slide, slideItems),
+                [{ key }], genArrowListener(slide, slideItems),
             );
         };
         arrows.forEach(useCallback);

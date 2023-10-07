@@ -5,14 +5,13 @@ import {
 import { usePMEvents } from '../presentEventHelpers';
 import PresentManager from '../PresentManager';
 
+const presentingEventMap = { key: 'F5' };
 export default function ShowHidePresent({
     presentManager,
 }: {
     presentManager: PresentManager,
 }) {
-    useKeyboardRegistering({
-        key: 'F5',
-    }, () => {
+    useKeyboardRegistering([presentingEventMap], () => {
         presentManager.isShowing = !isShowing;
     });
     usePMEvents(['visible'], presentManager);
@@ -22,7 +21,7 @@ export default function ShowHidePresent({
             onClick={() => {
                 presentManager.isShowing = !isShowing;
             }}
-            data-tool-tip={toShortcutKey({ key: 'F5' })}>
+            data-tool-tip={toShortcutKey(presentingEventMap)}>
             <i className='bi bi-file-slides-fill' />
         </div>
     );

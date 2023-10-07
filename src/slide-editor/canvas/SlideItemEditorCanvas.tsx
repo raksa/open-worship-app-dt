@@ -6,7 +6,6 @@ import {
     showCanvasContextMenu,
 } from './canvasCMHelpers';
 import { isSupportedMimetype } from '../../server/fileHelper';
-import FileSource from '../../helper/FileSource';
 import CanvasController from './CanvasController';
 import { useCCScale, useCanvasControllerEvents } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
@@ -17,7 +16,7 @@ export default function SlideItemEditorCanvas() {
     const canvasController = CanvasController.getInstance();
     const scale = useCCScale();
     useCanvasControllerEvents(['update']);
-    useKeyboardRegistering({ key: 'Escape' }, () => {
+    useKeyboardRegistering([{ key: 'Escape' }], () => {
         canvasController.stopAllMods();
     });
     const canvas = canvasController.canvas;

@@ -1,18 +1,17 @@
 import {
-    KeyboardType,
-    useKeyboardRegistering,
+    KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 
 export const INPUT_TEXT_CLASS = 'bible-search-input-text';
 
 function indexing(listLength: number, index: number, isNext: boolean) {
-    return ((index + (isNext ? 1 : -1)) + listLength) %
-        listLength;
+    return ((index + (isNext ? 1 : -1)) + listLength) % listLength;
 }
 
 function getElements(optionClass: string) {
     return Array.from(
-        document.querySelectorAll<HTMLDivElement>(`.${optionClass}`));
+        document.querySelectorAll<HTMLDivElement>(`.${optionClass}`),
+    );
 }
 
 function calculateIndexer(optionClass: string, selectedClass: string) {
@@ -129,9 +128,9 @@ export function processSelection(optionClass: string,
 
 export function userEnteringSelected(optionClass: string,
     selectedClass: string, callback: (value: string) => void) {
-    useKeyboardRegistering({ key: 'Enter' }, () => {
+    useKeyboardRegistering([{ key: 'Enter' }], () => {
         const selectedElement = getSelectedElement(optionClass, selectedClass);
-        if (selectedElement && selectedElement.dataset.optionValue) {
+        if (selectedElement?.dataset.optionValue) {
             callback(selectedElement.dataset.optionValue);
         }
     });

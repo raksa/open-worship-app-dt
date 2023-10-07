@@ -9,7 +9,7 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export type BibleTargetType = {
-    book: string,
+    bookKey: string,
     chapter: number,
     startVerse: number,
     endVerse: number,
@@ -34,7 +34,7 @@ class BibleRenderHelper {
 
     toBibleVersesKey(bibleKey: string,
         bibleTarget: BibleTargetType) {
-        const { book, chapter, startVerse, endVerse } = bibleTarget;
+        const { bookKey: book, chapter, startVerse, endVerse } = bibleTarget;
         const txtV = `${startVerse}${startVerse !== endVerse ?
             ('-' + endVerse) : ''}`;
         return `${bibleKey} | ${book} ${chapter}:${txtV}`;

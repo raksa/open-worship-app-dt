@@ -7,7 +7,7 @@ import {
     getBookKVList, bookToKey, VerseList, getVerses,
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    extractBible, toInputText,
+    extractBibleTitle, toInputText, toLocaleNumBB,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import {
     getDownloadedBibleInfoList,
@@ -70,13 +70,13 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
 
 export async function genInputText(preBible: string,
     bibleKey: string, inputText: string) {
-    const result = await extractBible(preBible, inputText);
+    const result = await extractBibleTitle(preBible, inputText);
     const {
-        book: newBook,
+        bookKey: newBook,
         chapter: newChapter,
-        startVerse: newStartVerse,
-        endVerse: newEndVerse,
+        bibleItem,
     } = result;
+    const target = bibleItem?.target;
     if (newBook !== null) {
         const bookObj = await getBookKVList(preBible);
         const key = bookObj === null ? null : Object.keys(bookObj)
@@ -86,8 +86,10 @@ export async function genInputText(preBible: string,
         if (key) {
             const newBookObj = await getBookKVList(bibleKey);
             if (newBookObj !== null) {
-                return toInputText(bibleKey, newBookObj[key],
-                    newChapter, newStartVerse, newEndVerse);
+                return toInputText(
+                    bibleKey, newBookObj[key], newChapter, target?.startVerse,
+                    target?.endVerse,
+                );
             }
         }
     }
@@ -137,35 +139,25 @@ export type ConsumeVerseType = {
     eVerse: number,
     verses: VerseList,
 };
-export async function consumeStartVerseEndVerse({
-    chapter, startVerse, endVerse, bibleSelected, book, bookKey,
+export async function genVerseList({
+    bibleKey, bookKey, chapter,
 }: {
+    bibleKey: string,
+    bookKey: string,
     chapter: number,
-    startVerse: number | null,
-    endVerse: number | null,
-    bibleSelected: string,
-    book?: string,
-    bookKey?: string,
 }) {
-    const newBookKey = bookKey ?? (
-        book ? await bookToKey(bibleSelected, book) : null
-    );
-    if (newBookKey === null) {
-        return null;
-    }
-    const verses = await getVerses(bibleSelected, newBookKey, chapter);
+    const verses = await getVerses(bibleKey, bookKey, chapter);
     if (verses === null) {
         return null;
     }
-    const verseCount = Object.keys(verses).length;
-    const sVerse = startVerse || 1;
-    const eVerse = endVerse || verseCount;
-    const result: ConsumeVerseType = {
-        verses,
-        sVerse,
-        eVerse,
-    };
-    return result;
+    const verseNumbList = await Promise.all(Array.
+        from({ length: Object.keys(verses).length }, (_, i) => {
+            return toLocaleNumBB(bibleKey, i);
+        }),
+    );
+    return verseNumbList.filter((verseNumSting) => {
+        return verseNumSting !== null;
+    }) as string[];
 }
 
 export async function moveBibleItemTo(

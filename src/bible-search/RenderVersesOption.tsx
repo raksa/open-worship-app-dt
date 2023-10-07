@@ -1,12 +1,8 @@
 import './RenderVersesOption.scss';
 
 import { useState } from 'react';
-import {
-    ConsumeVerseType, consumeStartVerseEndVerse,
-} from '../bible-list/bibleHelpers';
-import RenderVerseNumOption, {
-    mouseUp,
-} from './RenderVerseNumOption';
+import { genVerseList } from '../bible-list/bibleHelpers';
+import RenderVerseNumOption, { mouseUp } from './RenderVerseNumOption';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 
@@ -16,41 +12,42 @@ export default function RenderVersesOption({
     bibleItem: BibleItem,
     onVersesChange: (startVerse?: number, endVerse?: number) => void,
 }) {
+    const [verseList, setVerseList] = useState<string[] | null>(null);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
             document.body.removeEventListener('mouseup', mouseUp);
         };
     });
-    const [found, setFound] = useState<ConsumeVerseType | null>(null);
+    const { bibleKey, target } = bibleItem;
+    const { bookKey, chapter } = target;
     useAppEffect(() => {
-        const {
-            book: bookKey, chapter, startVerse, endVerse,
-        } = bibleItem.target;
-        consumeStartVerseEndVerse({
-            chapter, startVerse, endVerse, bibleSelected: bibleItem.bibleKey,
-            bookKey,
-        }).then((newFound) => {
-            setFound(newFound);
+        genVerseList({
+            bibleKey, bookKey, chapter,
+        }).then((verseNumList) => {
+            setVerseList(verseNumList);
         });
-    }, [bibleItem]);
-    if (found === null) {
-        return (
-            <div>Not Found</div>
-        );
+    }, [bibleKey, bookKey, chapter]);
+
+    if (verseList === null) {
+        return null;
     }
-    const verseCount = Object.values(found.verses).length;
     return (
         <div className='render-found sticky-top'>
-            <div className={'verse-select d-flex p-1 '
-                + 'align-content-start flex-wrap'}>
-                {Array.from({ length: verseCount }, (_, i) => {
+            <div className={
+                'verse-select d-flex p-1 align-content-start flex-wrap'
+            }>
+                {verseList.map((verseNumStr, i) => {
+                    if (verseNumStr !== `${i + 1}`) {
+                        verseNumStr = `${verseNumStr}(${i + 1})`;
+                    }
                     return (
-                        <RenderVerseNumOption key={i}
+                        <RenderVerseNumOption
+                            key={verseNumStr}
                             index={i}
+                            verseNumText={verseNumStr}
                             onVerseChange={onVersesChange}
-                            bibleSelected={bibleItem.bibleKey}
-                            found={found} />
+                            bibleItem={bibleItem} />
                     );
                 })}
             </div>

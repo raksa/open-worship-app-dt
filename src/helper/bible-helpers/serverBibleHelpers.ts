@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import {
-    getBibleInfo, getBookKVList, getChapterCount,
+    getBibleInfo, getBookKVList,
 } from './bibleInfoHelpers';
-
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
 import { useAppEffect } from '../debuggerHelpers';
+import { toLocaleNumBB } from './serverBibleHelpers2';
+
 export const bibleObj = bibleJson as {
     booksOrder: string[],
     books: { [key: string]: BookType },
@@ -28,7 +29,47 @@ export const toLocaleNum = (n: number, numList: string[]) => {
     }).join('');
 };
 
-export async function genMatches(bibleKey: string, inputText: string) {
+export async function genChapterMatches(
+    bibleKey: string, bookKey: string, guessingChapter: string | null,
+) {
+    const chapterCount = getKJVChapterCount(bookKey);
+    const chapterList = Array.from({ length: chapterCount }, (_, i) => {
+        return i + 1;
+    });
+    const chapterNumStrList = await Promise.all(chapterList.map((chapter) => {
+        return toLocaleNumBB(bibleKey, chapter);
+    }));
+    const newList = chapterNumStrList.map((chapterNumStr, i) => {
+        return [chapterList[i], chapterNumStr];
+    });
+    const newFilteredList = newList.filter((chapterMatch) => {
+        return chapterMatch[0] !== null;
+    }) as [number, string][];
+    if (guessingChapter === null) {
+        return newFilteredList;
+    }
+    return newFilteredList.filter(([_, chapterNumStr]) => {
+        return (
+            chapterNumStr.includes(guessingChapter) ||
+            guessingChapter.includes(chapterNumStr)
+        );
+    });
+}
+export function useChapterMatch(
+    bibleKey: string, bookKey: string, guessingChapter: string | null,
+) {
+    const [matches, setMatches] = useState<[number, string][] | null>(null);
+    useAppEffect(() => {
+        genChapterMatches(bibleKey, bookKey, guessingChapter).then(
+            (chapterNumStrList) => {
+                setMatches(chapterNumStrList);
+            },
+        );
+    }, [bookKey, guessingChapter]);
+    return matches;
+}
+
+export async function genBookMatches(bibleKey: string, inputText: string) {
     const kjvKeyValue = getKJVKeyValue();
     const bookKVList = await getBookKVList(bibleKey);
     if (bookKVList === null) {
@@ -51,41 +92,34 @@ export async function genMatches(bibleKey: string, inputText: string) {
         return false;
     });
 };
-export function useMatch(bibleKey: string, inputText: string) {
+export function useBookMatch(bibleKey: string, inputText: string) {
     const [matches, setMatches] = useState<string[] | null>(null);
     useAppEffect(() => {
-        genMatches(bibleKey, inputText).then((ms) => {
+        genBookMatches(bibleKey, inputText).then((ms) => {
             setMatches(ms);
         });
     }, [bibleKey, inputText]);
     return matches;
 }
-export function useGetBookKVList(bibleSelected: string) {
+export function useGetBookKVList(bibleKey: string) {
     const [bookKVList, setBookKVList] = useState<{
         [key: string]: string;
     } | null>(null);
     useAppEffect(() => {
-        getBookKVList(bibleSelected).then((list) => {
+        getBookKVList(bibleKey).then((list) => {
             setBookKVList(list);
         });
-    }, [bibleSelected]);
+    }, [bibleKey]);
     return bookKVList;
 }
 export function useGetBibleWithStatus(bibleKey: string) {
-    const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(null);
+    const [bibleStatus, setBibleStatus] = useState<BibleStatusType | null>(
+        null,
+    );
     useAppEffect(() => {
         getBibleInfoWithStatus(bibleKey).then((bs) => setBibleStatus(bs));
     }, [bibleKey]);
     return bibleStatus;
-}
-export function useGetChapterCount(bibleSelected: string, bookSelected: string) {
-    const [chapterCount, setChapterCount] = useState<number | null>(null);
-    useAppEffect(() => {
-        getChapterCount(bibleSelected, bookSelected).then((chapterCount) => {
-            setChapterCount(chapterCount);
-        });
-    });
-    return chapterCount;
 }
 
 export function getKJVKeyValue() {

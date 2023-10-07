@@ -12,21 +12,18 @@ import {
 } from '../bible-list/bibleItemHelpers';
 
 export default function InputHandler({
-    inputText,
-    onInputChange,
-    onBibleChange,
-    bibleSelected,
+    inputText, onInputChange, onBibleChange, bibleKey,
 }: {
     inputText: string
     onInputChange: (str: string) => void
     onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
-    bibleSelected: string;
+    bibleKey: string;
 }) {
-    const books = useGetBookKVList(bibleSelected);
+    const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(
-        bibleSelected, bookKey, 1, 1, 2);
-    useKeyboardRegistering({ key: 'Escape' }, () => {
+        bibleKey, bookKey, 1, 1, 2);
+    useKeyboardRegistering([{ key: 'Escape' }], () => {
         if (inputRef.current !== null) {
             if (document.activeElement !== inputRef.current) {
                 inputRef.current.focus();
@@ -49,7 +46,7 @@ export default function InputHandler({
                 }} />
             <span className='input-group-text select'>
                 <i className='bi bi-journal-bookmark' />
-                <BibleSelection value={bibleSelected}
+                <BibleSelection value={bibleKey}
                     onChange={onBibleChange} />
             </span>
         </>

@@ -16,9 +16,7 @@ export default function SlideItemEditorPopup({ slideItem }: {
     slideItem: SlideItem
 }) {
     const { Modal } = useModal();
-    useKeyboardRegistering({
-        key: 'Escape',
-    }, closeItemSlideEdit);
+    useKeyboardRegistering([{ key: 'Escape' }], closeItemSlideEdit);
     CanvasController.getInstance().init(slideItem);
     return (
         <Modal>

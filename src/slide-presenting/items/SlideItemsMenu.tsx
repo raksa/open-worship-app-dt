@@ -1,26 +1,23 @@
 import {
-    EventMapper as KBEventMapper,
-    useKeyboardRegistering,
+    EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
 import Slide from '../../slide-list/Slide';
 import PresentManager from '../../_present/PresentManager';
 import MenuIsModifying from './MenuIsModifying';
 
-export default function SlideItemsMenu({
-    slide,
-}: {
+const savingEventMapper: KBEventMapper = {
+    wControlKey: ['Ctrl'],
+    mControlKey: ['Ctrl'],
+    lControlKey: ['Ctrl'],
+    key: 's',
+};
+export default function SlideItemsMenu({ slide }: {
     slide: Slide,
 }) {
     const presentDisplay = PresentManager.getDefaultPresentDisplay();
     useFSEvents(['update'], slide.filePath);
-    const eventMapper: KBEventMapper = {
-        wControlKey: ['Ctrl'],
-        mControlKey: ['Ctrl'],
-        lControlKey: ['Ctrl'],
-        key: 's',
-    };
-    useKeyboardRegistering(eventMapper, () => {
+    useKeyboardRegistering([savingEventMapper], () => {
         slide.save();
     });
     const foundWrongDimension = slide.checkIsWrongDimension(presentDisplay);
@@ -58,7 +55,7 @@ export default function SlideItemsMenu({
                 <MenuIsModifying
                     slide={slide}
                     isHavingHistories={isHavingHistories}
-                    eventMapper={eventMapper} />
+                    eventMapper={savingEventMapper} />
                 {foundWrongDimension !== null &&
                     <button type='button'
                         className='btn btn-sm btn-warning'

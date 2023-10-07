@@ -54,7 +54,7 @@ export default class BibleItem extends ItemBase
             id: -1,
             bibleKey: '',
             target: {
-                book: '',
+                bookKey: '',
                 chapter: 0,
                 startVerse: 0,
                 endVerse: 0,
@@ -63,6 +63,22 @@ export default class BibleItem extends ItemBase
         }, filePath);
         item.jsonError = json;
         return item;
+    }
+    static fromData(
+        bibleKey: string, bookKey: string, chapter: number, startVerse: number,
+        endVerse: number
+    ) {
+        return BibleItem.fromJson({
+            id: -1,
+            bibleKey,
+            target: {
+                bookKey,
+                chapter,
+                startVerse,
+                endVerse,
+            },
+            metadata: {},
+        });
     }
     toJson(): BibleItemType {
         if (this.isError) {

@@ -12,7 +12,7 @@ import { setSetting } from '../helper/settingHelper';
 import { useModalTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {
-    const { closeModal, Modal } = useModal();
+    const { Modal } = useModal();
     const { data } = useModalTypeData();
     const bibleItem = BibleItem.parseBibleSearchData(data);
     const [inputText, setInputText] = useState<string | null>(
@@ -36,8 +36,7 @@ export default function BibleSearchPopup() {
                 </div>
             ) : (
                 <BibleSearchRender
-                    editingInputText={inputText}
-                    closeBibleSearch={closeModal} />
+                    editingInputText={inputText} />
             )
             }
         </Modal>

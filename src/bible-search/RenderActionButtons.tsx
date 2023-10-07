@@ -61,10 +61,10 @@ export default function RenderActionButtons({
             }
         }
     }, [addOrUpdateBibleItem, isWindowPresenting]);
-    useKeyboardRegistering(addListEventMapper, () => {
+    useKeyboardRegistering([addListEventMapper], () => {
         addOrUpdateBibleItem();
     });
-    useKeyboardRegistering(presentEventMapper, (event) => {
+    useKeyboardRegistering([presentEventMapper], (event) => {
         addBibleItemAndPresent(event);
     });
     const getAddingTitle = () => {
