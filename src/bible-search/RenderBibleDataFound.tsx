@@ -1,6 +1,6 @@
 import BibleItem from '../bible-list/BibleItem';
 import { useStateSettingNumber } from '../helper/settingHelper';
-import RenderVersesOption from './RenderVersesOption';
+import RenderVerseOptions from './RenderVerseOptions';
 import RenderActionButtons from './RenderActionButtons';
 import {
     BibleViewText, BibleViewTitle,
@@ -27,7 +27,7 @@ export default function RenderBibleDataFound({
             <div className={
                 'card-body bg-transparent border-success p-0'
             }>
-                <RenderVersesOption
+                <RenderVerseOptions
                     bibleItem={bibleItem}
                     onVersesChange={onVerseChange}
                 />

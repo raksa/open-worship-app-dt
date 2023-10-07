@@ -150,9 +150,9 @@ export async function genVerseList({
     if (verses === null) {
         return null;
     }
-    const verseNumbList = await Promise.all(Array.
-        from({ length: Object.keys(verses).length }, (_, i) => {
-            return toLocaleNumBB(bibleKey, i);
+    const verseNumbList = await Promise.all(
+        Array.from({ length: Object.keys(verses).length }, (_, i) => {
+            return toLocaleNumBB(bibleKey, i + 1);
         }),
     );
     const verseList = verseNumbList.map((verseNumSting, i) => {

@@ -1,34 +1,23 @@
 import './RenderVersesOption.scss';
 
-import { useState } from 'react';
-import { genVerseList } from '../bible-list/bibleHelpers';
 import RenderVerseNumOption, { mouseUp } from './RenderVerseNumOption';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
+import { useGenVerseList } from '../helper/bible-helpers/serverBibleHelpers';
 
-export default function RenderVersesOption({
+export default function RenderVerseOptions({
     bibleItem, onVersesChange,
 }: {
     bibleItem: BibleItem,
     onVersesChange: (startVerse?: number, endVerse?: number) => void,
 }) {
-    const [verseList, setVerseList] = useState<[number, string][] | null>(null);
+    const verseList = useGenVerseList(bibleItem);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
             document.body.removeEventListener('mouseup', mouseUp);
         };
     });
-    const { bibleKey, target } = bibleItem;
-    const { bookKey, chapter } = target;
-    useAppEffect(() => {
-        genVerseList({
-            bibleKey, bookKey, chapter,
-        }).then((verseNumList) => {
-            setVerseList(verseNumList);
-        });
-    }, [bibleKey, bookKey, chapter]);
-
     if (verseList === null) {
         return null;
     }

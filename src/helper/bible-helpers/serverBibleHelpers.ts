@@ -6,6 +6,8 @@ import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
 import { useAppEffect } from '../debuggerHelpers';
 import { toLocaleNumBB } from './serverBibleHelpers2';
+import { genVerseList } from '../../bible-list/bibleHelpers';
+import BibleItem from '../../bible-list/BibleItem';
 
 export const bibleObj = bibleJson as {
     booksOrder: string[],
@@ -108,6 +110,17 @@ export function useBookMatch(bibleKey: string, guessingBook: string) {
         });
     }, [bibleKey, guessingBook]);
     return matches;
+}
+export function useGenVerseList(bibleItem: BibleItem) {
+    const [verseList, setVerseList] = useState<[number, string][] | null>(null);
+    const { bibleKey, target } = bibleItem;
+    const { bookKey, chapter } = target;
+    useAppEffect(() => {
+        genVerseList({ bibleKey, bookKey, chapter }).then((verseNumList) => {
+            setVerseList(verseNumList);
+        });
+    }, [bibleKey, bookKey, chapter]);
+    return verseList;
 }
 export function useGetBookKVList(bibleKey: string) {
     const [bookKVList, setBookKVList] = useState<{
