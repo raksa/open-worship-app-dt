@@ -13,6 +13,7 @@ import {
 } from './bibleRenderHelpers';
 import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
+import { copyToClipboard } from '../server/appHelper';
 
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
@@ -176,6 +177,18 @@ export default class BibleItem extends ItemBase
             .toBibleVersesKey(this.bibleKey, this.target);
         return await bibleRenderHelper.toText(bibleVerseKey) ||
             `😟Unable to render text for ${bibleVerseKey}`;
+    }
+    async copyTitleToClipboard() {
+        const title = await this.toTitle();
+        copyToClipboard(title);
+    }
+    async copyTextToClipboard() {
+        const text = await this.toText();
+        copyToClipboard(text);
+    }
+    async copyToClipboard() {
+        const { title, text } = await this.toTitleText();
+        copyToClipboard(`${title}\n${text}`);
     }
     dragSerialize() {
         return {

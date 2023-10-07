@@ -1,4 +1,3 @@
-import { copyToClipboard } from '../server/appHelper';
 import BibleItem from '../bible-list/BibleItem';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVersesOption from './RenderVersesOption';
@@ -65,29 +64,20 @@ function RenderCopyButton({ bibleItem }: { bibleItem: BibleItem }) {
                 className='btn btn-sm btn-info'
                 title='Copy title to clipboard'
                 onClick={() => {
-                    bibleItem.toTitle().then((title) => {
-                        copyToClipboard(title);
-                    });
+                    bibleItem.copyTitleToClipboard();
                 }}><i className='bi bi-back ' />title</button>
             <button type='button'
                 className='btn btn-sm btn-info'
                 title='Copy verse text to clipboard'
                 onClick={() => {
-                    bibleItem.toText().then((text) => {
-                        copyToClipboard(text);
-                    });
+                    bibleItem.copyTextToClipboard();
                 }}>
                 <i className='bi bi-back' />text</button>
             <button type='button'
                 className='btn btn-sm btn-info'
                 title='Copy all to clipboard'
                 onClick={() => {
-                    Promise.all([
-                        bibleItem.toTitle(),
-                        bibleItem.toText(),
-                    ]).then(([title, text]) => {
-                        copyToClipboard(`${title}\n${text}`);
-                    });
+                    bibleItem.copyToClipboard();
                 }}><i className='bi bi-back' />all</button>
         </div>
     );

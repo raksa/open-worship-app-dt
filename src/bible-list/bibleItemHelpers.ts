@@ -32,6 +32,24 @@ export async function openBibleItemContextMenu(
     }
     const menuItem = [
         {
+            title: '(*T) ' + 'Copy Title',
+            onClick: () => {
+                bibleItem.copyTitleToClipboard();
+            },
+        },
+        {
+            title: '(*T) ' + 'Copy Text',
+            onClick: () => {
+                bibleItem.copyTextToClipboard();
+            },
+        },
+        {
+            title: '(*T) ' + 'Copy All',
+            onClick: () => {
+                bibleItem.copyToClipboard();
+            },
+        },
+        {
             title: '(*T) ' + 'Quick Edit',
             onClick: () => {
                 openBibleSearch();
