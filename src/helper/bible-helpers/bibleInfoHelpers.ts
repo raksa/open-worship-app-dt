@@ -8,7 +8,7 @@ import {
     is_dev, decrypt,
 } from '../../_owa-crypto/owa_crypto';
 import {
-    getKJVChapterCount, toBookKey, toFileName,
+    getKJVChapterCount, toFileName,
 } from './serverBibleHelpers';
 import { handleError } from '../errorHelpers';
 import { IndexedDbController } from '../../db/dbHelper';
@@ -79,7 +79,7 @@ export async function bookToKey(bibleKey: string, book: string) {
     return bookVKList[book] || null;
 }
 export async function getChapterCount(bibleKey: string, book: string) {
-    const bookKey = await toBookKey(bibleKey, book);
+    const bookKey = await bookToKey(bibleKey, book);
     if (bookKey === null) {
         return null;
     }

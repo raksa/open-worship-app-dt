@@ -12,7 +12,7 @@ export default function RenderVersesOption({
     bibleItem: BibleItem,
     onVersesChange: (startVerse?: number, endVerse?: number) => void,
 }) {
-    const [verseList, setVerseList] = useState<string[] | null>(null);
+    const [verseList, setVerseList] = useState<[number, string][] | null>(null);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
         return () => {
@@ -37,14 +37,12 @@ export default function RenderVersesOption({
             <div className={
                 'verse-select d-flex p-1 align-content-start flex-wrap'
             }>
-                {verseList.map((verseNumStr, i) => {
-                    if (verseNumStr !== `${i + 1}`) {
-                        verseNumStr = `${verseNumStr}(${i + 1})`;
-                    }
+                {verseList.map(([verseNum, verseNumStr], i) => {
                     return (
                         <RenderVerseNumOption
                             key={verseNumStr}
                             index={i}
+                            verseNum={verseNum}
                             verseNumText={verseNumStr}
                             onVerseChange={onVersesChange}
                             bibleItem={bibleItem} />

@@ -1,7 +1,7 @@
 import './BibleSearchPopup.scss';
 
 import { useState } from 'react';
-import BibleSearchRender from './BibleSearchRender';
+import RenderBibleSearch from './RenderBibleSearch';
 import { useModal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -35,7 +35,7 @@ export default function BibleSearchPopup() {
                     Loading...
                 </div>
             ) : (
-                <BibleSearchRender
+                <RenderBibleSearch
                     editingInputText={inputText} />
             )
             }

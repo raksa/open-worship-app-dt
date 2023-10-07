@@ -14,7 +14,7 @@ export default function RenderSearchSuggestion({
     applyVerseSelection: (
         newStartVerse?: number, newEndVerse?: number,
     ) => void,
-    applyBookSelection: (newBook: string) => void,
+    applyBookSelection: (newBookKey: string, newBook: string) => void,
     inputText: string,
     bibleKey: string,
     bibleResult: ExtractedBibleResult,
@@ -40,7 +40,6 @@ export default function RenderSearchSuggestion({
             </div>
         );
     }
-
     return (
         <div className='w-100 h-100'
             style={{ overflow: 'auto' }}>

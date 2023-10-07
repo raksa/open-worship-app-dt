@@ -126,12 +126,19 @@ export function processSelection(optionClass: string,
     });
 }
 
-export function userEnteringSelected(optionClass: string,
-    selectedClass: string, callback: (value: string) => void) {
+export type SelectBookType = (newBookKey: string, newBook: string) => void;
+
+export function userEnteringSelected(
+    optionClass: string, selectedClass: string, callback: SelectBookType
+) {
     useKeyboardRegistering([{ key: 'Enter' }], () => {
         const selectedElement = getSelectedElement(optionClass, selectedClass);
-        if (selectedElement?.dataset.optionValue) {
-            callback(selectedElement.dataset.optionValue);
+        if (
+            selectedElement?.dataset.optionBookKey &&
+            selectedElement?.dataset.optionBook
+        ) {
+            const { optionBookKey, optionBook } = selectedElement.dataset;
+            callback(optionBookKey, optionBook);
         }
     });
 }

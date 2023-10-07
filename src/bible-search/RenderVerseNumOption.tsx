@@ -6,9 +6,10 @@ export function mouseUp() {
 }
 
 export default function RenderVerseNumOption({
-    index, verseNumText, bibleItem, onVerseChange,
+    index, verseNum, verseNumText, bibleItem, onVerseChange,
 }: {
     index: number,
+    verseNum: number,
     verseNumText: string,
     bibleItem: BibleItem,
     onVerseChange: (startVerse?: number, endVerse?: number) => void,
@@ -25,6 +26,9 @@ export default function RenderVerseNumOption({
     select += ` ${ended ? 'selected-end' : ''}`;
     return (
         <div className={`item alert pointer text-center ${select}`}
+            title={
+                `${verseNum}` !== verseNumText ? `Verse ${verseNum}` : undefined
+            }
             onMouseDown={(event) => {
                 if (event.shiftKey) {
                     const arr = [ind, sVerse, eVerse]

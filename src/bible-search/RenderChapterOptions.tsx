@@ -66,8 +66,10 @@ function ChapterOptions({
                 const className = 'chapter-select btn btn-outline-success' +
                     ` ${OPTION_CLASS}` +
                     ` ${i === 0 ? OPTION_SELECTED_CLASS : ''}`;
+                const isDiff = `${chapter}` !== chapterNumStr;
                 return (
                     <div key={chapter}
+                        title={isDiff ? `Chapter ${chapter}` : undefined}
                         style={{ margin: '2px' }}>
                         <button className={className}
                             data-option-value={chapter}
@@ -75,33 +77,11 @@ function ChapterOptions({
                             onClick={() => {
                                 onSelect(chapter);
                             }}>
-                            {genChapterOption({
-                                chapter,
-                                chapterNumStr,
-                            })}
+                            <span>{chapterNumStr}</span>
                         </button>
                     </div>
                 );
             })}
         </>
-    );
-}
-
-function genChapterOption({
-    chapter, chapterNumStr,
-}: {
-    chapter: number,
-    chapterNumStr: string,
-}) {
-    if (`${chapter}` !== chapterNumStr) {
-        return (
-            <>
-                <span>{chapter}</span>
-                (<small className='text-muted'>{chapter}</small>)
-            </>
-        );
-    }
-    return (
-        <span>{chapterNumStr}</span>
     );
 }

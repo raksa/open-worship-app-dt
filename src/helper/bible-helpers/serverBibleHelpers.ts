@@ -69,8 +69,9 @@ export function useChapterMatch(
     return matches;
 }
 
-export async function genBookMatches(bibleKey: string, inputText: string) {
-    const kjvKeyValue = getKJVKeyValue();
+export async function genBookMatches(
+    bibleKey: string, guessingBook: string,
+): Promise<[string, string, string][] | null> {
     const bookKVList = await getBookKVList(bibleKey);
     if (bookKVList === null) {
         return null;
@@ -80,25 +81,29 @@ export async function genBookMatches(bibleKey: string, inputText: string) {
             return true;
         }
     };
-    const keys = Object.keys(bookKVList);
-    return keys.filter((k) => {
-        const kjvV = kjvKeyValue[k];
-        const v = bookKVList[k];
-        if (check(kjvV, inputText) || check(inputText, kjvV) ||
-            check(k, inputText) || check(inputText, k) ||
-            check(v, inputText) || check(inputText, v)) {
+    const keys = Object.entries(bookKVList);
+    const kjvKeyValue = getKJVKeyValue();
+    return keys.filter(([bookKey, book]) => {
+        const kjvValue = kjvKeyValue[bookKey];
+        if (check(kjvValue, guessingBook) || check(guessingBook, kjvValue) ||
+            check(kjvValue, guessingBook) || check(guessingBook, kjvValue) ||
+            check(book, guessingBook) || check(guessingBook, book)) {
             return true;
         }
         return false;
+    }).map(([bookKey, book]) => {
+        return [bookKey, book, kjvKeyValue[bookKey]];
     });
 };
-export function useBookMatch(bibleKey: string, inputText: string) {
-    const [matches, setMatches] = useState<string[] | null>(null);
+export function useBookMatch(bibleKey: string, guessingBook: string) {
+    const [matches, setMatches] = useState<[string, string, string][] | null>(
+        null,
+    );
     useAppEffect(() => {
-        genBookMatches(bibleKey, inputText).then((ms) => {
-            setMatches(ms);
+        genBookMatches(bibleKey, guessingBook).then((bookMatches) => {
+            setMatches(bookMatches);
         });
-    }, [bibleKey, inputText]);
+    }, [bibleKey, guessingBook]);
     return matches;
 }
 export function useGetBookKVList(bibleKey: string) {
@@ -199,16 +204,4 @@ export function toFileName(bookKey: string, chapterNum: number) {
     let indexStr = `000${index}`;
     indexStr = indexStr.substring(indexStr.length - 4);
     return `${indexStr}-${bookKey}.${chapterNum}`;
-}
-
-export async function toBookKey(bibleKey: string, book: string) {
-    const info = await getBibleInfo(bibleKey);
-    if (info !== null) {
-        for (const k in info.books) {
-            if (info.books[k] === book) {
-                return k;
-            }
-        }
-    }
-    return null;
 }

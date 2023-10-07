@@ -155,9 +155,12 @@ export async function genVerseList({
             return toLocaleNumBB(bibleKey, i);
         }),
     );
-    return verseNumbList.filter((verseNumSting) => {
+    const verseList = verseNumbList.map((verseNumSting, i) => {
+        return [i + 1, verseNumSting];
+    });
+    return verseList.filter(([_, verseNumSting]) => {
         return verseNumSting !== null;
-    }) as string[];
+    }) as [number, string][];
 }
 
 export async function moveBibleItemTo(

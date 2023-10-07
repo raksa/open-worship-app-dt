@@ -96,7 +96,7 @@ export default class BibleItem extends ItemBase
             typeof json.id !== 'number' ||
             (json.metadata && typeof json.metadata !== 'object') ||
             !json.target || typeof json.target !== 'object' ||
-            !json.target.book ||
+            !json.target.bookKey ||
             typeof json.target.chapter !== 'number' ||
             typeof json.target.startVerse !== 'number' ||
             typeof json.target.endVerse !== 'number') {
