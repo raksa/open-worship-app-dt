@@ -24,7 +24,8 @@ export default function InputHandler({
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(
-        bibleKey, bookKey, 1, 1, 2);
+        bibleKey, bookKey, 1, 1, 2,
+    );
     useKeyboardRegistering([{ key: 'Escape' }], () => {
         if (!checkIsBibleSearchInputFocused()) {
             setBibleSearchInputFocus();

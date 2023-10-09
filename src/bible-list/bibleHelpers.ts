@@ -4,7 +4,7 @@ import {
 } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
 import {
-    getBookKVList, VerseList, getVerses,
+    getBookKVList, VerseList, getVerses, keyToBook,
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     extractBibleTitle, toInputText, toLocaleNumBB,
@@ -68,30 +68,19 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     return [inputText, setInputText] as [string, (s: string) => void];
 }
 
-export async function genInputText(preBible: string,
-    bibleKey: string, inputText: string) {
-    const result = await extractBibleTitle(preBible, inputText);
+export async function genInputText(
+    oldBibleKey: string, newBibleKey: string, inputText: string,
+) {
     const {
-        bookKey: newBook,
-        chapter: newChapter,
-        bibleItem,
-    } = result;
+        bookKey, chapter, bibleItem,
+    } = await extractBibleTitle(oldBibleKey, inputText);
     const target = bibleItem?.target;
-    if (newBook !== null) {
-        const bookObj = await getBookKVList(preBible);
-        const key = bookObj === null ? null : Object.keys(bookObj)
-            .find((k) => {
-                return bookObj[k] === newBook;
-            });
-        if (key) {
-            const newBookObj = await getBookKVList(bibleKey);
-            if (newBookObj !== null) {
-                return toInputText(
-                    bibleKey, newBookObj[key], newChapter, target?.startVerse,
-                    target?.endVerse,
-                );
-            }
-        }
+    if (bookKey !== null) {
+        const newBook = await keyToBook(newBibleKey, bookKey);
+        return toInputText(
+            newBibleKey, newBook, chapter, target?.startVerse,
+            target?.endVerse,
+        );
     }
     return '';
 }

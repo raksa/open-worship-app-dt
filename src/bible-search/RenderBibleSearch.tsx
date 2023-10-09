@@ -25,14 +25,16 @@ export default function RenderBibleSearch({
         setBibleSearchInputFocus();
     };
 
-    const handleBibleChange = useCallback(async (
-        oldBibleKey: string, newBibleKey: string) => {
-        const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
-        setBibleKeySelected(newBibleKey);
-        if (newText !== null) {
-            setInputText(newText);
-        }
-    }, [inputText]);
+    const handleBibleChange = useCallback(
+        async (oldBibleKey: string, newBibleKey: string) => {
+            const newText = await genInputText(
+                oldBibleKey, newBibleKey, inputText,
+            );
+            setBibleKeySelected(newBibleKey);
+            if (newText !== null) {
+                setInputText(newText);
+            }
+        }, [inputText]);
     if (bibleKeySelected === null) {
         return (
             <BibleNotAvailable />
