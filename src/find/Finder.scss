@@ -1,0 +1,15 @@
+@import '../others/variables.scss';
+
+.finder-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    width: 350px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    z-index: $z-index-finder;
+
+    .close {
+        color: red;
+    }
+}

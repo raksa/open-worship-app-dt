@@ -6,8 +6,12 @@ $header-height: 42px;
 
 $card-header-height: 41px;
 
-$z-index-bible-search: 10;
-$z-index-context-menu: $z-index-bible-search + 10;
-$z-index-toast: $z-index-context-menu + 10;
-$z-index-resize-actor-top: $z-index-toast + 10;
+$base-z-index: 10;
+$z-index-bible-search: $base-z-index + 10;
+$z-index-popup-full-screen: $base-z-index + 20;
+$z-index-resize-actor-top: $base-z-index + 30;
+$z-index-finder: $base-z-index + 40;
+$z-index-context-menu: $base-z-index + 50;
+$z-index-toast: $base-z-index + 60;
+
 $hight-light-color: #ad0090;

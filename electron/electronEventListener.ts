@@ -55,7 +55,8 @@ export function initPresent(appController: ElectronAppController) {
     });
     // TODO: use shareProps.mainWin.on or shareProps.presentWin.on
     ipcMain.on('main:app:show-present', (event, data: ShowPresentDataType) => {
-        const presentController = ElectronPresentController.createInstance(data.presentId);
+        const presentController = ElectronPresentController
+            .createInstance(data.presentId);
         const display = appController.settingController.
             getDisplayById(data.displayId);
         if (display !== undefined) {
@@ -65,12 +66,11 @@ export function initPresent(appController: ElectronAppController) {
             presentController.setDisplay(display);
             appController.mainWin.focus();
         }
-        event.returnValue = new Promise((resolve) => {
-            resolve('hello');
-        });
+        event.returnValue = Promise.resolve('hello');
     });
     ipcMain.on('app:hide-present', (_, presentId: number) => {
-        const presentController = ElectronPresentController.getInstance(presentId);
+        const presentController = ElectronPresentController
+            .getInstance(presentId);
         if (presentController !== null) {
             presentController.close();
             presentController.destroyInstance();
@@ -82,7 +82,8 @@ export function initPresent(appController: ElectronAppController) {
     }) => {
         const display = appController.settingController.
             getDisplayById(data.displayId);
-        const presentController = ElectronPresentController.getInstance(data.presentId);
+        const presentController = ElectronPresentController
+            .getInstance(data.presentId);
         if (display !== undefined && presentController !== null) {
             presentController.setDisplay(display);
             event.returnValue = display;
@@ -103,7 +104,8 @@ export function initPresent(appController: ElectronAppController) {
                     data,
                 });
             } else {
-                const presentController = ElectronPresentController.getInstance(presentId);
+                const presentController = ElectronPresentController
+                    .getInstance(presentId);
                 if (presentController !== null) {
                     presentController.sendMessage(type, data);
                 }
@@ -118,5 +120,19 @@ export function initPresent(appController: ElectronAppController) {
     });
     ipcMain.on('app:preview-pdf', (_, pdfFilePath: string) => {
         appController.mainController.previewPdf(pdfFilePath);
+    });
+
+    const mainWinWebContents = appController.mainWin.webContents;
+    ipcMain.on('app:search-in-page', (event, searchText: string, options: {
+        forward?: boolean;
+        findNext?: boolean;
+        matchCase?: boolean;
+    } = {}) => {
+        event.returnValue = mainWinWebContents.findInPage(searchText, options);
+    });
+    ipcMain.on('app:stop-search-in-page', (
+        _, action: 'clearSelection' | 'keepSelection' | 'activateSelection',
+    ) => {
+        mainWinWebContents.stopFindInPage(action);
     });
 }

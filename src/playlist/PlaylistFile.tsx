@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
@@ -9,6 +9,7 @@ import PlaylistItem from './PlaylistItem';
 import ItemSource from '../helper/ItemSource';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import FileSource from '../helper/FileSource';
+import AppSuspense from '../others/AppSuspense';
 
 export default function PlaylistFile({
     index, filePath,
@@ -109,11 +110,11 @@ function RenderPlaylistItem({
     } else if (playlistItem.isBibleItem) {
         playlistItem.getBibleItem();
         return (
-            <Suspense fallback={<div>Loading ...</div>}>
+            <AppSuspense>
                 <PlaylistBibleItem key={index}
                     index={index}
                     playlistItem={playlistItem} />
-            </Suspense>
+            </AppSuspense>
         );
     } else if (playlistItem.isLyric) {
         return (

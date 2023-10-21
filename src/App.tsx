@@ -18,6 +18,7 @@ import AppModal, {
     APP_MODAL_QUERY_ROUTE_PATH,
 } from './app-modal/AppModal';
 import RedirectTo from './others/RedirectTo';
+import HandleFind from './find/HandleFind';
 
 export default function App() {
     const tabProps = useMemo(() => {
@@ -38,6 +39,7 @@ export default function App() {
             <Toast />
             <AppContextMenu />
             <HandleAlert />
+            <HandleFind />
         </div>
     );
 }

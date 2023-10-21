@@ -37,6 +37,16 @@ export function initMenu(appController: ElectronAppController) {
                 { role: 'cut' },
                 { role: 'copy' },
                 { role: 'paste' },
+                {
+                    label: 'find (Ctrl + F)', click: () => {
+                        appController.mainController.win.webContents
+                            .sendInputEvent({
+                                type: 'keyDown',
+                                keyCode: 'F',
+                                modifiers: ['control'],
+                            });
+                    },
+                },
                 ...(isMac ? [
                     { role: 'pasteAndMatchStyle' },
                     { role: 'delete' },
@@ -99,7 +109,9 @@ export function initMenu(appController: ElectronAppController) {
                 {
                     label: 'Learn More',
                     click: () => {
-                        electron.shell.openExternal('https://www.openworship.app/');
+                        electron.shell.openExternal(
+                            'https://www.openworship.app/',
+                        );
                     },
                 },
             ],
