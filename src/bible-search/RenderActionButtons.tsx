@@ -27,9 +27,9 @@ const addListEventMapper: KBEventMapper = {
     key: 'Enter',
 };
 
-export default function RenderActionButtons({
-    bibleItem,
-}: { bibleItem: BibleItem }) {
+export default function RenderActionButtons({ bibleItem }: Readonly<{
+    bibleItem: BibleItem,
+}>) {
     const closeModal = useCloseAppModal();
     const windowMode = useWindowMode();
     const { data } = useModalTypeData();
@@ -63,11 +63,17 @@ export default function RenderActionButtons({
     useKeyboardRegistering([presentEventMapper], (event) => {
         addBibleItemAndPresent(event);
     });
-    const getAddingTitle = () => {
+    const genSaveOrAdd = () => {
+        return isBibleEditing ? 'Save' : 'Add';
+    };
+    const genAddingTitle = () => {
         if (isWindowEditing) {
             return 'Add to Slide';
         }
-        return isBibleEditing ? 'Save Bible Item' : 'Add Bible Item';
+        return `${genSaveOrAdd()} bible item`;
+    };
+    const genPresentTitle = () => {
+        return `${genSaveOrAdd()} and present`;;
     };
     return (
         <div className='btn-group mx-1'>
@@ -75,18 +81,21 @@ export default function RenderActionButtons({
                 <button type='button'
                     className='btn btn-sm btn-info'
                     onClick={addOrUpdateBibleItem}
-                    data-tool-tip={KeyboardEventListener
-                        .toShortcutKey(addListEventMapper)}>
+                    data-tool-tip={
+                        `${genAddingTitle()} [${KeyboardEventListener
+                            .toShortcutKey(addListEventMapper)}]`
+                    }>
                     <i className='bi bi-plus-lg' />
-                    {getAddingTitle()}
                 </button>}
             {isWindowPresenting && <button type='button'
                 className='btn btn-sm btn-info ms-1'
                 onClick={addBibleItemAndPresent}
-                data-tool-tip={KeyboardEventListener
-                    .toShortcutKey(presentEventMapper)}>
+                data-tool-tip={
+                    `${genPresentTitle()} [${KeyboardEventListener
+                        .toShortcutKey(presentEventMapper)}]`
+                }>
+                <i className='bi bi-plus-lg' />
                 <i className='bi bi-easel' />
-                {isBibleEditing ? 'Save and Present' : 'Present'}
             </button>}
         </div>
     );

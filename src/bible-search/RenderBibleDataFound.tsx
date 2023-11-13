@@ -8,11 +8,11 @@ import {
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange, onPinning,
-}: {
+}: Readonly<{
     bibleItem: BibleItem,
     onVerseChange?: (startVerse?: number, endVerse?: number) => void,
     onPinning: () => void,
-}) {
+}>) {
     const [fontSize, setFontSize] = useStateSettingNumber(
         'bible-search-font-size', 16,
     );
@@ -34,7 +34,8 @@ export default function RenderBibleDataFound({
                 <div className='p-2'>
                     <BibleViewText
                         bibleItem={bibleItem}
-                        fontSize={fontSize} />
+                        fontSize={fontSize}
+                        isEnableContextMenu />
                 </div>
             </div>
             <div className='card-footer'>
@@ -52,41 +53,14 @@ function renderHeader(
             <div className='d-flex w-100 h-100' style={{
                 overflowX: 'auto',
             }}>
-                <div className='flex-fill'>
+                <div className='flex-fill text-nowrap'>
                     <BibleViewTitle bibleItem={bibleItem} />
                 </div>
                 <div>
                     <RenderActionButtons bibleItem={bibleItem} />
-                    {genCopyButtons(bibleItem)}
                     {genPinButton(isSearching, onPinning)}
                 </div>
             </div>
-        </div>
-    );
-}
-
-function genCopyButtons(bibleItem: BibleItem) {
-    return (
-        <div className='btn-group'>
-            <button type='button'
-                className='btn btn-sm btn-info'
-                title='Copy title to clipboard'
-                onClick={() => {
-                    bibleItem.copyTitleToClipboard();
-                }}><i className='bi bi-back ' />title</button>
-            <button type='button'
-                className='btn btn-sm btn-info'
-                title='Copy verse text to clipboard'
-                onClick={() => {
-                    bibleItem.copyTextToClipboard();
-                }}>
-                <i className='bi bi-back' />text</button>
-            <button type='button'
-                className='btn btn-sm btn-info'
-                title='Copy all to clipboard'
-                onClick={() => {
-                    bibleItem.copyToClipboard();
-                }}><i className='bi bi-back' />all</button>
         </div>
     );
 }

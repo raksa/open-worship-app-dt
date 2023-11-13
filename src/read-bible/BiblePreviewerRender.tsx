@@ -11,7 +11,7 @@ const MAX_FONT_SIZE = 150;
 const STEP_FONT_SIZE = 2;
 
 export default function BiblePreviewerRender() {
-    const [isFullScreen, setIsFullScreen] = useState(
+    const [isFulledScreen, setIsFulledScreen] = useState(
         !!document.fullscreenElement,
     );
     const [fontSize, _setFontSize] = useStateSettingNumber(
@@ -27,7 +27,7 @@ export default function BiblePreviewerRender() {
     };
     const bibleItemViewController = BibleItemViewController.getInstance();
     return (
-        <div className={`card h-100 ${isFullScreen ? 'app-popup-full' : ''}`}
+        <div className={`card h-100 ${isFulledScreen ? 'app-popup-full' : ''}`}
             onWheel={(event) => {
                 if (event.ctrlKey) {
                     setFontSize(Math.round(fontSize + event.deltaY / 10));
@@ -50,8 +50,8 @@ export default function BiblePreviewerRender() {
                         />
                     </div>
                     <FullScreenBtn
-                        isFullScreen={isFullScreen}
-                        setIsFullScreen={setIsFullScreen}
+                        isFulledScreen={isFulledScreen}
+                        setIsFullScreen={setIsFulledScreen}
                     />
                 </div>
             </div>
@@ -59,35 +59,51 @@ export default function BiblePreviewerRender() {
     );
 }
 
-function FullScreenBtn({ isFullScreen: isFull, setIsFullScreen }: {
-    isFullScreen: boolean,
+function FullScreenBtn({
+    isFulledScreen, setIsFullScreen,
+}: Readonly<{
+    isFulledScreen: boolean,
     setIsFullScreen: (isFullScreen: boolean) => void,
-}) {
+}>) {
+    const genFullScreenClassName = () => {
+        return isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen';
+    };
     return (
         <button className='btn btn-info btn-sm'
             onClick={() => {
-                if (!isFull) {
+                if (!isFulledScreen) {
                     setIsFullScreen(true);
                     document.documentElement.requestFullscreen();
+                    const onExitFullScreen = () => {
+                        if (!document.fullscreenElement) {
+                            setIsFullScreen(false);
+                            document.removeEventListener(
+                                'fullscreenchange', onExitFullScreen,
+                            );
+                        }
+                    };
+                    document.addEventListener(
+                        'fullscreenchange', onExitFullScreen,
+                    );
                 } else if (document.exitFullscreen) {
                     setIsFullScreen(false);
                     document.exitFullscreen();
                 }
             }}>
             <i className={
-                `bi bi-${isFull ? 'fullscreen-exit' : 'arrows-fullscreen'}`
+                `bi bi-${genFullScreenClassName()}`
             } />
-            {isFull ? 'Exit ' : ''}Full
+            {isFulledScreen ? 'Exit ' : ''}Full
         </button>
     );
 }
 
 function Render({
     fontSize, bibleItemViewController,
-}: {
+}: Readonly<{
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
-}) {
+}>) {
     const bibleItems = useBIVCUpdateEvent(bibleItemViewController);
     return (
         <BibleViewRenderer

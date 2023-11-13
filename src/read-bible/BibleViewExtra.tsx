@@ -7,6 +7,7 @@ import {
     useBibleItemRenderText, useBibleItemRenderTitle,
 } from '../bible-list/bibleItemHelpers';
 import { getRandomUUID } from '../helper/helpers';
+import { showAppContextMenu } from '../others/AppContextMenu';
 
 export function rendHeader(
     bibleItem: BibleItem,
@@ -36,11 +37,9 @@ export function rendHeader(
     );
 }
 
-export function BibleViewTitle({
-    bibleItem,
-}: {
+export function BibleViewTitle({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
-}) {
+}>) {
     const uuid = getRandomUUID();
     const title = useBibleItemRenderTitle(bibleItem, uuid);
     return (
@@ -50,16 +49,47 @@ export function BibleViewTitle({
     );
 }
 
+function openBibleTextContextMenu(
+    bibleItem: BibleItem, event: React.MouseEvent,
+) {
+    showAppContextMenu(event as any, [
+        {
+            title: 'Copy Title',
+            onClick: () => {
+                bibleItem.copyTitleToClipboard();
+            },
+        },
+        {
+            title: 'Copy Text',
+            onClick: () => {
+                bibleItem.copyTextToClipboard();
+            },
+        },
+        {
+            title: 'Copy',
+            onClick: () => {
+                bibleItem.copyToClipboard();
+            },
+        },
+    ]);
+}
 export function BibleViewText({
-    bibleItem, fontSize,
-}: {
+    bibleItem, fontSize, isEnableContextMenu,
+}: Readonly<{
     bibleItem: BibleItem,
     fontSize: number,
-}) {
+    isEnableContextMenu?: boolean,
+}>) {
     const uuid = getRandomUUID();
     const text = useBibleItemRenderText(bibleItem, uuid);
     return (
         <p id={uuid}
+            onContextMenu={(event) => {
+                if (!isEnableContextMenu) {
+                    return;
+                }
+                openBibleTextContextMenu(bibleItem, event);
+            }}
             className='app-selectable-text'
             style={{ fontSize: `${fontSize}px` }}>
             {text}
@@ -68,7 +98,7 @@ export function BibleViewText({
 }
 
 
-export function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
+export function RefRenderer({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
     const { bookKey: book, chapter, startVerse, endVerse } = bibleItem.target;
     const arr: number[] = [];
     for (let i = startVerse; i <= endVerse; i++) {
@@ -85,9 +115,9 @@ export function RefRenderer({ bibleItem }: { bibleItem: BibleItem }) {
         </>
     );
 }
-function RefItemRenderer({ bookKey, chapter, verse }: {
+function RefItemRenderer({ bookKey, chapter, verse }: Readonly<{
     bookKey: string, chapter: number, verse: number
-}) {
+}>) {
     const bibleRef = useGetBibleRef(bookKey, chapter, verse);
     return (
         <div>

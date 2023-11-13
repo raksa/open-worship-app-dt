@@ -3,9 +3,9 @@ import BibleItemRender from './BibleItemRender';
 import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
 import { genDuplicatedMessage } from './bibleItemHelpers';
 
-export default function RenderBibleItems({ bible }: {
+export default function RenderBibleItems({ bible }: Readonly<{
     bible: Bible,
-}) {
+}>) {
     const openBibleSearch = useOpenBibleSearch();
     const items = bible.items;
     return (
@@ -23,7 +23,8 @@ export default function RenderBibleItems({ bible }: {
                         bibleItem={bibleItem} />
                 );
             })}
-            {bible.isDefault && <div
+            {bible.isDefault && <button
+                type='button'
                 className={
                     'btn btn-sm btn-labeled btn-outline-primary p-2 '
                     + 'pointer border-white-round'
@@ -35,9 +36,8 @@ export default function RenderBibleItems({ bible }: {
                 onClick={() => {
                     openBibleSearch();
                 }}>
-                <span title='Need translation'>(*T)</span>
-                Add Bible Item
-            </div>}
+                <span title='Need translation'>(*T)</span>Add Bible Item
+            </button>}
         </ul>
     );
 }
