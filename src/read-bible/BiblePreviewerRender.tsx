@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import BibleViewSetting from './BibleViewSetting';
 import BibleItemViewController, {
@@ -59,39 +59,51 @@ export default function BiblePreviewerRender() {
     );
 }
 
+const enterFullScreen = async () => {
+    if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        return true;
+    }
+    return false;
+};
+const exitFullScreen = async () => {
+    if (document.exitFullscreen) {
+        await document.exitFullscreen();
+        return false;
+    }
+    return true;
+};
+
+const genFullScreenClassName = (isFulledScreen: boolean) => {
+    return isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen';
+};
+
 function FullScreenBtn({
     isFulledScreen, setIsFullScreen,
 }: Readonly<{
     isFulledScreen: boolean,
     setIsFullScreen: (isFullScreen: boolean) => void,
 }>) {
-    const genFullScreenClassName = () => {
-        return isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    };
+    useEffect(() => {
+        const onFullscreenChange = () => {
+            setIsFullScreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', onFullscreenChange);
+        return () => {
+            document.removeEventListener(
+                'fullscreenchange', onFullscreenChange,
+            );
+        };
+    });
     return (
         <button className='btn btn-info btn-sm'
-            onClick={() => {
-                if (!isFulledScreen) {
-                    setIsFullScreen(true);
-                    document.documentElement.requestFullscreen();
-                    const onExitFullScreen = () => {
-                        if (!document.fullscreenElement) {
-                            setIsFullScreen(false);
-                            document.removeEventListener(
-                                'fullscreenchange', onExitFullScreen,
-                            );
-                        }
-                    };
-                    document.addEventListener(
-                        'fullscreenchange', onExitFullScreen,
-                    );
-                } else if (document.exitFullscreen) {
-                    setIsFullScreen(false);
-                    document.exitFullscreen();
-                }
+            onClick={async () => {
+                setIsFullScreen(
+                    await (isFulledScreen ? exitFullScreen : enterFullScreen)()
+                );
             }}>
             <i className={
-                `bi bi-${genFullScreenClassName()}`
+                `bi bi-${genFullScreenClassName(isFulledScreen)}`
             } />
             {isFulledScreen ? 'Exit ' : ''}Full
         </button>
