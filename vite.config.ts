@@ -13,7 +13,8 @@ const htmlPlugin = () => {
             return html.replace(
                 '<!-- CONTENT_SECURITY_POLICY -->',
                 // eslint-disable-next-line quotes
-                `<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">`,
+                `<meta http-equiv="Content-Security-Policy" content="script-src`
+                + ` 'self' 'unsafe-inline'">`,
             );
         },
     };
