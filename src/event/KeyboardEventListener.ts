@@ -12,7 +12,7 @@ export const allArrows: KeyboardType[] = [
 ];
 export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
-export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Command';
+export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Meta';
 export type AllControlType = 'Ctrl' | 'Shift';
 
 export interface EventMapper {
@@ -62,6 +62,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
             event.ctrlKey && option.mControlKey.push('Ctrl');
             event.altKey && option.mControlKey.push('Option');
             event.shiftKey && option.mControlKey.push('Shift');
+            event.metaKey && option.mControlKey.push('Meta');
         } else if (appProvider.systemUtils.isLinux) {
             option.lControlKey = [];
             event.ctrlKey && option.lControlKey.push('Ctrl');
@@ -89,7 +90,9 @@ export default class KeyboardEventListener extends EventHandler<string> {
             allControls.push(...(lControlKey || []));
         }
         if (allControls.length > 0) {
-            const sorted = [...allControls].sort();
+            const sorted = [...allControls].sort((a, b) => {
+                return a.localeCompare(b);
+            });
             key = `${sorted.join(' + ')} + ${key}`;
         }
         return key;

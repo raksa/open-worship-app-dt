@@ -9,7 +9,9 @@ const Finder = lazy(() => {
 export default function HandleFind() {
     const [isFinding, setIsFinding] = useState(false);
     useKeyboardRegistering([{
-        allControlKey: ['Ctrl'],
+        wControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
+        mControlKey: ['Meta'],
         key: 'f',
     }], () => {
         setIsFinding(true);

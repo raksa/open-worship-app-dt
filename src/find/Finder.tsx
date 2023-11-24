@@ -23,10 +23,12 @@ function findString(text: string, options: SearchingOptions = {}) {
 export default function Finder({ onClose }: Readonly<{
     onClose: () => void;
 }>) {
-    const [searchingText, _setSearchingText] = useState('');
+    const [searchingText, setSearchingText] = useState('');
     const [isMatchCase, setIsMatchCase] = useState(false);
-    const setSearchingText = (text: string, options: SearchingOptions = {}) => {
-        _setSearchingText(text);
+    const setSearchingText1 = (
+        text: string, options: SearchingOptions = {},
+    ) => {
+        setSearchingText(text);
         findString(text, {
             matchCase: isMatchCase,
             ...options,
@@ -35,7 +37,7 @@ export default function Finder({ onClose }: Readonly<{
     return (
         <div className='finder-container input-group'>
             <button className='btn btn-info' onClick={() => {
-                setSearchingText(searchingText, {
+                setSearchingText1(searchingText, {
                     forward: false,
                     findNext: true,
                 });
@@ -43,7 +45,7 @@ export default function Finder({ onClose }: Readonly<{
                 <i className='bi bi-arrow-left' />
             </button>
             <button className='btn btn-info' onClick={() => {
-                setSearchingText(searchingText, {
+                setSearchingText1(searchingText, {
                     forward: true,
                     findNext: true,
                 });
@@ -54,22 +56,21 @@ export default function Finder({ onClose }: Readonly<{
                 value={searchingText}
                 onChange={(event) => {
                     const text = event.target.value;
-                    setSearchingText(text);
+                    setSearchingText1(text);
                 }} />
             <div className='input-group-text'>
-                Aa
-                <input className='form-check-input mt-0' type='checkbox'
+                Aa <input className='form-check-input mt-0' type='checkbox'
                     checked={isMatchCase}
                     onChange={(event) => {
                         const checked = event.target.checked;
                         setIsMatchCase(checked);
-                        setSearchingText(searchingText, {
+                        setSearchingText1(searchingText, {
                             matchCase: checked,
                         });
                     }} />
             </div>
             <button className='btn btn-danger' onClick={() => {
-                setSearchingText('');
+                setSearchingText1('');
                 onClose();
             }}>
                 <i className='bi bi-x-lg' />
