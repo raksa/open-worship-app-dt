@@ -5,16 +5,13 @@ export type SimpleToastType = {
 };
 
 export default function SimpleToast({
-    onClose,
-    toast,
-    onMouseEnter,
-    onMouseLeave,
-}: {
+    onClose, toast, onMouseEnter, onMouseLeave,
+}: Readonly<{
     onClose: () => void,
     toast: SimpleToastType,
     onMouseEnter: () => void,
     onMouseLeave: () => void,
-}) {
+}>) {
     return (
         <div className='toast show fade'
             onMouseEnter={() => onMouseEnter()}

@@ -15,12 +15,12 @@ const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderBookOptions({
     onSelect, bibleKey, bookKey, guessingBook,
-}: {
+}: Readonly<{
     onSelect: SelectBookType,
     bibleKey: string,
     bookKey: string | null,
     guessingBook: string | null,
-}) {
+}>) {
     if (bookKey !== null) {
         return null;
     }
@@ -35,11 +35,11 @@ export default function RenderBookOptions({
 
 function BookOptions({
     onSelect, bibleKey, guessingBook,
-}: {
+}: Readonly<{
     onSelect: SelectBookType,
     bibleKey: string,
     guessingBook: string,
-}) {
+}>) {
     const matches = useBookMatch(bibleKey, guessingBook);
     const useKeyEvent = (key: KeyboardType) => {
         useKeyboardRegistering([{ key }], (event: KeyboardEvent) => {

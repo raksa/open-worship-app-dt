@@ -8,9 +8,9 @@ const openSettingEventMapper: KBEventMapper = {
 };
 export default function HeaderSettingPopup({
     onClose,
-}: {
+}: Readonly<{
     onClose: () => void,
-}) {
+}>) {
     useKeyboardRegistering([openSettingEventMapper], onClose);
     return (
         <div className='card-header text-center w-100'>

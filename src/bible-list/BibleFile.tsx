@@ -58,10 +58,10 @@ function genContextMenu(bible: Bible | null | undefined,
 
 export default function BibleFile({
     index, filePath,
-}: {
+}: Readonly<{
     index: number,
     filePath: string,
-}) {
+}>) {
     const windowMode = useWindowMode();
     const [data, setData] = useState<Bible | null | undefined>(null);
     useAppEffect(() => {
@@ -93,7 +93,7 @@ export default function BibleFile({
     );
 }
 
-function BiblePreview({ bible }: { bible: Bible }) {
+function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
     const fileSource = FileSource.getInstance(bible.filePath);
     return (
         <div className='accordion accordion-flush py-1'>

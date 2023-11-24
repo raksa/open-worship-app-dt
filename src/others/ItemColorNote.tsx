@@ -8,9 +8,9 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
-export default function ItemColorNote({ item }: {
+export default function ItemColorNote({ item }: Readonly<{
     item: ColorNoteInf,
-}) {
+}>) {
     const [colorNote, _setColorNote] = useState('');
     useAppEffect(() => {
         item.getColorNote().then((colorNote) => {

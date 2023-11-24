@@ -7,10 +7,10 @@ import { DragTypeEnum } from '../../helper/DragInf';
 
 export default function SlideItemDragReceiver({
     width, onDrop, isLeft,
-}: {
+}: Readonly<{
     width: number, isLeft?: boolean,
     onDrop: (id: number, isLeft: boolean) => void,
-}) {
+}>) {
     const [isVertical, setIsVertical] = useState(false);
     const style: CSSProperties = isVertical ? {
         width: `${width}px`,

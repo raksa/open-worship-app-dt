@@ -2,10 +2,10 @@ import { useState } from 'react';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemRenderer from './SlideItemRenderer';
 
-export default function SlideItemRendererHtml({ slideItem }: {
+export default function SlideItemRendererHtml({ slideItem }: Readonly<{
     slideItem: SlideItem,
-}) {
-    const [parentWidth, setWidth] = useState(0);
+}>) {
+    const [parentWidth, setParentWidth] = useState(0);
     if (slideItem.isError) {
         return (
             <div className='alert alert-danger'>Error</div>
@@ -15,7 +15,7 @@ export default function SlideItemRendererHtml({ slideItem }: {
     return (
         <div ref={(div) => {
             if (div !== null) {
-                setWidth(div.parentElement?.clientWidth || 0);
+                setParentWidth(div.parentElement?.clientWidth || 0);
             }
         }}
             style={{

@@ -6,9 +6,9 @@ import {
 } from '../presentEventHelpers';
 import PresentManager from '../PresentManager';
 
-export default function MiniScreenClearControl({ presentManager }: {
+export default function MiniScreenClearControl({ presentManager }: Readonly<{
     presentManager: PresentManager;
-}) {
+}>) {
     usePBGMEvents(['update']);
     usePSlideMEvents(['update']);
     usePFTMEvents(['update']);
@@ -83,7 +83,7 @@ export default function MiniScreenClearControl({ presentManager }: {
     );
 }
 
-function RenderButton({ btnMaps }: {
+function RenderButton({ btnMaps }: Readonly<{
     btnMaps: {
         title: string,
         text: string,
@@ -92,7 +92,7 @@ function RenderButton({ btnMaps }: {
         eventMap: { key: string },
         isEnabled: boolean,
     }
-}) {
+}>) {
     const { title, text, btnType, onClick, eventMap, isEnabled } = btnMaps;
     const onClickCallback = isEnabled ? onClick : (() => { });
     useKeyboardRegistering([eventMap], onClickCallback);

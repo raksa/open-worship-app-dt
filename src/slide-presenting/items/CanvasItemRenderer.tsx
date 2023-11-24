@@ -4,9 +4,9 @@ import { BENBibleRender } from '../../slide-editor/canvas/box/BENViewBibleMode';
 import { CanvasItemPropsType } from '../../slide-editor/canvas/CanvasItem';
 import { BENVideoRender } from '../../slide-editor/canvas/box/BENViewVideoMode';
 
-export default function CanvasItemRenderer({ props }: {
+export default function CanvasItemRenderer({ props }: Readonly<{
     props: CanvasItemPropsType,
-}) {
+}>) {
     switch (props.type) {
         case 'image':
             return (

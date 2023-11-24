@@ -3,27 +3,28 @@ import { showSimpleToast } from '../toast/toastHelpers';
 
 export default function AskingNewName({
     defaultName, applyName, customIcon,
-}: {
+}: Readonly<{
     defaultName?: string,
     customIcon?: React.JSX.Element,
     applyName: (newName: string | null) => void,
-}) {
-    const [newName, setCreatingNewName] = useState(defaultName || '');
-    const isValid = /^[^\\\/:\*\?"<>\|]+$/.test(newName);
+}>) {
+    const [creatingNewName, setCreatingNewName] = useState(defaultName || '');
+    const isValid = /^[^\\\/:\*\?"<>\|]+$/.test(creatingNewName);
     return (
-        <div className='input-group' onClick={(event) => {
-            event.stopPropagation();
-        }}>
+        <div className='input-group'
+            onClick={(event) => {
+                event.stopPropagation();
+            }}>
             <input type='text'
                 className='form-control'
                 placeholder='title'
-                value={newName}
+                value={creatingNewName}
                 aria-label='file name'
                 aria-describedby='button-addon2'
                 autoFocus
                 onKeyDown={(event) => {
-                    if (event.key === 'Enter' && newName) {
-                        applyName(newName);
+                    if (event.key === 'Enter' && creatingNewName) {
+                        applyName(creatingNewName);
                     } else if (event.key === 'Escape') {
                         applyName(null);
                     }
@@ -43,7 +44,7 @@ export default function AskingNewName({
                         );
                         return;
                     }
-                    applyName(newName || null);
+                    applyName(creatingNewName || null);
                 }}>
                 {customIcon || <i className='bi bi-check' />}
             </button>

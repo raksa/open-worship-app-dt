@@ -12,10 +12,10 @@ const PathPreviewer = lazy(() => {
 
 export default function PathSelector({
     dirSource, prefix,
-}: {
+}: Readonly<{
     dirSource: DirSource,
     prefix: string
-}) {
+}>) {
     const [showing, setShowing] = useStateSettingBoolean(
         `${prefix}-selector-opened`, false,
     );
@@ -40,7 +40,7 @@ export default function PathSelector({
     );
 }
 
-function RenderTitle({ dirSource }: { dirSource: DirSource }) {
+function RenderTitle({ dirSource }: Readonly<{ dirSource: DirSource }>) {
     if (!dirSource.dirPath) {
         return null;
     }

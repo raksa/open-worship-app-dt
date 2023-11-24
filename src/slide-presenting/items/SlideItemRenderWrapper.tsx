@@ -9,14 +9,13 @@ import {
 } from './slideItemHelpers';
 
 export default function SlideItemRenderWrapper({
-    draggingIndex, slide, thumbSize,
-    slideItem, index, setDraggingIndex,
-}: {
+    draggingIndex, slide, thumbSize, slideItem, index, setDraggingIndex,
+}: Readonly<{
     draggingIndex: number | null, slide: Slide,
     thumbSize: number, slideItem: SlideItem,
     index: number,
     setDraggingIndex: (index: number | null) => void,
-}) {
+}>) {
     const onDropCallback = useCallback((id: number, isLeft: boolean) => {
         slide.moveItem(id, index, isLeft);
     }, [slide, index]);

@@ -13,12 +13,11 @@ import { useNavigate } from 'react-router-dom';
 import { goEditingMode } from '../router/routeHelpers';
 
 export default function SlideFile({
-    index,
-    filePath,
-}: {
+    index, filePath,
+}: Readonly<{
     index: number,
     filePath: string,
-}) {
+}>) {
     const navigator = useNavigate();
     const [data, setData] = useState<SlideDynamicType>(null);
     const reloadCallback = useCallback(() => {
@@ -86,7 +85,7 @@ export default function SlideFile({
 }
 
 
-function SlideFilePreviewNormal({ slide }: { slide: Slide }) {
+function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
         <>
@@ -98,7 +97,7 @@ function SlideFilePreviewNormal({ slide }: { slide: Slide }) {
     );
 }
 
-function SlideFilePreviewPdf({ slide }: { slide: Slide }) {
+function SlideFilePreviewPdf({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
         <>

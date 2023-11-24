@@ -52,13 +52,13 @@ function openContextMenu(
 export default function BibleView({
     indices, bibleItem, fontSize, bibleItemViewController: bibleItemViewCtl,
     isHorizontal,
-}: {
+}: Readonly<{
     indices: number[],
     bibleItem: BibleItem,
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
     isHorizontal: boolean,
-}) {
+}>) {
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}

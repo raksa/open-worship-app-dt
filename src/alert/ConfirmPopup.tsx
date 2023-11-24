@@ -7,9 +7,9 @@ import {
     closeAlert, ConfirmDataType,
 } from './alertHelpers';
 
-export default function ConfirmPopup({ data }: {
+export default function ConfirmPopup({ data }: Readonly<{
     data: ConfirmDataType,
-}) {
+}>) {
     const onCloseCallback = useCallback(() => {
         data.onConfirm(false);
         closeAlert();

@@ -28,8 +28,8 @@ export default function SettingAbout() {
                 </div>
             </div>
             <div className='alert alert-info'>
-                <span title='Need translation'>(*T)</span>
-                This is an open-source presentation app for worship service.
+                <span title='Need translation'>(*T)</span> This is an
+                open-source presentation app for worship service.
                 Official Github repo here: <button className='btn btn-success'
                     onClick={onClick}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>

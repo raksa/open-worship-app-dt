@@ -5,10 +5,10 @@ import PresentManager from './PresentManager';
 
 export default function PresentBackgroundVideo({
     bgSrc, presetManager,
-}: {
+}: Readonly<{
     bgSrc: BackgroundSrcType,
     presetManager: PresentManager;
-}) {
+}>) {
     const { presentBGManager } = presetManager;
     usePBGMEvents(['update'], presentBGManager);
     const {

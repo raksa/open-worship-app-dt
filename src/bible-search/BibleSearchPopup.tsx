@@ -31,8 +31,7 @@ export default function BibleSearchPopup() {
         <Modal>
             {inputText === null ? (
                 <div>
-                    <span title='Need translation'>(*T)</span>
-                    Loading...
+                    <span title='Need translation'>(*T)</span> Loading...
                 </div>
             ) : (
                 <RenderBibleSearch

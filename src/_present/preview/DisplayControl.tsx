@@ -3,9 +3,9 @@ import { showAppContextMenu } from '../../others/AppContextMenu';
 import { usePMEvents } from '../presentEventHelpers';
 import { getAllDisplays } from '../presentHelpers';
 
-export default function DisplayControl({ presentManager }: {
+export default function DisplayControl({ presentManager }: Readonly<{
     presentManager: PresentManager,
-}) {
+}>) {
     usePMEvents(['display-id'], presentManager);
     const displayId = presentManager.displayId;
     return (

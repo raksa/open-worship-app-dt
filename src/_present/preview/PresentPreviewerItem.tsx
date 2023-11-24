@@ -8,9 +8,11 @@ import PTEffectControl from './PTEffectControl';
 import { handleDrop } from '../../bible-list/dragHelpers';
 import { openContextMenu } from './presentPreviewerHelpers';
 
-export default function PresentPreviewerItem({ presentManager, width }: {
+export default function PresentPreviewerItem({
+    presentManager, width,
+}: Readonly<{
     presentManager: PresentManager, width: number,
-}) {
+}>) {
     const selectedCN = presentManager.isSelected ? 'highlight-selected' : '';
     return (
         <div key={presentManager.key}

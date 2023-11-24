@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
-export default function PathEditor({ dirSource }: {
+export default function PathEditor({ dirSource }: Readonly<{
     dirSource: DirSource,
     prefix: string
-}) {
+}>) {
     const [text, setText] = useState(dirSource.dirPath);
     const applyNewText = (newText: string) => {
         setText(newText);

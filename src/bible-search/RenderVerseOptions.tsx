@@ -7,10 +7,10 @@ import { useGenVerseList } from '../helper/bible-helpers/serverBibleHelpers';
 
 export default function RenderVerseOptions({
     bibleItem, onVersesChange,
-}: {
+}: Readonly<{
     bibleItem: BibleItem,
     onVersesChange: (startVerse?: number, endVerse?: number) => void,
-}) {
+}>) {
     const verseList = useGenVerseList(bibleItem);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);

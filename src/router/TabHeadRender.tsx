@@ -8,10 +8,10 @@ import {
 
 export default function TabRender({
     tabs, className = '',
-}: {
+}: Readonly<{
     tabs: TabOptionType[],
     className?: string,
-}) {
+}>) {
     const navigate = useNavigate();
     const location = useLocation();
     const _renderItem = renderItem.bind(null, { navigate, location });

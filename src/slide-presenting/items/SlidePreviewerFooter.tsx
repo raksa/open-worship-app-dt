@@ -10,11 +10,11 @@ import PresentSlideManager from '../../_present/PresentSlideManager';
 
 export default function SlidePreviewerFooter({
     thumbnailSize, setThumbnailSize, slide,
-}: {
+}: Readonly<{
     thumbnailSize: number,
     setThumbnailSize: (size: number) => void,
     slide: Slide,
-}) {
+}>) {
     const [history, setHistory] = useState<number[]>([]);
     usePSlideMEvents(['update'], undefined, () => {
         const dataList = PresentSlideManager.getDataList(slide.filePath);

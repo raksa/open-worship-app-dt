@@ -10,11 +10,11 @@ export default function RenderList({
     dirSource,
     mimetype,
     bodyHandler,
-}: {
+}: Readonly<{
     dirSource: DirSource,
     mimetype: MimetypeNameType,
     bodyHandler: (_: string[]) => any,
-}) {
+}>) {
     const [filePaths, setFilePaths] = useState<string[] | null | undefined>(
         null,
     );

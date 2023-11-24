@@ -10,7 +10,9 @@ import PresentPreviewerItem from './PresentPreviewerItem';
 import MiniPresentScreenFooter, {
     DEFAULT_PREVIEW_SIZE,
 } from './MiniPresentScreenFooter';
-import { useStateSettingBoolean, useStateSettingNumber } from '../../helper/settingHelper';
+import {
+    useStateSettingBoolean, useStateSettingNumber,
+} from '../../helper/settingHelper';
 import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import PresentPreviewerTools from './PresentPreviewerTools';

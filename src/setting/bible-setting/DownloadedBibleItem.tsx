@@ -11,14 +11,12 @@ import {
 import { showSimpleToast } from '../../toast/toastHelpers';
 
 export default function DownloadedBibleItem({
-    bibleInfo,
-    onDeleted,
-    onUpdate,
-}: {
+    bibleInfo, onDeleted, onUpdate,
+}: Readonly<{
     bibleInfo: BibleMinimalInfoType & { isUpdatable: boolean },
     onDeleted: () => void,
     onUpdate: () => void,
-}) {
+}>) {
     const { key, title } = bibleInfo;
     const onDeleteHandler = async () => {
         try {

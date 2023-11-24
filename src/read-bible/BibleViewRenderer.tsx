@@ -9,13 +9,13 @@ import BibleItem from '../bible-list/BibleItem';
 export default function BibleViewRenderer({
     fontSize, bibleItemViewController, isHorizontal, bibleItems,
     indices,
-}: {
+}: Readonly<{
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
     isHorizontal: boolean,
     bibleItems: BibleItem[],
     indices: number[],
-}) {
+}>) {
     if (bibleItems.length === 0) {
         return (
             <NoBibleViewAvailable

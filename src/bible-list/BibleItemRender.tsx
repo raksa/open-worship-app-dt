@@ -20,12 +20,12 @@ import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage, filePath,
-}: {
+}: Readonly<{
     index: number,
     bibleItem: BibleItem,
     warningMessage?: string,
     filePath?: string,
-}) {
+}>) {
     const openBibleSearch = useOpenBibleSearch(bibleItem);
     const windowMode = useWindowMode();
     useFSEvents(['select'], filePath);

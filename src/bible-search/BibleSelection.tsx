@@ -29,10 +29,10 @@ export async function showBibleOption(
         }));
 }
 
-export default function BibleSelection({ value, onChange }: {
+export default function BibleSelection({ value, onChange }: Readonly<{
     value: string,
     onChange: (oldValue: string, newValue: string) => void,
-}) {
+}>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
         return (
@@ -62,11 +62,11 @@ export default function BibleSelection({ value, onChange }: {
 
 export function BibleSelectionMini({
     value, onChange, isMinimal,
-}: {
+}: Readonly<{
     value: string,
     onChange: (oldValue: string, newValue: string) => void,
     isMinimal?: boolean,
-}) {
+}>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
         return (

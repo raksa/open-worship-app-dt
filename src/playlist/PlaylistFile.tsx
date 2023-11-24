@@ -13,10 +13,10 @@ import AppSuspense from '../others/AppSuspense';
 
 export default function PlaylistFile({
     index, filePath,
-}: {
+}: Readonly<{
     index: number,
     filePath: string,
-}) {
+}>) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
     const settingName = `opened-${filePath}`;
     const [isOpened, setIsOpened] = useStateSettingBoolean(settingName);
@@ -62,14 +62,12 @@ export default function PlaylistFile({
 }
 
 function PlaylistPreview({
-    isOpened,
-    setIsOpened,
-    playlist,
-}: {
+    isOpened, setIsOpened, playlist,
+}: Readonly<{
     isOpened: boolean,
     setIsOpened: (isOpened: boolean) => void,
     playlist: Playlist,
-}) {
+}>) {
     const fileSource = FileSource.getInstance(playlist.filePath);
     return (
         <div className='card pointer mt-1 ps-2'>
@@ -98,10 +96,10 @@ function PlaylistPreview({
 
 function RenderPlaylistItem({
     playlistItem, index,
-}: {
+}: Readonly<{
     playlistItem: PlaylistItem,
     index: number,
-}) {
+}>) {
     if (playlistItem.isSlide) {
         return (
             <PlaylistSlideItem
@@ -126,10 +124,10 @@ function RenderPlaylistItem({
 
 function PlaylistBibleItem({
     index, playlistItem,
-}: {
+}: Readonly<{
     index: number
     playlistItem: PlaylistItem,
-}) {
+}>) {
     const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
     useAppEffect(() => {
         playlistItem.getBibleItem().then((newBibleItem) => {

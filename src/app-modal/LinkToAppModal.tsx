@@ -33,11 +33,11 @@ export function useOpenAppModal(modalType: string, data?: string) {
 
 export default function LinkToAppModal({
     children, modalType, data,
-}: {
+}: Readonly<{
     children: ReactNode,
     modalType: string,
     data?: string,
-}) {
+}>) {
     const location = useLocation();
     const modalTypeData = toAppModalTypeData(modalType, data || '');
     const routePath = `${APP_MODAL_ROUTE_PATH}${modalTypeData}`;

@@ -9,12 +9,10 @@ import img404 from '../404.png';
 import CanvasController from '../CanvasController';
 import { BENViewErrorRender } from './BENViewError';
 
-export default function BENViewVideoMode({
-    canvasItemVideo, style,
-}: {
+export default function BENViewVideoMode({ canvasItemVideo, style }: Readonly<{
     canvasItemVideo: CanvasItemVideo,
     style: CSSProperties
-}) {
+}>) {
     return (
         <div className='box-editor pointer'
             style={style}
@@ -33,9 +31,9 @@ export default function BENViewVideoMode({
     );
 }
 
-export function BENVideoRender({ props }: {
+export function BENVideoRender({ props }: Readonly<{
     props: CanvasItemVideoPropsType,
-}) {
+}>) {
     try {
         CanvasItemVideo.validate(props);
     } catch (error) {
@@ -71,7 +69,7 @@ export function BENVideoRender({ props }: {
     );
 }
 
-function PlayIcon({ width }: { width: number }) {
+function PlayIcon({ width }: Readonly<{ width: number }>) {
     return (
         <svg xmlns='http://www.w3.org/2000/svg' width={width}
             filter='drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4))'

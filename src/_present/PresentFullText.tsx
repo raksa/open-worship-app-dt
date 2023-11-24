@@ -97,7 +97,8 @@ const styleText = `
 }
 
 #full-text .highlight.selected {
-    background: linear-gradient(transparent, transparent, rgba(255, 0, 157, 0.6), transparent);
+    background: ${'linear-gradient(transparent, transparent, '
+    + 'rgba(255, 0, 157, 0.6), transparent);'}
 }`;
 
 export default function PresentFullText({ presentManager }: Readonly<{

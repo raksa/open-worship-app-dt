@@ -77,7 +77,7 @@ export default function FileItemHandler({
     contextMenu, onDrop, onClick, renderChild,
     isPointer, onDelete, isDisabledColorNote,
     userClassName,
-}: {
+}: Readonly<{
     data: ItemSource<any> | null | undefined,
     reload: () => void,
     index: number,
@@ -91,7 +91,7 @@ export default function FileItemHandler({
     onDelete?: () => void,
     isDisabledColorNote?: boolean,
     userClassName?: string,
-}) {
+}>) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFSEvents(['select']);
     const applyClick = () => {

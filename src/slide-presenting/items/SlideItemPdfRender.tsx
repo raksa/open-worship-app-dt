@@ -9,10 +9,10 @@ import ReactDOMServer from 'react-dom/server';
 
 export function SlideItemPdfRenderContent({
     width, pdfImageSrc,
-}: {
+}: Readonly<{
     width: number,
     pdfImageSrc: string,
-}) {
+}>) {
     return (
         <img width={width}
             src={pdfImageSrc} />
@@ -29,16 +29,13 @@ export function genPdfSlideItem(width: number, pdfImageSrc: string) {
 }
 
 export default function SlideItemPdfRender({
-    slideItem,
-    width,
-    index,
-    onClick,
-}: {
+    slideItem, width, index, onClick,
+}: Readonly<{
     slideItem: SlideItem;
     width: number,
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-}) {
+}>) {
     usePSlideMEvents(['update']);
     const {
         activeCN,

@@ -25,8 +25,9 @@ export default function Appearance() {
     return (
         <div>
             <span className='p-'>
-                Font Size
-                <span className='badge bg-success'>({fontSize}px)</span>
+                Font Size <span className='badge bg-success'>
+                    ({fontSize}px)
+                </span>
             </span>-
             <div className='btn-group control'>
                 <button className='btn btn-sm btn-info'

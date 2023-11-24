@@ -1,10 +1,7 @@
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import PresentTransitionEffect from './PresentTransitionEffect';
 import {
-    PresentTransitionEffectType,
-    TargetType,
-    transitionEffect,
-    usePTEEvents,
+    PresentTransitionEffectType, TargetType, transitionEffect, usePTEEvents,
 } from './transitionEffectHelpers';
 
 function openContextMenu(event: any,
@@ -18,7 +15,9 @@ function openContextMenu(event: any,
                 ptEffect.effectType = effect as PresentTransitionEffectType;
             },
             otherChild: (
-                <i className={`${icon} ps-1 ${isSelected ? 'highlight-selected' : ''}`} />
+                <i className={
+                    `${icon} ps-1 ${isSelected ? 'highlight-selected' : ''}`
+                } />
             ),
         };
     }));
@@ -26,11 +25,11 @@ function openContextMenu(event: any,
 
 export default function RenderTransitionEffect({
     title, presentId, target,
-}: {
+}: Readonly<{
     title: string,
     presentId: number,
     target: TargetType,
-}) {
+}>) {
     const ptEffect = PresentTransitionEffect.getInstance(presentId, target);
     usePTEEvents(['update'], ptEffect);
     const selected = transitionEffect[ptEffect.effectType];
@@ -47,10 +46,10 @@ export default function RenderTransitionEffect({
 
 export function RendStyle({
     presentId, ptEffectTarget,
-}: {
+}: Readonly<{
     presentId: number,
     ptEffectTarget: TargetType,
-}) {
+}>) {
     const ptEffect = PresentTransitionEffect.getInstance(
         presentId, ptEffectTarget);
     usePTEEvents(['update'], ptEffect);

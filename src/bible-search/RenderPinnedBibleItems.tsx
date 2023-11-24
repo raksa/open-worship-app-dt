@@ -6,10 +6,10 @@ const RESIZE_SETTING_NAME = 'pinned-bible-items';
 
 export default function RenderPinnedBibleItems({
     pinnedBibleItems, setPinnedBibleItems,
-}: {
+}: Readonly<{
     pinnedBibleItems: BibleItem[],
     setPinnedBibleItems: (newPinnedBibleItems: BibleItem[]) => void,
-}) {
+}>) {
     const unpinBibleItem = (currentBibleItem: BibleItem) => {
         setPinnedBibleItems(
             pinnedBibleItems.filter(

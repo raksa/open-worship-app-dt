@@ -11,9 +11,9 @@ const Tools = lazy(() => {
     return import('./canvas/tools/Tools');
 });
 
-export default function SlideItemEditor({ slideItem }: {
+export default function SlideItemEditor({ slideItem }: Readonly<{
     slideItem: SlideItem
-}) {
+}>) {
     if (slideItem.isError) {
         return (
             <div className='alert alert-danger'>Error</div>

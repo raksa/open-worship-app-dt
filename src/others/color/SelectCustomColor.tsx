@@ -2,10 +2,10 @@ import { useRef, useState } from 'react';
 import { createMouseEvent } from '../AppContextMenu';
 import { AppColorType } from './colorHelpers';
 
-export default function SelectCustomColor({ color, onColorSelected }: {
+export default function SelectCustomColor({ color, onColorSelected }: Readonly<{
     color: AppColorType | null,
     onColorSelected: (color: AppColorType, event: MouseEvent) => void,
-}) {
+}>) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [localColor, setLocalColor] = useState<AppColorType>(
         color || '#ffffff');

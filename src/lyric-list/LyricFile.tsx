@@ -10,10 +10,10 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
     index, filePath,
-}: {
+}: Readonly<{
     index: number,
     filePath: string,
-}) {
+}>) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -53,7 +53,7 @@ export default function LyricFile({
     );
 }
 
-function LyricFilePreview({ lyric }: { lyric: Lyric }) {
+function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     const fileSource = FileSource.getInstance(lyric.filePath);
     return (
         <>

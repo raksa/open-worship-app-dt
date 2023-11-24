@@ -15,10 +15,10 @@ export function genHtmlSlideItem(canvasItemsJson: CanvasItemPropsType[]) {
 
 export default function SlideItemRenderer({
     width, height, canvasItemsJson,
-}: {
+}: Readonly<{
     width: string, height: string,
     canvasItemsJson: CanvasItemPropsType[],
-}) {
+}>) {
     return (
         <div style={{
             width: `${width}px`,

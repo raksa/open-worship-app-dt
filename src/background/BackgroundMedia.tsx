@@ -22,10 +22,10 @@ const bgTypeMapper: any = {
     [DragTypeEnum.BG_VIDEO]: 'video',
 };
 
-export default function BackgroundMedia({ rendChild, dragType }: {
+export default function BackgroundMedia({ rendChild, dragType }: Readonly<{
     rendChild: RenderChildType,
     dragType: DragTypeEnum,
-}) {
+}>) {
     const bgType = bgTypeMapper[dragType];
     const dirSource = useGenDS(`${bgType}-list-selected-dir`);
     const renderCallback = useCallback((filePaths: string[]) => {
@@ -57,11 +57,14 @@ function genBody(
         fileSource.src, bgType,
     );
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
+    const title = `${filePath}` + (selectedBGSrcList.length ?
+        ` \nShow in presents:${selectedBGSrcList.map(([key]) => key).join(',')
+        }` : '');
+
     return (
         <div key={fileSource.name}
             className={`${bgType}-thumbnail card ${selectedCN}`}
-            title={filePath + '\n Show in presents:'
-                + selectedBGSrcList.map(([key]) => key).join(',')}
+            title={title}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, fileSource, dragType);

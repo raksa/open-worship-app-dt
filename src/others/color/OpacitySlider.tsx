@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-export default function OpacitySlider({ value, onOpacityChanged }: {
+export default function OpacitySlider({ value, onOpacityChanged }: Readonly<{
     value: number,
     onOpacityChanged: (value: number, event: MouseEvent) => void,
-}) {
+}>) {
     const [localValue, setLocalValue] = useState(value || 1);
     return (
         <input type='range' value={localValue}

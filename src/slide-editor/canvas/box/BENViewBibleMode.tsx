@@ -8,10 +8,10 @@ import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewBibleMode({
     canvasItemBible, style,
-}: {
+}: Readonly<{
     canvasItemBible: CanvasItemBibleItem,
     style: CSSProperties
-}) {
+}>) {
     return (
         <div className='box-editor pointer'
             style={style}
@@ -31,9 +31,9 @@ export default function BENViewBibleMode({
     );
 }
 
-export function BENBibleRender({ props }: {
+export function BENBibleRender({ props }: Readonly<{
     props: CanvasItemBiblePropsType,
-}) {
+}>) {
     try {
         CanvasItemBibleItem.validate(props);
     } catch (error) {

@@ -53,7 +53,7 @@ export default function FileListHandler({
     id, mimetype, dirSource, header, bodyHandler,
     contextMenu, onNewFile, checkExtraFile,
     takeDroppedFile, userClassName,
-}: {
+}: Readonly<{
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
     header?: any,
@@ -63,7 +63,7 @@ export default function FileListHandler({
     checkExtraFile?: (filePath: string) => boolean,
     takeDroppedFile?: (filePath: string) => boolean,
     userClassName?: string,
-}) {
+}>) {
     const applyNameCallback = useCallback(async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
@@ -94,7 +94,8 @@ export default function FileListHandler({
                 })}>
                 {header && <div className='card-header'>{header}
                     {onNewFile && dirSource.dirPath &&
-                        <button className='btn btn-sm btn-outline-info float-end'
+                        <button
+                            className='btn btn-sm btn-outline-info float-end'
                             title='New File'
                             onClick={() => setIsCreatingNew(true)}>
                             <i className='bi bi-file-earmark-plus' />

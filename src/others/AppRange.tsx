@@ -7,11 +7,11 @@ export type AppRangeDefaultType = {
 
 export default function AppRange({
     currentSize, setCurrentSize, defaultSize,
-}: {
+}: Readonly<{
     currentSize: number,
     setCurrentSize: (size: number) => void,
     defaultSize: AppRangeDefaultType,
-}) {
+}>) {
     return (
         <div className='form form-inline d-flex flex-row-reverse'
             style={{ minWidth: '100px' }}>

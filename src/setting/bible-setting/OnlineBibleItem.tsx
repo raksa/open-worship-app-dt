@@ -53,8 +53,7 @@ export default function OnlineBibleItem({
                     (<div className='float-end'>
                         <button className='btn btn-info'
                             onClick={onDownloadHandler}>
-                            Download
-                            <i className='bi bi-cloud-arrow-down' />
+                            Download <i className='bi bi-cloud-arrow-down' />
                         </button>
                     </div>) : (<div>
                         <div className='progress'>

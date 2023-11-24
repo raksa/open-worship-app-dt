@@ -26,13 +26,13 @@ export type DataInputType = [
 ];
 export default function ResizeActor({
     fSizeName, flexSizeDefault, resizeKinds, dataInput, isDisableQuickResize,
-}: {
+}: Readonly<{
     fSizeName: string,
     flexSizeDefault: FlexSizeType,
     resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
     isDisableQuickResize?: boolean,
-}) {
+}>) {
     if (resizeKinds.length !== dataInput.length - 1) {
         throw new Error('resizeKinds and dataInput length not match');
     }
@@ -70,7 +70,7 @@ export default function ResizeActor({
 function RenderItem({
     data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName, dataInput,
     resizeKinds, isDisableQuickResize,
-}: {
+}: Readonly<{
     data: DataInputType,
     index: number,
     flexSize: FlexSizeType,
@@ -80,7 +80,7 @@ function RenderItem({
     dataInput: DataInputType[],
     resizeKinds: ResizeKindType[],
     isDisableQuickResize: boolean,
-}) {
+}>) {
     const disableCallback = useCallback((
         targetDataFSizeKey: string, target: DisabledType) => {
         const size = setDisablingSetting(fSizeName, defaultFlexSize,

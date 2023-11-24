@@ -5,12 +5,12 @@ import AppSuspense from './AppSuspense';
 export type TabHeaderPropsType<T> = [T, string, string?];
 export default function TabRender<T extends string>({
     tabs, activeTab, setActiveTab, className,
-}: {
+}: Readonly<{
     tabs: TabHeaderPropsType<T>[],
     activeTab: T,
     setActiveTab?: (t: T) => void,
     className?: string,
-}) {
+}>) {
     return (
         <ul className={`nav nav-tabs ${className}`}>
             {tabs.map(([tab, title, tabClassName]) => {

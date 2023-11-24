@@ -2,9 +2,11 @@ import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
 import BibleItemViewController from './BibleItemViewController';
 
-export default function NoBibleViewAvailable({ bibleItemViewController }: {
+export default function NoBibleViewAvailable({
+    bibleItemViewController,
+}: Readonly<{
     bibleItemViewController: BibleItemViewController,
-}) {
+}>) {
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}

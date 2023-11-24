@@ -10,9 +10,9 @@ const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],
     key: 's',
 };
-export default function SlideItemsMenu({ slide }: {
+export default function SlideItemsMenu({ slide }: Readonly<{
     slide: Slide,
-}) {
+}>) {
     const presentDisplay = PresentManager.getDefaultPresentDisplay();
     useFSEvents(['update'], slide.filePath);
     useKeyboardRegistering([savingEventMapper], () => {
@@ -37,8 +37,7 @@ export default function SlideItemsMenu({ slide }: {
                     onClick={() => {
                         editCacheManager.popUndo();
                     }}>
-                    undo
-                    <i className='bi bi-arrow-90deg-left' />
+                    undo <i className='bi bi-arrow-90deg-left' />
                 </button>
                 <button type='button'
                     className='btn btn-sm btn-info'
@@ -47,8 +46,7 @@ export default function SlideItemsMenu({ slide }: {
                     onClick={() => {
                         editCacheManager.popRedo();
                     }}>
-                    redo
-                    <i className='bi bi-arrow-90deg-right' />
+                    redo <i className='bi bi-arrow-90deg-right' />
                 </button>
                 <MenuIsModifying
                     slide={slide}

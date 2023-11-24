@@ -1,8 +1,8 @@
 export default function FileReadError({
     onContextMenu,
-}: {
+}: Readonly<{
     onContextMenu?: (event: any) => void,
-}) {
+}>) {
     return (
         <div className='card pointer'
             onContextMenu={onContextMenu} >

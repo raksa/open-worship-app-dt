@@ -9,9 +9,9 @@ import { usePMEvents } from './presentEventHelpers';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
-export default function PresentBackground({ presentManager }: {
+export default function PresentBackground({ presentManager }: Readonly<{
     presentManager: PresentManager;
-}) {
+}>) {
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentBGManager.render();
     });
@@ -40,10 +40,10 @@ export function genHtmlBG(bgSrc: BackgroundSrcType,
 
 export function RenderBG({
     bgSrc, presentManager,
-}: {
+}: Readonly<{
     bgSrc: BackgroundSrcType,
     presentManager: PresentManager;
-}) {
+}>) {
     const { presentBGManager } = presentManager;
     return (
         <div style={{
@@ -58,10 +58,10 @@ export function RenderBG({
 
 function RenderPresentBackground({
     bgSrc, presentManager,
-}: {
+}: Readonly<{
     bgSrc: BackgroundSrcType,
     presentManager: PresentManager;
-}) {
+}>) {
     if (bgSrc === null) {
         return null;
     }

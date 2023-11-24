@@ -13,13 +13,13 @@ const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderChapterOptions({
     bibleKey, bookKey, chapter, guessingChapter, onSelect,
-}: {
+}: Readonly<{
     bibleKey: string,
     bookKey: string | null,
     chapter: number | null,
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
-}) {
+}>) {
     if (bookKey == null || chapter !== null) {
         return null;
     }
@@ -34,12 +34,12 @@ export default function RenderChapterOptions({
 
 function ChapterOptions({
     bibleKey, bookKey, guessingChapter, onSelect,
-}: {
+}: Readonly<{
     bibleKey: string,
     bookKey: string,
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
-}) {
+}>) {
     const matches = useChapterMatch(bibleKey, bookKey, guessingChapter);
     const arrowListener = (event: KeyboardEvent) => {
         processSelection(

@@ -13,9 +13,9 @@ import { useModalTypeData } from '../app-modal/helpers';
 
 export default function RenderBibleSearch({
     editingInputText,
-}: {
+}: Readonly<{
     editingInputText: string,
-}) {
+}>) {
     const { data } = useModalTypeData();
     const isBibleEditing = !!data;
     const [inputText, _setInputText] = useState<string>(editingInputText);

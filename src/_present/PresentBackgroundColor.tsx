@@ -1,8 +1,8 @@
 import { AppColorType } from '../others/color/colorHelpers';
 
-export default function PresentBackgroundColor({ color }: {
+export default function PresentBackgroundColor({ color }: Readonly<{
     color: AppColorType,
-}) {
+}>) {
     return (
         <div style={{
             width: '100%',

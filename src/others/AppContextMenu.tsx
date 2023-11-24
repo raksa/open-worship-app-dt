@@ -130,9 +130,9 @@ export default function AppContextMenu() {
     );
 }
 
-function ContextMenuItem({ item }: {
+function ContextMenuItem({ item }: Readonly<{
     item: ContextMenuItemType,
-}) {
+}>) {
     return (
         <div className={'app-context-menu-item'
             + ` ${item.disabled ? 'disabled' : ''}`}

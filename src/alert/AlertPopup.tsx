@@ -7,9 +7,9 @@ import {
     AlertDataType, closeAlert,
 } from './alertHelpers';
 
-export default function AlertPopup({ data }: {
+export default function AlertPopup({ data }: Readonly<{
     data: AlertDataType,
-}) {
+}>) {
     const onCloseCallback = useCallback(() => {
         data.onClose();
         closeAlert();

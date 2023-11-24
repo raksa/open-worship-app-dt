@@ -14,11 +14,11 @@ import RenderPinnedBibleItems from './RenderPinnedBibleItems';
 
 export default function RenderBibleSearchBody({
     bibleKey, inputText, setInputText,
-}: {
+}: Readonly<{
     bibleKey: string,
     inputText: string,
     setInputText: (newText: string) => void,
-}) {
+}>) {
     const [pinnedBibleItems, setPinnedBibleItems] = useState<BibleItem[]>([]);
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),

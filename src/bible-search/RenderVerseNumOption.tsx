@@ -7,13 +7,13 @@ export function mouseUp() {
 
 export default function RenderVerseNumOption({
     index, verseNum, verseNumText, bibleItem, onVerseChange,
-}: {
+}: Readonly<{
     index: number,
     verseNum: number,
     verseNumText: string,
     bibleItem: BibleItem,
     onVerseChange: (startVerse?: number, endVerse?: number) => void,
-}) {
+}>) {
     const { target } = bibleItem;
     const sVerse = target.startVerse;
     const eVerse = target.endVerse;

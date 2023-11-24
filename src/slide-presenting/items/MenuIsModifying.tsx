@@ -4,13 +4,12 @@ import {
 import Slide from '../../slide-list/Slide';
 
 export default function MenuIsModifying({
-    slide,
-    eventMapper,
-}: {
+    slide, eventMapper,
+}: Readonly<{
     slide: Slide,
     eventMapper: any,
     isHavingHistories: boolean,
-}) {
+}>) {
     return (
         <>
             <button type='button'

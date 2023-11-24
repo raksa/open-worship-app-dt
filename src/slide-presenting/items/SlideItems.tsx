@@ -13,7 +13,7 @@ import { useWindowIsEditingMode } from '../../router/routeHelpers';
 import { genArrowListener, checkSlideItemToView } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 
-export default function SlideItems({ slide }: { slide: Slide }) {
+export default function SlideItems({ slide }: Readonly<{ slide: Slide }>) {
     const [thumbSize] = useSlideItemSizing(
         THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE
     );

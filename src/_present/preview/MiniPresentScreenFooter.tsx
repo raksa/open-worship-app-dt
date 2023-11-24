@@ -4,12 +4,12 @@ export const DEFAULT_PREVIEW_SIZE = 200;
 
 export default function MiniPresentScreenFooter({
     previewSize, setPreviewSize, isShowingTools, setIsShowingTools,
-}: {
+}: Readonly<{
     previewSize: number,
     setPreviewSize: (size: number) => void,
     setIsShowingTools: (isShowing: boolean) => void,
     isShowingTools: boolean,
-}) {
+}>) {
     const defaultSize = {
         size: DEFAULT_PREVIEW_SIZE,
         min: DEFAULT_PREVIEW_SIZE,

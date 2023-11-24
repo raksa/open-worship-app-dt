@@ -7,11 +7,9 @@ import BoxEditorControllingMode from './BoxEditorControllingMode';
 import { useCIControl } from '../canvasEventHelpers';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 
-export function BoxEditor({
-    canvasItem, scale,
-}: {
+export function BoxEditor({ canvasItem, scale }: Readonly<{
     canvasItem: CanvasItem<any>, scale: number,
-}) {
+}>) {
     const isControlling = useCIControl(canvasItem);
     useAppEffect(() => {
         boxEditorController.setScaleFactor(scale);

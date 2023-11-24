@@ -15,12 +15,12 @@ import {
 
 export default function InputHandler({
     inputText, onInputChange, onBibleChange, bibleKey,
-}: {
+}: Readonly<{
     inputText: string
     onInputChange: (str: string) => void
     onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
     bibleKey: string;
-}) {
+}>) {
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(

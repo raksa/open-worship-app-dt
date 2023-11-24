@@ -9,11 +9,11 @@ import RenderNoColor from './RenderNoColor';
 export default function RenderColors({
     colors, selectedColor,
     onColorChange,
-}: {
+}: Readonly<{
     colors: AnyObjectType,
     selectedColor: AppColorType | null,
     onColorChange: (color: AppColorType | null, event: MouseEvent) => void,
-}) {
+}>) {
     const onNoColorCallback = useCallback((event: any) => {
         onColorChange(null, event);
     }, [onColorChange]);

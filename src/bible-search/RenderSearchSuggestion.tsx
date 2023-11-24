@@ -10,7 +10,7 @@ import BibleItem from '../bible-list/BibleItem';
 export default function RenderSearchSuggestion({
     applyChapterSelection, applyVerseSelection, applyBookSelection,
     bibleResult, bibleKey, pinningBibleItem,
-}: {
+}: Readonly<{
     applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (
         newStartVerse?: number, newEndVerse?: number,
@@ -20,7 +20,7 @@ export default function RenderSearchSuggestion({
     bibleKey: string,
     bibleResult: ExtractedBibleResult,
     pinningBibleItem: (bibleItem: BibleItem) => void,
-}) {
+}>) {
     const onVerseChangeCallback = useCallback(
         (newStartVerse?: number, newEndVerse?: number) => {
             applyVerseSelection(newStartVerse, newEndVerse);

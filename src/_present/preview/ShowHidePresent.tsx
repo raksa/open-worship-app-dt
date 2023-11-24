@@ -1,6 +1,5 @@
 import {
-    toShortcutKey,
-    useKeyboardRegistering,
+    toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { usePMEvents } from '../presentEventHelpers';
 import PresentManager from '../PresentManager';
@@ -8,9 +7,9 @@ import PresentManager from '../PresentManager';
 const presentingEventMap = { key: 'F5' };
 export default function ShowHidePresent({
     presentManager,
-}: {
+}: Readonly<{
     presentManager: PresentManager,
-}) {
+}>) {
     useKeyboardRegistering([presentingEventMap], () => {
         presentManager.isShowing = !isShowing;
     });

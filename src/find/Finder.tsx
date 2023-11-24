@@ -20,9 +20,9 @@ function findString(text: string, options: SearchingOptions = {}) {
     );
 }
 
-export default function Finder({ onClose }: {
+export default function Finder({ onClose }: Readonly<{
     onClose: () => void;
-}) {
+}>) {
     const [searchingText, _setSearchingText] = useState('');
     const [isMatchCase, setIsMatchCase] = useState(false);
     const setSearchingText = (text: string, options: SearchingOptions = {}) => {

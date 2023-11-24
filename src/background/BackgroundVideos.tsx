@@ -26,10 +26,10 @@ function rendChild(
     );
 }
 
-function RendBody({ filePath, selectedBGSrcList }: {
+function RendBody({ filePath, selectedBGSrcList }: Readonly<{
     filePath: string,
     selectedBGSrcList: [string, BackgroundSrcType][],
-}) {
+}>) {
     const vRef = createRef<HTMLVideoElement>();
     const fileSource = FileSource.getInstance(filePath);
     return (

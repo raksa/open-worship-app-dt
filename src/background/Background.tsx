@@ -62,9 +62,9 @@ export default function Background() {
     );
 }
 
-export function RenderPresentIds({ ids }: {
+export function RenderPresentIds({ ids }: Readonly<{
     ids: number[],
-}) {
+}>) {
     return (
         <div style={{
             position: 'absolute',

@@ -1,7 +1,7 @@
-export default function RenderNoColor({ isSelected, onClick }: {
+export default function RenderNoColor({ isSelected, onClick }: Readonly<{
     isSelected: boolean,
     onClick?: (event: MouseEvent) => void,
-}) {
+}>) {
     return (
         <div title='no color'
             className='m-1 color-item pointer'

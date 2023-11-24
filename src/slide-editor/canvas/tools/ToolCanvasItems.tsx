@@ -1,4 +1,5 @@
-import CanvasItemRenderer from '../../../slide-presenting/items/CanvasItemRenderer';
+import CanvasItemRenderer
+    from '../../../slide-presenting/items/CanvasItemRenderer';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import CanvasController from '../CanvasController';
 import { useCanvasControllerEvents } from '../canvasEventHelpers';
