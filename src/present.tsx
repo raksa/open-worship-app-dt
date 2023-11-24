@@ -1,4 +1,5 @@
 import './_present/present.scss';
+import './others/font.scss';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

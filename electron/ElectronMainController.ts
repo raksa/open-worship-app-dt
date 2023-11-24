@@ -1,6 +1,5 @@
 import { BrowserWindow, shell } from 'electron';
 import { channels, PresentMessageType } from './electronEventListener';
-import { isDev } from './electronHelpers';
 import { genRoutProps } from './protocolHelpers';
 
 const routeProps = genRoutProps('index');
@@ -66,7 +65,7 @@ export default class ElectronMainController {
     }
     static getInstance() {
         if (this._instance === null) {
-            this._instance = new ElectronMainController();
+            this._instance = new this();
         }
         return this._instance;
     }

@@ -25,7 +25,8 @@ function genFilePathUrl(dirPath: string, url: string) {
 
 async function handler(dirPath: string, request: GlobalRequest) {
     const isLocal = request.url.startsWith(rootUrl);
-    const urlPath = isLocal ? genFilePathUrl(dirPath, request.url) : request.url;
+    const urlPath = isLocal ?
+        genFilePathUrl(dirPath, request.url) : request.url;
     return net.fetch(urlPath);
 };
 

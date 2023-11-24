@@ -122,15 +122,26 @@ export function initPresent(appController: ElectronAppController) {
         appController.mainController.previewPdf(pdfFilePath);
     });
 
-    const mainWinWebContents = appController.mainWin.webContents;
-    ipcMain.on('app:search-in-page', (event, searchText: string, options: {
-        forward?: boolean;
-        findNext?: boolean;
-        matchCase?: boolean;
-    } = {}) => {
-        event.returnValue = mainWinWebContents.findInPage(searchText, options);
+    ipcMain.on('main:app:open-search', () => {
+        appController.finderController.open(appController.mainWin);
     });
-    ipcMain.on('app:stop-search-in-page', (
+    ipcMain.on('finder:app:close-search', () => {
+        appController.finderController.close();
+    });
+
+    const mainWinWebContents = appController.mainWin.webContents;
+    ipcMain.on('finder:app:search-in-page',
+        (event, searchText: string, options: {
+            forward?: boolean;
+            findNext?: boolean;
+            matchCase?: boolean;
+        } = {}) => {
+            event.returnValue = mainWinWebContents.findInPage(
+                searchText, options,
+            );
+        },
+    );
+    ipcMain.on('finder:app:stop-search-in-page', (
         _, action: 'clearSelection' | 'keepSelection' | 'activateSelection',
     ) => {
         mainWinWebContents.stopFindInPage(action);

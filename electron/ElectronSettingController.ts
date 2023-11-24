@@ -52,7 +52,9 @@ export default class ElectronSettingController {
         return this.allDisplays.find((newDisplay) => newDisplay.id == id);
     }
     save() {
-        fs.writeFileSync(this.fileSettingPath, JSON.stringify(this._setting), 'utf8');
+        fs.writeFileSync(
+            this.fileSettingPath, JSON.stringify(this._setting), 'utf8',
+        );
     }
     syncMainWindow() {
         this.appController.mainWin.setBounds(this.mainWinBounds);

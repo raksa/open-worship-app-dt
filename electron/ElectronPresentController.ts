@@ -1,9 +1,7 @@
 import { BrowserWindow } from 'electron';
 import {
-    AnyObjectType,
-    channels,
+    AnyObjectType, channels,
 } from './electronEventListener';
-import { isDev } from './electronHelpers';
 import ElectronMainController from './ElectronMainController';
 import { genRoutProps } from './protocolHelpers';
 
@@ -80,7 +78,7 @@ export default class ElectronPresentController {
     static createInstance(presentId: number) {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
-            const presentController = new ElectronPresentController(presentId);
+            const presentController = new this(presentId);
             this._cache.set(key, presentController);
         }
         return this._cache.get(key) as ElectronPresentController;

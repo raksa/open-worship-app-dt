@@ -18,9 +18,10 @@ import AppModal, {
     APP_MODAL_QUERY_ROUTE_PATH,
 } from './app-modal/AppModal';
 import RedirectTo from './others/RedirectTo';
-import HandleFind from './find/HandleFind';
+import { useHandleFind } from './_find/finderHelpers';
 
 export default function App() {
+    useHandleFind();
     const tabProps = useMemo(() => {
         return [
             editingTab,
@@ -30,7 +31,7 @@ export default function App() {
     }, []);
     checkHome();
     return (
-        <div id='app' className='dark' data-bs-theme="dark">
+        <div id='app' className='dark' data-bs-theme='dark'>
             <DefaultTabContext.Provider value={tabProps}>
                 <BrowserRouter>
                     <AppRouteRender />
@@ -39,7 +40,6 @@ export default function App() {
             <Toast />
             <AppContextMenu />
             <HandleAlert />
-            <HandleFind />
         </div>
     );
 }
