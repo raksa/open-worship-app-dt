@@ -43,7 +43,7 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            input: ['index.html', 'present.html'],
+            input: ['index.html', 'present.html', 'finder.html'],
         },
     },
 });
