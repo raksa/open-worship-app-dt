@@ -93,16 +93,16 @@ const styleText = `
 }
 
 #full-text .highlight.hover {
-    border-bottom-color: rgba(255, 255, 255, 0.5);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 #full-text .highlight.selected {
     background: linear-gradient(transparent, transparent, rgba(255, 0, 157, 0.6), transparent);
 }`;
 
-export default function PresentFullText({ presentManager }: {
+export default function PresentFullText({ presentManager }: Readonly<{
     presentManager: PresentManager;
-}) {
+}>) {
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentFTManager.render();
     });

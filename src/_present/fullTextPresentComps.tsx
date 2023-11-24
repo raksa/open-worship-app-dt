@@ -21,17 +21,77 @@ export type LyricRenderedType = {
 };
 
 export function FTBibleTable({
-    bibleRenderedList,
-    isLineSync,
-    versesCount,
-}: {
+    bibleRenderedList, isLineSync, versesCount,
+}: Readonly<{
     bibleRenderedList: BibleItemRenderedType[],
     isLineSync: boolean,
     versesCount: number,
-}) {
+}>) {
     const fontFaceList = bibleRenderedList.map(({ locale }) => {
         return getFontFace(locale);
     });
+    const rendThHeader = (
+        { locale, bibleKey, title }: BibleItemRenderedType, i: number,
+    ) => {
+        return (
+            <th key={title} className='header'
+                style={{
+                    fontFamily: getFontFamilyByLocal(locale),
+                }}>
+                <div style={{ display: 'flex' }}>
+                    <div className='bible highlight bible-name bible-key'
+                        data-index={i}>
+                        {bibleKey}
+                    </div>
+                    <div className='title'>{title}</div>
+                </div>
+            </th>
+        );
+    };
+    const renderTrBody = (_: any, i: number) => {
+        return (
+            <tr key={i}>
+                {bibleRenderedList.map(({ locale, verses }, j) => {
+                    const { num, text } = verses[i];
+                    return (
+                        <td key={j}
+                            style={{
+                                fontFamily: getFontFamilyByLocal(locale),
+                            }}>
+                            <span className='highlight'
+                                data-highlight={i}>
+                                <div className='verse-number'>
+                                    {num}
+                                </div>{text}
+                            </span>
+                        </td>
+                    );
+                })}
+            </tr>
+        );
+    };
+    const renderTdBody = (
+        { locale, verses }: BibleItemRenderedType, i: number,
+    ) => {
+        return (
+            <td key={i}>
+                {verses.map(({ num, text }, j) => {
+                    return (
+                        <span key={j}
+                            className='highlight'
+                            style={{
+                                fontFamily: getFontFamilyByLocal(locale),
+                            }}
+                            data-highlight={j}>
+                            <div className='verse-number'>
+                                {num}
+                            </div>{text}
+                        </span>
+                    );
+                })}
+            </td>
+        );
+    };
     return (
         <div>
             <style dangerouslySetInnerHTML={{
@@ -40,68 +100,14 @@ export function FTBibleTable({
             <table>
                 <thead>
                     <tr>
-                        {bibleRenderedList.map(({ locale, bibleKey, title }, i) => {
-                            return (
-                                <th key={title} className='header'
-                                    style={{
-                                        fontFamily: getFontFamilyByLocal(locale),
-                                    }}>
-                                    <div style={{ display: 'flex' }}>
-                                        <div className='bible highlight bible-name bible-key'
-                                            data-index={i}>
-                                            {bibleKey}
-                                        </div>
-                                        <div className='title'>{title}</div>
-                                    </div>
-                                </th>
-                            );
-                        })}
+                        {bibleRenderedList.map(rendThHeader)}
                     </tr>
                 </thead>
                 <tbody>
-                    {isLineSync ? Array.from({ length: versesCount }).map((_, i) => {
-                        return (
-                            <tr key={i}>
-                                {bibleRenderedList.map(({ locale, verses }, j) => {
-                                    const { num, text } = verses[i];
-                                    return (
-                                        <td key={j}
-                                            style={{
-                                                fontFamily: getFontFamilyByLocal(locale),
-                                            }}>
-                                            <span className='highlight'
-                                                data-highlight={i}>
-                                                <div className='verse-number'>
-                                                    {num}
-                                                </div>{text}
-                                            </span>
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    }) : <tr>
-                        {bibleRenderedList.map(({ locale, verses }, i) => {
-                            return (
-                                <td key={i}>
-                                    {verses.map(({ num, text }, j) => {
-                                        return (
-                                            <span key={j}
-                                                className='highlight'
-                                                style={{
-                                                    fontFamily: getFontFamilyByLocal(locale),
-                                                }}
-                                                data-highlight={j}>
-                                                <div className='verse-number'>
-                                                    {num}
-                                                </div>{text}
-                                            </span>
-                                        );
-                                    })}
-                                </td>
-                            );
-                        })}
-                    </tr>}
+                    {isLineSync ?
+                        Array.from({ length: versesCount }).map(renderTrBody) :
+                        <tr>{bibleRenderedList.map(renderTdBody)}</tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -109,14 +115,12 @@ export function FTBibleTable({
 }
 
 export function FTLyricItem({
-    lyricRenderedList,
-    isLineSync,
-    itemsCount,
-}: {
+    lyricRenderedList, isLineSync, itemsCount,
+}: Readonly<{
     lyricRenderedList: LyricRenderedType[],
     isLineSync: boolean,
     itemsCount: number,
-}) {
+}>) {
     return (
         <table>
             <thead>
