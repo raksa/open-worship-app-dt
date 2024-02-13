@@ -12,13 +12,11 @@ import {
 import CanvasController from './canvas/CanvasController';
 import { useModal } from '../app-modal/Modal';
 
-export default function SlideItemEditorPopup({ slideItem }: {
+export default function SlideItemEditorPopup({ slideItem }: Readonly<{
     slideItem: SlideItem
-}) {
+}>) {
     const { Modal } = useModal();
-    useKeyboardRegistering({
-        key: 'Escape',
-    }, closeItemSlideEdit);
+    useKeyboardRegistering([{ key: 'Escape' }], closeItemSlideEdit);
     CanvasController.getInstance().init(slideItem);
     return (
         <Modal>

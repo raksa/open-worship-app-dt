@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
@@ -12,7 +13,8 @@ import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect
+    from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 const backgroundTypeList = ['color', 'image', 'video'] as const;
@@ -30,7 +32,8 @@ export type BGSrcListType = {
 export type PresentBGManagerEventType = 'update';
 
 const settingName = 'present-bg-';
-export default class PresentBGManager extends EventHandler<PresentBGManagerEventType>
+export default class PresentBGManager
+    extends EventHandler<PresentBGManagerEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-bg-m';
     readonly presentId: number;
@@ -88,6 +91,9 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return;
+        }
         presentManager.presentBGManager.bgSrc = data;
     }
     fireUpdate() {
@@ -145,16 +151,23 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
             if (selectedBGSrcList.length > 0) {
                 selectedBGSrcList.forEach(([key]) => {
-                    PresentManager.getInstanceByKey(key)
-                        .presentBGManager.bgSrc = null;
+                    const presentManager = PresentManager.getInstanceByKey(key);
+                    if (presentManager === null) {
+                        return;
+                    }
+                    presentManager.presentBGManager.bgSrc = null;
                 });
                 return;
             }
         }
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
-        chosenPresentManagers.forEach(async (presentManager) => {
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(event);
+        const setSrc = async (presentManager: PresentManager) => {
             const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
             presentManager.presentBGManager.bgSrc = bgSrc;
+        };
+        chosenPresentManagers.forEach((presentManager) => {
+            setSrc(presentManager);
         });
         this.fireUpdateEvent();
     }
@@ -180,7 +193,7 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
             return;
         }
         const aminData = this.ptEffect.styleAnim;
-        if (this.bgSrc !== null) {
+        if (this.presentManager !== null && this.bgSrc !== null) {
             const newDiv = genHtmlBG(this.bgSrc, this.presentManager);
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
@@ -189,21 +202,23 @@ export default class PresentBGManager extends EventHandler<PresentBGManagerEvent
                     child.remove();
                 });
             });
-        } else {
-            if (this.div.lastChild !== null) {
-                const targetDiv = this.div.lastChild as HTMLDivElement;
-                aminData.animOut(targetDiv).then(() => {
-                    targetDiv.remove();
-                });
-            }
+        } else if (this.div.lastChild !== null) {
+            const targetDiv = this.div.lastChild as HTMLDivElement;
+            aminData.animOut(targetDiv).then(() => {
+                targetDiv.remove();
+            });
         }
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflow: 'hidden',
         };
     }

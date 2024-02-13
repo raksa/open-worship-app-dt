@@ -61,7 +61,7 @@ $dot-border: 1px dashed greenyellow;
 
     &:hover,
     &.active {
-      background-image: url($vertical-move-icon);
+      background-image: url(/assets/move-v-icon.svg);
     }
 
     &.active {
@@ -86,7 +86,7 @@ $dot-border: 1px dashed greenyellow;
 
     &:hover,
     &.active {
-      background-image: url($horizontal-move-icon);
+      background-image: url(/assets/move-h-icon.svg);
     }
 
     &.active {

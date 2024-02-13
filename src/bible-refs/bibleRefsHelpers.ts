@@ -1,15 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
-    get_api_url,
-    get_api_key,
-    decrypt,
-    bible_ref,
+    get_api_url, get_api_key, decrypt, bible_ref,
 } from '../_owa-crypto';
-import { BibleRefsDbController } from '../db/dbHelper';
-import {
-    handleError,
-} from '../helper/errorHelpers';
+import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { IndexedDbController } from '../db/dbHelper';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {
@@ -20,6 +16,16 @@ export type BibleRefType = {
     isTitle: boolean;
     isLXXDSS: boolean;
 };
+
+
+export class BibleRefsDbController extends IndexedDbController {
+    get storeName() {
+        return 'bible_refs';
+    }
+    static instantiate() {
+        return new this();
+    }
+}
 
 async function downloadBibleRef(key: string) {
     try {
@@ -58,7 +64,7 @@ async function getCacheBibleRef(key: string) {
         if (record.updatedAt.getTime() - Date.now() > MAX_CACHE_MILLISECONDS) {
             return null;
         }
-        return record.data as RawBibleRefListType;
+        return record.data;
     } catch (error) {
         handleError(error);
     }
@@ -99,7 +105,7 @@ export async function getBibleRef(key: string) {
 export function useGetBibleRef(bookKey: string, chapter: number,
     verseNum: number) {
     const [bibleRef, setBibleRef] = useState<BibleRefType[][] | null>(null);
-    useEffect(() => {
+    useAppEffect(() => {
         const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
         getBibleRef(key).then((data) => {
             setBibleRef(data);

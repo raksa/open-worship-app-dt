@@ -1,11 +1,13 @@
 import DirSource from './DirSource';
 import {
+    checkIsAppFile,
     extractExtension,
     fsCheckFileExist,
     fsCreateFile,
     fsDeleteFile,
     fsReadFile,
     fsRenameFile,
+    fsWriteFile,
     getFileMetaData,
     pathBasename,
     pathJoin,
@@ -16,18 +18,16 @@ import ItemSource from './ItemSource';
 import { urlPathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
-import DragInf from './DragInf';
+import DragInf, { DragTypeEnum } from './DragInf';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSourceMetaManager from './FileSourceMetaManager';
 import ColorNoteInf from './ColorNoteInf';
-import { DragTypeEnum } from './DragInf';
 
 export type SrcData = `data:${string}`;
 
-export type FSEventType = 'select' | 'update'
-    | 'history-update' | 'edit' | 'delete'
-    | 'delete-cache' | 'refresh-dir';
+export type FSEventType = 'select' | 'update' | 'history-update' | 'edit'
+    | 'delete' | 'delete-cache';
 
 export default class FileSource extends EventHandler<FSEventType>
     implements DragInf<string>, ColorNoteInf {
@@ -36,6 +36,7 @@ export default class FileSource extends EventHandler<FSEventType>
     fileName: string;
     filePath: string;
     src: string;
+    colorNote: string | null = null;
     static _cache = new Map<string, FileSource>();
     constructor(basePath: string, fileName: string,
         filePath: string, src: string) {
@@ -44,6 +45,9 @@ export default class FileSource extends EventHandler<FSEventType>
         this.fileName = fileName;
         this.filePath = filePath;
         this.src = src;
+    }
+    get isAppFile() {
+        return !checkIsAppFile(this.fileName);
     }
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
@@ -64,12 +68,12 @@ export default class FileSource extends EventHandler<FSEventType>
             });
         });
     }
-    get colorNote() {
-        return FileSourceMetaManager.getColorNote(this);
+    getColorNote() {
+        return FileSourceMetaManager.getColorNote(this.filePath);
     }
-    set colorNote(color: string | null) {
-        FileSourceMetaManager.setColorNote(this, color);
-        this.fireRefreshDirEvent();
+    async setColorNote(color: string | null) {
+        FileSourceMetaManager.setColorNote(this.filePath, color);
+        this.dirSource?.fireReloadEvent();
     }
     get metadata() {
         return getFileMetaData(this.fileName);
@@ -83,25 +87,6 @@ export default class FileSource extends EventHandler<FSEventType>
     }
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
-    }
-    fireRefreshDirEvent() {
-        this.dirSource?.fireRefreshEvent();
-    }
-    fireSelectEvent() {
-        this.addPropEvent('select');
-        FileSource.addPropEvent('select', this);
-    }
-    fireHistoryUpdateEvent() {
-        this.addPropEvent('history-update');
-    }
-    fireUpdateEvent() {
-        this.addPropEvent('update');
-    }
-    fireDeleteEvent() {
-        this.addPropEvent('delete');
-    }
-    fireDeleteCacheEvent() {
-        this.addPropEvent('delete-cache');
     }
     deleteCache() {
         FileSource._cache.delete(this.filePath);
@@ -119,16 +104,24 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return null;
     }
-    async saveData(data: ItemSource<any>) {
+    async saveData(data: string) {
         try {
-            const content = JSON.stringify(data.toJson());
-            await fsCreateFile(this.filePath, content, true);
+            const isFileExist = await fsCheckFileExist(this.filePath);
+            if (isFileExist) {
+                await fsWriteFile(this.filePath, data);
+            } else {
+                await fsCreateFile(this.filePath, data, true);
+            }
             this.fireUpdateEvent();
             return true;
         } catch (error: any) {
             showSimpleToast('Saving File', error.message);
         }
         return false;
+    }
+    async saveDataFromItem(item: ItemSource<any>) {
+        const content = JSON.stringify(item.toJson());
+        return this.saveData(content);
     }
     async delete() {
         try {
@@ -168,7 +161,7 @@ export default class FileSource extends EventHandler<FSEventType>
     }
     dragSerialize(type?: DragTypeEnum) {
         return {
-            type: type ?? DragTypeEnum.UNKNOWN,
+            type: type || DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
     }
@@ -211,5 +204,35 @@ export default class FileSource extends EventHandler<FSEventType>
             showSimpleToast('Duplicating File', 'Unable to duplicate file');
             handleError(error);
         }
+    }
+    static registerFSEventListener(
+        events: FSEventType[], callback: () => void, filePath?: string,
+    ) {
+        const newEvents = events.map((event) => {
+            return filePath ? `${event}:${filePath}` : event;
+        });
+        return super.registerEventListener(newEvents, callback);
+    }
+    static addFSPropEvent(
+        eventName: FSEventType, filePath: string, data?: any,
+    ): void {
+        const newEventName = `${eventName}:${filePath}` as FSEventType;
+        super.addPropEvent(eventName, data);
+        super.addPropEvent(newEventName, data);
+    }
+    fireSelectEvent() {
+        FileSource.addFSPropEvent('select', this.filePath);
+    }
+    fireHistoryUpdateEvent() {
+        FileSource.addFSPropEvent('history-update', this.filePath);
+    }
+    fireUpdateEvent() {
+        FileSource.addFSPropEvent('update', this.filePath);
+    }
+    fireDeleteEvent() {
+        FileSource.addFSPropEvent('delete', this.filePath);
+    }
+    fireDeleteCacheEvent() {
+        FileSource.addFSPropEvent('delete-cache', this.filePath);
     }
 }

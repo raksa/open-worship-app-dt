@@ -1,11 +1,10 @@
-import FileSource from '../helper/FileSource';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import ColorNoteInf from './ColorNoteInf';
 import { AnyObjectType, cloneJson } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
-    abstract fileSource?: FileSource | null;
+    abstract filePath?: string | null;
     static SELECT_SETTING_NAME = '';
     jsonError: any;
     get isError() {
@@ -13,13 +12,13 @@ export abstract class ItemBase implements ColorNoteInf {
     }
     abstract get metadata(): AnyObjectType;
     abstract set metadata(metadata: AnyObjectType);
-    get colorNote() {
-        if (this.metadata && this.metadata['colorNote']) {
+    async getColorNote() {
+        if (this.metadata?.['colorNote']) {
             return this.metadata['colorNote'];
         }
         return null;
     }
-    set colorNote(c: string | null) {
+    async setColorNote(c: string | null) {
         const metadata = cloneJson(this.metadata);
         metadata['colorNote'] = c;
         this.metadata = metadata;
@@ -31,33 +30,35 @@ export abstract class ItemBase implements ColorNoteInf {
     set isSelectedEditing(_b: boolean) {
         throw new Error('Method not implemented.');
     }
-    async save(): Promise<boolean> {
+    async save(_?: any): Promise<boolean> {
         throw new Error('Method not implemented.');
     }
     abstract clone(): ItemBase;
     toJson() {
         throw new Error('Method not implemented.');
     }
-    static fromJson(_json: AnyObjectType, _fileSource?: FileSource): any {
+    static fromJson(_json: AnyObjectType, _filePath?: string): any {
         throw new Error('Method not implemented.');
     }
-    static fromJsonError(_json: AnyObjectType, _fileSource?: FileSource): any {
+    static fromJsonError(_json: AnyObjectType, _filePath?: string): any {
         throw new Error('Method not implemented.');
     }
     static validate(_json: AnyObjectType) {
         throw new Error('Method not implemented.');
     }
-    static _toSelectedItemSetting(fileSource: FileSource | null, id: number | string | null) {
-        if (fileSource === null || id === null) {
+    static _toSelectedItemSetting(
+        filePath: string | null, id: number | string | null,
+    ) {
+        if (filePath === null || id === null) {
             return null;
         }
-        return `${fileSource.filePath},${id}`;
+        return `${filePath},${id}`;
     }
     toSelectedItemSetting() {
-        if (!this.fileSource) {
+        if (!this.filePath) {
             return null;
         }
-        return ItemBase._toSelectedItemSetting(this.fileSource, this.id);
+        return ItemBase._toSelectedItemSetting(this.filePath, this.id);
     }
     static extractItemSetting(selectedItemSetting: string | null) {
         if (selectedItemSetting === null) {
@@ -68,7 +69,7 @@ export abstract class ItemBase implements ColorNoteInf {
             return null;
         }
         return {
-            fileSource: FileSource.getInstance(bibleFilePath),
+            filePath: bibleFilePath,
             id: Number(id),
         };
     }

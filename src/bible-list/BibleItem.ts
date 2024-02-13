@@ -1,4 +1,3 @@
-import FileSource from '../helper/FileSource';
 import {
     AnyObjectType, cloneJson, isValidJson,
 } from '../helper/helpers';
@@ -6,39 +5,27 @@ import { ItemBase } from '../helper/ItemBase';
 import {
     setSetting, getSetting,
 } from '../helper/settingHelper';
-import Bible from './Bible';
-import DragInf from '../helper/DragInf';
+import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { log } from '../helper/loggerHelpers';
 import {
-    bibleRenderHelper,
-} from '../helper/bible-helpers/bibleRenderHelpers';
-import { DragTypeEnum } from '../helper/DragInf';
-import { AddBiblePropsType } from '../helper/bible-helpers/bibleHelpers';
+    BibleTargetType, bibleRenderHelper,
+} from './bibleRenderHelpers';
+import ItemSource from '../helper/ItemSource';
+import { BibleItemType } from './bibleItemHelpers';
+import { copyToClipboard } from '../server/appHelper';
 
-export type BibleTargetType = {
-    book: string,
-    chapter: number,
-    startVerse: number,
-    endVerse: number,
-};
-export type BibleItemType = {
-    id: number,
-    bibleKey: string,
-    target: BibleTargetType,
-    metadata: AnyObjectType,
-}
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
     static SELECT_SETTING_NAME = 'bible-item-selected';
     _originalJson: BibleItemType;
     id: number;
-    fileSource?: FileSource;
+    filePath?: string;
     constructor(id: number, json: BibleItemType,
-        fileSource?: FileSource) {
+        filePath?: string) {
         super();
         this.id = id;
-        this.fileSource = fileSource;
+        this.filePath = filePath;
         this._originalJson = cloneJson(json);
     }
     get bibleKey() {
@@ -59,24 +46,40 @@ export default class BibleItem extends ItemBase
     set metadata(metadata: AnyObjectType) {
         this._originalJson.metadata = metadata;
     }
-    static fromJson(json: BibleItemType, fileSource?: FileSource) {
+    static fromJson(json: BibleItemType, filePath?: string) {
         this.validate(json);
-        return new BibleItem(json.id, json, fileSource);
+        return new BibleItem(json.id, json, filePath);
     }
-    static fromJsonError(json: BibleItemType, fileSource?: FileSource) {
+    static fromJsonError(json: BibleItemType, filePath?: string) {
         const item = new BibleItem(-1, {
             id: -1,
             bibleKey: '',
             target: {
-                book: '',
+                bookKey: '',
                 chapter: 0,
                 startVerse: 0,
                 endVerse: 0,
             },
             metadata: {},
-        }, fileSource);
+        }, filePath);
         item.jsonError = json;
         return item;
+    }
+    static fromData(
+        bibleKey: string, bookKey: string, chapter: number, startVerse: number,
+        endVerse: number
+    ) {
+        return BibleItem.fromJson({
+            id: -1,
+            bibleKey,
+            target: {
+                bookKey,
+                chapter,
+                startVerse,
+                endVerse,
+            },
+            metadata: {},
+        });
     }
     toJson(): BibleItemType {
         if (this.isError) {
@@ -94,7 +97,7 @@ export default class BibleItem extends ItemBase
             typeof json.id !== 'number' ||
             (json.metadata && typeof json.metadata !== 'object') ||
             !json.target || typeof json.target !== 'object' ||
-            !json.target.book ||
+            !json.target.bookKey ||
             typeof json.target.chapter !== 'number' ||
             typeof json.target.startVerse !== 'number' ||
             typeof json.target.endVerse !== 'number') {
@@ -107,27 +110,26 @@ export default class BibleItem extends ItemBase
         bibleItem.id = -1;
         return bibleItem;
     }
-    async save() {
-        if (this.fileSource === null) {
+    async save(bible: ItemSource<any>) {
+        if (this.filePath === null) {
             return false;
         }
-        const bible = await Bible.readFileToData(this.fileSource || null);
-        if (bible) {
-            const bibleItem = bible.getItemById(this.id);
-            if (bibleItem !== null) {
-                bibleItem.update(this);
-                bible.setItemById(this.id, bibleItem);
-                return bible.save();
-            }
+        const bibleItem = bible.getItemById(this.id) as BibleItem | null;
+        if (bibleItem !== null) {
+            bibleItem.update(this);
+            bible.setItemById(this.id, bibleItem);
+            return bible.save();
         }
         return false;
     }
     update(bibleItem: BibleItem) {
         this.bibleKey = bibleItem.bibleKey;
         this.target = bibleItem.target;
-        this.metadata = bibleItem.metadata || this.metadata;
+        this.metadata = bibleItem.metadata;
     }
-    static convertPresent(bibleItem: BibleItem, presentingBibleItems: BibleItem[]) {
+    static convertPresent(
+        bibleItem: BibleItem, presentingBibleItems: BibleItem[],
+    ) {
         let list;
         if (presentingBibleItems.length < 2) {
             list = [bibleItem.clone()];
@@ -141,9 +143,10 @@ export default class BibleItem extends ItemBase
         return list.filter((item) => item !== null);
     }
     static setBiblePresentingSetting(bibleItems: BibleItem[]) {
-        setSetting('bible-present', JSON.stringify(bibleItems.map((bibleItem) => {
+        const jsonData = bibleItems.map((bibleItem) => {
             return bibleItem.toJson();
-        })));
+        });
+        setSetting('bible-present', JSON.stringify(jsonData));
     }
     static getBiblePresentingSetting() {
         try {
@@ -175,8 +178,17 @@ export default class BibleItem extends ItemBase
         return await bibleRenderHelper.toText(bibleVerseKey) ||
             `😟Unable to render text for ${bibleVerseKey}`;
     }
-    static itemToText(item: BibleItem) {
-        return item.toText();
+    async copyTitleToClipboard() {
+        const title = await this.toTitle();
+        copyToClipboard(title);
+    }
+    async copyTextToClipboard() {
+        const text = await this.toText();
+        copyToClipboard(text);
+    }
+    async copyToClipboard() {
+        const { title, text } = await this.toTitleText();
+        copyToClipboard(`${title}\n${text}`);
     }
     dragSerialize() {
         return {
@@ -193,9 +205,9 @@ export default class BibleItem extends ItemBase
         return null;
     }
     static genBibleSearchData(bibleItem: BibleItem) {
-        if (bibleItem.fileSource) {
+        if (bibleItem.filePath) {
             const json = bibleItem.toJson() as any;
-            json.filePath = bibleItem.fileSource.filePath;
+            json.filePath = bibleItem.filePath;
             return JSON.stringify(json);
         }
     }
@@ -203,13 +215,15 @@ export default class BibleItem extends ItemBase
         if (!data) {
             return null;
         }
-        const json = JSON.parse(data) as any;
-        const fileSource = FileSource.getInstance(json.filePath);
-        return BibleItem.fromJson(json, fileSource);
+        const json = JSON.parse(data);
+        return BibleItem.fromJson(json, json.filePath);
     }
-    static saveFromBibleSearch(props: AddBiblePropsType, data?: string) {
-        // TODO: save to bible
-        const oldBibleItem = this.parseBibleSearchData(data);
-        console.log(props, oldBibleItem);
+    static saveFromBibleSearch(
+        bible: ItemSource<any>, oldBibleItem: BibleItem,
+        newBibleItem: BibleItem,
+    ) {
+        oldBibleItem.bibleKey = newBibleItem.bibleKey;
+        oldBibleItem.target = newBibleItem.target;
+        oldBibleItem.save(bible);
     }
 }

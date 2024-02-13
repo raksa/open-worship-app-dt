@@ -3,10 +3,10 @@ import { showBibleOption } from '../bible-search/BibleSelection';
 
 export default function ButtonAddMoreBible({
     bibleItems, applyPresents,
-}: {
+}: Readonly<{
     bibleItems: BibleItem[],
     applyPresents: (bibleItem: BibleItem[]) => void,
-}) {
+}>) {
     return (
         <button className='btn btn-info btn-sm'
             disabled={bibleItems.length === 0}
@@ -22,8 +22,7 @@ export default function ButtonAddMoreBible({
                         applyPresents(newBibleItems);
                     });
             }}>
-            <i className='bi bi-plus' />
-            Add Item
+            <i className='bi bi-plus' /> Add Item
         </button>
     );
 }

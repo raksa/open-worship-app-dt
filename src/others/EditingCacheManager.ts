@@ -16,10 +16,10 @@ type ChangesType<T> = {
 const SETTING_NAME = 'editing-cache';
 export default abstract class EditingCacheManager<T1, T2> {
     isUsingHistory = true;
-    fileSource: FileSource;
+    filePath: string;
     settingName: string;
-    constructor(fileSource: FileSource, settingNameSuffix: string) {
-        this.fileSource = fileSource;
+    constructor(filePath: string, settingNameSuffix: string) {
+        this.filePath = filePath;
         this.settingName = `${SETTING_NAME}-${settingNameSuffix}`;
     }
     get isChanged() {
@@ -41,7 +41,7 @@ export default abstract class EditingCacheManager<T1, T2> {
     }
     get _changedObject(): ChangeObjectType<T1> {
         const changes = this._changes;
-        const changedObject = changes[this.fileSource.filePath] || {
+        const changedObject = changes[this.filePath] || {
             undoQueue: [],
             redoQueue: [],
         };
@@ -51,7 +51,7 @@ export default abstract class EditingCacheManager<T1, T2> {
     }
     set _changedObject(changedObject: ChangeObjectType<T1>) {
         const changesObject = this._changes;
-        changesObject[this.fileSource.filePath] = changedObject;
+        changesObject[this.filePath] = changedObject;
         this._changes = changesObject;
     }
     get histories(): T1[] {
@@ -72,7 +72,7 @@ export default abstract class EditingCacheManager<T1, T2> {
         changedObject.undoQueue.push(history);
         changedObject.redoQueue = [];
         this._changedObject = changedObject;
-        this.fileSource.fireUpdateEvent();
+        FileSource.getInstance(this.filePath).fireUpdateEvent();
     }
     popUndo() {
         const changedObject = this._changedObject;
@@ -82,8 +82,9 @@ export default abstract class EditingCacheManager<T1, T2> {
         const history = changedObject.undoQueue.pop() as T1;
         changedObject.redoQueue.push(history);
         this._changedObject = changedObject;
-        this.fileSource.fireUpdateEvent();
-        this.fileSource.fireHistoryUpdateEvent();
+        const fileSource = FileSource.getInstance(this.filePath);
+        fileSource.fireUpdateEvent();
+        fileSource.fireHistoryUpdateEvent();
     }
     popRedo() {
         const changedObject = this._changedObject;
@@ -93,14 +94,16 @@ export default abstract class EditingCacheManager<T1, T2> {
         const history = changedObject.redoQueue.pop() as T1;
         changedObject.undoQueue.push(history);
         this._changedObject = changedObject;
-        this.fileSource.fireUpdateEvent();
-        this.fileSource.fireHistoryUpdateEvent();
+        const fileSource = FileSource.getInstance(this.filePath);
+        fileSource.fireUpdateEvent();
+        fileSource.fireHistoryUpdateEvent();
     }
     delete() {
         const data = this._changes;
-        delete data[this.fileSource.filePath];
+        delete data[this.filePath];
         this._changes = data;
-        this.fileSource.fireUpdateEvent();
-        this.fileSource.fireHistoryUpdateEvent();
+        const fileSource = FileSource.getInstance(this.filePath);
+        fileSource.fireUpdateEvent();
+        fileSource.fireHistoryUpdateEvent();
     }
 }

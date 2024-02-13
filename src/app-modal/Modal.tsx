@@ -1,34 +1,31 @@
 import './Modal.scss';
 
+import { PropsWithChildren, ReactNode } from 'react';
 import {
-    EventMapper, toShortcutKey,
-    useKeyboardRegistering,
+    EventMapper, toShortcutKey, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { useCloseAppModal } from './LinkToAppModal';
 
-import { ReactNode } from 'react';
 
 interface MyProps {
     children?: ReactNode
 }
 
-const eventMapper: EventMapper = {
-    wControlKey: ['Ctrl'],
-    mControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
+const quittingEventMap: EventMapper = {
+    allControlKey: ['Ctrl'],
     key: 'q',
 };
 
 export function useModal(isHandlingClose: boolean = true) {
     const closeModal = useCloseAppModal();
-    useKeyboardRegistering(eventMapper, () => {
+    useKeyboardRegistering([quittingEventMap], () => {
         if (isHandlingClose) {
             closeModal();
         }
     });
     function Modal({
         children,
-    }: React.PropsWithChildren<MyProps>) {
+    }: PropsWithChildren<MyProps>) {
         return (
             <div id='modal-container'>
                 {children}
@@ -42,7 +39,7 @@ export function useModal(isHandlingClose: boolean = true) {
                             onClick={() => {
                                 closeModal();
                             }}
-                            data-tool-tip={toShortcutKey(eventMapper)}
+                            data-tool-tip={toShortcutKey(quittingEventMap)}
                             className='btn btn-outline-danger m-2'>
                             <i className='bi bi-x-lg' />
                         </button>

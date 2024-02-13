@@ -1,5 +1,4 @@
-import { ConsumeVerseType } from '../helper/bible-helpers/bibleHelpers';
-import RendLocalNumberAsync from './RendLocalNumberAsync';
+import BibleItem from '../bible-list/BibleItem';
 
 let mouseDownInd: number | null = null;
 export function mouseUp() {
@@ -7,15 +6,17 @@ export function mouseUp() {
 }
 
 export default function RenderVerseNumOption({
-    index, bibleSelected, onVerseChange, found,
-}: {
+    index, verseNum, verseNumText, bibleItem, onVerseChange,
+}: Readonly<{
     index: number,
-    onVerseChange: (sv?: number, ev?: number) => void,
-    bibleSelected: string,
-    found: ConsumeVerseType,
-}) {
-    const sVerse = found.sVerse;
-    const eVerse = found.eVerse;
+    verseNum: number,
+    verseNumText: string,
+    bibleItem: BibleItem,
+    onVerseChange: (startVerse?: number, endVerse?: number) => void,
+}>) {
+    const { target } = bibleItem;
+    const sVerse = target.startVerse;
+    const eVerse = target.endVerse;
     const ind = index + 1;
     const started = sVerse === ind;
     const inside = sVerse <= ind && ind <= eVerse;
@@ -25,6 +26,9 @@ export default function RenderVerseNumOption({
     select += ` ${ended ? 'selected-end' : ''}`;
     return (
         <div className={`item alert pointer text-center ${select}`}
+            title={
+                `${verseNum}` !== verseNumText ? `Verse ${verseNum}` : undefined
+            }
             onMouseDown={(event) => {
                 if (event.shiftKey) {
                     const arr = [ind, sVerse, eVerse]
@@ -43,8 +47,7 @@ export default function RenderVerseNumOption({
                         Math.max(mouseDownInd, ind));
                 }
             }}>
-            <RendLocalNumberAsync ind={ind}
-                bibleSelected={bibleSelected} />
+            <span>{verseNumText}</span>
         </div>
     );
 }

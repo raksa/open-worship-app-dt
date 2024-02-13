@@ -16,15 +16,13 @@ import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
 
-export default function BoxEditorControllingMode({ canvasItem }: {
+export default function BoxEditorControllingMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
-}) {
+}>) {
     // TODO: move box by left right up down key, shift&ctl
     useCanvasControllerEvents(['update']);
     const canvasController = CanvasController.getInstance();
-    useKeyboardRegistering({
-        key: 'Delete',
-    }, () => {
+    useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
     });
     return (
@@ -78,12 +76,13 @@ export default function BoxEditorControllingMode({ canvasItem }: {
                         `object ${boxEditorController.rotatorCN}`
                     } />
                     <div className='rotate-link' />
-                    {Object.keys(boxEditorController.resizeActorList)
-                        .map((cn) => {
+                    {Object.keys(boxEditorController.resizeActorList).map(
+                        (cn) => {
                             return (
                                 <div key={cn} className={`object ${cn}`} />
                             );
-                        })
+                        },
+                    )
                     }
                 </div>
             </div>
@@ -91,9 +90,9 @@ export default function BoxEditorControllingMode({ canvasItem }: {
     );
 }
 
-function BECRender({ canvasItem }: {
+function BECRender({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
-}) {
+}>) {
     switch (canvasItem.type) {
         case 'image':
             return (

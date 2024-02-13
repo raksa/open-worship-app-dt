@@ -1,8 +1,8 @@
+import { useCallback, useContext } from 'react';
 import ColorPicker from '../../../others/color/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
 import CanvasController from '../CanvasController';
-import { useCallback, useContext } from 'react';
 import { ToolingBoxType } from '../canvasHelpers';
 import { CanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
@@ -12,7 +12,7 @@ export default function ToolsBox() {
         applyBoxData(newData);
     }, []);
     const onNoColorCallback = useCallback((
-        newColor: AppColorType) => {
+        _newColor: AppColorType) => {
         applyBoxData({
             backgroundColor: null,
         });

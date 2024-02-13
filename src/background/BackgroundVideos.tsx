@@ -17,19 +17,21 @@ export default function BackgroundVideos() {
     );
 }
 
-function rendChild(fileSource: FileSource,
-    selectedBGSrcList: [string, BackgroundSrcType][]) {
+function rendChild(
+    filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
+) {
     return (
-        <RendBody fileSource={fileSource}
+        <RendBody filePath={filePath}
             selectedBGSrcList={selectedBGSrcList} />
     );
 }
 
-function RendBody({ fileSource, selectedBGSrcList }: {
-    fileSource: FileSource,
+function RendBody({ filePath, selectedBGSrcList }: Readonly<{
+    filePath: string,
     selectedBGSrcList: [string, BackgroundSrcType][],
-}) {
+}>) {
     const vRef = createRef<HTMLVideoElement>();
+    const fileSource = FileSource.getInstance(filePath);
     return (
         <div className='card-body'
             onMouseEnter={() => {

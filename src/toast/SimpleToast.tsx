@@ -5,16 +5,13 @@ export type SimpleToastType = {
 };
 
 export default function SimpleToast({
-    onClose,
-    toast,
-    onMouseEnter,
-    onMouseLeave,
-}: {
+    onClose, toast, onMouseEnter, onMouseLeave,
+}: Readonly<{
     onClose: () => void,
     toast: SimpleToastType,
     onMouseEnter: () => void,
     onMouseLeave: () => void,
-}) {
+}>) {
     return (
         <div className='toast show fade'
             onMouseEnter={() => onMouseEnter()}
@@ -32,7 +29,7 @@ export default function SimpleToast({
                     aria-label='Close'
                     onClick={onClose} />
             </div>
-            <div className='toast-body selectable-text'
+            <div className='toast-body app-selectable-text'
                 dangerouslySetInnerHTML={{
                     __html: toast.message,
                 }} />

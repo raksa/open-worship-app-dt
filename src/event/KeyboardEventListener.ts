@@ -12,12 +12,14 @@ export const allArrows: KeyboardType[] = [
 ];
 export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
-export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Command';
+export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Meta';
+export type AllControlType = 'Ctrl' | 'Shift';
 
 export interface EventMapper {
     wControlKey?: WindowsControlType[];
     mControlKey?: MacControlType[];
     lControlKey?: LinuxControlType[];
+    allControlKey?: AllControlType[];
     key: KeyboardType | string;
 }
 export interface RegisteredEventMapper extends EventMapper {
@@ -60,16 +62,13 @@ export default class KeyboardEventListener extends EventHandler<string> {
             event.ctrlKey && option.mControlKey.push('Ctrl');
             event.altKey && option.mControlKey.push('Option');
             event.shiftKey && option.mControlKey.push('Shift');
+            event.metaKey && option.mControlKey.push('Meta');
         } else if (appProvider.systemUtils.isLinux) {
             option.lControlKey = [];
             event.ctrlKey && option.lControlKey.push('Ctrl');
             event.altKey && option.lControlKey.push('Alt');
             event.shiftKey && option.lControlKey.push('Shift');
         }
-    }
-    static toControlKey(controlType: WindowsControlType[] |
-        MacControlType[] | LinuxControlType[]) {
-        return controlType.sort().join(' + ');
     }
     static toShortcutKey(eventMapper: EventMapper) {
         let key = eventMapper.key;
@@ -79,18 +78,22 @@ export default class KeyboardEventListener extends EventHandler<string> {
         if (key.length === 1) {
             key = key.toUpperCase();
         }
-        if (appProvider.systemUtils.isWindows &&
-            eventMapper.wControlKey &&
-            eventMapper.wControlKey.length) {
-            key = `${this.toControlKey(eventMapper.wControlKey)} + ${key}`;
-        } else if (appProvider.systemUtils.isMac &&
-            eventMapper.mControlKey &&
-            eventMapper.mControlKey.length) {
-            key = `${this.toControlKey(eventMapper.mControlKey)} + ${key}`;
-        } else if (appProvider.systemUtils.isLinux &&
-            eventMapper.lControlKey &&
-            eventMapper.lControlKey.length) {
-            key = `${this.toControlKey(eventMapper.lControlKey)} + ${key}`;
+        const {
+            wControlKey, mControlKey, lControlKey, allControlKey,
+        } = eventMapper;
+        const allControls: string[] = allControlKey || [];
+        if (appProvider.systemUtils.isWindows) {
+            allControls.push(...(wControlKey || []));
+        } else if (appProvider.systemUtils.isMac) {
+            allControls.push(...(mControlKey || []));
+        } else if (appProvider.systemUtils.isLinux) {
+            allControls.push(...(lControlKey || []));
+        }
+        if (allControls.length > 0) {
+            const sorted = [...allControls].sort((a, b) => {
+                return a.localeCompare(b);
+            });
+            key = `${sorted.join(' + ')} + ${key}`;
         }
         return key;
     }
@@ -101,13 +104,16 @@ export default class KeyboardEventListener extends EventHandler<string> {
 }
 
 export function useKeyboardRegistering(
-    eventMapper: EventMapper, listener: ListenerType) {
+    eventMappers: EventMapper[], listener: ListenerType) {
     useAppEffect(() => {
-        const eventName = KeyboardEventListener.toEventMapperKey(eventMapper);
-        const registeredEvent = KeyboardEventListener.registerEventListener(
-            [eventName], listener);
+        const eventNames = eventMappers.map((eventMapper) => {
+            return KeyboardEventListener.toEventMapperKey(eventMapper);
+        });
+        const registeredEvents = KeyboardEventListener.registerEventListener(
+            eventNames, listener,
+        );
         return () => {
-            KeyboardEventListener.unregisterEventListener(registeredEvent);
+            KeyboardEventListener.unregisterEventListener(registeredEvents);
         };
     });
 }

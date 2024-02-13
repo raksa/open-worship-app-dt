@@ -1,22 +1,18 @@
-import {
-    bookToKey,
-    getBibleInfo,
-    getBookVKList,
-    getChapterCount,
-    getVerses,
-} from './bibleInfoHelpers';
-import { cloneJson } from '../helpers';
 import { useState } from 'react';
 import {
-    fromLocaleNum,
-    LocaleType,
-    toLocaleNum,
+    bookToKey, getBibleInfo, getVerses,
+} from './bibleInfoHelpers';
+import {
+    fromLocaleNum, LocaleType, toLocaleNum,
 } from '../../lang';
 import { useAppEffect } from '../debuggerHelpers';
+import BibleItem from '../../bible-list/BibleItem';
+import { getKJVChapterCount } from './serverBibleHelpers';
 
-export async function toInputText(bibleKey: string,
-    book?: string | null, chapter?: number | null,
-    startVerse?: number | null, endVerse?: number | null) {
+export async function toInputText(
+    bibleKey: string, book?: string | null, chapter?: number | null,
+    startVerse?: number | null, endVerse?: number | null,
+) {
     let txt = '';
     if (book) {
         txt += `${book} `;
@@ -72,124 +68,167 @@ export function useFromLocaleNumBB(bibleKey: string, localeNum: string) {
 
 
 export type ExtractedBibleResult = {
-    book: string | null,
+    bookKey: string | null,
+    guessingBook: string | null,
     chapter: number | null,
-    startVerse: number | null,
-    endVerse: number | null,
+    guessingChapter: string | null,
+    bibleItem: BibleItem | null,
 }
 
-export const defaultExtractedBible: ExtractedBibleResult = {
-    book: null,
-    chapter: null,
-    startVerse: null,
-    endVerse: null,
-};
-
-async function searchBook(bibleKey: string, arr: string[]) {
-    const bookVKList = await getBookVKList(bibleKey);
-    if (bookVKList !== null) {
-        if (arr.length) {
-            let i = 0;
-            while (++i <= arr.length) {
-                const j = i;
-                const bookKey = arr.filter((_, i1) => {
-                    return i1 < j;
-                }).join(' ');
-                if (bookVKList[bookKey]) {
-                    arr.splice(0, i);
-                    return bookKey;
-                }
-            }
-        }
-    }
-    throw new Error('Invalid book');
+export function genExtractedBible(): ExtractedBibleResult {
+    return {
+        bookKey: null,
+        guessingBook: null,
+        chapter: null,
+        guessingChapter: null,
+        bibleItem: null,
+    };
 }
 
-async function searchChapter(bibleKey: string,
-    book: string, arr: string[]) {
-    const error = new Error('Invalid chapter');
-    if (!arr[0]) {
-        throw error;
+export async function parseChapterFromGuessing(
+    bibleKey: string, bookKey: string, chapter: string,
+) {
+    const chapterNum = await fromLocaleNumBB(bibleKey, chapter);
+    const chapterCount = getKJVChapterCount(bookKey);
+    if (chapterNum === null || chapterNum < 1 || chapterNum > chapterCount) {
+        return null;
     }
-    const chapterCount = await getChapterCount(bibleKey, book);
-    if (chapterCount === null) {
-        throw error;
+    return chapterNum;
+}
+
+async function transformExtracted(
+    bibleKey: string, book: string, chapter: string | null,
+    startVerse: string | null, endVerse: string | null,
+): Promise<ExtractedBibleResult | null> {
+    const result = genExtractedBible();
+    result.guessingBook = book;
+    result.guessingChapter = chapter;
+    if (book === null) {
+        return result;
     }
-    const arr1 = arr[0].split(':');
-    const chapter = await fromLocaleNumBB(bibleKey, arr1[0]);
-    if (chapter === null || chapter < 1 ||
-        chapter > chapterCount) {
-        throw error;
-    }
-    arr1.shift();
     const bookKey = await bookToKey(bibleKey, book);
-    const err1 = new Error('Invalid book');
     if (bookKey === null) {
-        throw err1;
+        return null;
     }
-    let verseCount = 0;
-    if (arr1.length > 0) {
-        const verses = await getVerses(bibleKey, bookKey, chapter);
-        if (!verses) {
-            throw err1;
-        }
-        verseCount = Object.keys(verses).length;
+    result.bookKey = bookKey;
+    result.guessingBook = null;
+    if (chapter === null) {
+        return result;
     }
-    return { arr1, chapter, verseCount };
+    if (chapter.endsWith(':')) {
+        chapter = chapter.replace(':', '');
+        result.guessingChapter = chapter;
+    } else if (startVerse === null && endVerse === null) {
+        return result;
+    }
+    const chapterNum = await parseChapterFromGuessing(
+        bibleKey, bookKey, chapter,
+    );
+    if (chapterNum === null) {
+        return result;
+    }
+    const verses = await getVerses(bibleKey, bookKey, chapterNum);
+    if (verses === null) {
+        return result;
+    }
+    result.chapter = chapterNum;
+    result.guessingChapter = null;
+    const verseCount = Object.keys(verses).length;
+    result.bibleItem = BibleItem.fromData(
+        bibleKey, bookKey, chapterNum, 1, verseCount,
+    );
+    if (startVerse === null || endVerse === null) {
+        return result;
+    }
+    const target = result.bibleItem.target;
+    const startVerseNum = await fromLocaleNumBB(bibleKey, startVerse);
+    if (startVerseNum !== null) {
+        target.startVerse = startVerseNum;
+    }
+    const endVerseNum = await fromLocaleNumBB(bibleKey, endVerse);
+    if (endVerseNum !== null) {
+        target.endVerse = endVerseNum;
+    }
+    const { startVerse: sVerse, endVerse: eVerse } = target;
+    if (eVerse < 1 || eVerse < sVerse || sVerse > verseCount) {
+        target.startVerse = 1;
+        target.endVerse = verseCount;
+    }
+    return result;
 }
-
-async function searchStartVerse(bibleKey: string,
-    verseCount: number, arr1: string[]) {
-    const error = new Error('Invalid start verse');
-    if (!arr1[0]) {
-        throw error;
+const regexTitleMap: [
+    string, (
+        bibleKey: string, matches: RegExpMatchArray,
+    ) => Promise<ExtractedBibleResult | null>,
+][] = [
+        // "1 John 1:1-2"
+        ['(^.+)\\s(.+):(.+)-(.+)$', async (bibleKey, matches) => {
+            if (matches.length !== 5) {
+                return null;
+            }
+            const [_, book, chapter, verseStart, verseEnd] = matches;
+            return transformExtracted(
+                bibleKey, book, chapter, verseStart, verseEnd,
+            );
+        }],
+        // "1 John 1:1"
+        ['(^.+)\\s(.+):(.+)$', async (bibleKey, matches) => {
+            if (matches.length !== 4) {
+                return null;
+            }
+            const [_, book, chapter, verse] = matches;
+            const startVerse = verse;
+            const endVerse = verse;
+            return transformExtracted(
+                bibleKey, book, chapter, startVerse, endVerse,
+            );
+        }],
+        // "1 John 1:"
+        ['(^.+)\\s(.+)$', async (bibleKey, matches) => {
+            if (matches.length !== 3) {
+                return null;
+            }
+            const [_, book, chapter] = matches;
+            const startVerse = null;
+            const endVerse = null;
+            return transformExtracted(
+                bibleKey, book, chapter, startVerse, endVerse,
+            );
+        }],
+        // "1 John"
+        ['(^.+)$', async (bibleKey, matches) => {
+            if (matches.length !== 2) {
+                return null;
+            }
+            const [_, book] = matches;
+            const chapter = null;
+            const startVerse = null;
+            const endVerse = null;
+            return transformExtracted(
+                bibleKey, book, chapter, startVerse, endVerse,
+            );
+        }],
+    ];
+export async function extractBibleTitle(bibleKey: string, inputText: string) {
+    let cleanText = inputText.trim().replace(/\s+/g, ' ');
+    if (cleanText.endsWith('-')) {
+        cleanText = cleanText.slice(0, -1);
     }
-    const arr2 = arr1[0].split('-');
-    const startVerse = await fromLocaleNumBB(bibleKey, arr2[0]);
-    if (startVerse === null || startVerse < 0 ||
-        startVerse > verseCount) {
-        throw error;
+    if (cleanText === '') {
+        return genExtractedBible();
     }
-    arr2.shift();
-    return { arr2, startVerse };
-}
-
-async function searchEndVerse(bibleKey: string, verseCount: number,
-    startVerse: number, arr2: string[]) {
-    const error = new Error('Invalid end verse');
-    if (!arr2[0]) {
-        throw error;
-    }
-    const endVerse = await fromLocaleNumBB(bibleKey, arr2[0]);
-    if (endVerse === null || endVerse < 1 || endVerse > verseCount ||
-        endVerse <= startVerse) {
-        throw error;
-    }
-    return endVerse;
-}
-
-export async function extractBible(bibleKey: string, str: string) {
-    const result = cloneJson(defaultExtractedBible);
-    try {
-        const arr = str.trim().split(/\s+/);
-        result.book = await searchBook(bibleKey, arr);
-        const {
-            arr1, chapter, verseCount,
-        } = await searchChapter(bibleKey, result.book, arr);
-        if ((/^.+\s+.+:.*/).test(str)) {
-            result.chapter = chapter;
+    for (const [regexStr, matcher] of regexTitleMap) {
+        const regex = new RegExp(regexStr);
+        const matches = regex.exec(cleanText);
+        if (matches === null) {
+            continue;
         }
-        const {
-            arr2, startVerse,
-        } = await searchStartVerse(bibleKey, verseCount, arr1);
-        result.startVerse = startVerse;
-        result.endVerse = startVerse;
-        result.endVerse = await searchEndVerse(bibleKey,
-            verseCount, startVerse, arr2);
-    } catch (error: any) {
-        if (error.message === 'Invalid book') {
-            return cloneJson(defaultExtractedBible);
+        const result = await matcher(bibleKey, matches);
+        if (result !== null) {
+            return result;
         }
-    }
+    };
+    const result = genExtractedBible();
+    result.guessingBook = cleanText;
     return result;
 }

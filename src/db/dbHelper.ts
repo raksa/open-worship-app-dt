@@ -1,5 +1,4 @@
 export const DB_NAME = 'bible';
-export const DB_VERSION = 3;
 
 interface DbControllerInterface {
     db: IDBDatabase;
@@ -45,7 +44,7 @@ class InitDBOpeningQueue {
         if (this.request !== null) {
             return;
         }
-        const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        const request = window.indexedDB.open(DB_NAME);
         this.request = request;
         request.onupgradeneeded = (event: any) => {
             dbController.db = event.target.result;
@@ -62,7 +61,7 @@ class InitDBOpeningQueue {
     }
 }
 
-abstract class IndexedDbController implements DbControllerInterface {
+export abstract class IndexedDbController implements DbControllerInterface {
     static _instance: IndexedDbController | null = null;
     abstract get storeName(): string;
     private _initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
@@ -141,7 +140,8 @@ abstract class IndexedDbController implements DbControllerInterface {
         }
         await this._asyncOperation('readwrite', (store) => {
             return store.add({
-                id, data, ...{
+                id, data,
+                ...{
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
@@ -195,14 +195,5 @@ abstract class IndexedDbController implements DbControllerInterface {
         }
         await this._instance.init();
         return this._instance;
-    }
-}
-
-export class BibleRefsDbController extends IndexedDbController {
-    get storeName() {
-        return 'bible_refs';
-    }
-    static instantiate() {
-        return new this();
     }
 }

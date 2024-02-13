@@ -1,32 +1,33 @@
 import './PlaylistList.scss';
 
+import { useCallback } from 'react';
 import PlaylistFile from './PlaylistFile';
 import FileListHandler from '../others/FileListHandler';
 import Playlist from './Playlist';
-import DirSource from '../helper/DirSource';
-import { useCallback } from 'react';
-import FileSource from '../helper/FileSource';
+import { useGenDS } from '../helper/dirSourceHelpers';
 
 export default function PlaylistList() {
-    const dirSource = DirSource.getInstance('playlist-list-selected-dir');
-    const onNewFileCallback = useCallback(async (name: string) => {
-        return !await Playlist.create(dirSource.dirPath, name);
-    }, [dirSource]);
-    const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
+    const dirSource = useGenDS('playlist-list-selected-dir');
+    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>
-                {fileSources.map((fileSource, i) => {
-                    return <PlaylistFile key={fileSource.fileName}
+                {filePaths.map((filePath, i) => {
+                    return <PlaylistFile key={filePath}
                         index={i}
-                        fileSource={fileSource} />;
+                        filePath={filePath} />;
                 })}
             </>
         );
     }, []);
+    if (dirSource === null) {
+        return null;
+    }
     return (
         <FileListHandler id={'playlist-list'} mimetype={'playlist'}
             dirSource={dirSource}
-            onNewFile={onNewFileCallback}
+            onNewFile={async (dirPath: string, name: string) => {
+                return !await Playlist.create(dirPath, name);
+            }}
             header={<span>Playlists</span>}
             bodyHandler={bodyHandlerCallback} />
     );

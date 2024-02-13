@@ -1,11 +1,11 @@
-import React from 'react';
+import { ReactNode, Suspense } from 'react';
 
-export default function AppSuspense({ children }: {
-    children: React.ReactNode,
-}) {
+export default function AppSuspense({ children }: Readonly<{
+    children: ReactNode,
+}>) {
     return (
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Loading...</div>}>
             {children}
-        </React.Suspense>
+        </Suspense>
     );
 }

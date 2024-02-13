@@ -10,7 +10,7 @@ import {
 import FileSource from '../../helper/FileSource';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
-import CanvasItemBible from './CanvasItemBible';
+import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 import {
@@ -122,8 +122,9 @@ export default class CanvasController extends EventHandler<CCEventType> {
         const newItem = CanvasItemText.genDefaultItem();
         this.addNewItem(newItem);
     }
-    async addNewMediaItem(fileSource: FileSource, event: any) {
+    async addNewMediaItem(filePath: string, event: any) {
         try {
+            const fileSource = FileSource.getInstance(filePath);
             const mediaType = fileSource.metadata?.appMimetype.mimetypeName || '';
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast('Insert Medias',
@@ -134,8 +135,8 @@ export default class CanvasController extends EventHandler<CCEventType> {
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
             const newItem = await (mediaType === 'image' ?
-                CanvasItemImage.genFromInsertion(x, y, fileSource) :
-                CanvasItemVideo.genFromInsertion(x, y, fileSource));
+                CanvasItemImage.genFromInsertion(x, y, filePath) :
+                CanvasItemVideo.genFromInsertion(x, y, filePath));
             this.addNewItem(newItem);
             return;
         } catch (error) {
@@ -145,7 +146,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     async addNewBibleItem(bibleItem: BibleItem) {
         const id = this.canvas.maxItemId + 1;
-        const newItem = await CanvasItemBible.fromBibleItem(id, bibleItem);
+        const newItem = await CanvasItemBibleItem.fromBibleItem(id, bibleItem);
         this.addNewItem(newItem);
     }
     applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {

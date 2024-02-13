@@ -6,7 +6,7 @@ import { showAppContextMenu } from './AppContextMenu';
 
 // TODO: check direction rtl error with /*
 const cleanPath = (path: string) => {
-    if (path && path[0] === '/') {
+    if (path.startsWith('/')) {
         path = path.substring(1);
     }
     return path;
@@ -14,7 +14,7 @@ const cleanPath = (path: string) => {
 
 export function pathPreviewer(dirPath: string) {
     const onContextMenu = (event: any) => {
-        showAppContextMenu(event as any, [
+        showAppContextMenu(event, [
             {
                 title: 'Copy to Clipboard',
                 onClick: () => {

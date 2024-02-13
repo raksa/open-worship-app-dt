@@ -1,11 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const BibleList = React.lazy(() => {
+const BibleList = lazy(() => {
     return import('./bible-list/BibleList');
 });
-const BiblePreviewer = React.lazy(() => {
+const BiblePreviewer = lazy(() => {
     return import('./read-bible/BiblePreviewer');
 });
 
@@ -16,7 +16,7 @@ export default function AppReading() {
                 'h1': ['1'],
                 'h2': ['4'],
             }}
-            resizeKinds={['h', 'h']}
+            resizeKinds={['h']}
             dataInput={[
                 [BibleList, 'h1', 'flex v'],
                 [BiblePreviewer, 'h2', 'flex v'],

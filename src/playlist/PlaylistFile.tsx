@@ -1,23 +1,24 @@
-import { Suspense, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
 import FileItemHandler from '../others/FileItemHandler';
 import Playlist from './Playlist';
-import FileSource from '../helper/FileSource';
 import BibleItemRender from '../bible-list/BibleItemRender';
 import PlaylistItem from './PlaylistItem';
 import ItemSource from '../helper/ItemSource';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import FileSource from '../helper/FileSource';
+import AppSuspense from '../others/AppSuspense';
 
 export default function PlaylistFile({
-    index, fileSource,
-}: {
+    index, filePath,
+}: Readonly<{
     index: number,
-    fileSource: FileSource,
-}) {
+    filePath: string,
+}>) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
-    const settingName = `opened-${fileSource.filePath}`;
+    const settingName = `opened-${filePath}`;
     const [isOpened, setIsOpened] = useStateSettingBoolean(settingName);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -43,7 +44,7 @@ export default function PlaylistFile({
     }, [isOpened]);
     useAppEffect(() => {
         if (data === null) {
-            Playlist.readFileToData(fileSource).then(setData);
+            Playlist.readFileToData(filePath).then(setData);
         }
     }, [data]);
     return (
@@ -51,7 +52,7 @@ export default function PlaylistFile({
             index={index}
             data={data}
             reload={reloadCallback}
-            fileSource={fileSource}
+            filePath={filePath}
             className={'playlist-file'}
             onClick={onClickCallback}
             onDrop={onDropCallback}
@@ -61,14 +62,13 @@ export default function PlaylistFile({
 }
 
 function PlaylistPreview({
-    isOpened,
-    setIsOpened,
-    playlist,
-}: {
+    isOpened, setIsOpened, playlist,
+}: Readonly<{
     isOpened: boolean,
     setIsOpened: (isOpened: boolean) => void,
     playlist: Playlist,
-}) {
+}>) {
+    const fileSource = FileSource.getInstance(playlist.filePath);
     return (
         <div className='card pointer mt-1 ps-2'>
             <div className='card-header'
@@ -77,14 +77,14 @@ function PlaylistPreview({
                 }}>
                 <i className={`bi ${isOpened ?
                     'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {playlist.fileSource.name}
+                {fileSource.name}
             </div>
             {isOpened && playlist && <div
                 className='card-body d-flex flex-column'>
                 {playlist.items.map((playlistItem, i) => {
                     return (
                         <RenderPlaylistItem
-                            key={playlistItem.fileSource.fileName}
+                            key={fileSource.fileName}
                             index={i}
                             playlistItem={playlistItem} />
                     );
@@ -96,10 +96,10 @@ function PlaylistPreview({
 
 function RenderPlaylistItem({
     playlistItem, index,
-}: {
+}: Readonly<{
     playlistItem: PlaylistItem,
     index: number,
-}) {
+}>) {
     if (playlistItem.isSlide) {
         return (
             <PlaylistSlideItem
@@ -108,11 +108,11 @@ function RenderPlaylistItem({
     } else if (playlistItem.isBibleItem) {
         playlistItem.getBibleItem();
         return (
-            <Suspense fallback={<div>Loading ...</div>}>
+            <AppSuspense>
                 <PlaylistBibleItem key={index}
                     index={index}
                     playlistItem={playlistItem} />
-            </Suspense>
+            </AppSuspense>
         );
     } else if (playlistItem.isLyric) {
         return (
@@ -124,10 +124,10 @@ function RenderPlaylistItem({
 
 function PlaylistBibleItem({
     index, playlistItem,
-}: {
+}: Readonly<{
     index: number
     playlistItem: PlaylistItem,
-}) {
+}>) {
     const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
     useAppEffect(() => {
         playlistItem.getBibleItem().then((newBibleItem) => {

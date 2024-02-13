@@ -1,3 +1,5 @@
+import './BibleSelection.scss';
+
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     getBibleInfoWithStatusList,
@@ -27,10 +29,10 @@ export async function showBibleOption(
         }));
 }
 
-export default function BibleSelection({ value, onChange }: {
+export default function BibleSelection({ value, onChange }: Readonly<{
     value: string,
     onChange: (oldValue: string, newValue: string) => void,
-}) {
+}>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
         return (
@@ -60,11 +62,11 @@ export default function BibleSelection({ value, onChange }: {
 
 export function BibleSelectionMini({
     value, onChange, isMinimal,
-}: {
+}: Readonly<{
     value: string,
     onChange: (oldValue: string, newValue: string) => void,
     isMinimal?: boolean,
-}) {
+}>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
         return (
@@ -79,8 +81,10 @@ export function BibleSelectionMini({
         );
     }
     return (
-        <span className={'pointer ' +
-            (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')}
+        <span className={
+            'bible-selector pointer ' +
+            (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')
+        }
             onClick={(event) => {
                 event.stopPropagation();
                 showBibleOption(event, [value],

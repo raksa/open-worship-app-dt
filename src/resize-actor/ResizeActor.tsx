@@ -1,6 +1,5 @@
-import React, {
-    CSSProperties, Fragment,
-    useCallback, useState,
+import {
+    CSSProperties, Fragment, LazyExoticComponent, useCallback, useState,
 } from 'react';
 import AppSuspense from '../others/AppSuspense';
 import FlexResizeActor, {
@@ -18,22 +17,33 @@ export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
 };
 export type DataInputType = [
-    React.LazyExoticComponent<() => JSX.Element | null> | {
-        render: () => JSX.Element | null,
+    LazyExoticComponent<() => React.JSX.Element | null> | {
+        render: () => React.JSX.Element | null,
     },
     string,
     string,
     CSSProperties?,
 ];
 export default function ResizeActor({
-    fSizeName, flexSizeDefault,
-    resizeKinds, dataInput,
-}: {
+    fSizeName, flexSizeDefault, resizeKinds, dataInput, isDisableQuickResize,
+}: Readonly<{
     fSizeName: string,
     flexSizeDefault: FlexSizeType,
     resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
-}) {
+    isDisableQuickResize?: boolean,
+}>) {
+    if (resizeKinds.length !== dataInput.length - 1) {
+        throw new Error('resizeKinds and dataInput length not match');
+    }
+    for (const [_, key, __] of dataInput) {
+        if (flexSizeDefault[key] === undefined) {
+            throw new Error(
+                `key ${key} not found in flexSizeDefault:` +
+                JSON.stringify(flexSizeDefault)
+            );
+        }
+    }
     const defaultFlexSize = getFlexSizeSetting(fSizeName, flexSizeDefault);
     const [flexSize, setFlexSize] = useState(defaultFlexSize);
     return (
@@ -49,6 +59,7 @@ export default function ResizeActor({
                         fSizeName={fSizeName}
                         dataInput={dataInput}
                         resizeKinds={resizeKinds}
+                        isDisableQuickResize={isDisableQuickResize || false}
                     />
                 );
             })}
@@ -57,10 +68,9 @@ export default function ResizeActor({
 }
 
 function RenderItem({
-    data, index, flexSize, setFlexSize,
-    defaultFlexSize, fSizeName, dataInput,
-    resizeKinds,
-}: {
+    data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName, dataInput,
+    resizeKinds, isDisableQuickResize,
+}: Readonly<{
     data: DataInputType,
     index: number,
     flexSize: FlexSizeType,
@@ -69,7 +79,8 @@ function RenderItem({
     fSizeName: string,
     dataInput: DataInputType[],
     resizeKinds: ResizeKindType[],
-}) {
+    isDisableQuickResize: boolean,
+}>) {
     const disableCallback = useCallback((
         targetDataFSizeKey: string, target: DisabledType) => {
         const size = setDisablingSetting(fSizeName, defaultFlexSize,
@@ -91,7 +102,7 @@ function RenderItem({
             </AppSuspense>
         );
     };
-    const flexSizeValue = flexSize[key] || defaultFlexSize[key] || [];
+    const flexSizeValue = (flexSize[key] || defaultFlexSize[key]) || [];
     const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
     if (flexSizeValue[1]) {
         const onClick = (event: any) => {
@@ -125,6 +136,7 @@ function RenderItem({
     return (
         <Fragment key={index}>
             {isShowingFSizeActor && <FlexResizeActor
+                isDisableQuickResize={isDisableQuickResize}
                 disable={disableCallback}
                 checkSize={checkSizeCallback}
                 type={resizeKinds[index - 1]} />}

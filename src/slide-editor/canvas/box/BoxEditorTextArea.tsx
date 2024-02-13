@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
-export default function BoxEditorTextArea({ color, text, setText }: {
+export default function BoxEditorTextArea({ color, text, setText }: Readonly<{
     color?: AppColorType, text: string,
     setText: (t: string) => void,
-}) {
+}>) {
     const [localText, setLocalText] = useState(text);
     useAppEffect(() => {
         setLocalText(text);

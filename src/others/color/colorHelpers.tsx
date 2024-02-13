@@ -1,5 +1,5 @@
 import { DragTypeEnum } from '../../helper/DragInf';
-import { handleDragStart } from '../../helper/dragHelpers';
+import { handleDragStart } from '../../bible-list/dragHelpers';
 
 export const BLACK_COLOR = '#000000';
 export type AppColorType = `#${string}`;
@@ -14,7 +14,9 @@ export const transparentColor = (n: number): string => {
     return hex.length === 1 ? `0${hex}` : hex;
 };
 
-export function compareColor(color1: AppColorType, color2: AppColorType): boolean {
+export function compareColor(
+    color1: AppColorType, color2: AppColorType,
+): boolean {
     return color1.substring(0, 7).toLowerCase() ===
         color2.substring(0, 7).toLocaleLowerCase();
 }

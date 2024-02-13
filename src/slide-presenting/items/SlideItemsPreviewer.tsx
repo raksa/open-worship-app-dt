@@ -8,9 +8,9 @@ import {
 } from '../../slide-list/slideHelpers';
 import Slide from '../../slide-list/Slide';
 
-export default function SlideItemsPreviewer({ slide }: {
+export default function SlideItemsPreviewer({ slide }: Readonly<{
     slide: Slide,
-}) {
+}>) {
     const [thumbSize, setThumbSize] = useSlideItemSizing(
         THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
     return (

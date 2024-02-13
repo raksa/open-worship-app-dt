@@ -1,18 +1,18 @@
 import './BibleSearchPopup.scss';
 
-import BibleSearchRender from './BibleSearchRender';
+import { useState } from 'react';
+import RenderBibleSearch from './RenderBibleSearch';
 import { useModal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';
-import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     SELECTED_BIBLE_SETTING_NAME,
-} from '../helper/bible-helpers/bibleHelpers';
+} from '../bible-list/bibleHelpers';
 import { setSetting } from '../helper/settingHelper';
 import { useModalTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {
-    const { closeModal, Modal } = useModal();
+    const { Modal } = useModal();
     const { data } = useModalTypeData();
     const bibleItem = BibleItem.parseBibleSearchData(data);
     const [inputText, setInputText] = useState<string | null>(
@@ -26,18 +26,16 @@ export default function BibleSearchPopup() {
         bibleItem.toTitle().then((title) => {
             setInputText(title);
         });
-    }, [data, inputText]);
+    }, [bibleItem, inputText]);
     return (
         <Modal>
             {inputText === null ? (
                 <div>
-                    <span title='Need translation'>(*T)</span>
-                    Loading...
+                    <span title='Need translation'>(*T)</span> Loading...
                 </div>
             ) : (
-                <BibleSearchRender
-                    editingInputText={inputText}
-                    closeBibleSearch={closeModal} />
+                <RenderBibleSearch
+                    editingInputText={inputText} />
             )
             }
         </Modal>

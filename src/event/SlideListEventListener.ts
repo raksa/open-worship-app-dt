@@ -22,7 +22,8 @@ export function useSlideItemSelecting(
     listener: ListenerType<SlideItem | null>) {
     useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(
-            ['slide-item-select'], listener);
+            ['slide-item-select'], listener,
+        );
         return () => {
             SlideListEventListener.unregisterEventListener(event);
         };
@@ -36,7 +37,8 @@ export function useSlideItemSizing(settingName: string, defaultSize: number)
         settingName, getDefaultSize());
     useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(
-            ['slide-item-sizing'], () => setThumbnailSize(getDefaultSize()));
+            ['slide-item-sizing'], () => setThumbnailSize(getDefaultSize()),
+        );
         return () => {
             SlideListEventListener.unregisterEventListener(event);
         };

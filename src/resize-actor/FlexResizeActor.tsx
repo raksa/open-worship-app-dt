@@ -1,17 +1,19 @@
 import './FlexResizeActor.scss';
 
-import React from 'react';
+import { Component, RefObject, createRef } from 'react';
 import { DisabledType } from './flexSizeHelpers';
+
+const HIDDEN_WIDGET_CLASS = 'hidden-widget';
 
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
     type: ResizeKindType,
     checkSize: () => void,
-    disable: (dataFSizeKey: string,
-        target: DisabledType) => void,
+    disable: (dataFSizeKey: string, target: DisabledType) => void,
+    isDisableQuickResize: boolean,
 }
-export default class FlexResizeActor extends React.Component<Props, {}> {
-    myRef: React.RefObject<HTMLDivElement>;
+export default class FlexResizeActor extends Component<Props, {}> {
+    myRef: RefObject<HTMLDivElement>;
     lastPos: number = 0;
     previousMinSize: number = 0;
     nextMinSize: number = 0;
@@ -25,7 +27,7 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
     mouseUpListener: (mm: MouseEvent) => void;
     constructor(props: Props) {
         super(props);
-        this.myRef = React.createRef();
+        this.myRef = createRef();
         this.mouseMoveListener = (mm: MouseEvent) => this.onMouseMove(mm);
         this.mouseUpListener = (event) => {
             this.onMouseUp(event);
@@ -100,14 +102,14 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         }
 
         if (this.previousSize < this.previousMinSize) {
-            this.previous.classList.add('hidden-widget');
+            this.addHideWidget(this.previous);
         } else {
-            this.previous.classList.remove('hidden-widget');
+            this.removeHideWidget(this.previous);
         }
         if (this.nextSize < this.nextMinSize) {
-            this.next.classList.add('hidden-widget');
+            this.addHideWidget(this.next);
         } else {
-            this.next.classList.remove('hidden-widget');
+            this.removeHideWidget(this.next);
         }
         const prevGrowNew = this.sumGrow * (this.previousSize / this.sumSize);
         const nextGrowNew = this.sumGrow * (this.nextSize / this.sumSize);
@@ -116,6 +118,15 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         this.next.style.flexGrow = `${nextGrowNew}`;
 
         this.lastPos = pos;
+    }
+    addHideWidget(divElement: HTMLDivElement) {
+        if (this.props.isDisableQuickResize) {
+            return;
+        }
+        divElement.classList.add(HIDDEN_WIDGET_CLASS);
+    }
+    removeHideWidget(divElement: HTMLDivElement) {
+        divElement.classList.remove(HIDDEN_WIDGET_CLASS);
     }
     onMouseUp(event: MouseEvent) {
         if (this.isShouldIgnore(event)) {
@@ -167,8 +178,25 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
         }
     }
     render() {
+        const props = this.props;
+        const moverChildren = props.isDisableQuickResize ? null : [
+            ['left', 'chevron-left'],
+            ['right', 'chevron-right'],
+            ['up', 'chevron-up'],
+            ['down', 'chevron-down'],
+        ].map(([type, icon]) => {
+            return (
+                <i key={type}
+                    title={`Disable ${type}`}
+                    className={`${type} bi bi-${icon}`}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        this.quicMove(type);
+                    }} />
+            );
+        });
         return (
-            <div className={`flex-resize-actor ${this.props.type}`}
+            <div className={`flex-resize-actor ${props.type}`}
                 onDoubleClick={() => {
                     const prevGrowNew = this.previous.dataset['fsDefault'] || 1;
                     const nextGrowNew = this.next.dataset['fsDefault'] || 1;
@@ -176,26 +204,11 @@ export default class FlexResizeActor extends React.Component<Props, {}> {
                     this.previous.style.flexGrow = '';
                     this.next.style.flex = `${nextGrowNew}`;
                     this.next.style.flexGrow = '';
-                    this.props.checkSize();
+                    props.checkSize();
                 }}
                 ref={this.myRef}>
                 <div className='mover'>
-                    {[
-                        ['left', 'chevron-left'],
-                        ['right', 'chevron-right'],
-                        ['up', 'chevron-up'],
-                        ['down', 'chevron-down'],
-                    ].map(([type, icon], i) => {
-                        return (
-                            <i key={type}
-                                title={`Disable ${type}`}
-                                className={`${type} bi bi-${icon}`}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    this.quicMove(type);
-                                }} />
-                        );
-                    })}
+                    {moverChildren}
                 </div>
             </div>
         );

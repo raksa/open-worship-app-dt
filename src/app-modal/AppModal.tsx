@@ -1,8 +1,7 @@
 import BibleSearchPopup from '../bible-search/BibleSearchPopup';
 import SettingPopup from '../setting/SettingPopup';
 import {
-    AppModalType,
-    APP_MODAL_ROUTE_PATH as ROOT_APP_MODAL_ROUTE_PATH,
+    AppModalType, APP_MODAL_ROUTE_PATH as ROOT_APP_MODAL_ROUTE_PATH,
     useModalTypeData,
 } from './helpers';
 

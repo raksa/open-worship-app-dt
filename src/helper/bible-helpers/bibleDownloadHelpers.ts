@@ -76,7 +76,7 @@ const getDownloadHandler = (filePath: string, fileName: string,
             });
             response.on('end', async () => {
                 writeStream.close();
-                await getBibleInfo(fileName, true);
+                await getBibleInfo(fileName);
                 options.onDone(null, filePath);
             });
         } catch (error2) {
@@ -103,8 +103,9 @@ export async function startDownloadBible({
     if (filePath === null) {
         return options.onDone(new Error('Invalid file path'));
     }
-    const handler = getDownloadHandler(filePath, fileName, options);
-    httpsRequest(bibleFileFullName, handler);
+    httpsRequest(bibleFileFullName, (error, response) => {
+        getDownloadHandler(filePath, fileName, options)(error, response);
+    });
 }
 
 
@@ -145,7 +146,7 @@ export async function extractDownloadedBible(filePath: string) {
         const downloadPath = await bibleDataReader.getWritableBiblePath();
         await appProvider.fileUtils.tarExtract({
             file: filePath,
-            cwd: downloadPath as string,
+            cwd: downloadPath,
         });
         await fsDeleteFile(filePath);
         return true;

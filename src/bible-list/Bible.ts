@@ -4,30 +4,33 @@ import {
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import {
-    AnyObjectType,
-    cloneJson,
-    toMaxId,
+    AnyObjectType, cloneJson, toMaxId,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { getSetting } from '../helper/settingHelper';
+import { getSetting, getSettingPrefix } from '../helper/settingHelper';
 import BibleItem, { BibleItemType } from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { WindowModEnum } from '../router/routeHelpers';
 
 export type BibleType = {
     items: BibleItemType[],
     metadata: AnyObjectType,
 }
+const SELECT_DIR_SETTING = 'bible-list-selected-dir';
 export default class Bible extends ItemSource<BibleItem>{
-    static SELECT_DIR_SETTING = 'bible-list-selected-dir';
     static DEFAULT_FILE_NAME = 'Default';
     _originalJson: BibleType;
-    constructor(fileSource: FileSource, json: BibleType) {
-        super(fileSource);
+    constructor(filePath: string, json: BibleType) {
+        super(filePath);
         this._originalJson = cloneJson(json);
     }
-    static fromJson(fileSource: FileSource, json: any) {
+    static getSelectDirSettingName(windowMode: WindowModEnum | null) {
+        const prefixSetting = getSettingPrefix(windowMode);
+        return `${prefixSetting}${SELECT_DIR_SETTING}`;
+    }
+    static fromJson(filePath: string, json: any) {
         this.validate(json);
-        return new Bible(fileSource, json);
+        return new Bible(filePath, json);
     }
     get metadata() {
         return this._originalJson.metadata;
@@ -38,11 +41,11 @@ export default class Bible extends ItemSource<BibleItem>{
     get items() {
         return this._originalJson.items.map((json) => {
             try {
-                return BibleItem.fromJson(json, this.fileSource);
+                return BibleItem.fromJson(json, this.filePath);
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
-            return BibleItem.fromJsonError(json, this.fileSource);
+            return BibleItem.fromJsonError(json, this.filePath);
         });
     }
     set items(newItems: BibleItem[]) {
@@ -56,11 +59,12 @@ export default class Bible extends ItemSource<BibleItem>{
         }
         return 0;
     }
-    static checkIsDefault(fileSource: FileSource) {
+    static checkIsDefault(filePath: string) {
+        const fileSource = FileSource.getInstance(filePath);
         return fileSource.name === Bible.DEFAULT_FILE_NAME;
     }
     get isDefault() {
-        return Bible.checkIsDefault(this.fileSource);
+        return Bible.checkIsDefault(this.filePath);
     }
     get isSelected() {
         return false;
@@ -72,7 +76,7 @@ export default class Bible extends ItemSource<BibleItem>{
         this.metadata['isOpened'] = b;
         this.save();
     }
-    getItemById(id: number) {
+    getItemById(id: number): BibleItem | null {
         return this.items.find((item) => item.id === id) || null;
     }
     setItemById(id: number, item: BibleItem) {
@@ -85,8 +89,10 @@ export default class Bible extends ItemSource<BibleItem>{
         });
         this.items = newItems;
     }
-    static async updateOrToDefault(bibleItem: BibleItem) {
-        const bible = await Bible.getDefault();
+    static async addBibleItemToDefault(
+        bibleItem: BibleItem, windowMode: WindowModEnum | null,
+    ) {
+        const bible = await Bible.getDefault(windowMode);
         if (bible) {
             bible.addItem(bibleItem);
             if (await bible.save()) {
@@ -116,7 +122,7 @@ export default class Bible extends ItemSource<BibleItem>{
         }
     }
     addItem(item: BibleItem) {
-        item.fileSource = this.fileSource;
+        item.filePath = this.filePath;
         item.id = this.maxItemId + 1;
         const items = this.items;
         items.push(item);
@@ -130,9 +136,9 @@ export default class Bible extends ItemSource<BibleItem>{
         items[toIndex] = fromItem;
         this.items = items;
     }
-    async moveItemFrom(fileSource: FileSource, index?: number) {
+    async moveItemFrom(filePath: string, index?: number) {
         try {
-            const fromBible = await Bible.readFileToData(fileSource);
+            const fromBible = await Bible.readFileToData(filePath);
             if (!fromBible) {
                 showSimpleToast('Moving Bible Item', 'Cannot source Bible');
                 return;
@@ -141,7 +147,9 @@ export default class Bible extends ItemSource<BibleItem>{
             let targetBibleItems: BibleItem[] = backupBibleItems;
             if (index !== undefined) {
                 if (!backupBibleItems[index]) {
-                    showSimpleToast('Moving Bible Item', 'Cannot find Bible Item');
+                    showSimpleToast(
+                        'Moving Bible Item', 'Cannot find Bible Item',
+                    );
                     return;
                 }
                 targetBibleItems = [backupBibleItems[index]];
@@ -159,28 +167,36 @@ export default class Bible extends ItemSource<BibleItem>{
         }
     }
     static mimetype: MimetypeNameType = 'bible';
-    static async readFileToDataNoCache(fileSource: FileSource | null) {
-        return super.readFileToDataNoCache(fileSource) as Promise<Bible | null | undefined>;
+    static async readFileToDataNoCache(filePath: string | null) {
+        return super.readFileToDataNoCache(
+            filePath,
+        ) as Promise<Bible | null | undefined>;
     }
-    static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        return super.readFileToData(fileSource, isForceCache) as Promise<Bible | null | undefined>;
+    static async readFileToData(
+        filePath: string | null, isForceCache?: boolean,
+    ) {
+        return super.readFileToData(
+            filePath, isForceCache,
+        ) as Promise<Bible | null | undefined>;
     }
-    static async getDefault() {
-        const dir = getSetting(Bible.SELECT_DIR_SETTING, '');
+    static async getDefault(windowMode: WindowModEnum | null) {
+        const dir = getSetting(Bible.getSelectDirSettingName(windowMode), '');
         if (!dir) {
             return null;
         }
-        const fileSources = await fsListFilesWithMimetype(dir, 'bible') || [];
-        if (fileSources === null) {
+        const filePaths = await fsListFilesWithMimetype(dir, 'bible') || [];
+        if (filePaths === null) {
             return null;
         }
-        for (const fileSource of fileSources) {
-            if (Bible.checkIsDefault(fileSource)) {
-                return Bible.readFileToData(fileSource);
+        for (const filePath of filePaths) {
+            if (Bible.checkIsDefault(filePath)) {
+                return Bible.readFileToData(filePath);
             }
         }
         const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
-        const defaultBible = await Bible.readFileToData(defaultFS);
+        const defaultBible = await Bible.readFileToData(
+            defaultFS?.filePath || null,
+        );
         if (!defaultBible) {
             showSimpleToast('Getting Default Bible File',
                 'Fail to get default bible file');
@@ -193,7 +209,7 @@ export default class Bible extends ItemSource<BibleItem>{
         return super.create(dir, name, []);
     }
     clone() {
-        return Bible.fromJson(this.fileSource, this.toJson());
+        return Bible.fromJson(this.filePath, this.toJson());
     }
     empty() {
         this.items = [];

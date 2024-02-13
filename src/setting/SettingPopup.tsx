@@ -1,32 +1,29 @@
 import './SettingPopup.scss';
 
+import { lazy } from 'react';
 import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, { genTabBody } from '../others/TabRender';
-import React from 'react';
 import { useModal } from '../app-modal/Modal';
+import HeaderSettingPopup from './HeaderSettingPopup';
 
-const SettingGeneral = React.lazy(() => {
+const SettingGeneral = lazy(() => {
     return import('./SettingGeneral');
 });
-const SettingBible = React.lazy(() => {
+const SettingBible = lazy(() => {
     return import('./bible-setting/SettingBible');
 });
-const SettingAbout = React.lazy(() => {
+const SettingAbout = lazy(() => {
     return import('./SettingAbout');
 });
 
+
 export default function SettingPopup() {
-    const { Modal } = useModal();
+    const { Modal, closeModal } = useModal(false);
     return (
         <Modal>
             <div id='setting-popup'
                 className='app-modal shadow card'>
-                <div className='card-header text-center w-100'>
-                    <span>
-                        <i className='bi bi-gear-wide-connected' />
-                        Setting
-                    </span>
-                </div>
+                <HeaderSettingPopup onClose={closeModal} />
                 <Setting />
             </div>
         </Modal>

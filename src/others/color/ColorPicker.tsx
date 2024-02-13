@@ -3,9 +3,7 @@ import './ColorPicker.scss';
 import { useCallback, useState } from 'react';
 import colorList from '../color-list.json';
 import {
-    AppColorType,
-    transparentColor,
-    colorToTransparent,
+    AppColorType, transparentColor, colorToTransparent,
 } from './colorHelpers';
 import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';
@@ -13,12 +11,12 @@ import { useAppEffect } from '../../helper/debuggerHelpers';
 
 export default function ColorPicker({
     defaultColor, color, onColorChange, onNoColor,
-}: {
+}: Readonly<{
     defaultColor: AppColorType,
     color: AppColorType | null,
     onColorChange?: (color: AppColorType, event: MouseEvent) => void
     onNoColor?: (color: AppColorType, event: MouseEvent) => void
-}) {
+}>) {
     const [localColor, setLocalColor] = useState(color);
     const onColorChangeCallback = useCallback((
         newColor: AppColorType | null, event: any) => {

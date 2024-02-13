@@ -81,8 +81,9 @@ export function genHtmlAlertMarquee(marqueeData: { text: string }
     return div.firstChild as HTMLDivElement;
 }
 
-export function genHtmlAlertCountdown(countdownData: { dateTime: Date }
-    , presentManager: PresentManager) {
+export function genHtmlAlertCountdown(
+    countdownData: { dateTime: Date }, presentManager: PresentManager,
+) {
     const { dateTime } = countdownData;
     const scale = presentManager.height / 768;
     const fontSize = 100 * scale;

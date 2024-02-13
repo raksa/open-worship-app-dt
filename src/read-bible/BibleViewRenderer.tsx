@@ -1,81 +1,100 @@
 import BibleView from './BibleView';
-import BibleItem from '../bible-list/BibleItem';
-import { handleError } from '../helper/errorHelpers';
 import BibleItemViewController, {
-    RESIZER_SETTING_NAME,
-    useBIVCUpdateEvent,
+    RESIZE_SETTING_NAME,
 } from './BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
+import NoBibleViewAvailable from './NoBibleViewAvailable';
+import BibleItem from '../bible-list/BibleItem';
 
 export default function BibleViewRenderer({
-    fontSize, bibleItemViewController,
-}: {
+    fontSize, bibleItemViewController, isHorizontal, bibleItems,
+    indices,
+}: Readonly<{
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
-}) {
-    const bibleItems = useBIVCUpdateEvent(bibleItemViewController);
+    isHorizontal: boolean,
+    bibleItems: BibleItem[],
+    indices: number[],
+}>) {
     if (bibleItems.length === 0) {
-        return <NoBibleViewAvailable
-            bibleItemViewController={bibleItemViewController} />;
-    }
-    if (bibleItems.length === 1) {
         return (
-            <BibleView index={0}
-                bibleItem={bibleItems[0]}
-                fontSize={fontSize}
+            <NoBibleViewAvailable
                 bibleItemViewController={bibleItemViewController}
             />
         );
     }
+    if (bibleItems.length === 1) {
+        const bibleItem = bibleItems[0];
+        const newIndices = [...indices, 0];
+        if (bibleItem instanceof Array) {
+            return (
+                <BibleViewRenderer
+                    bibleItems={bibleItem}
+                    fontSize={fontSize}
+                    bibleItemViewController={
+                        bibleItemViewController
+                    }
+                    indices={newIndices}
+                    isHorizontal={!isHorizontal}
+                />
+            );
+        }
+        return (
+            <BibleView indices={newIndices}
+                bibleItem={bibleItem}
+                fontSize={fontSize}
+                bibleItemViewController={bibleItemViewController}
+                isHorizontal={isHorizontal}
+            />
+        );
+    }
+    const typeText = isHorizontal ? 'h' : 'v';
+    const contrastTypeText = isHorizontal ? 'v' : 'h';
     return (
         <ResizeActor
-            fSizeName={RESIZER_SETTING_NAME}
+            fSizeName={RESIZE_SETTING_NAME}
+            isDisableQuickResize={true}
             flexSizeDefault={Object.fromEntries(bibleItems.map((_, i) => {
-                return [`h${i + 1}`, ['1']];
+                return [`${typeText}${i + 1}`, ['1']];
             }))}
-            resizeKinds={['h']}
-            dataInput={bibleItems.map((bibleItem, i) => {
-                return [{
-                    render: () => {
-                        return <BibleView index={i}
-                            bibleItem={bibleItem}
-                            fontSize={fontSize}
-                            bibleItemViewController={bibleItemViewController}
-                        />;
+            resizeKinds={Array.from({
+                length: bibleItems.length - 1,
+            }).map(() => typeText)}
+            dataInput={bibleItems.map((item, i) => {
+                const isFlexItem = !(item instanceof Array);
+                return [
+                    {
+                        render: () => {
+                            if (!isFlexItem) {
+                                return (
+                                    <BibleViewRenderer
+                                        bibleItems={item}
+                                        fontSize={fontSize}
+                                        bibleItemViewController={
+                                            bibleItemViewController
+                                        }
+                                        indices={[...indices, i]}
+                                        isHorizontal={!isHorizontal}
+                                    />
+                                );
+                            } else {
+                                return (
+                                    <BibleView
+                                        bibleItem={item}
+                                        fontSize={fontSize}
+                                        bibleItemViewController={
+                                            bibleItemViewController
+                                        }
+                                        indices={[...indices, i]}
+                                        isHorizontal={isHorizontal}
+                                    />
+                                );
+                            }
+                        },
                     },
-                }, `h${i + 1}`, 'flex-item'];
+                    `${typeText}${i + 1}`,
+                    isFlexItem ? 'flex-item' : (`flex ${contrastTypeText}`),
+                ];
             })} />
-    );
-}
-
-function NoBibleViewAvailable({ bibleItemViewController }: {
-    bibleItemViewController: BibleItemViewController,
-}) {
-    return (
-        <div className='bible-view card flex-fill'
-            style={{ minWidth: '30%' }}
-            onDragOver={(event) => {
-                event.preventDefault();
-                event.currentTarget.classList.add('receiving-child');
-            }}
-            onDragLeave={(event) => {
-                event.preventDefault();
-                event.currentTarget.classList.remove('receiving-child');
-            }}
-            onDrop={async (event) => {
-                event.currentTarget.classList.remove('receiving-child');
-                const data = event.dataTransfer.getData('text');
-                try {
-                    const json = JSON.parse(data);
-                    if (json.type === 'bibleItem') {
-                        const bibleItem = BibleItem.fromJson(json.data);
-                        bibleItemViewController.addItem(bibleItem);
-                    }
-                } catch (error) {
-                    handleError(error);
-                }
-            }}>
-            '(*T) ' + 'No Bible Available'
-        </div>
     );
 }

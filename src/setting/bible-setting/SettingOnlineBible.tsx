@@ -3,16 +3,14 @@ import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
 
 export default function SettingOnlineBible({
-    downloadedBibleInfoList,
-    onlineBibleInfoList,
-    setOnlineBibleInfoList,
+    downloadedBibleInfoList, onlineBibleInfoList, setOnlineBibleInfoList,
     setDownloadedBibleInfoList,
-}: {
+}: Readonly<{
     downloadedBibleInfoList: BibleListType,
     onlineBibleInfoList: BibleListType,
     setOnlineBibleInfoList: (bbList: BibleListType) => void
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
-}) {
+}>) {
     const onDownloadedCallback = useCallback(() => {
         setDownloadedBibleInfoList(null);
     }, []);
@@ -25,8 +23,7 @@ export default function SettingOnlineBible({
                 onClick={() => {
                     setOnlineBibleInfoList(null);
                 }}>
-                <i className='bi bi-arrow-clockwise' />
-                Refresh
+                <i className='bi bi-arrow-clockwise' /> Refresh
             </button>
         );
     };
@@ -54,7 +51,7 @@ export default function SettingOnlineBible({
                 {getRefresher()}
             </div>
             <ul className='list-group d-flex flex-fill'>
-                {bibleInfoList.map((bibleInfo, i) => {
+                {bibleInfoList.map((bibleInfo) => {
                     return (
                         <OnlineBibleItem key={bibleInfo.key}
                             bibleInfo={bibleInfo}

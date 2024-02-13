@@ -1,12 +1,11 @@
-import React, { Suspense, useState } from 'react';
+import { lazy, useState } from 'react';
 import {
-    AlertDataType,
-    alertManager,
-    ConfirmDataType,
+    AlertDataType, alertManager, ConfirmDataType,
 } from './alertHelpers';
 import AlertPopup from './AlertPopup';
+import AppSuspense from '../others/AppSuspense';
 
-const ConfirmPopup = React.lazy(() => {
+const ConfirmPopup = lazy(() => {
     return import('./ConfirmPopup');
 });
 
@@ -25,14 +24,12 @@ export default function HandleAlert() {
 
     return (
         <>
-            {confirmData !== null && <Suspense
-                fallback={<div>Loading ...</div>}>
+            {confirmData !== null && <AppSuspense>
                 <ConfirmPopup data={confirmData} />
-            </Suspense>}
-            {alertData !== null && <Suspense
-                fallback={<div>Loading ...</div>}>
+            </AppSuspense>}
+            {alertData !== null && <AppSuspense>
                 <AlertPopup data={alertData} />
-            </Suspense>}
+            </AppSuspense>}
         </>
     );
 }

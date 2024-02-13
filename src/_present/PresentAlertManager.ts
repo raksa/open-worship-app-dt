@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
@@ -13,7 +14,8 @@ import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect
+    from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 export type AlertDataType = {
@@ -31,7 +33,8 @@ export type AlertSrcListType = {
 export type PresentAlertEventType = 'update';
 
 const settingName = 'present-alert-';
-export default class PresentAlertManager extends EventHandler<PresentAlertEventType>
+export default class PresentAlertManager
+    extends EventHandler<PresentAlertEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-alert-m';
     readonly presentId: number;
@@ -51,8 +54,8 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
                     marqueeData,
                     countdownData,
                 } = allAlertDataList[this.key];
-                this.alertData.marqueeData = marqueeData || null;
-                this.alertData.countdownData = countdownData || null;
+                this.alertData.marqueeData = marqueeData;
+                this.alertData.countdownData = countdownData;
             }
         }
     }
@@ -113,6 +116,9 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     }
     static receiveSyncPresent(message: PresentMessageType) {
         const presentManager = PresentManager.getInstance(message.presentId);
+        if (presentManager === null) {
+            return;
+        }
         const { presentAlertManager } = presentManager;
         const data: AlertDataType = message.data;
         presentAlertManager.setMarqueeData(data.marqueeData);
@@ -167,10 +173,14 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
     }
     static async setData(event: React.MouseEvent<HTMLElement, MouseEvent>,
         callback: (presentManager: PresentAlertManager) => void) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
-        chosenPresentManagers.forEach(async (presentManager) => {
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(event);
+        const callbackSave = async (presentManager: PresentManager) => {
             callback(presentManager.presentAlertManager);
             presentManager.presentAlertManager.saveAlertData();
+        };
+        chosenPresentManagers.forEach((presentManager) => {
+            callbackSave(presentManager);
         });
     }
     static async setMarquee(text: string,
@@ -188,14 +198,18 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             const { alertData } = presentAlertManager;
             const { dateTime: dateTimeData } = alertData.countdownData || {};
             const countdownData = dateTimeData !== undefined
-                && checkIsCountdownDatesEq(dateTimeData, dateTime) ? null : { dateTime };
+                && checkIsCountdownDatesEq(dateTimeData, dateTime) ?
+                null : { dateTime };
             presentAlertManager.setCountdownData(countdownData);
         });
     }
     renderMarquee() {
-        if (this.alertData.marqueeData !== null) {
-            const newDiv = genHtmlAlertMarquee(this.alertData.marqueeData,
-                this.presentManager);
+        if (
+            this.presentManager !== null && this.alertData.marqueeData !== null
+        ) {
+            const newDiv = genHtmlAlertMarquee(
+                this.alertData.marqueeData, this.presentManager,
+            );
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
                 if (element.offsetWidth < element.scrollWidth) {
@@ -205,9 +219,13 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
         }
     }
     renderCountdown() {
-        if (this.alertData.countdownData !== null) {
-            const newDiv = genHtmlAlertCountdown(this.alertData.countdownData,
-                this.presentManager);
+        if (
+            this.presentManager !== null &&
+            this.alertData.countdownData !== null
+        ) {
+            const newDiv = genHtmlAlertCountdown(
+                this.alertData.countdownData, this.presentManager,
+            );
             this.divCountdown.appendChild(newDiv);
         }
     }
@@ -221,12 +239,16 @@ export default class PresentAlertManager extends EventHandler<PresentAlertEventT
             removeAlert(child);
         });
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflow: 'hidden',
         };
     }

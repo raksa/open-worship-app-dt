@@ -23,13 +23,21 @@ export function usePMEvents(events: PresentManagerEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = presentManager?.
-            registerEventListener(events, update) || [];
-        const staticEvents = PresentManager.
-            registerEventListener(events, update);
+        let registeredEvents: any;
+        const isGlobal = presentManager === undefined;
+        if (isGlobal) {
+            registeredEvents = PresentManager.
+                registerEventListener(events, update);
+        } else {
+            registeredEvents = presentManager.
+                registerEventListener(events, update);
+        }
         return () => {
-            presentManager?.unregisterEventListener(instanceEvents);
-            PresentManager.unregisterEventListener(staticEvents);
+            if (isGlobal) {
+                PresentManager.unregisterEventListener(registeredEvents);
+            } else {
+                presentManager.unregisterEventListener(registeredEvents);
+            }
         };
     }, [presentManager, n]);
 }
@@ -43,13 +51,21 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = presentBGManager?.
-            registerEventListener(events, update) || [];
-        const staticEvents = PresentBGManager.
-            registerEventListener(events, update);
+        let registeredEvents: any;
+        const isGlobal = presentBGManager === undefined;
+        if (isGlobal) {
+            registeredEvents = PresentBGManager.
+                registerEventListener(events, update);
+        } else {
+            registeredEvents = presentBGManager.
+                registerEventListener(events, update);
+        }
         return () => {
-            presentBGManager?.unregisterEventListener(instanceEvents);
-            PresentBGManager.unregisterEventListener(staticEvents);
+            if (isGlobal) {
+                PresentBGManager.unregisterEventListener(registeredEvents);
+            } else {
+                presentBGManager.unregisterEventListener(registeredEvents);
+            }
         };
     }, [presentBGManager, n]);
 }
@@ -63,13 +79,21 @@ export function usePSlideMEvents(events: PresentSlideManagerEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = presentSlideManager?.
-            registerEventListener(events, update) || [];
-        const staticEvents = PresentSlideManager.
-            registerEventListener(events, update);
+        let registeredEvents: any;
+        const isGlobal = presentSlideManager === undefined;
+        if (isGlobal) {
+            registeredEvents = PresentSlideManager.
+                registerEventListener(events, update);
+        } else {
+            registeredEvents = presentSlideManager.
+                registerEventListener(events, update);
+        }
         return () => {
-            presentSlideManager?.unregisterEventListener(instanceEvents);
-            PresentSlideManager.unregisterEventListener(staticEvents);
+            if (isGlobal) {
+                PresentSlideManager.unregisterEventListener(registeredEvents);
+            } else {
+                presentSlideManager.unregisterEventListener(registeredEvents);
+            }
         };
     }, [presentSlideManager, n]);
 }
@@ -83,13 +107,21 @@ export function usePFTMEvents(events: PresentFTManagerEventType[],
             setN(n + 1);
             callback?.(args);
         };
-        const instanceEvents = presentFTManager?.
-            registerEventListener(events, update) || [];
-        const staticEvents = PresentFTManager.
-            registerEventListener(events, update);
+        let registeredEvents: any;
+        const isGlobal = presentFTManager === undefined;
+        if (isGlobal) {
+            registeredEvents = PresentFTManager.
+                registerEventListener(events, update);
+        } else {
+            registeredEvents = presentFTManager.
+                registerEventListener(events, update);
+        }
         return () => {
-            presentFTManager?.unregisterEventListener(instanceEvents);
-            PresentFTManager.unregisterEventListener(staticEvents);
+            if (isGlobal) {
+                PresentFTManager.unregisterEventListener(registeredEvents);
+            } else {
+                presentFTManager.unregisterEventListener(registeredEvents);
+            }
         };
     }, [presentFTManager, n]);
 }

@@ -7,12 +7,12 @@ import PresentSlideManager, {
     SlideItemDataType,
 } from '../../_present/PresentSlideManager';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
-import { handleDragStart } from '../../helper/dragHelpers';
+import { handleDragStart } from '../../bible-list/dragHelpers';
 import { checkIsWindowEditingMode } from '../../router/routeHelpers';
 
-export function RendShowingScreen({ slideItem }: {
+export function RendShowingScreen({ slideItem }: Readonly<{
     slideItem: SlideItem,
-}) {
+}>) {
     const { selectedList } = toCNHighlight(slideItem);
     if (selectedList.length === 0) {
         return null;
@@ -26,10 +26,10 @@ export function RendShowingScreen({ slideItem }: {
     );
 }
 
-export function RendInfo({ index, slideItem }: {
+export function RendInfo({ index, slideItem }: Readonly<{
     index: number,
     slideItem: SlideItem,
-}) {
+}>) {
     return (
         <>
             <div>
@@ -59,7 +59,8 @@ export function toCNHighlight(slideItem: SlideItem) {
     let presentingCN = '';
     if (!isEditing) {
         selectedList = PresentSlideManager.getDataList(
-            slideItem.fileSource.filePath, slideItem.id);
+            slideItem.filePath, slideItem.id,
+        );
         presentingCN = selectedList.length > 0 ? 'highlight-selected' : '';
     }
     return {
@@ -70,11 +71,9 @@ export function toCNHighlight(slideItem: SlideItem) {
 }
 
 export default function SlideItemRender({
-    slideItem, width, index,
-    onClick,
-    onContextMenu, onCopy,
-    onDragStart, onDragEnd,
-}: {
+    slideItem, width, index, onClick, onContextMenu, onCopy, onDragStart,
+    onDragEnd,
+}: Readonly<{
     slideItem: SlideItem;
     width: number,
     index: number;
@@ -83,7 +82,7 @@ export default function SlideItemRender({
     onCopy: () => void,
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
-}) {
+}>) {
     usePSlideMEvents(['update']);
     const {
         activeCN,

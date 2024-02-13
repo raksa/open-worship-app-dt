@@ -180,12 +180,7 @@ function move(): StyleAnimType {
     };
 }
 function zoom(): StyleAnimType {
-    return {
-        style: '',
-        animIn: async () => void 0,
-        animOut: async () => void 0,
-        duration: 0,
-    };
+    return none();
 }
 
 export const styleAnimList: {

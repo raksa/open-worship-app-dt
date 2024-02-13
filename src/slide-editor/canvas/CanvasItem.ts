@@ -1,17 +1,11 @@
-import React, { CSSProperties } from 'react';
+import { CSSProperties, createContext } from 'react';
 import {
     AnyObjectType, cloneJson,
 } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 import {
-    ToolingBoxType,
-    tooling2BoxProps,
-    canvasItemList,
-    genTextDefaultBoxStyle,
-    CanvasItemKindType,
-    hAlignmentList,
-    HAlignmentType,
-    vAlignmentList,
+    ToolingBoxType, tooling2BoxProps, canvasItemList, genTextDefaultBoxStyle,
+    CanvasItemKindType, hAlignmentList, HAlignmentType, vAlignmentList,
     VAlignmentType,
 } from './canvasHelpers';
 import { log } from '../../helper/loggerHelpers';
@@ -104,7 +98,8 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         });
     }
     clone() {
-        const newItem = (this.constructor as typeof CanvasItem<any>).fromJson(this.toJson());
+        const newItem = (this.constructor as typeof CanvasItem<any>)
+            .fromJson(this.toJson());
         newItem.props.id = -1;
         return newItem;
     }
@@ -157,4 +152,4 @@ export class CanvasItemError extends CanvasItem<any> {
     }
 }
 
-export const CanvasItemContext = React.createContext<CanvasItem<any> | null>(null);
+export const CanvasItemContext = createContext<CanvasItem<any> | null>(null);

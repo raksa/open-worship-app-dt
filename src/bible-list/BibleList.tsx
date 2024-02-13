@@ -1,35 +1,39 @@
 import './BibleList.scss';
 
+import { useCallback } from 'react';
 import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
-import DirSource from '../helper/DirSource';
-import { useCallback } from 'react';
-import FileSource from '../helper/FileSource';
-import { BIBLE_LIST_SELECTED_DIR } from '../helper/bible-helpers/bibleHelpers';
+import { useGenDS } from '../helper/dirSourceHelpers';
+import { useWindowMode } from '../router/routeHelpers';
+import { getSettingPrefix } from '../helper/settingHelper';
 
 export default function BibleList() {
-    const onNewFileCallback = useCallback(async (name: string) => {
-        return !await Bible.create(dirSource.dirPath, name);
-    }, []);
-    const bodyHandlerCallback = useCallback((fileSources: FileSource[]) => {
+    const windowMode = useWindowMode();
+    const dirSource = useGenDS(Bible.getSelectDirSettingName(windowMode));
+    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>
-                {fileSources.map((fileSource, i) => {
-                    return <BibleFile key={fileSource.fileName}
+                {filePaths.map((filePath, i) => {
+                    return <BibleFile key={filePath}
                         index={i}
-                        fileSource={fileSource} />;
+                        filePath={filePath} />;
                 })}
             </>
         );
     }, []);
-    const dirSource = DirSource.getInstance(BIBLE_LIST_SELECTED_DIR);
-    Bible.getDefault();
+    if (dirSource === null) {
+        return null;
+    }
+    Bible.getDefault(windowMode);
+    const settingPrefix = getSettingPrefix(windowMode);
     return (
-        <FileListHandler id={'bible-list'}
+        <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype={'bible'}
             dirSource={dirSource}
-            onNewFile={onNewFileCallback}
+            onNewFile={async (dirPath: string, name: string) => {
+                return !await Bible.create(dirPath, name);
+            }}
             header={<span>Bibles</span>}
             bodyHandler={bodyHandlerCallback}
             userClassName='p-0' />

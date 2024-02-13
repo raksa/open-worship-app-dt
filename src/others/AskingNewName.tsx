@@ -1,17 +1,20 @@
 import { useState } from 'react';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export default function AskingNewName({
     defaultName, applyName, customIcon,
-}: {
+}: Readonly<{
     defaultName?: string,
-    customIcon?: JSX.Element,
+    customIcon?: React.JSX.Element,
     applyName: (newName: string | null) => void,
-}) {
+}>) {
     const [creatingNewName, setCreatingNewName] = useState(defaultName || '');
+    const isValid = /^[^\\\/:\*\?"<>\|]+$/.test(creatingNewName);
     return (
-        <div className='input-group' onClick={(event) => {
-            event.stopPropagation();
-        }}>
+        <div className='input-group'
+            onClick={(event) => {
+                event.stopPropagation();
+            }}>
             <input type='text'
                 className='form-control'
                 placeholder='title'
@@ -27,16 +30,23 @@ export default function AskingNewName({
                     }
                 }}
                 onChange={(event) => {
-                    // TODO: validate name
                     setCreatingNewName(event.target.value);
                 }} />
             <button type='button'
                 id='button-addon2'
-                className='btn btn-outline-success'
+                className={`btn btn-outline-${isValid ? 'success' : 'danger'}`}
                 onClick={() => {
+                    if (!isValid) {
+                        showSimpleToast(
+                            'Invalid file name',
+                            'File name cannot contain any of the following ' +
+                            'characters: \\ / : * ? " < > |',
+                        );
+                        return;
+                    }
                     applyName(creatingNewName || null);
                 }}>
-                {customIcon ?? <i className='bi bi-check' />}
+                {customIcon || <i className='bi bi-check' />}
             </button>
         </div>
     );

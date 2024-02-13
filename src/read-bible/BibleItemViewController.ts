@@ -2,82 +2,229 @@ import { useState } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import {
+    getSetting, getSettingPrefix, setSetting,
+} from '../helper/settingHelper';
 import { handleError } from '../helper/errorHelpers';
 import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
+import { WindowModEnum } from '../router/routeHelpers';
 
 export type UpdateEventType = 'update';
-export const RESIZER_SETTING_NAME = 'bible-previewer-render';
+export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 
+function parseBibleItem(json: any): any {
+    if (json instanceof Array) {
+        return json.map((item: any) => {
+            return parseBibleItem(item);
+        });
+    }
+    return BibleItem.fromJson(json);
+}
+
+function stringifyBibleItem(item: any): any {
+    if (item instanceof Array) {
+        return item.map((item1) => {
+            return stringifyBibleItem(item1);
+        });
+    }
+    return item.toJson();
+}
+
+function cleanBibleItems(item: any): any {
+    if (item instanceof Array) {
+        return item.map((item1) => {
+            return cleanBibleItems(item1);
+        }).filter((item1) => {
+            if (item1 instanceof Array && item1.length === 0) {
+                return false;
+            }
+            return true;
+        });
+    }
+    return item;
+}
+const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
     static _instance: BibleItemViewController | null = null;
-    get bibleItems() {
+    static getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
+        const prefixSetting = getSettingPrefix(windowMode);
+        return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
+    }
+    get bibleItems(): any {
         try {
-            const bibleItems = JSON.parse(getSetting('bibleItems') || '[]');
-            return bibleItems.map((item: any) => {
-                return BibleItem.fromJson(item);
-            });
+            const settingName = BibleItemViewController.
+                getBibleItemsPreviewSettingName(null);
+            const jsonStr = getSetting(settingName) || '[]';
+            const json = JSON.parse(jsonStr);
+            return parseBibleItem(json);
         } catch (error) {
             handleError(error);
         }
+        setSetting('bibleItems', '[]');
         return [];
     }
     set bibleItems(newBibleItems: BibleItem[]) {
         if (newBibleItems.length !== this.bibleItems.length) {
-            clearFlexSizeSetting(RESIZER_SETTING_NAME);
+            clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
-        setSetting('bibleItems', JSON.stringify(newBibleItems.map((item) => {
-            return item.toJson();
-        })));
+        const jsonStr = JSON.stringify(stringifyBibleItem(newBibleItems));
+        const settingName = BibleItemViewController.
+            getBibleItemsPreviewSettingName(null);
+        setSetting(settingName, jsonStr);
         this.fireUpdateEvent();
+    }
+
+    private walkBibleItems(
+        fullBiblItems: any, indices: number[],
+        bibleItems?: any
+    ): {
+        bibleItems: BibleItem[],
+        fullBiblItems: any,
+        index: number,
+    } {
+        if (!bibleItems) {
+            bibleItems = fullBiblItems;
+        }
+        if (indices.length < 2) {
+            return {
+                fullBiblItems,
+                bibleItems,
+                index: indices.length === 1 ? indices[0] : 0,
+            };
+        }
+        indices = [...indices];
+        const index = indices.shift()!;
+        return this.walkBibleItems(
+            fullBiblItems, indices,
+            bibleItems[index],
+        );
     }
 
     fireUpdateEvent() {
         this.addPropEvent('update');
     }
 
-    changeItemBibleKey(index: number, bibleKey: string) {
-        const newBibleItems = this.bibleItems.map((item1) => {
-            return item1.clone();
-        });
-        newBibleItems[index].bibleKey = bibleKey;
-        this.bibleItems = newBibleItems;
+    changeItemBibleKey(indices: number[], bibleKey: string) {
+        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        bibleItems[index].bibleKey = bibleKey;
+        this.bibleItems = fullBiblItems;
     }
 
-    changeItemAtIndex(bibleItem: BibleItem, index: number) {
-        const newBibleItems = this.bibleItems.map((item1, i) => {
-            if (i !== index) {
-                return item1.clone();
-            } else {
-                return bibleItem;
-            }
-        });
-        this.bibleItems = newBibleItems;
+    changeItemAtIndex(bibleItem: BibleItem, indices: number[]) {
+        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        bibleItems[index] = bibleItem;
+        this.bibleItems = fullBiblItems;
     }
 
-    removeItem(index: number) {
-        const newBibleItems = this.bibleItems.filter((_, i) => {
-            return i !== index;
-        });
-        this.bibleItems = newBibleItems;
+    removeItem(indices: number[]) {
+        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        bibleItems.splice(index, 1);
+        const newFullBiblItems = cleanBibleItems(fullBiblItems);
+        this.bibleItems = newFullBiblItems;
     }
 
-    addItem(bibleItem: BibleItem) {
-        const newBibleItems = this.bibleItems.map((item1) => {
-            return item1.clone();
-        });
-        newBibleItems.push(bibleItem);
-        this.bibleItems = newBibleItems;
+    addItem(bibleItem: BibleItem, indices: number[]) {
+        const { fullBiblItems, bibleItems } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        bibleItems.push(bibleItem);
+        this.bibleItems = fullBiblItems;
     }
-    duplicateItemAtIndex(index: number, bibleKey?: string) {
-        const bibleItems = this.bibleItems;
-        const duplicatedBibleItem = bibleItems[index].clone();
-        if (bibleKey) {
-            duplicatedBibleItem.bibleKey = bibleKey;
+    private addItemAtIndex(indices: number[], bibleItem: BibleItem) {
+        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        bibleItems.splice(index, 0, bibleItem);
+        this.bibleItems = fullBiblItems;
+    }
+    private transform(indices: number[], isHorizontal: boolean) {
+        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        if (!(bibleItems[index] instanceof Array)) {
+            (bibleItems as any)[index] = [bibleItems[index]];
+            indices = [...indices, 0];
+            isHorizontal = false;
         }
-        bibleItems.splice(index + 1, 0, duplicatedBibleItem);
-        this.bibleItems = bibleItems;
+        this.bibleItems = fullBiblItems;
+        return { indices, isHorizontal };
+    }
+    private transformToVertical(indices: number[], isHorizontal: boolean) {
+        if (isHorizontal) {
+            return this.transform(indices, isHorizontal);
+        }
+        return { indices, isHorizontal };
+    }
+    private transformToHorizontal(indices: number[], isHorizontal: boolean) {
+        if (!isHorizontal) {
+            return this.transform(indices, isHorizontal);
+        }
+        return { indices, isHorizontal };
+    }
+    addItemAtIndexLeft(
+        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    ) {
+        const {
+            indices: newIndices,
+        } = this.transformToHorizontal(indices, isHorizontal);
+        this.addItemAtIndex(newIndices, bibleItem);
+    }
+    addItemAtIndexRight(
+        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    ) {
+        const {
+            indices: newIndices,
+        } = this.transformToHorizontal(indices, isHorizontal);
+        newIndices[newIndices.length - 1] += 1;
+        this.addItemAtIndex(newIndices, bibleItem);
+    }
+    addItemAtIndexTop(
+        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    ) {
+        const {
+            indices: newIndices,
+        } = this.transformToVertical(indices, isHorizontal);
+        this.addItemAtIndex(newIndices, bibleItem);
+    }
+    addItemAtIndexBottom(
+        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    ) {
+        const {
+            indices: newIndices,
+        } = this.transformToVertical(indices, isHorizontal);
+        newIndices[newIndices.length - 1] += 1;
+        this.addItemAtIndex(newIndices, bibleItem);
+    }
+    private cloneAtIndex(
+        indices: number[], bibleKey?: string,
+    ) {
+        const { bibleItems, index } = this.walkBibleItems(
+            this.bibleItems, indices,
+        );
+        const clonedBibleItem = bibleItems[index].clone();
+        if (bibleKey) {
+            clonedBibleItem.bibleKey = bibleKey;
+        }
+        return clonedBibleItem;
+    }
+    duplicateItemAtIndexRight(
+        indices: number[], isHorizontal: boolean, bibleKey?: string,
+    ) {
+        const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
+        this.addItemAtIndexRight(indices, duplicatedBibleItem, isHorizontal);
+    }
+    duplicateItemAtIndexBottom(
+        indices: number[], isHorizontal: boolean, bibleKey?: string,
+    ) {
+        const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
+        this.addItemAtIndexBottom(indices, duplicatedBibleItem, isHorizontal);
     }
 
     static getInstance() {
@@ -97,7 +244,8 @@ export function useBIVCUpdateEvent(
             setBibleItems(bibleItemViewController.bibleItems);
         };
         const instanceEvents = bibleItemViewController.registerEventListener(
-            ['update'], update) || [];
+            ['update'], update,
+        ) || [];
         return () => {
             bibleItemViewController.unregisterEventListener(instanceEvents);
         };

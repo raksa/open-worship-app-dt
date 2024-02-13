@@ -1,6 +1,6 @@
-export default function Tool({ title, children }: {
-    title?: string, children: any | any[],
-}) {
+export default function Tool({ title, children }: Readonly<{
+    title?: string, children: any,
+}>) {
     return (
         <div className='tool'>
             {title && <div>{title}</div>}

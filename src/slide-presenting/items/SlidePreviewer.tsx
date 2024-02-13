@@ -1,20 +1,14 @@
 import './SlidePreviewer.scss';
 
+import { useCallback, useState } from 'react';
 import SlideItemsPreviewer from './SlideItemsPreviewer';
+import { useSlideItemSizing } from '../../event/SlideListEventListener';
 import {
-    useSlideItemSizing,
-} from '../../event/SlideListEventListener';
-import {
-    THUMBNAIL_WIDTH_SETTING_NAME,
-    DEFAULT_THUMBNAIL_SIZE,
-    SlideDynamicType,
+    THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE, SlideDynamicType,
 } from '../../slide-list/slideHelpers';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
-import {
-    useSlideSelecting,
-} from '../../event/PreviewingEventListener';
-import { useCallback, useState } from 'react';
+import { useSlideSelecting } from '../../event/PreviewingEventListener';
 import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
@@ -39,8 +33,8 @@ export default function SlidePreviewer() {
             reloadSlide();
         }
     }, [slide]);
-    useFSEvents(['delete', 'update', 'refresh-dir'],
-        slide?.fileSource, () => {
+    useFSEvents(['delete', 'update'],
+        slide?.filePath, () => {
             setSlide(null);
         });
     if (!slide) {

@@ -22,7 +22,8 @@ export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
 const settingName = 'present-display-';
 
-export default class PresentManager extends EventHandler<PresentManagerEventType>
+export default class PresentManager
+    extends EventHandler<PresentManagerEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
@@ -181,6 +182,9 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
     static receiveSyncPresent(message: PresentMessageType) {
         const { type, data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return;
+        }
         if (type === 'init') {
             presentManager.setSyncPresent();
         } else if (type === 'background') {
@@ -214,16 +218,24 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
             return cachedInstances;
         }
         return getAllShowingPresentIds().map((presentId) => {
-            return this.getInstance(presentId);
+            return this.createInstance(presentId);
         });
     }
-    static getInstance(presentId: number) {
+    static createInstance(presentId: number) {
         const key = presentId.toString();
         if (!this._cache.has(key)) {
             const presentManager = new PresentManager(presentId);
             this._cache.set(key, presentManager);
+            PresentManager.savePresentManagersSetting();
         }
         return this._cache.get(key) as PresentManager;
+    }
+    static getInstance(presentId: number) {
+        const key = presentId.toString();
+        if (this._cache.has(key)) {
+            return this._cache.get(key) as PresentManager;
+        }
+        return null;
     }
     static getSelectedInstances() {
         return Array.from(this._cache.values())
@@ -250,25 +262,23 @@ export default class PresentManager extends EventHandler<PresentManagerEventType
         });
     }
     static getPresentManagersSetting() {
-        let presentManagers = this.getAllInstances();
         const str = getSetting(`${settingName}instances`, '');
         if (isValidJson(str, true)) {
             const json = JSON.parse(str);
-            json.forEach(({ presentId, isSelected }: any) => {
-                if (typeof presentId === 'number') {
-                    const presentManager = this.getInstance(presentId);
-                    presentManager._isSelected = !!isSelected;
-                    if (presentManagers.every((pm) => {
-                        return pm.presentId !== presentId;
-                    })) {
-                        presentManagers.push(presentManager);
+            if (json.length === 0) {
+                this.createInstance(0);
+            } else {
+                json.forEach(({ presentId, isSelected }: any) => {
+                    if (typeof presentId === 'number') {
+                        const presentManager = this.createInstance(presentId);
+                        presentManager._isSelected = !!isSelected;
                     }
-                }
-            });
+                });
+            }
+        } else {
+            this.createInstance(0);
         }
-        if (presentManagers.length === 0) {
-            presentManagers = [this.getInstance(0)];
-        }
+        const presentManagers = this.getAllInstances();
         if (presentManagers.length === 1) {
             presentManagers[0]._isSelected = true;
         }

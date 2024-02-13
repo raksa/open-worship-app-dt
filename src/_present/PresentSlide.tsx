@@ -3,9 +3,9 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePMEvents } from './presentEventHelpers';
 import PresentManager from './PresentManager';
 
-export default function PresentSlide({ presentManager }: {
+export default function PresentSlide({ presentManager }: Readonly<{
     presentManager: PresentManager;
-}) {
+}>) {
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentSlideManager.render();
     });

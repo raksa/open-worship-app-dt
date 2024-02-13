@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { lazy, useCallback, useState } from 'react';
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
@@ -6,14 +6,18 @@ import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { moveBibleItemTo } from '../helper/bible-helpers/bibleHelpers';
+import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelper';
+import { useFSEvents } from '../helper/dirSourceHelpers';
+import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
 
-const RenderBibleItems = React.lazy(() => {
+const RenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
 });
 
-function genContextMenu(bible: Bible | null | undefined) {
+function genContextMenu(bible: Bible | null | undefined,
+    windowMode: WindowModEnum | null,
+) {
     if (!bible) {
         return [];
     }
@@ -47,21 +51,22 @@ function genContextMenu(bible: Bible | null | undefined) {
     }, {
         title: '(*T) ' + 'Move All Items To',
         onClick: (event: any) => {
-            moveBibleItemTo(event, bible);
+            moveBibleItemTo(event, bible, windowMode);
         },
     }];
 }
 
 export default function BibleFile({
-    index, fileSource,
-}: {
+    index, filePath,
+}: Readonly<{
     index: number,
-    fileSource: FileSource,
-}) {
+    filePath: string,
+}>) {
+    const windowMode = useWindowMode();
     const [data, setData] = useState<Bible | null | undefined>(null);
     useAppEffect(() => {
         if (data === null) {
-            Bible.readFileToData(fileSource).then(setData);
+            Bible.readFileToData(filePath).then(setData);
         }
     }, [data]);
     const renderChildCallback = useCallback((bible: ItemSource<any>) => {
@@ -72,22 +77,24 @@ export default function BibleFile({
     const reloadCallback = useCallback(() => {
         setData(null);
     }, [setData]);
+    useFSEvents(['update'], filePath, reloadCallback);
     return (
         <FileItemHandler
             index={index}
             data={data}
             reload={reloadCallback}
-            fileSource={fileSource}
+            filePath={filePath}
             className={'bible-file'}
             renderChild={renderChildCallback}
             isDisabledColorNote
-            userClassName='p-0'
-            contextMenu={genContextMenu(data)}
+            userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
+            contextMenu={genContextMenu(data, windowMode)}
         />
     );
 }
 
-function BiblePreview({ bible }: { bible: Bible }) {
+function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
+    const fileSource = FileSource.getInstance(bible.filePath);
     return (
         <div className='accordion accordion-flush py-1'>
             <div className='accordion-header pointer'
@@ -99,7 +106,7 @@ function BiblePreview({ bible }: { bible: Bible }) {
                 <span className='w-100 text-center'>
                     <i className={`bi bi-book${bible.isOpened ?
                         '-fill' : ''} px-1`} />
-                    {bible.fileSource.name}
+                    {fileSource.name}
                 </span>
             </div>
             <div className={`accordion-collapse collapse ${bible.isOpened ?

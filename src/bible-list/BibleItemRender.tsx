@@ -1,45 +1,51 @@
+import { useCallback } from 'react';
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
-import FileSource from '../helper/FileSource';
 import { useFSEvents } from '../helper/dirSourceHelpers';
-import { useCallback } from 'react';
-import { handleDragStart } from '../helper/dragHelpers';
+import { handleDragStart } from './dragHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
-import {
-    useBibleItemRenderTitle,
-} from '../helper/bible-helpers/bibleRenderHelpers';
 import BibleItemViewController from '../read-bible/BibleItemViewController';
 import PresentFTManager from '../_present/PresentFTManager';
-import { checkIsWindowPresentingMode } from '../router/routeHelpers';
+import {
+    checkIsWindowPresentingMode, useWindowMode,
+} from '../router/routeHelpers';
+import {
+    openBibleItemContextMenu, useBibleItemRenderTitle,
+} from './bibleItemHelpers';
+import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
 
 export default function BibleItemRender({
-    index,
-    bibleItem,
-    warningMessage,
-    onContextMenu,
-    fileSource,
-}: {
+    index, bibleItem, warningMessage, filePath,
+}: Readonly<{
     index: number,
     bibleItem: BibleItem,
-    bible?: Bible;
     warningMessage?: string,
-    onContextMenu?: (event: React.MouseEvent<any>,
-        bibleItem: BibleItem, index: number) => void,
-    fileSource?: FileSource,
-}) {
-    useFSEvents(['select'], fileSource);
+    filePath?: string,
+}>) {
+    const openBibleSearch = useOpenBibleSearch(bibleItem);
+    const windowMode = useWindowMode();
+    useFSEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
-    const onContextMenuCallback = useCallback((
-        event: React.MouseEvent<any>) => {
-        onContextMenu?.(event, bibleItem, index);
-    }, [onContextMenu, bibleItem, index]);
-    const changeBible = (newBibleKey: string) => {
+    const onContextMenuCallback = useCallback(
+        (event: React.MouseEvent<any>) => {
+            openBibleItemContextMenu(
+                event, bibleItem, index, windowMode, openBibleSearch,
+            );
+        },
+        [bibleItem, index],
+    );
+    const changeBible = async (newBibleKey: string) => {
+        const bible = bibleItem.filePath ?
+            await Bible.readFileToData(bibleItem.filePath) : null;
+        if (!bible) {
+            return;
+        }
         bibleItem.bibleKey = newBibleKey;
-        bibleItem.save();
+        bibleItem.save(bible);
     };
     if (bibleItem.isError) {
         return (
@@ -72,7 +78,7 @@ export default function BibleItemRender({
                         isMinimal />
                 </div>
                 <span className='app-ellipsis'>
-                    {title === null ? 'not found' : title}
+                    {title || 'not found'}
                 </span>
                 {warningMessage && <span className='float-end'
                     title={warningMessage}>⚠️</span>}

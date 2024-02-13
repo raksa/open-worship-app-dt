@@ -1,7 +1,7 @@
 import ElectronAppController from './ElectronAppController';
-const fs = require('node:fs');
-const path = require('node:path');
-const electron = require('electron');
+import fs from 'node:fs';
+import path from 'node:path';
+import electron from 'electron';
 
 export default class ElectronSettingController {
     _setting: {
@@ -32,7 +32,7 @@ export default class ElectronSettingController {
         return path.join(useDataPath, 'setting.json');
     }
     get mainWinBounds() {
-        return this._setting.mainWinBounds || this.primaryDisplay.bounds;
+        return this._setting.mainWinBounds ?? this.primaryDisplay.bounds;
     }
     set mainWinBounds(bounds) {
         this._setting.mainWinBounds = bounds;
@@ -52,7 +52,9 @@ export default class ElectronSettingController {
         return this.allDisplays.find((newDisplay) => newDisplay.id == id);
     }
     save() {
-        fs.writeFileSync(this.fileSettingPath, JSON.stringify(this._setting), 'utf8');
+        fs.writeFileSync(
+            this.fileSettingPath, JSON.stringify(this._setting), 'utf8',
+        );
     }
     syncMainWindow() {
         this.appController.mainWin.setBounds(this.mainWinBounds);

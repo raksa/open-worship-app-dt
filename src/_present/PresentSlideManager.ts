@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { isValidJson } from '../helper/helpers';
@@ -11,7 +12,8 @@ import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect
+    from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 export type SlideItemDataType = {
@@ -25,7 +27,8 @@ export type SlideListType = {
 export type PresentSlideManagerEventType = 'update';
 
 const settingName = 'present-slide-';
-export default class PresentSlideManager extends EventHandler<PresentSlideManagerEventType>
+export default class PresentSlideManager extends
+    EventHandler<PresentSlideManagerEventType>
     implements PresentManagerInf {
     static eventNamePrefix: string = 'present-slide-m';
     readonly presentId: number;
@@ -83,13 +86,16 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
     static receiveSyncPresent(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return;
+        }
         presentManager.presentSlideManager.slideItemData = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
-        PresentSlideManager.fireUpdateEvent();
+        PresentSlideManager.fireUpdate();
     }
-    static fireUpdateEvent() {
+    static fireUpdate() {
         this.addPropEvent('update');
     }
     static getSlideList(): SlideListType {
@@ -115,22 +121,35 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         const str = JSON.stringify(slideList);
         setSetting(settingName, str);
     }
-    static getDataList(slideFilePath: string, slideItemId: number) {
+    static getDataList(slideFilePath?: string, slideItemId?: number) {
         const dataList = this.getSlideList();
         return Object.entries(dataList).filter(([_, data]) => {
-            return data.slideFilePath === slideFilePath &&
-                data.slideItemJson.id === slideItemId;
+            if (
+                slideFilePath !== undefined &&
+                data.slideFilePath !== slideFilePath
+            ) {
+                return false;
+            }
+            if (
+                slideItemId !== undefined &&
+                data.slideItemJson.id !== slideItemId
+            ) {
+                return false;
+            }
+            return true;
         });
     }
     static async slideSelect(slideFilePath: string,
         slideItemJson: SlideItemType,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(event);
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(event);
         chosenPresentManagers.forEach((presentManager) => {
             const { presentSlideManager } = presentManager;
             const { slideItemData } = presentSlideManager;
             const willSelected = `${slideFilePath}:${slideItemJson.id}`;
-            const selected = `${slideItemData?.slideFilePath}:${slideItemData?.slideItemJson.id}`;
+            const slideItemId = slideItemData?.slideItemJson.id;
+            const selected = `${slideItemData?.slideFilePath}:${slideItemId}`;
             if (selected !== willSelected) {
                 presentSlideManager.slideItemData = {
                     slideFilePath,
@@ -140,17 +159,17 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                 presentSlideManager.slideItemData = null;
             }
         });
-        PresentSlideManager.fireUpdateEvent();
     }
     renderPdf(pdfImageData: PdfImageDataType) {
-        if (this.div === null) {
+        const { presentManager } = this;
+        if (presentManager === null || this.div === null) {
             return;
         }
         Array.from(this.div.children).forEach((child) => {
             child.remove();
         });
         const { src: pdfImageSrc } = pdfImageData;
-        const parentWidth = this.presentManager.width;
+        const parentWidth = presentManager.width;
         const content = genPdfSlideItem(parentWidth, pdfImageSrc);
         const divContainer = document.createElement('div');
         Object.assign(divContainer.style, {
@@ -167,7 +186,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         }
         const aminData = this.ptEffect.styleAnim;
         const slideItemData = this.slideItemData;
-        if (slideItemData !== null) {
+        if (this.presentManager !== null && slideItemData !== null) {
             if (slideItemData.slideItemJson.pdfImageData) {
                 this.renderPdf(slideItemData.slideItemJson.pdfImageData);
                 return;
@@ -213,20 +232,22 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
                     });
                 }
             });
-        } else {
-            if (this.div.lastChild !== null) {
-                const targetDiv = this.div.lastChild as HTMLDivElement;
-                aminData.animOut(targetDiv).then(() => {
-                    targetDiv.remove();
-                });
-            }
+        } else if (this.div.lastChild !== null) {
+            const targetDiv = this.div.lastChild as HTMLDivElement;
+            aminData.animOut(targetDiv).then(() => {
+                targetDiv.remove();
+            });
         }
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflow: 'hidden',
         };
     }
@@ -234,7 +255,7 @@ export default class PresentSlideManager extends EventHandler<PresentSlideManage
         if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
             const slideItem = droppedData.item as SlideItem;
             this.slideItemData = {
-                slideFilePath: slideItem.fileSource.filePath,
+                slideFilePath: slideItem.filePath,
                 slideItemJson: slideItem.toJson(),
             };
         }

@@ -9,6 +9,11 @@ export type AnyObjectType = {
     [key: string]: any;
 };
 
+export function getRandomUUID() {
+    return Math.random().toString(36).substring(2) +
+        (new Date()).getTime().toString(36);
+}
+
 export function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -27,8 +32,11 @@ export function isVisible(elem: any) {
     if (style.display === 'none') { return false; }
     if (style.visibility !== 'visible') { return false; }
     if (+style.opacity < 0.1) { return false; }
-    if (elem.offsetWidth + elem.offsetHeight + elem.getBoundingClientRect().height +
-        elem.getBoundingClientRect().width === 0) {
+    if (
+        elem.offsetWidth + elem.offsetHeight +
+        elem.getBoundingClientRect().height +
+        elem.getBoundingClientRect().width === 0
+    ) {
         return false;
     }
     const elemCenter = {
@@ -38,13 +46,14 @@ export function isVisible(elem: any) {
     if (elemCenter.x < 0) {
         return false;
     }
-    if (elemCenter.x > (document.documentElement.clientWidth || window.innerWidth)) {
+    const { documentElement } = document;
+    if (elemCenter.x > (documentElement.clientWidth || window.innerWidth)) {
         return false;
     }
     if (elemCenter.y < 0) {
         return false;
     }
-    if (elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)) {
+    if (elemCenter.y > (documentElement.clientHeight || window.innerHeight)) {
         return false;
     }
     let pointContainer = document.elementFromPoint(elemCenter.x, elemCenter.y);
@@ -53,7 +62,7 @@ export function isVisible(elem: any) {
             return true;
         }
         pointContainer = pointContainer?.parentNode as any;
-    } while (!!pointContainer);
+    } while (pointContainer);
     return false;
 }
 
@@ -65,7 +74,9 @@ export const removePX = (str: string) => +str.replace('px', '');
 
 export function genRandomString(length: number = 5) {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = (
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    );
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() *
@@ -75,9 +86,10 @@ export function genRandomString(length: number = 5) {
 }
 
 export function getWindowDim() {
-    const width = window.innerWidth || document.documentElement.clientWidth ||
+    const { documentElement } = document;
+    const width = window.innerWidth || documentElement.clientWidth ||
         document.body.clientWidth;
-    const height = window.innerHeight || document.documentElement.clientHeight ||
+    const height = window.innerHeight || documentElement.clientHeight ||
         document.body.clientHeight;
     return { width, height };
 }
@@ -92,15 +104,17 @@ export function validateAppMeta(meta: any) {
     return false;
 }
 export function useReadFileToData<T extends ItemSource<any>>(
-    fileSource: FileSource | null) {
+    filePath: string | null,
+) {
     const [data, setData] = useState<T | null | undefined>(null);
     useAppEffect(() => {
-        if (fileSource !== null) {
+        if (filePath !== null) {
+            const fileSource = FileSource.getInstance(filePath);
             fileSource.readFileToJsonData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }
-    }, [fileSource]);
+    }, [filePath]);
     return data;
 }
 
@@ -135,7 +149,10 @@ export function getVideoDim(src: string) {
 }
 
 export function toMaxId(ids: number[]) {
-    return Math.max.apply(Math, ids);
+    if (ids.length === 0) {
+        return 0;
+    };
+    return Math.max(...ids);
 }
 
 export function isValidJson(json: any, isSilent: boolean = false) {

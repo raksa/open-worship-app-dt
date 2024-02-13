@@ -15,8 +15,10 @@ export default function BackgroundImages() {
     );
 }
 
-function rendChild(fileSource: FileSource,
-    selectedBGSrcList: [string, BackgroundSrcType][]) {
+function rendChild(
+    filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
+) {
+    const fileSource = FileSource.getInstance(filePath);
     return (
         <div className='card-body'>
             <RenderPresentIds

@@ -1,16 +1,13 @@
-const ext = '.pdf';
+import path from 'node:path';
+import fs from 'node:fs';
+const pdfjsLib = require('pdfjs-dist/build/pdf');
 
-function toFuturePdfPath(filePath: string, outputDir: string) {
-    const path = require('node:path') as typeof import('path');
-    const fileName = path.basename(filePath);
-    return path.join(outputDir, `${fileName}${ext}`);
-}
+const ext = '.pdf';
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js';
 
 function toPdf(filePath: string, outputDir: string) {
     return new Promise<void>((resolve, reject) => {
         const { convert } = require('libreoffice-convert');
-        const path = require('node:path') as typeof import('path');
-        const fs = require('node:fs') as typeof import('fs');
         const fileName = path.basename(filePath);
         if (!fs.existsSync(filePath)) {
             throw new Error(`File ${filePath} not found`);
@@ -36,5 +33,5 @@ function toPdf(filePath: string, outputDir: string) {
 
 export default {
     toPdf,
-    toFuturePdfPath,
+    pdfjsLib,
 };

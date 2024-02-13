@@ -1,4 +1,4 @@
-    import { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import ColorPicker from '../others/color/ColorPicker';
 import { AppColorType } from '../others/color/colorHelpers';
 import PresentBGManager, {
@@ -12,7 +12,7 @@ export default function BackgroundColors() {
     const [selectedBGSrcList, setSelectedBGSrcList] = useState<
         [string, BackgroundSrcType][] | null>(null);
     const onNoColorCallback = useCallback(async (
-        newColor: AppColorType, event: any) => {
+        _newColor: AppColorType, event: any) => {
         setSelectedBGSrcList(null);
         PresentBGManager.bgSrcSelect(null, event, 'color');
     }, []);

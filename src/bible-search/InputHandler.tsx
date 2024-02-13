@@ -5,40 +5,43 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
-import { useRef } from 'react';
-import { INPUT_TEXT_CLASS } from './selectionHelpers';
-import { 
-    useBibleItemToInputText,
- } from '../helper/bible-helpers/bibleRenderHelpers';
+import {
+    INPUT_ID, INPUT_TEXT_CLASS, checkIsBibleSearchInputFocused,
+    setBibleSearchInputFocus,
+} from './selectionHelpers';
+import {
+    useBibleItemPropsToInputText,
+} from '../bible-list/bibleItemHelpers';
 
 export default function InputHandler({
-    inputText,
-    onInputChange,
-    onBibleChange,
-    bibleSelected,
-}: {
+    inputText, onInputChange, onBibleChange, bibleKey,
+}: Readonly<{
     inputText: string
     onInputChange: (str: string) => void
     onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
-    bibleSelected: string;
-}) {
-    const books = useGetBookKVList(bibleSelected);
+    bibleKey: string;
+}>) {
+    const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
-    const placeholder = useBibleItemToInputText(
-        bibleSelected, bookKey, 1, 1, 2);
-    useKeyboardRegistering({ key: 'Escape' }, () => {
-        if (inputRef.current !== null) {
-            if (document.activeElement !== inputRef.current) {
-                inputRef.current.focus();
-                return;
-            }
-            onInputChange('');
+    const placeholder = useBibleItemPropsToInputText(
+        bibleKey, bookKey, 1, 1, 2,
+    );
+    useKeyboardRegistering([{ key: 'Escape' }], () => {
+        if (!checkIsBibleSearchInputFocused()) {
+            setBibleSearchInputFocus();
+            return;
         }
+        const arr = inputText.split(' ').filter((str) => str !== '');
+        if (arr.length === 1) {
+            onInputChange('');
+            return;
+        }
+        arr.pop();
+        onInputChange(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
     });
-    const inputRef = useRef<HTMLInputElement>(null);
     return (
         <>
-            <input ref={inputRef} type='text'
+            <input id={INPUT_ID} type='text'
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
@@ -49,7 +52,7 @@ export default function InputHandler({
                 }} />
             <span className='input-group-text select'>
                 <i className='bi bi-journal-bookmark' />
-                <BibleSelection value={bibleSelected}
+                <BibleSelection value={bibleKey}
                     onChange={onBibleChange} />
             </span>
         </>

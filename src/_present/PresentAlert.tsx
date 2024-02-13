@@ -1,12 +1,13 @@
+import './PresentAlert.scss';
+
 import { useRef } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import './PresentAlert.scss';
 import { usePMEvents } from './presentEventHelpers';
 import PresentManager from './PresentManager';
 
-export default function PresentAlert({ presentManager }: {
+export default function PresentAlert({ presentManager }: Readonly<{
     presentManager: PresentManager;
-}) {
+}>) {
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentAlertManager.renderAll();
     });

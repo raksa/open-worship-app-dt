@@ -1,4 +1,4 @@
-import React from 'react';
+import { CSSProperties } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import {
@@ -13,17 +13,11 @@ import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
 import {
-    PresentFTManagerEventType,
-    FTItemDataType,
-    settingName,
-    getFTList,
-    setFTList,
-    renderPFTManager,
-    bibleItemToFtData,
+    PresentFTManagerEventType, FTItemDataType, settingName, getFTList,
+    setFTList, renderPFTManager, bibleItemToFtData,
 } from './presentFTHelpers';
 import {
-    genPresentMouseEvent,
-    PresentMessageType,
+    genPresentMouseEvent, PresentMessageType,
 } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
@@ -74,7 +68,6 @@ export default class PresentFTManager
     set isLineSync(isLineSync: boolean) {
         setSetting(`${settingName}-line-sync-${this.presentId}`,
             `${isLineSync}`);
-        this.ftItemData = this.ftItemData;
     }
     get div() {
         return this._div;
@@ -123,11 +116,15 @@ export default class PresentFTManager
             }
         }
     }
-    get containerStyle(): React.CSSProperties {
+    get containerStyle(): CSSProperties {
+        const { presentManager } = this;
+        if (presentManager === null) {
+            return {};
+        }
         return {
             position: 'absolute',
-            width: `${this.presentManager.width}px`,
-            height: `${this.presentManager.height}px`,
+            width: `${presentManager.width}px`,
+            height: `${presentManager.height}px`,
             overflowX: 'hidden',
             overflowY: 'auto',
         };
@@ -164,6 +161,9 @@ export default class PresentFTManager
     static receiveSyncScroll(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
+        if (presentFTManager === null) {
+            return;
+        }
         if (presentFTManager._syncScrollTimeout !== null) {
             clearTimeout(presentFTManager._syncScrollTimeout);
         }
@@ -187,6 +187,9 @@ export default class PresentFTManager
     static receiveSyncSelectedIndex(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
+        if (presentFTManager === null) {
+            return;
+        }
         presentFTManager.selectedIndex = data.selectedIndex;
     }
     sendSyncData() {
@@ -199,6 +202,9 @@ export default class PresentFTManager
     static receiveSyncData(message: PresentMessageType) {
         const { data, presentId } = message;
         const presentFTManager = this.getInstanceByPresentId(presentId);
+        if (presentFTManager === null) {
+            return;
+        }
         presentFTManager.ftItemData = data;
     }
     fireUpdate() {
@@ -223,11 +229,13 @@ export default class PresentFTManager
     }
     static get textStyleTextColor(): string {
         const textStyle = this.textStyle;
-        return typeof textStyle.color !== 'string' ? '#ffffff' : textStyle.color;
+        return typeof textStyle.color !== 'string' ?
+            '#ffffff' : textStyle.color;
     }
     static get textStyleTextTextShadow(): string {
         const textStyle = this.textStyle;
-        return typeof textStyle.textShadow !== 'string' ? 'none' : textStyle.textShadow;
+        return typeof textStyle.textShadow !== 'string' ?
+            'none' : textStyle.textShadow;
     }
     static get textStyleText(): string {
         return `
@@ -268,19 +276,17 @@ export default class PresentFTManager
     }
     static async ftBibleItemSelect(
         event: React.MouseEvent | null, bibleItems: BibleItem[]) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(
-            genPresentMouseEvent(event) as any,
-        );
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(genPresentMouseEvent(event) as any);
         const ftItemData = await bibleItemToFtData(bibleItems);
-        chosenPresentManagers.forEach(async (presentManager) => {
+        chosenPresentManagers.forEach((presentManager) => {
             const { presentFTManager } = presentManager;
             presentFTManager.ftItemData = ftItemData;
         });
     }
     static async ftLyricSelect(event: React.MouseEvent | null, lyric: Lyric) {
-        const chosenPresentManagers = await PresentManager.contextChooseInstances(
-            genPresentMouseEvent(event) as any,
-        );
+        const chosenPresentManagers = await PresentManager
+            .contextChooseInstances(genPresentMouseEvent(event) as any);
         const renderedList = fullTextPresentHelper.genLyricRenderList(lyric);
         const ftItemData: FTItemDataType = {
             type: 'lyric',
@@ -290,7 +296,7 @@ export default class PresentFTManager
             scroll: 0,
             selectedIndex: null,
         };
-        chosenPresentManagers.forEach(async (presentManager) => {
+        chosenPresentManagers.forEach((presentManager) => {
             const { presentFTManager } = presentManager;
             presentFTManager.ftItemData = ftItemData;
         });
@@ -330,6 +336,9 @@ export default class PresentFTManager
     }
     static getInstanceByPresentId(presentId: number) {
         const presentManager = PresentManager.getInstance(presentId);
+        if (presentManager === null) {
+            return null;
+        }
         return presentManager.presentFTManager;
     }
     sendSyncPresent() {

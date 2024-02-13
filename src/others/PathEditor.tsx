@@ -1,38 +1,21 @@
+import { useState } from 'react';
 import { selectDirs } from '../server/appHelper';
 import DirSource from '../helper/DirSource';
-import { useState } from 'react';
-import { useDSEvents } from '../helper/dirSourceHelpers';
-import { fsCheckDirExist } from '../server/fileHelper';
-
-function useCheckValidPath(dirSource: DirSource) {
-    const [isDirPathValid, setIsDirPathValid] = useState<boolean | null>(null);
-    useDSEvents(['reload'], dirSource, () => {
-        if (!dirSource.dirPath) {
-            setIsDirPathValid(null);
-            return;
-        }
-        fsCheckDirExist(dirSource.dirPath).then((isDirPathValid) => {
-            setIsDirPathValid(isDirPathValid);
-        });
-    });
-    return isDirPathValid;
-}
-
-export default function PathEditor({ dirSource }: {
+export default function PathEditor({ dirSource }: Readonly<{
     dirSource: DirSource,
     prefix: string
-}) {
+}>) {
     const [text, setText] = useState(dirSource.dirPath);
-    const isDirPathValid = useCheckValidPath(dirSource);
-    useDSEvents(['reload'], dirSource, () => {
-        setText(dirSource.dirPath);
-    });
     const applyNewText = (newText: string) => {
         setText(newText);
         dirSource.dirPath = newText;
     };
-    const dirValidCN = isDirPathValid ? 'is-valid' : (
-        isDirPathValid === null ? '' : 'is-invalid');
+    let dirValidCN = 'is-valid';
+    if (dirSource.isDirPathValid === null) {
+        dirValidCN = '';
+    } else if (!dirSource.isDirPathValid) {
+        dirValidCN = 'is-invalid';
+    }
     return (
         <div className='input-group mb-3'>
             {dirSource.dirPath &&

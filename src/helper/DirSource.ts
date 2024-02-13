@@ -5,27 +5,39 @@ import {
     MimetypeNameType,
     getAppMimetype,
     fsListFiles,
+    fsCheckDirExist,
 } from '../server/fileHelper';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { getSetting, setSetting } from './settingHelper';
 
-export type DirSourceEventType = 'refresh' | 'reload';
+export type DirSourceEventType = 'reload';
 
 export default class DirSource extends EventHandler<DirSourceEventType> {
-    static eventNamePrefix: string = 'dir-source';
     settingName: string;
+    static eventNamePrefix: string = 'dir-source';
     static _fileCacheKeys: string[] = [];
     static _cache = new Map<string, DirSource>();
     static _objectId = 0;
-    checkExtraFile: ((fileName: string) => FileMetadataType | null) | null = null;
+    checkExtraFile: ((fName: string) => FileMetadataType | null) | null = null;
+    private _isDirPathValid: boolean | null = null;
     constructor(settingName: string) {
         super();
         if (!settingName) {
             throw new Error('Invalid setting name');
         }
         this.settingName = settingName;
+    }
+    async init() {
+        if (!this.dirPath) {
+            return;
+        }
+        const isDirectory = await fsCheckDirExist(this.dirPath);
+        this._isDirPathValid = isDirectory;
+    }
+    get isDirPathValid() {
+        return this._isDirPathValid;
     }
     get dirPath() {
         return getSetting(this.settingName, '');
@@ -44,8 +56,8 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             return cacheKey.includes(dirPath);
         }) || null;
     }
-    fireRefreshEvent() {
-        this.addPropEvent('refresh');
+    getFileSourceInstance(fileName: string) {
+        return FileSource.getInstance(this.dirPath, fileName);
     }
     fireReloadEvent() {
         this.addPropEvent('reload');
@@ -54,10 +66,10 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         if (!this.dirPath) {
             return;
         }
-        const fileSource = FileSource.getInstance(this.dirPath, fileName);
+        const fileSource = this.getFileSourceInstance(fileName);
         fileSource.fireUpdateEvent();
     }
-    async getFileSources(mimetype: MimetypeNameType) {
+    async getFilePaths(mimetype: MimetypeNameType) {
         if (!this.dirPath) {
             return [];
         }
@@ -73,21 +85,24 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             }).filter((fileMetadata) => {
                 return fileMetadata !== null;
             }) as FileMetadataType[];
-            return matchedFiles.map((fileMetadata) => {
-                return FileSource.getInstance(
-                    this.dirPath, fileMetadata.fileName);
+            const filePaths = matchedFiles.map((fileMetadata) => {
+                const fileSource = this.getFileSourceInstance(
+                    fileMetadata.fileName,
+                );
+                return fileSource.filePath;
             });
+            return filePaths;
         } catch (error) {
             handleError(error);
             showSimpleToast('Getting File List',
                 'Error occurred during listing file');
-            return undefined;
         }
     }
-    static getInstance(settingName: string) {
+    static async getInstance(settingName: string) {
         const cacheKey = this.toCacheKey(settingName);
         if (!this._cache.has(cacheKey)) {
             const dirSource = new DirSource(settingName);
+            await dirSource.init();
             this._cache.set(cacheKey, dirSource);
         }
         return this._cache.get(cacheKey) as DirSource;

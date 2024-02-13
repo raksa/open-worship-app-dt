@@ -1,6 +1,6 @@
-const path = require('node:path');
-const electron = require('electron');
-const url = require('node:url');
+import path from 'node:path';
+import electron from 'electron';
+import url from 'node:url';
 
 const browserUtils = {
     openExplorer(dir: string) {

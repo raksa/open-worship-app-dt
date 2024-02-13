@@ -1,5 +1,4 @@
 import { MimetypeNameType } from '../server/fileHelper';
-import FileSource from '../helper/FileSource';
 import {
     AnyObjectType,
     cloneJson,
@@ -18,13 +17,13 @@ export default class Playlist extends ItemSource<PlaylistItem>{
     static SELECT_DIR_SETTING = 'playlist-list-selected-dir';
     static mimetype: MimetypeNameType = 'playlist';
     _originalJson: PlaylistType;
-    constructor(fileSource: FileSource, json: PlaylistType) {
-        super(fileSource);
+    constructor(filePath: string, json: PlaylistType) {
+        super(filePath);
         this._originalJson = cloneJson(json);
     }
-    static fromJson(fileSource: FileSource, json: PlaylistType) {
+    static fromJson(filePath: string, json: PlaylistType) {
         this.validate(json);
-        return new Playlist(fileSource, json);
+        return new Playlist(filePath, json);
     }
     get metadata() {
         return this._originalJson.metadata;
@@ -32,22 +31,22 @@ export default class Playlist extends ItemSource<PlaylistItem>{
     get items() {
         return this._originalJson.items.map((json) => {
             try {
-                return PlaylistItem.fromJson(this.fileSource, json);
+                return PlaylistItem.fromJson(this.filePath, json);
             } catch (error: any) {
                 showSimpleToast('Instantiating Playlist Item', error.message);
             }
-            return PlaylistItem.fromJsonError(this.fileSource, json);
+            return PlaylistItem.fromJsonError(this.filePath, json);
         });
     }
     get maxItemId() {
         return 0;
     }
-    static async readFileToDataNoCache(fileSource: FileSource | null) {
-        return super.readFileToDataNoCache(fileSource) as
+    static async readFileToDataNoCache(filePath: string | null) {
+        return super.readFileToDataNoCache(filePath) as
             Promise<Playlist | null | undefined>;
     }
-    static async readFileToData(fileSource: FileSource | null, isForceCache?: boolean) {
-        return super.readFileToData(fileSource, isForceCache) as
+    static async readFileToData(filePath: string | null, isForceCache?: boolean) {
+        return super.readFileToData(filePath, isForceCache) as
             Promise<Playlist | null | undefined>;
     }
     static async create(dir: string, name: string) {
@@ -57,7 +56,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
         try {
             if (isValidJson(str)) {
                 const json = JSON.parse(str);
-                const item = PlaylistItem.fromJson(this.fileSource, json);
+                const item = PlaylistItem.fromJson(this.filePath, json);
                 this._originalJson.items.push(item.toJson());
                 return true;
             }
@@ -70,6 +69,6 @@ export default class Playlist extends ItemSource<PlaylistItem>{
         return this._originalJson;
     }
     clone() {
-        return Playlist.fromJson(this.fileSource, this.toJson());
+        return Playlist.fromJson(this.filePath, this.toJson());
     }
 }

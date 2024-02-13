@@ -9,10 +9,10 @@ import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewImageMode({
     canvasItemImage, style,
-}: {
+}: Readonly<{
     canvasItemImage: CanvasItemImage,
     style: CSSProperties
-}) {
+}>) {
     return (
         <div className='box-editor pointer'
             style={style}
@@ -31,9 +31,9 @@ export default function BENViewImageMode({
     );
 }
 
-export function BENImageRender({ props }: {
+export function BENImageRender({ props }: Readonly<{
     props: CanvasItemImagePropsType,
-}) {
+}>) {
     try {
         CanvasItemImage.validate(props);
     } catch (error) {

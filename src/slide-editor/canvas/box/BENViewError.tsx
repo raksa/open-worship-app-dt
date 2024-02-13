@@ -3,11 +3,9 @@ import appProvider from '../../../server/appProvider';
 import CanvasController from '../CanvasController';
 import CanvasItem from '../CanvasItem';
 
-export default function BENViewError({
-    canvasItem,
-}: {
+export default function BENViewError({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
-}) {
+}>) {
     return (
         <div className='box-editor pointer'
             style={canvasItem.getBoxStyle()}

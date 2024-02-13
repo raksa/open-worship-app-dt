@@ -1,11 +1,11 @@
-import React from 'react';
+import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const SlideItemEditorGround = React.lazy(() => {
+const SlideItemEditorGround = lazy(() => {
     return import('./slide-editor/SlideItemEditorGround');
 });
-const AppEditingLeft = React.lazy(() => {
+const AppEditingLeft = lazy(() => {
     return import('./AppEditingLeft');
 });
 

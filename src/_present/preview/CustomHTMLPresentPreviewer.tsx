@@ -12,11 +12,13 @@ type CustomElement<T, K extends string> = Partial<T & DOMAttributes<T> & {
 } & CustomEvents<`on${K}`>>;
 declare global {
     // eslint-disable-next-line no-unused-vars
-    namespace JSX {
+    namespace React.JSX {
         // eslint-disable-next-line no-unused-vars
         interface IntrinsicElements {
-            ['mini-present-previewer']: CustomElement<CustomHTMLPresentPreviewer,
-                'FTScroll' | 'VerseHover' | 'VerseSelect'>;
+            ['mini-present-previewer']: CustomElement<
+                CustomHTMLPresentPreviewer, 'FTScroll' |
+                'VerseHover' | 'VerseSelect'
+            >;
         }
     }
 }
@@ -40,7 +42,12 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.presentId > -1) {
-                const presentManager = PresentManager.getInstance(this.presentId);
+                const presentManager = PresentManager.getInstance(
+                    this.presentId,
+                );
+                if (presentManager === null) {
+                    return;
+                }
                 presentManager.width = width;
                 presentManager.height = height;
             }
@@ -56,6 +63,9 @@ export default class CustomHTMLPresentPreviewer extends HTMLElement {
         if (idStr !== null) {
             this.presentId = +idStr;
             const presentManager = PresentManager.getInstance(this.presentId);
+            if (presentManager === null) {
+                return;
+            }
             presentManager.registerEventListener(['resize'], () => {
                 this.resize();
             });

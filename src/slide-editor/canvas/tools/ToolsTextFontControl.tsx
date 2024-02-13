@@ -1,13 +1,13 @@
+import { useState } from 'react';
 import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
-import { useState } from 'react';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 
-export default function ToolsTextFontControl({ canvasItemText }: {
+export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
-}) {
+}>) {
     return (
         <Tool title='Font Size'>
             <FontSize canvasItemText={canvasItemText} />
@@ -16,9 +16,9 @@ export default function ToolsTextFontControl({ canvasItemText }: {
         </Tool>
     );
 }
-function FontSize({ canvasItemText }: {
+function FontSize({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
-}) {
+}>) {
     const [localFontSize, setLocalFontSize] = useState(
         canvasItemText.props.fontSize);
     useAppEffect(() => {
@@ -43,7 +43,7 @@ function FontSize({ canvasItemText }: {
                 }} >
                 <option>--</option>
                 {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
-                    .reverse().map((n, i) => {
+                    .reverse().map((n) => {
                         return <option key={n}
                             value={n}>{n}px</option>;
                     })}
@@ -51,9 +51,9 @@ function FontSize({ canvasItemText }: {
         </div>
     );
 }
-function FontFamily({ canvasItemText }: {
+function FontFamily({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
-}) {
+}>) {
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(
         canvasItemText.props.fontFamily || '');
@@ -97,14 +97,13 @@ function FontFamily({ canvasItemText }: {
 }
 
 function FontWeight({
-    fontFamily, fontWeight,
-    fontList, canvasItemText,
-}: {
+    fontFamily, fontWeight, fontList, canvasItemText,
+}: Readonly<{
     fontWeight: string,
     fontFamily: string,
     fontList: FontListType,
     canvasItemText: CanvasItemText,
-}) {
+}>) {
     const [localFontWeight, setLocalFontWeight] = useState(fontWeight);
     useAppEffect(() => {
         setLocalFontWeight(fontWeight);

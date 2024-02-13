@@ -62,7 +62,9 @@ export const setFlexSizeSetting = (fSizeName: string,
         const dataFSizeKey = item.getAttribute('data-fs');
         if (dataFSizeKey !== null) {
             const key = dataFSizeKeyToKey(fSizeName, dataFSizeKey);
-            flexSize[key][0] = item.style.flex;
+            if (flexSize[key]) {
+                flexSize[key][0] = item.style.flex;
+            }
         }
     });
     setSetting(settingString, JSON.stringify(flexSize));

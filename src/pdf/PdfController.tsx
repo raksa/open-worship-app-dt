@@ -1,6 +1,7 @@
 import pdfjsLibType, {
     PDFDocumentProxy,
 } from 'pdfjs-dist';
+import appProvider from '../server/appProvider';
 
 export type PdfImageDataType = {
     width: number;
@@ -13,21 +14,11 @@ const mapper = new Map<string, PdfImageDataType[]>();
 export default class PdfController {
     static _instance: PdfController | null = null;
     static pdfjsLib: typeof pdfjsLibType | null = null;
-    async getPdfjsLib() {
-        if (PdfController.pdfjsLib === null) {
-            const moduleLocation = 'pdfjs-dist/build/pdf';
-            // TODO: check jit import
-            const pdfjsLib = await import(moduleLocation) as typeof pdfjsLibType;
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js';
-            PdfController.pdfjsLib = pdfjsLib;
-        }
-        return PdfController.pdfjsLib;
-    }
     async genPdfImages(pdfPath: string) {
         if (mapper.has(pdfPath)) {
             return mapper.get(pdfPath) as PdfImageDataType[];
         }
-        const pdfjsLib = await this.getPdfjsLib();
+        const pdfjsLib = appProvider.pdfUtils.pdfjsLib;
         const loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
         const pdfImageDataList = await this._genImages(pdf);

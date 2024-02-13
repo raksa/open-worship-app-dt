@@ -1,6 +1,6 @@
 import './Background.scss';
 
-import React from 'react';
+import { lazy } from 'react';
 import {
     useStateSettingString,
 } from '../helper/settingHelper';
@@ -14,13 +14,13 @@ import {
     usePBGMEvents,
 } from '../_present/presentEventHelpers';
 
-const BackgroundColors = React.lazy(() => {
+const BackgroundColors = lazy(() => {
     return import('./BackgroundColors');
 });
-const BackgroundImages = React.lazy(() => {
+const BackgroundImages = lazy(() => {
     return import('./BackgroundImages');
 });
-const BackgroundVideos = React.lazy(() => {
+const BackgroundVideos = lazy(() => {
     return import('./BackgroundVideos');
 });
 
@@ -33,14 +33,15 @@ const tabTypeList = [
 type TabType = typeof tabTypeList[number][0];
 export default function Background() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
-        'background-tab', 'image');
+        'background-tab', 'image',
+    );
     usePBGMEvents(['update']);
     const bgSrcList = PresentBGManager.getBGSrcList();
     const toHLS = (type: BackgroundType) => {
-        const b = Object.values(bgSrcList).some((src) => {
+        const isSelected = Object.values(bgSrcList).some((src) => {
             return src.type === type;
         });
-        return b ? 'nav-highlight-selected' : undefined;
+        return isSelected ? 'nav-highlight-selected' : undefined;
     };
     return (
         <div className='background w-100 d-flex flex-column'>
@@ -61,9 +62,9 @@ export default function Background() {
     );
 }
 
-export function RenderPresentIds({ ids }: {
+export function RenderPresentIds({ ids }: Readonly<{
     ids: number[],
-}) {
+}>) {
     return (
         <div style={{
             position: 'absolute',

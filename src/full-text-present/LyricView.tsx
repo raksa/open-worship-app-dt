@@ -4,13 +4,13 @@ import LyricItem from '../lyric-list/LyricItem';
 
 export default function LyricView({
     index, lyricItem, lyricItems, onLyricChange, onClose,
-}: {
+}: Readonly<{
     index: number,
     lyricItem: LyricItem,
     lyricItems: LyricItem[],
     onLyricChange: (lyricPresent: LyricItem, index: number) => void,
     onClose: (index: number) => void,
-}) {
+}>) {
     return (
         <div className='lyric-view flex-fill'>
             <div className='input-group'>

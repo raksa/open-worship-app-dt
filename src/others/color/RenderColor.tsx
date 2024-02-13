@@ -15,12 +15,12 @@ function showContextMenu(event: any, color: AppColorType) {
 export default function RenderColor({
     name, color, isSelected,
     onClick,
-}: {
+}: Readonly<{
     name: string,
     color: AppColorType,
     isSelected?: boolean,
     onClick?: (event: MouseEvent, color: AppColorType) => void,
-}) {
+}>) {
     return (
         <div title={name}
             draggable

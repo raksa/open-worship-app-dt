@@ -1,6 +1,7 @@
+import { Stats } from 'node:fs';
+
 import appProvider from './appProvider';
 import FileSource from '../helper/FileSource';
-import { Stats } from 'fs';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from '../helper/errorHelpers';
 
@@ -10,6 +11,22 @@ import mimeSlide from './mime/slide-types.json';
 import mimeImage from './mime/image-types.json';
 import mimePlaylist from './mime/playlist-types.json';
 import mimeVideo from './mime/video-types.json';
+
+const appMimeTypesMapper = {
+    bible: mimeBible,
+    lyric: mimeLyric,
+    slide: mimeSlide,
+};
+const _mimeTypes = Object.values(appMimeTypesMapper) as AppMimetypeType[][];
+const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
+    const exts = cur.map((mimeType) => {
+        return mimeType.extensions;
+    }).reduce((acc1, cur1) => {
+        return acc1.concat(cur1);
+    }, []);
+    return acc.concat(exts);
+}, []);
+
 const mimeTypesMapper = {
     bible: mimeBible,
     lyric: mimeLyric,
@@ -31,6 +48,12 @@ export type FileMetadataType = {
     fileName: string,
     appMimetype: AppMimetypeType,
 };
+
+export function checkIsAppFile(fileName: string) {
+    const ext = extractExtension(fileName);
+    const isAppFile = appExtensions.includes(ext);
+    return isAppFile;
+}
 
 export const pathSeparator = appProvider.pathUtils.sep;
 export function pathJoin(filePath: string, fileName: string) {
@@ -141,18 +164,18 @@ export type FileResultType = {
     filePath: string,
 };
 
-function fsFilePromise<T>(fn: Function, ...args: any[]): Promise<T> {
+function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
     return new Promise<T>((resolve, reject) => {
         args = args || [];
-        args.push(function (error: any, ...args1: any[]) {
+        args.push(function (error: any, ...args1: any) {
             if (error) {
                 reject(error);
             } else {
                 args1 = args1 || [];
-                resolve.apply(null, args1 as any);
+                (resolve as any)(...args1);
             }
         });
-        fn.apply(null, args);
+        fn(...args);
     });
 }
 function _fsStat(filePath: string) {
@@ -170,10 +193,14 @@ function _fsReaddir(dirPath: string) {
     return fsFilePromise<string[]>(appProvider.fileUtils.readdir, dirPath);
 }
 function _fsReadFile(filePath: string, options?: any) {
-    return fsFilePromise<string>(appProvider.fileUtils.readFile, filePath, options);
+    return fsFilePromise<string>(
+        appProvider.fileUtils.readFile, filePath, options,
+    );
 }
 function _fsWriteFile(filePath: string, data: string, options?: any) {
-    return fsFilePromise<void>(appProvider.fileUtils.writeFile, filePath, data, options);
+    return fsFilePromise<void>(
+        appProvider.fileUtils.writeFile, filePath, data, options,
+    );
 }
 function _fsRename(oldPath: string, newPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
@@ -184,7 +211,9 @@ function _fsUnlink(filePath: string) {
 function _fsCopyFile(src: string, dest: string) {
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
 }
-async function _fsCheckExist(isFile: boolean, filePath: string, fileName?: string) {
+async function _fsCheckExist(
+    isFile: boolean, filePath: string, fileName?: string,
+) {
     if (!filePath) {
         return false;
     }
@@ -260,8 +289,9 @@ export async function fsListDirectories(dirPath: string) {
     });
 }
 
-export async function fsListFilesWithMimetype(dir: string,
-    mimetype: MimetypeNameType) {
+export async function fsListFilesWithMimetype(
+    dir: string, mimetype: MimetypeNameType,
+) {
     if (!dir) {
         return [];
     }
@@ -274,7 +304,7 @@ export async function fsListFilesWithMimetype(dir: string,
             return !!d;
         }) as FileMetadataType[];
         return matchedFiles.map((fileMetadata) => {
-            return FileSource.getInstance(dir, fileMetadata.fileName);
+            return FileSource.getInstance(dir, fileMetadata.fileName).filePath;
         });
     } catch (error) {
         handleError(error);
@@ -290,9 +320,6 @@ export function fsCreateDir(dirPath: string) {
 export async function fsWriteFile(filePath: string, txt: string) {
     if (await fsCheckDirExist(filePath)) {
         throw new Error(`${filePath} is not a directory`);
-    }
-    if (await fsCheckFileExist(filePath)) {
-        throw new Error('File exist');
     }
     await _fsWriteFile(filePath, txt, {
         encoding: 'utf8',

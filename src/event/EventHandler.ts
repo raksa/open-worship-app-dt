@@ -25,7 +25,7 @@ export default class EventHandler<T extends string> {
         }
         while (this._propEvent.length) {
             const event = this._propEvent.shift();
-            if(event !== undefined){
+            if (event !== undefined) {
                 this._checkOnEvent(event.eventName, event.data);
             }
         }

@@ -1,28 +1,24 @@
 import './Presenting.scss';
 
-import React from 'react';
+import { lazy } from 'react';
 import {
-    useFullTextOpening,
-    useSlideSelecting,
+    useFullTextOpening, useSlideSelecting,
 } from '../event/PreviewingEventListener';
 import {
     useSlideItemSelecting,
 } from '../event/SlideListEventListener';
 import {
-    getSetting,
-    useStateSettingString,
+    getSetting, useStateSettingString,
 } from '../helper/settingHelper';
-import TabRender, {
-    genTabBody,
-} from '../others/TabRender';
+import TabRender, { genTabBody } from '../others/TabRender';
 
-const SlidePreviewer = React.lazy(() => {
+const SlidePreviewer = lazy(() => {
     return import('./items/SlidePreviewer');
 });
-const FullTextPresentController = React.lazy(() => {
-    return import('../full-text-present/FullTextPresentController');
+const FullTextPreviewer = lazy(() => {
+    return import('../full-text-present/FullTextPreviewer');
 });
-const PresentAlertController = React.lazy(() => {
+const PresentAlertController = lazy(() => {
     return import('../present-alert/PresentAlertController');
 });
 
@@ -36,7 +32,7 @@ export function getIsShowingFTPreviewer() {
 
 const tabTypeList = [
     ['s', 'Slides', SlidePreviewer],
-    ['f', 'Full Text', FullTextPresentController],
+    ['f', 'Full Text', FullTextPreviewer],
     ['a', 'Alert', PresentAlertController],
 ] as const;
 type TabType = typeof tabTypeList[number][0];

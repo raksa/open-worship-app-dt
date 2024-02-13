@@ -31,14 +31,16 @@ export default function OnlineBibleItem({
                 onProgress: (percentage) => {
                     setDownloadingProgress(percentage);
                 },
-                onDone: async (error, filePath) => {
-                    if (error) {
-                        handleError(error);
-                    } else {
-                        await extractDownloadedBible(filePath as string);
-                        onDownloaded();
-                    }
-                    setDownloadingProgress(null);
+                onDone: (error, filePath) => {
+                    (async () => {
+                        if (error) {
+                            handleError(error);
+                        } else {
+                            await extractDownloadedBible(filePath as string);
+                            onDownloaded();
+                        }
+                        setDownloadingProgress(null);
+                    })();
                 },
             },
         });
@@ -51,8 +53,7 @@ export default function OnlineBibleItem({
                     (<div className='float-end'>
                         <button className='btn btn-info'
                             onClick={onDownloadHandler}>
-                            Download
-                            <i className='bi bi-cloud-arrow-down' />
+                            Download <i className='bi bi-cloud-arrow-down' />
                         </button>
                     </div>) : (<div>
                         <div className='progress'>

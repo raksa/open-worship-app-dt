@@ -2,9 +2,9 @@ import {
     useGetBibleWithStatus,
 } from '../helper/bible-helpers/serverBibleHelpers';
 
-export default function BibleSelectOption({ bibleKey }: {
+export default function BibleSelectOption({ bibleKey }: Readonly<{
     bibleKey: string,
-}) {
+}>) {
     const bibleStatus = useGetBibleWithStatus(bibleKey);
     if (bibleStatus === null) {
         return (

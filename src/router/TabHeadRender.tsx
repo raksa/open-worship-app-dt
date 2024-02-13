@@ -8,10 +8,10 @@ import {
 
 export default function TabRender({
     tabs, className = '',
-}: {
+}: Readonly<{
     tabs: TabOptionType[],
     className?: string,
-}) {
+}>) {
     const navigate = useNavigate();
     const location = useLocation();
     const _renderItem = renderItem.bind(null, { navigate, location });
@@ -29,9 +29,6 @@ function renderItem(
         routePath, checkIsActive,
     }: TabOptionType,
 ) {
-    const pathArray = location.pathname.split('/').filter((item) => {
-        return item !== '';
-    });
     const isActive = !!checkIsActive?.(routeProps);
     return (<li key={title}
         className={'nav-item ' + (tabClassName || '')}>

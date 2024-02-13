@@ -1,7 +1,7 @@
+import { useCallback } from 'react';
 import DownloadedBibleItem from './DownloadedBibleItem';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
-import { useCallback } from 'react';
 
 type BibleInfoType = {
     isUpdatable: boolean;
@@ -13,14 +13,12 @@ type BibleInfoType = {
     isDownloading: boolean;
 };
 export default function SettingDownloadedBible({
-    onlineBibleInfoList,
-    downloadedBibleInfoList,
-    setDownloadedBibleInfoList,
-}: {
+    onlineBibleInfoList, downloadedBibleInfoList, setDownloadedBibleInfoList,
+}: Readonly<{
     onlineBibleInfoList: BibleListType,
     downloadedBibleInfoList: BibleListType,
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
-}) {
+}>) {
     if (downloadedBibleInfoList === null) {
         return (
             <div>Loading...</div>
@@ -33,11 +31,11 @@ export default function SettingDownloadedBible({
     }
     const bibleInfoList = downloadedBibleInfoList
         .map<BibleInfoType>((bibleInfo) => {
-            const foundBibleInfo = onlineBibleInfoList &&
+            const foundBibleInfo = onlineBibleInfoList ?
                 onlineBibleInfoList.find((bible1) => {
                     return bible1.key === bibleInfo.key &&
                         bible1.version >= bibleInfo.version;
-                });
+                }) : undefined;
             return {
                 isDownloading: false,
                 ...bibleInfo,
@@ -52,8 +50,7 @@ export default function SettingDownloadedBible({
                     onClick={() => {
                         setDownloadedBibleInfoList(null);
                     }}>
-                    <i className='bi bi-arrow-clockwise' />
-                    Refresh
+                    <i className='bi bi-arrow-clockwise' /> Refresh
                 </button>
             </div>
             <ul className='list-group d-flex flex-fill'>
@@ -77,14 +74,13 @@ export default function SettingDownloadedBible({
 }
 
 function RenderItem({
-    bibleInfoList, bibleInfo, index,
-    setDownloadedBibleInfoList,
-}: {
+    bibleInfoList, bibleInfo, index, setDownloadedBibleInfoList,
+}: Readonly<{
     bibleInfoList: BibleInfoType[],
     bibleInfo: BibleInfoType,
     index: number,
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
-}) {
+}>) {
     const onDownloadedCallback = useCallback(() => {
         setDownloadedBibleInfoList(null);
     }, [setDownloadedBibleInfoList]);

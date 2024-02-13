@@ -1,12 +1,12 @@
 import { VAlignmentType, HAlignmentType } from '../canvasHelpers';
 
-export default function ToolAlign({ onData, isText }: {
+export default function ToolAlign({ onData, isText }: Readonly<{
     onData: (data: {
         verticalAlignment?: VAlignmentType,
         horizontalAlignment?: HAlignmentType,
     }) => void,
     isText?: boolean,
-}) {
+}>) {
     return (
         <div>
             <button className='btn btn-info' onClick={() => {

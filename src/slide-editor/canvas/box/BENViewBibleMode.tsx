@@ -1,17 +1,17 @@
 import { CSSProperties } from 'react';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import CanvasController from '../CanvasController';
-import CanvasItemBible, {
+import CanvasItemBibleItem, {
     CanvasItemBiblePropsType,
-} from '../CanvasItemBible';
+} from '../CanvasItemBibleItem';
 import { BENViewErrorRender } from './BENViewError';
 
 export default function BENViewBibleMode({
     canvasItemBible, style,
-}: {
-    canvasItemBible: CanvasItemBible,
+}: Readonly<{
+    canvasItemBible: CanvasItemBibleItem,
     style: CSSProperties
-}) {
+}>) {
     return (
         <div className='box-editor pointer'
             style={style}
@@ -31,11 +31,11 @@ export default function BENViewBibleMode({
     );
 }
 
-export function BENBibleRender({ props }: {
+export function BENBibleRender({ props }: Readonly<{
     props: CanvasItemBiblePropsType,
-}) {
+}>) {
     try {
-        CanvasItemBible.validate(props);
+        CanvasItemBibleItem.validate(props);
     } catch (error) {
         return (
             <BENViewErrorRender />
@@ -44,7 +44,7 @@ export function BENBibleRender({ props }: {
     const bibleRenderedList = props.bibleRenderedList;
     return (
         <div className='w-100 h-100'
-            style={CanvasItemBible.genStyle(props)}>
+            style={CanvasItemBibleItem.genStyle(props)}>
             {bibleRenderedList.map((bibleRendered) => {
                 return (
                     <div key={bibleRendered.title}>

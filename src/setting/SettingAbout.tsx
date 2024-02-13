@@ -1,22 +1,13 @@
 import BibleItem from '../bible-list/BibleItem';
 import {
-    useBibleItemRenderText,
-    useBibleItemToInputText,
-} from '../helper/bible-helpers/bibleRenderHelpers';
+    useBibleItemPropsToInputText, useBibleItemRenderText,
+} from '../bible-list/bibleItemHelpers';
 
 export default function SettingAbout() {
     const bookKey = 'PSA';
-    const text = useBibleItemRenderText(BibleItem.fromJson({
-        id: -1,
-        bibleKey: 'KJV',
-        target: {
-            book: bookKey, chapter: 150,
-            startVerse: 6,
-            endVerse: 6,
-        },
-        metadata: {},
-    }));
-    const title = useBibleItemToInputText('KJV', bookKey, 150, 6, 6);
+    const bibleItem = BibleItem.fromData('KJV', bookKey, 150, 6, 6);
+    const text = useBibleItemRenderText(bibleItem);
+    const title = useBibleItemPropsToInputText('KJV', bookKey, 150, 6, 6);
     const onClick = () => {
         const url = 'https://github.com/OpenWorshipApp/open-worship-app-dt';
         window.open(url, '_blank');
@@ -32,13 +23,13 @@ export default function SettingAbout() {
                     KJV|{title}
                 </div>
                 <div className={'card-body bg-transparent '
-                    + 'border-success selectable-text'}>
+                    + 'border-success app-selectable-text'}>
                     {text}
                 </div>
             </div>
             <div className='alert alert-info'>
-                <span title='Need translation'>(*T)</span>
-                This is an open-source presentation app for worship service.
+                <span title='Need translation'>(*T)</span> This is an
+                open-source presentation app for worship service.
                 Official Github repo here: <button className='btn btn-success'
                     onClick={onClick}
                 >https://github.com/OpenWorshipApp/open-worship-app-dt</button>

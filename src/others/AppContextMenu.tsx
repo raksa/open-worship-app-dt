@@ -1,8 +1,8 @@
 import './AppContextMenu.scss';
 
+import { ReactElement, useState } from 'react';
 import KeyboardEventListener from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
-import { ReactElement, useState } from 'react';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
@@ -130,9 +130,9 @@ export default function AppContextMenu() {
     );
 }
 
-function ContextMenuItem({ item }: {
+function ContextMenuItem({ item }: Readonly<{
     item: ContextMenuItemType,
-}) {
+}>) {
     return (
         <div className={'app-context-menu-item'
             + ` ${item.disabled ? 'disabled' : ''}`}

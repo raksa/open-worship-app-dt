@@ -1,13 +1,13 @@
 export default function BibleViewSetting({
     fontSize, setFontSize,
     minFontSize, maxFontSize, stepFontSize,
-}: {
+}: Readonly<{
     minFontSize: number,
     maxFontSize: number,
     stepFontSize: number,
     fontSize: number,
     setFontSize: (fontSize: number) => void,
-}) {
+}>) {
     return (
         <div className='bible-view-setting'>
             <div className='input-group d-flex'>

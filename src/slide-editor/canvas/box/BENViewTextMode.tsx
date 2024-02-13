@@ -8,12 +8,10 @@ import CanvasItemText, {
 } from '../CanvasItemText';
 import { BENViewErrorRender } from './BENViewError';
 
-export default function BENViewTextMode({
-    canvasItemText, style,
-}: {
+export default function BENViewTextMode({ canvasItemText, style }: Readonly<{
     canvasItemText: CanvasItemText,
     style: CSSProperties
-}) {
+}>) {
     return (
         <div className='box-editor pointer'
             style={style}
@@ -32,9 +30,9 @@ export default function BENViewTextMode({
     );
 }
 
-export function BENTextRender({ props }: {
+export function BENTextRender({ props }: Readonly<{
     props: CanvasItemTextPropsType,
-}) {
+}>) {
     try {
         CanvasItemText.validate(props);
     } catch (error) {
