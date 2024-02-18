@@ -62,7 +62,7 @@ class InitDBOpeningQueue {
 }
 
 export abstract class IndexedDbController implements DbControllerInterface {
-    static _instance: IndexedDbController | null = null;
+    private static _instance: IndexedDbController | null = null;
     abstract get storeName(): string;
     private _initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
     static instantiate(): IndexedDbController {

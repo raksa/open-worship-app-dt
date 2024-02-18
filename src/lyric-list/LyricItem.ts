@@ -2,7 +2,7 @@ import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { log } from '../helper/loggerHelpers';
+import { warn } from '../helper/loggerHelpers';
 
 export type LyricItemType = {
     id: number,
@@ -14,14 +14,14 @@ export type LyricItemType = {
 export default class LyricItem extends ItemBase
     implements DragInf<LyricItemType> {
     _originalJson: Readonly<LyricItemType>;
-    static SELECT_SETTING_NAME = 'lyric-item-selected';
+    static readonly SELECT_SETTING_NAME = 'lyric-item-selected';
     id: number;
     filePath: string;
     isCopied: boolean;
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: LyricItem | null = null;
     editingCacheManager: LyricEditingCacheManager;
-    static _cache = new Map<string, LyricItem>();
+    private static _cache = new Map<string, LyricItem>();
     constructor(id: number, filePath: string,
         json: LyricItemType,
         editingCacheManager?: LyricEditingCacheManager) {
@@ -113,7 +113,7 @@ export default class LyricItem extends ItemBase
     }
     static validate(json: AnyObjectType) {
         if (!json.title || !json.content) {
-            log(json);
+            warn(json);
             throw new Error('Invalid lyric item data');
         }
     }

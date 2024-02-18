@@ -30,7 +30,7 @@ const settingName = 'present-slide-';
 export default class PresentSlideManager extends
     EventHandler<PresentSlideManagerEventType>
     implements PresentManagerInf {
-    static eventNamePrefix: string = 'present-slide-m';
+    static readonly eventNamePrefix: string = 'present-slide-m';
     readonly presentId: number;
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;

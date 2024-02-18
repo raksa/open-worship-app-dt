@@ -7,7 +7,7 @@ import {
 } from '../helper/settingHelper';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
-import { log } from '../helper/loggerHelpers';
+import { warn } from '../helper/loggerHelpers';
 import {
     BibleTargetType, bibleRenderHelper,
 } from './bibleRenderHelpers';
@@ -15,9 +15,11 @@ import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
 import { copyToClipboard } from '../server/appHelper';
 
+const BIBLE_PRESENT_SETTING_NAME = 'bible-present';
+
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
-    static SELECT_SETTING_NAME = 'bible-item-selected';
+    static readonly SELECT_SETTING_NAME = 'bible-item-selected';
     _originalJson: BibleItemType;
     id: number;
     filePath?: string;
@@ -57,8 +59,8 @@ export default class BibleItem extends ItemBase
             target: {
                 bookKey: '',
                 chapter: 0,
-                startVerse: 0,
-                endVerse: 0,
+                verseStart: 0,
+                verseEnd: 0,
             },
             metadata: {},
         }, filePath);
@@ -66,8 +68,8 @@ export default class BibleItem extends ItemBase
         return item;
     }
     static fromData(
-        bibleKey: string, bookKey: string, chapter: number, startVerse: number,
-        endVerse: number
+        bibleKey: string, bookKey: string, chapter: number, verseStart: number,
+        verseEnd: number
     ) {
         return BibleItem.fromJson({
             id: -1,
@@ -75,8 +77,8 @@ export default class BibleItem extends ItemBase
             target: {
                 bookKey,
                 chapter,
-                startVerse,
-                endVerse,
+                verseStart,
+                verseEnd,
             },
             metadata: {},
         });
@@ -99,9 +101,9 @@ export default class BibleItem extends ItemBase
             !json.target || typeof json.target !== 'object' ||
             !json.target.bookKey ||
             typeof json.target.chapter !== 'number' ||
-            typeof json.target.startVerse !== 'number' ||
-            typeof json.target.endVerse !== 'number') {
-            log(json);
+            typeof json.target.verseStart !== 'number' ||
+            typeof json.target.verseEnd !== 'number') {
+            warn(json);
             throw new Error('Invalid bible item data');
         }
     }
@@ -146,11 +148,11 @@ export default class BibleItem extends ItemBase
         const jsonData = bibleItems.map((bibleItem) => {
             return bibleItem.toJson();
         });
-        setSetting('bible-present', JSON.stringify(jsonData));
+        setSetting(BIBLE_PRESENT_SETTING_NAME, JSON.stringify(jsonData));
     }
     static getBiblePresentingSetting() {
         try {
-            const str = getSetting('bible-present', '');
+            const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
             if (isValidJson(str, true)) {
                 return JSON.parse(str).map((item: any) => {
                     return BibleItem.fromJson(item);
@@ -173,10 +175,12 @@ export default class BibleItem extends ItemBase
             || `😟Unable to render title for ${bibleVerseKey}`;
     }
     async toText() {
-        const bibleVerseKey = bibleRenderHelper
-            .toBibleVersesKey(this.bibleKey, this.target);
-        return await bibleRenderHelper.toText(bibleVerseKey) ||
-            `😟Unable to render text for ${bibleVerseKey}`;
+        const bibleVerseKey = bibleRenderHelper.
+            toBibleVersesKey(this.bibleKey, this.target);
+        return (
+            await bibleRenderHelper.toText(bibleVerseKey) ||
+            `😟Unable to render text for ${bibleVerseKey}`
+        );
     }
     async copyTitleToClipboard() {
         const title = await this.toTitle();

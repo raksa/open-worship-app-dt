@@ -21,14 +21,14 @@ export type SlideItemType = {
 
 export default class SlideItem extends ItemBase implements DragInf<string> {
     _json: SlideItemType;
-    static SELECT_SETTING_NAME = 'slide-item-selected';
+    static readonly SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     filePath: string;
     isCopied: boolean;
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
     editingCacheManager: SlideEditingCacheManager;
-    static _cache = new Map<string, SlideItem>();
+    private static _cache = new Map<string, SlideItem>();
     constructor(
         id: number, filePath: string, json: SlideItemType,
         editingCacheManager?: SlideEditingCacheManager,

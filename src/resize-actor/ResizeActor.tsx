@@ -6,10 +6,7 @@ import FlexResizeActor, {
     ResizeKindType,
 } from './FlexResizeActor';
 import {
-    DisabledType,
-    getFlexSizeSetting,
-    keyToDataFSizeKey,
-    setDisablingSetting,
+    DisabledType, getFlexSizeSetting, keyToDataFSizeKey, setDisablingSetting,
     setFlexSizeSetting,
 } from './flexSizeHelpers';
 

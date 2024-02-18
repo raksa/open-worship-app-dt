@@ -43,25 +43,24 @@ function cleanBibleItems(item: any): any {
     }
     return item;
 }
+function getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
+    const prefixSetting = getSettingPrefix(windowMode);
+    return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
+}
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
-    static _instance: BibleItemViewController | null = null;
-    static getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
-        const prefixSetting = getSettingPrefix(windowMode);
-        return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
-    }
+    private static _instance: BibleItemViewController | null = null;
     get bibleItems(): any {
+        const settingName = getBibleItemsPreviewSettingName(null);
         try {
-            const settingName = BibleItemViewController.
-                getBibleItemsPreviewSettingName(null);
             const jsonStr = getSetting(settingName) || '[]';
             const json = JSON.parse(jsonStr);
             return parseBibleItem(json);
         } catch (error) {
             handleError(error);
         }
-        setSetting('bibleItems', '[]');
+        setSetting(settingName, '[]');
         return [];
     }
     set bibleItems(newBibleItems: BibleItem[]) {
@@ -69,8 +68,7 @@ export default class BibleItemViewController
             clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
         const jsonStr = JSON.stringify(stringifyBibleItem(newBibleItems));
-        const settingName = BibleItemViewController.
-            getBibleItemsPreviewSettingName(null);
+        const settingName = getBibleItemsPreviewSettingName(null);
         setSetting(settingName, jsonStr);
         this.fireUpdateEvent();
     }
@@ -238,7 +236,8 @@ export default class BibleItemViewController
 export function useBIVCUpdateEvent(
     bibleItemViewController: BibleItemViewController) {
     const [bibleItems, setBibleItems] = useState(
-        bibleItemViewController.bibleItems);
+        bibleItemViewController.bibleItems,
+    );
     useAppEffect(() => {
         const update = () => {
             setBibleItems(bibleItemViewController.bibleItems);

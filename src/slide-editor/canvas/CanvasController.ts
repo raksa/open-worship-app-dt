@@ -4,8 +4,7 @@ import CanvasItem, {
     CanvasItemPropsType,
 } from './CanvasItem';
 import {
-    getSetting,
-    setSetting,
+    getSetting, setSetting,
 } from '../../helper/settingHelper';
 import FileSource from '../../helper/FileSource';
 import CanvasItemText from './CanvasItemText';
@@ -14,16 +13,17 @@ import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 import {
-    CanvasItemMediaPropsType,
-    CCEventType,
+    CanvasItemMediaPropsType, CCEventType,
 } from './canvasHelpers';
 import CanvasItemVideo from './CanvasItemVideo';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 
+const EDITOR_SCALE_SETTING_NAME = 'editor-scale';
+
 export default class CanvasController extends EventHandler<CCEventType> {
-    static eventNamePrefix: string = 'canvas-c';
-    static _instance: CanvasController | null = null;
+    static readonly eventNamePrefix: string = 'canvas-c';
+    private static _instance: CanvasController | null = null;
     copiedItem: CanvasItem<any> | null = null;
     _canvas: Canvas;
     _slideItem: SlideItem | null = null;
@@ -34,7 +34,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     constructor() {
         super();
         this._canvas = Canvas.genDefaultCanvas();
-        const defaultData = +(getSetting('editor-scale') || NaN);
+        const defaultData = +(getSetting(EDITOR_SCALE_SETTING_NAME) || NaN);
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }
@@ -51,7 +51,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     }
     set scale(n: number) {
         this._scale = n;
-        setSetting('editor-scale', n.toString());
+        setSetting(EDITOR_SCALE_SETTING_NAME, n.toString());
         this.addPropEvent('scale');
     }
     get isCopied() {
@@ -125,13 +125,16 @@ export default class CanvasController extends EventHandler<CCEventType> {
     async addNewMediaItem(filePath: string, event: any) {
         try {
             const fileSource = FileSource.getInstance(filePath);
-            const mediaType = fileSource.metadata?.appMimetype.mimetypeName || '';
+            const mediaType = (
+                fileSource.metadata?.appMimetype.mimetypeName || ''
+            );
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast('Insert Medias',
                     'Only image and video files are supported');
                 return;
             }
-            const rect = (event.target as HTMLDivElement).getBoundingClientRect();
+            const rect = (event.target as HTMLDivElement).
+                getBoundingClientRect();
             const x = Math.floor((event.clientX - rect.left) / this.scale);
             const y = Math.floor((event.clientY - rect.top) / this.scale);
             const newItem = await (mediaType === 'image' ?

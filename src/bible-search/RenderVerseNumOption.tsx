@@ -12,11 +12,11 @@ export default function RenderVerseNumOption({
     verseNum: number,
     verseNumText: string,
     bibleItem: BibleItem,
-    onVerseChange: (startVerse?: number, endVerse?: number) => void,
+    onVerseChange: (verseStart?: number, verseEnd?: number) => void,
 }>) {
     const { target } = bibleItem;
-    const sVerse = target.startVerse;
-    const eVerse = target.endVerse;
+    const sVerse = target.verseStart;
+    const eVerse = target.verseEnd;
     const ind = index + 1;
     const started = sVerse === ind;
     const inside = sVerse <= ind && ind <= eVerse;

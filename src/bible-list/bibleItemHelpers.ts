@@ -103,8 +103,8 @@ export function genDuplicatedMessage(list: BibleItem[],
     const duplicated = list.find(({ target: target1 }, i1) => {
         return target.bookKey === target1.bookKey &&
             target.chapter === target1.chapter &&
-            target.startVerse === target1.startVerse &&
-            target.endVerse === target1.endVerse && i !== i1;
+            target.verseStart === target1.verseStart &&
+            target.verseEnd === target1.verseEnd && i !== i1;
     });
     if (duplicated) {
         const itemNum = list.indexOf(duplicated) + 1;
@@ -145,14 +145,14 @@ export function useBibleItemRenderText(item: BibleItem, htmlID?: string) {
 
 export function useBibleItemPropsToInputText(
     bibleKey: string, book?: string | null, chapter?: number | null,
-    startVerse?: number | null, endVerse?: number | null,
+    verseStart?: number | null, verseEnd?: number | null,
 ) {
     const [text, setText] = useState<string>('');
     useAppEffect(() => {
-        toInputText(bibleKey, book, chapter, startVerse, endVerse)
+        toInputText(bibleKey, book, chapter, verseStart, verseEnd)
             .then((text1) => {
                 setText(text1);
             });
-    }, [bibleKey, book, chapter, startVerse, endVerse]);
+    }, [bibleKey, book, chapter, verseStart, verseEnd]);
     return text;
 }

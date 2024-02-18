@@ -3,7 +3,7 @@ const logLevelMapper = {
     'minimal': ['error', 'warn'],
     'critical': ['error'],
 };
-const logLevel: 'verbose' | 'minimal' | 'critical' = 'critical';
+const logLevel: 'verbose' | 'minimal' | 'critical' = 'minimal';
 const logLevelList = logLevelMapper[logLevel];
 
 function callConsole(method: string, ...args: any[]) {

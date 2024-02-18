@@ -6,7 +6,7 @@ export type RegisteredEventType<T, F> = {
 };
 
 export default class EventHandler<T extends string> {
-    static eventNamePrefix: string = 'event';
+    static readonly eventNamePrefix: string = 'event';
     private static readonly _eventHandler = new EventHandler<any>();
     private _eventListenersMapper = new Map<string, ListenerType<any>[]>();
     _propEvent: {

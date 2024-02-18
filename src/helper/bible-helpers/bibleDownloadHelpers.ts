@@ -2,8 +2,7 @@ import { handleError } from '../errorHelpers';
 import { LocaleType } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
-    get_api_url,
-    get_api_key,
+    get_api_url, get_api_key,
 } from '../../_owa-crypto/owa_crypto';
 import appProvider from '../../server/appProvider';
 import {

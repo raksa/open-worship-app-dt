@@ -4,18 +4,15 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
 import {
-    AlertType,
-    checkIsCountdownDatesEq,
-    genHtmlAlertCountdown,
-    genHtmlAlertMarquee,
-    removeAlert,
+    AlertType, checkIsCountdownDatesEq, genHtmlAlertCountdown,
+    genHtmlAlertMarquee, removeAlert,
 } from './presentAlertHelpers';
 import { sendPresentMessage } from './presentEventHelpers';
 import { PresentMessageType } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import PresentTransitionEffect
-    from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect from
+    './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 
 export type AlertDataType = {
@@ -36,7 +33,7 @@ const settingName = 'present-alert-';
 export default class PresentAlertManager
     extends EventHandler<PresentAlertEventType>
     implements PresentManagerInf {
-    static eventNamePrefix: string = 'present-alert-m';
+    static readonly eventNamePrefix: string = 'present-alert-m';
     readonly presentId: number;
     private alertData: AlertDataType = {
         marqueeData: null,
@@ -141,10 +138,16 @@ export default class PresentAlertManager
             const json = JSON.parse(str);
             Object.values(json).forEach((item: any) => {
                 const { countdownData } = item;
-                if (!(item.marqueeData === null
-                    || typeof item.marqueeData.text === 'string') ||
-                    !(countdownData === null
-                        || typeof countdownData.dateTime === 'string')) {
+                if (
+                    !(
+                        item.marqueeData === null ||
+                        typeof item.marqueeData.text === 'string'
+                    ) ||
+                    !(
+                        countdownData === null ||
+                        typeof countdownData.dateTime === 'string'
+                    )
+                ) {
                     throw new Error('Invalid alert data');
                 }
                 if (countdownData?.dateTime) {

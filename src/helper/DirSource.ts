@@ -1,11 +1,7 @@
 import EventHandler from '../event/EventHandler';
 import {
-    FileMetadataType,
-    getFileMetaData,
-    MimetypeNameType,
-    getAppMimetype,
-    fsListFiles,
-    fsCheckDirExist,
+    FileMetadataType, getFileMetaData, MimetypeNameType, getAppMimetype,
+    fsListFiles, fsCheckDirExist,
 } from '../server/fileHelper';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
@@ -16,10 +12,9 @@ export type DirSourceEventType = 'reload';
 
 export default class DirSource extends EventHandler<DirSourceEventType> {
     settingName: string;
-    static eventNamePrefix: string = 'dir-source';
-    static _fileCacheKeys: string[] = [];
-    static _cache = new Map<string, DirSource>();
-    static _objectId = 0;
+    static readonly eventNamePrefix: string = 'dir-source';
+    private static _fileCacheKeys: string[] = [];
+    private static _cache = new Map<string, DirSource>();
     checkExtraFile: ((fName: string) => FileMetadataType | null) | null = null;
     private _isDirPathValid: boolean | null = null;
     constructor(settingName: string) {

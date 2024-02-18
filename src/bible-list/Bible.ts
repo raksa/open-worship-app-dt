@@ -1,6 +1,5 @@
 import {
-    fsListFilesWithMimetype,
-    MimetypeNameType,
+    fsListFilesWithMimetype, MimetypeNameType,
 } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import {
@@ -8,9 +7,10 @@ import {
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting, getSettingPrefix } from '../helper/settingHelper';
-import BibleItem, { BibleItemType } from './BibleItem';
+import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { WindowModEnum } from '../router/routeHelpers';
+import { BibleItemType } from './bibleItemHelpers';
 
 export type BibleType = {
     items: BibleItemType[],
@@ -18,7 +18,7 @@ export type BibleType = {
 }
 const SELECT_DIR_SETTING = 'bible-list-selected-dir';
 export default class Bible extends ItemSource<BibleItem>{
-    static DEFAULT_FILE_NAME = 'Default';
+    static readonly DEFAULT_FILE_NAME = 'Default';
     _originalJson: BibleType;
     constructor(filePath: string, json: BibleType) {
         super(filePath);
@@ -166,7 +166,7 @@ export default class Bible extends ItemSource<BibleItem>{
             showSimpleToast('Moving Bible Item', error.message);
         }
     }
-    static mimetype: MimetypeNameType = 'bible';
+    static readonly mimetype: MimetypeNameType = 'bible';
     static async readFileToDataNoCache(filePath: string | null) {
         return super.readFileToDataNoCache(
             filePath,

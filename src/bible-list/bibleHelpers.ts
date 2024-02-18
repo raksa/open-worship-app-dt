@@ -36,23 +36,23 @@ async function getSelectedEditingBibleItem() {
             return null;
         }
         bibleKey = downloadedBibleInfoList[0].key;
-        setSetting('selected-bible', bibleKey);
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
     }
     return bibleKey;
 }
 export function useGetSelectedBibleKey() {
-    const [bibleKeySelected, _setBibleKeySelected] = useState<string | null>(
+    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
         null);
-    const setBibleKeySelected = (bibleKey: string | null) => {
+    const setBibleKeySelected1 = (bibleKey: string | null) => {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
-        _setBibleKeySelected(bibleKey);
+        setBibleKeySelected(bibleKey);
     };
     useAppEffect(() => {
         getSelectedEditingBibleItem().then((bibleKey) => {
-            setBibleKeySelected(bibleKey);
+            setBibleKeySelected1(bibleKey);
         });
     });
-    return [bibleKeySelected, setBibleKeySelected] as
+    return [bibleKeySelected, setBibleKeySelected1] as
         [string | null, (b: string | null) => void];
 }
 
@@ -78,8 +78,8 @@ export async function genInputText(
     if (bookKey !== null) {
         const newBook = await keyToBook(newBibleKey, bookKey);
         return toInputText(
-            newBibleKey, newBook, chapter, target?.startVerse,
-            target?.endVerse,
+            newBibleKey, newBook, chapter, target?.verseStart,
+            target?.verseEnd,
         );
     }
     return '';

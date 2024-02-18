@@ -110,8 +110,8 @@ const fullTextPresentHelper = {
                     bibleItem.target.bookKey, bibleItem.target.chapter);
                 const verseList: BibleRenderVerseType[] = [];
                 if (verses !== null) {
-                    for (let i = bibleItem.target.startVerse;
-                        i <= bibleItem.target.endVerse; i++) {
+                    for (let i = bibleItem.target.verseStart;
+                        i <= bibleItem.target.verseEnd; i++) {
                         const verseNumb = await toLocaleNumBB(bibleItem.bibleKey, i);
                         if (verseNumb !== null) {
                             verseList.push({

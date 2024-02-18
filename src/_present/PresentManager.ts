@@ -1,6 +1,7 @@
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { getWindowDim, isValidJson } from '../helper/helpers';
+import { log } from '../helper/loggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import PresentAlertManager from './PresentAlertManager';
@@ -16,7 +17,8 @@ import {
 } from './presentHelpers';
 import PresentManagerInf from './PresentManagerInf';
 import PresentSlideManager from './PresentSlideManager';
-import PresentTransitionEffect from './transition-effect/PresentTransitionEffect';
+import PresentTransitionEffect from
+    './transition-effect/PresentTransitionEffect';
 
 export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
@@ -25,7 +27,7 @@ const settingName = 'present-display-';
 export default class PresentManager
     extends EventHandler<PresentManagerEventType>
     implements PresentManagerInf {
-    static eventNamePrefix: string = 'present-m';
+    static readonly eventNamePrefix: string = 'present-m';
     readonly presentBGManager: PresentBGManager;
     readonly presentSlideManager: PresentSlideManager;
     readonly presentFTManager: PresentFTManager;
@@ -206,7 +208,7 @@ export default class PresentManager
         } else if (type === 'visible') {
             presentManager.isShowing = data?.isShowing;
         } else {
-            console.log(message);
+            log(message);
         }
     }
     static getInstanceByKey(key: string) {
@@ -309,7 +311,7 @@ export default class PresentManager
         ].includes(droppedData.type)) {
             this.presentFTManager.receivePresentDrag(droppedData);
         } else {
-            console.log(droppedData);
+            log(droppedData);
         }
     }
 }

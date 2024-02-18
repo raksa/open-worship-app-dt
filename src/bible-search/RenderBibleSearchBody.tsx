@@ -66,14 +66,14 @@ export default function RenderBibleSearchBody({
         [bibleKey, extractedInput.bookKey, setInputText],
     );
     const applyVerseSelectionCallback = useCallback(async (
-        newStartVerse?: number, newEndVerse?: number) => {
+        newverseStart?: number, newverseEnd?: number) => {
         if (bibleKey === null || extractedInput.bookKey === null) {
             return;
         }
         const book = await keyToBook(bibleKey, extractedInput.bookKey);
         const txt = await toInputText(
             bibleKey, book, extractedInput.chapter,
-            newStartVerse, newEndVerse,
+            newverseStart, newverseEnd,
         );
         setInputText(txt);
     }, [

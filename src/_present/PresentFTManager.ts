@@ -21,11 +21,12 @@ import {
 } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
+import { warn } from '../helper/loggerHelpers';
 
 export default class PresentFTManager
     extends EventHandler<PresentFTManagerEventType>
     implements PresentManagerInf {
-    static eventNamePrefix: string = 'present-ft-m';
+    static readonly eventNamePrefix: string = 'present-ft-m';
     readonly presentId: number;
     private _ftItemData: FTItemDataType | null = null;
     private static _textStyle: AnyObjectType = {};
@@ -44,7 +45,7 @@ export default class PresentFTManager
                 if (isValidJson(str, true)) {
                     const style = JSON.parse(str);
                     if (typeof style !== 'object') {
-                        console.log(style);
+                        warn(style);
                         throw new Error('Invalid style data');
                     }
                     PresentFTManager._textStyle = style;
@@ -331,7 +332,7 @@ export default class PresentFTManager
             const newFtItemData = await bibleItemToFtData([droppedData.item]);
             this.ftItemData = newFtItemData;
         } else {
-            console.log(droppedData);
+            log(droppedData);
         }
     }
     static getInstanceByPresentId(presentId: number) {

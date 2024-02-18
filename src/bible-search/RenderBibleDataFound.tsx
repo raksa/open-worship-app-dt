@@ -10,7 +10,7 @@ export default function RenderBibleDataFound({
     bibleItem, onVerseChange, onPinning,
 }: Readonly<{
     bibleItem: BibleItem,
-    onVerseChange?: (startVerse?: number, endVerse?: number) => void,
+    onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
     onPinning: () => void,
 }>) {
     const [fontSize, setFontSize] = useStateSettingNumber(

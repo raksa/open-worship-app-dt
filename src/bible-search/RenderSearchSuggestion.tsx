@@ -13,7 +13,7 @@ export default function RenderSearchSuggestion({
 }: Readonly<{
     applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (
-        newStartVerse?: number, newEndVerse?: number,
+        newverseStart?: number, newverseEnd?: number,
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
     inputText: string,
@@ -22,8 +22,8 @@ export default function RenderSearchSuggestion({
     pinningBibleItem: (bibleItem: BibleItem) => void,
 }>) {
     const onVerseChangeCallback = useCallback(
-        (newStartVerse?: number, newEndVerse?: number) => {
-            applyVerseSelection(newStartVerse, newEndVerse);
+        (newverseStart?: number, newverseEnd?: number) => {
+            applyVerseSelection(newverseStart, newverseEnd);
         },
         [applyVerseSelection],
     );

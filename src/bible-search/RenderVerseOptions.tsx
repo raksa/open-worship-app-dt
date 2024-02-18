@@ -9,7 +9,7 @@ export default function RenderVerseOptions({
     bibleItem, onVersesChange,
 }: Readonly<{
     bibleItem: BibleItem,
-    onVersesChange: (startVerse?: number, endVerse?: number) => void,
+    onVersesChange: (verseStart?: number, verseEnd?: number) => void,
 }>) {
     const verseList = useGenVerseList(bibleItem);
     useAppEffect(() => {

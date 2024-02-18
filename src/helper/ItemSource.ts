@@ -1,6 +1,5 @@
 import {
-    MimetypeNameType,
-    createNewFileDetail,
+    MimetypeNameType, createNewFileDetail,
 } from '../server/fileHelper';
 import FileSource from './FileSource';
 import {
@@ -12,11 +11,11 @@ import { showSimpleToast } from '../toast/toastHelpers';
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
 }> {
-    static SELECT_SETTING_NAME = '';
+    protected static SELECT_SETTING_NAME = '';
     SELECT_SETTING_NAME: string = '';
-    static mimetype: MimetypeNameType;
+    protected static mimetype: MimetypeNameType = 'other';
     filePath: string;
-    static _cache = new Map<string, ItemSource<any>>();
+    private static _cache = new Map<string, ItemSource<any>>();
     constructor(filePath: string) {
         this.filePath = filePath;
     }

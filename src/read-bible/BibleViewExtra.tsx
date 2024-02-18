@@ -99,9 +99,9 @@ export function BibleViewText({
 
 
 export function RefRenderer({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
-    const { bookKey: book, chapter, startVerse, endVerse } = bibleItem.target;
+    const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
     const arr: number[] = [];
-    for (let i = startVerse; i <= endVerse; i++) {
+    for (let i = verseStart; i <= verseEnd; i++) {
         arr.push(i);
     }
     return (

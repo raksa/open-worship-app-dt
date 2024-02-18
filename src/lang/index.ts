@@ -20,17 +20,19 @@ export type LanguageType = {
     flagSVG: string;
 };
 
+const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
+
 export const defaultLocal: LocaleType = 'en';
 let currentLocale: LocaleType = defaultLocal;
 export function setCurrentLocale(locale: LocaleType) {
-    setSetting('language-locale', locale);
+    setSetting(LANGUAGE_LOCALE_SETTING_NAME, locale);
     currentLocale = locale;
 }
 export function checkIsValidLocale(locale: any) {
     return locales.includes(locale);
 }
 export function getCurrentLocale() {
-    const lc = getSetting('language-locale', 'en');
+    const lc = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en');
     if (checkIsValidLocale(lc)) {
         currentLocale = lc as LocaleType;
     }

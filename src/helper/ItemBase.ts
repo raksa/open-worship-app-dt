@@ -5,7 +5,8 @@ import { AnyObjectType, cloneJson } from './helpers';
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
     abstract filePath?: string | null;
-    static SELECT_SETTING_NAME = '';
+    protected static SELECT_SETTING_NAME = '';
+    protected static copiedItem: ItemBase | null = null;
     jsonError: any;
     get isError() {
         return !!this.jsonError;
@@ -96,7 +97,9 @@ export abstract class ItemBase implements ColorNoteInf {
         return this._getSettingResult(this.SELECT_SETTING_NAME);
     }
     static setSelectedEditingItem(item: ItemBase | null) {
-        return this._setItemSetting(`${this.SELECT_SETTING_NAME}-editing`, item);
+        return this._setItemSetting(
+            `${this.SELECT_SETTING_NAME}-editing`, item,
+        );
     }
     static async getSelectedItem(): Promise<ItemBase | null | undefined> {
         throw new Error('Method not implemented.');

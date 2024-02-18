@@ -11,8 +11,8 @@ import {
 export type BibleTargetType = {
     bookKey: string,
     chapter: number,
-    startVerse: number,
-    endVerse: number,
+    verseStart: number,
+    verseEnd: number,
 };
 
 type CallbackType = (text: string | null) => void;
@@ -34,9 +34,9 @@ class BibleRenderHelper {
 
     toBibleVersesKey(bibleKey: string,
         bibleTarget: BibleTargetType) {
-        const { bookKey: book, chapter, startVerse, endVerse } = bibleTarget;
-        const txtV = `${startVerse}${startVerse !== endVerse ?
-            ('-' + endVerse) : ''}`;
+        const { bookKey: book, chapter, verseStart, verseEnd } = bibleTarget;
+        const txtV = `${verseStart}${verseStart !== verseEnd ?
+            ('-' + verseEnd) : ''}`;
         return `${bibleKey} | ${book} ${chapter}:${txtV}`;
     }
     fromBibleVerseKey(bibleVersesKey: string) {
@@ -44,13 +44,13 @@ class BibleRenderHelper {
         const bibleKey = arr[0];
         arr = arr[1].split(':');
         const [book, chapter] = arr[0].split(' ');
-        const [startVerse, endVerse] = arr[1].split('-');
+        const [verseStart, verseEnd] = arr[1].split('-');
         return {
             bibleKey,
             book,
             chapter: Number(chapter),
-            startVerse: Number(startVerse),
-            endVerse: endVerse ? Number(endVerse) : Number(startVerse),
+            verseStart: Number(verseStart),
+            verseEnd: verseEnd ? Number(verseEnd) : Number(verseStart),
         };
     }
 
@@ -70,13 +70,13 @@ class BibleRenderHelper {
         const {
             bibleKey: bible,
             book, chapter,
-            startVerse, endVerse,
+            verseStart, verseEnd,
         } = this.fromBibleVerseKey(bibleVersesKey);
         const chapterLocale = await toLocaleNumBB(bible, chapter);
-        const startVerseLocale = await toLocaleNumBB(bible, startVerse);
-        const endVerseLocale = await toLocaleNumBB(bible, endVerse);
-        const txtV = `${startVerseLocale}${startVerse !== endVerse ?
-            ('-' + endVerseLocale) : ''}`;
+        const verseStartLocale = await toLocaleNumBB(bible, verseStart);
+        const verseEndLocale = await toLocaleNumBB(bible, verseEnd);
+        const txtV = `${verseStartLocale}${verseStart !== verseEnd ?
+            ('-' + verseEndLocale) : ''}`;
         let bookKey = await keyToBook(bible, book);
         if (bookKey === null) {
             bookKey = getKJVKeyValue()[book];
@@ -101,14 +101,14 @@ class BibleRenderHelper {
         const {
             bibleKey: bible,
             book, chapter,
-            startVerse, endVerse,
+            verseStart, verseEnd,
         } = this.fromBibleVerseKey(bibleVersesKey);
         const verses = await getVerses(bible, book, chapter);
         if (!verses) {
             return null;
         }
         let txt = '';
-        for (let i = startVerse; i <= endVerse; i++) {
+        for (let i = verseStart; i <= verseEnd; i++) {
             const localNum = await toLocaleNumBB(bible, i);
             txt += ` (${localNum}): ${verses[i.toString()]}`;
         }
