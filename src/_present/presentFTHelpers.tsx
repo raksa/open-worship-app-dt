@@ -5,15 +5,15 @@ import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { getBibleInfoWithStatusList } from
     '../helper/bible-helpers/serverBibleHelpers';
-import appProviderPresent from './appProviderPresent';
 import {
     BibleItemRenderedType, LyricRenderedType,
 } from './fullTextPresentComps';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import PresentFTManager from './PresentFTManager';
 import PresentManager from './PresentManager';
-import { warn } from '../helper/loggerHelpers';
+import * as loggerHelpers from '../helper/loggerHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 const ftDataTypeList = [
     'bible-item', 'lyric',
@@ -37,23 +37,26 @@ export type FTListType = {
 
 export type PresentFTManagerEventType = 'update' | 'text-style';
 
-export const settingName = 'present-ft-';
+export const PRESENT_SETTING_NAME = 'present-ft-';
 
 const validateBible = ({ renderedList, bibleItem }: any) => {
     BibleItem.validate(bibleItem);
-    return !Array.isArray(renderedList)
-        || renderedList.some(({
-            locale, bibleKey, title, verses,
-        }: any) => {
-            return !checkIsValidLocale(locale)
-                || typeof bibleKey !== 'string'
-                || typeof title !== 'string'
-                || !Array.isArray(verses)
-                || verses.some(({ num, text }: any) => {
-                    return typeof num !== 'string'
-                        || typeof text !== 'string';
-                });
-        });
+    return (
+        !Array.isArray(renderedList) ||
+        renderedList.some(({ locale, bibleKey, title, verses }: any) => {
+            return (
+                !checkIsValidLocale(locale) ||
+                typeof bibleKey !== 'string' ||
+                typeof title !== 'string' ||
+                !Array.isArray(verses) ||
+                verses.some(({ num, text }: any) => {
+                    return (
+                        typeof num !== 'string' || typeof text !== 'string'
+                    );
+                })
+            );
+        })
+    );
 };
 const validateLyric = ({ renderedList }: any) => {
     return !Array.isArray(renderedList)
@@ -69,32 +72,36 @@ const validateLyric = ({ renderedList }: any) => {
         });
 };
 export function getFTList(): FTListType {
-    const str = getSetting(`${settingName}-ft-data`, '');
+    const settingName = `${PRESENT_SETTING_NAME}-ft-data`;
+    const str = getSetting(settingName, '');
     try {
         if (!isValidJson(str, true)) {
             return {};
         }
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
-            if (!ftDataTypeList.includes(item.type)
-                || (
+            if (
+                !ftDataTypeList.includes(item.type) ||
+                (
                     item.type === 'bible-item' &&
                     validateBible(item.bibleItemData)
-                )
-                || (item.type === 'lyric' && validateLyric(item.lyricData))) {
-                warn(item);
+                ) ||
+                (item.type === 'lyric' && validateLyric(item.lyricData))
+            ) {
+                loggerHelpers.error(item);
                 throw new Error('Invalid full-text data');
             }
         });
         return json;
     } catch (error) {
-        appProviderPresent.appUtils.handleError(error);
+        setSetting(settingName, '');
+        handleError(error);
     }
     return {};
 }
 export function setFTList(ftList: FTListType) {
     const str = JSON.stringify(ftList);
-    setSetting(`${settingName}-ft-data`, str);
+    setSetting(`${PRESENT_SETTING_NAME}-ft-data`, str);
 }
 
 function onSelectIndex(presentFTManager: PresentFTManager,

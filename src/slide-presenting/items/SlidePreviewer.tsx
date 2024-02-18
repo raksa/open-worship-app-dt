@@ -9,7 +9,6 @@ import {
 import SlidePreviewerFooter from './SlidePreviewerFooter';
 import Slide from '../../slide-list/Slide';
 import { useSlideSelecting } from '../../event/PreviewingEventListener';
-import SlideList from '../../slide-list/SlideList';
 import SlideItemsMenu from './SlideItemsMenu';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
 import { useAppEffect } from '../../helper/debuggerHelpers';
@@ -39,7 +38,9 @@ export default function SlidePreviewer() {
         });
     if (!slide) {
         return (
-            <SlideList />
+            <div className='alert alert-warning'>
+                "Node Slide Selected" please select one!
+            </div>
         );
     }
     return (

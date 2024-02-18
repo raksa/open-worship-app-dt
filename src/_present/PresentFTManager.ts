@@ -13,7 +13,7 @@ import appProviderPresent from './appProviderPresent';
 import fullTextPresentHelper from './fullTextPresentHelper';
 import { sendPresentMessage } from './presentEventHelpers';
 import {
-    PresentFTManagerEventType, FTItemDataType, settingName, getFTList,
+    PresentFTManagerEventType, FTItemDataType, PRESENT_SETTING_NAME, getFTList,
     setFTList, renderPFTManager, bibleItemToFtData,
 } from './presentFTHelpers';
 import {
@@ -21,7 +21,8 @@ import {
 } from './presentHelpers';
 import PresentManager from './PresentManager';
 import PresentManagerInf from './PresentManagerInf';
-import { warn } from '../helper/loggerHelpers';
+import * as loggerHelpers from '../helper/loggerHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export default class PresentFTManager
     extends EventHandler<PresentFTManagerEventType>
@@ -40,18 +41,18 @@ export default class PresentFTManager
             const allFTList = getFTList();
             this._ftItemData = allFTList[this.key] || null;
 
-            const str = getSetting(`${settingName}-style-text`, '');
+            const str = getSetting(`${PRESENT_SETTING_NAME}-style-text`, '');
             try {
                 if (isValidJson(str, true)) {
                     const style = JSON.parse(str);
                     if (typeof style !== 'object') {
-                        warn(style);
+                        loggerHelpers.error(style);
                         throw new Error('Invalid style data');
                     }
                     PresentFTManager._textStyle = style;
                 }
             } catch (error) {
-                appProviderPresent.appUtils.handleError(error);
+                handleError(error);
             }
         }
         this._divScrollListener = () => {
@@ -63,11 +64,12 @@ export default class PresentFTManager
         };
     }
     get isLineSync() {
-        const settingKey = `${settingName}-line-sync-${this.presentId}`;
+        const presentId = this.presentId;
+        const settingKey = `${PRESENT_SETTING_NAME}-line-sync-${presentId}`;
         return getSetting(settingKey) === 'true';
     }
     set isLineSync(isLineSync: boolean) {
-        setSetting(`${settingName}-line-sync-${this.presentId}`,
+        setSetting(`${PRESENT_SETTING_NAME}-line-sync-${this.presentId}`,
             `${isLineSync}`);
     }
     get div() {
@@ -215,7 +217,7 @@ export default class PresentFTManager
     static fireUpdateEvent() {
         this.addPropEvent('update');
     }
-    static maxTextStyleTextFontSize = 200;
+    static readonly maxTextStyleTextFontSize = 200;
     static get textStyleTextFontSize() {
         const textStyle = this.textStyle;
         return typeof textStyle.fontSize !== 'number' ? 25 : textStyle.fontSize;
@@ -224,8 +226,9 @@ export default class PresentFTManager
         let fontSize = this.textStyleTextFontSize;
         fontSize += isUp ? 1 : -1;
         this.applyTextStyle({
-            fontSize: Math.min(this.maxTextStyleTextFontSize,
-                Math.max(1, fontSize)),
+            fontSize: Math.min(
+                this.maxTextStyleTextFontSize, Math.max(1, fontSize),
+            ),
         });
     }
     static get textStyleTextColor(): string {
@@ -251,7 +254,7 @@ export default class PresentFTManager
     static set textStyle(style: AnyObjectType) {
         this._textStyle = style;
         const str = JSON.stringify(style);
-        setSetting(`${settingName}-style-text`, str);
+        setSetting(`${PRESENT_SETTING_NAME}-style-text`, str);
         this.sendSynTextStyle();
         this.addPropEvent('text-style');
     }

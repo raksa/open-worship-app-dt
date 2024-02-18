@@ -53,7 +53,7 @@ export default function PlaylistFile({
             data={data}
             reload={reloadCallback}
             filePath={filePath}
-            className={'playlist-file'}
+            className='playlist-file'
             onClick={onClickCallback}
             onDrop={onDropCallback}
             renderChild={renderChildCallback}

@@ -42,8 +42,10 @@ export function useAppEffect(
         const store = restore(toKey);
         mapper.set(toKey, store);
         if (store.count > THRESHOLD) {
-            warn(`[useAppEffect] ${toKey} is called more than `
-                + `${THRESHOLD} times in ${MILLIE_SECOND}ms`);
+            warn(
+                `[useAppEffect] ${toKey} is called more than `
+                + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
+            );
         }
         return effect();
     };

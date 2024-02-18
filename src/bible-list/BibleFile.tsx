@@ -84,7 +84,7 @@ export default function BibleFile({
             data={data}
             reload={reloadCallback}
             filePath={filePath}
-            className={'bible-file'}
+            className='bible-file'
             renderChild={renderChildCallback}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}

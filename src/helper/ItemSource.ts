@@ -1,5 +1,5 @@
 import {
-    MimetypeNameType, createNewFileDetail,
+    MimetypeNameType, createNewFileDetail, fsCheckFileExist,
 } from '../server/fileHelper';
 import FileSource from './FileSource';
 import {
@@ -11,7 +11,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
 }> {
-    protected static SELECT_SETTING_NAME = '';
+    protected static SELECT_SETTING_NAME = 'selected';
     SELECT_SETTING_NAME: string = '';
     protected static mimetype: MimetypeNameType = 'other';
     filePath: string;
@@ -61,21 +61,24 @@ export default abstract class ItemSource<T extends {
             throw new Error('Invalid item source data');
         }
     }
-    static setSelectedFileSource(filePath: string | null,
-        settingName?: string) {
-        settingName = settingName || this.SELECT_SETTING_NAME;
-        if (!settingName) {
-            return;
-        }
+    private static toSettingName(settingName?: string): string {
+        return settingName || this.SELECT_SETTING_NAME;
+    }
+    static setSelectedFileSource(
+        filePath: string | null, settingName?: string,
+    ) {
+        settingName = this.toSettingName(settingName);
         setSetting(settingName, filePath || '');
     }
     static getSelectedFilePath(settingName?: string) {
-        settingName = settingName || this.SELECT_SETTING_NAME;
-        if (!settingName) {
-            return null;
-        }
-        const selected = getSetting(settingName, '');
-        return selected || null;
+        settingName = this.toSettingName(settingName);
+        const selectedFilePath = getSetting(settingName, '');
+        fsCheckFileExist(selectedFilePath).then((isFileExist) => {
+            if (!isFileExist) {
+                this.setSelectedFileSource(null, settingName);
+            }
+        });
+        return selectedFilePath || null;
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {

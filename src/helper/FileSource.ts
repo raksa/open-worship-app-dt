@@ -100,6 +100,7 @@ export default class FileSource extends EventHandler<FSEventType>
                 return JSON.parse(str) as AnyObjectType;
             }
         } catch (error: any) {
+            debugger;
             showSimpleToast('Reading File Data', error.message);
         }
         return null;

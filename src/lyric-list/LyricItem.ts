@@ -2,7 +2,7 @@ import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import LyricEditingCacheManager from './LyricEditingCacheManager';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { warn } from '../helper/loggerHelpers';
+import * as loggerHelpers from '../helper/loggerHelpers';
 
 export type LyricItemType = {
     id: number,
@@ -113,7 +113,7 @@ export default class LyricItem extends ItemBase
     }
     static validate(json: AnyObjectType) {
         if (!json.title || !json.content) {
-            warn(json);
+            loggerHelpers.error(json);
             throw new Error('Invalid lyric item data');
         }
     }

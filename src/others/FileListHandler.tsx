@@ -59,6 +59,7 @@ export default function FileListHandler({
     header?: any,
     bodyHandler: (filePaths: string[]) => any,
     onNewFile?: (dirPath: string, newName: string) => Promise<boolean>,
+    onFileDeleted?: (filePath: string) => void,
     contextMenu?: ContextMenuItemType[],
     checkExtraFile?: (filePath: string) => boolean,
     takeDroppedFile?: (filePath: string) => boolean,

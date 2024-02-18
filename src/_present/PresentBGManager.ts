@@ -2,9 +2,7 @@ import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
-    getImageDim,
-    getVideoDim,
-    isValidJson,
+    getImageDim, getVideoDim, isValidJson,
 } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
@@ -16,6 +14,7 @@ import PresentManagerInf from './PresentManagerInf';
 import PresentTransitionEffect
     from './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 const backgroundTypeList = ['color', 'image', 'video'] as const;
 export type BackgroundType = typeof backgroundTypeList[number];
@@ -35,7 +34,7 @@ const settingName = 'present-bg-';
 export default class PresentBGManager
     extends EventHandler<PresentBGManagerEventType>
     implements PresentManagerInf {
-    static eventNamePrefix: string = 'present-bg-m';
+    static readonly eventNamePrefix: string = 'present-bg-m';
     readonly presentId: number;
     private _bgSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -177,13 +176,13 @@ export default class PresentBGManager
             try {
                 return await getImageDim(bgSrc.src);
             } catch (error) {
-                appProviderPresent.appUtils.handleError(error);
+                handleError(error);
             }
         } else if (bgSrc.type === 'video') {
             try {
                 return await getVideoDim(bgSrc.src);
             } catch (error) {
-                appProviderPresent.appUtils.handleError(error);
+                handleError(error);
             }
         }
         return [undefined, undefined];

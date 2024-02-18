@@ -225,6 +225,7 @@ export async function extractBibleTitle(bibleKey: string, inputText: string) {
     if (cleanText === '') {
         return genExtractedBible();
     }
+    debugger;
     for (const [regexStr, matcher] of regexTitleMap) {
         const regex = new RegExp(regexStr);
         const matches = regex.exec(cleanText);

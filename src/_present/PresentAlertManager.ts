@@ -14,6 +14,7 @@ import PresentManagerInf from './PresentManagerInf';
 import PresentTransitionEffect from
     './transition-effect/PresentTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export type AlertDataType = {
     marqueeData: {
@@ -156,7 +157,7 @@ export default class PresentAlertManager
             });
             return json;
         } catch (error) {
-            appProviderPresent.appUtils.handleError(error);
+            handleError(error);
         }
         return {};
     }

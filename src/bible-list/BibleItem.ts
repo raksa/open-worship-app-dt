@@ -7,7 +7,7 @@ import {
 } from '../helper/settingHelper';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
-import { warn } from '../helper/loggerHelpers';
+import * as loggerHelpers from '../helper/loggerHelpers';
 import {
     BibleTargetType, bibleRenderHelper,
 } from './bibleRenderHelpers';
@@ -103,7 +103,7 @@ export default class BibleItem extends ItemBase
             typeof json.target.chapter !== 'number' ||
             typeof json.target.verseStart !== 'number' ||
             typeof json.target.verseEnd !== 'number') {
-            warn(json);
+            loggerHelpers.error(json);
             throw new Error('Invalid bible item data');
         }
     }

@@ -61,7 +61,8 @@ function genContextMenu(
                 const fileSource = FileSource.getInstance(filePath);
                 const isOk = await openConfirm(
                     `Deleting "${fileSource.fileName}"`,
-                    'Are you sure to delete this file?');
+                    'Are you sure to delete this file?',
+                );
                 if (isOk) {
                     await fileSource.delete();
                     onDelete?.();

@@ -29,7 +29,7 @@ export default function BibleList() {
     const settingPrefix = getSettingPrefix(windowMode);
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
-            mimetype={'bible'}
+            mimetype='bible'
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Bible.create(dirPath, name);
