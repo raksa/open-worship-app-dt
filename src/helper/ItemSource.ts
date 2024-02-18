@@ -73,11 +73,13 @@ export default abstract class ItemSource<T extends {
     static getSelectedFilePath(settingName?: string) {
         settingName = this.toSettingName(settingName);
         const selectedFilePath = getSetting(settingName, '');
-        fsCheckFileExist(selectedFilePath).then((isFileExist) => {
-            if (!isFileExist) {
-                this.setSelectedFileSource(null, settingName);
-            }
-        });
+        if (selectedFilePath) {
+            fsCheckFileExist(selectedFilePath).then((isFileExist) => {
+                if (!isFileExist) {
+                    this.setSelectedFileSource(null, settingName);
+                }
+            });
+        }
         return selectedFilePath || null;
     }
     abstract clone(): ItemSource<T>;
