@@ -7,11 +7,10 @@ import {
 } from '../read-bible/BibleViewExtra';
 
 export default function RenderBibleDataFound({
-    bibleItem, onVerseChange, onPinning,
+    bibleItem, onVerseChange,
 }: Readonly<{
     bibleItem: BibleItem,
     onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
-    onPinning: () => void,
 }>) {
     const [fontSize, setFontSize] = useStateSettingNumber(
         'bible-search-font-size', 16,
@@ -22,7 +21,7 @@ export default function RenderBibleDataFound({
             style={{
                 height: '10px',
             }}>
-            {renderHeader(bibleItem, isSearching, onPinning)}
+            {renderHeader(bibleItem)}
             <div className={
                 'card-body bg-transparent border-success p-0'
             }>
@@ -46,7 +45,7 @@ export default function RenderBibleDataFound({
 }
 
 function renderHeader(
-    bibleItem: BibleItem, isSearching: boolean, onPinning: () => void,
+    bibleItem: BibleItem,
 ) {
     return (
         <div className='card-header bg-transparent border-success'>
@@ -58,32 +57,8 @@ function renderHeader(
                 </div>
                 <div>
                     <RenderActionButtons bibleItem={bibleItem} />
-                    {genPinButton(isSearching, onPinning)}
                 </div>
             </div>
-        </div>
-    );
-}
-
-function genPinButton(
-    isSearching: boolean, onClick: () => void,
-) {
-    return (
-        <div className='btn-group float-end'>
-            {isSearching ?
-                <button type='button'
-                    className='btn btn-sm btn-outline-warning'
-                    title='Pin this verse'
-                    onClick={onClick}>
-                    <i className='bi bi-pin' />
-                </button> :
-                <button type='button'
-                    className='btn btn-sm btn-outline-warning'
-                    title='Pin this verse'
-                    onClick={onClick}>
-                    <i className='bi bi-x-lg' />
-                </button>
-            }
         </div>
     );
 }

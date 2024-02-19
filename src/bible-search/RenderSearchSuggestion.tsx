@@ -5,25 +5,23 @@ import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
-import BibleItem from '../bible-list/BibleItem';
 
 export default function RenderSearchSuggestion({
     applyChapterSelection, applyVerseSelection, applyBookSelection,
-    bibleResult, bibleKey, pinningBibleItem,
+    bibleResult, bibleKey,
 }: Readonly<{
     applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (
-        newverseStart?: number, newverseEnd?: number,
+        newVerseStart?: number, newVerseEnd?: number,
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
     inputText: string,
     bibleKey: string,
     bibleResult: ExtractedBibleResult,
-    pinningBibleItem: (bibleItem: BibleItem) => void,
 }>) {
     const onVerseChangeCallback = useCallback(
-        (newverseStart?: number, newverseEnd?: number) => {
-            applyVerseSelection(newverseStart, newverseEnd);
+        (newVerseStart?: number, newVerseEnd?: number) => {
+            applyVerseSelection(newVerseStart, newVerseEnd);
         },
         [applyVerseSelection],
     );
@@ -37,7 +35,6 @@ export default function RenderSearchSuggestion({
                 <RenderBibleDataFound
                     bibleItem={bibleItem}
                     onVerseChange={onVerseChangeCallback}
-                    onPinning={() => pinningBibleItem(bibleItem)}
                 />
             </div>
         );

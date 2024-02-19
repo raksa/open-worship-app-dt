@@ -7,9 +7,6 @@ import RenderSearchSuggestion from './RenderSearchSuggestion';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import BibleItem from '../bible-list/BibleItem';
-import { toMaxId } from '../helper/helpers';
-import RenderPinnedBibleItems from './RenderPinnedBibleItems';
 
 
 export default function RenderBibleSearchBody({
@@ -19,7 +16,6 @@ export default function RenderBibleSearchBody({
     inputText: string,
     setInputText: (newText: string) => void,
 }>) {
-    const [pinnedBibleItems, setPinnedBibleItems] = useState<BibleItem[]>([]);
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
@@ -66,38 +62,22 @@ export default function RenderBibleSearchBody({
         [bibleKey, extractedInput.bookKey, setInputText],
     );
     const applyVerseSelectionCallback = useCallback(async (
-        newverseStart?: number, newverseEnd?: number) => {
+        newVerseStart?: number, newVerseEnd?: number) => {
         if (bibleKey === null || extractedInput.bookKey === null) {
             return;
         }
         const book = await keyToBook(bibleKey, extractedInput.bookKey);
         const txt = await toInputText(
             bibleKey, book, extractedInput.chapter,
-            newverseStart, newverseEnd,
+            newVerseStart, newVerseEnd,
         );
         setInputText(txt);
     }, [
         bibleKey, extractedInput.bookKey,
         extractedInput.chapter, setInputText,
     ]);
-    const pinningBibleItem = useCallback((currentBibleItem: BibleItem) => {
-        const newBibleItem = currentBibleItem.clone();
-        const maxId = toMaxId(
-            pinnedBibleItems.map((bibleItem) => {
-                return bibleItem.id;
-            }),
-        );
-        newBibleItem.id = maxId + 1;
-        setPinnedBibleItems([...pinnedBibleItems, newBibleItem]);
-    }, [extractedInput.bibleItem, pinnedBibleItems]);
     return (
         <div className='d-flex w-100 h-100'>
-            {pinnedBibleItems.length > 0 ?
-                <RenderPinnedBibleItems
-                    pinnedBibleItems={pinnedBibleItems}
-                    setPinnedBibleItems={setPinnedBibleItems}
-                /> : null
-            }
             <RenderSearchSuggestion
                 inputText={inputText}
                 bibleKey={bibleKey}
@@ -105,7 +85,7 @@ export default function RenderBibleSearchBody({
                 applyChapterSelection={applyChapterSelectionCallback}
                 applyVerseSelection={applyVerseSelectionCallback}
                 applyBookSelection={applyBookSelectionCallback}
-                pinningBibleItem={pinningBibleItem} />
+            />
         </div>
     );
 }
