@@ -33,45 +33,46 @@ export default function RenderActionButtons({ bibleItem }: Readonly<{
     const { data } = useModalTypeData();
     const isBibleEditing = !!data;
     const isWindowPresenting = useWindowIsPresentingMode();
+    if (!isBibleEditing) {
+        return null;
+    }
     return (
         <div className='btn-group mx-1'>
-            {!isBibleEditing ? null : <>
-                <button type='button'
-                    className='btn btn-sm btn-info'
-                    onClick={() => {
-                        updateBibleItem(bibleItem, data);
-                    }}
-                    data-tool-tip={
-                        `Save bible item [${KeyboardEventListener.
-                            toShortcutKey(addListEventMapper)}]`
-                    }>
-                    <i className='bi bi-floppy' />
-                </button>
-                {!isWindowPresenting ? null : <button type='button'
-                    className='btn btn-sm btn-info ms-1'
-                    onClick={(event) => {
-                        const updatedBibleItem = updateBibleItem(
-                            bibleItem, data,
+            <button type='button'
+                className='btn btn-sm btn-info'
+                onClick={() => {
+                    updateBibleItem(bibleItem, data);
+                }}
+                data-tool-tip={
+                    `Save bible item [${KeyboardEventListener.
+                        toShortcutKey(addListEventMapper)}]`
+                }>
+                <i className='bi bi-floppy' />
+            </button>
+            {!isWindowPresenting ? null : <button type='button'
+                className='btn btn-sm btn-info ms-1'
+                onClick={(event) => {
+                    const updatedBibleItem = updateBibleItem(
+                        bibleItem, data,
+                    );
+                    if (updatedBibleItem !== null) {
+                        PresentFTManager.ftBibleItemSelect(
+                            event, [bibleItem],
                         );
-                        if (updatedBibleItem !== null) {
-                            PresentFTManager.ftBibleItemSelect(
-                                event, [bibleItem],
-                            );
-                        } else {
-                            showSimpleToast(
-                                'Update Bible Item',
-                                'Fail to update bible item',
-                            );
-                        }
-                    }}
-                    data-tool-tip={
-                        `Save bible item and present [${KeyboardEventListener.
-                            toShortcutKey(presentEventMapper)}]`
-                    }>
-                    <i className='bi bi-floppy' />
-                    <i className='bi bi-easel' />
-                </button>}
-            </>}
+                    } else {
+                        showSimpleToast(
+                            'Update Bible Item',
+                            'Fail to update bible item',
+                        );
+                    }
+                }}
+                data-tool-tip={
+                    `Save bible item and present [${KeyboardEventListener.
+                        toShortcutKey(presentEventMapper)}]`
+                }>
+                <i className='bi bi-floppy' />
+                <i className='bi bi-easel' />
+            </button>}
         </div>
     );
 }

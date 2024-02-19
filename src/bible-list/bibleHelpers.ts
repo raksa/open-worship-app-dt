@@ -88,7 +88,7 @@ export async function genInputText(
 export async function updateBibleItem(bibleItem: BibleItem, data: string) {
     const messageTitle = 'Saving Bible Item Failed';
     const oldBibleItem = BibleItem.parseBibleSearchData(data);
-    if (oldBibleItem === null || oldBibleItem.filePath === undefined) {
+    if (!oldBibleItem?.filePath) {
         showSimpleToast(messageTitle, 'Invalid bible item data');
         return null;
     }
@@ -97,7 +97,12 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
         showSimpleToast(messageTitle, 'Fail to read bible file');
         return null;
     }
-    BibleItem.saveFromBibleSearch(bible, oldBibleItem, bibleItem);
+    const isSaved = await BibleItem.saveFromBibleSearch(
+        bible, oldBibleItem, bibleItem,
+    );
+    if (isSaved) {
+        showSimpleToast(messageTitle, 'Bible item saved successfully!');
+    }
     return bibleItem;
 };
 

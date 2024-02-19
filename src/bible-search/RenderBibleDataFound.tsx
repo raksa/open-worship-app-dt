@@ -8,7 +8,9 @@ import {
     BibleViewText, BibleViewTitle,
 } from '../read-bible/BibleViewExtra';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
+import {
+    genDefaultBibleItemContextMenu,
+} from '../bible-list/bibleItemHelpers';
 import { useWindowMode } from '../router/routeHelpers';
 
 export default function RenderBibleDataFound({
@@ -67,9 +69,7 @@ function renderHeader(
 ) {
     return (
         <div className='card-header bg-transparent border-success'>
-            <div className='d-flex w-100 h-100' style={{
-                overflowX: 'auto',
-            }}>
+            <div className='d-flex w-100 h-100'>
                 <div className='flex-fill text-nowrap'>
                     <BibleViewTitle bibleItem={bibleItem} />
                 </div>

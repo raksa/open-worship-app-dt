@@ -228,6 +228,6 @@ export default class BibleItem extends ItemBase
     ) {
         oldBibleItem.bibleKey = newBibleItem.bibleKey;
         oldBibleItem.target = newBibleItem.target;
-        oldBibleItem.save(bible);
+        return oldBibleItem.save(bible);
     }
 }
