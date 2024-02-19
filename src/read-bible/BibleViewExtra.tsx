@@ -4,11 +4,9 @@ import {
 } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 import {
-    genDefaultBibleItemContextMenu, useBibleItemRenderText,
-    useBibleItemRenderTitle,
+    useBibleItemRenderText, useBibleItemRenderTitle,
 } from '../bible-list/bibleItemHelpers';
 import { getRandomUUID } from '../helper/helpers';
-import { showAppContextMenu } from '../others/AppContextMenu';
 
 export function rendHeader(
     bibleItem: BibleItem,
@@ -50,28 +48,16 @@ export function BibleViewTitle({ bibleItem }: Readonly<{
     );
 }
 
-function openBibleTextContextMenu(
-    bibleItem: BibleItem, event: React.MouseEvent,
-) {
-    showAppContextMenu(event as any, genDefaultBibleItemContextMenu(bibleItem));
-}
 export function BibleViewText({
-    bibleItem, fontSize, isEnableContextMenu,
+    bibleItem, fontSize,
 }: Readonly<{
     bibleItem: BibleItem,
     fontSize: number,
-    isEnableContextMenu?: boolean,
 }>) {
     const uuid = getRandomUUID();
     const text = useBibleItemRenderText(bibleItem, uuid);
     return (
         <p id={uuid}
-            onContextMenu={(event) => {
-                if (!isEnableContextMenu) {
-                    return;
-                }
-                openBibleTextContextMenu(bibleItem, event);
-            }}
             className='app-selectable-text'
             style={{ fontSize: `${fontSize}px` }}>
             {text}

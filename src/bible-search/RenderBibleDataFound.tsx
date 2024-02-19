@@ -1,10 +1,15 @@
 import BibleItem from '../bible-list/BibleItem';
 import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVerseOptions from './RenderVerseOptions';
-import RenderActionButtons from './RenderActionButtons';
+import RenderActionButtons, {
+    genFoundBibleItemContextMenu, useFoundActionKeyboard,
+} from './RenderActionButtons';
 import {
     BibleViewText, BibleViewTitle,
 } from '../read-bible/BibleViewExtra';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
+import { useWindowMode } from '../router/routeHelpers';
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange,
@@ -12,12 +17,26 @@ export default function RenderBibleDataFound({
     bibleItem: BibleItem,
     onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
 }>) {
+    const windowMode = useWindowMode();
     const [fontSize, setFontSize] = useStateSettingNumber(
         'bible-search-font-size', 16,
     );
     const isSearching = onVerseChange !== undefined;
+    useFoundActionKeyboard(bibleItem);
     return (
         <div className='card border-success mt-1 w-100 h-100'
+            onContextMenu={(event) => {
+                if (windowMode === null) {
+                    return;
+                }
+                showAppContextMenu(event as any, [
+                    ...genFoundBibleItemContextMenu(
+                        bibleItem, windowMode,
+                        true,
+                    ),
+                    ...genDefaultBibleItemContextMenu(bibleItem),
+                ]);
+            }}
             style={{
                 height: '10px',
             }}>
@@ -33,8 +52,7 @@ export default function RenderBibleDataFound({
                 <div className='p-2'>
                     <BibleViewText
                         bibleItem={bibleItem}
-                        fontSize={fontSize}
-                        isEnableContextMenu />
+                        fontSize={fontSize} />
                 </div>
             </div>
             <div className='card-footer'>

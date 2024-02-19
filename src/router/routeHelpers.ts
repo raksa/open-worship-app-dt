@@ -93,22 +93,22 @@ export function checkIsWindowEditingMode(mode?: WindowModEnum | null) {
     return checkIsWindowMode(WindowModEnum.editing, mode);
 }
 export function useWindowIsEditingMode() {
-    const windowType = useWindowMode();
-    return checkIsWindowEditingMode(windowType);
+    const windowMode = useWindowMode();
+    return checkIsWindowEditingMode(windowMode);
 }
 export function checkIsWindowPresentingMode(mode?: WindowModEnum | null) {
     return checkIsWindowMode(WindowModEnum.presenting, mode);
 }
 export function useWindowIsPresentingMode() {
-    const windowType = useWindowMode();
-    return checkIsWindowPresentingMode(windowType);
+    const windowMode = useWindowMode();
+    return checkIsWindowPresentingMode(windowMode);
 }
 export function checkIsWindowReadingMode(mode?: WindowModEnum | null) {
     return checkIsWindowMode(WindowModEnum.reading, mode);
 }
 export function useWindowIsReadingMode() {
-    const windowType = useWindowMode();
-    return checkIsWindowReadingMode(windowType);
+    const windowMode = useWindowMode();
+    return checkIsWindowReadingMode(windowMode);
 }
 
 export function goToPath(pathname: string) {
