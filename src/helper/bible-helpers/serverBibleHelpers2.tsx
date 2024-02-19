@@ -137,17 +137,18 @@ async function transformExtracted(
     result.bibleItem = BibleItem.fromData(
         bibleKey, bookKey, chapterNum, 1, verseCount,
     );
-    if (verseStart === null || verseEnd === null) {
-        return result;
-    }
     const target = result.bibleItem.target;
-    const verseStartNum = await fromLocaleNumBB(bibleKey, verseStart);
-    if (verseStartNum !== null) {
-        target.verseStart = verseStartNum;
+    if (verseStart !== null) {
+        const verseStartNum = await fromLocaleNumBB(bibleKey, verseStart);
+        if (verseStartNum !== null) {
+            target.verseStart = verseStartNum;
+        }
     }
-    const verseEndNum = await fromLocaleNumBB(bibleKey, verseEnd);
-    if (verseEndNum !== null) {
-        target.verseEnd = verseEndNum;
+    if (verseEnd !== null) {
+        const verseEndNum = await fromLocaleNumBB(bibleKey, verseEnd);
+        if (verseEndNum !== null) {
+            target.verseEnd = verseEndNum;
+        }
     }
     const { verseStart: sVerse, verseEnd: eVerse } = target;
     if (eVerse < 1 || eVerse < sVerse || sVerse > verseCount) {
@@ -173,7 +174,7 @@ const regexTitleMap: [
         }],
         // "1 John 1:1-"
         ['(^.+)\\s(.+):(.+)-$', async (bibleKey, matches) => {
-            if (matches.length !== 5) {
+            if (matches.length !== 4) {
                 return null;
             }
             const [_, book, chapter, verseStart] = matches;
@@ -187,9 +188,8 @@ const regexTitleMap: [
             if (matches.length !== 4) {
                 return null;
             }
-            const [_, book, chapter, verse] = matches;
-            const verseStart = verse;
-            const verseEnd = verse;
+            const [_, book, chapter, verseStart] = matches;
+            const verseEnd = verseStart;
             return transformExtracted(
                 bibleKey, book, chapter, verseStart, verseEnd,
             );
@@ -225,7 +225,6 @@ export async function extractBibleTitle(bibleKey: string, inputText: string) {
     if (cleanText === '') {
         return genExtractedBible();
     }
-    debugger;
     for (const [regexStr, matcher] of regexTitleMap) {
         const regex = new RegExp(regexStr);
         const matches = regex.exec(cleanText);
