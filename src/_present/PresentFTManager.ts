@@ -335,7 +335,7 @@ export default class PresentFTManager
             const newFtItemData = await bibleItemToFtData([droppedData.item]);
             this.ftItemData = newFtItemData;
         } else {
-            log(droppedData);
+            loggerHelpers.log(droppedData);
         }
     }
     static getInstanceByPresentId(presentId: number) {

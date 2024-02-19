@@ -4,7 +4,8 @@ import {
 } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 import {
-    useBibleItemRenderText, useBibleItemRenderTitle,
+    genDefaultBibleItemContextMenu, useBibleItemRenderText,
+    useBibleItemRenderTitle,
 } from '../bible-list/bibleItemHelpers';
 import { getRandomUUID } from '../helper/helpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -52,26 +53,7 @@ export function BibleViewTitle({ bibleItem }: Readonly<{
 function openBibleTextContextMenu(
     bibleItem: BibleItem, event: React.MouseEvent,
 ) {
-    showAppContextMenu(event as any, [
-        {
-            title: 'Copy Title',
-            onClick: () => {
-                bibleItem.copyTitleToClipboard();
-            },
-        },
-        {
-            title: 'Copy Text',
-            onClick: () => {
-                bibleItem.copyTextToClipboard();
-            },
-        },
-        {
-            title: 'Copy',
-            onClick: () => {
-                bibleItem.copyToClipboard();
-            },
-        },
-    ]);
+    showAppContextMenu(event as any, genDefaultBibleItemContextMenu(bibleItem));
 }
 export function BibleViewText({
     bibleItem, fontSize, isEnableContextMenu,

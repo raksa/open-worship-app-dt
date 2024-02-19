@@ -21,16 +21,8 @@ export type BibleItemType = {
     metadata: AnyObjectType,
 }
 
-export async function openBibleItemContextMenu(
-    event: any, bibleItem: BibleItem, index: number,
-    windowMode: WindowModEnum | null, openBibleSearch: () => void,
-) {
-    const bible = await Bible.readFileToData(bibleItem.filePath ?? null);
-    if (!bible) {
-        showSimpleToast('Open Bible Item Context Menu', 'Unable to get bible');
-        return;
-    }
-    const menuItem = [
+export function genDefaultBibleItemContextMenu(bibleItem: BibleItem) {
+    return [
         {
             title: '(*T) ' + 'Copy Title',
             onClick: () => {
@@ -49,6 +41,20 @@ export async function openBibleItemContextMenu(
                 bibleItem.copyToClipboard();
             },
         },
+    ];
+}
+
+export async function openBibleItemContextMenu(
+    event: any, bibleItem: BibleItem, index: number,
+    windowMode: WindowModEnum | null, openBibleSearch: () => void,
+) {
+    const bible = await Bible.readFileToData(bibleItem.filePath ?? null);
+    if (!bible) {
+        showSimpleToast('Open Bible Item Context Menu', 'Unable to get bible');
+        return;
+    }
+    const menuItem = [
+        ...genDefaultBibleItemContextMenu(bibleItem),
         {
             title: '(*T) ' + 'Quick Edit',
             onClick: () => {

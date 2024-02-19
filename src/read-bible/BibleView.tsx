@@ -10,12 +10,14 @@ import {
     applyDragged, genDraggingClass, removeDraggingClass,
 } from './readBibleHelper';
 import { BibleViewText, rendHeader } from './BibleViewExtra';
+import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 
 function openContextMenu(
     bibleItemViewCtl: BibleItemViewController, event: React.MouseEvent,
-    indices: number[], isHorizontal: boolean,
+    indices: number[], isHorizontal: boolean, bibleItem: BibleItem,
 ) {
     showAppContextMenu(event as any, [
+        ...genDefaultBibleItemContextMenu(bibleItem),
         {
             title: 'Split Right', onClick: () => {
                 bibleItemViewCtl.duplicateItemAtIndexRight(
@@ -76,7 +78,9 @@ export default function BibleView({
                 applyDragged(event, bibleItemViewCtl, indices, isHorizontal);
             }}
             onContextMenu={(event) => {
-                openContextMenu(bibleItemViewCtl, event, indices, isHorizontal);
+                openContextMenu(
+                    bibleItemViewCtl, event, indices, isHorizontal, bibleItem,
+                );
             }}>
             {
                 rendHeader(

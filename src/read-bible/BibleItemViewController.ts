@@ -50,17 +50,23 @@ function getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
-    private static _instance: BibleItemViewController | null = null;
+    private _settingNameSuffix: string | null;
+    constructor(settingNameSuffix?: string) {
+        super();
+        this._settingNameSuffix = settingNameSuffix || null;
+    }
+    get settingName() {
+        return getBibleItemsPreviewSettingName(null) + this._settingNameSuffix;
+    }
     get bibleItems(): any {
-        const settingName = getBibleItemsPreviewSettingName(null);
         try {
-            const jsonStr = getSetting(settingName) || '[]';
+            const jsonStr = getSetting(this.settingName) || '[]';
             const json = JSON.parse(jsonStr);
             return parseBibleItem(json);
         } catch (error) {
             handleError(error);
         }
-        setSetting(settingName, '[]');
+        setSetting(this.settingName, '[]');
         return [];
     }
     set bibleItems(newBibleItems: BibleItem[]) {
@@ -68,8 +74,7 @@ export default class BibleItemViewController
             clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
         const jsonStr = JSON.stringify(stringifyBibleItem(newBibleItems));
-        const settingName = getBibleItemsPreviewSettingName(null);
-        setSetting(settingName, jsonStr);
+        setSetting(this.settingName, jsonStr);
         this.fireUpdateEvent();
     }
 
@@ -223,13 +228,6 @@ export default class BibleItemViewController
     ) {
         const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
         this.addItemAtIndexBottom(indices, duplicatedBibleItem, isHorizontal);
-    }
-
-    static getInstance() {
-        if (this._instance === null) {
-            this._instance = new BibleItemViewController();
-        }
-        return this._instance;
     }
 }
 

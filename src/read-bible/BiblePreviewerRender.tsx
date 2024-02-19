@@ -10,7 +10,11 @@ const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
 const STEP_FONT_SIZE = 2;
 
-export default function BiblePreviewerRender() {
+export default function BiblePreviewerRender({
+    bibleItemViewController,
+}: Readonly<{
+    bibleItemViewController: BibleItemViewController,
+}>) {
     const [isFulledScreen, setIsFulledScreen] = useState(
         !!document.fullscreenElement,
     );
@@ -25,7 +29,6 @@ export default function BiblePreviewerRender() {
         }
         _setFontSize(fontSize);
     };
-    const bibleItemViewController = BibleItemViewController.getInstance();
     return (
         <div className={`card h-100 ${isFulledScreen ? 'app-popup-full' : ''}`}
             onWheel={(event) => {
