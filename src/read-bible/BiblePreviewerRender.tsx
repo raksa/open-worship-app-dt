@@ -119,14 +119,13 @@ function Render({
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
 }>) {
-    const bibleItems = useBIVCUpdateEvent(bibleItemViewController);
+    const nestedBibleItems = useBIVCUpdateEvent(bibleItemViewController);
     return (
         <BibleViewRenderer
             fontSize={fontSize}
             bibleItemViewController={bibleItemViewController}
-            bibleItems={bibleItems}
+            nestedBibleItems={nestedBibleItems}
             isHorizontal={true}
-            indices={[]}
         />
     );
 }

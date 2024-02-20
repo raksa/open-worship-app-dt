@@ -25,7 +25,9 @@ export default function NoBibleViewAvailable({
                     const json = JSON.parse(data);
                     if (json.type === 'bibleItem') {
                         const bibleItem = BibleItem.fromJson(json.data);
-                        bibleItemViewController.addItem(bibleItem, []);
+                        bibleItemViewController.addItem(
+                            null, bibleItem, false, false,
+                        );
                     }
                 } catch (error) {
                     handleError(error);

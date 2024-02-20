@@ -11,8 +11,7 @@ import { getRandomUUID } from '../helper/helpers';
 export function rendHeader(
     bibleItem: BibleItem,
     onChange: (oldBibleKey: string, newBibleKey: string) => void,
-    onClose: (indices: number[]) => void,
-    indices: number[],
+    onClose: () => void,
 ) {
     return (
         <div className='card-header'>
@@ -28,7 +27,7 @@ export function rendHeader(
                 <div>
                     <button className='btn-close'
                         onClick={() => {
-                            onClose(indices);
+                            onClose();
                         }} />
                 </div>
             </div>

@@ -48,6 +48,9 @@ export default class BibleItem extends ItemBase
     set metadata(metadata: AnyObjectType) {
         this._originalJson.metadata = metadata;
     }
+    isSameId(bibleItem: BibleItem) {
+        return this.id === bibleItem.id;
+    }
     static fromJson(json: BibleItemType, filePath?: string) {
         this.validate(json);
         return new BibleItem(json.id, json, filePath);
@@ -107,9 +110,11 @@ export default class BibleItem extends ItemBase
             throw new Error('Invalid bible item data');
         }
     }
-    clone() {
+    clone(isKeepId = false) {
         const bibleItem = BibleItem.fromJson(this.toJson());
-        bibleItem.id = -1;
+        if (!isKeepId) {
+            bibleItem.id = -1;
+        }
         return bibleItem;
     }
     async save(bible: ItemSource<any>) {

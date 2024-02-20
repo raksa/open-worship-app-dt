@@ -8,41 +8,91 @@ import {
 import { handleError } from '../helper/errorHelpers';
 import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
 import { WindowModEnum } from '../router/routeHelpers';
+import { BibleItemType } from '../bible-list/bibleItemHelpers';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 
-function parseBibleItem(json: any): any {
+export type NestedBibleItemsType = BibleItem | NestedBibleItemsType[];
+export type NestedObjectsType = BibleItemType | NestedObjectsType[];
+
+function parseNestedBibleItem(json: any): NestedBibleItemsType {
     if (json instanceof Array) {
-        return json.map((item: any) => {
-            return parseBibleItem(item);
+        let nestedBibleItems: NestedBibleItemsType = json.map((item: any) => {
+            return parseNestedBibleItem(item);
         });
+        nestedBibleItems = sanitizeZeroItem(nestedBibleItems);
+        return nestedBibleItems;
     }
     return BibleItem.fromJson(json);
 }
 
-function stringifyBibleItem(item: any): any {
-    if (item instanceof Array) {
-        return item.map((item1) => {
-            return stringifyBibleItem(item1);
-        });
-    }
-    return item.toJson();
-}
-
-function cleanBibleItems(item: any): any {
-    if (item instanceof Array) {
-        return item.map((item1) => {
-            return cleanBibleItems(item1);
+function sanitizeZeroItem(
+    nestedBibleItems: NestedBibleItemsType,
+): NestedBibleItemsType {
+    if (nestedBibleItems instanceof Array) {
+        let isFoundError = false;
+        const newNestedBibleItems = nestedBibleItems.map((item1) => {
+            const newItem1 = sanitizeZeroItem(item1);
+            if (
+                item1 instanceof Array && newItem1 instanceof Array &&
+                item1.length !== newItem1.length
+            ) {
+                isFoundError = true;
+            }
+            return newItem1;
         }).filter((item1) => {
             if (item1 instanceof Array && item1.length === 0) {
                 return false;
             }
             return true;
         });
+        if (isFoundError) {
+            return sanitizeZeroItem(newNestedBibleItems);
+        }
+        return newNestedBibleItems;
     }
-    return item;
+    return nestedBibleItems;
 }
+
+function stringifyNestedBibleItem(
+    nestedBibleItems: NestedBibleItemsType,
+): NestedObjectsType {
+    if (nestedBibleItems instanceof Array) {
+        return nestedBibleItems.map((item1) => {
+            return stringifyNestedBibleItem(item1);
+        });
+    }
+    return nestedBibleItems.toJson();
+}
+
+function seekParent(
+    nestedBibleItems: NestedBibleItemsType, bibleItem: BibleItem,
+    isHorizontal: boolean = true,
+): {
+    nestedBibleItems: NestedBibleItemsType[], isHorizontal: boolean,
+    bibleItem: BibleItem,
+} | null {
+    if (nestedBibleItems instanceof Array) {
+        for (const nestedBibleItem of nestedBibleItems) {
+            if (nestedBibleItem instanceof Array) {
+                const foundParent = seekParent(
+                    nestedBibleItem, bibleItem, !isHorizontal,
+                );
+                if (foundParent !== null) {
+                    return foundParent;
+                }
+            } else if (nestedBibleItem.isSameId(bibleItem)) {
+                return {
+                    nestedBibleItems, isHorizontal, bibleItem: nestedBibleItem,
+                };
+            }
+        }
+    }
+    return null;
+}
+
 function getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
     const prefixSetting = getSettingPrefix(windowMode);
     return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
@@ -58,187 +108,133 @@ export default class BibleItemViewController
     get settingName() {
         return getBibleItemsPreviewSettingName(null) + this._settingNameSuffix;
     }
-    get bibleItems(): any {
+    get nestedBibleItems() {
         try {
             const jsonStr = getSetting(this.settingName) || '[]';
             const json = JSON.parse(jsonStr);
-            return parseBibleItem(json);
+            return parseNestedBibleItem(json);
         } catch (error) {
             handleError(error);
         }
         setSetting(this.settingName, '[]');
         return [];
     }
-    set bibleItems(newBibleItems: BibleItem[]) {
-        if (newBibleItems.length !== this.bibleItems.length) {
+    set nestedBibleItems(newBibleItems: NestedBibleItemsType) {
+        if (
+            newBibleItems instanceof Array &&
+            this.nestedBibleItems instanceof Array
+            && newBibleItems.length !== this.nestedBibleItems.length
+        ) {
             clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
-        const jsonStr = JSON.stringify(stringifyBibleItem(newBibleItems));
+        const jsonStr = JSON.stringify(stringifyNestedBibleItem(newBibleItems));
         setSetting(this.settingName, jsonStr);
         this.fireUpdateEvent();
-    }
-
-    private walkBibleItems(
-        fullBiblItems: any, indices: number[],
-        bibleItems?: any
-    ): {
-        bibleItems: BibleItem[],
-        fullBiblItems: any,
-        index: number,
-    } {
-        if (!bibleItems) {
-            bibleItems = fullBiblItems;
-        }
-        if (indices.length < 2) {
-            return {
-                fullBiblItems,
-                bibleItems,
-                index: indices.length === 1 ? indices[0] : 0,
-            };
-        }
-        indices = [...indices];
-        const index = indices.shift()!;
-        return this.walkBibleItems(
-            fullBiblItems, indices,
-            bibleItems[index],
-        );
     }
 
     fireUpdateEvent() {
         this.addPropEvent('update');
     }
-
-    changeItemBibleKey(indices: number[], bibleKey: string) {
-        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        bibleItems[index].bibleKey = bibleKey;
-        this.bibleItems = fullBiblItems;
-    }
-
-    changeItemAtIndex(bibleItem: BibleItem, indices: number[]) {
-        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        bibleItems[index] = bibleItem;
-        this.bibleItems = fullBiblItems;
-    }
-
-    removeItem(indices: number[]) {
-        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        bibleItems.splice(index, 1);
-        const newFullBiblItems = cleanBibleItems(fullBiblItems);
-        this.bibleItems = newFullBiblItems;
-    }
-
-    addItem(bibleItem: BibleItem, indices: number[]) {
-        const { fullBiblItems, bibleItems } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        bibleItems.push(bibleItem);
-        this.bibleItems = fullBiblItems;
-    }
-    private addItemAtIndex(indices: number[], bibleItem: BibleItem) {
-        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        bibleItems.splice(index, 0, bibleItem);
-        this.bibleItems = fullBiblItems;
-    }
-    private transform(indices: number[], isHorizontal: boolean) {
-        const { fullBiblItems, bibleItems, index } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        if (!(bibleItems[index] instanceof Array)) {
-            (bibleItems as any)[index] = [bibleItems[index]];
-            indices = [...indices, 0];
-            isHorizontal = false;
+    seek(bibleItem: BibleItem, toastTitle: string, toastMessage: string) {
+        const nestedBibleItems = this.nestedBibleItems;
+        const foundParent = seekParent(nestedBibleItems, bibleItem);
+        if (foundParent === null) {
+            showSimpleToast(toastTitle, toastMessage);
+            throw new Error();
         }
-        this.bibleItems = fullBiblItems;
-        return { indices, isHorizontal };
+        const {
+            nestedBibleItems: parentNestedBibleItems, isHorizontal,
+            bibleItem: foundBibleItem,
+        } = foundParent;
+        const index = parentNestedBibleItems.indexOf(foundBibleItem);
+        return {
+            nestedBibleItems, parentNestedBibleItems, index, isHorizontal,
+        };
     }
-    private transformToVertical(indices: number[], isHorizontal: boolean) {
-        if (isHorizontal) {
-            return this.transform(indices, isHorizontal);
+    changeItem(oldBibleItem: BibleItem, newBibleItem: BibleItem) {
+        try {
+            const {
+                nestedBibleItems, parentNestedBibleItems, index,
+            } = this.seek(
+                oldBibleItem, 'Change Item', 'Unable to change bible item',
+            );
+            parentNestedBibleItems[index] = newBibleItem;
+            this.nestedBibleItems = nestedBibleItems;
+        } catch (error) { }
+    }
+
+    removeItem(bibleItem: BibleItem) {
+        try {
+            const {
+                nestedBibleItems, parentNestedBibleItems, index,
+            } = this.seek(
+                bibleItem, 'Remove Item', 'Unable to remove bible item',
+            );
+            parentNestedBibleItems.splice(index, 1);
+            this.nestedBibleItems = nestedBibleItems;
+        } catch (error) { }
+    }
+
+    addItem(oldBibleItem: BibleItem | null, bibleItem: BibleItem,
+        isHorizontal: boolean, isBefore: boolean,
+    ) {
+        const newBibleItem = bibleItem.clone();
+        newBibleItem.id = (new Date()).getTime();
+        if (oldBibleItem === null) {
+            this.nestedBibleItems = [newBibleItem];
+            return;
         }
-        return { indices, isHorizontal };
+        try {
+            const {
+                nestedBibleItems, parentNestedBibleItems,
+                isHorizontal: foundIsHorizontal, index,
+            } = this.seek(
+                oldBibleItem, 'Add Item', 'Unable to add bible item',
+            );
+            if (isHorizontal === foundIsHorizontal) {
+                parentNestedBibleItems.splice(
+                    index + (isBefore ? 0 : 1), 0, newBibleItem,
+                );
+            } else {
+                parentNestedBibleItems[index] = (
+                    isBefore ?
+                        [newBibleItem, oldBibleItem] :
+                        [oldBibleItem, newBibleItem]
+                );
+            }
+            this.nestedBibleItems = nestedBibleItems;
+        } catch (error) { }
     }
-    private transformToHorizontal(indices: number[], isHorizontal: boolean) {
-        if (!isHorizontal) {
-            return this.transform(indices, isHorizontal);
-        }
-        return { indices, isHorizontal };
-    }
-    addItemAtIndexLeft(
-        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    addItemLeft(
+        oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        const {
-            indices: newIndices,
-        } = this.transformToHorizontal(indices, isHorizontal);
-        this.addItemAtIndex(newIndices, bibleItem);
+        this.addItem(oldBibleItem, bibleItem, true, true);
     }
-    addItemAtIndexRight(
-        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    addItemRight(
+        oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        const {
-            indices: newIndices,
-        } = this.transformToHorizontal(indices, isHorizontal);
-        newIndices[newIndices.length - 1] += 1;
-        this.addItemAtIndex(newIndices, bibleItem);
+        this.addItem(oldBibleItem, bibleItem, true, false);
     }
-    addItemAtIndexTop(
-        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    addItemTop(
+        oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        const {
-            indices: newIndices,
-        } = this.transformToVertical(indices, isHorizontal);
-        this.addItemAtIndex(newIndices, bibleItem);
+        this.addItem(oldBibleItem, bibleItem, false, true);
     }
-    addItemAtIndexBottom(
-        indices: number[], bibleItem: BibleItem, isHorizontal: boolean,
+    addItemBottom(
+        oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        const {
-            indices: newIndices,
-        } = this.transformToVertical(indices, isHorizontal);
-        newIndices[newIndices.length - 1] += 1;
-        this.addItemAtIndex(newIndices, bibleItem);
-    }
-    private cloneAtIndex(
-        indices: number[], bibleKey?: string,
-    ) {
-        const { bibleItems, index } = this.walkBibleItems(
-            this.bibleItems, indices,
-        );
-        const clonedBibleItem = bibleItems[index].clone();
-        if (bibleKey) {
-            clonedBibleItem.bibleKey = bibleKey;
-        }
-        return clonedBibleItem;
-    }
-    duplicateItemAtIndexRight(
-        indices: number[], isHorizontal: boolean, bibleKey?: string,
-    ) {
-        const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
-        this.addItemAtIndexRight(indices, duplicatedBibleItem, isHorizontal);
-    }
-    duplicateItemAtIndexBottom(
-        indices: number[], isHorizontal: boolean, bibleKey?: string,
-    ) {
-        const duplicatedBibleItem = this.cloneAtIndex(indices, bibleKey);
-        this.addItemAtIndexBottom(indices, duplicatedBibleItem, isHorizontal);
+        this.addItem(oldBibleItem, bibleItem, false, false);
     }
 }
 
 export function useBIVCUpdateEvent(
     bibleItemViewController: BibleItemViewController) {
-    const [bibleItems, setBibleItems] = useState(
-        bibleItemViewController.bibleItems,
+    const [nestedBibleItems, setNestedBibleItems] = useState(
+        bibleItemViewController.nestedBibleItems,
     );
     useAppEffect(() => {
         const update = () => {
-            setBibleItems(bibleItemViewController.bibleItems);
+            setNestedBibleItems(bibleItemViewController.nestedBibleItems);
         };
         const instanceEvents = bibleItemViewController.registerEventListener(
             ['update'], update,
@@ -247,5 +243,5 @@ export function useBIVCUpdateEvent(
             bibleItemViewController.unregisterEventListener(instanceEvents);
         };
     }, [bibleItemViewController]);
-    return bibleItems;
+    return nestedBibleItems;
 }

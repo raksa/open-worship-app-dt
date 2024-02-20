@@ -14,37 +14,33 @@ import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 
 function openContextMenu(
     bibleItemViewCtl: BibleItemViewController, event: React.MouseEvent,
-    indices: number[], isHorizontal: boolean, bibleItem: BibleItem,
+    bibleItem: BibleItem,
 ) {
     showAppContextMenu(event as any, [
         ...genDefaultBibleItemContextMenu(bibleItem),
         {
             title: 'Split Right', onClick: () => {
-                bibleItemViewCtl.duplicateItemAtIndexRight(
-                    indices, isHorizontal,
-                );
+                bibleItemViewCtl.addItemRight(bibleItem, bibleItem);
             },
         }, {
             title: 'Split Right To', onClick: () => {
                 showBibleOption(event, [], (bibleKey: string) => {
-                    bibleItemViewCtl.duplicateItemAtIndexRight(
-                        indices, isHorizontal, bibleKey,
-                    );
+                    const newBibleItem = bibleItem.clone();
+                    newBibleItem.bibleKey = bibleKey;
+                    bibleItemViewCtl.addItemRight(bibleItem, newBibleItem);
                 });
             },
         },
         {
             title: 'Split Bottom', onClick: () => {
-                bibleItemViewCtl.duplicateItemAtIndexBottom(
-                    indices, isHorizontal,
-                );
+                bibleItemViewCtl.addItemBottom(bibleItem, bibleItem);
             },
         }, {
             title: 'Split Bottom To', onClick: () => {
                 showBibleOption(event, [], (bibleKey: string) => {
-                    bibleItemViewCtl.duplicateItemAtIndexBottom(
-                        indices, isHorizontal, bibleKey,
-                    );
+                    const newBibleItem = bibleItem.clone();
+                    newBibleItem.bibleKey = bibleKey;
+                    bibleItemViewCtl.addItemBottom(bibleItem, newBibleItem);
                 });
             },
         },
@@ -52,14 +48,11 @@ function openContextMenu(
 }
 
 export default function BibleView({
-    indices, bibleItem, fontSize, bibleItemViewController: bibleItemViewCtl,
-    isHorizontal,
+    bibleItem, fontSize, bibleItemViewController: bibleItemViewCtl,
 }: Readonly<{
-    indices: number[],
     bibleItem: BibleItem,
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
-    isHorizontal: boolean,
 }>) {
     return (
         <div className='bible-view card flex-fill'
@@ -75,25 +68,22 @@ export default function BibleView({
                 removeDraggingClass(event);
             }}
             onDrop={async (event) => {
-                applyDragged(event, bibleItemViewCtl, indices, isHorizontal);
+                applyDragged(event, bibleItemViewCtl, bibleItem);
             }}
             onContextMenu={(event) => {
                 openContextMenu(
-                    bibleItemViewCtl, event, indices, isHorizontal, bibleItem,
+                    bibleItemViewCtl, event, bibleItem,
                 );
             }}>
             {
                 rendHeader(
                     bibleItem,
                     (_oldBibleKey: string, newBibleKey: string) => {
-                        bibleItemViewCtl.changeItemBibleKey(
-                            indices, newBibleKey,
-                        );
+                        bibleItem.bibleKey = newBibleKey;
                     },
                     () => {
-                        bibleItemViewCtl.removeItem(indices);
+                        bibleItemViewCtl.removeItem(bibleItem);
                     },
-                    indices,
                 )
             }
             <div className='card-body p-3'>

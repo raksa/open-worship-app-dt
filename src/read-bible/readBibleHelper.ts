@@ -47,38 +47,26 @@ export function removeDraggingClass(event: DragDropEventType) {
 }
 
 export function applyDragged(
-    event: DragDropEventType,
-    bibleItemViewCtl: BibleItemViewController,
-    indices: number[],
-    isHorizontal: boolean
+    event: DragDropEventType, bibleItemViewCtl: BibleItemViewController,
+    bibleItem: BibleItem,
 ) {
     const allPos = removeDraggingClass(event);
     const data = event.dataTransfer.getData('text');
     try {
         const json = JSON.parse(data);
         if (json.type === 'bibleItem') {
-            const bibleItem = BibleItem.fromJson(json.data);
+            const newBibleItem = BibleItem.fromJson(json.data);
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
-                    bibleItemViewCtl.changeItemAtIndex(
-                        bibleItem, indices,
-                    );
+                    bibleItemViewCtl.changeItem(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
-                    bibleItemViewCtl.addItemAtIndexLeft(
-                        indices, bibleItem, isHorizontal,
-                    );
+                    bibleItemViewCtl.addItemLeft(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {
-                    bibleItemViewCtl.addItemAtIndexRight(
-                        indices, bibleItem, isHorizontal,
-                    );
+                    bibleItemViewCtl.addItemRight(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.TOP.toString()) {
-                    bibleItemViewCtl.addItemAtIndexTop(
-                        indices, bibleItem, isHorizontal,
-                    );
+                    bibleItemViewCtl.addItemTop(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
-                    bibleItemViewCtl.addItemAtIndexBottom(
-                        indices, bibleItem, isHorizontal,
-                    );
+                    bibleItemViewCtl.addItemBottom(bibleItem, newBibleItem);
                 }
             }
         }
