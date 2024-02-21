@@ -7,6 +7,7 @@ import {
     useBibleItemRenderText, useBibleItemRenderTitle,
 } from '../bible-list/bibleItemHelpers';
 import { getRandomUUID } from '../helper/helpers';
+import { createContext, useContext } from 'react';
 
 export function rendHeader(
     bibleItem: BibleItem,
@@ -47,12 +48,17 @@ export function BibleViewTitle({ bibleItem }: Readonly<{
     );
 }
 
+export const DEFAULT_BIBLE_TEXT_FONT_SIZE = 16;
+export const BibleTextFontSizeContext = createContext<number>(
+    DEFAULT_BIBLE_TEXT_FONT_SIZE,
+);
+
 export function BibleViewText({
-    bibleItem, fontSize,
+    bibleItem,
 }: Readonly<{
     bibleItem: BibleItem,
-    fontSize: number,
 }>) {
+    const fontSize = useContext(BibleTextFontSizeContext);
     const uuid = getRandomUUID();
     const text = useBibleItemRenderText(bibleItem, uuid);
     return (

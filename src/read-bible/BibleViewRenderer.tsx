@@ -5,17 +5,14 @@ import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
 
 export default function BibleViewRenderer({
-    fontSize, bibleItemViewController, isHorizontal, nestedBibleItems,
+    bibleItemViewController, isHorizontal, nestedBibleItems,
 }: Readonly<{
-    fontSize: number,
     bibleItemViewController: BibleItemViewController,
     isHorizontal: boolean,
     nestedBibleItems: NestedBibleItemsType,
 }>) {
     if (!(nestedBibleItems instanceof Array)) {
-        return bibleItemViewController.finalRenderer(
-            nestedBibleItems, fontSize,
-        );
+        return bibleItemViewController.finalRenderer(nestedBibleItems);
     }
     if (nestedBibleItems.length === 0) {
         return (
@@ -44,7 +41,6 @@ export default function BibleViewRenderer({
                             return (
                                 <BibleViewRenderer
                                     nestedBibleItems={item}
-                                    fontSize={fontSize}
                                     bibleItemViewController={
                                         bibleItemViewController
                                     }

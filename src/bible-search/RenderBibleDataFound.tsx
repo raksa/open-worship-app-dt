@@ -1,5 +1,4 @@
 import BibleItem from '../bible-list/BibleItem';
-import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVerseOptions from './RenderVerseOptions';
 import RenderActionButtons, {
     genFoundBibleItemContextMenu, useFoundActionKeyboard,
@@ -20,9 +19,6 @@ export default function RenderBibleDataFound({
     onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
 }>) {
     const windowMode = useWindowMode();
-    const [fontSize, setFontSize] = useStateSettingNumber(
-        'bible-search-font-size', 16,
-    );
     const isSearching = onVerseChange !== undefined;
     useFoundActionKeyboard(bibleItem);
     return (
@@ -54,11 +50,8 @@ export default function RenderBibleDataFound({
                 <div className='p-2'>
                     <BibleViewText
                         bibleItem={bibleItem}
-                        fontSize={fontSize} />
+                    />
                 </div>
-            </div>
-            <div className='card-footer'>
-                {renderFontSizeController(fontSize, setFontSize)}
             </div>
         </div>
     );
@@ -77,26 +70,6 @@ function renderHeader(
                     <RenderActionButtons bibleItem={bibleItem} />
                 </div>
             </div>
-        </div>
-    );
-}
-
-function renderFontSizeController(
-    fontSize: number, setFontSize: (fontSize: number) => void,
-) {
-    return (
-        <div className='form form-inline d-flex'
-            style={{ minWidth: '100px' }}>
-            <label className='form-label' style={{ width: '150px' }}>
-                Font Size:{fontSize}px
-            </label>
-            <input type='range' className='form-range'
-                min={10} max={120}
-                step={2}
-                value={fontSize}
-                onChange={(event) => {
-                    setFontSize(+event.target.value);
-                }} />
         </div>
     );
 }

@@ -5,6 +5,9 @@ import BibleItemViewController, {
     useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
+import {
+    BibleTextFontSizeContext, DEFAULT_BIBLE_TEXT_FONT_SIZE,
+} from './BibleViewExtra';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
@@ -19,7 +22,8 @@ export default function BiblePreviewerRender({
         !!document.fullscreenElement,
     );
     const [fontSize, _setFontSize] = useStateSettingNumber(
-        'preview-font-S=size', 16);
+        'preview-font-S=size', DEFAULT_BIBLE_TEXT_FONT_SIZE,
+    );
     const setFontSize = (fontSize: number) => {
         if (fontSize < MIN_FONT_SIZE) {
             fontSize = MIN_FONT_SIZE;
@@ -37,9 +41,11 @@ export default function BiblePreviewerRender({
                 }
             }}>
             <div className='card-body d-flex d-flex-row overflow-hidden h-100'>
-                <Render fontSize={fontSize}
-                    bibleItemViewController={bibleItemViewController}
-                />
+                <BibleTextFontSizeContext.Provider value={fontSize}>
+                    <Render
+                        bibleItemViewController={bibleItemViewController}
+                    />
+                </BibleTextFontSizeContext.Provider>
             </div>
             <div className='card-footer p-0'>
                 <div className='d-flex w-100'>
@@ -99,30 +105,33 @@ function FullScreenBtn({
         };
     });
     return (
-        <button className='btn btn-info btn-sm'
-            onClick={async () => {
-                setIsFullScreen(
-                    await (isFulledScreen ? exitFullScreen : enterFullScreen)()
-                );
-            }}>
-            <i className={
-                `bi bi-${genFullScreenClassName(isFulledScreen)}`
-            } />
-            {isFulledScreen ? 'Exit ' : ''}Full
-        </button>
+        <div style={{ width: '60px', overflow: 'hidden' }}>
+            <button className='btn btn-info btn-sm'
+
+                onClick={async () => {
+                    setIsFullScreen(
+                        await (
+                            isFulledScreen ? exitFullScreen : enterFullScreen
+                        )()
+                    );
+                }}>
+                <i className={
+                    `bi bi-${genFullScreenClassName(isFulledScreen)}`
+                } />
+                {isFulledScreen ? 'Exit ' : ''}Full
+            </button>
+        </div>
     );
 }
 
 function Render({
-    fontSize, bibleItemViewController,
+    bibleItemViewController,
 }: Readonly<{
-    fontSize: number,
     bibleItemViewController: BibleItemViewController,
 }>) {
     const nestedBibleItems = useBIVCUpdateEvent(bibleItemViewController);
     return (
         <BibleViewRenderer
-            fontSize={fontSize}
             bibleItemViewController={bibleItemViewController}
             nestedBibleItems={nestedBibleItems}
             isHorizontal={true}

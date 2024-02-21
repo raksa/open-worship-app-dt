@@ -100,7 +100,7 @@ function getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
     const prefixSetting = getSettingPrefix(windowMode);
     return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
 }
-type FinalRendererType = (bibleItem: BibleItem, fontSize: number) => ReactNode;
+type FinalRendererType = (bibleItem: BibleItem) => ReactNode;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
@@ -268,13 +268,24 @@ export default class BibleItemViewController
 }
 
 export class SearchBibleItemViewController extends BibleItemViewController {
-    private _nestedBibleItems: NestedBibleItemsType = [];
+    private _nestedBibleItems: NestedBibleItemsType;
+    constructor() {
+        super((_: BibleItem) => null);
+        const bibleItem = BibleItem.fromJson({
+            id: -1, bibleKey: 'KJV', metadata: {},
+            target: { bookKey: 'GEN', chapter: 1, verseStart: 1, verseEnd: 1 },
+        });
+        this._nestedBibleItems = [bibleItem];
+    }
     get nestedBibleItems() {
         return this._nestedBibleItems;
     }
     set nestedBibleItems(newNestedBibleItems: NestedBibleItemsType) {
         this._nestedBibleItems = sanitizeZeroItem(newNestedBibleItems);
         this.fireUpdateEvent();
+    }
+    checkIsBibleItemSelected(bibleItem: BibleItem) {
+        return bibleItem.id === -1;
     }
 }
 

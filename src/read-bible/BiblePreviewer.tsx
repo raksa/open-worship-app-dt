@@ -4,10 +4,9 @@ import BiblePreviewerRender from './BiblePreviewerRender';
 import BibleView from './BibleView';
 
 export default function BiblePreviewer() {
-    const finalRenderer = (bibleItem: BibleItem, fontSize: number) => {
+    const finalRenderer = (bibleItem: BibleItem) => {
         return (<BibleView
             bibleItem={bibleItem}
-            fontSize={fontSize}
             bibleItemViewController={bibleItemViewController}
         />);
     };

@@ -7,9 +7,9 @@ import {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
 import { setBibleSearchInputFocus } from './selectionHelpers';
-import RenderBibleSearchBody from './RenderBibleSearchBody';
 import RenderKeepWindowOpen from './RenderKeepWindowOpen';
 import { useModalTypeData } from '../app-modal/helpers';
+import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
 
 export default function RenderBibleSearch({
     editingInputText,
@@ -18,10 +18,10 @@ export default function RenderBibleSearch({
 }>) {
     const { data } = useModalTypeData();
     const isBibleEditing = !!data;
-    const [inputText, _setInputText] = useState<string>(editingInputText);
+    const [inputText, setInputText] = useState<string>(editingInputText);
     const [bibleKeySelected, setBibleKeySelected] = useGetSelectedBibleKey();
-    const setInputText = (newText: string) => {
-        _setInputText(newText);
+    const setInputText1 = (newText: string) => {
+        setInputText(newText);
         setBibleSearchInputFocus();
     };
 
@@ -32,7 +32,7 @@ export default function RenderBibleSearch({
             );
             setBibleKeySelected(newBibleKey);
             if (newText !== null) {
-                setInputText(newText);
+                setInputText1(newText);
             }
         }, [inputText]);
     if (bibleKeySelected === null) {
@@ -52,7 +52,7 @@ export default function RenderBibleSearch({
                     </span>
                     <InputHandler
                         inputText={inputText}
-                        onInputChange={setInputText}
+                        onInputChange={setInputText1}
                         bibleKey={bibleKeySelected}
                         onBibleChange={handleBibleChange} />
                 </div>
@@ -61,10 +61,11 @@ export default function RenderBibleSearch({
                 'body card-body card w-100 h-100 overflow-hidden d-flex'
             }>
                 <div className='found h-100 w-100 overflow-hidden'>
-                    <RenderBibleSearchBody
+                    <BibleSearchBodyPreviewer
                         bibleKey={bibleKeySelected}
                         inputText={inputText}
-                        setInputText={setInputText} />
+                        setInputText={setInputText1}
+                    />
                 </div>
             </div>
         </div>

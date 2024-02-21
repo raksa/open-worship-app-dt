@@ -20,10 +20,9 @@ function openContextMenu(
 }
 
 export default function BibleView({
-    bibleItem, fontSize, bibleItemViewController: bibleItemViewCtl,
+    bibleItem, bibleItemViewController: bibleItemViewCtl,
 }: Readonly<{
     bibleItem: BibleItem,
-    fontSize: number,
     bibleItemViewController: BibleItemViewController,
 }>) {
     return (
@@ -63,7 +62,7 @@ export default function BibleView({
             <div className='card-body p-3'>
                 <BibleViewText
                     bibleItem={bibleItem}
-                    fontSize={fontSize} />
+                />
                 {/* TODO: implement this
                 <RefRenderer bibleItem={bibleItem} /> */}
             </div>
