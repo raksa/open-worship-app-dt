@@ -1,7 +1,6 @@
 import BibleView from './BibleView';
 import BibleItemViewController, {
-    NestedBibleItemsType,
-    RESIZE_SETTING_NAME,
+    NestedBibleItemsType, RESIZE_SETTING_NAME,
 } from './BibleItemViewController';
 import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';

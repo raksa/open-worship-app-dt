@@ -66,7 +66,9 @@ export function applyDragged(
                 } else if (pos === DraggingPosEnum.TOP.toString()) {
                     bibleItemViewCtl.addBibleItemTop(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
-                    bibleItemViewCtl.addBibleItemBottom(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemBottom(
+                        bibleItem, newBibleItem,
+                    );
                 }
             }
         }

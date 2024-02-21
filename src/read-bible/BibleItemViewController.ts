@@ -119,15 +119,17 @@ export default class BibleItemViewController
         setSetting(this.settingName, '[]');
         return [];
     }
-    set nestedBibleItems(newBibleItems: NestedBibleItemsType) {
+    set nestedBibleItems(newNestedBibleItems: NestedBibleItemsType) {
         if (
-            newBibleItems instanceof Array &&
+            newNestedBibleItems instanceof Array &&
             this.nestedBibleItems instanceof Array
-            && newBibleItems.length !== this.nestedBibleItems.length
+            && newNestedBibleItems.length !== this.nestedBibleItems.length
         ) {
             clearFlexSizeSetting(RESIZE_SETTING_NAME);
         }
-        const jsonStr = JSON.stringify(stringifyNestedBibleItem(newBibleItems));
+        const jsonStr = JSON.stringify(stringifyNestedBibleItem(
+            newNestedBibleItems,
+        ));
         setSetting(this.settingName, jsonStr);
         this.fireUpdateEvent();
     }
@@ -151,12 +153,12 @@ export default class BibleItemViewController
             nestedBibleItems, parentNestedBibleItems, index, isHorizontal,
         };
     }
-    changeItem(oldBibleItem: BibleItem, newBibleItem: BibleItem) {
+    changeItem(bibleItem: BibleItem, newBibleItem: BibleItem) {
         try {
             const {
                 nestedBibleItems, parentNestedBibleItems, index,
             } = this.seek(
-                oldBibleItem, 'Change Item', 'Unable to change bible item',
+                bibleItem, 'Change Item', 'Unable to change bible item',
             );
             parentNestedBibleItems[index] = newBibleItem;
             this.nestedBibleItems = nestedBibleItems;
@@ -175,12 +177,12 @@ export default class BibleItemViewController
         } catch (error) { }
     }
 
-    addBibleItem(oldBibleItem: BibleItem | null, bibleItem: BibleItem,
+    addBibleItem(bibleItem: BibleItem | null, newBibleItem: BibleItem,
         isHorizontal: boolean, isBefore: boolean,
     ) {
-        const newBibleItem = bibleItem.clone();
+        newBibleItem = newBibleItem.clone();
         newBibleItem.id = (new Date()).getTime();
-        if (oldBibleItem === null) {
+        if (bibleItem === null) {
             this.nestedBibleItems = [newBibleItem];
             return;
         }
@@ -189,7 +191,7 @@ export default class BibleItemViewController
                 nestedBibleItems, parentNestedBibleItems,
                 isHorizontal: foundIsHorizontal, index,
             } = this.seek(
-                oldBibleItem, 'Add Item', 'Unable to add bible item',
+                bibleItem, 'Add Item', 'Unable to add bible item',
             );
             if (isHorizontal === foundIsHorizontal) {
                 parentNestedBibleItems.splice(
@@ -198,32 +200,47 @@ export default class BibleItemViewController
             } else {
                 parentNestedBibleItems[index] = (
                     isBefore ?
-                        [newBibleItem, oldBibleItem] :
-                        [oldBibleItem, newBibleItem]
+                        [newBibleItem, bibleItem] :
+                        [bibleItem, newBibleItem]
                 );
             }
             this.nestedBibleItems = nestedBibleItems;
         } catch (error) { }
     }
     addBibleItemLeft(
-        oldBibleItem: BibleItem, bibleItem: BibleItem,
+        bibleItem: BibleItem, newBibleItem: BibleItem,
     ) {
-        this.addBibleItem(oldBibleItem, bibleItem, true, true);
+        this.addBibleItem(bibleItem, newBibleItem, true, true);
     }
     addBibleItemRight(
-        oldBibleItem: BibleItem, bibleItem: BibleItem,
+        bibleItem: BibleItem, newBibleItem: BibleItem,
     ) {
-        this.addBibleItem(oldBibleItem, bibleItem, true, false);
+        this.addBibleItem(bibleItem, newBibleItem, true, false);
     }
     addBibleItemTop(
-        oldBibleItem: BibleItem, bibleItem: BibleItem,
+        bibleItem: BibleItem, newBibleItem: BibleItem,
     ) {
-        this.addBibleItem(oldBibleItem, bibleItem, false, true);
+        this.addBibleItem(bibleItem, newBibleItem, false, true);
     }
     addBibleItemBottom(
-        oldBibleItem: BibleItem, bibleItem: BibleItem,
+        bibleItem: BibleItem, newBibleItem: BibleItem,
     ) {
-        this.addBibleItem(oldBibleItem, bibleItem, false, false);
+        this.addBibleItem(bibleItem, newBibleItem, false, false);
+    }
+}
+
+export class SearchBibleItemViewController extends BibleItemViewController {
+    private _nestedBibleItems: NestedBibleItemsType;
+    constructor() {
+        super();
+        this._nestedBibleItems = [];
+    }
+    get nestedBibleItems() {
+        return this._nestedBibleItems;
+    }
+    set nestedBibleItems(newNestedBibleItems: NestedBibleItemsType) {
+        this._nestedBibleItems = sanitizeZeroItem(newNestedBibleItems);
+        this.fireUpdateEvent();
     }
 }
 

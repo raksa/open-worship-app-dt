@@ -40,7 +40,9 @@ function openContextMenu(
                 showBibleOption(event, [], (bibleKey: string) => {
                     const newBibleItem = bibleItem.clone();
                     newBibleItem.bibleKey = bibleKey;
-                    bibleItemViewCtl.addBibleItemBottom(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemBottom(
+                        bibleItem, newBibleItem,
+                    );
                 });
             },
         },
@@ -79,7 +81,9 @@ export default function BibleView({
                 rendHeader(
                     bibleItem,
                     (_oldBibleKey: string, newBibleKey: string) => {
-                        bibleItem.bibleKey = newBibleKey;
+                        const newBibleItem = bibleItem.clone(true);
+                        newBibleItem.bibleKey = newBibleKey;
+                        bibleItemViewCtl.changeItem(bibleItem, newBibleItem);
                     },
                     () => {
                         bibleItemViewCtl.removeItem(bibleItem);
