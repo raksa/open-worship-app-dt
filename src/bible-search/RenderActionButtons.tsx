@@ -151,7 +151,6 @@ export function genFoundBibleItemContextMenu(
                 addListEventMapper, isKeyboardShortcut,
             )}`,
             onClick: () => {
-                addBibleItem(bibleItem, windowMode);
                 addBibleItem(bibleItem, windowMode).then((addedBibleItem) => {
                     if (addedBibleItem === null) {
                         showAddingBibleItemFail();

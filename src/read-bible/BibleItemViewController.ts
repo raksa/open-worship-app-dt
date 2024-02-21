@@ -175,7 +175,7 @@ export default class BibleItemViewController
         } catch (error) { }
     }
 
-    addItem(oldBibleItem: BibleItem | null, bibleItem: BibleItem,
+    addBibleItem(oldBibleItem: BibleItem | null, bibleItem: BibleItem,
         isHorizontal: boolean, isBefore: boolean,
     ) {
         const newBibleItem = bibleItem.clone();
@@ -205,25 +205,25 @@ export default class BibleItemViewController
             this.nestedBibleItems = nestedBibleItems;
         } catch (error) { }
     }
-    addItemLeft(
+    addBibleItemLeft(
         oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        this.addItem(oldBibleItem, bibleItem, true, true);
+        this.addBibleItem(oldBibleItem, bibleItem, true, true);
     }
-    addItemRight(
+    addBibleItemRight(
         oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        this.addItem(oldBibleItem, bibleItem, true, false);
+        this.addBibleItem(oldBibleItem, bibleItem, true, false);
     }
-    addItemTop(
+    addBibleItemTop(
         oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        this.addItem(oldBibleItem, bibleItem, false, true);
+        this.addBibleItem(oldBibleItem, bibleItem, false, true);
     }
-    addItemBottom(
+    addBibleItemBottom(
         oldBibleItem: BibleItem, bibleItem: BibleItem,
     ) {
-        this.addItem(oldBibleItem, bibleItem, false, false);
+        this.addBibleItem(oldBibleItem, bibleItem, false, false);
     }
 }
 

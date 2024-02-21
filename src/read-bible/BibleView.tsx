@@ -20,27 +20,27 @@ function openContextMenu(
         ...genDefaultBibleItemContextMenu(bibleItem),
         {
             title: 'Split Right', onClick: () => {
-                bibleItemViewCtl.addItemRight(bibleItem, bibleItem);
+                bibleItemViewCtl.addBibleItemRight(bibleItem, bibleItem);
             },
         }, {
             title: 'Split Right To', onClick: () => {
                 showBibleOption(event, [], (bibleKey: string) => {
                     const newBibleItem = bibleItem.clone();
                     newBibleItem.bibleKey = bibleKey;
-                    bibleItemViewCtl.addItemRight(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemRight(bibleItem, newBibleItem);
                 });
             },
         },
         {
             title: 'Split Bottom', onClick: () => {
-                bibleItemViewCtl.addItemBottom(bibleItem, bibleItem);
+                bibleItemViewCtl.addBibleItemBottom(bibleItem, bibleItem);
             },
         }, {
             title: 'Split Bottom To', onClick: () => {
                 showBibleOption(event, [], (bibleKey: string) => {
                     const newBibleItem = bibleItem.clone();
                     newBibleItem.bibleKey = bibleKey;
-                    bibleItemViewCtl.addItemBottom(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemBottom(bibleItem, newBibleItem);
                 });
             },
         },

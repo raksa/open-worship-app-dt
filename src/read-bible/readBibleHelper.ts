@@ -60,13 +60,13 @@ export function applyDragged(
                 if (pos === DraggingPosEnum.CENTER.toString()) {
                     bibleItemViewCtl.changeItem(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
-                    bibleItemViewCtl.addItemLeft(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemLeft(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {
-                    bibleItemViewCtl.addItemRight(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemRight(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.TOP.toString()) {
-                    bibleItemViewCtl.addItemTop(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemTop(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
-                    bibleItemViewCtl.addItemBottom(bibleItem, newBibleItem);
+                    bibleItemViewCtl.addBibleItemBottom(bibleItem, newBibleItem);
                 }
             }
         }

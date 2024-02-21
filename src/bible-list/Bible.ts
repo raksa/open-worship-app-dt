@@ -48,9 +48,9 @@ export default class Bible extends ItemSource<BibleItem>{
             return BibleItem.fromJsonError(json, this.filePath);
         });
     }
-    set items(newItems: BibleItem[]) {
-        const items = newItems.map((item) => item.toJson());
-        this._originalJson.items = items;
+    set items(newBibleItems: BibleItem[]) {
+        const bibleItems = newBibleItems.map((item) => item.toJson());
+        this._originalJson.items = bibleItems;
     }
     get maxItemId() {
         if (this.items.length) {
@@ -79,11 +79,11 @@ export default class Bible extends ItemSource<BibleItem>{
     getItemById(id: number): BibleItem | null {
         return this.items.find((item) => item.id === id) || null;
     }
-    setItemById(id: number, item: BibleItem) {
-        const items = this.items;
-        const newItems = items.map((item1) => {
+    setItemById(id: number, bibleItem: BibleItem) {
+        const bibleItems = this.items;
+        const newItems = bibleItems.map((item1) => {
             if (item1.id === id) {
-                return item;
+                return bibleItem;
             }
             return item1;
         });
@@ -94,7 +94,7 @@ export default class Bible extends ItemSource<BibleItem>{
     ) {
         const bible = await Bible.getDefault(windowMode);
         if (bible) {
-            bible.addItem(bibleItem);
+            bible.addBibleItem(bibleItem);
             if (await bible.save()) {
                 return bibleItem;
             }
@@ -102,39 +102,39 @@ export default class Bible extends ItemSource<BibleItem>{
         return null;
     }
     duplicate(index: number) {
-        const items = this.items;
-        const newItem = items[index].clone();
+        const bibleItems = this.items;
+        const newItem = bibleItems[index].clone();
         newItem.id = this.maxItemId + 1;
-        items.splice(index + 1, 0, newItem);
-        this.items = items;
+        bibleItems.splice(index + 1, 0, newItem);
+        this.items = bibleItems;
     }
     removeItemAtIndex(index: number): BibleItem | null {
-        const items = this.items;
-        const removedItems = items.splice(index, 1);
-        this.items = items;
+        const bibleItems = this.items;
+        const removedItems = bibleItems.splice(index, 1);
+        this.items = bibleItems;
         return removedItems[0] || null;
     }
     removeItem(bibleItem: BibleItem) {
-        const items = this.items;
-        const index = items.indexOf(bibleItem);
+        const bibleItems = this.items;
+        const index = bibleItems.indexOf(bibleItem);
         if (index !== -1) {
             this.removeItemAtIndex(index);
         }
     }
-    addItem(item: BibleItem) {
-        item.filePath = this.filePath;
-        item.id = this.maxItemId + 1;
-        const items = this.items;
-        items.push(item);
-        this.items = items;
+    addBibleItem(bibleItem: BibleItem) {
+        bibleItem.filePath = this.filePath;
+        bibleItem.id = this.maxItemId + 1;
+        const bibleItems = this.items;
+        bibleItems.push(bibleItem);
+        this.items = bibleItems;
     }
     swapItem(fromIndex: number, toIndex: number) {
-        const items = this.items;
-        const fromItem = items[fromIndex];
-        const toItem = items[toIndex];
-        items[fromIndex] = toItem;
-        items[toIndex] = fromItem;
-        this.items = items;
+        const bibleItems = this.items;
+        const fromItem = bibleItems[fromIndex];
+        const toItem = bibleItems[toIndex];
+        bibleItems[fromIndex] = toItem;
+        bibleItems[toIndex] = fromItem;
+        this.items = bibleItems;
     }
     async moveItemFrom(filePath: string, index?: number) {
         try {
