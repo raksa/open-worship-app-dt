@@ -11,6 +11,9 @@ import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
 import { useWindowMode } from '../router/routeHelpers';
+import {
+    SearchBibleItemViewController,
+} from '../read-bible/BibleItemViewController';
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange,
@@ -21,8 +24,10 @@ export default function RenderBibleDataFound({
     const windowMode = useWindowMode();
     const isSearching = onVerseChange !== undefined;
     useFoundActionKeyboard(bibleItem);
+    const bibleItemViewController = SearchBibleItemViewController.getInstance();
+    bibleItemViewController.selectBibleItem.syncData(bibleItem);
     return (
-        <div className='card border-success mt-1 w-100 h-100'
+        <div className='card border-success w-100 h-100'
             onContextMenu={(event) => {
                 if (windowMode === null) {
                     return;
@@ -33,6 +38,9 @@ export default function RenderBibleDataFound({
                         true,
                     ),
                     ...genDefaultBibleItemContextMenu(bibleItem),
+                    ...bibleItemViewController.genContextMenu(
+                        bibleItemViewController.selectBibleItem,
+                    ),
                 ]);
             }}
             style={{

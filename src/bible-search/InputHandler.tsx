@@ -12,15 +12,19 @@ import {
 import {
     useBibleItemPropsToInputText,
 } from '../bible-list/bibleItemHelpers';
+import {
+    SearchBibleItemViewController,
+} from '../read-bible/BibleItemViewController';
 
 export default function InputHandler({
-    inputText, onInputChange, onBibleChange, bibleKey,
+    inputText, onBibleChange, bibleKey,
 }: Readonly<{
     inputText: string
-    onInputChange: (str: string) => void
     onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
     bibleKey: string;
 }>) {
+    const setInputText = SearchBibleItemViewController.
+        getInstance().setInputText;
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(
@@ -33,11 +37,11 @@ export default function InputHandler({
         }
         const arr = inputText.split(' ').filter((str) => str !== '');
         if (arr.length === 1) {
-            onInputChange('');
+            setInputText('');
             return;
         }
         arr.pop();
-        onInputChange(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
+        setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
     });
     return (
         <>
@@ -48,7 +52,7 @@ export default function InputHandler({
                 placeholder={placeholder}
                 onChange={(event) => {
                     const value = event.target.value;
-                    onInputChange(value);
+                    setInputText(value);
                 }} />
             <span className='input-group-text select'>
                 <i className='bi bi-journal-bookmark' />

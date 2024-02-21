@@ -7,15 +7,19 @@ import RenderSearchSuggestion from './RenderSearchSuggestion';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
+import {
+    SearchBibleItemViewController,
+} from '../read-bible/BibleItemViewController';
 
 
 export default function RenderBibleSearchBody({
-    bibleKey, inputText, setInputText,
+    bibleKey, inputText,
 }: Readonly<{
     bibleKey: string,
     inputText: string,
-    setInputText: (newText: string) => void,
 }>) {
+    const setInputText = SearchBibleItemViewController.
+        getInstance().setInputText;
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
@@ -79,7 +83,6 @@ export default function RenderBibleSearchBody({
     return (
         <div className='d-flex w-100 h-100'>
             <RenderSearchSuggestion
-                inputText={inputText}
                 bibleKey={bibleKey}
                 bibleResult={extractedInput}
                 applyChapterSelection={applyChapterSelectionCallback}

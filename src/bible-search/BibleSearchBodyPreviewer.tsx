@@ -6,14 +6,13 @@ import BiblePreviewerRender from '../read-bible/BiblePreviewerRender';
 import BibleView from '../read-bible/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
 
-const bibleItemViewController = new SearchBibleItemViewController();
 export default function BibleSearchBodyPreviewer({
-    bibleKey, inputText, setInputText,
+    bibleKey, inputText,
 }: Readonly<{
     bibleKey: string,
     inputText: string,
-    setInputText: (newText: string) => void,
 }>) {
+    const bibleItemViewController = SearchBibleItemViewController.getInstance();
     bibleItemViewController.finalRenderer = (
         bibleItem: BibleItem,
     ) => {
@@ -24,8 +23,7 @@ export default function BibleSearchBodyPreviewer({
             isSelected ?
                 <RenderBibleSearchBody
                     bibleKey={bibleKey}
-                    inputText={inputText}
-                    setInputText={setInputText} /> :
+                    inputText={inputText} /> :
                 <BibleView
                     bibleItem={bibleItem}
                     bibleItemViewController={bibleItemViewController}

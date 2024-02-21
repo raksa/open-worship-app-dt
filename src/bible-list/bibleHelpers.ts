@@ -4,7 +4,7 @@ import {
 } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
 import {
-    getBookKVList, VerseList, getVerses, keyToBook,
+    VerseList, getVerses, keyToBook,
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     extractBibleTitle, toInputText, toLocaleNumBB,

@@ -199,6 +199,9 @@ export default class BibleItem extends ItemBase
         const { title, text } = await this.toTitleText();
         copyToClipboard(`${title}\n${text}`);
     }
+    syncData(bibleItem: BibleItem) {
+        this._originalJson = bibleItem._originalJson;
+    }
     dragSerialize() {
         return {
             type: DragTypeEnum.BIBLE_ITEM,

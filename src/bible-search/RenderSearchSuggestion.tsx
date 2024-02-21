@@ -15,7 +15,6 @@ export default function RenderSearchSuggestion({
         newVerseStart?: number, newVerseEnd?: number,
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
-    inputText: string,
     bibleKey: string,
     bibleResult: ExtractedBibleResult,
 }>) {

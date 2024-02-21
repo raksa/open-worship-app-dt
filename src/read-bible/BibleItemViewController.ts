@@ -13,6 +13,7 @@ import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { showBibleOption } from '../bible-search/BibleSelection';
+import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -273,16 +274,17 @@ export default class BibleItemViewController
 
 export class SearchBibleItemViewController extends BibleItemViewController {
     private _nestedBibleItems: NestedBibleItemsType;
-    private _selectBibleItemId: number;
+    private static _instance: SearchBibleItemViewController | null = null;
+    selectBibleItem: BibleItem;
+    setInputText = (_: string) => { };
+    setBibleKey = (_: string | null) => { };
     constructor() {
         super((_: BibleItem) => null);
-        debugger;
-        this._selectBibleItemId = this.genBibleItemUniqueId();
-        const bibleItem = BibleItem.fromJson({
-            id: this._selectBibleItemId, bibleKey: 'KJV', metadata: {},
+        this.selectBibleItem = BibleItem.fromJson({
+            id: this.genBibleItemUniqueId(), bibleKey: 'KJV', metadata: {},
             target: { bookKey: 'GEN', chapter: 1, verseStart: 1, verseEnd: 1 },
         });
-        this._nestedBibleItems = [bibleItem];
+        this._nestedBibleItems = [this.selectBibleItem];
     }
     get nestedBibleItems() {
         return this._nestedBibleItems;
@@ -292,9 +294,30 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         this.fireUpdateEvent();
     }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
-        console.log(bibleItem.id, this._selectBibleItemId);
-
-        return bibleItem.id === this._selectBibleItemId;
+        return bibleItem === this.selectBibleItem;
+    }
+    static getInstance() {
+        if (this._instance === null) {
+            this._instance = new this;
+        }
+        return this._instance;
+    }
+    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
+        const menus = super.genContextMenu(bibleItem);
+        if (!this.checkIsBibleItemSelected(bibleItem)) {
+            menus.push({
+                title: 'Edit', onClick: () => {
+                    const newBibleItem = bibleItem.clone(true);
+                    this.selectBibleItem = newBibleItem;
+                    this.changeItem(bibleItem, newBibleItem);
+                    bibleItem.toTitle().then((inputText) => {
+                        this.setInputText(inputText);
+                        this.setBibleKey(bibleItem.bibleKey);
+                    });
+                },
+            });
+        }
+        return menus;
     }
 }
 
