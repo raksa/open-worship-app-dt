@@ -141,13 +141,19 @@ async function transformExtracted(
     if (verseStart !== null) {
         const verseStartNum = await fromLocaleNumBB(bibleKey, verseStart);
         if (verseStartNum !== null) {
-            target.verseStart = verseStartNum;
+            target.verseStart = (
+                verseStartNum > 0 && verseStartNum <= verseCount ?
+                    verseStartNum : 1
+            );
         }
     }
     if (verseEnd !== null) {
         const verseEndNum = await fromLocaleNumBB(bibleKey, verseEnd);
         if (verseEndNum !== null) {
-            target.verseEnd = verseEndNum;
+            target.verseEnd = (
+                verseEndNum > 0 && verseEndNum <= verseCount ?
+                    verseEndNum : verseCount
+            );
         }
     }
     const { verseStart: sVerse, verseEnd: eVerse } = target;

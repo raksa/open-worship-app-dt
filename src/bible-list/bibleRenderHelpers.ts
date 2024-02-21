@@ -110,7 +110,7 @@ class BibleRenderHelper {
         let txt = '';
         for (let i = verseStart; i <= verseEnd; i++) {
             const localNum = await toLocaleNumBB(bible, i);
-            txt += ` (${localNum}): ${verses[i.toString()]}`;
+            txt += ` (${localNum}): ${verses[i.toString()] ?? '??'}`;
         }
         return this._fullfilCallback(cacheKey, txt);
     }
