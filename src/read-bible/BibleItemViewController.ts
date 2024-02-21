@@ -140,6 +140,10 @@ export default class BibleItemViewController
         this.fireUpdateEvent();
     }
 
+    genBibleItemUniqueId() {
+        return (new Date()).getTime();
+    }
+
     fireUpdateEvent() {
         this.addPropEvent('update');
     }
@@ -187,7 +191,7 @@ export default class BibleItemViewController
         isHorizontal: boolean, isBefore: boolean,
     ) {
         newBibleItem = newBibleItem.clone();
-        newBibleItem.id = (new Date()).getTime();
+        newBibleItem.id = this.genBibleItemUniqueId();
         if (bibleItem === null) {
             this.nestedBibleItems = [newBibleItem];
             return;
@@ -269,10 +273,13 @@ export default class BibleItemViewController
 
 export class SearchBibleItemViewController extends BibleItemViewController {
     private _nestedBibleItems: NestedBibleItemsType;
+    private _selectBibleItemId: number;
     constructor() {
         super((_: BibleItem) => null);
+        debugger;
+        this._selectBibleItemId = this.genBibleItemUniqueId();
         const bibleItem = BibleItem.fromJson({
-            id: -1, bibleKey: 'KJV', metadata: {},
+            id: this._selectBibleItemId, bibleKey: 'KJV', metadata: {},
             target: { bookKey: 'GEN', chapter: 1, verseStart: 1, verseEnd: 1 },
         });
         this._nestedBibleItems = [bibleItem];
@@ -285,7 +292,9 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         this.fireUpdateEvent();
     }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
-        return bibleItem.id === -1;
+        console.log(bibleItem.id, this._selectBibleItemId);
+
+        return bibleItem.id === this._selectBibleItemId;
     }
 }
 

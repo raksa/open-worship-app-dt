@@ -6,6 +6,7 @@ import BiblePreviewerRender from '../read-bible/BiblePreviewerRender';
 import BibleView from '../read-bible/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
 
+const bibleItemViewController = new SearchBibleItemViewController();
 export default function BibleSearchBodyPreviewer({
     bibleKey, inputText, setInputText,
 }: Readonly<{
@@ -13,7 +14,6 @@ export default function BibleSearchBodyPreviewer({
     inputText: string,
     setInputText: (newText: string) => void,
 }>) {
-    const bibleItemViewController = new SearchBibleItemViewController();
     bibleItemViewController.finalRenderer = (
         bibleItem: BibleItem,
     ) => {
