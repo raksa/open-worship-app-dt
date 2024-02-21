@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
@@ -100,13 +100,16 @@ function getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
     const prefixSetting = getSettingPrefix(windowMode);
     return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
 }
+type FinalRendererType = (bibleItem: BibleItem, fontSize: number) => ReactNode;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
     private _settingNameSuffix: string | null;
-    constructor(settingNameSuffix?: string) {
+    finalRenderer: FinalRendererType;
+    constructor(finalRenderer: FinalRendererType, settingNameSuffix?: string) {
         super();
         this._settingNameSuffix = settingNameSuffix || null;
+        this.finalRenderer = finalRenderer;
     }
     get settingName() {
         return getBibleItemsPreviewSettingName(null) + this._settingNameSuffix;
@@ -265,11 +268,7 @@ export default class BibleItemViewController
 }
 
 export class SearchBibleItemViewController extends BibleItemViewController {
-    private _nestedBibleItems: NestedBibleItemsType;
-    constructor() {
-        super();
-        this._nestedBibleItems = [];
-    }
+    private _nestedBibleItems: NestedBibleItemsType = [];
     get nestedBibleItems() {
         return this._nestedBibleItems;
     }

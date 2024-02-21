@@ -3,6 +3,10 @@
 .bible-view {
   min-width: 200px;
 
+  &:hover {
+    border: 1px dotted rgba(82, 127, 150, 0.572);
+  }
+
   .card-header {
     .btn-close {
       margin: 5px;

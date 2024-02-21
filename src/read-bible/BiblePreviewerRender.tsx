@@ -5,8 +5,6 @@ import BibleItemViewController, {
     useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
-import BibleItem from '../bible-list/BibleItem';
-import BibleView from './BibleView';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
@@ -122,22 +120,12 @@ function Render({
     bibleItemViewController: BibleItemViewController,
 }>) {
     const nestedBibleItems = useBIVCUpdateEvent(bibleItemViewController);
-    const finalRenderer = (
-        bibleItem: BibleItem,
-    ) => {
-        return (<BibleView
-            bibleItem={bibleItem}
-            fontSize={fontSize}
-            bibleItemViewController={bibleItemViewController}
-        />);
-    };
     return (
         <BibleViewRenderer
             fontSize={fontSize}
             bibleItemViewController={bibleItemViewController}
             nestedBibleItems={nestedBibleItems}
             isHorizontal={true}
-            finalRenderer={finalRenderer}
         />
     );
 }
