@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -10,6 +11,8 @@ import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
 import { WindowModEnum } from '../router/routeHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { ContextMenuItemType } from '../others/AppContextMenu';
+import { showBibleOption } from '../bible-search/BibleSelection';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -83,7 +86,7 @@ function seekParent(
                 if (foundParent !== null) {
                     return foundParent;
                 }
-            } else if (nestedBibleItem.isSameId(bibleItem)) {
+            } else if (nestedBibleItem.checkIsSameId(bibleItem)) {
                 return {
                     nestedBibleItems, isHorizontal, bibleItem: nestedBibleItem,
                 };
@@ -226,6 +229,38 @@ export default class BibleItemViewController
         bibleItem: BibleItem, newBibleItem: BibleItem,
     ) {
         this.addBibleItem(bibleItem, newBibleItem, false, false);
+    }
+    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
+        return [
+            {
+                title: 'Split Right', onClick: () => {
+                    this.addBibleItemRight(bibleItem, bibleItem);
+                },
+            }, {
+                title: 'Split Right To', onClick: (event: any) => {
+                    showBibleOption(event, [], (bibleKey: string) => {
+                        const newBibleItem = bibleItem.clone();
+                        newBibleItem.bibleKey = bibleKey;
+                        this.addBibleItemRight(bibleItem, newBibleItem);
+                    });
+                },
+            },
+            {
+                title: 'Split Bottom', onClick: () => {
+                    this.addBibleItemBottom(bibleItem, bibleItem);
+                },
+            }, {
+                title: 'Split Bottom To', onClick: (event: any) => {
+                    showBibleOption(event, [], (bibleKey: string) => {
+                        const newBibleItem = bibleItem.clone();
+                        newBibleItem.bibleKey = bibleKey;
+                        this.addBibleItemBottom(
+                            bibleItem, newBibleItem,
+                        );
+                    });
+                },
+            },
+        ];
     }
 }
 

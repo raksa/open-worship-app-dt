@@ -48,7 +48,7 @@ export default class BibleItem extends ItemBase
     set metadata(metadata: AnyObjectType) {
         this._originalJson.metadata = metadata;
     }
-    isSameId(bibleItem: BibleItem) {
+    checkIsSameId(bibleItem: BibleItem) {
         return this.id === bibleItem.id;
     }
     static fromJson(json: BibleItemType, filePath?: string) {

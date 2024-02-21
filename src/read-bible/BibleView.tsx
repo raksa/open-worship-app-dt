@@ -2,9 +2,6 @@ import './BibleView.scss';
 
 import { showAppContextMenu } from '../others/AppContextMenu';
 import BibleItem from '../bible-list/BibleItem';
-import {
-    showBibleOption,
-} from '../bible-search/BibleSelection';
 import BibleItemViewController from './BibleItemViewController';
 import {
     applyDragged, genDraggingClass, removeDraggingClass,
@@ -18,34 +15,7 @@ function openContextMenu(
 ) {
     showAppContextMenu(event as any, [
         ...genDefaultBibleItemContextMenu(bibleItem),
-        {
-            title: 'Split Right', onClick: () => {
-                bibleItemViewCtl.addBibleItemRight(bibleItem, bibleItem);
-            },
-        }, {
-            title: 'Split Right To', onClick: () => {
-                showBibleOption(event, [], (bibleKey: string) => {
-                    const newBibleItem = bibleItem.clone();
-                    newBibleItem.bibleKey = bibleKey;
-                    bibleItemViewCtl.addBibleItemRight(bibleItem, newBibleItem);
-                });
-            },
-        },
-        {
-            title: 'Split Bottom', onClick: () => {
-                bibleItemViewCtl.addBibleItemBottom(bibleItem, bibleItem);
-            },
-        }, {
-            title: 'Split Bottom To', onClick: () => {
-                showBibleOption(event, [], (bibleKey: string) => {
-                    const newBibleItem = bibleItem.clone();
-                    newBibleItem.bibleKey = bibleKey;
-                    bibleItemViewCtl.addBibleItemBottom(
-                        bibleItem, newBibleItem,
-                    );
-                });
-            },
-        },
+        ...bibleItemViewCtl.genContextMenu(bibleItem),
     ]);
 }
 

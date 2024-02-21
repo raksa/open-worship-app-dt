@@ -1,26 +1,24 @@
-import BibleView from './BibleView';
+import { ReactNode } from 'react';
+
 import BibleItemViewController, {
     NestedBibleItemsType, RESIZE_SETTING_NAME,
 } from './BibleItemViewController';
 import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
+import BibleItem from '../bible-list/BibleItem';
 
 export default function BibleViewRenderer({
     fontSize, bibleItemViewController, isHorizontal, nestedBibleItems,
+    finalRenderer,
 }: Readonly<{
     fontSize: number,
     bibleItemViewController: BibleItemViewController,
     isHorizontal: boolean,
     nestedBibleItems: NestedBibleItemsType,
+    finalRenderer: (bibleItem: BibleItem) => ReactNode,
 }>) {
     if (!(nestedBibleItems instanceof Array)) {
-        return (
-            <BibleView
-                bibleItem={nestedBibleItems}
-                fontSize={fontSize}
-                bibleItemViewController={bibleItemViewController}
-            />
-        );
+        return finalRenderer(nestedBibleItems);
     }
     if (nestedBibleItems.length === 0) {
         return (
@@ -54,6 +52,7 @@ export default function BibleViewRenderer({
                                         bibleItemViewController
                                     }
                                     isHorizontal={!isHorizontal}
+                                    finalRenderer={finalRenderer}
                                 />
                             );
                         },
