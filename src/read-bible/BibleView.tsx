@@ -26,7 +26,7 @@ export default function BibleView({
 }>) {
     const bibleItemViewController = useContext(BibleItemViewControllerContext);
     return (
-        <div className='bible-view card flex-fill'
+        <div className='bible-view card flex-fill w-100 h-100'
             style={{ minWidth: '30%' }}
             onDragOver={(event) => {
                 event.preventDefault();
