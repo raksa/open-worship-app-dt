@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import InputHandler from './InputHandler';
 import {
     genInputText, useGetSelectedBibleKey,
@@ -63,14 +64,12 @@ export default function RenderBibleSearch({
                 </div>
             </div>
             <div className={
-                'body card-body card w-100 h-100 overflow-hidden d-flex'
+                'card-body w-100 h-100 overflow-hidden'
             }>
-                <div className='found h-100 w-100 overflow-hidden'>
-                    <BibleSearchBodyPreviewer
-                        bibleKey={bibleKey}
-                        inputText={inputText}
-                    />
-                </div>
+                <BibleSearchBodyPreviewer
+                    bibleKey={bibleKey}
+                    inputText={inputText}
+                />
             </div>
         </div>
     );

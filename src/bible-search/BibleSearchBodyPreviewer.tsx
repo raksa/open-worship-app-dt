@@ -1,6 +1,6 @@
 import BibleItem from '../bible-list/BibleItem';
 import {
-    SearchBibleItemViewController,
+    BibleItemViewControllerContext, SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
 import BiblePreviewerRender from '../read-bible/BiblePreviewerRender';
 import BibleView from '../read-bible/BibleView';
@@ -26,13 +26,13 @@ export default function BibleSearchBodyPreviewer({
                     inputText={inputText} /> :
                 <BibleView
                     bibleItem={bibleItem}
-                    bibleItemViewController={bibleItemViewController}
                 />
         );
     };
     return (
-        <BiblePreviewerRender
-            bibleItemViewController={bibleItemViewController}
-        />
+        <BibleItemViewControllerContext.Provider
+            value={bibleItemViewController}>
+            <BiblePreviewerRender />
+        </BibleItemViewControllerContext.Provider>
     );
 }

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, createContext, useContext, useState } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
@@ -13,7 +13,6 @@ import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { showBibleOption } from '../bible-search/BibleSelection';
-import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -321,8 +320,14 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     }
 }
 
-export function useBIVCUpdateEvent(
-    bibleItemViewController: BibleItemViewController) {
+export const BibleItemViewControllerContext = createContext<
+    BibleItemViewController
+>(
+    new BibleItemViewController((_: BibleItem) => null)
+);
+
+export function useBIVCUpdateEvent() {
+    const bibleItemViewController = useContext(BibleItemViewControllerContext);
     const [nestedBibleItems, setNestedBibleItems] = useState(
         bibleItemViewController.nestedBibleItems,
     );

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+
 import { useStateSettingNumber } from '../helper/settingHelper';
 import BibleViewSetting from './BibleViewSetting';
-import BibleItemViewController, {
+import {
     useBIVCUpdateEvent,
 } from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
@@ -13,11 +14,7 @@ const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
 const STEP_FONT_SIZE = 2;
 
-export default function BiblePreviewerRender({
-    bibleItemViewController,
-}: Readonly<{
-    bibleItemViewController: BibleItemViewController,
-}>) {
+export default function BiblePreviewerRender() {
     const [isFulledScreen, setIsFulledScreen] = useState(
         !!document.fullscreenElement,
     );
@@ -34,17 +31,19 @@ export default function BiblePreviewerRender({
         _setFontSize(fontSize);
     };
     return (
-        <div className={`card h-100 ${isFulledScreen ? 'app-popup-full' : ''}`}
+        <div className={
+            `card w-100 h-100 ${isFulledScreen ? 'app-popup-full' : ''}`
+        }
             onWheel={(event) => {
                 if (event.ctrlKey) {
                     setFontSize(Math.round(fontSize + event.deltaY / 10));
                 }
             }}>
-            <div className='card-body d-flex d-flex-row overflow-hidden h-100'>
+            <div className={
+                'card-body d-flex overflow-hidden w-100 h-100'
+            }>
                 <BibleTextFontSizeContext.Provider value={fontSize}>
-                    <Render
-                        bibleItemViewController={bibleItemViewController}
-                    />
+                    <Render />
                 </BibleTextFontSizeContext.Provider>
             </div>
             <div className='card-footer p-0'>
@@ -124,15 +123,10 @@ function FullScreenBtn({
     );
 }
 
-function Render({
-    bibleItemViewController,
-}: Readonly<{
-    bibleItemViewController: BibleItemViewController,
-}>) {
-    const nestedBibleItems = useBIVCUpdateEvent(bibleItemViewController);
+function Render() {
+    const nestedBibleItems = useBIVCUpdateEvent();
     return (
         <BibleViewRenderer
-            bibleItemViewController={bibleItemViewController}
             nestedBibleItems={nestedBibleItems}
             isHorizontal={true}
         />

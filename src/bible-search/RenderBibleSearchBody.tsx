@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import {
     ExtractedBibleResult, genExtractedBible, extractBibleTitle, toInputText,
     parseChapterFromGuessing,
@@ -81,14 +82,12 @@ export default function RenderBibleSearchBody({
         extractedInput.chapter, setInputText,
     ]);
     return (
-        <div className='d-flex w-100 h-100'>
-            <RenderSearchSuggestion
-                bibleKey={bibleKey}
-                bibleResult={extractedInput}
-                applyChapterSelection={applyChapterSelectionCallback}
-                applyVerseSelection={applyVerseSelectionCallback}
-                applyBookSelection={applyBookSelectionCallback}
-            />
-        </div>
+        <RenderSearchSuggestion
+            bibleKey={bibleKey}
+            bibleResult={extractedInput}
+            applyChapterSelection={applyChapterSelectionCallback}
+            applyVerseSelection={applyVerseSelectionCallback}
+            applyBookSelection={applyBookSelectionCallback}
+        />
     );
 }

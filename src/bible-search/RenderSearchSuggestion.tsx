@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+
 import RenderBookOptions from './RenderBookOptions';
 import RenderChapterOptions from './RenderChapterOptions';
 import {
@@ -30,18 +31,18 @@ export default function RenderSearchSuggestion({
 
     if (bibleItem !== null) {
         return (
-            <div className='d-flex w-100 h-100'>
-                <RenderBibleDataFound
-                    bibleItem={bibleItem}
-                    onVerseChange={onVerseChangeCallback}
-                />
-            </div>
+            <RenderBibleDataFound
+                bibleItem={bibleItem}
+                onVerseChange={onVerseChangeCallback}
+            />
         );
     }
     return (
-        <div className='w-100 h-100'
-            style={{ overflow: 'auto' }}>
-            <div className='d-flex flex-wrap justify-content-start'>
+        <div className='found w-100 h-100'>
+            <div className={
+                'w-100  d-flex flex-wrap align-items-start '
+                + 'justify-content-start'
+            }>
                 <RenderBookOptions
                     bibleKey={bibleKey}
                     bookKey={bookKey}

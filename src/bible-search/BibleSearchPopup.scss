@@ -5,42 +5,29 @@
   min-height: 98%;
   margin: auto;
 
-  &>.card-header {
-    height: 60px;
-  }
-
   .input-group-header {
     margin: auto;
     max-width: 450px;
   }
 
-  .body {
-    padding: 5px;
+  .chapter-select {
+    width: 85px;
+    font-size: 13px;
+  }
 
+  .found {
+    overflow-y: auto;
 
-
-    .chapter-select {
-      width: 85px;
-      font-size: 13px;
-    }
-
-    .found {
-      overflow-x: hidden;
-      overflow-y: auto;
-
-      .btn {
-        flex: 1 1 auto;
-
-        &.bible-search-chapter-option {
-          &:hover {
-            font-weight: bold;
-          }
-        }
+    .bible-search-chapter-option,
+    .bible-search-book-option {
+      &:hover {
+        font-weight: bold;
+        background-color: transparent !important;
       }
     }
+  }
 
-    .select {
-      padding: 0;
-    }
+  .select {
+    padding: 0;
   }
 }

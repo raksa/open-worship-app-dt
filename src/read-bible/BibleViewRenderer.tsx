@@ -1,16 +1,18 @@
-import BibleItemViewController, {
-    NestedBibleItemsType, RESIZE_SETTING_NAME,
+import { useContext } from 'react';
+
+import {
+    BibleItemViewControllerContext, NestedBibleItemsType, RESIZE_SETTING_NAME,
 } from './BibleItemViewController';
 import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
 
 export default function BibleViewRenderer({
-    bibleItemViewController, isHorizontal, nestedBibleItems,
+    isHorizontal, nestedBibleItems,
 }: Readonly<{
-    bibleItemViewController: BibleItemViewController,
     isHorizontal: boolean,
     nestedBibleItems: NestedBibleItemsType,
 }>) {
+    const bibleItemViewController = useContext(BibleItemViewControllerContext);
     if (!(nestedBibleItems instanceof Array)) {
         return bibleItemViewController.finalRenderer(nestedBibleItems);
     }
@@ -18,6 +20,14 @@ export default function BibleViewRenderer({
         return (
             <NoBibleViewAvailable
                 bibleItemViewController={bibleItemViewController}
+            />
+        );
+    }
+    if (nestedBibleItems.length === 1) {
+        return (
+            <BibleViewRenderer
+                nestedBibleItems={nestedBibleItems[0]}
+                isHorizontal={!isHorizontal}
             />
         );
     }
@@ -41,9 +51,6 @@ export default function BibleViewRenderer({
                             return (
                                 <BibleViewRenderer
                                     nestedBibleItems={item}
-                                    bibleItemViewController={
-                                        bibleItemViewController
-                                    }
                                     isHorizontal={!isHorizontal}
                                 />
                             );

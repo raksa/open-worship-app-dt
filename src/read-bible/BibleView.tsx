@@ -1,30 +1,30 @@
 import './BibleView.scss';
 
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { useContext } from 'react';
+
 import BibleItem from '../bible-list/BibleItem';
-import BibleItemViewController from './BibleItemViewController';
+import {
+    showAppContextMenu,
+} from '../others/AppContextMenu';
+import {
+    BibleItemViewControllerContext,
+} from './BibleItemViewController';
 import {
     applyDragged, genDraggingClass, removeDraggingClass,
 } from './readBibleHelper';
-import { BibleViewText, rendHeader } from './BibleViewExtra';
-import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
-
-function openContextMenu(
-    bibleItemViewCtl: BibleItemViewController, event: React.MouseEvent,
-    bibleItem: BibleItem,
-) {
-    showAppContextMenu(event as any, [
-        ...genDefaultBibleItemContextMenu(bibleItem),
-        ...bibleItemViewCtl.genContextMenu(bibleItem),
-    ]);
-}
+import {
+    BibleViewText, rendHeader,
+} from './BibleViewExtra';
+import {
+    genDefaultBibleItemContextMenu,
+} from '../bible-list/bibleItemHelpers';
 
 export default function BibleView({
-    bibleItem, bibleItemViewController: bibleItemViewCtl,
+    bibleItem,
 }: Readonly<{
     bibleItem: BibleItem,
-    bibleItemViewController: BibleItemViewController,
 }>) {
+    const bibleItemViewController = useContext(BibleItemViewControllerContext);
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}
@@ -39,12 +39,13 @@ export default function BibleView({
                 removeDraggingClass(event);
             }}
             onDrop={async (event) => {
-                applyDragged(event, bibleItemViewCtl, bibleItem);
+                applyDragged(event, bibleItemViewController, bibleItem);
             }}
-            onContextMenu={(event) => {
-                openContextMenu(
-                    bibleItemViewCtl, event, bibleItem,
-                );
+            onContextMenu={(event: any) => {
+                showAppContextMenu(event, [
+                    ...genDefaultBibleItemContextMenu(bibleItem),
+                    ...bibleItemViewController.genContextMenu(bibleItem),
+                ]);
             }}>
             {
                 rendHeader(
@@ -52,10 +53,12 @@ export default function BibleView({
                     (_oldBibleKey: string, newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone(true);
                         newBibleItem.bibleKey = newBibleKey;
-                        bibleItemViewCtl.changeItem(bibleItem, newBibleItem);
+                        bibleItemViewController.changeItem(
+                            bibleItem, newBibleItem,
+                        );
                     },
                     () => {
-                        bibleItemViewCtl.removeItem(bibleItem);
+                        bibleItemViewController.removeItem(bibleItem);
                     },
                 )
             }
