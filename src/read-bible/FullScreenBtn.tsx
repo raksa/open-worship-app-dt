@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 const enterFullScreen = async () => {
     if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
@@ -19,31 +17,40 @@ export const genFullScreenClassName = (isFulledScreen: boolean) => {
     return isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen';
 };
 
+let onFullscreenChange: (() => void) | null = null;
+function removeFSListener() {
+    if (onFullscreenChange === null) {
+        return;
+    }
+    document.removeEventListener(
+        'fullscreenchange', onFullscreenChange,
+    );
+    onFullscreenChange = null;
+}
+
 export default function FullScreenBtn({
     isFulledScreen, setIsFullScreen,
 }: Readonly<{
     isFulledScreen: boolean,
     setIsFullScreen: (isFullScreen: boolean) => void,
 }>) {
-    useEffect(() => {
-        const onFullscreenChange = () => {
-            setIsFullScreen(!!document.fullscreenElement);
-        };
-        document.addEventListener('fullscreenchange', onFullscreenChange);
-        return () => {
-            document.removeEventListener(
-                'fullscreenchange', onFullscreenChange,
-            );
-        };
-    });
     return (
-        <div style={{ width: '60px', overflow: 'hidden' }}>
+        <div style={{ overflow: 'hidden' }}>
             <button className='btn btn-info btn-sm'
                 onClick={async () => {
                     const action = (
                         isFulledScreen ? exitFullScreen : enterFullScreen
                     );
-                    setIsFullScreen(await action());
+                    const isFulledScreenSuccess = await action();
+                    removeFSListener();
+                    onFullscreenChange = () => {
+                        setIsFullScreen(!!document.fullscreenElement);
+                        removeFSListener();
+                    };
+                    document.addEventListener(
+                        'fullscreenchange', onFullscreenChange,
+                    );
+                    setIsFullScreen(isFulledScreenSuccess);
                 }}>
                 <i className={
                     `bi bi-${genFullScreenClassName(isFulledScreen)}`
