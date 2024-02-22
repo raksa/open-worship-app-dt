@@ -55,7 +55,6 @@ export default function InputHandler({
                     setInputText(value);
                 }} />
             <span className='input-group-text select'>
-                <i className='bi bi-journal-bookmark' />
                 <BibleSelection value={bibleKey}
                     onChange={onBibleChange} />
             </span>

@@ -49,14 +49,12 @@ export default function RenderBibleSearch({
     }
     return (
         <div id='bible-search-popup' className='app-modal shadow card'>
-            <div className='card-header text-center w-100'>
+            <div className='card-header d-flex text-center w-100'>
                 {isBibleEditing ? null : <div className='float-start'>
                     <RenderKeepWindowOpen />
                 </div>}
-                <div className='input-group input-group-header'>
-                    <span className='input-group-text'>
-                        <i className='bi bi-search' />
-                    </span>
+                <div className='input-group input-group-header'
+                    style={{ width: 350 }}>
                     <InputHandler
                         inputText={inputText}
                         bibleKey={bibleKey}
