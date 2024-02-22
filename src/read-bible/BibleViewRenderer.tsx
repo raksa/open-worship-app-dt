@@ -18,9 +18,7 @@ export default function BibleViewRenderer({
     }
     if (nestedBibleItems.length === 0) {
         return (
-            <NoBibleViewAvailable
-                bibleItemViewController={bibleItemViewController}
-            />
+            <NoBibleViewAvailable/>
         );
     }
     if (nestedBibleItems.length === 1) {

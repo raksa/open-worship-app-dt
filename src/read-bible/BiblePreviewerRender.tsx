@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useStateSettingNumber } from '../helper/settingHelper';
 import BibleViewSetting from './BibleViewSetting';
@@ -9,15 +9,14 @@ import BibleViewRenderer from './BibleViewRenderer';
 import {
     BibleTextFontSizeContext, DEFAULT_BIBLE_TEXT_FONT_SIZE,
 } from './BibleViewExtra';
+import FullScreenBtn from './FullScreenBtn';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
 const STEP_FONT_SIZE = 2;
 
 export default function BiblePreviewerRender() {
-    const [isFulledScreen, setIsFulledScreen] = useState(
-        !!document.fullscreenElement,
-    );
+    const [isFulledScreen, setIsFulledScreen] = useState(false);
     const [fontSize, _setFontSize] = useStateSettingNumber(
         'preview-font-S=size', DEFAULT_BIBLE_TEXT_FONT_SIZE,
     );
@@ -63,62 +62,6 @@ export default function BiblePreviewerRender() {
                     />
                 </div>
             </div>
-        </div>
-    );
-}
-
-const enterFullScreen = async () => {
-    if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-        return true;
-    }
-    return false;
-};
-const exitFullScreen = async () => {
-    if (document.exitFullscreen) {
-        await document.exitFullscreen();
-        return false;
-    }
-    return true;
-};
-
-const genFullScreenClassName = (isFulledScreen: boolean) => {
-    return isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-};
-
-function FullScreenBtn({
-    isFulledScreen, setIsFullScreen,
-}: Readonly<{
-    isFulledScreen: boolean,
-    setIsFullScreen: (isFullScreen: boolean) => void,
-}>) {
-    useEffect(() => {
-        const onFullscreenChange = () => {
-            setIsFullScreen(!!document.fullscreenElement);
-        };
-        document.addEventListener('fullscreenchange', onFullscreenChange);
-        return () => {
-            document.removeEventListener(
-                'fullscreenchange', onFullscreenChange,
-            );
-        };
-    });
-    return (
-        <div style={{ width: '60px', overflow: 'hidden' }}>
-            <button className='btn btn-info btn-sm'
-
-                onClick={async () => {
-                    setIsFullScreen(
-                        await (
-                            isFulledScreen ? exitFullScreen : enterFullScreen
-                        )()
-                    );
-                }}>
-                <i className={
-                    `bi bi-${genFullScreenClassName(isFulledScreen)}`
-                } />
-                {isFulledScreen ? 'Exit ' : ''}Full
-            </button>
         </div>
     );
 }
