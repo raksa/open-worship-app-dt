@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
@@ -8,7 +9,9 @@ import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
-import BibleItemViewController from '../read-bible/BibleItemViewController';
+import {
+    useBibleItemViewControllerContext,
+} from '../read-bible/BibleItemViewController';
 import PresentFTManager from '../_present/PresentFTManager';
 import {
     checkIsWindowPresentingMode, useWindowMode,
@@ -26,6 +29,7 @@ export default function BibleItemRender({
     warningMessage?: string,
     filePath?: string,
 }>) {
+    const bibleItemViewController = useBibleItemViewControllerContext();
     const openBibleSearch = useOpenBibleSearch(bibleItem);
     const windowMode = useWindowMode();
     useFSEvents(['select'], filePath);
@@ -61,7 +65,7 @@ export default function BibleItemRender({
                 handleDragStart(event, bibleItem);
             }}
             onDoubleClick={(event) => {
-                BibleItemViewController.getInstance().bibleItems = [bibleItem];
+                bibleItemViewController.appendBibleItem(bibleItem);
                 if (checkIsWindowPresentingMode()) {
                     PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
                 }

@@ -12,8 +12,9 @@ export type PreviewingType =
     | 'select-slide'
     | 'update-slide';
 
-export default class PreviewingEventListener extends EventHandler<PreviewingType> {
-    static eventNamePrefix: string = 'previewing';
+export default class PreviewingEventListener extends
+    EventHandler<PreviewingType> {
+    static readonly eventNamePrefix: string = 'previewing';
     selectLyric(lyric: Lyric | null) {
         if (lyric !== null) {
             setIsPreviewingLyric();

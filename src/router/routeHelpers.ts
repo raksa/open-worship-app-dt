@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import {
     useLocation, useNavigate, NavigateFunction, Location,
 } from 'react-router-dom';
+
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProvider from '../server/appProvider';
 
@@ -47,7 +48,7 @@ export const home: TabOptionType = {
 };
 export const editingTab = genTabItem('Editing', '/edit');
 export const presentingTab = genTabItem('Presenting', '/present');
-export const readingTab = genTabItem('Read', '/reading');
+export const readingTab = genTabItem('Reading', '/reading');
 
 export function goEditingMode(navigate: NavigateFunction) {
     navigate(editingTab.routePath);
@@ -56,7 +57,7 @@ export function goEditingMode(navigate: NavigateFunction) {
 export const WindowModeContext = createContext<WindowModEnum | null>(null);
 export const DefaultTabContext = createContext<TabOptionType[] | null>(null);
 
-export function genWindowMode(props?: TabCheckPropsType): WindowModEnum | null {
+function getWindowMode(props?: TabCheckPropsType): WindowModEnum | null {
     if (props === undefined) {
         props = {
             location: window.location as any as Location,
@@ -79,14 +80,14 @@ export function useWindowMode(): WindowModEnum | null {
         location,
         navigate: useNavigate(),
     };
-    return genWindowMode(props);
+    return getWindowMode(props);
 }
 
 function checkIsWindowMode(
     targetMode: WindowModEnum,
     mode?: WindowModEnum | null,
 ) {
-    mode = mode || genWindowMode();
+    mode = mode || getWindowMode();
     return mode === targetMode;
 }
 export function checkIsWindowEditingMode(mode?: WindowModEnum | null) {

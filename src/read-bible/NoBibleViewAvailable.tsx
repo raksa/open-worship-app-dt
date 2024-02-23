@@ -1,11 +1,11 @@
-import { useContext } from 'react';
-
 import BibleItem from '../bible-list/BibleItem';
 import { handleError } from '../helper/errorHelpers';
-import { BibleItemViewControllerContext } from './BibleItemViewController';
+import {
+    useBibleItemViewControllerContext,
+} from './BibleItemViewController';
 
 export default function NoBibleViewAvailable() {
-    const bibleItemViewController = useContext(BibleItemViewControllerContext);
+    const bibleItemViewController = useBibleItemViewControllerContext();
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}

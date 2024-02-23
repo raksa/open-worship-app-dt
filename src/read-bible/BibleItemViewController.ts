@@ -4,7 +4,7 @@ import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    getSetting, getSettingPrefix, setSetting,
+    getSetting, setSetting,
 } from '../helper/settingHelper';
 import { handleError } from '../helper/errorHelpers';
 import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
@@ -13,6 +13,9 @@ import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { showBibleOption } from '../bible-search/BibleSelection';
+import {
+    genFoundBibleItemContextMenu,
+} from '../bible-search/RenderActionButtons';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -96,23 +99,16 @@ function seekParent(
     return null;
 }
 
-function getBibleItemsPreviewSettingName(windowMode: WindowModEnum | null) {
-    const prefixSetting = getSettingPrefix(windowMode);
-    return `${prefixSetting}${BIBLE_ITEMS_PREVIEW_SETTING}`;
-}
-type FinalRendererType = (bibleItem: BibleItem) => ReactNode;
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType>{
-    private _settingNameSuffix: string | null;
-    finalRenderer: FinalRendererType;
-    constructor(finalRenderer: FinalRendererType, settingNameSuffix?: string) {
+    private _settingNameSuffix: string;
+    constructor(settingNameSuffix: string) {
         super();
-        this._settingNameSuffix = settingNameSuffix || null;
-        this.finalRenderer = finalRenderer;
+        this._settingNameSuffix = `-${settingNameSuffix}`;
     }
     get settingName() {
-        return getBibleItemsPreviewSettingName(null) + this._settingNameSuffix;
+        return BIBLE_ITEMS_PREVIEW_SETTING + this._settingNameSuffix;
     }
     get nestedBibleItems() {
         try {
@@ -138,6 +134,10 @@ export default class BibleItemViewController
         ));
         setSetting(this.settingName, jsonStr);
         this.fireUpdateEvent();
+    }
+
+    finalRenderer(_: BibleItem): ReactNode {
+        return null;
     }
 
     genBibleItemUniqueId() {
@@ -237,7 +237,9 @@ export default class BibleItemViewController
     ) {
         this.addBibleItem(bibleItem, newBibleItem, false, false);
     }
-    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
+    genContextMenu(
+        bibleItem: BibleItem, _: WindowModEnum | null,
+    ): ContextMenuItemType[] {
         return [
             {
                 title: 'Split Right', onClick: () => {
@@ -269,6 +271,15 @@ export default class BibleItemViewController
             },
         ];
     }
+    appendBibleItem(bibleItem: BibleItem) {
+        const newBibleItem = bibleItem.clone();
+        newBibleItem.id = this.genBibleItemUniqueId();
+        let nestedBibleItems = this.nestedBibleItems;
+        if (!(nestedBibleItems instanceof Array)) {
+            nestedBibleItems = [nestedBibleItems];
+        }
+        this.nestedBibleItems = [...nestedBibleItems, newBibleItem];
+    }
 }
 
 export class SearchBibleItemViewController extends BibleItemViewController {
@@ -278,7 +289,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     setInputText = (_: string) => { };
     setBibleKey = (_: string | null) => { };
     constructor() {
-        super((_: BibleItem) => null);
+        super('');
         this.selectBibleItem = BibleItem.fromJson({
             id: this.genBibleItemUniqueId(), bibleKey: 'KJV', metadata: {},
             target: { bookKey: 'GEN', chapter: 1, verseStart: 1, verseEnd: 1 },
@@ -301,10 +312,15 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         }
         return this._instance;
     }
-    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
-        const menus = super.genContextMenu(bibleItem);
+    genContextMenu(
+        bibleItem: BibleItem, windowMode: WindowModEnum | null,
+    ): ContextMenuItemType[] {
+        const menu1 = windowMode === null ? [] : genFoundBibleItemContextMenu(
+            bibleItem, windowMode, this.checkIsBibleItemSelected(bibleItem),
+        );
+        const menus2 = super.genContextMenu(bibleItem, windowMode);
         if (!this.checkIsBibleItemSelected(bibleItem)) {
-            menus.push({
+            menus2.push({
                 title: 'Edit', onClick: () => {
                     const newBibleItem = bibleItem.clone(true);
                     this.selectBibleItem = newBibleItem;
@@ -316,18 +332,20 @@ export class SearchBibleItemViewController extends BibleItemViewController {
                 },
             });
         }
-        return menus;
+        return [...menu1, ...menus2];
     }
 }
 
 export const BibleItemViewControllerContext = createContext<
     BibleItemViewController
->(
-    new BibleItemViewController((_: BibleItem) => null)
-);
+>(new BibleItemViewController(''));
+
+export function useBibleItemViewControllerContext() {
+    return useContext(BibleItemViewControllerContext);
+}
 
 export function useBIVCUpdateEvent() {
-    const bibleItemViewController = useContext(BibleItemViewControllerContext);
+    const bibleItemViewController = useBibleItemViewControllerContext();
     const [nestedBibleItems, setNestedBibleItems] = useState(
         bibleItemViewController.nestedBibleItems,
     );

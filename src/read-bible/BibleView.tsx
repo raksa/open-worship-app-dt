@@ -1,13 +1,11 @@
 import './BibleView.scss';
 
-import { useContext } from 'react';
-
 import BibleItem from '../bible-list/BibleItem';
 import {
     showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
-    BibleItemViewControllerContext,
+    useBibleItemViewControllerContext,
 } from './BibleItemViewController';
 import {
     applyDragged, genDraggingClass, removeDraggingClass,
@@ -24,7 +22,7 @@ export default function BibleView({
 }: Readonly<{
     bibleItem: BibleItem,
 }>) {
-    const bibleItemViewController = useContext(BibleItemViewControllerContext);
+    const bibleItemViewController = useBibleItemViewControllerContext();
     return (
         <div className='bible-view card flex-fill w-100 h-100'
             style={{ minWidth: '30%' }}

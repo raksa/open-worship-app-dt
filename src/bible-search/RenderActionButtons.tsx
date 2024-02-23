@@ -131,7 +131,7 @@ function toShortcutKey(
     if (!isKeyboardShortcut) {
         return '';
     }
-    return KeyboardEventListener.toShortcutKey(eventMapper);
+    return `[${KeyboardEventListener.toShortcutKey(eventMapper)}]`;
 }
 
 export function genFoundBibleItemContextMenu(

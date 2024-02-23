@@ -1,7 +1,7 @@
-import { useContext } from 'react';
 
 import {
-    BibleItemViewControllerContext, NestedBibleItemsType, RESIZE_SETTING_NAME,
+    NestedBibleItemsType, RESIZE_SETTING_NAME,
+    useBibleItemViewControllerContext,
 } from './BibleItemViewController';
 import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
@@ -12,13 +12,13 @@ export default function BibleViewRenderer({
     isHorizontal: boolean,
     nestedBibleItems: NestedBibleItemsType,
 }>) {
-    const bibleItemViewController = useContext(BibleItemViewControllerContext);
+    const bibleItemViewController = useBibleItemViewControllerContext();
     if (!(nestedBibleItems instanceof Array)) {
         return bibleItemViewController.finalRenderer(nestedBibleItems);
     }
     if (nestedBibleItems.length === 0) {
         return (
-            <NoBibleViewAvailable/>
+            <NoBibleViewAvailable />
         );
     }
     if (nestedBibleItems.length === 1) {

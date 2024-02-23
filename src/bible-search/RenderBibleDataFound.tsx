@@ -1,7 +1,7 @@
 import BibleItem from '../bible-list/BibleItem';
 import RenderVerseOptions from './RenderVerseOptions';
 import RenderActionButtons, {
-    genFoundBibleItemContextMenu, useFoundActionKeyboard,
+    useFoundActionKeyboard,
 } from './RenderActionButtons';
 import {
     BibleViewText, BibleViewTitle,
@@ -10,10 +10,10 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
-import { useWindowMode } from '../router/routeHelpers';
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
+import { useWindowMode } from '../router/routeHelpers';
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange,
@@ -29,17 +29,10 @@ export default function RenderBibleDataFound({
     return (
         <div className='card border-success w-100 h-100'
             onContextMenu={(event) => {
-                if (windowMode === null) {
-                    return;
-                }
                 showAppContextMenu(event as any, [
-                    ...genFoundBibleItemContextMenu(
-                        bibleItem, windowMode,
-                        true,
-                    ),
                     ...genDefaultBibleItemContextMenu(bibleItem),
                     ...bibleItemViewController.genContextMenu(
-                        bibleItemViewController.selectBibleItem,
+                        bibleItemViewController.selectBibleItem, windowMode,
                     ),
                 ]);
             }}

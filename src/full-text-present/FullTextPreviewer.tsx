@@ -14,8 +14,8 @@ import {
     getIsShowingFTPreviewer,
 } from '../slide-presenting/Presenting';
 
-const BiblePreviewer = lazy(() => {
-    return import('../read-bible/BiblePreviewer');
+const BiblePreviewerRender = lazy(() => {
+    return import('../read-bible/BiblePreviewerRender');
 });
 const LyricPreviewer = lazy(() => {
     return import('./LyricPreviewer');
@@ -37,7 +37,7 @@ export function setIsPreviewingLyric() {
     setSetting(FT_TAB_SETTING_NAME, 'l');
 }
 const tabTypeList = [
-    ['b', 'Bible', BiblePreviewer],
+    ['b', 'Bible', BiblePreviewerRender],
     ['l', 'Lyric', LyricPreviewer],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
