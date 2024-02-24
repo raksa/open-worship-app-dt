@@ -1,13 +1,15 @@
 import {
-    CSSProperties, Fragment, LazyExoticComponent, useCallback, useState,
+    CSSProperties, Fragment, LazyExoticComponent, useCallback, useEffect,
+    useState,
 } from 'react';
+
 import AppSuspense from '../others/AppSuspense';
 import FlexResizeActor, {
     ResizeKindType,
 } from './FlexResizeActor';
 import {
     DisabledType, getFlexSizeSetting, keyToDataFSizeKey, setDisablingSetting,
-    setFlexSizeSetting,
+    genFlexSizeSetting, setFlexSizeSetting,
 } from './flexSizeHelpers';
 
 export type FlexSizeType = {
@@ -22,13 +24,15 @@ export type DataInputType = [
     CSSProperties?,
 ];
 export default function ResizeActor({
-    fSizeName, flexSizeDefault, resizeKinds, dataInput, isDisableQuickResize,
+    fSizeName, flexSizeDefault, resizeKinds, dataInput,
+    isDisableQuickResize, isNotSaveSetting = false,
 }: Readonly<{
     fSizeName: string,
     flexSizeDefault: FlexSizeType,
     resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
     isDisableQuickResize?: boolean,
+    isNotSaveSetting?: boolean,
 }>) {
     if (resizeKinds.length !== dataInput.length - 1) {
         throw new Error('resizeKinds and dataInput length not match');
@@ -41,8 +45,36 @@ export default function ResizeActor({
             );
         }
     }
-    const defaultFlexSize = getFlexSizeSetting(fSizeName, flexSizeDefault);
+    const defaultFlexSize = (
+        isNotSaveSetting ? flexSizeDefault :
+            getFlexSizeSetting(fSizeName, flexSizeDefault)
+    );
     const [flexSize, setFlexSize] = useState(defaultFlexSize);
+    const setFlexSize1 = (newFlexSize: FlexSizeType) => {
+        if (!isNotSaveSetting) {
+            setFlexSizeSetting(fSizeName, newFlexSize);
+        }
+        setFlexSize(newFlexSize);
+    };
+    useEffect(() => {
+        const foundDiff = [];
+        const newFlexSize = { ...flexSize };
+        for (const key in flexSizeDefault) {
+            if (!newFlexSize[key]) {
+                newFlexSize[key] = flexSizeDefault[key];
+                foundDiff.push(key);
+            }
+        }
+        for (const key in newFlexSize) {
+            if (!flexSizeDefault[key]) {
+                delete newFlexSize[key];
+                foundDiff.push(key);
+            }
+        }
+        if (foundDiff.length > 0) {
+            setFlexSize1(newFlexSize);
+        }
+    }, [flexSize, flexSizeDefault]);
     return (
         <>
             {dataInput.map((data, i) => {
@@ -51,7 +83,7 @@ export default function ResizeActor({
                         data={data}
                         index={i}
                         flexSize={flexSize}
-                        setFlexSize={setFlexSize}
+                        setFlexSize={setFlexSize1}
                         defaultFlexSize={defaultFlexSize}
                         fSizeName={fSizeName}
                         dataInput={dataInput}
@@ -65,8 +97,8 @@ export default function ResizeActor({
 }
 
 function RenderItem({
-    data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName, dataInput,
-    resizeKinds, isDisableQuickResize,
+    data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName,
+    dataInput, resizeKinds, isDisableQuickResize,
 }: Readonly<{
     data: DataInputType,
     index: number,
@@ -80,12 +112,13 @@ function RenderItem({
 }>) {
     const disableCallback = useCallback((
         targetDataFSizeKey: string, target: DisabledType) => {
-        const size = setDisablingSetting(fSizeName, defaultFlexSize,
-            targetDataFSizeKey, target);
+        const size = setDisablingSetting(
+            fSizeName, defaultFlexSize, targetDataFSizeKey, target,
+        );
         setFlexSize(size);
     }, [fSizeName, defaultFlexSize]);
     const checkSizeCallback = useCallback(() => {
-        const size = setFlexSizeSetting(fSizeName, defaultFlexSize);
+        const size = genFlexSizeSetting(fSizeName, defaultFlexSize);
         setFlexSize(size);
     }, [fSizeName, defaultFlexSize]);
     const [Children, key, classList, style = {}] = data;
@@ -103,17 +136,23 @@ function RenderItem({
     const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
     if (flexSizeValue[1]) {
         const onClick = (event: any) => {
-            setDisablingSetting(fSizeName, defaultFlexSize, dataFSizeKey);
+            setDisablingSetting(
+                fSizeName, defaultFlexSize, dataFSizeKey,
+            );
             const current = event.currentTarget;
             const flexSizeDisabled = flexSizeValue[1] as DisabledType;
-            const target = (flexSizeDisabled[0] === 'first' ?
-                current.nextElementSibling :
-                current.previousElementSibling) as HTMLDivElement;
+            const target = (
+                flexSizeDisabled[0] === 'first' ? current.nextElementSibling :
+                    current.previousElementSibling
+            ) as HTMLDivElement;
             const targetFGrow = Number(target.style.flexGrow);
             const flexGrow = targetFGrow - flexSizeDisabled[1];
-            target.style.flexGrow = `${flexGrow < targetFGrow / 10 ?
-                targetFGrow : flexGrow}`;
-            const size = setFlexSizeSetting(fSizeName, defaultFlexSize);
+            target.style.flexGrow = (
+                `${flexGrow < targetFGrow / 10 ? targetFGrow : flexGrow}`
+            );
+            const size = genFlexSizeSetting(
+                fSizeName, defaultFlexSize,
+            );
             setFlexSize(size);
         };
         return (

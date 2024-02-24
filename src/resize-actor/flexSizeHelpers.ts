@@ -35,9 +35,10 @@ export function keyToDataFSizeKey(fSizeName: string, key: string) {
     return `${fSizeName}-${key}`;
 }
 
-export const setDisablingSetting = (fSizeName: string,
-    defaultSize: FlexSizeType, dataFSizeKey: string,
-    target?: DisabledType) => {
+export const setDisablingSetting = (
+    fSizeName: string, defaultSize: FlexSizeType, dataFSizeKey: string,
+    target?: DisabledType,
+) => {
     const settingString = toSettingString(fSizeName);
     const flexSize = getFlexSizeSetting(fSizeName, defaultSize);
     const key = dataFSizeKeyToKey(fSizeName, dataFSizeKey);
@@ -51,12 +52,14 @@ export function clearFlexSizeSetting(fSizeName: string) {
     setSetting(settingString, '');
 }
 
-export const setFlexSizeSetting = (fSizeName: string,
-    defaultSize: FlexSizeType) => {
+export const genFlexSizeSetting = (
+    fSizeName: string, defaultSize: FlexSizeType,
+) => {
     const selectorString = `[data-fs^="${fSizeName}"]`;
-    const collection = document.querySelectorAll<HTMLDivElement>(selectorString);
+    const collection = document.querySelectorAll<HTMLDivElement>(
+        selectorString,
+    );
     const items = Array.from(collection);
-    const settingString = toSettingString(fSizeName);
     const flexSize = getFlexSizeSetting(fSizeName, defaultSize);
     items.forEach((item) => {
         const dataFSizeKey = item.getAttribute('data-fs');
@@ -67,12 +70,19 @@ export const setFlexSizeSetting = (fSizeName: string,
             }
         }
     });
-    setSetting(settingString, JSON.stringify(flexSize));
     return flexSize;
 };
 
-export function getFlexSizeSetting(fSizeName: string,
-    defaultSize: FlexSizeType): FlexSizeType {
+export const setFlexSizeSetting = (
+    fSizeName: string, flexSize: FlexSizeType,
+) => {
+    const settingString = toSettingString(fSizeName);
+    setSetting(settingString, JSON.stringify(flexSize));
+};
+
+export function getFlexSizeSetting(
+    fSizeName: string, defaultSize: FlexSizeType,
+): FlexSizeType {
     const settingString = toSettingString(fSizeName);
     const str = getSetting(settingString, '');
     try {

@@ -36,7 +36,10 @@ export default function BibleViewRenderer({
     })) as FlexSizeType;
     return (
         <ResizeActor
-            fSizeName={RESIZE_SETTING_NAME}
+            fSizeName={
+                bibleItemViewController.toSettingName(RESIZE_SETTING_NAME)
+            }
+            isNotSaveSetting
             isDisableQuickResize={true}
             flexSizeDefault={flexSizeDefault}
             resizeKinds={Array.from({
