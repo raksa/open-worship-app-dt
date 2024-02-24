@@ -202,7 +202,7 @@ function RenderItem({
                     onClick={onHiddenWidgetClick} /> :
                 <div data-fs={keyToDataFSizeKey(fSizeName, key)}
                     data-fs-default={flexSizeValue[0]}
-                    data-min-size={40}
+                    data-min-size={50}
                     className={`${classList} overflow-hidden`}
                     style={{
                         flex: flexSizeValue[0] || 1,

@@ -22,7 +22,7 @@ export default class FlexResizeActor extends Component<Props, {}> {
     lastPos: number = 0;
     previousMinSize: number = 0;
     nextMinSize: number = 0;
-    previousSize: number = 0;
+    preSize: number = 0;
     nextSize: number = 0;
     previousGrow: number = 0;
     nextGrow: number = 0;
@@ -41,25 +41,24 @@ export default class FlexResizeActor extends Component<Props, {}> {
     private get currentNode() {
         return this.myRef.current as HTMLDivElement;
     }
-    private getSibling(node: HTMLDivElement, isNext: boolean) {
+    private getSiblingFromNode(node: HTMLDivElement, isNext: boolean) {
         if (isNext) {
             return node.nextElementSibling as HTMLDivElement;
         }
         return node.previousElementSibling as HTMLDivElement;
     }
-    get preNode() {
-        let node = this.currentNode.previousElementSibling as HTMLDivElement;
+    private getSibling(isNext: boolean) {
+        let node = this.getSiblingFromNode(this.currentNode, isNext);
         while (checkIsActiveHiddenWidgetNode(node)) {
-            node = this.getSibling(node, false);
+            node = this.getSiblingFromNode(node, isNext);
         }
         return node;
     }
+    get preNode() {
+        return this.getSibling(false);
+    }
     get nextNode() {
-        let node = this.currentNode.nextElementSibling as HTMLDivElement;
-        while (checkIsActiveHiddenWidgetNode(node)) {
-            node = this.getSibling(node, true);
-        }
-        return node;
+        return this.getSibling(true);
     }
     get isVertical() {
         return this.props.type === 'v';
@@ -71,22 +70,21 @@ export default class FlexResizeActor extends Component<Props, {}> {
         return this.isVertical ? div.offsetHeight : div.offsetWidth;
     }
     init() {
-        const current = this.myRef.current;
-        if (!current) {
+        if (!this.currentNode) {
             return;
         }
-        const prev = current.previousElementSibling as HTMLDivElement;
-        const next = current.nextElementSibling as HTMLDivElement;
+        const prev = this.preNode;
+        const next = this.nextNode;
         if (!prev || !next) {
             return;
         }
-        current.classList.add('active');
+        this.currentNode.classList.add('active');
 
         this.previousMinSize = +(this.preNode.dataset['minSize'] || '');
         this.nextMinSize = +(this.nextNode.dataset['minSize'] || '');
-        this.previousSize = this.getOffsetSize(prev);
+        this.preSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
-        this.sumSize = this.previousSize + this.nextSize;
+        this.sumSize = this.preSize + this.nextSize;
         this.previousGrow = Number(prev.style.flexGrow);
         this.nextGrow = Number(next.style.flexGrow);
         this.sumGrow = this.previousGrow + this.nextGrow;
@@ -110,20 +108,20 @@ export default class FlexResizeActor extends Component<Props, {}> {
         }
         let pos = this.getMousePagePos(event);
         const d = pos - this.lastPos;
-        this.previousSize += d;
+        this.preSize += d;
         this.nextSize -= d;
-        if (this.previousSize < 0) {
-            this.nextSize += this.previousSize;
-            pos -= this.previousSize;
-            this.previousSize = 0;
+        if (this.preSize < 0) {
+            this.nextSize += this.preSize;
+            pos -= this.preSize;
+            this.preSize = 0;
         }
         if (this.nextSize < 0) {
-            this.previousSize += this.nextSize;
+            this.preSize += this.nextSize;
             pos += this.nextSize;
             this.nextSize = 0;
         }
 
-        if (this.previousSize < this.previousMinSize) {
+        if (this.preSize < this.previousMinSize) {
             this.addHideWidget(this.preNode);
         } else {
             this.removeHideWidget(this.preNode);
@@ -133,7 +131,7 @@ export default class FlexResizeActor extends Component<Props, {}> {
         } else {
             this.removeHideWidget(this.nextNode);
         }
-        const prevGrowNew = this.sumGrow * (this.previousSize / this.sumSize);
+        const prevGrowNew = this.sumGrow * (this.preSize / this.sumSize);
         const nextGrowNew = this.sumGrow * (this.nextSize / this.sumSize);
 
         this.preNode.style.flexGrow = `${prevGrowNew}`;
@@ -154,14 +152,13 @@ export default class FlexResizeActor extends Component<Props, {}> {
         if (this.isShouldIgnore(event)) {
             return;
         }
-        const current = this.myRef.current;
-        if (!current) {
+        if (!this.currentNode) {
             return;
         }
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
-        current.classList.remove('active');
+        this.currentNode.classList.remove('active');
         if (this.preNode.classList.contains('hidden-widget')) {
             this.quicMove('left');
             return;
@@ -189,10 +186,10 @@ export default class FlexResizeActor extends Component<Props, {}> {
                 isFirst ? this.previousGrow : this.nextGrow,
             ]);
         }
-        this.myRef.current?.classList.remove('active');
+        this.currentNode.classList.remove('active');
     }
     componentDidMount() {
-        const target = this.myRef.current;
+        const target = this.currentNode;
         if (target) {
             target.addEventListener('mousedown', (md) => {
                 this.onMouseDown(md);
