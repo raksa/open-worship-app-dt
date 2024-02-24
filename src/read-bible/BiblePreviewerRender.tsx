@@ -71,7 +71,6 @@ function Render() {
     return (
         <BibleViewRenderer
             nestedBibleItems={nestedBibleItems}
-            isHorizontal={true}
         />
     );
 }

@@ -7,9 +7,9 @@ import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
 
 export default function BibleViewRenderer({
-    isHorizontal, nestedBibleItems,
+    isHorizontal = true, nestedBibleItems,
 }: Readonly<{
-    isHorizontal: boolean,
+    isHorizontal?: boolean,
     nestedBibleItems: NestedBibleItemsType,
 }>) {
     const bibleItemViewController = useBibleItemViewControllerContext();

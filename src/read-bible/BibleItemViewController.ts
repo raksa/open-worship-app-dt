@@ -7,7 +7,6 @@ import {
     getSetting, setSetting,
 } from '../helper/settingHelper';
 import { handleError } from '../helper/errorHelpers';
-import { clearFlexSizeSetting } from '../resize-actor/flexSizeHelpers';
 import { WindowModEnum } from '../router/routeHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -25,10 +24,9 @@ export type NestedObjectsType = BibleItemType | NestedObjectsType[];
 
 function parseNestedBibleItem(json: any): NestedBibleItemsType {
     if (json instanceof Array) {
-        let nestedBibleItems: NestedBibleItemsType = json.map((item: any) => {
+        const nestedBibleItems: NestedBibleItemsType = json.map((item: any) => {
             return parseNestedBibleItem(item);
         });
-        nestedBibleItems = sanitizeNestedItems(nestedBibleItems);
         return nestedBibleItems;
     }
     return BibleItem.fromJson(json);
@@ -43,7 +41,10 @@ function sanitizeNestedItems(nestedBibleItems: NestedBibleItemsType) {
         }
         break;
     }
-    return nestedBibleItems;
+    if (nestedBibleItems instanceof BibleItem) {
+        nestedBibleItems = [nestedBibleItems];
+    }
+    return [...nestedBibleItems];
 }
 function deepSanitizeNestedItems(
     nestedBibleItems: NestedBibleItemsType,
@@ -132,16 +133,10 @@ export default class BibleItemViewController
         return [];
     }
     set nestedBibleItems(newNestedBibleItems: NestedBibleItemsType) {
-        if (
-            newNestedBibleItems instanceof Array &&
-            this.nestedBibleItems instanceof Array
-            && newNestedBibleItems.length !== this.nestedBibleItems.length
-        ) {
-            clearFlexSizeSetting(RESIZE_SETTING_NAME);
-        }
-        const jsonStr = JSON.stringify(stringifyNestedBibleItem(
-            newNestedBibleItems,
-        ));
+        newNestedBibleItems = sanitizeNestedItems(newNestedBibleItems);
+        const jsonStr = JSON.stringify(
+            stringifyNestedBibleItem(newNestedBibleItems),
+        );
         setSetting(this.settingName, jsonStr);
         this.fireUpdateEvent();
     }
@@ -190,13 +185,6 @@ export default class BibleItemViewController
 
     removeItem(bibleItem: BibleItem) {
         try {
-            if (
-                this.nestedBibleItems instanceof BibleItem &&
-                this.nestedBibleItems.id === bibleItem.id
-            ) {
-                this.nestedBibleItems = [];
-                return;
-            }
             const {
                 nestedBibleItems, parentNestedBibleItems, index,
             } = this.seek(
@@ -305,16 +293,16 @@ export default class BibleItemViewController
 export class SearchBibleItemViewController extends BibleItemViewController {
     private _nestedBibleItems: NestedBibleItemsType;
     private static _instance: SearchBibleItemViewController | null = null;
-    selectBibleItem: BibleItem;
+    selectedBibleItem: BibleItem;
     setInputText = (_: string) => { };
     setBibleKey = (_: string | null) => { };
     constructor() {
         super('');
-        this.selectBibleItem = BibleItem.fromJson({
+        this.selectedBibleItem = BibleItem.fromJson({
             id: this.genBibleItemUniqueId(), bibleKey: 'KJV', metadata: {},
             target: { bookKey: 'GEN', chapter: 1, verseStart: 1, verseEnd: 1 },
         });
-        this._nestedBibleItems = [this.selectBibleItem];
+        this._nestedBibleItems = [this.selectedBibleItem];
     }
     get nestedBibleItems() {
         return this._nestedBibleItems;
@@ -324,7 +312,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         this.fireUpdateEvent();
     }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
-        return bibleItem === this.selectBibleItem;
+        return bibleItem === this.selectedBibleItem;
     }
     static getInstance() {
         if (this._instance === null) {
@@ -343,7 +331,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             menus2.push({
                 title: 'Edit', onClick: () => {
                     const newBibleItem = bibleItem.clone(true);
-                    this.selectBibleItem = newBibleItem;
+                    this.selectedBibleItem = newBibleItem;
                     this.changeItem(bibleItem, newBibleItem);
                     bibleItem.toTitle().then((inputText) => {
                         this.setInputText(inputText);
