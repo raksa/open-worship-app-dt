@@ -35,10 +35,8 @@ export default function BibleSearchPopup() {
                     <span title='Need translation'>(*T)</span> Loading...
                 </div>
             ) : (
-                <RenderBibleSearch
-                    editingInputText={inputText} />
-            )
-            }
+                <RenderBibleSearch editingInputText={inputText} />
+            )}
         </Modal>
     );
 }

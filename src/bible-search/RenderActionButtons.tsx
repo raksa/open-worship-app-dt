@@ -15,7 +15,7 @@ import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
-import { getIsKeepWindowOpen } from './RenderKeepWindowOpen';
+import { getIsKeepWindowOpen } from './RenderExtraLeftButtons';
 
 const presentEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],

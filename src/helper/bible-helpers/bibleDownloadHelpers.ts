@@ -6,18 +6,16 @@ import {
 } from '../../_owa-crypto/owa_crypto';
 import appProvider from '../../server/appProvider';
 import {
-    fsCheckFileExist,
-    fsDeleteFile,
-    fsCreateWriteStream,
-    fsListDirectories,
+    fsCheckFileExist, fsDeleteFile, fsCreateWriteStream, fsListDirectories,
 } from '../../server/fileHelper';
 import {
-    bibleDataReader,
-    getBibleInfo,
+    bibleDataReader, getBibleInfo,
 } from './bibleInfoHelpers';
 
-export function httpsRequest(pathName: string,
-    callback: (error: Error | null, response?: any) => void) {
+export function httpsRequest(
+    pathName: string,
+    callback: (error: Error | null, response?: any) => void,
+) {
     const hostname = get_api_url().split('//')[1];
     const request = appProvider.httpUtils.request({
         port: 443,
@@ -42,8 +40,9 @@ export type DownloadOptionsType = {
     onDone: (error: Error | null, filePath?: string) => void
 }
 
-const getDownloadHandler = (filePath: string, fileName: string,
-    options: DownloadOptionsType) => {
+const getDownloadHandler = (
+    filePath: string, fileName: string, options: DownloadOptionsType,
+) => {
     return async (error: any, response: any) => {
         if (await fsCheckFileExist(filePath)) {
             await fsDeleteFile(filePath);

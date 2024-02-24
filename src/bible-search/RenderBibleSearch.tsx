@@ -8,18 +8,21 @@ import {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
 import { setBibleSearchInputFocus } from './selectionHelpers';
-import RenderKeepWindowOpen from './RenderKeepWindowOpen';
+import RenderExtraLeftButtons from './RenderExtraLeftButtons';
 import { useModalTypeData } from '../app-modal/helpers';
 import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
+import ResizeActor from '../resize-actor/ResizeActor';
+import BibleOnlineSearchBodyPreviewer from './BibleOnlineSearchBodyPreviewer';
 
 export default function RenderBibleSearch({
     editingInputText,
 }: Readonly<{
     editingInputText: string,
 }>) {
+    const [isSearchOnline, setIsSearchOnline] = useState(false);
     const { data } = useModalTypeData();
     const isBibleEditing = !!data;
     const [inputText, setInputText] = useState<string>(editingInputText);
@@ -47,11 +50,20 @@ export default function RenderBibleSearch({
             <BibleNotAvailable />
         );
     }
+    const searchingBody = (
+        <BibleSearchBodyPreviewer
+            bibleKey={bibleKey}
+            inputText={inputText}
+        />
+    );
     return (
         <div id='bible-search-popup' className='app-modal shadow card'>
             <div className='card-header d-flex text-center w-100'>
                 {isBibleEditing ? null : <div className='float-start'>
-                    <RenderKeepWindowOpen />
+                    <RenderExtraLeftButtons
+                        setIsSearchOnline={setIsSearchOnline}
+                        isSearchOnline={isSearchOnline}
+                    />
                 </div>}
                 <div className='input-group input-group-header'
                     style={{ width: 350 }}>
@@ -62,12 +74,30 @@ export default function RenderBibleSearch({
                 </div>
             </div>
             <div className={
-                'card-body w-100 h-100 overflow-hidden'
+                'card-body d-flex w-100 h-100 overflow-hidden'
             }>
-                <BibleSearchBodyPreviewer
-                    bibleKey={bibleKey}
-                    inputText={inputText}
-                />
+                {isSearchOnline ?
+                    <ResizeActor fSizeName='bible-search-popup-body'
+                        isHorizontal
+                        isDisableQuickResize
+                        flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
+                        dataInput={[
+                            [{
+                                render: () => {
+                                    return (
+                                        <BibleOnlineSearchBodyPreviewer
+                                            bibleKey={bibleKey}
+                                        />
+                                    );
+                                },
+                            }, 'h1', ''],
+                            [{
+                                render: () => {
+                                    return searchingBody;
+                                },
+                            }, 'h2', ''],
+                        ]} /> : searchingBody
+                }
             </div>
         </div>
     );
