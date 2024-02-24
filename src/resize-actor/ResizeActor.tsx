@@ -70,7 +70,6 @@ export default function ResizeActor({
             setFlexSize1(newFlexSize);
         }
     }, [flexSize, flexSizeDefault]);
-    console.log(flexSize, dataInput);
 
     return (
         <div className={
