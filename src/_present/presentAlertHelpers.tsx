@@ -148,7 +148,9 @@ export function removeAlert(div: ChildNode) {
     }
 }
 
-export function checkIsCountdownDatesEq(date1: Date | null, date2: Date | null) {
+export function checkIsCountdownDatesEq(
+    date1: Date | null, date2: Date | null,
+) {
     if (date1 === null || date2 === null) {
         return false;
     }

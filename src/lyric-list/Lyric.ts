@@ -17,8 +17,8 @@ export type LyricType = {
     metadata: AnyObjectType,
 }
 export default class Lyric extends ItemSource<LyricItem>{
-    static mimetype: MimetypeNameType = 'lyric';
-    static SELECT_SETTING_NAME = 'lyric-selected';
+    static readonly mimetype: MimetypeNameType = 'lyric';
+    static readonly SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
     editingCacheManager: LyricEditingCacheManager;
     constructor(filePath: string, json: LyricType) {
@@ -85,7 +85,9 @@ export default class Lyric extends ItemSource<LyricItem>{
             filePath,
         ) as Promise<Lyric | null | undefined>;
     }
-    static async readFileToData(filePath: string | null, isForceCache?: boolean) {
+    static async readFileToData(
+        filePath: string | null, isForceCache?: boolean,
+    ) {
         return super.readFileToData(
             filePath, isForceCache,
         ) as Promise<Lyric | null | undefined>;

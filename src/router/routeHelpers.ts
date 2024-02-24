@@ -46,8 +46,8 @@ export const home: TabOptionType = {
     title: 'Home',
     routePath: '/',
 };
-export const editingTab = genTabItem('Editing', '/edit');
-export const presentingTab = genTabItem('Presenting', '/present');
+export const editingTab = genTabItem('Editing', '/editing');
+export const presentingTab = genTabItem('Presenting', '/presenting');
 export const readingTab = genTabItem('Reading', '/reading');
 
 export function goEditingMode(navigate: NavigateFunction) {
@@ -128,7 +128,7 @@ export function checkHome() {
     if (url.pathname === '/') {
         if (appProvider.isDesktop) {
             const savePathname = getSetting(ROUTE_PATHNAME_KEY);
-            if (savePathname !== '') {
+            if (!['/', ''].includes(savePathname)) {
                 return goToPath(savePathname);
             }
         }

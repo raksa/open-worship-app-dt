@@ -1,8 +1,6 @@
 import { MimetypeNameType } from '../server/fileHelper';
 import {
-    AnyObjectType,
-    cloneJson,
-    isValidJson,
+    AnyObjectType, cloneJson, isValidJson,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
@@ -45,7 +43,9 @@ export default class Playlist extends ItemSource<PlaylistItem>{
         return super.readFileToDataNoCache(filePath) as
             Promise<Playlist | null | undefined>;
     }
-    static async readFileToData(filePath: string | null, isForceCache?: boolean) {
+    static async readFileToData(
+        filePath: string | null, isForceCache?: boolean,
+    ) {
         return super.readFileToData(filePath, isForceCache) as
             Promise<Playlist | null | undefined>;
     }

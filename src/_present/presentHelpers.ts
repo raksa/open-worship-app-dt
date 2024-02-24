@@ -120,7 +120,9 @@ export function genPresentMouseEvent(event?: any): MouseEvent {
     if (event) {
         return event;
     }
-    const miniPresentScreen = document.getElementsByClassName('mini-present-screen')[0];
+    const miniPresentScreen = document.getElementsByClassName(
+        'mini-present-screen',
+    )[0];
     if (miniPresentScreen !== undefined) {
         const rect = miniPresentScreen.getBoundingClientRect();
         return createMouseEvent(rect.x, rect.y);

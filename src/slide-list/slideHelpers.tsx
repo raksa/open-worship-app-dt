@@ -121,8 +121,12 @@ export async function convertOfficeFile(
                 {' is required to convert Office file to PDF.'}
                 <br />
                 <b>
-                    <a href='https://www.google.com/search?q=download+libreoffice'
-                        target='_blank'>Download</a>
+                    <a href={
+                        'https://www.google.com/search?q=download+libreoffice'
+                    }
+                        target='_blank'>
+                        Download
+                    </a>
                 </b>
             </div>);
             openAlert('LibreOffice is not installed', alertMessage);

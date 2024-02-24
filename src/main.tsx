@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+
 import App from './App';
 import { initApp } from './server/appHelper';
 import appProvider from './server/appProvider';

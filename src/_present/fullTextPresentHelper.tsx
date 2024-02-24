@@ -45,15 +45,22 @@ const fullTextPresentHelper = {
         return div.firstChild as HTMLTableElement;
     },
     removeClassName(parent: HTMLElement, className: string) {
-        const targets = parent.querySelectorAll<HTMLSpanElement>(`span.${className}`);
+        const targets = parent.querySelectorAll<HTMLSpanElement>(
+            `span.${className}`,
+        );
         const arrChildren = Array.from(targets);
         arrChildren.forEach((target) => {
             target.classList.remove(className);
         });
         return arrChildren;
     },
-    resetClassName(parent: HTMLElement, className: string, isAdd: boolean, blockId?: string) {
-        const currentBlocks = parent.querySelectorAll(`[data-highlight="${blockId}"]`);
+    resetClassName(
+        parent: HTMLElement, className: string, isAdd: boolean,
+        blockId?: string,
+    ) {
+        const currentBlocks = parent.querySelectorAll(
+            `[data-highlight="${blockId}"]`,
+        );
         Array.from(currentBlocks).forEach((currentBlock) => {
             if (isAdd) {
                 currentBlock.classList.add(className);
@@ -69,7 +76,9 @@ const fullTextPresentHelper = {
         onBibleSelect: (event: MouseEvent, index: number) => void,
     }) {
         if (!appProviderPresent.isPresent) {
-            const divBibleKeys = table.querySelectorAll<HTMLSpanElement>('div.bible-name');
+            const divBibleKeys = table.querySelectorAll<HTMLSpanElement>(
+                'div.bible-name',
+            );
             Array.from(divBibleKeys).forEach((divBibleKey) => {
                 divBibleKey.addEventListener('mouseover', () => {
                     divBibleKey.classList.add('hover');
@@ -78,7 +87,9 @@ const fullTextPresentHelper = {
                     divBibleKey.classList.remove('hover');
                 });
                 divBibleKey.addEventListener('click', (event) => {
-                    const index = Number(divBibleKey.getAttribute('data-index'));
+                    const index = Number(divBibleKey.getAttribute(
+                        'data-index',
+                    ));
                     onBibleSelect(event, index);
                 });
             });
@@ -86,10 +97,14 @@ const fullTextPresentHelper = {
         const spans = table.querySelectorAll<HTMLSpanElement>('span.highlight');
         Array.from(spans).forEach((span) => {
             span.addEventListener('mouseover', () => {
-                this.resetClassName(table, 'hover', true, span.dataset.highlight);
+                this.resetClassName(
+                    table, 'hover', true, span.dataset.highlight,
+                );
             });
             span.addEventListener('mouseout', () => {
-                this.resetClassName(table, 'hover', false, span.dataset.highlight);
+                this.resetClassName(
+                    table, 'hover', false, span.dataset.highlight,
+                );
             });
             span.addEventListener('click', () => {
                 const arrChildren = this.removeClassName(table, 'selected');
@@ -104,30 +119,34 @@ const fullTextPresentHelper = {
     },
     genBibleItemRenderList(bibleItems: BibleItem[]) {
         return Promise.all(bibleItems.map((bibleItem) => {
-            return new Promise<BibleItemRenderedType>(async (resolve, _) => {
-                const bibleTitle = await bibleItem.toTitle();
-                const verses = await getVerses(bibleItem.bibleKey,
-                    bibleItem.target.bookKey, bibleItem.target.chapter);
-                const verseList: BibleRenderVerseType[] = [];
-                if (verses !== null) {
-                    for (let i = bibleItem.target.verseStart;
-                        i <= bibleItem.target.verseEnd; i++) {
-                        const verseNumb = await toLocaleNumBB(bibleItem.bibleKey, i);
-                        if (verseNumb !== null) {
-                            verseList.push({
-                                num: verseNumb,
-                                text: verses[`${i}`],
-                            });
+            return new Promise<BibleItemRenderedType>((resolve, _) => {
+                (async () => {
+                    const bibleTitle = await bibleItem.toTitle();
+                    const verses = await getVerses(bibleItem.bibleKey,
+                        bibleItem.target.bookKey, bibleItem.target.chapter);
+                    const verseList: BibleRenderVerseType[] = [];
+                    if (verses !== null) {
+                        for (let i = bibleItem.target.verseStart;
+                            i <= bibleItem.target.verseEnd; i++) {
+                            const verseNumb = await toLocaleNumBB(
+                                bibleItem.bibleKey, i,
+                            );
+                            if (verseNumb !== null) {
+                                verseList.push({
+                                    num: verseNumb,
+                                    text: verses[`${i}`],
+                                });
+                            }
                         }
                     }
-                }
-                const locale = await getBibleLocale(bibleItem.bibleKey);
-                resolve({
-                    locale,
-                    bibleKey: bibleItem.bibleKey,
-                    title: bibleTitle,
-                    verses: verseList,
-                });
+                    const locale = await getBibleLocale(bibleItem.bibleKey);
+                    resolve({
+                        locale,
+                        bibleKey: bibleItem.bibleKey,
+                        title: bibleTitle,
+                        verses: verseList,
+                    });
+                })();
             });
         }));
     },

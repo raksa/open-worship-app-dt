@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
     Routes, Route, BrowserRouter, useLocation,
 } from 'react-router-dom';
+
 import NotFound404 from './router/NotFound404';
 import AppPresenting from './AppPresenting';
 import {
@@ -23,11 +24,7 @@ import { useHandleFind } from './_find/finderHelpers';
 export default function App() {
     useHandleFind();
     const tabProps = useMemo(() => {
-        return [
-            editingTab,
-            presentingTab,
-            readingTab,
-        ];
+        return [editingTab, presentingTab, readingTab];
     }, []);
     checkHome();
     return (
