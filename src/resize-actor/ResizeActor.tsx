@@ -4,7 +4,9 @@ import {
 } from 'react';
 
 import AppSuspense from '../others/AppSuspense';
-import FlexResizeActor from './FlexResizeActor';
+import FlexResizeActor, {
+    ACTIVE_HIDDEN_WIDGET_CLASS, HIDDEN_WIDGET_CLASS,
+} from './FlexResizeActor';
 import {
     DisabledType, getFlexSizeSetting, keyToDataFSizeKey, setDisablingSetting,
     genFlexSizeSetting, setFlexSizeSetting,
@@ -94,6 +96,27 @@ export default function ResizeActor({
     );
 }
 
+function checkIsHiddenWidget(
+    dataInput: DataInputType[], flexSize: FlexSizeType, index: number,
+) {
+    const preKey = dataInput[index][1];
+    const preFlexSizeValue = flexSize[preKey];
+    return !!preFlexSizeValue[1];
+}
+
+function checkIsThereNotHiddenWidget(
+    dataInput: DataInputType[], flexSize: FlexSizeType, startIndex: number,
+    endIndex?: number,
+) {
+    endIndex = endIndex !== undefined ? endIndex : dataInput.length - 1;
+    for (let i = startIndex; i < endIndex; i++) {
+        if (!checkIsHiddenWidget(dataInput, flexSize, i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function RenderItem({
     data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName,
     dataInput, isDisableQuickResize, isHorizontal,
@@ -132,8 +155,9 @@ function RenderItem({
     };
     const flexSizeValue = (flexSize[key] || defaultFlexSize[key]) || [];
     const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
+    let onHiddenWidgetClick: ((event: any) => void) | null = null;
     if (flexSizeValue[1]) {
-        const onClick = (event: any) => {
+        onHiddenWidgetClick = (event: any) => {
             setDisablingSetting(
                 fSizeName, defaultFlexSize, dataFSizeKey,
             );
@@ -153,19 +177,13 @@ function RenderItem({
             );
             setFlexSize(size);
         };
-        return (
-            <div key={fSizeName}
-                title='Enable'
-                className='hidden-widget pointer'
-                style={{ color: 'green' }}
-                onClick={onClick} />
-        );
     }
-    let isShowingFSizeActor = index !== 0;
-    if (isShowingFSizeActor) {
-        const preKey = dataInput[index - 1][1];
-        const preFlexSizeValue = flexSize[preKey];
-        isShowingFSizeActor = !preFlexSizeValue[1];
+    let isShowingFSizeActor = false;
+    if (index !== 0 && onHiddenWidgetClick === null && (
+        checkIsThereNotHiddenWidget(dataInput, flexSize, 0, index) ||
+        checkIsThereNotHiddenWidget(dataInput, flexSize, index + 1)
+    )) {
+        isShowingFSizeActor = true;
     }
     return (
         <Fragment key={index}>
@@ -174,16 +192,25 @@ function RenderItem({
                 disable={disableCallback}
                 checkSize={checkSizeCallback}
                 type={isHorizontal ? 'h' : 'v'} />}
-            <div data-fs={keyToDataFSizeKey(fSizeName, key)}
-                data-fs-default={flexSizeValue[0]}
-                data-min-size={40}
-                className={`${classList} overflow-hidden`}
-                style={{
-                    flex: flexSizeValue[0] || 1,
-                    ...style,
-                }}>
-                {renderChildren()}
-            </div>
+            {onHiddenWidgetClick !== null ?
+                <div title='Enable'
+                    className={
+                        `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
+                        `${HIDDEN_WIDGET_CLASS} pointer`
+                    }
+                    style={{ color: 'green' }}
+                    onClick={onHiddenWidgetClick} /> :
+                <div data-fs={keyToDataFSizeKey(fSizeName, key)}
+                    data-fs-default={flexSizeValue[0]}
+                    data-min-size={40}
+                    className={`${classList} overflow-hidden`}
+                    style={{
+                        flex: flexSizeValue[0] || 1,
+                        ...style,
+                    }}>
+                    {renderChildren()}
+                </div>
+            }
         </Fragment>
     );
 }
