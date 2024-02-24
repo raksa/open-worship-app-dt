@@ -51,7 +51,10 @@ function deepSanitizeNestedItems(
 ): { nestedBibleItems: NestedBibleItemsType, isFoundError: boolean } {
     let isFoundError = false;
     if (nestedBibleItems instanceof Array) {
-        if (nestedBibleItems.length === 1) {
+        if (
+            nestedBibleItems.length === 1 &&
+            nestedBibleItems[0] instanceof BibleItem
+        ) {
             return {
                 nestedBibleItems: nestedBibleItems[0], isFoundError: true,
             };
