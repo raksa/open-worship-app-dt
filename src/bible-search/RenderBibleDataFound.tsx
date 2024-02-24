@@ -58,9 +58,7 @@ export default function RenderBibleDataFound({
     );
 }
 
-function renderHeader(
-    bibleItem: BibleItem,
-) {
+function renderHeader(bibleItem: BibleItem) {
     return (
         <div className='card-header bg-transparent border-success'>
             <div className='d-flex w-100 h-100'>

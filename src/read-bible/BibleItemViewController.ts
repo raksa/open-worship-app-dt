@@ -246,7 +246,7 @@ export default class BibleItemViewController
         this.addBibleItem(bibleItem, newBibleItem, false, false);
     }
     genContextMenu(
-        bibleItem: BibleItem, _: WindowModEnum | null,
+        bibleItem: BibleItem, _?: WindowModEnum | null,
     ): ContextMenuItemType[] {
         return [
             {
@@ -321,9 +321,9 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         return this._instance;
     }
     genContextMenu(
-        bibleItem: BibleItem, windowMode: WindowModEnum | null,
+        bibleItem: BibleItem, windowMode?: WindowModEnum | null,
     ): ContextMenuItemType[] {
-        const menu1 = windowMode === null ? [] : genFoundBibleItemContextMenu(
+        const menu1 = !windowMode ? [] : genFoundBibleItemContextMenu(
             bibleItem, windowMode, this.checkIsBibleItemSelected(bibleItem),
         );
         const menus2 = super.genContextMenu(bibleItem, windowMode);

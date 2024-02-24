@@ -11,7 +11,7 @@ import {
     applyDragged, genDraggingClass, removeDraggingClass,
 } from './readBibleHelper';
 import {
-    BibleViewText, rendHeader,
+    BibleViewText, RendHeader,
 } from './BibleViewExtra';
 import {
     genDefaultBibleItemContextMenu,
@@ -45,21 +45,19 @@ export default function BibleView({
                     ...bibleItemViewController.genContextMenu(bibleItem),
                 ]);
             }}>
-            {
-                rendHeader(
-                    bibleItem,
-                    (_oldBibleKey: string, newBibleKey: string) => {
-                        const newBibleItem = bibleItem.clone(true);
-                        newBibleItem.bibleKey = newBibleKey;
-                        bibleItemViewController.changeItem(
-                            bibleItem, newBibleItem,
-                        );
-                    },
-                    () => {
-                        bibleItemViewController.removeItem(bibleItem);
-                    },
-                )
-            }
+            <RendHeader
+                bibleItem={bibleItem}
+                onChange={(_oldBibleKey: string, newBibleKey: string) => {
+                    const newBibleItem = bibleItem.clone(true);
+                    newBibleItem.bibleKey = newBibleKey;
+                    bibleItemViewController.changeItem(
+                        bibleItem, newBibleItem,
+                    );
+                }}
+                onClose={() => {
+                    bibleItemViewController.removeItem(bibleItem);
+                }}
+            />
             <div className='card-body p-3'>
                 <BibleViewText
                     bibleItem={bibleItem}

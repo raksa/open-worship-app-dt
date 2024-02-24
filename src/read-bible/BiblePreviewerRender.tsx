@@ -7,7 +7,7 @@ import {
 } from './BibleItemViewController';
 import BibleViewRenderer from './BibleViewRenderer';
 import {
-    BibleTextFontSizeContext, DEFAULT_BIBLE_TEXT_FONT_SIZE,
+    BibleViewFontSizeContext, DEFAULT_BIBLE_TEXT_FONT_SIZE,
 } from './BibleViewExtra';
 import FullScreenBtn from './FullScreenBtn';
 
@@ -41,9 +41,9 @@ export default function BiblePreviewerRender() {
             <div className={
                 'card-body d-flex overflow-hidden w-100 h-100'
             }>
-                <BibleTextFontSizeContext.Provider value={fontSize}>
+                <BibleViewFontSizeContext.Provider value={fontSize}>
                     <Render />
-                </BibleTextFontSizeContext.Provider>
+                </BibleViewFontSizeContext.Provider>
             </div>
             <div className='card-footer p-0'>
                 <div className='d-flex w-100'>
