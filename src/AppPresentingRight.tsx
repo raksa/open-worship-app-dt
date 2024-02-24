@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
@@ -11,17 +12,15 @@ const MiniPresentScreen = lazy(() => {
 
 export default function AppPresentingRight() {
     return (
-        <div className='flex v h-100'>
-            <ResizeActor fSizeName={resizeSettingNames.appPresentingRight}
-                flexSizeDefault={{
-                    'v1': ['1'],
-                    'v2': ['1'],
-                }}
-                resizeKinds={['v']}
-                dataInput={[
-                    [BibleList, 'v1', 'flex-item'],
-                    [MiniPresentScreen, 'v2', 'flex-item'],
-                ]} />
-        </div>
+        <ResizeActor fSizeName={resizeSettingNames.appPresentingRight}
+            isHorizontal={false}
+            flexSizeDefault={{
+                'v1': ['1'],
+                'v2': ['1'],
+            }}
+            dataInput={[
+                [BibleList, 'v1', 'flex-item'],
+                [MiniPresentScreen, 'v2', 'flex-item'],
+            ]} />
     );
 }

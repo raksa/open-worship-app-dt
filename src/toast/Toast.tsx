@@ -1,6 +1,7 @@
 import './Toast.scss';
 
 import { useCallback, useState } from 'react';
+
 import {
     useToastSimpleShowing,
 } from '../event/ToastEventListener';

@@ -20,15 +20,20 @@
         user-select: text !important;
     }
 
-    &>.app-header {
-        height: $header-height;
+    & #app-header {
+        width: 100% !important;
+        height: $header-height !important;
+        overflow: hidden;
 
         .highlight-border-bottom {
             border-bottom: 1px solid var(--bs-gray-600);
         }
     }
 
-    &>.app-body {
+    & #app-body {
+        width: 100% !important;
+        height: calc(100% - $header-height) !important;
+        overflow: hidden;
         background-color: var(--bs-gray-700);
         padding: 2px;
     }

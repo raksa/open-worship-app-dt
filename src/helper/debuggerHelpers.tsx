@@ -1,6 +1,7 @@
 import {
     DependencyList, EffectCallback, useEffect, useState,
 } from 'react';
+
 import { log, warn } from './loggerHelpers';
 
 const THRESHOLD = 10;

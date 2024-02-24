@@ -1,4 +1,5 @@
 import { lazy, useCallback, useState } from 'react';
+
 import FileReadError from './FileReadError';
 import {
     ContextMenuItemType, showAppContextMenu,

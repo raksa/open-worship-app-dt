@@ -1,6 +1,7 @@
 import './FullTextPreviewer.scss';
 
 import { lazy } from 'react';
+
 import {
     useLyricSelecting,
 } from '../event/PreviewingEventListener';

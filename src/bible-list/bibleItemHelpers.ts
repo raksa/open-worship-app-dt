@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import Bible from './Bible';
 import { WindowModEnum } from '../router/routeHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';

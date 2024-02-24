@@ -1,6 +1,7 @@
 import './ColorPicker.scss';
 
 import { useCallback, useState } from 'react';
+
 import colorList from '../color-list.json';
 import {
     AppColorType, transparentColor, colorToTransparent,

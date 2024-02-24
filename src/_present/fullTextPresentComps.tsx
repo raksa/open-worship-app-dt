@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+
 import { LocaleType } from '../lang';
 import { getFontFace, getFontFamilyByLocal } from '../server/fontHelpers';
 

@@ -1,6 +1,7 @@
 import './SlideItemDragReceiver.scss';
 
 import { CSSProperties, useState } from 'react';
+
 import SlideItem from '../../slide-list/SlideItem';
 import { handleDrop } from '../../bible-list/dragHelpers';
 import { DragTypeEnum } from '../../helper/DragInf';

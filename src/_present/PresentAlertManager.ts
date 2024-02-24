@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+
 import EventHandler from '../event/EventHandler';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';

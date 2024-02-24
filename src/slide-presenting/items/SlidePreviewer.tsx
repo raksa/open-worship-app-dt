@@ -1,6 +1,7 @@
 import './SlidePreviewer.scss';
 
 import { useCallback, useState } from 'react';
+
 import SlideItemsPreviewer from './SlideItemsPreviewer';
 import { useSlideItemSizing } from '../../event/SlideListEventListener';
 import {

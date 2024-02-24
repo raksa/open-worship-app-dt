@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
@@ -15,12 +16,12 @@ const PlaylistList = lazy(() => {
 export default function AppPresentingLeft() {
     return (
         <ResizeActor fSizeName={resizeSettingNames.appPresentingLeft}
+            isHorizontal={false}
             flexSizeDefault={{
                 'v1': ['1'],
                 'v2': ['1'],
                 'v3': ['1'],
             }}
-            resizeKinds={['v', 'v']}
             dataInput={[
                 [SlideList, 'v1', 'flex-item'],
                 [LyricList, 'v2', 'flex-item'],

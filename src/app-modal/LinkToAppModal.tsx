@@ -1,10 +1,11 @@
+import { ReactNode } from 'react';
+
 import {
     Link, useLocation, useNavigate,
 } from 'react-router-dom';
 import {
     APP_MODAL_ROUTE_PATH, toAppModalTypeData,
 } from './helpers';
-import { ReactNode } from 'react';
 import { goHomeBack } from '../router/routeHelpers';
 
 export function useCloseAppModal() {

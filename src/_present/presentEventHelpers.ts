@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { useAppEffect } from '../helper/debuggerHelpers';
 import appProviderPresent from './appProviderPresent';
 import PresentBGManager, {

@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+
 import DownloadedBibleItem from './DownloadedBibleItem';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';

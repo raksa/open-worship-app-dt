@@ -1,6 +1,7 @@
 import './Background.scss';
 
 import { lazy } from 'react';
+
 import {
     useStateSettingString,
 } from '../helper/settingHelper';

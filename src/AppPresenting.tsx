@@ -34,16 +34,16 @@ export default function AppPresenting() {
         <BibleItemViewControllerContext.Provider
             value={bibleItemViewController}>
             <ResizeActor fSizeName={resizeSettingNames.appPresenting}
+                isHorizontal
                 flexSizeDefault={{
                     'h1': ['1'],
                     'h2': ['3'],
                     'h3': ['2'],
                 }}
-                resizeKinds={['h', 'h']}
                 dataInput={[
-                    [AppPresentingLeft, 'h1', 'flex v'],
-                    [AppPresentingMiddle, 'h2', 'flex v'],
-                    [AppPresentingRight, 'h3', 'flex v'],
+                    [AppPresentingLeft, 'h1', ''],
+                    [AppPresentingMiddle, 'h2', ''],
+                    [AppPresentingRight, 'h3', ''],
                 ]} />
         </BibleItemViewControllerContext.Provider>
     );

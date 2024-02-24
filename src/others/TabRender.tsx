@@ -1,4 +1,5 @@
 import { LazyExoticComponent } from 'react';
+
 import { tran } from '../lang';
 import AppSuspense from './AppSuspense';
 

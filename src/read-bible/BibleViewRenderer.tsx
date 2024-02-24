@@ -1,15 +1,17 @@
-
 import {
     NestedBibleItemsType, RESIZE_SETTING_NAME,
     useBibleItemViewControllerContext,
 } from './BibleItemViewController';
-import ResizeActor, { FlexSizeType } from '../resize-actor/ResizeActor';
+import ResizeActor, {
+    DataInputType, FlexSizeType,
+} from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
 
 export default function BibleViewRenderer({
-    isHorizontal = true, nestedBibleItems,
+    isHorizontal = true, classPrefix = '', nestedBibleItems,
 }: Readonly<{
     isHorizontal?: boolean,
+    classPrefix?: string,
     nestedBibleItems: NestedBibleItemsType,
 }>) {
     const bibleItemViewController = useBibleItemViewControllerContext();
@@ -21,31 +23,32 @@ export default function BibleViewRenderer({
             <NoBibleViewAvailable />
         );
     }
+    const typeText = isHorizontal ? 'h' : 'v';
+    classPrefix += typeText;
     if (nestedBibleItems.length === 1) {
         return (
             <BibleViewRenderer
                 nestedBibleItems={nestedBibleItems[0]}
                 isHorizontal={!isHorizontal}
+                classPrefix={classPrefix}
             />
         );
     }
-    const typeText = isHorizontal ? 'h' : 'v';
-    const contrastTypeText = isHorizontal ? 'v' : 'h';
     const flexSizeDefault = Object.fromEntries(nestedBibleItems.map((_, i) => {
         return [`${typeText}${i + 1}`, ['1']];
     })) as FlexSizeType;
     return (
         <ResizeActor
             fSizeName={
-                bibleItemViewController.toSettingName(RESIZE_SETTING_NAME)
+                bibleItemViewController.toSettingName(
+                    `${RESIZE_SETTING_NAME}-${classPrefix}`
+                )
             }
+            isHorizontal={isHorizontal}
             isNotSaveSetting
             isDisableQuickResize={true}
             flexSizeDefault={flexSizeDefault}
-            resizeKinds={Array.from({
-                length: nestedBibleItems.length - 1,
-            }).map(() => typeText)}
-            dataInput={nestedBibleItems.map((item, i) => {
+            dataInput={nestedBibleItems.map((item, i): DataInputType => {
                 return [
                     {
                         render: () => {
@@ -53,12 +56,13 @@ export default function BibleViewRenderer({
                                 <BibleViewRenderer
                                     nestedBibleItems={item}
                                     isHorizontal={!isHorizontal}
+                                    classPrefix={classPrefix}
                                 />
                             );
                         },
                     },
                     `${typeText}${i + 1}`,
-                    `flex ${contrastTypeText}`,
+                    '',
                 ];
             })} />
     );

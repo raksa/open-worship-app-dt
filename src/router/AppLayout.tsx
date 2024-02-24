@@ -6,6 +6,7 @@ import '../others/bootstrap-override.scss';
 import '../others/scrollbar.scss';
 
 import { useContext } from 'react';
+
 import { Outlet } from 'react-router-dom';
 import SettingHeader from '../setting/SettingHeader';
 import BibleSearchHeader from '../bible-search/BibleSearchHeader';
@@ -23,18 +24,18 @@ export default function AppLayout() {
     }
     return (
         <WindowModeContext.Provider value={windowMode}>
-            <div className='d-flex flex-column w-100 h-100'>
+            <>
                 {/* <TestInfinite /> */}
                 {getHeader(tabOptionList)}
                 {genBody()}
-            </div>
+            </>
         </WindowModeContext.Provider>
     );
 }
 
 function getHeader(tabOptionList: TabOptionType[]) {
     return (
-        <div className='app-header d-flex'>
+        <div id='app-header' className='d-flex'>
             <TabHeadRender tabs={tabOptionList || []} />
             <div className={
                 'highlight-border-bottom d-flex'
@@ -51,7 +52,7 @@ function getHeader(tabOptionList: TabOptionType[]) {
 
 function genBody() {
     return (
-        <div className='app-body flex-fill flex h border-white-round'>
+        <div id='app-body' className='border-white-round'>
             <Outlet />
         </div>
     );

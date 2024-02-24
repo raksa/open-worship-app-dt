@@ -1,6 +1,7 @@
 import './Modal.scss';
 
 import { PropsWithChildren, ReactNode } from 'react';
+
 import {
     EventMapper, toShortcutKey, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';

@@ -1,6 +1,7 @@
 import './ConfirmPopup.scss';
 
 import { useCallback } from 'react';
+
 import PrimitiveModal from '../app-modal/PrimitiveModal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
@@ -23,7 +24,7 @@ export default function ConfirmPopup({ data }: Readonly<{
                     {data.title}
                 </>} onClose={onCloseCallback} />
                 <div className='card-body d-flex flex-column'>
-                    <div className='p-2 flex-fill flex h app-selectable-text'
+                    <div className='p-2 flex-fill app-selectable-text'
                         dangerouslySetInnerHTML={{
                             __html: data.question,
                         }} />

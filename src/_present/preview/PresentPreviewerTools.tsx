@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+
 import AppSuspense from '../../others/AppSuspense';
 
 const CustomStyle = lazy(() => {

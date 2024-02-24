@@ -1,6 +1,7 @@
 import './SlideItemEditorPreviewer.scss';
 
 import { useState } from 'react';
+
 import { useSlideItemSelecting } from '../event/SlideListEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';

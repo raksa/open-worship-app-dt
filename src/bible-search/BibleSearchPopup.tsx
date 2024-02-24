@@ -1,6 +1,7 @@
 import './BibleSearchPopup.scss';
 
 import { useState } from 'react';
+
 import RenderBibleSearch from './RenderBibleSearch';
 import { useModal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';

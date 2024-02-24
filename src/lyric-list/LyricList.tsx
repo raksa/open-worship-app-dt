@@ -1,6 +1,7 @@
 import './LyricList.scss';
 
 import { useCallback } from 'react';
+
 import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';

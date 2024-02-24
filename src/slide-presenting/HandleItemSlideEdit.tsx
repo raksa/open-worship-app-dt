@@ -1,4 +1,5 @@
 import { lazy, useState } from 'react';
+
 import WindowEventListener, {
     useWindowEvent, EventMapper as WEventMapper,
 } from '../event/WindowEventListener';

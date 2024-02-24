@@ -1,4 +1,5 @@
 import { lazy, useState } from 'react';
+
 import {
     AlertDataType, alertManager, ConfirmDataType,
 } from './alertHelpers';

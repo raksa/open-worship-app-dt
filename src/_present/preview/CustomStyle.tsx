@@ -1,6 +1,7 @@
 import './CustomStyle.scss';
 
 import { lazy } from 'react';
+
 import { useStateSettingString } from '../../helper/settingHelper';
 import TabRender, { genTabBody } from '../../others/TabRender';
 

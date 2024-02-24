@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';

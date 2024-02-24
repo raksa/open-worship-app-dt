@@ -2,6 +2,7 @@ import './_present/present.scss';
 import './others/font.scss';
 
 import { StrictMode } from 'react';
+
 import { createRoot } from 'react-dom/client';
 import appProviderPresent from './_present/appProviderPresent';
 import PresentApp from './_present/PresentApp';

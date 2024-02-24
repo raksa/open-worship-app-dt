@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './others/font.scss';
 
 import { StrictMode } from 'react';
+
 import { createRoot } from 'react-dom/client';
 import appProviderPresent from './_present/appProviderPresent';
 import FinderApp from './_find/FinderApp';

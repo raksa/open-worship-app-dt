@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import LyricView from './LyricView';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';

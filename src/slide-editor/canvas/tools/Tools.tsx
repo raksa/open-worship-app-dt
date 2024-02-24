@@ -1,6 +1,7 @@
 import './Tools.scss';
 
 import { Fragment, lazy } from 'react';
+
 import { useStateSettingString } from '../../../helper/settingHelper';
 import TabRender, { genTabBody } from '../../../others/TabRender';
 import CanvasController from '../CanvasController';

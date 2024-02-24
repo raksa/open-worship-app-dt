@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
 import {

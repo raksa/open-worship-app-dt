@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+
 import ReactDOMServer from 'react-dom/server';
 import { BackgroundSrcType } from './PresentBGManager';
 import PresentManager from './PresentManager';

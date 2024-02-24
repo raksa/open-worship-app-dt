@@ -1,4 +1,5 @@
 import { lazy, useMemo } from 'react';
+
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import BibleItemViewController, {
@@ -28,14 +29,14 @@ export default function AppReading() {
         <BibleItemViewControllerContext.Provider
             value={bibleItemViewController}>
             <ResizeActor fSizeName={resizeSettingNames.read}
+                isHorizontal
                 flexSizeDefault={{
                     'h1': ['1'],
                     'h2': ['4'],
                 }}
-                resizeKinds={['h']}
                 dataInput={[
-                    [BibleList, 'h1', 'flex v'],
-                    [BiblePreviewerRender, 'h2', 'flex v'],
+                    [BibleList, 'h1', ''],
+                    [BiblePreviewerRender, 'h2', ''],
                 ]} />
         </BibleItemViewControllerContext.Provider>
     );

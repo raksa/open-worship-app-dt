@@ -1,6 +1,7 @@
 import './Presenting.scss';
 
 import { lazy } from 'react';
+
 import {
     useFullTextOpening, useSlideSelecting,
 } from '../event/PreviewingEventListener';
@@ -45,7 +46,7 @@ export default function Presenting() {
     useSlideSelecting(() => setTabType('s'));
     useSlideItemSelecting(() => setTabType('s'));
     return (
-        <div id='presenting' className='w-100 h-100'>
+        <div id='presenting-manager' className='w-100 h-100'>
             <TabRender<TabType>
                 tabs={tabTypeList.map(([type, name]) => {
                     return [type, name];
@@ -53,7 +54,7 @@ export default function Presenting() {
                 activeTab={tabType}
                 setActiveTab={setTabType}
                 className='header' />
-            <div className='body w-100 p-1'>
+            <div className='body w-100 p-1 overflow-hidden'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+
 import CanvasItemImage, {
     CanvasItemImagePropsType,
 } from '../CanvasItemImage';

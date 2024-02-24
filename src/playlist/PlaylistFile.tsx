@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import { useStateSettingBoolean } from '../helper/settingHelper';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';

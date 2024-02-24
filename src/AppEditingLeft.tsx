@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
@@ -12,11 +13,11 @@ const SlidePreviewer = lazy(() => {
 export default function AppEditingLeft() {
     return (
         <ResizeActor fSizeName={resizeSettingNames.appEditingLeft}
+            isHorizontal={false}
             flexSizeDefault={{
                 'v1': ['1'],
                 'v2': ['2'],
             }}
-            resizeKinds={['v']}
             dataInput={[
                 [SlideList, 'v1', 'flex-item'],
                 [SlidePreviewer, 'v2', 'flex-item'],

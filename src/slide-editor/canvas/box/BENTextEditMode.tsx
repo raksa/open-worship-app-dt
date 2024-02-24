@@ -1,4 +1,5 @@
 import { CSSProperties, useCallback } from 'react';
+
 import CanvasController from '../CanvasController';
 import CanvasItemText from '../CanvasItemText';
 import BoxEditorTextArea from './BoxEditorTextArea';

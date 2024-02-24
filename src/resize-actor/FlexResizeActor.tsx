@@ -1,6 +1,7 @@
 import './FlexResizeActor.scss';
 
 import { Component, RefObject, createRef } from 'react';
+
 import { DisabledType } from './flexSizeHelpers';
 
 const HIDDEN_WIDGET_CLASS = 'hidden-widget';

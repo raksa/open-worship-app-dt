@@ -1,6 +1,7 @@
 import './SettingPopup.scss';
 
 import { lazy } from 'react';
+
 import { useStateSettingString } from '../helper/settingHelper';
 import TabRender, { genTabBody } from '../others/TabRender';
 import { useModal } from '../app-modal/Modal';
@@ -48,7 +49,7 @@ function Setting() {
                     activeTab={tabType}
                     setActiveTab={setTabType} />
             </div>
-            <div className='setting-body flex-fill flex h'>
+            <div className='setting-body flex-fill'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

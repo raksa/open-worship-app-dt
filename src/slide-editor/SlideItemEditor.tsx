@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
@@ -20,7 +21,7 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
         );
     }
     return (
-        <div className='slide-item-editor flex v w-100 h-100'
+        <div className='slide-item-editor w-100 h-100 overflow-hidden'
             onWheel={(event) => {
                 if (event.ctrlKey) {
                     CanvasController.getInstance()
@@ -28,11 +29,11 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
                 }
             }}>
             <ResizeActor fSizeName={resizeSettingNames.slideItemEditor}
+                isHorizontal={false}
                 flexSizeDefault={{
                     'v1': ['3'],
                     'v2': ['1'],
                 }}
-                resizeKinds={['v']}
                 dataInput={[
                     [SlideItemEditorCanvas, 'v1', 'flex-item'],
                     [Tools, 'v2', 'flex-item'],

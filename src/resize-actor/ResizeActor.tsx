@@ -4,9 +4,7 @@ import {
 } from 'react';
 
 import AppSuspense from '../others/AppSuspense';
-import FlexResizeActor, {
-    ResizeKindType,
-} from './FlexResizeActor';
+import FlexResizeActor from './FlexResizeActor';
 import {
     DisabledType, getFlexSizeSetting, keyToDataFSizeKey, setDisablingSetting,
     genFlexSizeSetting, setFlexSizeSetting,
@@ -24,19 +22,16 @@ export type DataInputType = [
     CSSProperties?,
 ];
 export default function ResizeActor({
-    fSizeName, flexSizeDefault, resizeKinds, dataInput,
+    isHorizontal, fSizeName, flexSizeDefault, dataInput,
     isDisableQuickResize, isNotSaveSetting = false,
 }: Readonly<{
+    isHorizontal: boolean,
     fSizeName: string,
     flexSizeDefault: FlexSizeType,
-    resizeKinds: ResizeKindType[],
     dataInput: DataInputType[],
     isDisableQuickResize?: boolean,
     isNotSaveSetting?: boolean,
 }>) {
-    if (resizeKinds.length !== dataInput.length - 1) {
-        throw new Error('resizeKinds and dataInput length not match');
-    }
     for (const [_, key, __] of dataInput) {
         if (flexSizeDefault[key] === undefined) {
             throw new Error(
@@ -75,8 +70,12 @@ export default function ResizeActor({
             setFlexSize1(newFlexSize);
         }
     }, [flexSize, flexSizeDefault]);
+    console.log(flexSize, dataInput);
+
     return (
-        <>
+        <div className={
+            `w-100 h-100 flex ${isHorizontal ? 'h' : 'v'} overflow-hidden`
+        }>
             {dataInput.map((data, i) => {
                 return (
                     <RenderItem key={`${data[1]}-${data[2]}}`}
@@ -87,18 +86,18 @@ export default function ResizeActor({
                         defaultFlexSize={defaultFlexSize}
                         fSizeName={fSizeName}
                         dataInput={dataInput}
-                        resizeKinds={resizeKinds}
                         isDisableQuickResize={isDisableQuickResize || false}
+                        isHorizontal={isHorizontal}
                     />
                 );
             })}
-        </>
+        </div>
     );
 }
 
 function RenderItem({
     data, index, flexSize, setFlexSize, defaultFlexSize, fSizeName,
-    dataInput, resizeKinds, isDisableQuickResize,
+    dataInput, isDisableQuickResize, isHorizontal,
 }: Readonly<{
     data: DataInputType,
     index: number,
@@ -107,8 +106,8 @@ function RenderItem({
     defaultFlexSize: FlexSizeType,
     fSizeName: string,
     dataInput: DataInputType[],
-    resizeKinds: ResizeKindType[],
     isDisableQuickResize: boolean,
+    isHorizontal: boolean,
 }>) {
     const disableCallback = useCallback((
         targetDataFSizeKey: string, target: DisabledType) => {
@@ -175,11 +174,11 @@ function RenderItem({
                 isDisableQuickResize={isDisableQuickResize}
                 disable={disableCallback}
                 checkSize={checkSizeCallback}
-                type={resizeKinds[index - 1]} />}
+                type={isHorizontal ? 'h' : 'v'} />}
             <div data-fs={keyToDataFSizeKey(fSizeName, key)}
                 data-fs-default={flexSizeValue[0]}
                 data-min-size={40}
-                className={classList}
+                className={`${classList} overflow-hidden`}
                 style={{
                     flex: flexSizeValue[0] || 1,
                     ...style,
