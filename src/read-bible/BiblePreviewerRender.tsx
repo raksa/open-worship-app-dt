@@ -8,7 +8,7 @@ import {
 import BibleViewRenderer from './BibleViewRenderer';
 import {
     BibleViewFontSizeContext, DEFAULT_BIBLE_TEXT_FONT_SIZE,
-} from './BibleViewExtra';
+} from '../helper/bibleViewHelpers';
 import FullScreenBtn from './FullScreenBtn';
 
 const MIN_FONT_SIZE = 5;

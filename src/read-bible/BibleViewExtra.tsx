@@ -1,5 +1,3 @@
-import { createContext, useContext } from 'react';
-
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMini } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
@@ -7,6 +5,9 @@ import {
     useBibleItemRenderText, useBibleItemRenderTitle,
 } from '../bible-list/bibleItemHelpers';
 import { getRandomUUID } from '../helper/helpers';
+import {
+    fontSizeToHeightStyle, useBibleViewFontSize,
+} from '../helper/bibleViewHelpers';
 
 export function RendHeader({
     bibleItem, onChange, onClose,
@@ -15,11 +16,10 @@ export function RendHeader({
     onChange: (oldBibleKey: string, newBibleKey: string) => void,
     onClose: () => void,
 }>) {
-    const fontSize = useContext(BibleViewFontSizeContext);
+    const fontSize = useBibleViewFontSize();
     return (
-        <div className='card-header d-flex' style={{
-            height: fontSize >= 20 ? (fontSize + 30) : undefined,
-        }}>
+        <div className='card-header d-flex'
+            style={fontSizeToHeightStyle(fontSize)}>
             <div className='flex-fill d-flex'>
                 <div>
                     <BibleSelectionMini
@@ -43,7 +43,7 @@ export function BibleViewTitle({ bibleItem }: Readonly<{
 }>) {
     const uuid = getRandomUUID();
     const title = useBibleItemRenderTitle(bibleItem, uuid);
-    const fontSize = useContext(BibleViewFontSizeContext);
+    const fontSize = useBibleViewFontSize();
     return (
         <div id={uuid} className='title app-selectable-text'
             style={{ fontSize }}>
@@ -52,17 +52,12 @@ export function BibleViewTitle({ bibleItem }: Readonly<{
     );
 }
 
-export const DEFAULT_BIBLE_TEXT_FONT_SIZE = 16;
-export const BibleViewFontSizeContext = createContext<number>(
-    DEFAULT_BIBLE_TEXT_FONT_SIZE,
-);
-
 export function BibleViewText({
     bibleItem,
 }: Readonly<{
     bibleItem: BibleItem,
 }>) {
-    const fontSize = useContext(BibleViewFontSizeContext);
+    const fontSize = useBibleViewFontSize();
     const uuid = getRandomUUID();
     const text = useBibleItemRenderText(bibleItem, uuid);
     return (

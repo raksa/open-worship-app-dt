@@ -14,6 +14,9 @@ import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
 import { useWindowMode } from '../router/routeHelpers';
+import {
+    fontSizeToHeightStyle, useBibleViewFontSize,
+} from '../helper/bibleViewHelpers';
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange,
@@ -35,32 +38,27 @@ export default function RenderBibleDataFound({
                         bibleItemViewController.selectedBibleItem, windowMode,
                     ),
                 ]);
-            }}
-            style={{
-                height: '10px',
             }}>
-            {renderHeader(bibleItem)}
-            <div className={
-                'card-body bg-transparent border-success p-0'
-            }>
+            <RenderHeader bibleItem={bibleItem} />
+            <div className='card-body bg-transparent border-success p-0'>
                 {!isSearching ? null :
                     <RenderVerseOptions
                         bibleItem={bibleItem}
                         onVersesChange={onVerseChange} />
                 }
                 <div className='p-2'>
-                    <BibleViewText
-                        bibleItem={bibleItem}
-                    />
+                    <BibleViewText bibleItem={bibleItem} />
                 </div>
             </div>
         </div>
     );
 }
 
-function renderHeader(bibleItem: BibleItem) {
+function RenderHeader({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
+    const fontSize = useBibleViewFontSize();
     return (
-        <div className='card-header bg-transparent border-success'>
+        <div className='card-header bg-transparent border-success'
+            style={fontSizeToHeightStyle(fontSize)}>
             <div className='d-flex w-100 h-100'>
                 <div className='flex-fill text-nowrap'>
                     <BibleViewTitle bibleItem={bibleItem} />
