@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 
 import {
     ExtractedBibleResult, genExtractedBible, extractBibleTitle, toInputText,
@@ -11,14 +11,13 @@ import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
+import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
 
-export default function RenderBibleSearchBody({
-    bibleKey, inputText,
-}: Readonly<{
-    bibleKey: string,
+export default function RenderBibleSearchBody({ inputText }: Readonly<{
     inputText: string,
 }>) {
+    const bibleKey = useContext(SelectedBibleKeyContext);
     const setInputText = SearchBibleItemViewController.
         getInstance().setInputText;
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
@@ -83,7 +82,6 @@ export default function RenderBibleSearchBody({
     ]);
     return (
         <RenderSearchSuggestion
-            bibleKey={bibleKey}
             bibleResult={extractedInput}
             applyChapterSelection={applyChapterSelectionCallback}
             applyVerseSelection={applyVerseSelectionCallback}

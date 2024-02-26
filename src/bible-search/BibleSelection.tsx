@@ -29,8 +29,8 @@ export async function showBibleOption(
         }));
 }
 
-export default function BibleSelection({ value, onChange }: Readonly<{
-    value: string,
+export default function BibleSelection({ bibleKey, onChange }: Readonly<{
+    bibleKey: string,
     onChange: (oldValue: string, newValue: string) => void,
 }>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
@@ -46,9 +46,9 @@ export default function BibleSelection({ value, onChange }: Readonly<{
     }
     return (
         <select className='form-select bible'
-            value={value}
+            value={bibleKey}
             onChange={(event) => {
-                onChange(value, event.target.value);
+                onChange(bibleKey, event.target.value);
             }}>
             {bibleInfoList.map((bibleInfo) => {
                 return (

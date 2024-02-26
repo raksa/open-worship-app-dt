@@ -15,16 +15,18 @@ import {
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
+import { useContext } from 'react';
+import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
 export default function InputHandler({
-    inputText, onBibleChange, bibleKey,
+    inputText, onBibleChange,
 }: Readonly<{
     inputText: string
     onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
-    bibleKey: string;
 }>) {
     const setInputText = SearchBibleItemViewController.
         getInstance().setInputText;
+    const bibleKey = useContext(SelectedBibleKeyContext);
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(
@@ -55,7 +57,7 @@ export default function InputHandler({
                     setInputText(value);
                 }} />
             <span className='input-group-text select'>
-                <BibleSelection value={bibleKey}
+                <BibleSelection bibleKey={bibleKey}
                     onChange={onBibleChange} />
             </span>
         </>

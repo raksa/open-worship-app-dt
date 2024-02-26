@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+
 import {
     allArrows, KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
@@ -7,14 +9,14 @@ import {
 import {
     useChapterMatch,
 } from '../helper/bible-helpers/serverBibleHelpers';
+import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
 const OPTION_CLASS = 'bible-search-chapter-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderChapterOptions({
-    bibleKey, bookKey, chapter, guessingChapter, onSelect,
+    bookKey, chapter, guessingChapter, onSelect,
 }: Readonly<{
-    bibleKey: string,
     bookKey: string | null,
     chapter: number | null,
     guessingChapter: string | null,
@@ -25,7 +27,6 @@ export default function RenderChapterOptions({
     }
     return (
         <ChapterOptions
-            bibleKey={bibleKey}
             bookKey={bookKey}
             guessingChapter={guessingChapter}
             onSelect={onSelect} />
@@ -33,13 +34,13 @@ export default function RenderChapterOptions({
 }
 
 function ChapterOptions({
-    bibleKey, bookKey, guessingChapter, onSelect,
+    bookKey, guessingChapter, onSelect,
 }: Readonly<{
-    bibleKey: string,
     bookKey: string,
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
 }>) {
+    const bibleKey = useContext(SelectedBibleKeyContext);
     const matches = useChapterMatch(bibleKey, bookKey, guessingChapter);
     const arrowListener = (event: KeyboardEvent) => {
         processSelection(

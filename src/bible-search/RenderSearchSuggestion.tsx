@@ -8,16 +8,15 @@ import {
 import RenderBibleDataFound from './RenderBibleDataFound';
 
 export default function RenderSearchSuggestion({
-    applyChapterSelection, applyVerseSelection, applyBookSelection,
-    bibleResult, bibleKey,
+    bibleResult, applyChapterSelection, applyVerseSelection,
+    applyBookSelection,
 }: Readonly<{
+    bibleResult: ExtractedBibleResult,
     applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (
         newVerseStart?: number, newVerseEnd?: number,
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
-    bibleKey: string,
-    bibleResult: ExtractedBibleResult,
 }>) {
     const onVerseChangeCallback = useCallback(
         (newVerseStart?: number, newVerseEnd?: number) => {
@@ -44,13 +43,11 @@ export default function RenderSearchSuggestion({
                 + 'justify-content-start'
             }>
                 <RenderBookOptions
-                    bibleKey={bibleKey}
                     bookKey={bookKey}
                     guessingBook={guessingBook}
                     onSelect={applyBookSelection}
                 />
                 <RenderChapterOptions
-                    bibleKey={bibleKey}
                     bookKey={bookKey}
                     chapter={chapter}
                     guessingChapter={guessingChapter}

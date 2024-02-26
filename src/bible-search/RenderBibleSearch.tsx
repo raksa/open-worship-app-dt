@@ -1,7 +1,8 @@
-import { useCallback, useState } from 'react';
+import { lazy, useCallback, useState } from 'react';
 
 import InputHandler from './InputHandler';
 import {
+    SelectedBibleKeyContext,
     genInputText, useGetSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
 import {
@@ -15,7 +16,10 @@ import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
-import BibleOnlineSearchBodyPreviewer from './BibleOnlineSearchBodyPreviewer';
+
+const BibleOnlineSearchBodyPreviewer = lazy(() => {
+    return import('./BibleOnlineSearchBodyPreviewer');
+});
 
 export default function RenderBibleSearch({
     editingInputText,
@@ -52,53 +56,46 @@ export default function RenderBibleSearch({
     }
     const searchingBody = (
         <BibleSearchBodyPreviewer
-            bibleKey={bibleKey}
             inputText={inputText}
         />
     );
     return (
-        <div id='bible-search-popup' className='app-modal shadow card'>
-            <div className='card-header d-flex text-center w-100'>
-                {isBibleEditing ? null : <div className='float-start'>
-                    <RenderExtraLeftButtons
-                        setIsSearchOnline={setIsSearchOnline}
-                        isSearchOnline={isSearchOnline}
-                    />
-                </div>}
-                <div className='input-group input-group-header'
-                    style={{ width: 350 }}>
-                    <InputHandler
-                        inputText={inputText}
-                        bibleKey={bibleKey}
-                        onBibleChange={handleBibleChange} />
+        <SelectedBibleKeyContext.Provider value={bibleKey}>
+            <div id='bible-search-popup' className='app-modal shadow card'>
+                <div className='card-header d-flex text-center w-100'>
+                    {isBibleEditing ? null : <div className='float-start'>
+                        <RenderExtraLeftButtons
+                            setIsSearchOnline={setIsSearchOnline}
+                            isSearchOnline={isSearchOnline}
+                        />
+                    </div>}
+                    <div className='input-group input-group-header'
+                        style={{ width: 350 }}>
+                        <InputHandler
+                            inputText={inputText}
+                            onBibleChange={handleBibleChange}
+                        />
+                    </div>
+                </div>
+                <div className={
+                    'card-body d-flex w-100 h-100 overflow-hidden'
+                }>
+                    {isSearchOnline ?
+                        <ResizeActor fSizeName='bible-search-popup-body'
+                            isHorizontal
+                            isDisableQuickResize
+                            flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
+                            dataInput={[
+                                [BibleOnlineSearchBodyPreviewer, 'h1', ''],
+                                [{
+                                    render: () => {
+                                        return searchingBody;
+                                    },
+                                }, 'h2', ''],
+                            ]} /> : searchingBody
+                    }
                 </div>
             </div>
-            <div className={
-                'card-body d-flex w-100 h-100 overflow-hidden'
-            }>
-                {isSearchOnline ?
-                    <ResizeActor fSizeName='bible-search-popup-body'
-                        isHorizontal
-                        isDisableQuickResize
-                        flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
-                        dataInput={[
-                            [{
-                                render: () => {
-                                    return (
-                                        <BibleOnlineSearchBodyPreviewer
-                                            bibleKey={bibleKey}
-                                        />
-                                    );
-                                },
-                            }, 'h1', ''],
-                            [{
-                                render: () => {
-                                    return searchingBody;
-                                },
-                            }, 'h2', ''],
-                        ]} /> : searchingBody
-                }
-            </div>
-        </div>
+        </SelectedBibleKeyContext.Provider>
     );
 }
