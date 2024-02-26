@@ -65,9 +65,10 @@ export default function BibleItemRender({
                 handleDragStart(event, bibleItem);
             }}
             onDoubleClick={(event) => {
-                bibleItemViewController.appendBibleItem(bibleItem);
                 if (checkIsWindowPresentingMode()) {
                     PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+                } else {
+                    bibleItemViewController.appendBibleItem(bibleItem);
                 }
             }}
             onContextMenu={onContextMenuCallback}>

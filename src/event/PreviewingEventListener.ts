@@ -1,6 +1,3 @@
-import {
-    setIsPreviewingLyric,
-} from '../full-text-present/FullTextPreviewer';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
@@ -16,9 +13,6 @@ export default class PreviewingEventListener extends
     EventHandler<PreviewingType> {
     static readonly eventNamePrefix: string = 'previewing';
     selectLyric(lyric: Lyric | null) {
-        if (lyric !== null) {
-            setIsPreviewingLyric();
-        }
         this.addPropEvent('select-lyric', lyric);
     }
     updateLyric(lyric: Lyric) {
@@ -67,15 +61,6 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
             ['update-slide'], listener);
         return () => {
             previewingEventListener.unregisterEventListener(event);
-        };
-    });
-}
-export function useFullTextOpening(listener: ListenerType<void>) {
-    useAppEffect(() => {
-        const eventLyric = previewingEventListener.registerEventListener(
-            ['select-lyric'], listener);
-        return () => {
-            previewingEventListener.unregisterEventListener(eventLyric);
         };
     });
 }

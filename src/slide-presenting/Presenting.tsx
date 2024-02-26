@@ -3,7 +3,7 @@ import './Presenting.scss';
 import { lazy } from 'react';
 
 import {
-    useFullTextOpening, useSlideSelecting,
+    useLyricSelecting, useSlideSelecting,
 } from '../event/PreviewingEventListener';
 import {
     useSlideItemSelecting,
@@ -16,8 +16,11 @@ import TabRender, { genTabBody } from '../others/TabRender';
 const SlidePreviewer = lazy(() => {
     return import('./items/SlidePreviewer');
 });
-const FullTextPreviewer = lazy(() => {
-    return import('../full-text-present/FullTextPreviewer');
+const BiblePreviewerRender = lazy(() => {
+    return import('../read-bible/BiblePreviewerRender');
+});
+const LyricPreviewer = lazy(() => {
+    return import('../full-text-present/LyricPreviewer');
 });
 const PresentAlertController = lazy(() => {
     return import('../present-alert/PresentAlertController');
@@ -33,16 +36,15 @@ export function getIsShowingFTPreviewer() {
 
 const tabTypeList = [
     ['s', 'Slides', SlidePreviewer],
-    ['f', 'Full Text', FullTextPreviewer],
+    ['b', 'Bibles', BiblePreviewerRender],
+    ['l', 'Lyrics', LyricPreviewer],
     ['a', 'Alert', PresentAlertController],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Presenting() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         PRESENT_TAB_SETTING_NAME, 's');
-    useFullTextOpening(() => {
-        setTabType('f');
-    });
+    useLyricSelecting(() => setTabType('l'));
     useSlideSelecting(() => setTabType('s'));
     useSlideItemSelecting(() => setTabType('s'));
     return (
