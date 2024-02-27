@@ -72,19 +72,13 @@ export function BibleViewText({
                         </div>
                         <div className='verse-text'
                             onClick={(event) => {
-                                const classList = event.currentTarget.classList;
+                                const currentTarget = event.currentTarget;
+                                const classList = currentTarget.classList;
                                 if (classList.contains('selected')) {
                                     classList.remove('selected');
                                 } else {
                                     classList.add('selected');
                                 }
-                            }}
-                            onDoubleClick={(event) => {
-                                event.currentTarget.parentElement?.childNodes.
-                                    forEach((element: any) => {
-                                        element.classList.remove('selected');
-                                    });
-                                event.currentTarget.classList.add('selected');
                             }}
                         >{text}</div>
                     </Fragment>
