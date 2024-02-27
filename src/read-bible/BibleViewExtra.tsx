@@ -2,12 +2,12 @@ import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMini } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
 import {
-    useBibleItemRenderText, useBibleItemRenderTitle,
+    useBibleItemRenderTitle, useBibleItemVerseTextList,
 } from '../bible-list/bibleItemHelpers';
-import { getRandomUUID } from '../helper/helpers';
 import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
+import { Fragment } from 'react';
 
 export function RendHeader({
     bibleItem, onChange, onClose,
@@ -41,11 +41,10 @@ export function RendHeader({
 export function BibleViewTitle({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
-    const uuid = getRandomUUID();
-    const title = useBibleItemRenderTitle(bibleItem, uuid);
+    const title = useBibleItemRenderTitle(bibleItem);
     const fontSize = useBibleViewFontSize();
     return (
-        <div id={uuid} className='title app-selectable-text'
+        <div className='title app-selectable-text'
             style={{ fontSize }}>
             {title}
         </div>
@@ -58,14 +57,40 @@ export function BibleViewText({
     bibleItem: BibleItem,
 }>) {
     const fontSize = useBibleViewFontSize();
-    const uuid = getRandomUUID();
-    const text = useBibleItemRenderText(bibleItem, uuid);
+    const result = useBibleItemVerseTextList(bibleItem);
+    if (result === null) {
+        return null;
+    }
     return (
-        <p id={uuid}
-            className='app-selectable-text'
+        <div className='bible-view-text app-selectable-text'
             style={{ fontSize: `${fontSize}px` }}>
-            {text}
-        </p>
+            {result.map(([verse, text]) => {
+                return (
+                    <Fragment key={verse}>
+                        <div className='verse-number'>
+                            <div>{verse}</div>
+                        </div>
+                        <div className='verse-text'
+                            onClick={(event) => {
+                                const classList = event.currentTarget.classList;
+                                if (classList.contains('selected')) {
+                                    classList.remove('selected');
+                                } else {
+                                    classList.add('selected');
+                                }
+                            }}
+                            onDoubleClick={(event) => {
+                                event.currentTarget.parentElement?.childNodes.
+                                    forEach((element: any) => {
+                                        element.classList.remove('selected');
+                                    });
+                                event.currentTarget.classList.add('selected');
+                            }}
+                        >{text}</div>
+                    </Fragment>
+                );
+            })}
+        </div>
     );
 }
 

@@ -15,25 +15,28 @@ export type BibleTargetType = {
     verseEnd: number,
 };
 
-type CallbackType = (text: string | null) => void;
+type CallbackType<T extends (string | [string, string][])> = (
+    _: T | null,
+) => void;
 class BibleRenderHelper {
-    _callbackMapper: Map<string, Array<CallbackType>> = new Map();
-    _pushCallback(key: string, callback: CallbackType) {
+    _callbackMapper: Map<string, Array<CallbackType<any>>> = new Map();
+    _pushCallback(key: string, callback: CallbackType<any>) {
         const callbackList = this._callbackMapper.get(key) || [];
         callbackList.push(callback);
         this._callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
-    _fullfilCallback(key: string, text: string | null) {
+    _fullfilCallback(key: string, result: any) {
         const callbackList = this._callbackMapper.get(key) || [];
         this._callbackMapper.delete(key);
         callbackList.forEach((callback) => {
-            callback(text);
+            callback(result);
         });
     }
 
-    toBibleVersesKey(bibleKey: string,
-        bibleTarget: BibleTargetType) {
+    toBibleVersesKey(
+        bibleKey: string, bibleTarget: BibleTargetType,
+    ) {
         const { bookKey: book, chapter, verseStart, verseEnd } = bibleTarget;
         const txtV = `${verseStart}${verseStart !== verseEnd ?
             ('-' + verseEnd) : ''}`;
@@ -57,11 +60,11 @@ class BibleRenderHelper {
     toTitleQueueKey(bibleVersesKey: string) {
         return `title > ${bibleVersesKey}`;
     }
-    toTextQueueKey(bibleVersesKey: string) {
+    toVerseTextListQueueKey(bibleVersesKey: string) {
         return `text > ${bibleVersesKey}`;
     }
 
-    async _toTitle(bibleVersesKey: string, callback: CallbackType) {
+    async _toTitle(bibleVersesKey: string, callback: CallbackType<string>) {
         const cacheKey = this.toTitleQueueKey(bibleVersesKey);
         const isFist = this._pushCallback(cacheKey, callback);
         if (!isFist) {
@@ -84,50 +87,64 @@ class BibleRenderHelper {
         const title = `${bookKey} ${chapterLocale}:${txtV}`;
         this._fullfilCallback(cacheKey, title);
     }
-    toTitle(bibleVersesKey: string) {
-        return new Promise<string | null>((resolve) => {
+    toTitle(bibleKey: string, target: BibleTargetType) {
+        return new Promise<string>((resolve) => {
+            const bibleVersesKey = bibleRenderHelper.toBibleVersesKey(
+                bibleKey, target,
+            );
             this._toTitle(bibleVersesKey, (title) => {
+                if (title === null) {
+                    resolve(`😟Unable to render text for ${bibleVersesKey}`);
+                    return;
+                }
                 resolve(title);
             });
         });
     }
 
-    async _toText(bibleVersesKey: string, callback: CallbackType) {
-        const cacheKey = this.toTextQueueKey(bibleVersesKey);
+    async _toVerseTextList(
+        bibleVersesKey: string, callback: CallbackType<[string, string][]>,
+    ) {
+        const cacheKey = this.toVerseTextListQueueKey(bibleVersesKey);
         const isFist = this._pushCallback(cacheKey, callback);
         if (!isFist) {
             return;
         }
         const {
-            bibleKey: bible,
-            book, chapter,
-            verseStart, verseEnd,
+            bibleKey: bible, book, chapter, verseStart, verseEnd,
         } = this.fromBibleVerseKey(bibleVersesKey);
         const verses = await getVerses(bible, book, chapter);
         if (!verses) {
             return null;
         }
-        let txt = '';
+        const result: [string, string][] = [];
         for (let i = verseStart; i <= verseEnd; i++) {
             const localNum = await toLocaleNumBB(bible, i);
-            txt += ` (${localNum}): ${verses[i.toString()] ?? '??'}`;
+            const iString = i.toString();
+            result.push([localNum ?? iString, verses[iString] ?? '??']);
         }
-        return this._fullfilCallback(cacheKey, txt);
+        return this._fullfilCallback(cacheKey, result);
     }
-    toText(bibleVersesKey: string) {
-        return new Promise<string | null>((resolve) => {
-            this._toText(bibleVersesKey, (text) => {
-                resolve(text);
+    toVerseTextList(bibleKey: string, target: BibleTargetType) {
+        const bibleVersesKey = bibleRenderHelper
+            .toBibleVersesKey(bibleKey, target);
+        return new Promise<[string, string][] | null>((resolve) => {
+            this._toVerseTextList(bibleVersesKey, (result) => {
+                resolve(result);
             });
         });
     }
-    async bibleItemToText(bibleKey: string, target: BibleTargetType) {
-        const bibleVerseKey = bibleRenderHelper
-            .toBibleVersesKey(bibleKey, target);
-        return (
-            await this.toText(bibleVerseKey) ||
-            `😟Unable to render text for ${bibleVerseKey}`
-        );
+    async toText(bibleKey: string, target: BibleTargetType) {
+        const verseTextList = await this.toVerseTextList(bibleKey, target);
+        if (verseTextList === null) {
+            const bibleVersesKey = bibleRenderHelper.toBibleVersesKey(
+                bibleKey, target,
+            );
+            return `😟Unable to render text for ${bibleVersesKey}`;
+        }
+        return verseTextList.map(([verse, text]) => {
+            return `(${verse}): ${text}`;
+        }).join(' ');
     }
 }
 

@@ -8,12 +8,8 @@ import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import {
-    BibleTargetType,
-} from './bibleRenderHelpers';
-import {
-    toInputText,
-} from '../helper/bible-helpers/serverBibleHelpers2';
+import { BibleTargetType } from './bibleRenderHelpers';
+import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export type BibleItemType = {
     id: number,
@@ -121,33 +117,32 @@ export function genDuplicatedMessage(list: BibleItem[],
 }
 
 
-function useBibleItemRender(
-    item: BibleItem, convertCallback: () => Promise<string>, htmlID?: string,
-) {
+export function useBibleItemRenderTitle(bibleItem: BibleItem,) {
+    const [title, setTitle] = useState<string>('');
+    useAppEffect(() => {
+        bibleItem.toTitle().then((text) => {
+            setTitle(text);
+        });
+    }, [bibleItem]);
+    return title;
+}
+export function useBibleItemRenderText(bibleItem: BibleItem) {
     const [text, setText] = useState<string>('');
     useAppEffect(() => {
-        const htmlContainer = htmlID ? document.getElementById(htmlID) : null;
-        if (htmlContainer !== null) {
-            htmlContainer.innerHTML = 'Loading...';
-        }
-        convertCallback().then((text1) => {
-            setText(text1);
-            if (htmlContainer !== null) {
-                htmlContainer.innerHTML = text1;
-            }
+        bibleItem.toText().then((text) => {
+            setText(text);
         });
-    }, [item]);
+    }, [bibleItem]);
     return text;
 }
-export function useBibleItemRenderTitle(item: BibleItem, htmlID?: string) {
-    return useBibleItemRender(item, () => {
-        return item.toTitle();
-    }, htmlID);
-}
-export function useBibleItemRenderText(item: BibleItem, htmlID?: string) {
-    return useBibleItemRender(item, () => {
-        return item.toText();
-    }, htmlID);
+export function useBibleItemVerseTextList(bibleItem: BibleItem) {
+    const [result, setResult] = useState<[string, string][] | null>(null);
+    useAppEffect(() => {
+        bibleItem.toVerseTextList().then((result) => {
+            setResult(result);
+        });
+    }, [bibleItem]);
+    return result;
 }
 
 export function useBibleItemPropsToInputText(

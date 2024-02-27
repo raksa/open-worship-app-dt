@@ -173,19 +173,14 @@ export default class BibleItem extends ItemBase
         const text = await this.toText();
         return { title, text };
     }
-    async toTitle() {
-        const bibleVerseKey = bibleRenderHelper
-            .toBibleVersesKey(this.bibleKey, this.target);
-        return await bibleRenderHelper.toTitle(bibleVerseKey)
-            || `😟Unable to render title for ${bibleVerseKey}`;
+    toTitle() {
+        return bibleRenderHelper.toTitle(this.bibleKey, this.target);
     }
-    async toText() {
-        const bibleVerseKey = bibleRenderHelper.
-            toBibleVersesKey(this.bibleKey, this.target);
-        return (
-            await bibleRenderHelper.toText(bibleVerseKey) ||
-            `😟Unable to render text for ${bibleVerseKey}`
-        );
+    toText() {
+        return bibleRenderHelper.toText(this.bibleKey, this.target);
+    }
+    toVerseTextList() {
+        return bibleRenderHelper.toVerseTextList(this.bibleKey, this.target);
     }
     async copyTitleToClipboard() {
         const title = await this.toTitle();
