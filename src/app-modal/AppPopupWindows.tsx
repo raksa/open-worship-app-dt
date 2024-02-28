@@ -1,19 +1,19 @@
 import BibleSearchPopup from '../bible-search/BibleSearchPopup';
 import SettingPopup from '../setting/SettingPopup';
 import {
-    AppModalType, APP_MODAL_ROUTE_PATH as ROOT_APP_MODAL_ROUTE_PATH,
-    useModalTypeData,
+    AppPopupWindowsType, APP_MODAL_ROUTE_PATH as ROOT_APP_MODAL_ROUTE_PATH,
+    usePopupWindowsTypeData,
 } from './helpers';
 
 export const APP_MODAL_QUERY_ROUTE_PATH = `${ROOT_APP_MODAL_ROUTE_PATH}:query`;
 
-export default function AppModal() {
-    const { modalType } = useModalTypeData();
-    if (modalType === AppModalType.BIBLE_SEARCH) {
+export default function AppPopupWindows() {
+    const { modalType: popupType } = usePopupWindowsTypeData();
+    if (popupType === AppPopupWindowsType.BIBLE_SEARCH) {
         return (
             <BibleSearchPopup />
         );
-    } else if (modalType === AppModalType.SETTING) {
+    } else if (popupType === AppPopupWindowsType.SETTING) {
         return (
             <SettingPopup />
         );

@@ -1,18 +1,16 @@
 import {
-    EventMapper as KBEventMapper,
-    toShortcutKey,
-    useKeyboardRegistering,
+    EventMapper as KBEventMapper, toShortcutKey, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { tran } from '../lang';
 import LinkToAppModal, {
     useOpenAppModal,
 } from '../app-modal/LinkToAppModal';
-import { AppModalType } from '../app-modal/helpers';
+import { AppPopupWindowsType } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 
 export function useOpenBibleSearch(bibleItem?: BibleItem) {
     const data = bibleItem && BibleItem.genBibleSearchData(bibleItem);
-    return useOpenAppModal(AppModalType.BIBLE_SEARCH, data);
+    return useOpenAppModal(AppPopupWindowsType.BIBLE_SEARCH, data);
 }
 
 const openBibleEventMap: KBEventMapper = {
@@ -23,7 +21,7 @@ export default function BibleSearchHeader() {
     const openBibleSearch = useOpenBibleSearch();
     useKeyboardRegistering([openBibleEventMap], openBibleSearch);
     return (
-        <LinkToAppModal modalType={AppModalType.BIBLE_SEARCH}>
+        <LinkToAppModal modalType={AppPopupWindowsType.BIBLE_SEARCH}>
             <button className='btn btn-labeled btn-primary'
                 style={{ width: '220px' }}
                 data-tool-tip={toShortcutKey(openBibleEventMap)}

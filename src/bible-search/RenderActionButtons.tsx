@@ -10,7 +10,7 @@ import {
     WindowModEnum, checkIsWindowEditingMode, checkIsWindowPresentingMode,
     useWindowIsPresentingMode, useWindowMode,
 } from '../router/routeHelpers';
-import { useModalTypeData } from '../app-modal/helpers';
+import { usePopupWindowsTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -30,7 +30,7 @@ const addListEventMapper: KBEventMapper = {
 export default function RenderActionButtons({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
-    const { data } = useModalTypeData();
+    const { data } = usePopupWindowsTypeData();
     const isBibleEditing = !!data;
     const isWindowPresenting = useWindowIsPresentingMode();
     if (!isBibleEditing) {

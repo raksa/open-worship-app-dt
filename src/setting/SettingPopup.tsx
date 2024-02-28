@@ -19,12 +19,12 @@ const SettingAbout = lazy(() => {
 
 
 export default function SettingPopup() {
-    const { Modal, closeModal } = useModal(false);
+    const { Modal } = useModal();
     return (
         <Modal>
             <div id='setting-popup'
                 className='app-modal shadow card'>
-                <HeaderSettingPopup onClose={closeModal} />
+                <HeaderSettingPopup />
                 <Setting />
             </div>
         </Modal>

@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-
 import {
     Routes, Route, BrowserRouter, useLocation,
 } from 'react-router-dom';
@@ -16,9 +15,9 @@ import AppReading from './AppReading';
 import HandleAlert from './alert/HandleAlert';
 import AppContextMenu from './others/AppContextMenu';
 import Toast from './toast/Toast';
-import AppModal, {
+import AppPopupWindows, {
     APP_MODAL_QUERY_ROUTE_PATH,
-} from './app-modal/AppModal';
+} from './app-modal/AppPopupWindows';
 import RedirectTo from './others/RedirectTo';
 import { useHandleFind } from './_find/finderHelpers';
 
@@ -54,20 +53,25 @@ function AppRouteRender() {
             <Routes location={state?.backgroundLocation || location}>
                 <Route element={<AppLayout />}>
                     <Route path={home.routePath}
-                        element={<RedirectTo to={presentingTab.title} />} />
+                        element={<RedirectTo to={presentingTab.title} />}
+                    />
                     <Route path={editingTab.routePath}
-                        element={<AppEditing />} />
+                        element={<AppEditing />}
+                    />
                     <Route path={presentingTab.routePath}
-                        element={<AppPresenting />} />
+                        element={<AppPresenting />}
+                    />
                     <Route path={readingTab.routePath}
-                        element={<AppReading />} />
+                        element={<AppReading />}
+                    />
                 </Route>
                 <Route path='*' element={<NotFound404 />} />
             </Routes>
             {state?.backgroundLocation && (
                 <Routes>
                     <Route path={APP_MODAL_QUERY_ROUTE_PATH}
-                        element={<AppModal />} />
+                        element={<AppPopupWindows />}
+                    />
                 </Routes>
             )}
         </>

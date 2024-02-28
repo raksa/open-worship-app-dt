@@ -44,19 +44,24 @@ export default function Tools() {
                     setActiveTab={setTabType} />
                 <div className={'align-self-end flex-fill d-flex '
                     + 'justify-content-end'}>
-                    <span>{scale.toFixed(1)}x</span>
-                    <div style={{ maxWidth: '200px' }}>
-                        <input type='range' className='form-range'
-                            onChange={(event) => {
-                                canvasController.scale = +event.target.value;
-                            }}
-                            min={canvasController.MIN_SCALE}
-                            max={canvasController.MAX_SCALE}
-                            step={canvasController.SCALE_STEP}
-                            value={scale}
-                            onWheel={(event) => {
-                                canvasController.applyScale(event.deltaY > 0);
-                            }} />
+                    <div className='canvas-board-size-container d-flex ps-1'>
+                        <span>{scale.toFixed(1)}x</span>
+                        <div style={{ maxWidth: '200px' }}>
+                            <input type='range' className='form-range'
+                                onChange={(event) => {
+                                    const scale = +event.target.value;
+                                    canvasController.scale = scale;
+                                }}
+                                min={canvasController.MIN_SCALE}
+                                max={canvasController.MAX_SCALE}
+                                step={canvasController.SCALE_STEP}
+                                value={scale}
+                                onWheel={(event) => {
+                                    canvasController.applyScale(
+                                        event.deltaY > 0,
+                                    );
+                                }} />
+                        </div>
                     </div>
                 </div>
             </div>

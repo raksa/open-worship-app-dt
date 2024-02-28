@@ -4,7 +4,7 @@ import appProvider from '../server/appProvider';
 export const APP_MODAL_ROUTE_PATH = '/modal/';
 export const DELIMITER = '_';
 
-export enum AppModalType {
+export enum AppPopupWindowsType {
     BIBLE_SEARCH = 'bible-search',
     ALERT = 'alert',
     SETTING = 'setting',
@@ -24,7 +24,7 @@ export function fromAppModalTypeData(query?: string) {
     };
 }
 
-export function useModalTypeData() {
+export function usePopupWindowsTypeData() {
     const { query } = useParams<'query'>();
     return fromAppModalTypeData(query);
 }

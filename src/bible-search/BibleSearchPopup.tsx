@@ -10,11 +10,11 @@ import {
     SELECTED_BIBLE_SETTING_NAME,
 } from '../bible-list/bibleHelpers';
 import { setSetting } from '../helper/settingHelper';
-import { useModalTypeData } from '../app-modal/helpers';
+import { usePopupWindowsTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {
     const { Modal } = useModal();
-    const { data } = useModalTypeData();
+    const { data } = usePopupWindowsTypeData();
     const bibleItem = BibleItem.parseBibleSearchData(data);
     const [inputText, setInputText] = useState<string | null>(
         bibleItem !== null ? null : '',

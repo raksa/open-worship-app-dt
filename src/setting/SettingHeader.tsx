@@ -1,9 +1,9 @@
 import LinkToAppModal from '../app-modal/LinkToAppModal';
-import { AppModalType } from '../app-modal/helpers';
+import { AppPopupWindowsType } from '../app-modal/helpers';
 
 export default function SettingHeader() {
     return (
-        <LinkToAppModal modalType={AppModalType.SETTING}>
+        <LinkToAppModal modalType={AppPopupWindowsType.SETTING}>
             <button className='btn btn-outline-success rotating-hover'>
                 <i className='bi bi-gear-wide-connected' /> 
             </button>

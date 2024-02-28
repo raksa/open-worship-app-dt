@@ -18,10 +18,10 @@ export const closeItemSlideEditEvent: WEventMapper = {
     widget: 'slide-item-edit',
     state: 'close',
 };
-export function openItemSlideEdit(slideItem: SlideItem) {
+export function openSlideItemQuickEdit(slideItem: SlideItem) {
     WindowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
 }
-export function closeItemSlideEdit() {
+export function closeSlideItemQuickEdit() {
     WindowEventListener.fireEvent(closeItemSlideEditEvent);
 }
 

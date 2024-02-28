@@ -61,6 +61,18 @@ export function BibleViewText({
     if (result === null) {
         return null;
     }
+    const handleSelection = (event: any) => {
+        const currentTarget = event.currentTarget;
+        const classList = currentTarget.classList;
+        if (classList.contains('selected')) {
+            classList.remove('selected');
+        } else {
+            currentTarget.parentElement?.childNodes.forEach((element: any) => {
+                element.classList.remove('selected');
+            });
+            classList.add('selected');
+        }
+    };
     return (
         <div className='bible-view-text app-selectable-text'
             style={{ fontSize: `${fontSize}px` }}>
@@ -71,15 +83,7 @@ export function BibleViewText({
                             <div>{verse}</div>
                         </div>
                         <div className='verse-text'
-                            onClick={(event) => {
-                                const currentTarget = event.currentTarget;
-                                const classList = currentTarget.classList;
-                                if (classList.contains('selected')) {
-                                    classList.remove('selected');
-                                } else {
-                                    classList.add('selected');
-                                }
-                            }}
+                            onClick={handleSelection}
                         >{text}</div>
                     </Fragment>
                 );

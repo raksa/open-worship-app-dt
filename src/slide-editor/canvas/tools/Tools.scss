@@ -15,6 +15,12 @@
             overflow: auto;
             padding: 2px 3px;
             border: 1px solid rgba(128, 128, 128, 0.109);
+
         }
+    }
+
+    .canvas-board-size-container {
+        background-color: var(--bs-gray-900);
+        border-radius: 5px;
     }
 }

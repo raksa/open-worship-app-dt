@@ -7,6 +7,7 @@ import BibleItemViewController, {
 } from './read-bible/BibleItemViewController';
 import BibleItem from './bible-list/BibleItem';
 import BibleView from './read-bible/BibleView';
+import HandleItemSlideEdit from './slide-presenting/HandleItemSlideEdit';
 
 const AppPresentingLeft = lazy(() => {
     return import('./AppPresentingLeft');
@@ -45,6 +46,7 @@ export default function AppPresenting() {
                     [AppPresentingMiddle, 'h2', ''],
                     [AppPresentingRight, 'h3', ''],
                 ]} />
+            <HandleItemSlideEdit />
         </BibleItemViewControllerContext.Provider>
     );
 }

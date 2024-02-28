@@ -1,4 +1,4 @@
-import { lazy, useCallback, useState } from 'react';
+import { lazy, useCallback, useContext, useState } from 'react';
 
 import InputHandler from './InputHandler';
 import {
@@ -10,12 +10,13 @@ import {
 } from './RenderSearchSuggestion';
 import { setBibleSearchInputFocus } from './selectionHelpers';
 import RenderExtraLeftButtons from './RenderExtraLeftButtons';
-import { useModalTypeData } from '../app-modal/helpers';
+import { usePopupWindowsTypeData } from '../app-modal/helpers';
 import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
+import { CloseButtonContext } from '../app-modal/Modal';
 
 const BibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
@@ -26,8 +27,9 @@ export default function RenderBibleSearch({
 }: Readonly<{
     editingInputText: string,
 }>) {
+    const closeButton = useContext(CloseButtonContext);
     const [isSearchOnline, setIsSearchOnline] = useState(false);
-    const { data } = useModalTypeData();
+    const { data } = usePopupWindowsTypeData();
     const isBibleEditing = !!data;
     const [inputText, setInputText] = useState<string>(editingInputText);
     const [bibleKey, setBibleKey] = useGetSelectedBibleKey();
@@ -76,6 +78,7 @@ export default function RenderBibleSearch({
                             onBibleChange={handleBibleChange}
                         />
                     </div>
+                    {closeButton}
                 </div>
                 <div className={
                     'card-body d-flex w-100 h-100 overflow-hidden'

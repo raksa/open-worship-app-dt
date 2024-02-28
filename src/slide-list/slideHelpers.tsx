@@ -1,4 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
+
 import { openAlert, openConfirm } from '../alert/alertHelpers';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
@@ -8,7 +9,9 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import { AppMimetypeType } from '../server/fileHelper';
-import { openItemSlideEdit } from '../slide-presenting/HandleItemSlideEdit';
+import {
+    openSlideItemQuickEdit,
+} from '../slide-presenting/HandleItemSlideEdit';
 import { showSimpleToast } from '../toast/toastHelpers';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
@@ -55,7 +58,7 @@ export function openSlideContextMenu(event: any,
                 if (isEditing) {
                     SlideListEventListener.selectSlideItem(slideItem);
                 } else {
-                    openItemSlideEdit(slideItem);
+                    openSlideItemQuickEdit(slideItem);
                 }
             },
         },
