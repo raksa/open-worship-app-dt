@@ -15,7 +15,10 @@ import BibleItem from '../bible-list/BibleItem';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
-import { getIsKeepWindowOpen } from './RenderExtraLeftButtons';
+import { getIsKeepingPopup } from './RenderExtraLeftButtons';
+import {
+    SearchBibleItemViewController,
+} from '../read-bible/BibleItemViewController';
 
 const presentEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -85,16 +88,15 @@ function showAddingBibleItemFail() {
 
 async function addBibleItemAndPresent(
     event: any, bibleItem: BibleItem, windowMode: WindowModEnum,
-    onDone?: () => void,
+    onDone: () => void,
 ) {
     const addedBibleItem = await addBibleItem(
-        bibleItem, windowMode,
+        bibleItem, windowMode, onDone,
     );
     if (addedBibleItem !== null) {
         PresentFTManager.ftBibleItemSelect(
             event, [addedBibleItem],
         );
-        onDone?.();
     } else {
         showAddingBibleItemFail();
     }
@@ -104,13 +106,12 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
     const closeModal = useCloseAppModal();
     const windowMode = useWindowMode();
     const isWindowPresenting = useWindowIsPresentingMode();
-    const isKeepWindowOpen = getIsKeepWindowOpen();
-    const onDone = isKeepWindowOpen ? () => false : closeModal;
+    const isKeepingPopup = getIsKeepingPopup();
+    const onDone = isKeepingPopup ? () => false : closeModal;
+    SearchBibleItemViewController.getInstance().onSearchAddBibleItem = onDone;
     useKeyboardRegistering([addListEventMapper], () => {
-        addBibleItem(bibleItem, windowMode).then((addedBibleItem) => {
-            if (addedBibleItem !== null) {
-                onDone();
-            } else {
+        addBibleItem(bibleItem, windowMode, onDone).then((addedBibleItem) => {
+            if (addedBibleItem === null) {
                 showAddingBibleItemFail();
             }
         });
@@ -136,7 +137,7 @@ function toShortcutKey(
 
 export function genFoundBibleItemContextMenu(
     bibleItem: BibleItem, windowMode: WindowModEnum,
-    isKeyboardShortcut?: boolean,
+    onDone: () => void, isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
     // TODO: fix slide select editing
     const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
@@ -151,11 +152,12 @@ export function genFoundBibleItemContextMenu(
                 addListEventMapper, isKeyboardShortcut,
             )}`,
             onClick: () => {
-                addBibleItem(bibleItem, windowMode).then((addedBibleItem) => {
-                    if (addedBibleItem === null) {
-                        showAddingBibleItemFail();
-                    }
-                });
+                addBibleItem(bibleItem, windowMode, onDone).
+                    then((addedBibleItem) => {
+                        if (addedBibleItem === null) {
+                            showAddingBibleItemFail();
+                        }
+                    });
             },
         },
         ...(isWindowPresenting ? [
@@ -171,7 +173,7 @@ export function genFoundBibleItemContextMenu(
                 )}`,
                 onClick: async (event: any) => {
                     addBibleItemAndPresent(
-                        event, bibleItem, windowMode,
+                        event, bibleItem, windowMode, onDone,
                     );
                 },
             },

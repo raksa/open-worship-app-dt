@@ -109,7 +109,7 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
 };
 
 export async function addBibleItem(
-    bibleItem: BibleItem, windowMode: WindowModEnum | null,
+    bibleItem: BibleItem, windowMode: WindowModEnum | null, onDone: () => void,
 ) {
     const isWindowEditing = checkIsWindowEditingMode();
     if (isWindowEditing) {
@@ -122,6 +122,7 @@ export async function addBibleItem(
     );
     if (savedBibleItem !== null) {
         showSimpleToast('Adding bible', 'Bible item is added');
+        onDone?.();
         return savedBibleItem;
     } else {
         showSimpleToast('Adding bible', 'Fail to add bible to list');

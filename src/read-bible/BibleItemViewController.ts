@@ -299,6 +299,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     selectedBibleItem: BibleItem;
     setInputText = (_: string) => { };
     setBibleKey = (_: string | null) => { };
+    onSearchAddBibleItem = () => { };
     constructor() {
         super('');
         this.selectedBibleItem = BibleItem.fromJson({
@@ -327,7 +328,8 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         bibleItem: BibleItem, windowMode?: WindowModEnum | null,
     ): ContextMenuItemType[] {
         const menu1 = !windowMode ? [] : genFoundBibleItemContextMenu(
-            bibleItem, windowMode, this.checkIsBibleItemSelected(bibleItem),
+            bibleItem, windowMode, this.onSearchAddBibleItem,
+            this.checkIsBibleItemSelected(bibleItem),
         );
         const menus2 = super.genContextMenu(bibleItem, windowMode);
         if (!this.checkIsBibleItemSelected(bibleItem)) {

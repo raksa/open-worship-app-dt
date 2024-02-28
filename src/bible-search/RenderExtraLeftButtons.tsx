@@ -2,7 +2,7 @@ import { getSetting, useStateSettingBoolean } from '../helper/settingHelper';
 
 const CLOSE_ON_ADD_BIBLE_ITEM = 'close-on-add-bible-item';
 
-export function getIsKeepWindowOpen() {
+export function getIsKeepingPopup() {
     return getSetting(CLOSE_ON_ADD_BIBLE_ITEM) === 'true';
 }
 
@@ -12,7 +12,7 @@ export default function RenderExtraLeftButtons({
     setIsSearchOnline: (_: boolean) => void,
     isSearchOnline: boolean,
 }>) {
-    const [isKeeping, setIsKeeping] = useStateSettingBoolean(
+    const [isKeepingPopup, setIsKeepingPopup] = useStateSettingBoolean(
         CLOSE_ON_ADD_BIBLE_ITEM, false,
     );
     return (
@@ -22,9 +22,9 @@ export default function RenderExtraLeftButtons({
                     title='Keep window open when add bible item'
                     type='checkbox' role='switch'
                     id='present-previewer-showing-tool'
-                    checked={isKeeping}
+                    checked={isKeepingPopup}
                     onChange={(event) => {
-                        setIsKeeping(event.target.checked);
+                        setIsKeepingPopup(event.target.checked);
                     }} />
             </div>
             <button className={
