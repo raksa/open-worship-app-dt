@@ -11,7 +11,7 @@ export default class ElectronFinderController {
             x: 0, y: 0,
             width: 350, height: 100,
             webPreferences: {
-                webSecurity: false, //TODO: change this to true
+                webSecurity: true,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFile,

@@ -33,9 +33,7 @@ const confirmEraseLocalStorage = () => {
 };
 
 function isDomException(error: any) {
-    return typeof error === 'object'
-        && typeof error.message === 'string'
-        && error.message.includes('DOMException');
+    return error instanceof DOMException;
 }
 
 window.onunhandledrejection = (promiseError) => {

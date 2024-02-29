@@ -42,13 +42,13 @@ export function genOnDragLeave() {
     };
 }
 
-async function getDroppingFolder(event: React.DragEvent<HTMLDivElement>) {
-    if (event.dataTransfer.files.length === 1) {
-        const item = event.dataTransfer.files[0] as any;
+async function getDroppingFolder(files: File[]) {
+    for (const file of files) {
         try {
-            const isDir = await fsCheckDirExist(item.path);
+            const filePath = (file as any).path;
+            const isDir = await fsCheckDirExist(filePath);
             if (isDir) {
-                return item.path;
+                return filePath;
             }
         } catch (error) {
             handleError(error);
@@ -90,10 +90,10 @@ export function genOnDrop({
         }
         const fileSource = FileSource.getInstance(filePath);
         const title = 'Copying File';
-        if (checkExtraFile?.(filePath) ||
-            !isSupportedExt(fileSource.fileName, mimetype)) {
-            showSimpleToast(title, 'Unsupported file type!');
-        } else {
+        if (
+            checkExtraFile?.(filePath) ||
+            isSupportedExt(fileSource.fileName, mimetype)
+        ) {
             try {
                 await fsCopyFileToPath(filePath,
                     fileSource.fileName, dirSource.dirPath);
@@ -101,21 +101,31 @@ export function genOnDrop({
             } catch (error: any) {
                 showSimpleToast(title, error.message);
             }
+        } else {
+            showSimpleToast(title, 'Unsupported file type!');
         }
     };
     return async (event: React.DragEvent<HTMLDivElement>) => {
         changeDragEventStyle(event, 'opacity', '1');
         event.preventDefault();
-        const droppedPath = await getDroppingFolder(event);
+
+        const files = Array(event.dataTransfer.files).
+            reduce((result: File[], fileList) => {
+                for (const file of fileList) {
+                    result.push(file);
+                }
+                return result;
+            }, []);
+        const droppedPath = await getDroppingFolder(files);
         if (droppedPath !== null) {
             handleDroppedFolder(droppedPath);
             return;
         } else if (!dirSource.dirPath) {
             showSimpleToast('Open Folder', 'Unable to open folder');
         }
-        Array.from(event.dataTransfer.files).forEach((file) => {
+        for (const file of files) {
             handleDroppedFiles(file);
-        });
+        }
     };
 }
 

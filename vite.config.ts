@@ -1,23 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 const resolveAlias = {
     '/js/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
-};
-
-const htmlPlugin = () => {
-    return {
-        name: 'html-transform',
-        transformIndexHtml(html) {
-            return html.replace(
-                '<!-- CONTENT_SECURITY_POLICY -->',
-                // eslint-disable-next-line quotes
-                `<meta http-equiv="Content-Security-Policy" content="script-src`
-                + ` 'self' 'unsafe-inline'">`,
-            );
-        },
-    };
 };
 
 // https://vitejs.dev/config/
@@ -33,7 +20,11 @@ export default defineConfig({
             }).filter((target) => target.dest !== ''),
         }),
         react(),
-        htmlPlugin(),
+        basicSsl({
+            name: 'localhost',
+            domains: ['localhost'],
+            certDir: '.devServer/cert',
+          }),
     ],
     server: {
         port: 3000,

@@ -4,9 +4,13 @@ import {
 } from './electronEventListener';
 import { initMenu } from './electronMenu';
 import { initDevtools } from './devtools';
-import electron from 'electron';
+import { app } from 'electron';
+import { isDev } from './electronHelpers';
 
-electron.app.whenReady().then(() => {
+if (isDev) {
+    app.commandLine.appendSwitch('ignore-certificate-errors');
+}
+app.whenReady().then(() => {
     const appController = ElectronAppController.getInstance();
     initApp(appController);
     initPresent(appController);

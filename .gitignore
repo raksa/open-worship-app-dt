@@ -30,3 +30,4 @@ release/
 .env.prod
 electron/ow.node
 Default.owb
+.devServer/

@@ -5,7 +5,7 @@ import { genRoutProps } from './protocolHelpers';
 const routeProps = genRoutProps('index');
 export default class ElectronMainController {
     win: BrowserWindow;
-    static _instance: ElectronMainController | null = null;
+    private static _instance: ElectronMainController | null = null;
     constructor() {
         this.win = this.createMainWindow();
     }
@@ -21,7 +21,7 @@ export default class ElectronMainController {
             backgroundColor: '#000000',
             x: 0, y: 0,
             webPreferences: {
-                webSecurity: false, //TODO: change this to true
+                webSecurity: true,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFile,
