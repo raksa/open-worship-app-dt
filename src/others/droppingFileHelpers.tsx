@@ -1,8 +1,5 @@
 import {
-    fsCheckDirExist,
-    fsCopyFileToPath,
-    isSupportedExt,
-    MimetypeNameType,
+    fsCheckDirExist, fsCopyFileToPath, isSupportedExt, MimetypeNameType,
 } from '../server/fileHelper';
 import {
     ContextMenuItemType, showAppContextMenu,
@@ -23,12 +20,14 @@ export function genOnDragOver(
 ) {
     return (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
+        const items = Object.entries(event.dataTransfer.items);
         if (!dirSource.dirPath) {
             changeDragEventStyle(event, 'opacity', '0.5');
             return;
         }
-        if (Array.from(event.dataTransfer.files).every((file) => {
-            return isSupportedExt(file.name, mimetype);
+        if (items.length > 0 && items.every(([_, { kind, type }]) => {
+            const isSupported = kind === 'file' && type.startsWith(mimetype);
+            return isSupported;
         })) {
             changeDragEventStyle(event, 'opacity', '0.5');
         }

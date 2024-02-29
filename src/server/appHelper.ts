@@ -1,9 +1,6 @@
 import appProvider from './appProvider';
-import { pathJoin } from './fileHelper';
 import {
-    defaultLocal,
-    getCurrentLangAsync,
-    getLangAsync,
+    defaultLocal, getCurrentLangAsync, getLangAsync,
 } from '../lang';
 import initCrypto from '../_owa-crypto';
 import {
@@ -13,7 +10,7 @@ import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export function openExplorer(dir: string) {
-    appProvider.browserUtils.openExplorer(pathJoin(dir, ''));
+    appProvider.browserUtils.openExplorer(dir);
 }
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
@@ -55,8 +52,10 @@ export function getPresentRendered() {
     });
 }
 export function getUserWritablePath() {
-    return appProvider.messageUtils.
-        sendDataSync('main:app:get-data-path');
+    return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
+}
+export function getDesktopPath() {
+    return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
 }
 
 export async function initApp() {

@@ -28,6 +28,9 @@ export function initApp(appController: ElectronAppController) {
     ipcMain.on('main:app:get-data-path', (event) => {
         event.returnValue = app.getPath('userData');
     });
+    ipcMain.on('main:app:get-desktop-path', (event) => {
+        event.returnValue = app.getPath('desktop');
+    });
     ipcMain.on('main:app:select-dirs', async (event) => {
         const result = await dialog.showOpenDialog(appController.mainWin, {
             properties: ['openDirectory'],

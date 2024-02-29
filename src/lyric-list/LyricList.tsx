@@ -26,6 +26,7 @@ export default function LyricList() {
     return (
         <FileListHandler id='lyric-list'
             mimetype='lyric'
+            defaultFolderName='lyrics'
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Lyric.create(dirPath, name);

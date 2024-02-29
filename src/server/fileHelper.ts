@@ -142,8 +142,9 @@ export function addExtension(name: string, extension: string) {
     return `${name}${extension}`;
 }
 
-export function isSupportedExt(fileName: string,
-    mimetype: MimetypeNameType) {
+export function isSupportedExt(
+    fileName: string, mimetype: MimetypeNameType,
+) {
     const mimetypeList = getAppMimetype(mimetype);
     const ext = extractExtension(fileName);
     return mimetypeList.map((newMimetype) => {
@@ -181,8 +182,10 @@ function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
 function _fsStat(filePath: string) {
     return fsFilePromise<Stats>(appProvider.fileUtils.stat, filePath);
 }
-function _fsMkdir(dirPath: string) {
-    return fsFilePromise<void>(appProvider.fileUtils.mkdir, dirPath);
+function _fsMkdir(dirPath: string, isRecursive: boolean) {
+    return fsFilePromise<void>(appProvider.fileUtils.mkdir, dirPath, {
+        recursive: isRecursive,
+    });
 }
 function _fsRmdir(dirPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rmdir, dirPath, {
@@ -314,8 +317,8 @@ export async function fsListFilesWithMimetype(
     return null;
 }
 
-export function fsCreateDir(dirPath: string) {
-    return _fsMkdir(dirPath);
+export function fsCreateDir(dirPath: string, isRecursive = true) {
+    return _fsMkdir(dirPath, isRecursive);
 }
 export async function fsWriteFile(filePath: string, txt: string) {
     if (await fsCheckDirExist(filePath)) {

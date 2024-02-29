@@ -18,6 +18,7 @@ import {
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
+import NoDirSelected from './NoDirSelected';
 
 const AskingNewName = lazy(() => {
     return import('./AskingNewName');
@@ -54,6 +55,7 @@ export default function FileListHandler({
     id, mimetype, dirSource, header, bodyHandler,
     contextMenu, onNewFile, checkExtraFile,
     takeDroppedFile, userClassName,
+    defaultFolderName,
 }: Readonly<{
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
@@ -65,6 +67,7 @@ export default function FileListHandler({
     checkExtraFile?: (filePath: string) => boolean,
     takeDroppedFile?: (filePath: string) => boolean,
     userClassName?: string,
+    defaultFolderName: string,
 }>) {
     const applyNameCallback = useCallback(async (name: string | null) => {
         if (name === null) {
@@ -85,7 +88,7 @@ export default function FileListHandler({
     }, [dirSource.dirPath]);
     return (
         <DirSourceContext.Provider value={dirSource}>
-            <div className={`${id} card w-100 h-100 ${userClassName}`}
+            <div className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
                 onDragOver={genOnDragOver(dirSource, mimetype)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
@@ -108,28 +111,21 @@ export default function FileListHandler({
                     onContextMenu={genOnContextMenu(contextMenu)}>
                     <PathSelector prefix={`path-${id}`}
                         dirSource={dirSource} />
-                    {!dirSource.dirPath ? noDirSelected : (
-                        <ul className='list-group flex-fill d-flex'>
-                            {onNewFile && isCreatingNew && <AskingNewName
-                                applyName={applyNameCallback} />}
-                            <RenderList dirSource={dirSource}
-                                bodyHandler={bodyHandler}
-                                mimetype={mimetype} />
-                        </ul>
-                    )}
+                    {!dirSource.dirPath ?
+                        <NoDirSelected dirSource={dirSource}
+                            defaultFolderName={defaultFolderName}
+                        /> :
+                        (
+                            <ul className='list-group flex-fill d-flex'>
+                                {onNewFile && isCreatingNew && <AskingNewName
+                                    applyName={applyNameCallback} />}
+                                <RenderList dirSource={dirSource}
+                                    bodyHandler={bodyHandler}
+                                    mimetype={mimetype} />
+                            </ul>
+                        )}
                 </div>
             </div >
         </DirSourceContext.Provider>
     );
 }
-
-const noDirSelected = (
-    <div className='card-body pb-5'>
-        <div className='alert alert-info'>
-            <i className='bi bi-info-circle' />
-            <span className='ms-2'>
-                No directory selected
-            </span>
-        </div>
-    </div>
-);

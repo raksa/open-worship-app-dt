@@ -10,8 +10,11 @@ import { DragTypeEnum } from '../helper/DragInf';
 
 export default function BackgroundImages() {
     return (
-        <BackgroundMedia dragType={DragTypeEnum.BG_IMAGE}
-            rendChild={rendChild} />
+        <BackgroundMedia
+            defaultFolderName='images'
+            dragType={DragTypeEnum.BG_IMAGE}
+            rendChild={rendChild}
+        />
     );
 }
 

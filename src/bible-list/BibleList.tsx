@@ -6,11 +6,14 @@ import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useGenDS } from '../helper/dirSourceHelpers';
-import { useWindowMode } from '../router/routeHelpers';
+import {
+    checkIsWindowReadingMode, useWindowMode,
+} from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelper';
 
 export default function BibleList() {
     const windowMode = useWindowMode();
+    const isReadingMode = checkIsWindowReadingMode(windowMode);
     const dirSource = useGenDS(Bible.getSelectDirSettingName(windowMode));
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
@@ -31,6 +34,7 @@ export default function BibleList() {
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype='bible'
+            defaultFolderName={`bibles${isReadingMode ? '-read' : ''}`}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Bible.create(dirPath, name);

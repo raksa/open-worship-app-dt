@@ -23,9 +23,12 @@ const bgTypeMapper: any = {
     [DragTypeEnum.BG_VIDEO]: 'video',
 };
 
-export default function BackgroundMedia({ rendChild, dragType }: Readonly<{
+export default function BackgroundMedia({
+    rendChild, dragType, defaultFolderName,
+}: Readonly<{
     rendChild: RenderChildType,
     dragType: DragTypeEnum,
+    defaultFolderName: string,
 }>) {
     const bgType = bgTypeMapper[dragType];
     const dirSource = useGenDS(`${bgType}-list-selected-dir`);
@@ -44,6 +47,7 @@ export default function BackgroundMedia({ rendChild, dragType }: Readonly<{
     return (
         <FileListHandler id={`background-${bgType}`}
             mimetype={bgType}
+            defaultFolderName={defaultFolderName}
             dirSource={dirSource}
             bodyHandler={renderCallback} />
     );

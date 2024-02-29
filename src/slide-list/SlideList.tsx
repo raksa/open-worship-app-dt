@@ -58,6 +58,7 @@ export default function SlideList() {
     return (
         <FileListHandler id='slide-list'
             mimetype='slide'
+            defaultFolderName='slides'
             dirSource={dirSource}
             checkExtraFile={checkExtraFileCallback}
             takeDroppedFile={takeDropFileCallback}

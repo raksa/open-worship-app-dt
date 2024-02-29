@@ -13,8 +13,11 @@ import { DragTypeEnum } from '../helper/DragInf';
 
 export default function BackgroundVideos() {
     return (
-        <BackgroundMedia dragType={DragTypeEnum.BG_VIDEO}
-            rendChild={rendChild} />
+        <BackgroundMedia
+            defaultFolderName='videos'
+            dragType={DragTypeEnum.BG_VIDEO}
+            rendChild={rendChild}
+        />
     );
 }
 
@@ -23,7 +26,8 @@ function rendChild(
 ) {
     return (
         <RendBody filePath={filePath}
-            selectedBGSrcList={selectedBGSrcList} />
+            selectedBGSrcList={selectedBGSrcList}
+        />
     );
 }
 

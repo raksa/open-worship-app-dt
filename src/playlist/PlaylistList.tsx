@@ -26,6 +26,7 @@ export default function PlaylistList() {
     return (
         <FileListHandler id='playlist-list'
             mimetype='playlist'
+            defaultFolderName='playlists'
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Playlist.create(dirPath, name);
