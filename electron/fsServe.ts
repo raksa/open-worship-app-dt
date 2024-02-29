@@ -4,8 +4,8 @@ import { app, net, protocol } from 'electron';
 
 const indexHtml = 'index.html';
 export const customScheme = 'owa-access';
-export const appScheme = 'app';
-export const rootUrl = `${appScheme}://owa`;
+export const httpScheme = 'http';
+export const rootUrl = `${httpScheme}://owa`;
 
 function toFileFullPath(filePath: string) {
     try {
@@ -40,5 +40,5 @@ export function initCustomSchemeHandler() {
         );
     });
     const dirPath = path.resolve(app.getAppPath(), 'dist');
-    protocol.handle(appScheme, handler.bind(null, dirPath));
+    protocol.handle(httpScheme, handler.bind(null, dirPath));
 };
