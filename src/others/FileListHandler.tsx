@@ -89,7 +89,7 @@ export default function FileListHandler({
     return (
         <DirSourceContext.Provider value={dirSource}>
             <div className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
-                onDragOver={genOnDragOver(dirSource, mimetype)}
+                onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
                     dirSource,

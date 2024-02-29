@@ -16,7 +16,7 @@ function changeDragEventStyle(event: React.DragEvent<HTMLDivElement>,
 }
 
 export function genOnDragOver(
-    dirSource: DirSource, mimetype: MimetypeNameType,
+    dirSource: DirSource,
 ) {
     return (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -25,9 +25,8 @@ export function genOnDragOver(
             changeDragEventStyle(event, 'opacity', '0.5');
             return;
         }
-        if (items.length > 0 && items.every(([_, { kind, type }]) => {
-            const isSupported = kind === 'file' && type.startsWith(mimetype);
-            return isSupported;
+        if (items.length > 0 && items.every(([_, { kind }]) => {
+            return kind === 'file';
         })) {
             changeDragEventStyle(event, 'opacity', '0.5');
         }
