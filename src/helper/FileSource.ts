@@ -1,21 +1,12 @@
 import DirSource from './DirSource';
 import {
-    checkIsAppFile,
-    extractExtension,
-    fsCheckFileExist,
-    fsCreateFile,
-    fsDeleteFile,
-    fsReadFile,
-    fsRenameFile,
-    fsWriteFile,
-    getFileMetaData,
-    pathBasename,
-    pathJoin,
-    pathSeparator,
+    checkIsAppFile, extractExtension, fsCheckFileExist, fsCreateFile,
+    fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
+    pathBasename, pathJoin, pathSeparator,
 } from '../server/fileHelper';
 import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
-import { urlPathToFileURL } from '../server/helpers';
+import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
 import DragInf, { DragTypeEnum } from './DragInf';
@@ -31,15 +22,16 @@ export type FSEventType = 'select' | 'update' | 'history-update' | 'edit'
 
 export default class FileSource extends EventHandler<FSEventType>
     implements DragInf<string>, ColorNoteInf {
-    static eventNamePrefix: string = 'file-source';
+    static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
     fileName: string;
     filePath: string;
     src: string;
     colorNote: string | null = null;
-    static _cache = new Map<string, FileSource>();
-    constructor(basePath: string, fileName: string,
-        filePath: string, src: string) {
+    private static _cache = new Map<string, FileSource>();
+    constructor(
+        basePath: string, fileName: string, filePath: string, src: string,
+    ) {
         super();
         this.basePath = basePath;
         this.fileName = fileName;
@@ -144,8 +136,9 @@ export default class FileSource extends EventHandler<FSEventType>
             basePath = filePath.substring(0, index);
             fileName = pathBasename(filePath);
         }
-        return new FileSource(basePath, fileName, filePath,
-            urlPathToFileURL(filePath).toString());
+        return new FileSource(
+            basePath, fileName, filePath, pathToFileURL(filePath),
+        );
     }
     static getInstance(filePath: string, fileName?: string,
         refreshCache?: boolean) {

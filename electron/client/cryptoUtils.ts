@@ -7,14 +7,18 @@ const cryptoUtils = {
     encrypt(text: string, key: string) {
         const cipher = crypto.createCipheriv(ALGORITHM, key, IV_STRING);
         let encrypted = cipher.update(text);
-        encrypted = Buffer.from(new Uint8Array([...encrypted, ...(cipher.final())]));
+        encrypted = Buffer.from(
+            new Uint8Array([...encrypted, ...(cipher.final())]),
+        );
         return encrypted.toString('base64');
     },
     decrypt(text: string, key: string) {
         const encryptedText = Buffer.from(text, 'base64');
         const decipher = crypto.createDecipheriv(ALGORITHM, key, IV_STRING);
         let decrypted = decipher.update(encryptedText);
-        decrypted = Buffer.from(new Uint8Array([...decrypted, ...(decipher.final())]));
+        decrypted = Buffer.from(
+            new Uint8Array([...decrypted, ...(decipher.final())]),
+        );
         return decrypted.toString();
     },
 };

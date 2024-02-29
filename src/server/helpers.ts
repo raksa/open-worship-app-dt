@@ -1,7 +1,7 @@
 import appProvider from './appProvider';
 
-export function urlPathToFileURL(urlPath: string) {
-    return appProvider.browserUtils.urlPathToFileURL(urlPath);
+export function pathToFileURL(filePath: string) {
+    return appProvider.browserUtils.pathToFileURL(filePath);
 }
 
 export function toBase64(str: string) {

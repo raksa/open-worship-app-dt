@@ -3,8 +3,9 @@ import path from 'node:path';
 import { app, net, protocol } from 'electron';
 
 const indexHtml = 'index.html';
-export const scheme = 'http';
-export const rootUrl = `${scheme}://owa`;
+export const customScheme = 'owa-access';
+export const appScheme = 'app';
+export const rootUrl = `${appScheme}://owa`;
 
 function toFileFullPath(filePath: string) {
     try {
@@ -23,22 +24,21 @@ function genFilePathUrl(dirPath: string, url: string) {
     return `file://${filePath}`;
 }
 
-async function handler(dirPath: string, request: GlobalRequest) {
-    const isLocal = request.url.startsWith(rootUrl);
-    const urlPath = isLocal ?
-        genFilePathUrl(dirPath, request.url) : request.url;
+function handler(dirPath: string, request: GlobalRequest) {
+    const url = request.url;
+    let urlPath = url;
+    if (url.startsWith(rootUrl)) {
+        urlPath = genFilePathUrl(dirPath, url);
+    }
     return net.fetch(urlPath);
 };
 
-let registered = false;
-export function registerScheme() {
-    const registerHandler = () => {
-        if (registered) {
-            return;
-        }
-        registered = true;
-        const dirPath = path.resolve(app.getAppPath(), 'dist');
-        protocol.handle(scheme, handler.bind(null, dirPath));
-    };
-    return registerHandler;
+export function initCustomSchemeHandler() {
+    protocol.handle(customScheme, function (request) {
+        return net.fetch('file://' + request.url.slice(
+            `${customScheme}://`.length),
+        );
+    });
+    const dirPath = path.resolve(app.getAppPath(), 'dist');
+    protocol.handle(appScheme, handler.bind(null, dirPath));
 };

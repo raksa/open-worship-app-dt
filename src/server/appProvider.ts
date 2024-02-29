@@ -89,7 +89,7 @@ const appProvider = (window as any).provider as {
     browserUtils: {
         openExplorer: (dir: string) => void,
         copyToClipboard: (str: string) => void,
-        urlPathToFileURL: (urlPath: string) => string,
+        pathToFileURL: (filePath: string) => string,
     };
     messageUtils: MessageUtilsType;
     httpUtils: {
