@@ -1,12 +1,10 @@
 import { app, protocol } from 'electron';
-import { customScheme, initCustomSchemeHandler } from './fsServe';
+import {
+    customScheme, initCustomSchemeHandler, schemePrivileges,
+} from './fsServe';
 
 protocol.registerSchemesAsPrivileged([{
-    scheme: customScheme,
-    privileges: {
-        bypassCSP: true,
-        stream: true,
-    },
+    scheme: customScheme, privileges: schemePrivileges,
 }]);
 
 import ElectronAppController from './ElectronAppController';

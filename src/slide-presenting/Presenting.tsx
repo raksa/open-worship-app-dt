@@ -56,7 +56,7 @@ export default function Presenting() {
                 activeTab={tabType}
                 setActiveTab={setTabType}
                 className='header' />
-            <div className='body w-100 p-1 overflow-hidden'>
+            <div className='body w-100 overflow-hidden'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

@@ -1,6 +1,6 @@
 import electron from 'electron';
 import url from 'node:url';
-import { customScheme } from '../fsServe';
+import { rootUrlAccess } from '../fsServe';
 
 const browserUtils = {
     openExplorer(dir: string) {
@@ -12,7 +12,7 @@ const browserUtils = {
     pathToFileURL(filePath: string) {
         let urlPath = url.pathToFileURL(filePath).toString();
         urlPath = urlPath.slice('file://'.length);
-        return `${customScheme}://${urlPath}`;
+        return `${rootUrlAccess}://${urlPath}`;
     },
 };
 

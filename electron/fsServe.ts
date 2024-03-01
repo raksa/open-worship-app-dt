@@ -3,9 +3,17 @@ import path from 'node:path';
 import { app, net, protocol } from 'electron';
 
 const indexHtml = 'index.html';
-export const customScheme = 'owa-access';
-export const httpScheme = 'http';
-export const rootUrl = `${httpScheme}://owa`;
+export const customScheme = 'owa';
+export const schemePrivileges = {
+    standard: true,
+    secure: true,
+    allowServiceWorkers: true,
+    supportFetchAPI: true,
+    corsEnabled: true,
+    stream: true,
+};
+export const rootUrl = `${customScheme}://local`;
+export const rootUrlAccess = `${customScheme}://access`;
 
 function toFileFullPath(filePath: string) {
     try {
@@ -34,11 +42,13 @@ function handler(dirPath: string, request: GlobalRequest) {
 };
 
 export function initCustomSchemeHandler() {
-    protocol.handle(customScheme, function (request) {
-        return net.fetch('file://' + request.url.slice(
-            `${customScheme}://`.length),
-        );
-    });
     const dirPath = path.resolve(app.getAppPath(), 'dist');
-    protocol.handle(httpScheme, handler.bind(null, dirPath));
+    protocol.handle(customScheme, function (request) {
+        const url = request.url;
+        if (url.startsWith(rootUrl)) {
+            return handler(dirPath, request);
+        }
+        const fileUrl = `file://${url.slice(rootUrlAccess.length)}`;
+        return net.fetch(fileUrl);
+    });
 };
