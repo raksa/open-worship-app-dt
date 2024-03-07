@@ -42,29 +42,11 @@ function handlerLocal(dirPath: string, url: string) {
     return net.fetch(urlPath);
 };
 
-function checkIsSafe(url: string) {
-    const { pathname } = new URL(url);
-    // NB, this checks for paths that escape the bundle, e.g.
-    // app://bundle/../../secret_file.txt
-    const pathToServe = path.resolve(__dirname, pathname);
-    const relativePath = path.relative(__dirname, pathToServe);
-    const isSafe = (
-        relativePath && !relativePath.startsWith('..') &&
-        !path.isAbsolute(relativePath)
-    );
-    return isSafe;
-}
 
 export function initCustomSchemeHandler() {
     const dirPath = path.resolve(app.getAppPath(), 'dist');
     protocol.handle(customScheme, (request) => {
         const url = request.url;
-        if (!checkIsSafe(url)) {
-            return new Response('bad', {
-                status: 400,
-                headers: { 'content-type': 'text/html' },
-            });
-        }
         if (url.startsWith(rootUrl)) {
             return handlerLocal(dirPath, url);
         }
