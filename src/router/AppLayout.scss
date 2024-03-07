@@ -69,6 +69,11 @@
 
     .right {
         padding: 0;
+
+        .card-body,
+        .card-footer {
+            padding: 0;
+        }
     }
 
     .pointer {
