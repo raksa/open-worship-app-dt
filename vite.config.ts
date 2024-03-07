@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 
 const resolveAlias = {
@@ -35,15 +35,6 @@ const htmlPlugin = () => {
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
-        viteStaticCopy({
-            targets: Object.entries(resolveAlias).map(([from, to]) => {
-                const regex = new RegExp(/^\/(\w+)\//);
-                return {
-                    src: to,
-                    dest: regex.exec(from)?.[1] ?? '',
-                };
-            }).filter((target) => target.dest !== ''),
-        }),
         react(),
         htmlPlugin(),
         basicSsl({
@@ -60,7 +51,9 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            input: ['index.html', 'present.html', 'finder.html'],
+            input: [
+                'index.html', 'present.html', 'finder.html',
+            ].map(item => resolve(item)),
         },
     },
 });

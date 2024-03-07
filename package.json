@@ -12,7 +12,7 @@
         "electron": "env-cmd -f .env electron .",
         "electron:watch": "nodemon --exec \"npm run electron\" --watch electron-build",
         "electron:dev": "npm run electron:build && concurrently -k \"npm run electron:build:watch\" \"npm run electron:watch\"",
-        "build": "npm run vite:build && npm run electron:build",
+        "build": "npm run vite:build && npm run electron:build && node build-copy.mjs",
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
         "pack:mac": "npm run build && electron-builder build --mac",
@@ -111,8 +111,7 @@
         "react-router-dom": "^6.22.1",
         "sass": "^1.69.5",
         "typescript": "^5.3.2",
-        "vite": "^5.1.4",
-        "vite-plugin-static-copy": "^0.17.1"
+        "vite": "^5.1.5"
     },
     "dependencies": {
         "electron-font-manager": "^0.0.1",
