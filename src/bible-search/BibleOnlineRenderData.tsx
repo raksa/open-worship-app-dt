@@ -41,7 +41,10 @@ export default function BibleOnlineRenderData({
                     );
                 })}
             </div>
-            <div className='card-footer'>
+            <div className='card-footer' style={{
+                maxHeight: 200,
+                overflowY: 'auto',
+            }}>
                 <nav>
                     <ul className='pagination flex-wrap'>
                         {pages.map((pageNumber) => {
