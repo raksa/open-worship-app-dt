@@ -4,6 +4,17 @@ import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 
+export type SelectedBookKeyType = [string, string] | null;
+
+export type APIDataType = {
+    mapper: {
+        [key: string]: {
+            apiKey: string,
+            apiUrl: string,
+        }
+    }
+}
+
 export type BibleSearchOnlineType = {
     maxLineNumber: number;
     fromLineNumber: number;
@@ -11,10 +22,14 @@ export type BibleSearchOnlineType = {
     content: string[];
 }
 export type BibleSearchForType = {
+    bookKey?: string,
     fromLineNumber?: number;
     toLineNumber?: number;
     text: string;
+    isFresh?: boolean,
 }
+
+
 export type PagingDataTye = {
     pages: string[];
     currentPage: string;

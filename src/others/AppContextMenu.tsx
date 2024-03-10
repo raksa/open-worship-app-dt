@@ -43,14 +43,14 @@ const setPositionMenu = (menu: HTMLElement,
         const wd = getWindowDim();
         let maxWidth;
         let maxHeight;
-        if ((x + bc.width) > wd.width) {
+        if (x > wd.width / 2 && (x + bc.width) > wd.width) {
             menu.style.right = `${wd.width - x}px`;
             maxWidth = x;
         } else {
             menu.style.left = `${x}px`;
             maxWidth = wd.width - x;
         }
-        if ((y + bc.height) > wd.height) {
+        if (y > wd.height / 2 && (y + bc.height) > wd.height) {
             menu.style.bottom = `${wd.height - y}px`;
             maxHeight = y;
         } else {
@@ -87,20 +87,20 @@ export function showAppContextMenu(
 }
 
 export default function AppContextMenu() {
-    const [data, _setData] = useState<{
+    const [data, setData] = useState<{
         event: MouseEvent,
         items: ContextMenuItemType[]
     } | null>(null);
-    const setData = (newData: PropsType | null) => {
+    const setData1 = (newData: PropsType | null) => {
         WindowEventListener.fireEvent({
             widget: 'context-menu',
             state: newData === null ? 'close' : 'open',
         });
-        _setData(newData);
+        setData(newData);
     };
     useAppEffect(() => {
         setDataDelegator = (newData) => {
-            setData(newData);
+            setData1(newData);
         };
         return () => {
             setDataDelegator = null;

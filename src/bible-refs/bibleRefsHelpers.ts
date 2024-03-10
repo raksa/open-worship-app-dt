@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
 import {
-    get_api_url, get_api_key, decrypt, bible_ref,
+    decrypt, bible_ref,
 } from '../_owa-crypto';
 import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { IndexedDbController } from '../db/dbHelper';
+import { appApiFetch } from '../helper/networkHelpers';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {
@@ -30,13 +31,7 @@ export class BibleRefsDbController extends IndexedDbController {
 
 async function downloadBibleRef(key: string) {
     try {
-        const apiUrl = get_api_url();
-        const apiKey = get_api_key();
-        const content = await fetch(`${apiUrl}/bible-refs/${key}`, {
-            headers: {
-                'x-api-key': apiKey,
-            },
-        });
+        const content = await appApiFetch(`bible-refs/${key}`);
         return await content.text();
     } catch (error) {
         handleError(error);

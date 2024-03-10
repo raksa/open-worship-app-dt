@@ -1,21 +1,80 @@
+import { genBookMatches } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    calcPaging, BibleSearchOnlineType, pageNumberToReqData,
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenu';
+import { showSimpleToast } from '../toast/toastHelpers';
+import {
+    calcPaging, BibleSearchOnlineType, pageNumberToReqData, SelectedBookKeyType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderPerPage from './BibleOnlineRenderPerPage';
 
+async function selectBookKey(
+    event: any, bibleKey: string, selectedBook: SelectedBookKeyType,
+    setSelectedBook: (_: SelectedBookKeyType) => void,
+) {
+    const bookList = await genBookMatches(bibleKey, '');
+    if (bookList === null) {
+        showSimpleToast('Getting bible list', 'Fail to get bible list');
+        return;
+    }
+    showAppContextMenu(event, [
+        {
+            title: 'all books',
+            onClick: () => {
+                setSelectedBook(null);
+            },
+        },
+        ...bookList.map(([bookKey, localBookName, bookName]) => {
+            const extraName = (
+                localBookName !== bookName ? `(${bookName})` : ''
+            );
+            return {
+                title: `${localBookName}${extraName}`,
+                disabled: selectedBook?.[0] === bookKey,
+                onClick: () => {
+                    setSelectedBook([bookKey, localBookName]);
+                },
+            } as ContextMenuItemType;
+        }),
+    ]);
+}
+
 export default function BibleOnlineRenderData({
-    text, allData, searchFor, bibleKey,
+    text, allData, searchFor, bibleKey, selectedBook, setSelectedBook,
 }: Readonly<{
     text: string,
     allData: { [key: string]: BibleSearchOnlineType },
     searchFor: (from: number, to: number) => void,
     bibleKey: string,
+    selectedBook: SelectedBookKeyType,
+    setSelectedBook: (_: SelectedBookKeyType) => void,
 }>) {
+    const genBookSection = (message: string) => {
+        return (
+            <div className='d-flex w-100'>
+                <div className='flex-fill'>
+                    <h4>{message}</h4>
+                </div>
+                <div>
+                    <button className='btn btn-sm btn-info'
+                        onClick={(event) => {
+                            selectBookKey(
+                                event, bibleKey, selectedBook,
+                                setSelectedBook,
+                            );
+                        }}>
+                        {
+                            selectedBook === null ?
+                                'all books' : selectedBook[1]
+                        }
+                    </button>
+                </div>
+            </div>
+        );
+    };
     const allPageNumberFound = Object.keys(allData);
     if (allPageNumberFound.length === 0) {
-        return (
-            <div>No Data</div>
-        );
+        return genBookSection('No Data');
     }
     const pagingData = calcPaging(allData[allPageNumberFound[0]]);
     const searchFor1 = (pageNumber: string) => {
@@ -26,7 +85,7 @@ export default function BibleOnlineRenderData({
     return (
         <>
             <div className='card-body w-100'>
-                <h4>{text}</h4>
+                {genBookSection(text)}
                 {allPageNumberFound.map((pageNumber) => {
                     if (!pages.includes(pageNumber)) {
                         return null;

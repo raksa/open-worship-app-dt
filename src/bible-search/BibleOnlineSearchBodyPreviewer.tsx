@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 
 import {
     AllDataType, BibleSearchForType, searchOnline, calcPaging, findPageNumber,
+    APIDataType, SelectedBookKeyType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderData from './BibleOnlineRenderData';
 import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
@@ -9,15 +10,6 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
 import BibleSelection from './BibleSelection';
-
-type APIDataType = {
-    mapper: {
-        [key: string]: {
-            apiKey: string,
-            apiUrl: string,
-        }
-    }
-}
 
 async function loadApiData() {
     try {
@@ -76,6 +68,9 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
 }>) {
     const selectedBibleKey = useContext(SelectedBibleKeyContext);
     const [bibleKey, setBibleKey] = useState(selectedBibleKey);
+    const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(
+        null,
+    );
     const [inputText, setInputText] = useState('');
     const [searchingText, setSearchingText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
@@ -87,6 +82,9 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
 
     const searchOnline1 = (searchData: BibleSearchForType) => {
         const apiDataMap = apiData.mapper[bibleKey];
+        if (selectedBook !== null) {
+            searchData['bookKey'] = selectedBook[0];
+        }
         searchOnline(
             apiDataMap.apiUrl, apiDataMap.apiKey, searchData,
         ).then((data) => {
@@ -145,6 +143,8 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
                     });
                 }}
                 bibleKey={bibleKey}
+                selectedBook={selectedBook}
+                setSelectedBook={setSelectedBook}
             />
         </div>
     );

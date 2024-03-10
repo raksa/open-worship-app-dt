@@ -11,6 +11,7 @@ import {
 import {
     bibleDataReader, getBibleInfo,
 } from './bibleInfoHelpers';
+import { appApiFetch } from '../networkHelpers';
 
 export function httpsRequest(
     pathName: string,
@@ -158,13 +159,7 @@ export async function extractDownloadedBible(filePath: string) {
 export async function getOnlineBibleInfoList():
     Promise<BibleMinimalInfoType[] | null> {
     try {
-        const apiUrl = get_api_url();
-        const apiKey = get_api_key();
-        const content = await fetch(`${apiUrl}/info.json`, {
-            headers: {
-                'x-api-key': apiKey,
-            },
-        });
+        const content = await appApiFetch('info.json');
         const json = await content.json();
         if (typeof json.mapper !== 'object') {
             throw new Error('Cannot get bible list');
