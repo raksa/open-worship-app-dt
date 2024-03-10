@@ -1,4 +1,4 @@
-import appProvider from './appProvider';
+import appProvider, { FontListType } from './appProvider';
 import {
     defaultLocal, getCurrentLangAsync, getLangAsync,
 } from '../lang';
@@ -8,6 +8,13 @@ import {
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
+
+export function getFontListByNodeFont() {
+    appProvider.messageUtils.sendData('main:app:get-font-list');
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:get-font-list',
+    ) as FontListType | null;
+}
 
 export function openExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);

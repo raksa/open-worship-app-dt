@@ -7,17 +7,32 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import appProvider, {
     FontListType,
 } from './appProvider';
+import { getFontListByNodeFont } from './appHelper';
+
+
+function showLoadingFontFail() {
+    showSimpleToast('Loading Fonts', 'Fail to load font list');
+}
 
 export function useFontList() {
     const [fontList, setFontList] = useState<FontListType | null>(null);
     useAppEffect(() => {
         if (fontList === null) {
-            appProvider.fontUtils.getFonts().then((fonts) => {
-                setFontList(fonts);
-            }).catch((error) => {
-                handleError(error);
-                showSimpleToast('Loading Fonts', 'Fail to load font list');
-            });
+            if (appProvider.systemUtils.isMac) {
+                appProvider.fontUtils.getFonts().then((fonts) => {
+                    setFontList(fonts);
+                }).catch((error) => {
+                    handleError(error);
+                    showLoadingFontFail();
+                });
+            } else {
+                const fonts = getFontListByNodeFont();
+                if (fonts === null) {
+                    showLoadingFontFail();
+                } else {
+                    setFontList(fonts);
+                }
+            }
         }
     });
     return fontList;

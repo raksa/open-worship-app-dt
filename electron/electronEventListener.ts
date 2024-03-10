@@ -1,9 +1,12 @@
 import ElectronAppController from './ElectronAppController';
 import ElectronPresentController from './ElectronPresentController';
 import electron, { shell } from 'electron';
+import fontList from 'font-list';
 
 const { dialog, ipcMain, app } = electron;
-
+const cache: { [key: string]: any } = {
+    fontsMap: null,
+};
 
 export type AnyObjectType = {
     [key: string]: any;
@@ -123,6 +126,22 @@ export function initPresent(appController: ElectronAppController) {
     });
     ipcMain.on('app:preview-pdf', (_, pdfFilePath: string) => {
         appController.mainController.previewPdf(pdfFilePath);
+    });
+
+    ipcMain.on('main:app:get-font-list', async (event) => {
+        if (cache.fontsMap !== null) {
+            event.returnValue = cache.fontsMap;
+        }
+        try {
+            const fonts = await fontList.getFonts({ disableQuoting: true });
+            const fontsMap = Object.fromEntries(fonts.map((fontName) => {
+                return [fontName, []];
+            }));
+            event.returnValue = fontsMap;
+            cache.fontsMap = fontsMap;
+        } catch (error) {
+            event.returnValue = null;
+        }
     });
 
     ipcMain.on('main:app:reveal-path', (_, path: string) => {
