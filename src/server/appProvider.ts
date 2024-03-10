@@ -87,7 +87,6 @@ const appProvider = (window as any).provider as {
         decrypt: (text: string, key: string) => string,
     };
     browserUtils: {
-        openExplorer: (dir: string) => void,
         copyToClipboard: (str: string) => void,
         pathToFileURL: (filePath: string) => string,
     };

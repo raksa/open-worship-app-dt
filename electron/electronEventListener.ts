@@ -1,6 +1,6 @@
 import ElectronAppController from './ElectronAppController';
 import ElectronPresentController from './ElectronPresentController';
-import electron from 'electron';
+import electron, { shell } from 'electron';
 
 const { dialog, ipcMain, app } = electron;
 
@@ -123,6 +123,10 @@ export function initPresent(appController: ElectronAppController) {
     });
     ipcMain.on('app:preview-pdf', (_, pdfFilePath: string) => {
         appController.mainController.previewPdf(pdfFilePath);
+    });
+
+    ipcMain.on('main:app:reveal-path', (_, path: string) => {
+        shell.showItemInFolder(path);
     });
 
     ipcMain.on('main:app:open-search', () => {

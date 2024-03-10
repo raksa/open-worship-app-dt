@@ -1,13 +1,10 @@
-import electron from 'electron';
+import { clipboard } from 'electron';
 import url from 'node:url';
 import { rootUrlAccess } from '../fsServe';
 
 const browserUtils = {
-    openExplorer(dir: string) {
-        electron.shell.showItemInFolder(dir);
-    },
     copyToClipboard(str: string) {
-        electron.clipboard.writeText(str);
+        clipboard.writeText(str);
     },
     pathToFileURL(filePath: string) {
         let urlPath = url.pathToFileURL(filePath).toString();

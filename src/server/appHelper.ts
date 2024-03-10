@@ -10,7 +10,7 @@ import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export function openExplorer(dir: string) {
-    appProvider.browserUtils.openExplorer(dir);
+    appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
