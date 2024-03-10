@@ -96,19 +96,18 @@ export function pageNumberToReqData(
     };
 }
 
-const rootUrl = 'https://b3xgqsu6u7.execute-api.us-west-2.amazonaws.com';
-export async function searchOnline(searchData: BibleSearchForType) {
+export async function searchOnline(
+    apiUrl: string, apiKey: string, searchData: BibleSearchForType,
+) {
     try {
-        const response = await fetch(
-            `${rootUrl}/prod/search-S0pW`,
-            {
-                headers: {
-                    'x-api-key': 'InTheNameOfFatherSonAndHolySpirit',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                body: JSON.stringify(searchData),
+        const response = await fetch(apiUrl, {
+            headers: {
+                'x-api-key': apiKey,
+                'Content-Type': 'application/json',
             },
+            method: 'POST',
+            body: JSON.stringify(searchData),
+        },
         );
         const result = await response.json();
         if (result['content']) {

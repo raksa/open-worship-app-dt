@@ -58,7 +58,8 @@ export default function InputHandler({
                 }} />
             <span className='input-group-text select'>
                 <BibleSelection bibleKey={bibleKey}
-                    onChange={onBibleChange} />
+                    onChange={onBibleChange}
+                />
             </span>
         </>
     );

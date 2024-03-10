@@ -2,8 +2,7 @@ import { lazy, useCallback, useContext, useState } from 'react';
 
 import InputHandler from './InputHandler';
 import {
-    SelectedBibleKeyContext,
-    genInputText, useGetSelectedBibleKey,
+    SelectedBibleKeyContext, genInputText, useGetSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
 import {
     BibleNotAvailable,

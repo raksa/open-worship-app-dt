@@ -96,7 +96,7 @@ function genBookOption({
                     onSelect(bookKey, book);
                 }}>
                 <span>{book}</span>
-                {book !== bookKey ? <>
+                {book !== bookKJV ? <>
                     (<small className='text-muted'>
                         {bookKJV}
                     </small>)

@@ -1,5 +1,5 @@
 import {
-    CSSProperties, Fragment, LazyExoticComponent, useCallback, useEffect,
+    CSSProperties, Fragment, LazyExoticComponent, useCallback,
     useState,
 } from 'react';
 
@@ -11,6 +11,7 @@ import {
     DisabledType, getFlexSizeSetting, keyToDataFSizeKey, setDisablingSetting,
     genFlexSizeSetting, setFlexSizeSetting,
 } from './flexSizeHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
@@ -53,7 +54,7 @@ export default function ResizeActor({
         }
         setFlexSize(newFlexSize);
     };
-    useEffect(() => {
+    useAppEffect(() => {
         const foundDiff = [];
         const newFlexSize = { ...flexSize };
         for (const key in flexSizeDefault) {

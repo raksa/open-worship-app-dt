@@ -4,11 +4,12 @@ import {
 import BibleOnlineRenderPerPage from './BibleOnlineRenderPerPage';
 
 export default function BibleOnlineRenderData({
-    text, allData, searchFor,
+    text, allData, searchFor, bibleKey,
 }: Readonly<{
     text: string,
     allData: { [key: string]: BibleSearchOnlineType },
     searchFor: (from: number, to: number) => void,
+    bibleKey: string,
 }>) {
     const allPageNumberFound = Object.keys(allData);
     if (allPageNumberFound.length === 0) {
@@ -35,6 +36,7 @@ export default function BibleOnlineRenderData({
                         <BibleOnlineRenderPerPage key={pageNumber}
                             text={text}
                             data={data} pageNumber={pageNumber}
+                            bibleKey={bibleKey}
                         />
                     );
                 })}

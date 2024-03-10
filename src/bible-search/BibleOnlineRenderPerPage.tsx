@@ -1,19 +1,16 @@
-import { useContext } from 'react';
-
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
 import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
 
 export default function BibleOnlineRenderPerPage({
-    pageNumber, data, text,
+    pageNumber, data, text, bibleKey,
 }: Readonly<{
     pageNumber: string,
     data: BibleSearchOnlineType,
     text: string,
+    bibleKey: string,
 }>) {
-    const bibleKey = useContext(SelectedBibleKeyContext);
     return (
         <>
             <div className='d-flex'>

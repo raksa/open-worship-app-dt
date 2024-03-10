@@ -59,7 +59,7 @@ export function initCustomSchemeHandler() {
         { urls: ['https://*/*'] }, (details, callback) => {
             if (details.responseHeaders) {
                 details.responseHeaders['access-control-allow-headers'] = [
-                    'x-api-key',
+                    'x-api-key', 'content-type',
                 ];
                 details.responseHeaders['access-control-allow-origin'] = [
                     '*',
