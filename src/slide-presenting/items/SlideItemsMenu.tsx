@@ -19,9 +19,9 @@ export default function SlideItemsMenu({ slide }: Readonly<{
         slide.save();
     });
     const foundWrongDimension = slide.checkIsWrongDimension(presentDisplay);
-    const editCacheManager = slide.editingCacheManager;
-    const undo = editCacheManager.undoQueue;
-    const redo = editCacheManager.redoQueue;
+    const editHistoryManager = slide.editingHistoryManager;
+    const undo = editHistoryManager.undoQueue;
+    const redo = editHistoryManager.redoQueue;
     const isHavingHistories = !!undo.length || !!redo.length;
     const isShowingMenu = undo.length || redo.length || foundWrongDimension;
     return (
@@ -35,7 +35,7 @@ export default function SlideItemsMenu({ slide }: Readonly<{
                 <button type='button' className='btn btn-sm btn-info'
                     title='clear all' disabled={!undo.length}
                     onClick={() => {
-                        editCacheManager.popUndo();
+                        editHistoryManager.popUndo();
                     }}>
                     undo <i className='bi bi-arrow-90deg-left' />
                 </button>
@@ -44,7 +44,7 @@ export default function SlideItemsMenu({ slide }: Readonly<{
                     title='clear background'
                     disabled={redo.length === 0}
                     onClick={() => {
-                        editCacheManager.popRedo();
+                        editHistoryManager.popRedo();
                     }}>
                     redo <i className='bi bi-arrow-90deg-right' />
                 </button>

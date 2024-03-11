@@ -44,7 +44,7 @@ export default function SlideFile({
         if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
         }
-        data?.editingCacheManager.delete();
+        data?.editingHistoryManager.delete();
     }, [data, filePath]);
     useAppEffect(() => {
         if (data === null) {

@@ -1,13 +1,13 @@
 import { AnyObjectType, cloneJson } from '../helper/helpers';
-import EditingCacheManager from '../others/EditingCacheManager';
-import { LyricEditingHistoryType, LyricType } from './Lyric';
-import { LyricItemType } from './LyricItem';
+import EditingHistoryManager from '../others/EditingHistoryManager';
+import { SlideEditingHistoryType, SlideType } from './Slide';
+import { SlideItemType } from './SlideItem';
 
-export default class LyricEditingCacheManager
-    extends EditingCacheManager<LyricEditingHistoryType, LyricType> {
-    _originalJson: Readonly<LyricType>;
-    constructor(filePath: string, json: LyricType) {
-        super(filePath, 'lyric');
+export default class SlideEditingHistoryManager
+    extends EditingHistoryManager<SlideEditingHistoryType, SlideType> {
+    _originalJson: Readonly<SlideType>;
+    constructor(filePath: string, json: SlideType) {
+        super(filePath, 'slide');
         this._originalJson = Object.freeze(cloneJson(json));
     }
     get cloneItems() {
@@ -17,7 +17,7 @@ export default class LyricEditingCacheManager
         return cloneJson(this._originalJson.metadata);
     }
     get presentJson() {
-        if (this.isUsingHistory) {
+        if (!this.isUsingHistory) {
             return {
                 items: this.cloneItems,
                 metadata: this.cloneMetadata,
@@ -36,22 +36,21 @@ export default class LyricEditingCacheManager
             metadata: newMetadata || this.cloneMetadata,
         };
     }
-    getLyricItemById(id: number) {
+    getSlideItemById(id: number) {
         const latestHistory = this.presentJson;
         return latestHistory.items.find((item) => {
             return item.id === id;
         }) || null;
     }
-    checkIsLyricItemChanged(id: number) {
-        const newItem = this.getLyricItemById(id);
-        const lyricItems = this._originalJson.items;
-        const originalItem = lyricItems.find((item) => {
+    checkIsSlideItemChanged(id: number) {
+        const newItem = this.getSlideItemById(id);
+        const slideItems = this._originalJson.items;
+        const originalItem = slideItems.find((item) => {
             return item.id === id;
         });
-        return newItem?.title !== originalItem?.title ||
-            newItem?.content !== originalItem?.content;
+        return JSON.stringify(newItem) !== JSON.stringify(originalItem);
     }
-    pushLyricItems(items: LyricItemType[]) {
+    pushSlideItems(items: SlideItemType[]) {
         const newHistory = {
             items,
         };

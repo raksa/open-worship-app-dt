@@ -14,7 +14,7 @@ type ChangesType<T> = {
 };
 
 const SETTING_NAME = 'editing-cache';
-export default abstract class EditingCacheManager<T1, T2> {
+export default abstract class EditingHistoryManager<T1, T2> {
     isUsingHistory = true;
     filePath: string;
     settingName: string;

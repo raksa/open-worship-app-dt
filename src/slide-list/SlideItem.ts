@@ -4,7 +4,7 @@ import { ItemBase } from '../helper/ItemBase';
 import Slide from './Slide';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import SlideEditingCacheManager from './SlideEditingCacheManager';
+import SlideEditingHistoryManager from './SlideEditingHistoryManager';
 import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_present/presentHelpers';
@@ -27,25 +27,25 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     isCopied: boolean;
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
-    editingCacheManager: SlideEditingCacheManager;
+    editingHistoryManager: SlideEditingHistoryManager;
     private static _cache = new Map<string, SlideItem>();
     constructor(
         id: number, filePath: string, json: SlideItemType,
-        editingCacheManager?: SlideEditingCacheManager,
+        editingHistoryManager?: SlideEditingHistoryManager,
     ) {
         super();
         this.id = id;
         this._json = cloneJson(json);
         this.filePath = filePath;
-        if (editingCacheManager !== undefined) {
-            this.editingCacheManager = editingCacheManager;
+        if (editingHistoryManager !== undefined) {
+            this.editingHistoryManager = editingHistoryManager;
         } else {
-            this.editingCacheManager = new SlideEditingCacheManager(
+            this.editingHistoryManager = new SlideEditingHistoryManager(
                 filePath, {
                 items: [json],
                 metadata: {},
             });
-            this.editingCacheManager.isUsingHistory = false;
+            this.editingHistoryManager.isUsingHistory = false;
         }
         this.isCopied = false;
         SlideItem._cache.set(this.key, this);
@@ -64,14 +64,14 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
     set originalJson(json: SlideItemType) {
         this._json = json;
-        const items = this.editingCacheManager.presentJson.items;
+        const items = this.editingHistoryManager.presentJson.items;
         const newItems = items.map((item) => {
             if (item.id === this.id) {
                 return this.toJson();
             }
             return item;
         });
-        this.editingCacheManager.pushSlideItems(newItems);
+        this.editingHistoryManager.pushSlideItems(newItems);
     }
     get metadata() {
         return this.originalJson.metadata;
@@ -144,7 +144,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         FileSource.getInstance(this.filePath).fireSelectEvent();
     }
     get isChanged() {
-        return this.editingCacheManager.checkIsSlideItemChanged(this.id);
+        return this.editingHistoryManager.checkIsSlideItemChanged(this.id);
     }
     static getSelectedEditingResult() {
         const selected = this.getSelectedResult();
@@ -175,21 +175,21 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
     static fromJson(
         json: SlideItemType, filePath: string,
-        editingCacheManager?: SlideEditingCacheManager,
+        editingHistoryManager?: SlideEditingHistoryManager,
     ) {
         return new SlideItem(json.id, filePath, json,
-            editingCacheManager);
+            editingHistoryManager);
     }
     static fromJsonError(json: AnyObjectType,
         filePath: string,
-        editingCacheManager?: SlideEditingCacheManager) {
+        editingHistoryManager?: SlideEditingHistoryManager) {
         const newJson = {
             id: -1,
             metadata: {},
             canvasItems: [],
         };
         const item = new SlideItem(-1, filePath, newJson,
-            editingCacheManager);
+            editingHistoryManager);
         item.jsonError = json;
         return item;
     }

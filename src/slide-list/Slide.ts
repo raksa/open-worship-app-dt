@@ -13,7 +13,7 @@ import {
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import SlideEditingCacheManager from './SlideEditingCacheManager';
+import SlideEditingHistoryManager from './SlideEditingHistoryManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import { DisplayType } from '../_present/presentHelpers';
@@ -34,12 +34,12 @@ export default class Slide extends ItemSource<SlideItem>{
     static mimetype: MimetypeNameType = 'slide';
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
-    editingCacheManager: SlideEditingCacheManager;
+    editingHistoryManager: SlideEditingHistoryManager;
     _pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
     constructor(filePath: string, json: SlideType) {
         super(filePath);
-        this.editingCacheManager = new SlideEditingCacheManager(
+        this.editingHistoryManager = new SlideEditingHistoryManager(
             this.filePath, json,
         );
     }
@@ -50,7 +50,7 @@ export default class Slide extends ItemSource<SlideItem>{
         if (this.isPdf) {
             return false;
         }
-        return this.editingCacheManager.isChanged;
+        return this.editingHistoryManager.isChanged;
     }
     get copiedItem() {
         return this.items.find((item) => {
@@ -86,10 +86,10 @@ export default class Slide extends ItemSource<SlideItem>{
         if (this.isPdf) {
             return {};
         }
-        return this.editingCacheManager.presentJson.metadata;
+        return this.editingHistoryManager.presentJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this.editingCacheManager.pushMetadata(metadata);
+        this.editingHistoryManager.pushMetadata(metadata);
     }
     get items() {
         if (this.isPdf) {
@@ -106,24 +106,24 @@ export default class Slide extends ItemSource<SlideItem>{
                 return slideItem;
             });
         }
-        const latestHistory = this.editingCacheManager.presentJson;
+        const latestHistory = this.editingHistoryManager.presentJson;
         return latestHistory.items.map((json) => {
             try {
                 return SlideItem.fromJson(
-                    json as any, this.filePath, this.editingCacheManager,
+                    json as any, this.filePath, this.editingHistoryManager,
                 );
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
             return SlideItem.fromJsonError(json, this.filePath,
-                this.editingCacheManager);
+                this.editingHistoryManager);
         });
     }
     set items(newItems: SlideItem[]) {
         const slideItems = newItems.map((item) => {
             return item.toJson();
         });
-        this.editingCacheManager.pushSlideItems(slideItems);
+        this.editingHistoryManager.pushSlideItems(slideItems);
     }
     get maxItemId() {
         if (this.items.length) {
@@ -139,7 +139,7 @@ export default class Slide extends ItemSource<SlideItem>{
         const isSuccess = await super.save();
         if (isSuccess) {
             SlideItem.clearCache();
-            this.editingCacheManager.save();
+            this.editingHistoryManager.save();
         }
         return isSuccess;
     }
@@ -201,7 +201,7 @@ export default class Slide extends ItemSource<SlideItem>{
             canvasItems: [], // TODO: add default canvas item
         };
         const newItem = new SlideItem(item.id, this.filePath, json,
-            this.editingCacheManager);
+            this.editingHistoryManager);
         this.itemIdShouldToView = newItem.id;
         this.addItem(newItem);
     }
@@ -246,7 +246,7 @@ export default class Slide extends ItemSource<SlideItem>{
             }
             return json;
         });
-        this.editingCacheManager.pushSlideItems(newItemsJson);
+        this.editingHistoryManager.pushSlideItems(newItemsJson);
     }
     showSlideItemContextMenu(event: any) {
         showAppContextMenu(event, [{
@@ -266,7 +266,7 @@ export default class Slide extends ItemSource<SlideItem>{
         }]);
     }
     async discardChanged() {
-        this.editingCacheManager.delete();
+        this.editingHistoryManager.delete();
         FileSource.getInstance(this.filePath).fireUpdateEvent();
     }
     static toScaleThumbSize(isUp: boolean, currentScale: number) {
@@ -314,7 +314,7 @@ export default class Slide extends ItemSource<SlideItem>{
         const data = await super.readFileToDataNoCache(filePath);
         const slide = data as SlideDynamicType;
         if (isOrigin && slide) {
-            slide.editingCacheManager.isUsingHistory = false;
+            slide.editingHistoryManager.isUsingHistory = false;
         }
         return slide;
     }
