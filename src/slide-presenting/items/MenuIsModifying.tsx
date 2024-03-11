@@ -4,23 +4,23 @@ import {
 import Slide from '../../slide-list/Slide';
 
 export default function MenuIsModifying({
-    slide, eventMapper,
+    slide, eventMapper, isSlideChanged,
 }: Readonly<{
     slide: Slide,
     eventMapper: any,
-    isHavingHistories: boolean,
+    isSlideChanged: boolean,
 }>) {
     return (
         <>
             <button type='button'
                 className='btn btn-sm btn-info'
-                disabled={!slide.isChanged}
+                disabled={!isSlideChanged}
                 onClick={() => {
                     slide.discardChanged();
                 }}>Discard Changed</button>
             <button type='button'
                 className='btn btn-sm btn-success'
-                disabled={!slide.isChanged}
+                disabled={!isSlideChanged}
                 data-tool-tip={toShortcutKey(eventMapper)}
                 title='save slide thumbs'
                 onClick={() => {

@@ -3,22 +3,18 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    checkIsPdf,
-    MAX_THUMBNAIL_SCALE,
-    MIN_THUMBNAIL_SCALE,
-    openSlideContextMenu,
-    readPdfToSlide,
-    SlideDynamicType,
-    THUMBNAIL_SCALE_STEP,
+    checkIsPdf, MAX_THUMBNAIL_SCALE, MIN_THUMBNAIL_SCALE, openSlideContextMenu,
+    readPdfToSlide, SlideDynamicType, THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import SlideEditingHistoryManager from './SlideEditingHistoryManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
+import EditingHistoryManager from '../others/EditingHistoryManager';
+import { useState } from 'react';
 
 export type SlideEditingHistoryType = {
     items?: SlideItemType[],
@@ -31,26 +27,21 @@ export type SlideType = {
 };
 
 export default class Slide extends ItemSource<SlideItem>{
-    static mimetype: MimetypeNameType = 'slide';
-    static SELECT_SETTING_NAME = 'slide-selected';
+    static readonly mimetype: MimetypeNameType = 'slide';
+    static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
-    editingHistoryManager: SlideEditingHistoryManager;
     _pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
-    constructor(filePath: string, json: SlideType) {
+    private _slideJson: SlideType;
+    constructor(filePath: string, slideJson: SlideType) {
         super(filePath);
-        this.editingHistoryManager = new SlideEditingHistoryManager(
-            this.filePath, json,
-        );
+        this._slideJson = slideJson;
+    }
+    get editingHistoryManager() {
+        return new EditingHistoryManager(this.filePath);
     }
     get isPdf() {
         return this._pdfImageDataList !== null;
-    }
-    get isChanged() {
-        if (this.isPdf) {
-            return false;
-        }
-        return this.editingHistoryManager.isChanged;
     }
     get copiedItem() {
         return this.items.find((item) => {
@@ -86,10 +77,11 @@ export default class Slide extends ItemSource<SlideItem>{
         if (this.isPdf) {
             return {};
         }
-        return this.editingHistoryManager.presentJson.metadata;
+        return this._slideJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this.editingHistoryManager.pushMetadata(metadata);
+        this._slideJson.metadata = metadata;
+        this.addHistory();
     }
     get items() {
         if (this.isPdf) {
@@ -106,8 +98,7 @@ export default class Slide extends ItemSource<SlideItem>{
                 return slideItem;
             });
         }
-        const latestHistory = this.editingHistoryManager.presentJson;
-        return latestHistory.items.map((json) => {
+        return this._slideJson.items.map((json) => {
             try {
                 return SlideItem.fromJson(
                     json as any, this.filePath, this.editingHistoryManager,
@@ -123,7 +114,8 @@ export default class Slide extends ItemSource<SlideItem>{
         const slideItems = newItems.map((item) => {
             return item.toJson();
         });
-        this.editingHistoryManager.pushSlideItems(slideItems);
+        this._slideJson.items = slideItems;
+        this.addHistory();
     }
     get maxItemId() {
         if (this.items.length) {
@@ -132,6 +124,11 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         return 0;
     }
+    addHistory() {
+        return this.editingHistoryManager.addHistory(
+            JSON.stringify(this._slideJson),
+        );
+    }
     getItemByIndex(index: number) {
         return this.items[index] || null;
     }
@@ -139,7 +136,7 @@ export default class Slide extends ItemSource<SlideItem>{
         const isSuccess = await super.save();
         if (isSuccess) {
             SlideItem.clearCache();
-            this.editingHistoryManager.save();
+            this.editingHistoryManager.discard();
         }
         return isSuccess;
     }
@@ -215,6 +212,26 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         this.items = newItems;
     }
+    private async applyHistory(isHistoryChanged: boolean) {
+        if (!isHistoryChanged) {
+            return false;
+        }
+        const newSlide = await Slide.readFileToDataNoCache(this.filePath);
+        if (!newSlide) {
+            return false;
+        }
+        this.items = newSlide.items;
+        this.metadata = newSlide.metadata;
+        return true;
+    }
+    async undo() {
+        const isUndoDone = await this.editingHistoryManager.undo();
+        return await this.applyHistory(isUndoDone);
+    }
+    async redo() {
+        const isRedoDone = await this.editingHistoryManager.redo();
+        return await this.applyHistory(isRedoDone);
+    }
     static toWrongDimensionString({ slideItem, display }: {
         slideItem: { width: number, height: number },
         display: { width: number, height: number },
@@ -238,15 +255,15 @@ export default class Slide extends ItemSource<SlideItem>{
         return null;
     }
     async fixSlideDimension(display: DisplayType) {
-        const newItemsJson = this.items.map((item) => {
+        const newItems = this.items.map((item) => {
             const json = item.toJson();
             if (item.checkIsWrongDimension(display)) {
                 json.metadata.width = display.bounds.width;
                 json.metadata.height = display.bounds.height;
             }
-            return json;
+            return item;
         });
-        this.editingHistoryManager.pushSlideItems(newItemsJson);
+        this.items = newItems;
     }
     showSlideItemContextMenu(event: any) {
         showAppContextMenu(event, [{
@@ -266,7 +283,7 @@ export default class Slide extends ItemSource<SlideItem>{
         }]);
     }
     async discardChanged() {
-        this.editingHistoryManager.delete();
+        this.editingHistoryManager.discard();
         FileSource.getInstance(this.filePath).fireUpdateEvent();
     }
     static toScaleThumbSize(isUp: boolean, currentScale: number) {
@@ -303,23 +320,29 @@ export default class Slide extends ItemSource<SlideItem>{
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    static async readFileToDataNoCache(filePath: string | null,
-        isOrigin?: boolean) {
+    static async readFileToDataNoCache(filePath: string | null) {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
             if (fileSource.src && checkIsPdf(fileSource.extension)) {
                 return readPdfToSlide(filePath);
             }
+            const editingHistoryManager = new EditingHistoryManager(filePath);
+            const slideJson = await editingHistoryManager.getLastedHistory();
+            if (slideJson !== null) {
+                try {
+                    return this.fromJson(filePath, slideJson);
+                } catch (error: any) {
+                    showSimpleToast('Instantiating Data', error.message);
+                }
+            }
         }
         const data = await super.readFileToDataNoCache(filePath);
         const slide = data as SlideDynamicType;
-        if (isOrigin && slide) {
-            slide.editingHistoryManager.isUsingHistory = false;
-        }
         return slide;
     }
-    static async readFileToData(filePath: string | null,
-        isForceCache?: boolean) {
+    static async readFileToData(
+        filePath: string | null, isForceCache?: boolean,
+    ) {
         const slide = super.readFileToData(filePath, isForceCache);
         return slide as Promise<Slide | undefined | null>;
     }
@@ -343,5 +366,12 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     clone() {
         return Slide.fromJson(this.filePath, this.toJson());
+    }
+    async delete() {
+        await this.editingHistoryManager.discard();
+        const fileSource = FileSource.getInstance(this.filePath);
+        await fileSource.delete();
+        fileSource.fireUpdateEvent();
+        fileSource.fireHistoryUpdateEvent();
     }
 }

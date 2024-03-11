@@ -12,6 +12,7 @@ import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useNavigate } from 'react-router-dom';
 import { goEditingMode } from '../router/routeHelpers';
+import { useEditingHistoryStatus } from '../others/EditingHistoryManager';
 
 export default function SlideFile({
     index, filePath,
@@ -44,7 +45,7 @@ export default function SlideFile({
         if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
         }
-        data?.editingHistoryManager.delete();
+        data?.delete();
     }, [data, filePath]);
     useAppEffect(() => {
         if (data === null) {
@@ -87,13 +88,14 @@ export default function SlideFile({
 
 
 function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
+    const editingStatus = useEditingHistoryStatus(slide.filePath);
     const fileSource = FileSource.getInstance(slide.filePath);
+    const isSlideChanged = editingStatus[0] || editingStatus[1];
     return (
         <div className='w-100 h-100 app-ellipsis'>
             <i className='bi bi-file-earmark-slides' />
             {fileSource.name}
-            {slide.isChanged && <span
-                style={{ color: 'red' }}>*</span>}
+            {isSlideChanged && <span style={{ color: 'red' }}>*</span>}
         </div>
     );
 }

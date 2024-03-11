@@ -1,10 +1,8 @@
 import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
 // TODO: remove Slide
-import Slide from './Slide';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import SlideEditingHistoryManager from './SlideEditingHistoryManager';
 import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_present/presentHelpers';
@@ -27,26 +25,14 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     isCopied: boolean;
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedItem: SlideItem | null = null;
-    editingHistoryManager: SlideEditingHistoryManager;
     private static _cache = new Map<string, SlideItem>();
     constructor(
         id: number, filePath: string, json: SlideItemType,
-        editingHistoryManager?: SlideEditingHistoryManager,
     ) {
         super();
         this.id = id;
         this._json = cloneJson(json);
         this.filePath = filePath;
-        if (editingHistoryManager !== undefined) {
-            this.editingHistoryManager = editingHistoryManager;
-        } else {
-            this.editingHistoryManager = new SlideEditingHistoryManager(
-                filePath, {
-                items: [json],
-                metadata: {},
-            });
-            this.editingHistoryManager.isUsingHistory = false;
-        }
         this.isCopied = false;
         SlideItem._cache.set(this.key, this);
     }
@@ -174,22 +160,16 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         };
     }
     static fromJson(
-        json: SlideItemType, filePath: string,
-        editingHistoryManager?: SlideEditingHistoryManager,
-    ) {
-        return new SlideItem(json.id, filePath, json,
-            editingHistoryManager);
+        json: SlideItemType, filePath: string) {
+        return new SlideItem(json.id, filePath, json);
     }
-    static fromJsonError(json: AnyObjectType,
-        filePath: string,
-        editingHistoryManager?: SlideEditingHistoryManager) {
+    static fromJsonError(json: AnyObjectType, filePath: string) {
         const newJson = {
             id: -1,
             metadata: {},
             canvasItems: [],
         };
-        const item = new SlideItem(-1, filePath, newJson,
-            editingHistoryManager);
+        const item = new SlideItem(-1, filePath, newJson);
         item.jsonError = json;
         return item;
     }
