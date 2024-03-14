@@ -14,12 +14,6 @@ import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
 import EditingHistoryManager from '../others/EditingHistoryManager';
-import { useState } from 'react';
-
-export type SlideEditingHistoryType = {
-    items?: SlideItemType[],
-    metadata?: AnyObjectType,
-};
 
 export type SlideType = {
     items: SlideItemType[],
@@ -100,14 +94,11 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         return this._slideJson.items.map((json) => {
             try {
-                return SlideItem.fromJson(
-                    json as any, this.filePath, this.editingHistoryManager,
-                );
+                return SlideItem.fromJson(json as any, this.filePath);
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
-            return SlideItem.fromJsonError(json, this.filePath,
-                this.editingHistoryManager);
+            return SlideItem.fromJsonError(json, this.filePath);
         });
     }
     set items(newItems: SlideItem[]) {
@@ -197,8 +188,7 @@ export default class Slide extends ItemSource<SlideItem>{
             },
             canvasItems: [], // TODO: add default canvas item
         };
-        const newItem = new SlideItem(item.id, this.filePath, json,
-            this.editingHistoryManager);
+        const newItem = new SlideItem(item.id, this.filePath, json);
         this.itemIdShouldToView = newItem.id;
         this.addItem(newItem);
     }
@@ -296,9 +286,9 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         return newScale;
     }
-    static fromJson(filePath: string, json: any) {
+    static fromJson(filePath: string, json: AnyObjectType) {
         this.validate(json);
-        return new Slide(filePath, json);
+        return new Slide(filePath, json as any);
     }
     get isSelected() {
         const selectedFilePath = Slide.getSelectedFilePath();
@@ -373,5 +363,39 @@ export default class Slide extends ItemSource<SlideItem>{
         await fileSource.delete();
         fileSource.fireUpdateEvent();
         fileSource.fireHistoryUpdateEvent();
+    }
+    static getSelectedSlideItemEditingResult() {
+        const selected = SlideItem.getSelectedResult();
+        const selectedFilePath = Slide.getSelectedFilePath();
+        if (selected?.filePath === selectedFilePath) {
+            return selected;
+        }
+        return null;
+    }
+    static async getSelectedSlideItem() {
+        const selected = this.getSelectedSlideItemEditingResult();
+        if (selected !== null) {
+            const slide = await Slide.readFileToData(selected.filePath);
+            return slide?.getItemById(selected.id);
+        }
+        return null;
+    }
+    static async slideItemFromKey(key: string) {
+        const extracted = SlideItem.extractKey(key);
+        if (extracted === null) {
+            return null;
+        }
+        const { filePath, id } = extracted;
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        const slide = await Slide.readFileToData(filePath);
+        if (!slide) {
+            return null;
+        }
+        return slide.getItemById(id);
+    }
+    static slideItemDragDeserialize(data: any) {
+        return this.slideItemFromKey(data);
     }
 }

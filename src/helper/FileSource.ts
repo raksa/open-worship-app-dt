@@ -1,10 +1,10 @@
 import DirSource from './DirSource';
 import {
     checkIsAppFile, extractExtension, fsCheckFileExist, fsCreateFile,
-    fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
+    fsDeleteFile, fsReadFile, fsRenameFileInDir, fsWriteFile, getFileMetaData,
     pathBasename, pathJoin, pathSeparator,
 } from '../server/fileHelper';
-import { AnyObjectType, isValidJson } from './helpers';
+import { AnyObjectType, isValidJsonString } from './helpers';
 import ItemSource from './ItemSource';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
@@ -88,7 +88,7 @@ export default class FileSource extends EventHandler<FSEventType>
     async readFileToJsonData() {
         try {
             const str = await fsReadFile(this.filePath);
-            if (isValidJson(str)) {
+            if (isValidJsonString(str)) {
                 return JSON.parse(str) as AnyObjectType;
             }
         } catch (error: any) {
@@ -166,7 +166,7 @@ export default class FileSource extends EventHandler<FSEventType>
             return false;
         }
         try {
-            await fsRenameFile(this.basePath, this.fileName,
+            await fsRenameFileInDir(this.basePath, this.fileName,
                 newName + this.extension);
             return true;
         } catch (error: any) {

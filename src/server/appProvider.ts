@@ -1,7 +1,10 @@
-import pdfjsLibType from 'pdfjs-dist';
 import http from 'node:http';
 import fs from 'node:fs';
+import fsPromise from 'node:fs/promises';
+import { createInterface } from 'node:readline';
 import path from 'node:path';
+
+import pdfjsLibType from 'pdfjs-dist';
 import tar from 'tar';
 
 export type MessageEventType = {
@@ -22,15 +25,50 @@ export type MessageUtilsType = {
 
 export type FileUtilsType = {
     createWriteStream: typeof fs.createWriteStream,
-    readdir: typeof fs.readdir,
+    createReadStream: typeof fs.createReadStream,
+    createInterface: typeof createInterface,
+
     stat: typeof fs.stat,
+    statSync: typeof fs.statSync,
+    statPromise: typeof fsPromise.stat,
+
+    readdir: typeof fs.readdir,
+    readdirSync: typeof fs.readdirSync,
+    readdirPromise: typeof fsPromise.readdir,
+
     mkdir: typeof fs.mkdir,
-    writeFile: typeof fs.writeFile,
-    rename: typeof fs.rename,
-    unlink: typeof fs.unlink,
+    mkdirSync: typeof fs.mkdirSync,
+    mkdirPromise: typeof fsPromise.mkdir,
+
     rmdir: typeof fs.rmdir,
+    rmdirSync: typeof fs.rmdirSync,
+    rmdirPromise: typeof fsPromise.rmdir,
+
     readFile: typeof fs.readFile,
+    readFileSync: typeof fs.readFileSync,
+    readFilePromise: typeof fsPromise.readFile,
+
+    writeFile: typeof fs.writeFile,
+    writeFileSync: typeof fs.writeFileSync,
+    writeFilePromise: typeof fsPromise.writeFile,
+
+    rename: typeof fs.rename,
+    renameSync: typeof fs.renameSync,
+    renamePromise: typeof fsPromise.rename,
+
+    unlink: typeof fs.unlink,
+    unlinkSync: typeof fs.unlinkSync,
+    unlinkPromise: typeof fsPromise.unlink,
+
+
     copyFile: typeof fs.copyFile,
+    copyFileSync: typeof fs.copyFileSync,
+    copyFilePromise: typeof fsPromise.copyFile,
+
+    appendFile: typeof fs.appendFile,
+    appendFileSync: typeof fs.appendFileSync,
+    appendFilePromise: typeof fsPromise.appendFile,
+
     tarExtract: typeof tar.x,
     watch: typeof fs.watch,
 };

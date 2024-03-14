@@ -56,8 +56,10 @@ export default abstract class ItemSource<T extends {
         return json;
     }
     static validate(json: AnyObjectType) {
-        if (!json.items || !(json.items instanceof Array)
-            || !validateAppMeta(json.metadata)) {
+        if (
+            !json.items || !(json.items instanceof Array) ||
+            !validateAppMeta(json.metadata)
+        ) {
             throw new Error('Invalid item source data');
         }
     }

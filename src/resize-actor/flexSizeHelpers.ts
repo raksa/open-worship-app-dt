@@ -1,5 +1,5 @@
 import { handleError } from '../helper/errorHelpers';
-import { isValidJson } from '../helper/helpers';
+import { isValidJsonString } from '../helper/helpers';
 import { setSetting, getSetting } from '../helper/settingHelper';
 import { FlexSizeType } from './ResizeActor';
 
@@ -86,7 +86,7 @@ export function getFlexSizeSetting(
     const settingString = toSettingString(fSizeName);
     const str = getSetting(settingString, '');
     try {
-        if (!isValidJson(str, true)) {
+        if (!isValidJsonString(str, true)) {
             return defaultSize;
         }
         const size = JSON.parse(str);

@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { appendFile, rename, unlink } from 'node:fs/promises';
-import { createReadStream } from 'node:fs';
-import { createInterface } from 'node:readline';
 
 import { handleError } from '../helper/errorHelpers';
 import EventHandler, { RegisteredEventType } from '../event/EventHandler';
-import { fsCheckFileExist } from '../server/fileHelper';
+import { fsCheckFileExist, fsWriteFile } from '../server/fileHelper';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import appProvider from '../server/appProvider';
 
+
+const fileUtils = appProvider.fileUtils;
+(window as any).fileUtils = fileUtils;
 
 class FileLineHandler {
     readonly CURRENT_VIEW = '|***->';
@@ -15,13 +16,19 @@ class FileLineHandler {
     constructor(filePath: string) {
         this.historyFilePath = `${filePath}.swap`;
     }
+    addSign(line: string) {
+        return `${this.CURRENT_VIEW}${line}`;
+    }
+    removeSign(line: string) {
+        return line.split(this.CURRENT_VIEW)[1];
+    }
     async *processLineByLine() {
         const isFileExist = await fsCheckFileExist(this.historyFilePath);
         if (!isFileExist) {
             return;
         }
-        const fileStream = createReadStream(this.historyFilePath);
-        const rl = createInterface({
+        const fileStream = fileUtils.createReadStream(this.historyFilePath);
+        const rl = fileUtils.createInterface({
             input: fileStream,
             crlfDelay: Infinity,
         });
@@ -29,8 +36,8 @@ class FileLineHandler {
         // ('\r\n') in filePath as a single line break.
         let lineNumber = 1;
         for await (const line of rl) {
-            lineNumber++;
             yield [lineNumber, line] as [number, string];
+            lineNumber++;
         }
     }
     async getLine(lineNumber: number) {
@@ -42,15 +49,15 @@ class FileLineHandler {
         return null;
     }
     async remapLines(taken: (_: [number, string]) => (string | null)) {
-        const tempFilePath = `${this.historyFilePath}.tmp`;
+        const tempFilePath = `${this.historyFilePath}.tmp-${Date.now()}`;
         for await (const foundLine of this.processLineByLine()) {
             const newLIne = taken(foundLine);
             if (newLIne !== null) {
-                this.appendLine(newLIne);
+                await this.appendLine(tempFilePath, newLIne);
             }
         }
-        await unlink(this.historyFilePath);
-        await rename(tempFilePath, this.historyFilePath);
+        await fileUtils.unlinkPromise(this.historyFilePath);
+        await fileUtils.renamePromise(tempFilePath, this.historyFilePath);
     }
     removeLines(from: number, to: number = Infinity) {
         if (to < from) {
@@ -63,7 +70,7 @@ class FileLineHandler {
             return null;
         });
     }
-    async replaceLine(lineNumber: number, newLine: string) {
+    replaceLine(lineNumber: number, newLine: string) {
         return this.remapLines(([lineNumber1, line]) => {
             return lineNumber === lineNumber1 ? newLine : line;
         });
@@ -75,9 +82,10 @@ class FileLineHandler {
         }
         return lastLineNumber;
     }
-    async appendLine(line: string) {
+    async appendLine(filePath: string, line: string) {
         try {
-            await appendFile(this.historyFilePath, line);
+            await fsWriteFile(filePath, '');
+            await fileUtils.appendFilePromise(filePath, line);
             return await this.getLastLineNumber();
         } catch (error) {
             handleError(error);
@@ -96,12 +104,12 @@ class FileLineHandler {
         const currentView = await this.getCurrentViewLine();
         if (currentView !== null) {
             await this.replaceLine(
-                currentView[0], currentView[1].split(this.CURRENT_VIEW)[1],
+                currentView[0], this.removeSign(currentView[1]),
             );
         }
         const line = await this.getLine(lineNumber);
         if (line !== null) {
-            await this.replaceLine(lineNumber, `${this.CURRENT_VIEW}${line}`);
+            await this.replaceLine(lineNumber, this.addSign(line));
         }
     }
     async appendCurrentViewLine(line: string) {
@@ -109,12 +117,12 @@ class FileLineHandler {
         if (currentView !== null) {
             await this.removeLines(currentView[0] + 1);
         }
-        await this.appendLine(line);
+        await this.appendLine(this.historyFilePath, line);
         const lastLineNumber = await this.getLastLineNumber();
         await this.setCurrentViewLine(lastLineNumber);
     }
     removeHistoryFile() {
-        return unlink(this.historyFilePath);
+        return fileUtils.unlinkPromise(this.historyFilePath);
     }
 }
 
@@ -204,7 +212,12 @@ export default class EditingHistoryManager {
         if (currentView === null) {
             return null;
         }
-        return currentView[1];
+        const jsonString = this.fileLineHandler.removeSign(currentView[1]);
+        try {
+            return JSON.parse(jsonString);
+        } catch (error) {
+            handleError(error);
+        }
     }
     async discard() {
         try {

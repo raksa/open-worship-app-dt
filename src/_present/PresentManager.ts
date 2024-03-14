@@ -1,6 +1,6 @@
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { getWindowDim, isValidJson } from '../helper/helpers';
+import { getWindowDim, isValidJsonString } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -265,7 +265,7 @@ export default class PresentManager
     }
     static getPresentManagersSetting() {
         const str = getSetting(`${settingName}instances`, '');
-        if (isValidJson(str, true)) {
+        if (isValidJsonString(str, true)) {
             const json = JSON.parse(str);
             if (json.length === 0) {
                 this.createInstance(0);

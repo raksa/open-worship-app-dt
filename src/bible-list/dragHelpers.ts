@@ -23,7 +23,7 @@ async function deserializeDragData({
 }: DragDataType<any>): Promise<DroppedDataType | null> {
     let item: any = null;
     if (type === DragTypeEnum.SLIDE_ITEM) {
-        item = await SlideItem.dragDeserialize(data);
+        item = await SlideItem.slideItemDragDeserialize(data);
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);
     } else if ([

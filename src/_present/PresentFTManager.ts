@@ -6,7 +6,7 @@ import {
     DroppedDataType, DragTypeEnum,
 } from '../helper/DragInf';
 import {
-    AnyObjectType, isValidJson,
+    AnyObjectType, isValidJsonString,
 } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import Lyric from '../lyric-list/Lyric';
@@ -44,7 +44,7 @@ export default class PresentFTManager
 
             const str = getSetting(`${PRESENT_SETTING_NAME}-style-text`, '');
             try {
-                if (isValidJson(str, true)) {
+                if (isValidJsonString(str, true)) {
                     const style = JSON.parse(str);
                     if (typeof style !== 'object') {
                         loggerHelpers.error(style);

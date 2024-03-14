@@ -156,12 +156,14 @@ export function toMaxId(ids: number[]) {
     return Math.max(...ids);
 }
 
-export function isValidJson(json: any, isSilent: boolean = false) {
+export function isValidJsonString(
+    jsonString: string, isSilent: boolean = false,
+) {
     try {
-        return JSON.parse(json);
+        return JSON.parse(jsonString);
     } catch (error) {
-        if (!isSilent && json === '') {
-            trace('Invalid Json:', json);
+        if (!isSilent && jsonString === '') {
+            trace('Invalid Json:', jsonString);
         }
         return false;
     }

@@ -15,6 +15,7 @@ import { showBibleOption } from '../bible-search/BibleSelection';
 import {
     genFoundBibleItemContextMenu,
 } from '../bible-search/RenderActionButtons';
+import { AnyObjectType } from '../helper/helpers';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -22,14 +23,16 @@ export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 export type NestedBibleItemsType = BibleItem | NestedBibleItemsType[];
 export type NestedObjectsType = BibleItemType | NestedObjectsType[];
 
-function parseNestedBibleItem(json: any): NestedBibleItemsType {
+function parseNestedBibleItem(
+    json: AnyObjectType | AnyObjectType[],
+): NestedBibleItemsType {
     if (json instanceof Array) {
-        const nestedBibleItems: NestedBibleItemsType = json.map((item: any) => {
+        const nestedBibleItems: NestedBibleItemsType = json.map((item) => {
             return parseNestedBibleItem(item);
         });
         return nestedBibleItems;
     }
-    return BibleItem.fromJson(json);
+    return BibleItem.fromJson(json as any);
 }
 
 function sanitizeNestedItems(nestedBibleItems: NestedBibleItemsType) {

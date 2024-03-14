@@ -3,9 +3,7 @@ import { MimetypeNameType } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import LyricEditingHistoryManager from './LyricEditingHistoryManager';
 import LyricItem, { LyricItemType } from './LyricItem';
-import { showSimpleToast } from '../toast/toastHelpers';
 
 export type LyricEditingHistoryType = {
     items?: LyricItemType[],
@@ -20,37 +18,22 @@ export default class Lyric extends ItemSource<LyricItem>{
     static readonly mimetype: MimetypeNameType = 'lyric';
     static readonly SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
-    editingHistoryManager: LyricEditingHistoryManager;
+    private _json: LyricType;
     constructor(filePath: string, json: LyricType) {
         super(filePath);
-        this.editingHistoryManager = new LyricEditingHistoryManager(
-            this.filePath, json,
-        );
+        this._json = json;
     }
     get isChanged() {
-        return this.editingHistoryManager.isChanged;
+        return false;
     }
     get metadata() {
-        return this.editingHistoryManager.presentJson.metadata;
+        return {};
     }
     get items() {
-        const latestHistory = this.editingHistoryManager.presentJson;
-        return latestHistory.items.map((json) => {
-            try {
-                return LyricItem.fromJson(
-                    json as any, this.filePath, this.editingHistoryManager,
-                );
-            } catch (error: any) {
-                showSimpleToast('Instantiating Bible Item', error.message);
-            }
-            return LyricItem.fromJsonError(
-                json, this.filePath, this.editingHistoryManager,
-            );
-        });
+        return [];
     }
     set items(newItems: LyricItem[]) {
         const lyricItems = newItems.map((item) => item.toJson());
-        this.editingHistoryManager.pushLyricItems(lyricItems);
     }
     get maxItemId() {
         if (this.items.length) {
@@ -76,9 +59,9 @@ export default class Lyric extends ItemSource<LyricItem>{
         }
         FileSource.getInstance(this.filePath).fireSelectEvent();
     }
-    static fromJson(filePath: string, json: any) {
+    static fromJson(filePath: string, json: AnyObjectType) {
         this.validate(json);
-        return new Lyric(filePath, json);
+        return new Lyric(filePath, json as any);
     }
     static async readFileToDataNoCache(filePath: string | null) {
         return super.readFileToDataNoCache(
@@ -129,7 +112,6 @@ export default class Lyric extends ItemSource<LyricItem>{
         const isSuccess = await super.save();
         if (isSuccess) {
             LyricItem.clearCache();
-            this.editingHistoryManager.save();
         }
         return isSuccess;
     }

@@ -1,5 +1,5 @@
 import BibleItem from '../bible-list/BibleItem';
-import { isValidJson } from '../helper/helpers';
+import { isValidJsonString } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -75,7 +75,7 @@ export function getFTList(): FTListType {
     const settingName = `${PRESENT_SETTING_NAME}-ft-data`;
     const str = getSetting(settingName, '');
     try {
-        if (!isValidJson(str, true)) {
+        if (!isValidJsonString(str, true)) {
             return {};
         }
         const json = JSON.parse(str);

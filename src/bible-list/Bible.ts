@@ -28,9 +28,9 @@ export default class Bible extends ItemSource<BibleItem>{
         const prefixSetting = getSettingPrefix(windowMode);
         return `${prefixSetting}${SELECT_DIR_SETTING}`;
     }
-    static fromJson(filePath: string, json: any) {
+    static fromJson(filePath: string, json: AnyObjectType) {
         this.validate(json);
-        return new Bible(filePath, json);
+        return new Bible(filePath, json as any);
     }
     get metadata() {
         return this._originalJson.metadata;

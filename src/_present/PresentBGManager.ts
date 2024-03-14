@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
-    getImageDim, getVideoDim, isValidJson,
+    getImageDim, getVideoDim, isValidJsonString,
 } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import appProviderPresent from './appProviderPresent';
@@ -105,7 +105,7 @@ export default class PresentBGManager
     }
     static getBGSrcList(): BGSrcListType {
         const str = getSetting(settingName, '');
-        if (isValidJson(str, true)) {
+        if (isValidJsonString(str, true)) {
             const json = JSON.parse(str);
             const items = Object.values(json);
             if (items.every((item: any) => {

@@ -1,18 +1,19 @@
 import { AnyObjectType, getImageDim } from '../../helper/helpers';
 import FileSource from '../../helper/FileSource';
 import {
-    CanvasItemMediaPropsType,
-    genTextDefaultBoxStyle,
-    validateMediaProps,
+    CanvasItemMediaPropsType, genTextDefaultBoxStyle, validateMediaProps,
 } from './canvasHelpers';
 import CanvasItem, {
-    CanvasItemError,
-    CanvasItemPropsType,
+    CanvasItemError, CanvasItemPropsType,
 } from './CanvasItem';
 import { handleError } from '../../helper/errorHelpers';
 
-export type CanvasItemImagePropsType = CanvasItemPropsType & CanvasItemMediaPropsType;
-export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
+export type CanvasItemImagePropsType = (
+    CanvasItemPropsType & CanvasItemMediaPropsType
+);
+
+export default class CanvasItemImage extends
+    CanvasItem<CanvasItemImagePropsType> {
     static gegStyle(_props: CanvasItemImagePropsType) {
         return {};
     }

@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { isValidJson } from '../helper/helpers';
+import { isValidJsonString } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { PdfImageDataType } from '../pdf/PdfController';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
@@ -103,7 +103,7 @@ export default class PresentSlideManager extends
     static getSlideList(): SlideListType {
         const str = getSetting(settingName, '');
         try {
-            if (!isValidJson(str, true)) {
+            if (!isValidJsonString(str, true)) {
                 return {};
             }
             const json = JSON.parse(str);

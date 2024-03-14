@@ -9,6 +9,7 @@ import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import EditingHistoryManager from '../others/EditingHistoryManager';
 
 export type SlideItemType = {
     id: number,
@@ -36,6 +37,9 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         this.isCopied = false;
         SlideItem._cache.set(this.key, this);
     }
+    get editingHistoryManager() {
+        return new EditingHistoryManager(this.filePath);
+    }
     get key() {
         return SlideItem.genKeyByFileSource(this.filePath, this.id);
     }
@@ -50,14 +54,16 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
     set originalJson(json: SlideItemType) {
         this._json = json;
-        const items = this.editingHistoryManager.presentJson.items;
-        const newItems = items.map((item) => {
-            if (item.id === this.id) {
-                return this.toJson();
+        const editingHistoryManager = this.editingHistoryManager;
+        editingHistoryManager.getLastedHistory().then((
+            jsonStr: string | null,
+        ) => {
+            if (jsonStr !== null) {
+                const json = JSON.parse(jsonStr);
+                json.items[this.id] = json;
+                editingHistoryManager.addHistory(JSON.stringify(json));
             }
-            return item;
         });
-        this.editingHistoryManager.pushSlideItems(newItems);
     }
     get metadata() {
         return this.originalJson.metadata;
@@ -129,25 +135,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         }
         FileSource.getInstance(this.filePath).fireSelectEvent();
     }
-    get isChanged() {
-        return this.editingHistoryManager.checkIsSlideItemChanged(this.id);
-    }
-    static getSelectedEditingResult() {
-        const selected = this.getSelectedResult();
-        const selectedFilePath = Slide.getSelectedFilePath();
-        if (selected?.filePath === selectedFilePath) {
-            return selected;
-        }
-        return null;
-    }
-    static async getSelectedItem() {
-        const selected = this.getSelectedEditingResult();
-        if (selected !== null) {
-            const slide = await Slide.readFileToData(selected.filePath);
-            return slide?.getItemById(selected.id);
-        }
-        return null;
-    }
     static defaultSlideItemData(id: number) {
         const { width, height } = Canvas.getDefaultDim();
         return {
@@ -184,6 +171,13 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             metadata: this.metadata,
         };
     }
+    clone(isDuplicateId?: boolean) {
+        const slideItem = SlideItem.fromJson(this.toJson(), this.filePath);
+        if (!isDuplicateId) {
+            slideItem.id = -1;
+        }
+        return slideItem;
+    }
     static validate(json: AnyObjectType) {
         if (typeof json.id !== 'number' ||
             typeof json.metadata !== 'object' ||
@@ -193,28 +187,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             log(json);
             throw new Error('Invalid slide item data');
         }
-    }
-    clone(isDuplicateId?: boolean) {
-        const slideItem = SlideItem.fromJson(this.toJson(), this.filePath);
-        if (!isDuplicateId) {
-            slideItem.id = -1;
-        }
-        return slideItem;
-    }
-    static async fromKey(key: string) {
-        const extracted = this.extractKey(key);
-        if (extracted === null) {
-            return null;
-        }
-        const { filePath, id } = extracted;
-        if (filePath === undefined || id === undefined) {
-            return null;
-        }
-        const slide = await Slide.readFileToData(filePath);
-        if (!slide) {
-            return null;
-        }
-        return slide.getItemById(id);
     }
     static genKeyByFileSource(filePath: string, id: number) {
         return `${filePath}:${id}`;
@@ -241,8 +213,5 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             type: DragTypeEnum.SLIDE_ITEM,
             data: this.key,
         };
-    }
-    static dragDeserialize(data: any) {
-        return this.fromKey(data);
     }
 }

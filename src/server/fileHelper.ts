@@ -330,8 +330,9 @@ export async function fsWriteFile(filePath: string, txt: string) {
     });
     return filePath;
 }
-export async function fsCreateFile(filePath: string,
-    txt: string, isOverride?: boolean) {
+export async function fsCreateFile(
+    filePath: string, txt: string, isOverride?: boolean,
+) {
     if (await fsCheckDirExist(filePath)) {
         throw new Error(`${filePath} is not a directory`);
     }
@@ -345,8 +346,9 @@ export async function fsCreateFile(filePath: string,
     await _fsWriteFile(filePath, txt);
     return filePath;
 }
-export async function fsRenameFile(basePath: string,
-    oldFileName: string, newFileName: string) {
+export async function fsRenameFileInDir(
+    basePath: string, oldFileName: string, newFileName: string,
+) {
     const oldFilePath = pathJoin(basePath, oldFileName);
     const newFilePath = pathJoin(basePath, newFileName);
     if (!await fsCheckFileExist(oldFilePath)) {

@@ -1,6 +1,6 @@
 import { MimetypeNameType } from '../server/fileHelper';
 import {
-    AnyObjectType, cloneJson, isValidJson,
+    AnyObjectType, cloneJson, isValidJsonString,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
@@ -54,7 +54,7 @@ export default class Playlist extends ItemSource<PlaylistItem>{
     }
     addFromData(str: string) {
         try {
-            if (isValidJson(str)) {
+            if (isValidJsonString(str)) {
                 const json = JSON.parse(str);
                 const item = PlaylistItem.fromJson(this.filePath, json);
                 this._originalJson.items.push(item.toJson());

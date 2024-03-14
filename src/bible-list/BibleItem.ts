@@ -1,5 +1,5 @@
 import {
-    AnyObjectType, cloneJson, isValidJson,
+    AnyObjectType, cloneJson, isValidJsonString,
 } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
 import {
@@ -158,7 +158,7 @@ export default class BibleItem extends ItemBase
     static getBiblePresentingSetting() {
         try {
             const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
-            if (isValidJson(str, true)) {
+            if (isValidJsonString(str, true)) {
                 return JSON.parse(str).map((item: any) => {
                     return BibleItem.fromJson(item);
                 }) as BibleItem[];

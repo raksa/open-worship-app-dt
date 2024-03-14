@@ -58,18 +58,19 @@ export default class Canvas {
         metadata: AnyObjectType,
         canvasItems: AnyObjectType[],
     }) {
-        const canvasItems = canvasItemsJson.map((json: any) => {
-            switch (json.type) {
+        const canvasItems = canvasItemsJson.map((json: AnyObjectType) => {
+            const anyJson = json as any;
+            switch (anyJson.type) {
                 case 'image':
-                    return CanvasItemImage.fromJson(json);
+                    return CanvasItemImage.fromJson(anyJson);
                 case 'video':
-                    return CanvasItemVideo.fromJson(json);
+                    return CanvasItemVideo.fromJson(anyJson);
                 case 'text':
-                    return CanvasItemText.fromJson(json);
+                    return CanvasItemText.fromJson(anyJson);
                 case 'bible':
-                    return CanvasItemBibleItem.fromJson(json);
+                    return CanvasItemBibleItem.fromJson(anyJson);
                 default:
-                    return CanvasItemError.fromJsonError(json);
+                    return CanvasItemError.fromJsonError(anyJson);
             }
         }).filter((item) => item !== null) as CanvasItem<any>[];
         return new Canvas({
