@@ -47,9 +47,12 @@ export default function SlideList() {
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return filePaths.map((filePath, i) => {
             const fileSource = FileSource.getInstance(filePath);
-            return <SlideFile key={fileSource.fileName}
-                index={i}
-                filePath={filePath} />;
+            return (
+                <SlideFile key={fileSource.fileName}
+                    index={i}
+                    filePath={filePath}
+                />
+            );
         });
     }, []);
     if (dirSource === null) {

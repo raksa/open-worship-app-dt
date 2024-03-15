@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { handleError } from '../helper/errorHelpers';
 import EventHandler, { RegisteredEventType } from '../event/EventHandler';
-import { fsCheckFileExist, fsWriteFile } from '../server/fileHelper';
+import { fsCheckFileExist } from '../server/fileHelper';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import appProvider from '../server/appProvider';
 
@@ -36,8 +36,10 @@ class FileLineHandler {
         // ('\r\n') in filePath as a single line break.
         let lineNumber = 1;
         for await (const line of rl) {
-            yield [lineNumber, line] as [number, string];
-            lineNumber++;
+            if (line) {
+                yield [lineNumber, line] as [number, string];
+                lineNumber++;
+            }
         }
     }
     async getLine(lineNumber: number) {
@@ -84,8 +86,7 @@ class FileLineHandler {
     }
     async appendLine(filePath: string, line: string) {
         try {
-            await fsWriteFile(filePath, '');
-            await fileUtils.appendFilePromise(filePath, line);
+            await fileUtils.appendFilePromise(filePath, line + '\n');
             return await this.getLastLineNumber();
         } catch (error) {
             handleError(error);
@@ -155,19 +156,12 @@ export default class EditingHistoryManager {
         this.eventHandler.unregisterEventListener(registeredEvents);
     }
 
-    async checkIsChanged() {
-        const currentView = await this.fileLineHandler.getCurrentViewLine();
-        if (currentView === null) {
-            return false;
-        }
-        return currentView[0] > 0;
-    }
     async checkCanUndo() {
         const currentView = await this.fileLineHandler.getCurrentViewLine();
         if (currentView === null) {
             return false;
         }
-        return currentView[0] > 1;
+        return currentView[0] > 0;
     }
     async checkCanRedo() {
         const currentView = await this.fileLineHandler.getCurrentViewLine();
@@ -175,7 +169,7 @@ export default class EditingHistoryManager {
         if (currentView === null) {
             return false;
         }
-        return currentView[0] === lastLineNumber;
+        return currentView[0] < lastLineNumber;
     }
     async undo() {
         const canUndo = await this.checkCanUndo();
@@ -236,13 +230,14 @@ export function useEditingHistoryStatus(filePath: string) {
     useAppEffect(() => {
         const update = async () => {
             const editingHistoryManager = new EditingHistoryManager(filePath);
-            const canUndo = await editingHistoryManager.checkCanRedo();
+            const canUndo = await editingHistoryManager.checkCanUndo();
             const canRedo = await editingHistoryManager.checkCanRedo();
             setStatus([canUndo, canRedo]);
         };
         const registeredEvents = EditingHistoryManager.registerEventListener(
             filePath, update,
         );
+        update();
         return () => {
             EditingHistoryManager.unregisterEventListener(registeredEvents);
         };
