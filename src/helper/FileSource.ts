@@ -111,10 +111,6 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
-    async saveDataFromItem(item: ItemSource<any>) {
-        const content = JSON.stringify(item.toJson());
-        return this.saveData(content);
-    }
     async delete() {
         try {
             await fsDeleteFile(this.filePath);

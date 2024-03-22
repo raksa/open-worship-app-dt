@@ -24,31 +24,23 @@ export default class Slide extends ItemSource<SlideItem>{
     static readonly mimetype: MimetypeNameType = 'slide';
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
-    _pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
-    private _slideJson: SlideType;
-    constructor(filePath: string, slideJson: SlideType) {
+    constructor(filePath: string) {
         super(filePath);
-        this._slideJson = slideJson;
     }
     get editingHistoryManager() {
         return new EditingHistoryManager(this.filePath);
     }
     get isPdf() {
-        return this._pdfImageDataList !== null;
+        // TODO: check is PDF by ext
+        return false;
     }
-    get copiedItem() {
-        return this.items.find((item) => {
-            return item.isCopied;
-        }) || null;
-    }
-    set copiedItem(newItem: SlideItem | null) {
-        this.items.forEach((item) => {
-            item.isCopied = false;
-        });
-        if (newItem !== null) {
-            newItem.isCopied = true;
-        }
+    async getJson(): Promise<SlideType> {
+        // this.validate(json);
+        return {
+            items: [],
+            metadata: {},
+        };
     }
     get selectedIndex() {
         const foundItem = this.items.find((item) => {
@@ -67,19 +59,23 @@ export default class Slide extends ItemSource<SlideItem>{
             this.items[newIndex].isSelected = true;
         }
     }
-    get metadata() {
+    async getMetadata() {
         if (this.isPdf) {
             return {};
         }
-        return this._slideJson.metadata;
+        const slideJson = await this.getJson();
+        return slideJson.metadata;
     }
-    set metadata(metadata: AnyObjectType) {
-        this._slideJson.metadata = metadata;
-        this.addHistory();
+    async setMetadata(metadata: AnyObjectType) {
+        const slideJson = await this.getJson();
+        slideJson.metadata = metadata;
+        this.save(slideJson);
     }
-    get items() {
+    async getItems() {
         if (this.isPdf) {
-            return (this._pdfImageDataList || []).map((pdfImageData, i) => {
+            const pdfImageDataList: PdfImageDataType[] = [];
+            // TODO: get pdf items
+            return pdfImageDataList.map((pdfImageData, i) => {
                 const slideItem = new SlideItem(i, this.filePath, {
                     id: i,
                     canvasItems: [],
@@ -122,14 +118,6 @@ export default class Slide extends ItemSource<SlideItem>{
     }
     getItemByIndex(index: number) {
         return this.items[index] || null;
-    }
-    async save(): Promise<boolean> {
-        const isSuccess = await super.save();
-        if (isSuccess) {
-            SlideItem.clearCache();
-            this.editingHistoryManager.discard();
-        }
-        return isSuccess;
     }
     duplicateItem(slideItem: SlideItem) {
         const items = this.items;
@@ -286,9 +274,8 @@ export default class Slide extends ItemSource<SlideItem>{
         }
         return newScale;
     }
-    static fromJson(filePath: string, json: AnyObjectType) {
-        this.validate(json);
-        return new Slide(filePath, json as any);
+    static fromJson(filePath: string) {
+        return new Slide(filePath);
     }
     get isSelected() {
         const selectedFilePath = Slide.getSelectedFilePath();

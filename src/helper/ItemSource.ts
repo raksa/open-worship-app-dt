@@ -85,9 +85,9 @@ export default abstract class ItemSource<T extends {
         return selectedFilePath || null;
     }
     abstract clone(): ItemSource<T>;
-    async save(): Promise<boolean> {
+    async save(json: AnyObjectType): Promise<boolean> {
         const fileSource = FileSource.getInstance(this.filePath);
-        const isSuccess = await fileSource.saveDataFromItem(this);
+        const isSuccess = await fileSource.saveData(JSON.stringify(json));
         if (isSuccess) {
             ItemSource._cache.set(this.filePath, this);
         }
