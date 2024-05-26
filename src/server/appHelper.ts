@@ -1,6 +1,6 @@
 import appProvider, { FontListType } from './appProvider';
 import {
-    defaultLocal, getCurrentLangAsync, getLangAsync,
+    defaultLocale, getCurrentLangAsync, getLangAsync,
 } from '../lang';
 import initCrypto from '../_owa-crypto';
 import {
@@ -71,7 +71,7 @@ export async function initApp() {
     const promises = [
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
-        getLangAsync(defaultLocal),
+        getLangAsync(defaultLocale),
     ];
     for (const bibleInfo of downloadedBibleInfoList || []) {
         promises.push(getLangAsync(bibleInfo.locale));

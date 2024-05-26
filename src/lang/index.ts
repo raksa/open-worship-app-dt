@@ -22,8 +22,8 @@ export type LanguageType = {
 
 const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
 
-export const defaultLocal: LocaleType = 'en';
-let currentLocale: LocaleType = defaultLocal;
+export const defaultLocale: LocaleType = 'en';
+let currentLocale: LocaleType = defaultLocale;
 export function setCurrentLocale(locale: LocaleType) {
     setSetting(LANGUAGE_LOCALE_SETTING_NAME, locale);
     currentLocale = locale;
