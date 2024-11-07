@@ -1,35 +1,30 @@
 import { setSetting, getSetting } from '../helper/settingHelper';
 import ColorNoteInf from './ColorNoteInf';
-import { AnyObjectType, cloneJson } from './helpers';
+import { AnyObjectType } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
-    abstract filePath?: string | null;
-    protected static SELECT_SETTING_NAME = '';
-    protected static copiedItem: ItemBase | null = null;
-    jsonError: any;
+    abstract filePath: string;
+    protected static SELECT_SETTING_NAME: string;
+    protected static copiedKey: string | null;
+    _isError: boolean = false;
     get isError() {
-        return !!this.jsonError;
+        return !!this._isError;
     }
-    abstract get metadata(): AnyObjectType;
-    abstract set metadata(metadata: AnyObjectType);
+    set isError(isError: boolean) {
+        this._isError = isError;
+    }
+    abstract getMetadata(): Promise<AnyObjectType>;
+    abstract setMetadata(metadata: AnyObjectType): Promise<void>;
     async getColorNote() {
-        if (this.metadata?.['colorNote']) {
-            return this.metadata['colorNote'];
-        }
-        return null;
+        const metadata = await this.getMetadata();
+        return metadata['colorNote'] || null;
     }
-    async setColorNote(c: string | null) {
-        const metadata = cloneJson(this.metadata);
-        metadata['colorNote'] = c;
-        this.metadata = metadata;
+    async setColorNote(color: string | null) {
+        const metadata = await this.getMetadata();
+        metadata['colorNote'] = color;
+        // TODO: implement this
         this.save();
-    }
-    get isSelectedEditing() {
-        throw new Error('Method not implemented.');
-    }
-    set isSelectedEditing(_b: boolean) {
-        throw new Error('Method not implemented.');
     }
     async save(_?: any): Promise<boolean> {
         throw new Error('Method not implemented.');
@@ -38,10 +33,7 @@ export abstract class ItemBase implements ColorNoteInf {
     toJson() {
         throw new Error('Method not implemented.');
     }
-    static fromJson(_json: AnyObjectType, _filePath?: string): any {
-        throw new Error('Method not implemented.');
-    }
-    static fromJsonError(_json: AnyObjectType, _filePath?: string): any {
+    static fromJson(_filePath?: string): any {
         throw new Error('Method not implemented.');
     }
     static validate(_json: AnyObjectType) {
@@ -85,6 +77,12 @@ export abstract class ItemBase implements ColorNoteInf {
             return true;
         }
         return false;
+    }
+    get isSelectedEditing() {
+        throw new Error('Method not implemented.');
+    }
+    set isSelectedEditing(_b: boolean) {
+        throw new Error('Method not implemented.');
     }
     static _getSettingResult(settingName: string) {
         const selectedStr = getSetting(settingName, '');

@@ -1,6 +1,6 @@
 import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
-import LyricEditingHistoryManager from './LyricEditingHistoryManager';
+import LyricEditingHistoryManager from './Lyr';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import * as loggerHelpers from '../helper/loggerHelpers';
 

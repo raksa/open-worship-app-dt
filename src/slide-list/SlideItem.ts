@@ -9,7 +9,6 @@ import { DisplayType } from '../_present/presentHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
-import EditingHistoryManager from '../others/EditingHistoryManager';
 
 export type SlideItemType = {
     id: number,
@@ -24,92 +23,73 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     filePath: string;
     presentType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     static copiedSlideItemKey: string | null = null;
-    constructor(
-        id: number, filePath: string,
-    ) {
+    constructor(id: number, filePath: string) {
         super();
         this.id = id;
         this.filePath = filePath;
     }
-    get editingHistoryManager() {
-        return new EditingHistoryManager(this.filePath);
+    static filePathToKey(filePath: string, id: number) {
+        return `${filePath}:${id}`;
     }
     get key() {
-        return SlideItem.genKeyByFileSource(this.filePath, this.id);
+        return SlideItem.filePathToKey(this.filePath, this.id);
     }
-    get pdfImageData() {
-        return this.originalJson.pdfImageData || null;
+    static extractKey(key: string) {
+        const [filePath, id] = key.split(':');
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        return { filePath, id: parseInt(id) };
     }
-    get isPdf() {
-        return this.pdfImageData !== null;
+    async getJsonData() {
+        // TODO: implement this
+        return {
+            id: this.id,
+            canvasItems: [],
+            pdfImageData: { src: '', width: 0, height: 0 },
+            metadata: {},
+        };
     }
-    get originalJson() {
-        return this._json;
+    async setJsonData(json: SlideItemType) {
+        // TODO: implement this
     }
-    set originalJson(json: SlideItemType) {
-        this._json = json;
-        const editingHistoryManager = this.editingHistoryManager;
-        editingHistoryManager.getLastedHistory().then((
-            jsonStr: string | null,
-        ) => {
-            if (jsonStr !== null) {
-                const json = JSON.parse(jsonStr);
-                json.items[this.id] = json;
-                editingHistoryManager.addHistory(JSON.stringify(json));
-            }
-        });
+    async getPdfImageData() {
+        return (await this.getJsonData()).pdfImageData || null;
     }
-    get metadata() {
-        return this.originalJson.metadata;
+    async checkIsPdf() {
+        return await this.getPdfImageData() !== null;
     }
-    set metadata(metadata: AnyObjectType) {
-        const json = cloneJson(this.originalJson);
-        json.metadata = metadata;
-        this.originalJson = json;
+    async getMetadata() {
+        return (await this.getJsonData()).metadata;
     }
-    get pdfImageSrc() {
-        return this.pdfImageData?.src || '';
+    async getPdfImageSrc() {
+        return (await this.getPdfImageData())?.src || '';
     }
-    get canvas() {
+    async getCanvas() {
         return Canvas.fromJson({
-            metadata: this.metadata,
-            canvasItems: this.canvasItemsJson,
+            metadata: await this.getMetadata(),
+            canvasItems: await this.getCanvasItemsJson(),
         });
     }
-    set canvas(canvas: Canvas) {
-        this.canvasItemsJson = canvas.canvasItems.map((item) => {
-            return item.toJson();
-        });
+    async getCanvasItemsJson() {
+        return (await this.getJsonData()).canvasItems;
     }
-    get canvasItemsJson() {
-        return this.originalJson.canvasItems;
-    }
-    set canvasItemsJson(canvasItemsJson: CanvasItemPropsType[]) {
-        const json = cloneJson(this.originalJson);
+    async setCanvasItemsJson(canvasItemsJson: CanvasItemPropsType[]) {
+        const json = cloneJson(await this.getJsonData()) as any;
         json.canvasItems = canvasItemsJson;
-        this.originalJson = json;
+        // TODO: implement this
     }
-    get width() {
-        if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.width || 0);
+    async getWidth() {
+        if (await this.checkIsPdf()) {
+            return Math.floor((await this.getPdfImageData())?.width || 0);
         }
-        return this.metadata.width;
+        return (await this.getMetadata()).width;
     }
-    set width(width: number) {
-        const metadata = this.metadata;
-        metadata.width = width;
-        this.metadata = metadata;
-    }
-    get height() {
-        if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.height || 0);
+    async getHeight() {
+        if (await this.checkIsPdf()) {
+            return Math.floor((await this.getPdfImageData())?.height || 0);
         }
-        return this.metadata.height;
-    }
-    set height(height: number) {
-        const metadata = this.metadata;
-        metadata.height = height;
-        this.metadata = metadata;
+        return (await this.getMetadata()).height;
     }
     get isSelected() {
         const selected = SlideItem.getSelectedResult();
@@ -140,38 +120,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             canvasItems: [],
         };
     }
-    static fromJson(
-        json: SlideItemType, filePath: string) {
-        return new SlideItem(json.id, filePath, json);
-    }
-    static fromJsonError(json: AnyObjectType, filePath: string) {
-        const newJson = {
-            id: -1,
-            metadata: {},
-            canvasItems: [],
-        };
-        const item = new SlideItem(-1, filePath, newJson);
-        item.jsonError = json;
-        return item;
-    }
-    toJson(): SlideItemType {
-        if (this.isError) {
-            return this.jsonError;
-        }
-        return {
-            id: this.id,
-            canvasItems: this.canvasItemsJson,
-            pdfImageData: this.pdfImageData || undefined,
-            metadata: this.metadata,
-        };
-    }
-    clone(isDuplicateId?: boolean) {
-        const slideItem = SlideItem.fromJson(this.toJson(), this.filePath);
-        if (!isDuplicateId) {
-            slideItem.id = -1;
-        }
-        return slideItem;
-    }
     static validate(json: AnyObjectType) {
         if (typeof json.id !== 'number' ||
             typeof json.metadata !== 'object' ||
@@ -182,25 +130,11 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             throw new Error('Invalid slide item data');
         }
     }
-    static genKeyByFileSource(filePath: string, id: number) {
-        return `${filePath}:${id}`;
-    }
-    static extractKey(key: string) {
-        const [filePath, id] = key.split(':');
-        if (filePath === undefined || id === undefined) {
-            return null;
-        }
-        return {
-            filePath,
-            id: parseInt(id),
-        };
-    }
-    static clearCache() {
-        this._cache = new Map();
-    }
-    checkIsWrongDimension({ bounds }: DisplayType) {
-        return bounds.width !== this.width ||
-            bounds.height !== this.height;
+    async checkIsWrongDimension({ bounds }: DisplayType) {
+        return (
+            bounds.width !== await this.getWidth() ||
+            bounds.height !== await this.getHeight()
+        );
     }
     dragSerialize() {
         return {

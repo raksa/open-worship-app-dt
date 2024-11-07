@@ -36,7 +36,7 @@ export default function BackgroundColors() {
     if (selectedBGSrcList.length) {
         return (
             <>
-                <div title={'Show in presents:'
+                <div title={'Showing in presents:'
                     + selectedBGSrcList.map(([key]) => key).join(',')}>
                     <RenderPresentIds
                         ids={selectedBGSrcList.map(([key]) => +key)} />

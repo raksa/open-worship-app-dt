@@ -11,7 +11,6 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
 import { DisplayType } from '../_present/presentHelpers';
-import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
 import EditingHistoryManager from '../others/EditingHistoryManager';
 
@@ -20,7 +19,7 @@ export type SlideType = {
     metadata: AnyObjectType,
 };
 
-export default class Slide extends ItemSource<SlideItem>{
+export default class Slide extends ItemSource<SlideItem> {
     static readonly mimetype: MimetypeNameType = 'slide';
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
@@ -71,32 +70,6 @@ export default class Slide extends ItemSource<SlideItem>{
         slideJson.metadata = metadata;
         this.save(slideJson);
     }
-    async getItems() {
-        if (this.isPdf) {
-            const pdfImageDataList: PdfImageDataType[] = [];
-            // TODO: get pdf items
-            return pdfImageDataList.map((pdfImageData, i) => {
-                const slideItem = new SlideItem(i, this.filePath, {
-                    id: i,
-                    canvasItems: [],
-                    pdfImageData,
-                    metadata: {
-                        width: pdfImageData.width,
-                        height: pdfImageData.height,
-                    },
-                });
-                return slideItem;
-            });
-        }
-        return this._slideJson.items.map((json) => {
-            try {
-                return SlideItem.fromJson(json as any, this.filePath);
-            } catch (error: any) {
-                showSimpleToast('Instantiating Bible Item', error.message);
-            }
-            return SlideItem.fromJsonError(json, this.filePath);
-        });
-    }
     set items(newItems: SlideItem[]) {
         const slideItems = newItems.map((item) => {
             return item.toJson();
@@ -119,16 +92,16 @@ export default class Slide extends ItemSource<SlideItem>{
     getItemByIndex(index: number) {
         return this.items[index] || null;
     }
-    duplicateItem(slideItem: SlideItem) {
+    duplicateItem(slideItemId: number) {
         const items = this.items;
         const index = items.findIndex((item) => {
-            return item.id === slideItem.id;
+            return item.id === slideItemId;
         });
         if (index === -1) {
             showSimpleToast('Duplicate Item', 'Unable to find item');
             return;
         }
-        const newItem = slideItem.clone();
+        const newItem = items[index].clone();
         if (newItem !== null) {
             newItem.id = this.maxItemId + 1;
             items.splice(index + 1, 0, newItem);
@@ -303,14 +276,10 @@ export default class Slide extends ItemSource<SlideItem>{
             if (fileSource.src && checkIsPdf(fileSource.extension)) {
                 return readPdfToSlide(filePath);
             }
-            const editingHistoryManager = new EditingHistoryManager(filePath);
-            const slideJson = await editingHistoryManager.getLastedHistory();
-            if (slideJson !== null) {
-                try {
-                    return this.fromJson(filePath, slideJson);
-                } catch (error: any) {
-                    showSimpleToast('Instantiating Data', error.message);
-                }
+            try {
+                return this.fromJson(filePath);
+            } catch (error: any) {
+                showSimpleToast('Instantiating Data', error.message);
             }
         }
         const data = await super.readFileToDataNoCache(filePath);
@@ -342,7 +311,7 @@ export default class Slide extends ItemSource<SlideItem>{
         openSlideContextMenu(event, this, slideItem);
     }
     clone() {
-        return Slide.fromJson(this.filePath, this.toJson());
+        return Slide.fromJson(this.filePath);
     }
     async delete() {
         await this.editingHistoryManager.discard();
