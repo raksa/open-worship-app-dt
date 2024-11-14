@@ -35,6 +35,7 @@ export default function BoxEditorControllingMode({ canvasItem }: Readonly<{
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
                             canvasItem.applyProps(info);
+                            canvasController.fireUpdateEvent();
                         }
                     };
                 }

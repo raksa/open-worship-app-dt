@@ -1,10 +1,16 @@
+import { lazy } from 'react';
+
 import BibleItem from '../bible-list/BibleItem';
 import {
     BibleItemViewControllerContext, SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
-import BiblePreviewerRender from '../read-bible/BiblePreviewerRender';
 import BibleView from '../read-bible/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
+import AppSuspense from '../others/AppSuspense';
+
+const BiblePreviewerRender = lazy(() => {
+    return import('../read-bible/BiblePreviewerRender');
+});
 
 export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
     inputText: string,
@@ -29,7 +35,9 @@ export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
     return (
         <BibleItemViewControllerContext.Provider
             value={bibleItemViewController}>
-            <BiblePreviewerRender />
+            <AppSuspense>
+                <BiblePreviewerRender />
+            </AppSuspense>
         </BibleItemViewControllerContext.Provider>
     );
 }

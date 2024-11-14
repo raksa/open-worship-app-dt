@@ -9,6 +9,7 @@ import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
 import ColorPicker from '../../../others/color/ColorPicker';
 import { AppColorType } from '../../../others/color/colorHelpers';
+import CanvasController from '../CanvasController';
 
 export default function ToolsText() {
     const onDataCallback = useCallback((newData: any) => {
@@ -42,6 +43,7 @@ export default function ToolsText() {
     }
     const applyTextData = (newData: ToolingTextType) => {
         canvasItem.applyTextData(newData);
+        CanvasController.getInstance().fireUpdateEvent();
     };
     return (
         <div className='d-flex'>

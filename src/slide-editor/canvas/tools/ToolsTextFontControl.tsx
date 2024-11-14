@@ -5,6 +5,7 @@ import CanvasItemText from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
+import CanvasController from '../CanvasController';
 
 export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
@@ -28,6 +29,7 @@ function FontSize({ canvasItemText }: Readonly<{
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
         canvasItemText.applyTextData({ fontSize });
+        CanvasController.getInstance().fireUpdateEvent();
     };
     return (
         <div>
@@ -57,12 +59,13 @@ function FontFamily({ canvasItemText }: Readonly<{
 }>) {
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(
-        canvasItemText.props.fontFamily || '');
+        canvasItemText.props.fontFamily ?? '');
     const applyFontFamily = (fontFamily: string) => {
         setLocalFontFamily(fontFamily);
         canvasItemText.applyTextData({
             fontFamily: fontFamily || null,
         });
+        CanvasController.getInstance().fireUpdateEvent();
     };
     if (fontList === null) {
         return (
@@ -114,6 +117,7 @@ function FontWeight({
         canvasItemText.applyTextData({
             fontWeight: newFontWeight || null,
         });
+        CanvasController.getInstance().fireUpdateEvent();
     };
     return (
         <div>
