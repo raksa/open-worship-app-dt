@@ -43,6 +43,13 @@ export default defineConfig({
             certDir: '.devServer/cert',
         }),
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern-compiler', // or "modern"
+            },
+        },
+    },
     server: {
         port: 3000,
     },
