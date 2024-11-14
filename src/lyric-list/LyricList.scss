@@ -1,4 +1,4 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 
 .lyric-list {
   .card-header {
@@ -7,6 +7,7 @@
 
   .card-body {
     height: calc(100% - $card-header-height);
+
     .item {
       cursor: pointer;
     }

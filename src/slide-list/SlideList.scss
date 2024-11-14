@@ -1,4 +1,4 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 
 .slide-list {
   .card-body {

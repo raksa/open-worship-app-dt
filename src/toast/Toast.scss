@@ -1,4 +1,4 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 
 .toast {
   position: fixed;
