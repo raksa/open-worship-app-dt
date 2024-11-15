@@ -1,11 +1,10 @@
-import PresentManager from '../PresentManager';
+import { usePresentManager } from '../PresentManager';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { usePMEvents } from '../presentEventHelpers';
 import { getAllDisplays } from '../presentHelpers';
 
-export default function DisplayControl({ presentManager }: Readonly<{
-    presentManager: PresentManager,
-}>) {
+export default function DisplayControl() {
+    const presentManager = usePresentManager();
     usePMEvents(['display-id'], presentManager);
     const displayId = presentManager.displayId;
     return (

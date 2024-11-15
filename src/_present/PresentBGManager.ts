@@ -160,8 +160,9 @@ export default class PresentBGManager
                 return;
             }
         }
-        const chosenPresentManagers = await PresentManager
-            .contextChooseInstances(event);
+        const chosenPresentManagers = (
+            await PresentManager.contextChooseInstances(event)
+        );
         const setSrc = async (presentManager: PresentManager) => {
             const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
             presentManager.presentBGManager.bgSrc = bgSrc;

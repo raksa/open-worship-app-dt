@@ -1,7 +1,7 @@
 import './MiniPresentScreen.scss';
 
 import './CustomHTMLPresentPreviewer';
-import PresentManager from '../PresentManager';
+import PresentManager, { PresentManagerContext } from '../PresentManager';
 import {
     initReceivePresentMessage,
     usePMEvents,
@@ -64,9 +64,13 @@ export default function MiniPresentScreen() {
                 <div className='w-100'>
                     {presentManagers.map((presentManager) => {
                         return (
-                            <PresentPreviewerItem key={presentManager.key}
-                                presentManager={presentManager}
-                                width={previewWith} />
+                            <PresentManagerContext.Provider
+                                key={presentManager.key}
+                                value={presentManager}>
+                                <PresentPreviewerItem
+                                    width={previewWith}
+                                />
+                            </PresentManagerContext.Provider>
                         );
                     })}
                 </div>

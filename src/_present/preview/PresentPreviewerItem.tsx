@@ -2,17 +2,16 @@ import './CustomHTMLPresentPreviewer';
 
 import ShowHidePresent from './ShowHidePresent';
 import MiniScreenClearControl from './MiniScreenClearControl';
-import PresentManager from '../PresentManager';
+import { usePresentManager } from '../PresentManager';
 import DisplayControl from './DisplayControl';
 import PTEffectControl from './PTEffectControl';
 import { handleDrop } from '../../bible-list/dragHelpers';
 import { openContextMenu } from './presentPreviewerHelpers';
 
-export default function PresentPreviewerItem({
-    presentManager, width,
-}: Readonly<{
-    presentManager: PresentManager, width: number,
+export default function PresentPreviewerItem({ width }: Readonly<{
+    width: number,
 }>) {
+    const presentManager = usePresentManager();
     const selectedCN = presentManager.isSelected ? 'highlight-selected' : '';
     return (
         <div key={presentManager.key}
@@ -50,16 +49,12 @@ export default function PresentPreviewerItem({
             }}>
                 <div className={'d-flex'}>
                     <div className='d-flex justify-content-start'>
-                        <ShowHidePresent
-                            presentManager={presentManager} />
-                        <MiniScreenClearControl
-                            presentManager={presentManager} />
+                        <ShowHidePresent />
+                        <MiniScreenClearControl />
                     </div>
                     <div className='flex-fill d-flex justify-content-end'>
-                        <DisplayControl
-                            presentManager={presentManager} />
-                        <PTEffectControl
-                            presentManager={presentManager} />
+                        <DisplayControl />
+                        <PTEffectControl />
                     </div>
                 </div>
             </div>

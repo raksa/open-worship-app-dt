@@ -10,11 +10,17 @@ import {
     checkIsWindowReadingMode, useWindowMode,
 } from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelper';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export default function BibleList() {
     const windowMode = useWindowMode();
     const isReadingMode = checkIsWindowReadingMode(windowMode);
-    const dirSource = useGenDS(Bible.getSelectDirSettingName(windowMode));
+    const isReading = checkIsWindowReadingMode(windowMode);
+    const dirSourceSettingName = (
+        isReading ? dirSourceSettingNames.BIBLE_READ :
+            dirSourceSettingNames.BIBLE_PRESENT
+    );
+    const dirSource = useGenDS(dirSourceSettingName);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>

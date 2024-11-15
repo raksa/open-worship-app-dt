@@ -15,9 +15,10 @@ import PresentSlideManager, {
     PresentSlideManagerEventType,
 } from './PresentSlideManager';
 
-export function usePMEvents(events: PresentManagerEventType[],
-    presentManager?: PresentManager,
-    callback?: () => void) {
+export function usePMEvents(
+    events: PresentManagerEventType[], presentManager?: PresentManager,
+    callback?: () => void,
+) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {

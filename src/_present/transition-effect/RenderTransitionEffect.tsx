@@ -1,4 +1,5 @@
 import { showAppContextMenu } from '../../others/AppContextMenu';
+import { usePresentManager } from '../PresentManager';
 import PresentTransitionEffect from './PresentTransitionEffect';
 import {
     PresentTransitionEffectType, TargetType, transitionEffect, usePTEEvents,
@@ -44,14 +45,13 @@ export default function RenderTransitionEffect({
     );
 }
 
-export function RendStyle({
-    presentId, ptEffectTarget,
-}: Readonly<{
-    presentId: number,
+export function RendStyle({ ptEffectTarget }: Readonly<{
     ptEffectTarget: TargetType,
 }>) {
+    const presentManager = usePresentManager();
     const ptEffect = PresentTransitionEffect.getInstance(
-        presentId, ptEffectTarget);
+        presentManager.presentId, ptEffectTarget,
+    );
     usePTEEvents(['update'], ptEffect);
     return (
         <style>

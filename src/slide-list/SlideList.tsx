@@ -11,9 +11,10 @@ import {
 import { extractExtension } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export default function SlideList() {
-    const dirSource = useGenDS('slide-list-selected-dir');
+    const dirSource = useGenDS(dirSourceSettingNames.SLIDE);
     if (dirSource !== null) {
         dirSource.checkExtraFile = (fileName: string) => {
             if (checkIsPdf(extractExtension(fileName))) {

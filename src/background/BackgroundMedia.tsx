@@ -24,14 +24,15 @@ const bgTypeMapper: any = {
 };
 
 export default function BackgroundMedia({
-    rendChild, dragType, defaultFolderName,
+    rendChild, dragType, defaultFolderName, dirSourceSettingName,
 }: Readonly<{
     rendChild: RenderChildType,
     dragType: DragTypeEnum,
     defaultFolderName: string,
+    dirSourceSettingName: string,
 }>) {
     const bgType = bgTypeMapper[dragType];
-    const dirSource = useGenDS(`${bgType}-list-selected-dir`);
+    const dirSource = useGenDS(dirSourceSettingName);
     const renderCallback = useCallback((filePaths: string[]) => {
         const genBodyWithChild = genBody.bind(null, rendChild, dragType);
         return (

@@ -18,12 +18,15 @@ if (container !== null) {
 }
 
 document.addEventListener('keyup', function (event) {
-    if ((event.ctrlKey || event.altKey)
-        && ['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    if (
+        (event.ctrlKey || event.altKey) &&
+        ['ArrowLeft', 'ArrowRight'].includes(event.key)
+    ) {
         const isNext = event.key === 'ArrowRight';
         appProviderPresent.messageUtils.sendData(
             'present:app:change-bible', isNext,
         );
     }
 });
+
 document.body.style.backgroundColor = 'transparent';

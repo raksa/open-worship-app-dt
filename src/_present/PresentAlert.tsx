@@ -4,11 +4,10 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePMEvents } from './presentEventHelpers';
-import PresentManager from './PresentManager';
+import { usePresentManager } from './PresentManager';
 
-export default function PresentAlert({ presentManager }: Readonly<{
-    presentManager: PresentManager;
-}>) {
+export default function PresentAlert() {
+    const presentManager = usePresentManager();
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentAlertManager.renderAll();
     });

@@ -4,14 +4,13 @@ import {
 import {
     usePBGMEvents, usePFTMEvents, usePSlideMEvents,
 } from '../presentEventHelpers';
-import PresentManager from '../PresentManager';
+import { usePresentManager } from '../PresentManager';
 
-export default function MiniScreenClearControl({ presentManager }: Readonly<{
-    presentManager: PresentManager;
-}>) {
+export default function MiniScreenClearControl() {
     usePBGMEvents(['update']);
     usePSlideMEvents(['update']);
     usePFTMEvents(['update']);
+    const presentManager = usePresentManager();
     const {
         presentBGManager,
         presentSlideManager,

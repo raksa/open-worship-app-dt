@@ -2,7 +2,7 @@ import PresentAlert from '../PresentAlert';
 import PresentBackground from '../PresentBackground';
 import PresentSlide from '../PresentSlide';
 import PresentFullText from '../PresentFullText';
-import PresentManager from '../PresentManager';
+import PresentManager, { PresentManagerContext } from '../PresentManager';
 import { RendStyle } from '../transition-effect/RenderTransitionEffect';
 
 const IMAGE_BG =
@@ -17,11 +17,9 @@ export default function MiniPresentApp({ id }: Readonly<{ id: number }>) {
         return null;
     }
     return (
-        <>
-            <RendStyle ptEffectTarget='background'
-                presentId={presentManager.presentId} />
-            <RendStyle ptEffectTarget='slide'
-                presentId={presentManager.presentId} />
+        <PresentManagerContext.Provider value={presentManager}>
+            <RendStyle ptEffectTarget='background' />
+            <RendStyle ptEffectTarget='slide' />
             <div style={{
                 pointerEvents: 'none',
                 position: 'absolute',
@@ -31,14 +29,10 @@ export default function MiniPresentApp({ id }: Readonly<{ id: number }>) {
                 backgroundSize: '20px 20px',
                 backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
             }} />
-            <PresentBackground
-                presentManager={presentManager} />
-            <PresentSlide
-                presentManager={presentManager} />
-            <PresentFullText
-                presentManager={presentManager} />
-            <PresentAlert
-                presentManager={presentManager} />
-        </>
+            <PresentBackground />
+            <PresentSlide />
+            <PresentFullText />
+            <PresentAlert />
+        </PresentManagerContext.Provider>
     );
 }

@@ -2,7 +2,9 @@ import { useRef } from 'react';
 
 import ReactDOMServer from 'react-dom/server';
 import { BackgroundSrcType } from './PresentBGManager';
-import PresentManager from './PresentManager';
+import PresentManager, {
+    PresentManagerContext, usePresentManager,
+} from './PresentManager';
 import PresentBackgroundColor from './PresentBackgroundColor';
 import PresentBackgroundImage from './PresentBackgroundImage';
 import PresentBackgroundVideo from './PresentBackgroundVideo';
@@ -10,9 +12,8 @@ import { usePMEvents } from './presentEventHelpers';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
-export default function PresentBackground({ presentManager }: Readonly<{
-    presentManager: PresentManager;
-}>) {
+export default function PresentBackground() {
+    const presentManager = usePresentManager();
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentBGManager.render();
     });
@@ -29,39 +30,35 @@ export default function PresentBackground({ presentManager }: Readonly<{
     );
 }
 
-export function genHtmlBG(bgSrc: BackgroundSrcType,
-    presentManager: PresentManager) {
+export function genHtmlBG(
+    bgSrc: BackgroundSrcType, presentManager: PresentManager,
+) {
     const str = ReactDOMServer.renderToStaticMarkup(
-        <RenderBG bgSrc={bgSrc}
-            presentManager={presentManager} />);
+        <PresentManagerContext.Provider value={presentManager}>
+            <RenderBG bgSrc={bgSrc} />
+        </PresentManagerContext.Provider>
+    );
     const div = document.createElement('div');
     div.innerHTML = str;
     return div.firstChild as HTMLDivElement;
 }
 
-export function RenderBG({
-    bgSrc, presentManager,
-}: Readonly<{
+export function RenderBG({ bgSrc }: Readonly<{
     bgSrc: BackgroundSrcType,
-    presentManager: PresentManager;
 }>) {
+    const presentManager = usePresentManager();
     const { presentBGManager } = presentManager;
     return (
         <div style={{
             ...presentBGManager.containerStyle,
         }}>
-            <RenderPresentBackground
-                presentManager={presentManager}
-                bgSrc={bgSrc} />
+            <RenderPresentBackground bgSrc={bgSrc} />
         </div>
     );
 }
 
-function RenderPresentBackground({
-    bgSrc, presentManager,
-}: Readonly<{
+function RenderPresentBackground({ bgSrc }: Readonly<{
     bgSrc: BackgroundSrcType,
-    presentManager: PresentManager;
 }>) {
     if (bgSrc === null) {
         return null;
@@ -69,13 +66,11 @@ function RenderPresentBackground({
     switch (bgSrc.type) {
         case 'image':
             return (
-                <PresentBackgroundImage bgSrc={bgSrc}
-                    presetManager={presentManager} />
+                <PresentBackgroundImage bgSrc={bgSrc} />
             );
         case 'video':
             return (
-                <PresentBackgroundVideo bgSrc={bgSrc}
-                    presetManager={presentManager} />
+                <PresentBackgroundVideo bgSrc={bgSrc} />
             );
         case 'color':
             return (

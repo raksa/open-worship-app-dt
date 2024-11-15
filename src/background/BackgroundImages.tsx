@@ -7,6 +7,7 @@ import { RenderPresentIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export default function BackgroundImages() {
     return (
@@ -14,6 +15,7 @@ export default function BackgroundImages() {
             defaultFolderName='images'
             dragType={DragTypeEnum.BG_IMAGE}
             rendChild={rendChild}
+            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_IMAGE}
         />
     );
 }

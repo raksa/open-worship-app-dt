@@ -1,11 +1,9 @@
 import './PresentCloseButton.scss';
-import PresentManager from './PresentManager';
 
-export default function PresentCloseButton({
-    presentManager,
-}: Readonly<{
-    presentManager: PresentManager,
-}>) {
+import { usePresentManager } from './PresentManager';
+
+export default function PresentCloseButton() {
+    const presentManager = usePresentManager();
     return (
         <button id="close" onClick={() => {
             presentManager.hide();

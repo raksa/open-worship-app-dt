@@ -6,9 +6,10 @@ import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export default function LyricList() {
-    const dirSource = useGenDS('lyric-list-selected-dir');
+    const dirSource = useGenDS(dirSourceSettingNames.LYRIC);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>

@@ -6,9 +6,10 @@ import PlaylistFile from './PlaylistFile';
 import FileListHandler from '../others/FileListHandler';
 import Playlist from './Playlist';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export default function PlaylistList() {
-    const dirSource = useGenDS('playlist-list-selected-dir');
+    const dirSource = useGenDS(dirSourceSettingNames.PLAYLIST);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
             <>

@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { getWindowDim, isValidJson } from '../helper/helpers';
@@ -23,6 +24,17 @@ import PresentTransitionEffect from
 export type PresentManagerEventType = 'instance' | 'update'
     | 'visible' | 'display-id' | 'resize';
 const settingName = 'present-display-';
+
+export const PresentManagerContext = createContext<PresentManager | null>(null);
+export function usePresentManager(): PresentManager {
+    const presentManager = useContext(PresentManagerContext);
+    if (presentManager === null) {
+        throw new Error(
+            'usePresentManager must be used within a PresentManager',
+        );
+    }
+    return presentManager;
+}
 
 export default class PresentManager
     extends EventHandler<PresentManagerEventType>

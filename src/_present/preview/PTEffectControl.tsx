@@ -1,12 +1,9 @@
-import PresentManager from '../PresentManager';
+import { usePresentManager } from '../PresentManager';
 import RenderTransitionEffect
     from '../transition-effect/RenderTransitionEffect';
 
-export default function PTEffectControl({
-    presentManager,
-}: Readonly<{
-    presentManager: PresentManager,
-}>) {
+export default function PTEffectControl() {
+    const presentManager = usePresentManager();
     const presentId = presentManager.presentId;
     return (
         <>

@@ -11,8 +11,9 @@ const classNameMapper = {
     toast: 'toast-actor',
 };
 
-export function genHtmlAlertMarquee(marqueeData: { text: string }
-    , presentManager: PresentManager) {
+export function genHtmlAlertMarquee(
+    marqueeData: { text: string }, presentManager: PresentManager,
+) {
     const { text } = marqueeData;
     const duration = (text.length || 0) / 6;
     const scale = presentManager.height / 768;

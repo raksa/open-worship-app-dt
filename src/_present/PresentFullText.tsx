@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePFTMEvents, usePMEvents } from './presentEventHelpers';
 import PresentFTManager from './PresentFTManager';
-import PresentManager from './PresentManager';
+import { usePresentManager } from './PresentManager';
 
 const styleText = `
 #full-text {
@@ -102,9 +102,8 @@ const styleText = `
     + 'rgba(255, 0, 157, 0.6), transparent);'}
 }`;
 
-export default function PresentFullText({ presentManager }: Readonly<{
-    presentManager: PresentManager;
-}>) {
+export default function PresentFullText() {
+    const presentManager = usePresentManager();
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentFTManager.render();
     });

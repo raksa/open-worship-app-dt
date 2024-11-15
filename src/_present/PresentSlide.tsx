@@ -2,11 +2,10 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePMEvents } from './presentEventHelpers';
-import PresentManager from './PresentManager';
+import { usePresentManager } from './PresentManager';
 
-export default function PresentSlide({ presentManager }: Readonly<{
-    presentManager: PresentManager;
-}>) {
+export default function PresentSlide() {
+    const presentManager = usePresentManager();
     usePMEvents(['resize'], presentManager, () => {
         presentManager.presentSlideManager.render();
     });
