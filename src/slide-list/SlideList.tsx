@@ -11,7 +11,9 @@ import {
 import { extractExtension } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { useGenDS } from '../helper/dirSourceHelpers';
-import { dirSourceSettingNames } from '../helper/constants';
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
 
 export default function SlideList() {
     const dirSource = useGenDS(dirSourceSettingNames.SLIDE);
@@ -59,7 +61,7 @@ export default function SlideList() {
     return (
         <FileListHandler id='slide-list'
             mimetype='slide'
-            defaultFolderName='slides'
+            defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
             checkExtraFile={checkExtraFileCallback}
             takeDroppedFile={takeDropFileCallback}

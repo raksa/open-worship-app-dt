@@ -9,11 +9,9 @@ import appProviderPresent from './appProviderPresent';
 import {
     initReceivePresentMessage, sendPresentMessage,
 } from './presentEventHelpers';
-import { useCheckSelectedDir } from '../helper/tourHelpers';
 
 initReceivePresentMessage();
 export default function PresentApp() {
-    useCheckSelectedDir();
     const urlParams = new URLSearchParams(window.location.search);
     const presentId = +(urlParams.get('presentId') ?? '0');
     const presentManager = PresentManager.createInstance(presentId);

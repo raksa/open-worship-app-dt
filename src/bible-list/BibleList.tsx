@@ -10,7 +10,9 @@ import {
     checkIsWindowReadingMode, useWindowMode,
 } from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelper';
-import { dirSourceSettingNames } from '../helper/constants';
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
 
 export default function BibleList() {
     const windowMode = useWindowMode();
@@ -19,6 +21,10 @@ export default function BibleList() {
     const dirSourceSettingName = (
         isReading ? dirSourceSettingNames.BIBLE_READ :
             dirSourceSettingNames.BIBLE_PRESENT
+    );
+    const defaultDataDirName = (
+        isReading ? defaultDataDirNames.BIBLE_READ :
+            defaultDataDirNames.BIBLE_PRESENT
     );
     const dirSource = useGenDS(dirSourceSettingName);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
@@ -40,7 +46,7 @@ export default function BibleList() {
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype='bible'
-            defaultFolderName={`bibles${isReadingMode ? '-read' : ''}`}
+            defaultFolderName={defaultDataDirName}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Bible.create(dirPath, name);

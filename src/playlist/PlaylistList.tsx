@@ -6,7 +6,9 @@ import PlaylistFile from './PlaylistFile';
 import FileListHandler from '../others/FileListHandler';
 import Playlist from './Playlist';
 import { useGenDS } from '../helper/dirSourceHelpers';
-import { dirSourceSettingNames } from '../helper/constants';
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
 
 export default function PlaylistList() {
     const dirSource = useGenDS(dirSourceSettingNames.PLAYLIST);
@@ -27,7 +29,7 @@ export default function PlaylistList() {
     return (
         <FileListHandler id='playlist-list'
             mimetype='playlist'
-            defaultFolderName='playlists'
+            defaultFolderName={defaultDataDirNames.PLAYLIST}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Playlist.create(dirPath, name);

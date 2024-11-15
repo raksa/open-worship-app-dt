@@ -239,8 +239,8 @@ async function _fsCheckExist(
         }
     }
 }
-export function fsCheckDirExist(filePath: string, fileName?: string) {
-    return _fsCheckExist(false, filePath, fileName);
+export function fsCheckDirExist(dirPath: string) {
+    return _fsCheckExist(false, dirPath);
 }
 export function fsCheckFileExist(filePath: string, fileName?: string) {
     return _fsCheckExist(true, filePath, fileName);

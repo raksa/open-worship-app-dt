@@ -6,7 +6,9 @@ import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';
 import { useGenDS } from '../helper/dirSourceHelpers';
-import { dirSourceSettingNames } from '../helper/constants';
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
 
 export default function LyricList() {
     const dirSource = useGenDS(dirSourceSettingNames.LYRIC);
@@ -27,7 +29,7 @@ export default function LyricList() {
     return (
         <FileListHandler id='lyric-list'
             mimetype='lyric'
-            defaultFolderName='lyrics'
+            defaultFolderName={defaultDataDirNames.LYRIC}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Lyric.create(dirPath, name);

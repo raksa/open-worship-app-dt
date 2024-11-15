@@ -20,8 +20,10 @@ import AppPopupWindows, {
 } from './app-modal/AppPopupWindows';
 import RedirectTo from './others/RedirectTo';
 import { useHandleFind } from './_find/finderHelpers';
+import { useCheckSelectedDir } from './helper/tourHelpers';
 
 export default function App() {
+    useCheckSelectedDir();
     useHandleFind();
     const tabProps = useMemo(() => {
         return [editingTab, presentingTab, readingTab];

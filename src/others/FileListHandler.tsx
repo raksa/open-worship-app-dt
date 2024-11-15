@@ -110,18 +110,23 @@ export default function FileListHandler({
                 <div className='card-body d-flex flex-column'
                     onContextMenu={genOnContextMenu(contextMenu)}>
                     <PathSelector prefix={`path-${id}`}
-                        dirSource={dirSource} />
+                        dirSource={dirSource}
+                    />
                     {!dirSource.dirPath ?
                         <NoDirSelected dirSource={dirSource}
                             defaultFolderName={defaultFolderName}
                         /> :
                         (
                             <ul className='list-group flex-fill d-flex'>
-                                {onNewFile && isCreatingNew && <AskingNewName
-                                    applyName={applyNameCallback} />}
+                                {onNewFile && isCreatingNew && (
+                                    <AskingNewName
+                                        applyName={applyNameCallback}
+                                    />
+                                )}
                                 <RenderList dirSource={dirSource}
                                     bodyHandler={bodyHandler}
-                                    mimetype={mimetype} />
+                                    mimetype={mimetype}
+                                />
                             </ul>
                         )}
                 </div>

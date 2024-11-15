@@ -9,13 +9,15 @@ import { RenderPresentIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
-import { dirSourceSettingNames } from '../helper/constants';
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
 
 
 export default function BackgroundVideos() {
     return (
         <BackgroundMedia
-            defaultFolderName='videos'
+            defaultFolderName={defaultDataDirNames.BACKGROUND_VIDEO}
             dragType={DragTypeEnum.BG_VIDEO}
             rendChild={rendChild}
             dirSourceSettingName={dirSourceSettingNames.BACKGROUND_VIDEO}
