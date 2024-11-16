@@ -187,8 +187,10 @@ export default class Slide extends ItemSource<SlideItem> {
         slideItem: { width: number, height: number },
         display: { width: number, height: number },
     }) {
-        return `⚠️ slide:${slideItem.width}x${slideItem.height} `
-            + `display:${display.width}x${display.height}`;
+        return (
+            `⚠️ slide:${slideItem.width}x${slideItem.height} ` +
+            `display:${display.width}x${display.height}`
+        );
     }
     checkIsWrongDimension(display: DisplayType) {
         const found = this.items.find((item) => {
