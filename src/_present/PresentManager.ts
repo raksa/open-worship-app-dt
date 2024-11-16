@@ -30,7 +30,8 @@ export function usePresentManager(): PresentManager {
     const presentManager = useContext(PresentManagerContext);
     if (presentManager === null) {
         throw new Error(
-            'usePresentManager must be used within a PresentManager',
+            'usePresentManager must be used within a PresentManager ' +
+            'Context Provider',
         );
     }
     return presentManager;

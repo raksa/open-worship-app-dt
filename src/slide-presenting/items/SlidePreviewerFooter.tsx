@@ -9,6 +9,68 @@ import {
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 import PresentSlideManager from '../../_present/PresentSlideManager';
 
+
+function HistoryPreviewerFooter({ slide }: Readonly<{ slide: Slide }>) {
+    const [history, setHistory] = useState<number[]>([]);
+    usePSlideMEvents(['update'], undefined, () => {
+        const dataList = PresentSlideManager.getDataList(slide.filePath);
+        if (dataList.length > 0) {
+            const index = slide.items.findIndex((slideItem) => {
+                return dataList.find(([_, slideItemData]) => {
+                    const dataId = slideItemData['slideItemJson']['id'];
+                    return dataId === slideItem.id;
+                });
+            });
+            setHistory((oldHistory) => {
+                const newHistory = [
+                    ...oldHistory, index + 1,
+                ];
+                if (newHistory.length > 3) {
+                    newHistory.shift();
+                }
+                return newHistory;
+            });
+        }
+    });
+    return (
+        <div className='history me-1'>
+            <span className='badge rounded-pill text-bg-info'>
+                {history.join(', ')}
+            </span>
+        </div>
+    );
+}
+
+function ScalePreviewerFooter({
+    thumbnailSize, setThumbnailSize,
+}: Readonly<{
+    thumbnailSize: number,
+    setThumbnailSize: (size: number) => void,
+}>) {
+    const currentScale = (thumbnailSize / DEFAULT_THUMBNAIL_SIZE);
+    return (
+        <div className='form form-inline d-flex flex-row-reverse'
+            style={{ minWidth: '100px' }}>
+            <label className='form-label'>
+                Size:{currentScale.toFixed(1)}
+            </label>
+            <input type='range' className='form-range'
+                min={MIN_THUMBNAIL_SCALE} max={MAX_THUMBNAIL_SCALE}
+                step={THUMBNAIL_SCALE_STEP}
+                value={currentScale.toFixed(1)}
+                onChange={(event) => {
+                    setThumbnailSize((+event.target.value) *
+                        DEFAULT_THUMBNAIL_SIZE);
+                }}
+                onWheel={(event) => {
+                    const newScale = Slide.toScaleThumbSize(
+                        event.deltaY > 0, currentScale);
+                    setThumbnailSize(newScale * DEFAULT_THUMBNAIL_SIZE);
+                }} />
+        </div>
+    );
+}
+
 export default function SlidePreviewerFooter({
     thumbnailSize, setThumbnailSize, slide,
 }: Readonly<{
@@ -16,50 +78,15 @@ export default function SlidePreviewerFooter({
     setThumbnailSize: (size: number) => void,
     slide: Slide,
 }>) {
-    const [history, setHistory] = useState<number[]>([]);
-    usePSlideMEvents(['update'], undefined, () => {
-        const dataList = PresentSlideManager.getDataList(slide.filePath);
-        if (dataList.length > 0) {
-            setHistory((oldHistory) => {
-                return [
-                    ...dataList.map((data) => {
-                        return data[1]['slideItemJson']['id'] + 1;
-                    }),
-                    ...oldHistory,
-                ];
-            });
-        }
-    });
-    const currentScale = (thumbnailSize / DEFAULT_THUMBNAIL_SIZE);
     return (
         <div className='card-footer w-100'>
             <div className='d-flex w-100 h-100'>
-                <div className='history border-white-round pointer me-1'
-                    onClick={() => {
-                        setHistory([]);
-                    }}>
-                    {history.join(', ')}
-                </div>
+                <HistoryPreviewerFooter slide={slide} />
                 {pathPreviewer(slide.filePath)}
-                <div className='form form-inline d-flex flex-row-reverse'
-                    style={{ minWidth: '100px' }}>
-                    <label className='form-label'>
-                        Size:{currentScale.toFixed(1)}
-                    </label>
-                    <input type='range' className='form-range'
-                        min={MIN_THUMBNAIL_SCALE} max={MAX_THUMBNAIL_SCALE}
-                        step={THUMBNAIL_SCALE_STEP}
-                        value={currentScale.toFixed(1)}
-                        onChange={(event) => {
-                            setThumbnailSize((+event.target.value) *
-                                DEFAULT_THUMBNAIL_SIZE);
-                        }}
-                        onWheel={(event) => {
-                            const newScale = Slide.toScaleThumbSize(
-                                event.deltaY > 0, currentScale);
-                            setThumbnailSize(newScale * DEFAULT_THUMBNAIL_SIZE);
-                        }} />
-                </div>
+                <ScalePreviewerFooter
+                    thumbnailSize={thumbnailSize}
+                    setThumbnailSize={setThumbnailSize}
+                />
             </div>
         </div>
     );

@@ -72,9 +72,11 @@ export function usePBGMEvents(events: PresentBGManagerEventType[],
     }, [presentBGManager, n]);
 }
 
-export function usePSlideMEvents(events: PresentSlideManagerEventType[],
+export function usePSlideMEvents(
+    events: PresentSlideManagerEventType[],
     presentSlideManager?: PresentSlideManager,
-    callback?: () => void) {
+    callback?: () => void,
+) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {

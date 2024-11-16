@@ -18,8 +18,8 @@ export function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
     if (checkIsWindowEditingMode()) {
         slideItem.isSelected = !slideItem.isSelected;
     } else {
-        PresentSlideManager.slideSelect(slideItem.filePath,
-            slideItem.toJson(), event,
+        PresentSlideManager.slideSelect(
+            slideItem.filePath, slideItem.toJson(), event,
         );
     }
 }

@@ -33,20 +33,25 @@ export function RendInfo({ index, slideItem }: Readonly<{
     return (
         <>
             <div>
-                <span title={`Id: ${index + 1}`}>{index + 1} </span>
+                <span className='badge rounded-pill text-bg-info'
+                    title={`Index: ${index + 1}`}>
+                    {index + 1}
+                </span>
                 {slideItem.isSelected && <span title='Selected'>
                     <i className='bi bi-collection' />
                 </span>}
             </div>
             <div className='flex-fill d-flex justify-content-end'>
-                <span title={`width:${slideItem.width}, `
-                    + `height:${slideItem.height}`}>
+                <span title={
+                    `width:${slideItem.width}, height:${slideItem.height}`
+                }>
                     <small className='pe-2'>
                         {slideItem.width}x{slideItem.height}
                     </small>
                 </span>
-                {slideItem.isChanged && <span
-                    style={{ color: 'red' }}>*</span>}
+                {slideItem.isChanged && (
+                    <span style={{ color: 'red' }}>*</span>
+                )}
             </div>
         </>
     );

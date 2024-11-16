@@ -144,8 +144,9 @@ export default class PresentSlideManager extends
     static async slideSelect(slideFilePath: string,
         slideItemJson: SlideItemType,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
-        const chosenPresentManagers = await PresentManager
-            .contextChooseInstances(event);
+        const chosenPresentManagers = (
+            await PresentManager.contextChooseInstances(event)
+        );
         chosenPresentManagers.forEach((presentManager) => {
             const { presentSlideManager } = presentManager;
             const { slideItemData } = presentSlideManager;
