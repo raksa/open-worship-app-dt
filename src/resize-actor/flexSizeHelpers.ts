@@ -1,7 +1,20 @@
+import { CSSProperties, LazyExoticComponent } from 'react';
+
 import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
 import { setSetting, getSetting } from '../helper/settingHelper';
-import { FlexSizeType } from './ResizeActor';
+
+export type FlexSizeType = {
+    [key: string]: [string, DisabledType?],
+};
+export type DataInputType = {
+    children: LazyExoticComponent<() => React.JSX.Element | null> | {
+        render: () => React.JSX.Element | null,
+    },
+    key: string,
+    className?: string,
+    extraStyle?: CSSProperties,
+};
 
 export const settingPrefix = 'widget-size';
 export const disablingTargetTypeList = ['first', 'second'] as const;
@@ -108,4 +121,49 @@ export function getFlexSizeSetting(
         setSetting(settingString, JSON.stringify(defaultSize));
     }
     return defaultSize;
+}
+
+function checkIsHiddenWidget(
+    dataInput: DataInputType[], flexSize: FlexSizeType, index: number,
+) {
+    const preKey = dataInput[index]['key'];
+    const preFlexSizeValue = flexSize[preKey];
+    return !!preFlexSizeValue[1];
+}
+
+export function checkIsThereNotHiddenWidget(
+    dataInput: DataInputType[], flexSize: FlexSizeType, startIndex: number,
+    endIndex?: number,
+) {
+    endIndex = endIndex ?? dataInput.length - 1;
+    for (let i = startIndex; i < endIndex; i++) {
+        if (!checkIsHiddenWidget(dataInput, flexSize, i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function calcShowingHiddenWidget(
+    event: any, key: string, fSizeName: string, defaultFlexSize: FlexSizeType,
+    flexSizeDisabled: DisabledType,
+) {
+    const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
+    setDisablingSetting(
+        fSizeName, defaultFlexSize, dataFSizeKey,
+    );
+    const current = event.currentTarget;
+    const target = (
+        flexSizeDisabled[0] === 'first' ? current.nextElementSibling :
+            current.previousElementSibling
+    ) as HTMLDivElement;
+    const targetFGrow = Number(target.style.flexGrow);
+    const flexGrow = targetFGrow - flexSizeDisabled[1];
+    target.style.flexGrow = (
+        `${flexGrow < targetFGrow / 10 ? targetFGrow : flexGrow}`
+    );
+    const size = genFlexSizeSetting(
+        fSizeName, defaultFlexSize,
+    );
+    return size;
 }

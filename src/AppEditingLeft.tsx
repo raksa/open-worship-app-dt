@@ -19,8 +19,8 @@ export default function AppEditingLeft() {
                 'v2': ['2'],
             }}
             dataInput={[
-                [SlideList, 'v1', 'flex-item'],
-                [SlidePreviewer, 'v2', 'flex-item'],
+                { children: SlideList, key: 'v1', className: 'flex-item' },
+                { children: SlidePreviewer, key: 'v2', className: 'flex-item' },
             ]} />
     );
 }

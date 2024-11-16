@@ -19,8 +19,8 @@ export default function AppEditing() {
                 'h2': ['3'],
             }}
             dataInput={[
-                [AppEditingLeft, 'h1', ''],
-                [SlideItemEditorGround, 'h2', ''],
+                {children: AppEditingLeft, key: 'h1'},
+                {children: SlideItemEditorGround, key: 'h2'},
             ]} />
     );
 }

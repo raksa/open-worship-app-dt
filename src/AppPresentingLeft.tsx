@@ -23,9 +23,9 @@ export default function AppPresentingLeft() {
                 'v3': ['1'],
             }}
             dataInput={[
-                [SlideList, 'v1', 'flex-item'],
-                [LyricList, 'v2', 'flex-item'],
-                [PlaylistList, 'v3', 'flex-item'],
+                { children: SlideList, key: 'v1', className: 'flex-item' },
+                { children: LyricList, key: 'v2', className: 'flex-item' },
+                { children: PlaylistList, key: 'v3', className: 'flex-item' },
             ]} />
     );
 }

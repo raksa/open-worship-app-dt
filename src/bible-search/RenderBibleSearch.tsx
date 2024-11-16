@@ -88,12 +88,18 @@ export default function RenderBibleSearch({
                             isDisableQuickResize
                             flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
                             dataInput={[
-                                [BibleOnlineSearchBodyPreviewer, 'h1', ''],
-                                [{
-                                    render: () => {
-                                        return searchingBody;
-                                    },
-                                }, 'h2', ''],
+                                {
+                                    children: BibleOnlineSearchBodyPreviewer,
+                                    key: 'h1',
+                                },
+                                {
+                                    children: {
+                                        render: () => {
+                                            return searchingBody;
+                                        },
+                                    }, key: 'h2',
+                                },
+
                             ]} /> : searchingBody
                     }
                 </div>

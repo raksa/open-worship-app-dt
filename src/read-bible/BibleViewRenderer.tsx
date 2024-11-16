@@ -3,9 +3,9 @@ import {
     useBibleItemViewControllerContext,
 } from './BibleItemViewController';
 import ResizeActor, {
-    DataInputType, FlexSizeType,
 } from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
+import { FlexSizeType, DataInputType } from '../resize-actor/flexSizeHelpers';
 
 export default function BibleViewRenderer({
     isHorizontal = true, classPrefix = '', nestedBibleItems,
@@ -49,8 +49,8 @@ export default function BibleViewRenderer({
             isDisableQuickResize={true}
             flexSizeDefault={flexSizeDefault}
             dataInput={nestedBibleItems.map((item, i): DataInputType => {
-                return [
-                    {
+                return {
+                    children: {
                         render: () => {
                             return (
                                 <BibleViewRenderer
@@ -61,9 +61,8 @@ export default function BibleViewRenderer({
                             );
                         },
                     },
-                    `${typeText}${i + 1}`,
-                    '',
-                ];
+                    key: `${typeText}${i + 1}`,
+                };
             })} />
     );
 }

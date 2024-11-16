@@ -35,8 +35,13 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
                     'v2': ['1'],
                 }}
                 dataInput={[
-                    [SlideItemEditorCanvas, 'v1', 'flex-item'],
-                    [Tools, 'v2', 'flex-item'],
+                    {
+                        children: SlideItemEditorCanvas, key: 'v1',
+                        className: 'flex-item',
+                    },
+                    {
+                        children: Tools, key: 'v2', className: 'flex-item',
+                    },
                 ]} />
         </div>
     );

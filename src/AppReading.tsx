@@ -35,8 +35,8 @@ export default function AppReading() {
                     'h2': ['4'],
                 }}
                 dataInput={[
-                    [BibleList, 'h1', ''],
-                    [BiblePreviewerRender, 'h2', ''],
+                    { children: BibleList, key: 'h1' },
+                    { children: BiblePreviewerRender, key: 'h2' },
                 ]} />
         </BibleItemViewControllerContext.Provider>
     );
