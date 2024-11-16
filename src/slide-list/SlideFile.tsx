@@ -30,7 +30,7 @@ export default function SlideFile({
                 previewingEventListener.presentSlide(data);
                 return;
             }
-            data.isSelected = !data.isSelected;
+            data.isSelected = true;
         }
     }, [data]);
     const renderChildCallback = useCallback((slide: ItemSource<any>) => {

@@ -3,7 +3,7 @@ import './SlideItemRender.scss';
 import SlideItem from '../../slide-list/SlideItem';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 import {
-    RendInfo, RendShowingScreen, toCNHighlight,
+    RendInfo, toCNHighlight,
 } from './SlideItemRender';
 import ReactDOMServer from 'react-dom/server';
 
@@ -38,8 +38,7 @@ export default function SlideItemPdfRender({
 }>) {
     usePSlideMEvents(['update']);
     const {
-        activeCN,
-        presentingCN,
+        activeCN, presentingCN,
     } = toCNHighlight(slideItem);
     return (
         <div className={`slide-item card pointer ${activeCN} ${presentingCN}`}
@@ -50,8 +49,8 @@ export default function SlideItemPdfRender({
             <div className='card-header d-flex'>
                 <i className='bi bi-filetype-pdf' />
                 <RendInfo index={index}
-                    slideItem={slideItem} />
-                <RendShowingScreen slideItem={slideItem} />
+                    slideItem={slideItem}
+                />
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >

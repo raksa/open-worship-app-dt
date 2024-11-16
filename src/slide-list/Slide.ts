@@ -30,7 +30,7 @@ export type SlideType = {
     metadata: AnyObjectType,
 };
 
-export default class Slide extends ItemSource<SlideItem>{
+export default class Slide extends ItemSource<SlideItem> {
     static mimetype: MimetypeNameType = 'slide';
     static SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
@@ -211,7 +211,7 @@ export default class Slide extends ItemSource<SlideItem>{
         });
         const result = SlideItem.getSelectedResult();
         if (result?.id === slideItem.id) {
-            SlideItem.setSelectedItem(null);
+            SlideItem.setSelected(null);
         }
         this.items = newItems;
     }
@@ -327,6 +327,23 @@ export default class Slide extends ItemSource<SlideItem>{
         const fileSource = this.getSelectedFilePath();
         if (fileSource !== null) {
             return this.readFileToData(fileSource);
+        }
+        return null;
+    }
+    static async getSelectedSlideItem() {
+        let selectedSlideItem = await SlideItem.getSelected();
+        if (selectedSlideItem === null) {
+            const slide = await this.getSelected();
+            if (slide) {
+                const items = slide.items;
+                if (items.length > 0) {
+                    selectedSlideItem = items[0];
+                }
+            }
+        }
+        if (selectedSlideItem) {
+            selectedSlideItem.isSelected = true;
+            return selectedSlideItem;
         }
         return null;
     }

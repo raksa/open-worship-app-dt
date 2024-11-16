@@ -7,7 +7,8 @@ import { checkIsWindowEditingMode } from '../../router/routeHelpers';
 export function getPresentingIndex(slide: Slide) {
     for (let i = 0; i < slide.items.length; i++) {
         const selectedList = PresentSlideManager.getDataList(
-            slide.filePath, slide.items[i].id);
+            slide.filePath, slide.items[i].id,
+        );
         if (selectedList.length > 0) {
             return i;
         }
@@ -16,7 +17,7 @@ export function getPresentingIndex(slide: Slide) {
 }
 export function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
     if (checkIsWindowEditingMode()) {
-        slideItem.isSelected = !slideItem.isSelected;
+        slideItem.isSelected = true;
     } else {
         PresentSlideManager.slideSelect(
             slideItem.filePath, slideItem.toJson(), event,
@@ -52,8 +53,9 @@ export const genArrowListener = (slide: Slide, slideItems: SlideItem[]) => {
             } else if (ind < 0) {
                 ind = length - 1;
             }
-            handleSlideItemSelecting(slideItems[ind],
-                genPresentMouseEvent() as any);
+            handleSlideItemSelecting(
+                slideItems[ind], genPresentMouseEvent() as any,
+            );
         }
     };
 };

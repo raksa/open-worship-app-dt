@@ -121,7 +121,7 @@ export default class Lyric extends ItemSource<LyricItem>{
         });
         const result = LyricItem.getSelectedResult();
         if (result?.id === lyricItem.id) {
-            LyricItem.setSelectedItem(null);
+            LyricItem.setSelected(null);
         }
         this.items = newItems;
     }

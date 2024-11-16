@@ -24,7 +24,7 @@ export default function LyricFile({
                 previewingEventListener.selectLyric(data);
                 return;
             }
-            data.isSelected = !data.isSelected;
+            data.isSelected = true;
         }
     }, [data]);
     const renderChildCallback = useCallback((lyric: ItemSource<any>) => {

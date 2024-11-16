@@ -127,18 +127,19 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
     get isSelected() {
         const selected = SlideItem.getSelectedResult();
-        return selected?.filePath === this.filePath &&
-            selected?.id === this.id;
+        return (
+            selected?.filePath === this.filePath && selected?.id === this.id
+        );
     }
     set isSelected(b: boolean) {
         if (this.isSelected === b) {
             return;
         }
         if (b) {
-            SlideItem.setSelectedItem(this);
+            SlideItem.setSelected(this);
             SlideListEventListener.selectSlideItem(this);
         } else {
-            SlideItem.setSelectedItem(null);
+            SlideItem.setSelected(null);
             SlideListEventListener.selectSlideItem(null);
         }
         FileSource.getInstance(this.filePath).fireSelectEvent();
@@ -147,18 +148,18 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         return this.editingCacheManager.checkIsSlideItemChanged(this.id);
     }
     static getSelectedEditingResult() {
-        const selected = this.getSelectedResult();
+        const selectedData = this.getSelectedResult();
         const selectedFilePath = Slide.getSelectedFilePath();
-        if (selected?.filePath === selectedFilePath) {
-            return selected;
+        if (selectedData?.filePath === selectedFilePath) {
+            return selectedData;
         }
         return null;
     }
-    static async getSelectedItem() {
-        const selected = this.getSelectedEditingResult();
-        if (selected !== null) {
-            const slide = await Slide.readFileToData(selected.filePath);
-            return slide?.getItemById(selected.id);
+    static async getSelected() {
+        const selectedData = this.getSelectedEditingResult();
+        if (selectedData !== null) {
+            const slide = await Slide.readFileToData(selectedData.filePath);
+            return slide?.getItemById(selectedData.id);
         }
         return null;
     }

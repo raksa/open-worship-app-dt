@@ -3,33 +3,17 @@ import './SlideItemRender.scss';
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
-import PresentSlideManager, {
-    SlideItemDataType,
-} from '../../_present/PresentSlideManager';
+import PresentSlideManager from '../../_present/PresentSlideManager';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
 import { handleDragStart } from '../../bible-list/dragHelpers';
 import { checkIsWindowEditingMode } from '../../router/routeHelpers';
-
-export function RendShowingScreen({ slideItem }: Readonly<{
-    slideItem: SlideItem,
-}>) {
-    const { selectedList } = toCNHighlight(slideItem);
-    if (selectedList.length === 0) {
-        return null;
-    }
-    return (
-        <span
-            title={`Showing on screens: ${selectedList
-                .map(([key]) => key).join(', ')}`}>
-            ({selectedList.map(([key]) => key).join(', ')})
-        </span>
-    );
-}
 
 export function RendInfo({ index, slideItem }: Readonly<{
     index: number,
     slideItem: SlideItem,
 }>) {
+    const { selectedList } = toCNHighlight(slideItem);
+    const screenIds = selectedList.map(([id]) => id);
     return (
         <>
             <div>
@@ -37,9 +21,13 @@ export function RendInfo({ index, slideItem }: Readonly<{
                     title={`Index: ${index + 1}`}>
                     {index + 1}
                 </span>
-                {slideItem.isSelected && <span title='Selected'>
-                    <i className='bi bi-collection' />
-                </span>}
+                {selectedList.length > 0 ? (
+                    <span title={
+                        `Showing on screens: ${screenIds.join(', ')}`
+                    }>
+                        <i className='bi bi-collection' />
+                    </span>
+                ) : null}
             </div>
             <div className='flex-fill d-flex justify-content-end'>
                 <span title={
@@ -60,18 +48,14 @@ export function RendInfo({ index, slideItem }: Readonly<{
 export function toCNHighlight(slideItem: SlideItem) {
     const isEditing = checkIsWindowEditingMode();
     const activeCN = isEditing && slideItem.isSelected ? 'active' : '';
-    let selectedList: [string, SlideItemDataType][] = [];
-    let presentingCN = '';
-    if (!isEditing) {
-        selectedList = PresentSlideManager.getDataList(
-            slideItem.filePath, slideItem.id,
-        );
-        presentingCN = selectedList.length > 0 ? 'highlight-selected' : '';
-    }
+    const selectedList = PresentSlideManager.getDataList(
+        slideItem.filePath, slideItem.id,
+    );
+    const presentingCN = (
+        (isEditing || selectedList.length == 0) ? '' : 'highlight-selected'
+    );
     return {
-        selectedList,
-        activeCN,
-        presentingCN,
+        selectedList, activeCN, presentingCN,
     };
 }
 
@@ -114,8 +98,8 @@ export default function SlideItemRender({
             onCopy={onCopy}>
             <div className='card-header d-flex'>
                 <RendInfo index={index}
-                    slideItem={slideItem} />
-                <RendShowingScreen slideItem={slideItem} />
+                    slideItem={slideItem}
+                />
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >

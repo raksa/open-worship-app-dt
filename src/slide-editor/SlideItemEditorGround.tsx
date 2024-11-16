@@ -9,13 +9,15 @@ import { useSlideSelecting } from '../event/PreviewingEventListener';
 import CanvasController from './canvas/CanvasController';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import Slide from '../slide-list/Slide';
 
 export default function SlideItemEditorGround() {
     const [slideItem, setSlideItem] = useState<
-        SlideItem | null | undefined>(null);
+        SlideItem | null | undefined
+    >(null);
     const reloadSlide = async () => {
-        const newSlide = await SlideItem.getSelectedItem();
-        setSlideItem(newSlide || undefined);
+        const selectedSlideItem = await Slide.getSelectedSlideItem();
+        setSlideItem(selectedSlideItem || undefined);
     };
     useAppEffect(() => {
         if (slideItem === null) {

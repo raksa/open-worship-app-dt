@@ -7,30 +7,23 @@ import {
     THUMBNAIL_SCALE_STEP,
 } from '../../slide-list/slideHelpers';
 import { usePSlideMEvents } from '../../_present/presentEventHelpers';
-import PresentSlideManager from '../../_present/PresentSlideManager';
+import { getPresentingIndex } from './slideItemHelpers';
 
 
 function HistoryPreviewerFooter({ slide }: Readonly<{ slide: Slide }>) {
     const [history, setHistory] = useState<number[]>([]);
     usePSlideMEvents(['update'], undefined, () => {
-        const dataList = PresentSlideManager.getDataList(slide.filePath);
-        if (dataList.length > 0) {
-            const index = slide.items.findIndex((slideItem) => {
-                return dataList.find(([_, slideItemData]) => {
-                    const dataId = slideItemData['slideItemJson']['id'];
-                    return dataId === slideItem.id;
-                });
-            });
-            setHistory((oldHistory) => {
-                const newHistory = [
-                    ...oldHistory, index + 1,
-                ];
-                if (newHistory.length > 3) {
-                    newHistory.shift();
-                }
-                return newHistory;
-            });
+        const index = getPresentingIndex(slide);
+        if (index < 0) {
+            return;
         }
+        setHistory((oldHistory) => {
+            const newHistory = [...oldHistory, index + 1];
+            if (newHistory.length > 3) {
+                newHistory.shift();
+            }
+            return newHistory;
+        });
     });
     return (
         <div className='history me-1'>

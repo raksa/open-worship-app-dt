@@ -40,19 +40,26 @@ export default function SlideItemRenderWrapper({
             <SlideItemPdfRender key={slideItem.id}
                 onClick={onClickCallback}
                 slideItem={slideItem}
-                width={thumbSize} index={index} />
+                width={thumbSize} index={index}
+            />
         );
     }
-    const shouldReceiveAtFirst = draggingIndex !== null &&
-        draggingIndex !== 0 && index === 0;
-    const shouldReceiveAtLast = draggingIndex !== null &&
-        draggingIndex !== index && draggingIndex !== index + 1;
+    const shouldReceiveAtFirst = (
+        draggingIndex !== null && draggingIndex !== 0 && index === 0
+    );
+    const shouldReceiveAtLast = (
+        draggingIndex !== null && draggingIndex !== index &&
+        draggingIndex !== index + 1
+    );
     return (
         <Fragment key={slideItem.id}>
-            {shouldReceiveAtFirst && <SlideItemDragReceiver
-                width={thumbSize}
-                isLeft
-                onDrop={onDropCallback} />}
+            {shouldReceiveAtFirst && (
+                <SlideItemDragReceiver
+                    width={thumbSize}
+                    isLeft
+                    onDrop={onDropCallback}
+                />
+            )}
             <SlideItemRender index={index}
                 slideItem={slideItem}
                 width={thumbSize}
@@ -60,10 +67,14 @@ export default function SlideItemRenderWrapper({
                 onContextMenu={onContextMenuCallback}
                 onCopy={onCopyCallback}
                 onDragStart={onDragStartCallback}
-                onDragEnd={onDragEngCallback} />
-            {shouldReceiveAtLast && <SlideItemDragReceiver
-                width={thumbSize}
-                onDrop={onDropCallback} />}
+                onDragEnd={onDragEngCallback}
+            />
+            {shouldReceiveAtLast && (
+                <SlideItemDragReceiver
+                    width={thumbSize}
+                    onDrop={onDropCallback}
+                />
+            )}
         </Fragment>
     );
 }

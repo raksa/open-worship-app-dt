@@ -90,18 +90,18 @@ export abstract class ItemBase implements ColorNoteInf {
         const selectedStr = getSetting(settingName, '');
         return this.extractItemSetting(selectedStr);
     }
-    static setSelectedItem(item: ItemBase | null) {
+    static setSelected(item: ItemBase | null) {
         return this._setItemSetting(this.SELECT_SETTING_NAME, item);
     }
     static getSelectedResult() {
         return this._getSettingResult(this.SELECT_SETTING_NAME);
     }
-    static setSelectedEditingItem(item: ItemBase | null) {
+    static setSelectedEditing(item: ItemBase | null) {
         return this._setItemSetting(
             `${this.SELECT_SETTING_NAME}-editing`, item,
         );
     }
-    static async getSelectedItem(): Promise<ItemBase | null | undefined> {
+    static async getSelected(): Promise<ItemBase | null | undefined> {
         throw new Error('Method not implemented.');
     }
 }
