@@ -3,8 +3,6 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { getBibleInfoWithStatusList } from
-    '../helper/bible-helpers/serverBibleHelpers';
 import {
     BibleItemRenderedType, LyricRenderedType,
 } from './fullTextPresentComps';
@@ -14,6 +12,10 @@ import PresentManager from './PresentManager';
 import * as loggerHelpers from '../helper/loggerHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { handleError } from '../helper/errorHelpers';
+import { openAlert } from '../alert/alertHelpers';
+import {
+    getDownloadedBibleInfoList,
+} from '../helper/bible-helpers/bibleDownloadHelpers';
 
 const ftDataTypeList = [
     'bible-item', 'lyric',
@@ -110,19 +112,36 @@ function onSelectIndex(presentFTManager: PresentFTManager,
     presentFTManager.sendSyncSelectedIndex();
 }
 async function onBibleSelect(presentFTManager: PresentFTManager,
-    event: any, index: number, ftItemData: FTItemDataType) {
+    event: any, index: number, ftItemData: FTItemDataType,
+) {
     const bibleRenderedList = (
         ftItemData.bibleItemData?.renderedList as BibleItemRenderedType[]
     );
     const bibleItemingList = bibleRenderedList.map(({ bibleKey }) => {
         return bibleKey;
     });
-    const bibleList = await getBibleInfoWithStatusList();
-    const bibleListFiltered = bibleList.filter(([bibleKey]) => {
-        return !bibleItemingList.includes(bibleKey);
+    const bibleInfoList = await getDownloadedBibleInfoList();
+    if (bibleInfoList === null) {
+        openAlert(
+            'Unable to get bible info list',
+            'We were sorry, but we are unable to get bible list at the moment' +
+            ' please try again later'
+        );
+        return;
+    }
+    const bibleListFiltered = bibleInfoList.filter((bibleInfo) => {
+        return !bibleItemingList.includes(bibleInfo.key);
     });
-    const bibleItemJson = ftItemData.bibleItemData?.bibleItem as BibleItemType;
     const applyBibleItems = async (newBibleKeys: string[]) => {
+        const bibleItemJson = ftItemData.bibleItemData?.bibleItem;
+        if (bibleItemJson === undefined) {
+            openAlert(
+                'Fail to get bible item data',
+                'We were sorry, but we are unable to get bible item data at ' +
+                'the moment please try again later',
+            );
+            return;
+        }
         const newBibleItems = newBibleKeys.map((bibleKey1) => {
             const bibleItem = BibleItem.fromJson(bibleItemJson);
             bibleItem.bibleKey = bibleKey1;
@@ -146,10 +165,10 @@ async function onBibleSelect(presentFTManager: PresentFTManager,
                 title: 'Shift Click to Add',
                 disabled: true,
             }] : [],
-            ...bibleListFiltered.map(([bibleKey, isAvailable]) => {
+            ...bibleListFiltered.map((bibleInfo) => {
+                const bibleKey = bibleInfo.key;
                 return {
                     title: bibleKey,
-                    disabled: !isAvailable,
                     onClick: async (event1: any) => {
                         if (event1.shiftKey) {
                             bibleItemingList.push(bibleKey);
@@ -179,11 +198,13 @@ export function renderPFTManager(presentFTManager: PresentFTManager) {
     if (ftItemData.type === 'bible-item' &&
         ftItemData.bibleItemData !== undefined) {
         newTable = fullTextPresentHelper.genHtmlFromFtBibleItem(
-            ftItemData.bibleItemData.renderedList, presentFTManager.isLineSync);
+            ftItemData.bibleItemData.renderedList, presentFTManager.isLineSync,
+        );
     } else if (ftItemData.type === 'lyric' &&
         ftItemData.lyricData !== undefined) {
         newTable = fullTextPresentHelper.genHtmlFromFtLyric(
-            ftItemData.lyricData.renderedList, presentFTManager.isLineSync);
+            ftItemData.lyricData.renderedList, presentFTManager.isLineSync,
+        );
     }
     if (newTable === null) {
         return;

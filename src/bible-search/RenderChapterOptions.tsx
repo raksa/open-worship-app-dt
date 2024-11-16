@@ -22,7 +22,7 @@ export default function RenderChapterOptions({
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
 }>) {
-    if (bookKey == null || chapter !== null) {
+    if (bookKey === null || chapter !== null) {
         return null;
     }
     return (

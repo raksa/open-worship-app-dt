@@ -10,6 +10,10 @@ import {
     BibleViewFontSizeContext, DEFAULT_BIBLE_TEXT_FONT_SIZE,
 } from '../helper/bibleViewHelpers';
 import FullScreenBtn from './FullScreenBtn';
+import {
+    checkIsWindowReadingMode, useWindowMode,
+} from '../router/routeHelpers';
+import { fontSizeSettingNames } from '../helper/constants';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
@@ -17,8 +21,14 @@ const STEP_FONT_SIZE = 2;
 
 export default function BiblePreviewerRender() {
     const [isFulledScreen, setIsFulledScreen] = useState(false);
+    const windowMode = useWindowMode();
+    const isReading = checkIsWindowReadingMode(windowMode);
+    const fontSizeSettingName = (
+        isReading ? fontSizeSettingNames.BIBLE_READING :
+            fontSizeSettingNames.BIBLE_PRESENTING
+    );
     const [fontSize, _setFontSize] = useStateSettingNumber(
-        'preview-font-S=size', DEFAULT_BIBLE_TEXT_FONT_SIZE,
+        fontSizeSettingName, DEFAULT_BIBLE_TEXT_FONT_SIZE,
     );
     const setFontSize = (fontSize: number) => {
         if (fontSize < MIN_FONT_SIZE) {

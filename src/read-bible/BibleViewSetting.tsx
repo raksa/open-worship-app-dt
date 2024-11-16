@@ -1,6 +1,5 @@
 export default function BibleViewSetting({
-    fontSize, setFontSize,
-    minFontSize, maxFontSize, stepFontSize,
+    fontSize, setFontSize, minFontSize, maxFontSize, stepFontSize,
 }: Readonly<{
     minFontSize: number,
     maxFontSize: number,
@@ -9,6 +8,7 @@ export default function BibleViewSetting({
     setFontSize: (fontSize: number) => void,
 }>) {
     return (
+        // TODO: auto hide footer, transaction back up on hover
         <div className='bible-view-setting'>
             <div className='input-group d-flex'>
                 <div className='flex-fill d-flex mx-1'>
@@ -26,7 +26,8 @@ export default function BibleViewSetting({
                             value={fontSize}
                             onChange={(event) => {
                                 setFontSize(Number(event.target.value));
-                            }} />
+                            }}
+                        />
                     </div>
                 </div>
             </div>

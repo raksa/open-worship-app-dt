@@ -6,27 +6,33 @@ import {
     AnyObjectType, cloneJson, toMaxId,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { getSetting, getSettingPrefix } from '../helper/settingHelper';
+import { getSetting } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { WindowModEnum } from '../router/routeHelpers';
+import {
+    checkIsWindowReadingMode, WindowModEnum,
+} from '../router/routeHelpers';
 import { BibleItemType } from './bibleItemHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export type BibleType = {
     items: BibleItemType[],
     metadata: AnyObjectType,
 }
-const SELECT_DIR_SETTING = 'bible-list-selected-dir';
-export default class Bible extends ItemSource<BibleItem>{
+export default class Bible extends ItemSource<BibleItem> {
     static readonly DEFAULT_FILE_NAME = 'Default';
     _originalJson: BibleType;
     constructor(filePath: string, json: BibleType) {
         super(filePath);
         this._originalJson = cloneJson(json);
     }
-    static getSelectDirSettingName(windowMode: WindowModEnum | null) {
-        const prefixSetting = getSettingPrefix(windowMode);
-        return `${prefixSetting}${SELECT_DIR_SETTING}`;
+    static getDirSourceSettingName(windowMode: WindowModEnum | null) {
+        const isReading = checkIsWindowReadingMode(windowMode);
+        const dirSourceSettingName = (
+            isReading ? dirSourceSettingNames.BIBLE_READ :
+                dirSourceSettingNames.BIBLE_PRESENT
+        );
+        return dirSourceSettingName;
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
@@ -180,7 +186,7 @@ export default class Bible extends ItemSource<BibleItem>{
         ) as Promise<Bible | null | undefined>;
     }
     static async getDefault(windowMode: WindowModEnum | null) {
-        const dir = getSetting(Bible.getSelectDirSettingName(windowMode), '');
+        const dir = getSetting(Bible.getDirSourceSettingName(windowMode), '');
         if (!dir) {
             return null;
         }

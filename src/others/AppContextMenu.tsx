@@ -70,7 +70,8 @@ let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
 export function showAppContextMenu(
     event: MouseEvent,
-    items: ContextMenuItemType[]) {
+    items: ContextMenuItemType[],
+) {
     event.stopPropagation();
     return new Promise<void>((resolve) => {
         setDataDelegator?.({ event, items });

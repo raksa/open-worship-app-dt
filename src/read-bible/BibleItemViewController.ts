@@ -253,11 +253,11 @@ export default class BibleItemViewController
     ): ContextMenuItemType[] {
         return [
             {
-                title: 'Split Left', onClick: () => {
+                title: 'Split Horizontal', onClick: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
                 },
             }, {
-                title: 'Split Left To', onClick: (event: any) => {
+                title: 'Split Horizontal To', onClick: (event: any) => {
                     showBibleOption(event, [], (bibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = bibleKey;
@@ -266,11 +266,11 @@ export default class BibleItemViewController
                 },
             },
             {
-                title: 'Split Bottom', onClick: () => {
+                title: 'Split Vertical', onClick: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
                 },
             }, {
-                title: 'Split Bottom To', onClick: (event: any) => {
+                title: 'Split Vertical To', onClick: (event: any) => {
                     showBibleOption(event, [], (bibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = bibleKey;

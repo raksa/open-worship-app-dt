@@ -17,3 +17,9 @@ export const defaultDataDirNames = {
     BIBLE_PRESENT: 'bibles',
     BIBLE_READ: 'bibles-read',
 };
+
+
+export const fontSizeSettingNames = {
+    BIBLE_PRESENTING: 'bible-preview-font-size:presenting',
+    BIBLE_READING: 'bible-preview-font-size:reading',
+};

@@ -13,8 +13,9 @@ const ConfirmPopup = lazy(() => {
 export type AlertType = 'confirm' | null;
 
 export default function HandleAlert() {
-    const [confirmData, setConfirmData] = useState<
-        ConfirmDataType | null>(null);
+    const [confirmData, setConfirmData] = (
+        useState<ConfirmDataType | null>(null)
+    );
     alertManager.openConfirm = (newConfirmData) => {
         setConfirmData(newConfirmData);
     };
@@ -25,12 +26,16 @@ export default function HandleAlert() {
 
     return (
         <>
-            {confirmData !== null && <AppSuspense>
-                <ConfirmPopup data={confirmData} />
-            </AppSuspense>}
-            {alertData !== null && <AppSuspense>
-                <AlertPopup data={alertData} />
-            </AppSuspense>}
+            {confirmData !== null && (
+                <AppSuspense>
+                    <ConfirmPopup data={confirmData} />
+                </AppSuspense>
+            )}
+            {alertData !== null && (
+                <AppSuspense>
+                    <AlertPopup data={alertData} />
+                </AppSuspense>
+            )}
         </>
     );
 }

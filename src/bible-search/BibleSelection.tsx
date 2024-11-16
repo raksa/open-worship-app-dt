@@ -1,32 +1,43 @@
 import './BibleSelection.scss';
 
-import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    getBibleInfoWithStatusList,
-} from '../helper/bible-helpers/serverBibleHelpers';
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenu';
 import {
     useDownloadedBibleInfoList,
 } from '../setting/bible-setting/bibleSettingHelpers';
 import BibleSelectOption from './BibleSelectOption';
+import {
+    getDownloadedBibleInfoList,
+} from '../helper/bible-helpers/bibleDownloadHelpers';
+import { openAlert } from '../alert/alertHelpers';
 
 export async function showBibleOption(
     event: any, excludeBibleKey: string[],
     onSelect: (bibleKey: string) => void,
 ) {
-    const bibleList = await getBibleInfoWithStatusList();
-    const bibleListFiltered = bibleList.filter(([bibleKey]) => {
-        return !excludeBibleKey.includes(bibleKey);
-    });
-    showAppContextMenu(event,
-        bibleListFiltered.map(([bibleKey, isAvailable]) => {
+    const bibleInfoList = await getDownloadedBibleInfoList();
+    if (bibleInfoList === null) {
+        openAlert(
+            'Unable to get bible info list',
+            'We were sorry, but we are unable to get bible list at the moment' +
+            ' please try again later'
+        );
+        return;
+    }
+    const contextMenuItems: ContextMenuItemType[] = (
+        bibleInfoList.filter((bibleInfo) => {
+            return !excludeBibleKey.includes(bibleInfo.key);
+        }).map((bibleInfo) => {
             return {
-                title: bibleKey,
-                disabled: !isAvailable,
+                title: bibleInfo.key,
                 onClick: () => {
-                    onSelect(bibleKey);
+                    onSelect(bibleInfo.key);
                 },
             };
-        }));
+        })
+    );
+    showAppContextMenu(event, contextMenuItems);
 }
 
 export default function BibleSelection({ bibleKey, onChange }: Readonly<{
@@ -53,7 +64,8 @@ export default function BibleSelection({ bibleKey, onChange }: Readonly<{
             {bibleInfoList.map((bibleInfo) => {
                 return (
                     <BibleSelectOption key={bibleInfo.key}
-                        bibleKey={bibleInfo.key} />
+                        bibleKey={bibleInfo.key}
+                    />
                 );
             })}
         </select>

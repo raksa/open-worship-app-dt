@@ -45,7 +45,7 @@ export default function SlideItemDragReceiver({
             }}
             onDrop={async (event) => {
                 const droppedData = await handleDrop(event);
-                if (droppedData == null ||
+                if (droppedData === null ||
                     droppedData.type !== DragTypeEnum.SLIDE_ITEM) {
                     return;
                 }

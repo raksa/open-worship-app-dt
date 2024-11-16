@@ -11,21 +11,13 @@ import {
 } from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelper';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
 } from '../helper/constants';
 
 export default function BibleList() {
     const windowMode = useWindowMode();
-    const isReadingMode = checkIsWindowReadingMode(windowMode);
     const isReading = checkIsWindowReadingMode(windowMode);
-    const dirSourceSettingName = (
-        isReading ? dirSourceSettingNames.BIBLE_READ :
-            dirSourceSettingNames.BIBLE_PRESENT
-    );
-    const defaultDataDirName = (
-        isReading ? defaultDataDirNames.BIBLE_READ :
-            defaultDataDirNames.BIBLE_PRESENT
-    );
+    const dirSourceSettingName = Bible.getDirSourceSettingName(windowMode);
     const dirSource = useGenDS(dirSourceSettingName);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
@@ -43,6 +35,10 @@ export default function BibleList() {
     }
     Bible.getDefault(windowMode);
     const settingPrefix = getSettingPrefix(windowMode);
+    const defaultDataDirName = (
+        isReading ? defaultDataDirNames.BIBLE_READ :
+            defaultDataDirNames.BIBLE_PRESENT
+    );
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype='bible'
