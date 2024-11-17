@@ -172,3 +172,19 @@ export function isColor(strColor: string) {
     s.color = strColor;
     return !!s.color;
 }
+
+export function freezeObject(obj: any) {
+    if (!['object', 'array'].includes(typeof obj)) {
+        return;
+    }
+    Object.freeze(obj);
+    if (Array.isArray(obj)) {
+        obj.forEach((item) => {
+            freezeObject(item);
+        });
+    } else if (obj instanceof Object) {
+        for (const key in obj) {
+            freezeObject(obj[key]);
+        }
+    }
+}

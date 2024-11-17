@@ -5,6 +5,7 @@ import {
 } from './flexSizeHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import RenderResizeActorItem from './RenderResizeActorItem';
+import { freezeObject } from '../helper/helpers';
 
 
 export default function ResizeActor({
@@ -13,11 +14,12 @@ export default function ResizeActor({
 }: Readonly<{
     isHorizontal: boolean,
     fSizeName: string,
-    flexSizeDefault: FlexSizeType,
+    flexSizeDefault: Readonly<FlexSizeType>,
     dataInput: DataInputType[],
     isDisableQuickResize?: boolean,
     isNotSaveSetting?: boolean,
 }>) {
+    freezeObject(flexSizeDefault);
     for (const { key } of dataInput) {
         if (flexSizeDefault[key] === undefined) {
             throw new Error(
