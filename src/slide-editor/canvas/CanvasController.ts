@@ -122,30 +122,47 @@ export default class CanvasController extends EventHandler<CCEventType> {
         const newItem = CanvasItemText.genDefaultItem();
         this.addNewItem(newItem);
     }
-    async addNewMediaItem(filePath: string, event: any) {
+    getMousePosition(event: any) {
+        const rect = (
+            (event.target as HTMLDivElement).getBoundingClientRect()
+        );
+        const x = Math.floor((event.clientX - rect.left) / this.scale);
+        const y = Math.floor((event.clientY - rect.top) / this.scale);
+        return { x, y };
+    }
+    async genNewMediaItemFromFilePath(filePath: string, event: any) {
         try {
             const fileSource = FileSource.getInstance(filePath);
             const mediaType = (
                 fileSource.metadata?.appMimetype.mimetypeName || ''
             );
             if (!['image', 'video'].includes(mediaType)) {
-                showSimpleToast('Insert Medias',
-                    'Only image and video files are supported');
+                showSimpleToast(
+                    'Insert Medias', 'Only image and video files are supported',
+                );
                 return;
             }
-            const rect = (event.target as HTMLDivElement).
-                getBoundingClientRect();
-            const x = Math.floor((event.clientX - rect.left) / this.scale);
-            const y = Math.floor((event.clientY - rect.top) / this.scale);
-            const newItem = await (mediaType === 'image' ?
-                CanvasItemImage.genFromInsertion(x, y, filePath) :
-                CanvasItemVideo.genFromInsertion(x, y, filePath));
-            this.addNewItem(newItem);
-            return;
+            const { x, y } = this.getMousePosition(event);
+            const newItem = (
+                await (mediaType === 'image' ?
+                    CanvasItemImage.genFromInsertion(x, y, filePath) :
+                    CanvasItemVideo.genFromInsertion(x, y, filePath))
+            );
+            return newItem;
         } catch (error) {
             handleError(error);
         }
         showSimpleToast('Insert Image or Video', 'Fail to insert medias');
+    }
+    async genNewImageItemFromBlob(blob: Blob, event: any) {
+        try {
+            const { x, y } = this.getMousePosition(event);
+            const newItem = CanvasItemImage.genFromBlob(x, y, blob);
+            return newItem;
+        } catch (error) {
+            handleError(error);
+        }
+        showSimpleToast('Pasting Image', 'Fail to insert image');
     }
     async addNewBibleItem(bibleItem: BibleItem) {
         const id = this.canvas.maxItemId + 1;

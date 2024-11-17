@@ -1,21 +1,36 @@
 import { selectFiles } from '../../server/appHelper';
-import { getMimetypeExtensions } from '../../server/fileHelper';
-import FileSource from '../../helper/FileSource';
+import {
+    getMimetypeExtensions, isSupportedMimetype,
+} from '../../server/fileHelper';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
 
-export function showCanvasContextMenu(event: any) {
+function checkClipboardIsImage(clipboardItem: ClipboardItem) {
+    return clipboardItem.types.every((type) => {
+        return isSupportedMimetype(type, 'image');
+    });
+}
+
+export async function showCanvasContextMenu(event: any) {
     const canvasController = CanvasController.getInstance();
+    const clipboardItems = await navigator.clipboard.read();
+    const isPastingImage = clipboardItems.some((clipboardItem) => {
+        return checkClipboardIsImage(clipboardItem);
+    });
     showAppContextMenu(event, [
         {
             title: 'New',
-            onClick: () => canvasController.addNewTextItem(),
+            onClick: () => {
+                canvasController.addNewTextItem();
+            },
         },
         {
             title: 'Paste',
             disabled: canvasController.isCopied === null,
-            onClick: () => canvasController.paste(),
+            onClick: () => {
+                canvasController.paste();
+            },
         },
         {
             title: 'Insert Medias',
@@ -32,10 +47,40 @@ export function showCanvasContextMenu(event: any) {
                     },
                 ]);
                 filePaths.forEach((filePath) => {
-                    canvasController.addNewMediaItem(filePath, event);
+                    canvasController.genNewMediaItemFromFilePath(
+                        filePath, event,
+                    ).then((newCanvasItem) => {
+                        if (newCanvasItem) {
+                            canvasController.addNewItem(newCanvasItem);
+                        }
+                    });
                 });
             },
         },
+        ...(isPastingImage ? [
+            {
+                title: 'Paste Image',
+                onClick: async () => {
+                    const clipboardItems = await navigator.clipboard.read();
+                    for (const clipboardItem of clipboardItems) {
+                        clipboardItem.types.forEach(async (type) => {
+                            if (!isSupportedMimetype(type, 'image')) {
+                                return;
+                            }
+                            const blob = await clipboardItem.getType(type);
+                            canvasController
+                                .genNewImageItemFromBlob(blob, event)
+                                .then((newCanvasItem) => {
+                                    if (!newCanvasItem) {
+                                        return;
+                                    }
+                                    canvasController.addNewItem(newCanvasItem);
+                                });
+                        })
+                    }
+                },
+            },
+        ] : []),
     ]);
 }
 
