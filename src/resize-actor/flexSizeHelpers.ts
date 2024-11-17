@@ -100,28 +100,27 @@ export function getFlexSizeSetting(
     const settingString = toSettingString(fSizeName);
     const str = getSetting(settingString, '');
     try {
-        if (!isValidJson(str, true)) {
-            return defaultSize;
-        }
-        const size = JSON.parse(str);
-        if (Object.keys(defaultSize).every((k) => {
-            const fsValue = size[k];
-            if (!fsValue || fsValue.length === 0 ||
-                (fsValue[1] &&
-                    !disablingTargetTypeList.includes(fsValue[1][0]) &&
-                    typeof fsValue[1][1] !== 'number'
-                )) {
-                return false;
+        if (isValidJson(str, true)) {
+            const size = JSON.parse(str);
+            if (Object.keys(defaultSize).every((k) => {
+                const fsValue = size[k];
+                if (!fsValue || fsValue.length === 0 ||
+                    (fsValue[1] &&
+                        !disablingTargetTypeList.includes(fsValue[1][0]) &&
+                        typeof fsValue[1][1] !== 'number'
+                    )) {
+                    return false;
+                }
+                return true;
+            })) {
+                return size;
             }
-            return true;
-        })) {
-            return size;
         }
     } catch (error) {
         handleError(error);
-        setSetting(settingString, JSON.stringify(defaultSize));
     }
-    return defaultSize;
+    setSetting(settingString, JSON.stringify(defaultSize));
+    return getFlexSizeSetting(fSizeName, defaultSize);
 }
 
 function checkIsHiddenWidget(

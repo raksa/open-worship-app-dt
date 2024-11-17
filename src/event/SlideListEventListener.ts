@@ -29,8 +29,9 @@ export function useSlideItemSelecting(
         };
     });
 }
-export function useSlideItemSizing(settingName: string, defaultSize: number)
-    : [number, (s: number) => void] {
+export function useSlideItemSizing(
+    settingName: string, defaultSize: number,
+): [number, (s: number) => void] {
     const getDefaultSize = () => +getSetting(
         settingName, defaultSize.toString());
     const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(

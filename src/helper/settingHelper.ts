@@ -45,8 +45,9 @@ export function useStateSettingString<T extends string>(
     };
     return [data, setDataSetting] as [T, (t: T) => void];
 }
-export function useStateSettingNumber(settingName: string
-    , defaultNumber: number): [number, (n: number) => void] {
+export function useStateSettingNumber(
+    settingName: string, defaultNumber: number,
+): [number, (n: number) => void] {
     const defaultData = +(getSetting(settingName) || NaN);
     const [data, setData] = useState(
         isNaN(defaultData) ? defaultNumber : defaultData,
@@ -71,7 +72,6 @@ export class SettingManager<T> {
     constructor({
         settingName, defaultValue, isErrorToDefault,
         validate, serialize, deserialize,
-
     }: {
         settingName: string,
         defaultValue: T,
