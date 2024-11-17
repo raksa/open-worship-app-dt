@@ -180,31 +180,54 @@ export default class CanvasController extends EventHandler<CCEventType> {
         });
         this.setCanvasItems(newCanvasItems);
     }
-    applyItemFully(canvasItem: CanvasItem<any>) {
-        const isMedia = ['image', 'video'].includes(canvasItem.type);
+    scaleCanvasItemToSize(
+        canvasItem: CanvasItem<any>, targetWidth: number, targetHeight: number,
+        width: number, height: number,
+    ) {
+        const scale = Math.min(
+            targetWidth / width, targetHeight / height,
+        );
         const props = canvasItem.props as CanvasItemPropsType;
-        const parentWidth = this.canvas.width;
-        const parentHeight = this.canvas.height;
-        let width = props.width;
-        let height = props.height;
-        if (isMedia) {
-            const mediaProps = canvasItem.props as CanvasItemMediaPropsType;
-            width = mediaProps.mediaWidth;
-            height = mediaProps.mediaHeight;
-        }
-        const scale = Math.min(parentWidth / width,
-            parentHeight / height);
         props.width = width * scale;
         props.height = height * scale;
-        const parentDimension = {
+        const targetDimension = {
             parentWidth: this.canvas.width,
             parentHeight: this.canvas.height,
         };
-        canvasItem.applyBoxData(parentDimension, {
+        canvasItem.applyBoxData(targetDimension, {
             horizontalAlignment: 'center',
             verticalAlignment: 'center',
         });
         this.fireUpdateEvent();
+    }
+    applyCanvasItemFully(canvasItem: CanvasItem<any>) {
+        const props = canvasItem.props as CanvasItemPropsType;
+        let width = props.width;
+        let height = props.height;
+        if (['image', 'video'].includes(canvasItem.type)) {
+            const mediaProps = canvasItem.props as CanvasItemMediaPropsType;
+            width = mediaProps.mediaWidth;
+            height = mediaProps.mediaHeight;
+        }
+        const targetWidth = this.canvas.width;
+        const targetHeight = this.canvas.height;
+        this.scaleCanvasItemToSize(
+            canvasItem, targetWidth, targetHeight, width, height,
+        );
+    }
+    applyCanvasItemMediaStrip(canvasItem: CanvasItem<any>) {
+        if (!['image', 'video'].includes(canvasItem.type)) {
+            return;
+        }
+        const props = canvasItem.props as CanvasItemPropsType;
+        const targeWidth = props.width;
+        const targetHeightHeight = props.height;
+        const mediaProps = canvasItem.props as CanvasItemMediaPropsType;
+        const width = mediaProps.mediaWidth;
+        const height = mediaProps.mediaHeight;
+        this.scaleCanvasItemToSize(
+            canvasItem, targeWidth, targetHeightHeight, width, height,
+        );
     }
     stopAllMods(isSilent?: boolean) {
         this.canvas.canvasItems.forEach((item) => {

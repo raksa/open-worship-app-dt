@@ -74,12 +74,26 @@ export default function ToolsBox() {
                         applyBoxData({
                             rotate: 0,
                         });
-                    }}>UnRotate</button>
+                    }}>
+                    UnRotate
+                </button>
                 <hr />
                 <button className='btn btn-secondary'
                     onClick={() => {
-                        canvasController.applyItemFully(canvasItem);
-                    }}>Full</button>
+                        canvasController.applyCanvasItemFully(canvasItem);
+                    }}>
+                    Full
+                </button>
+                {['image', 'video'].includes(canvasItem.type) ? (
+                    <button className='btn btn-secondary'
+                        onClick={() => {
+                            canvasController.applyCanvasItemMediaStrip(
+                                canvasItem,
+                            );
+                        }}>
+                        Strip
+                    </button>
+                ) : null}
             </Tool>
         </>
     );

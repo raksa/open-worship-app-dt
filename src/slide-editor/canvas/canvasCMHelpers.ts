@@ -76,7 +76,7 @@ export async function showCanvasContextMenu(event: any) {
                                     }
                                     canvasController.addNewItem(newCanvasItem);
                                 });
-                        })
+                        });
                     }
                 },
             },
