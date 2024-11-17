@@ -47,7 +47,7 @@ export default function RenderResizeActorItem({
         setFlexSize(size);
     }, [fSizeName, defaultFlexSize]);
 
-    const { children, key, className = '', extraStyle = {} } = data;
+    const { children, key, className = '', extraStyle = {}, widgetName } = data;
     const flexSizeValue = (flexSize[key] || defaultFlexSize[key]) || [];
     const onHiddenWidgetClick = flexSizeValue[1] ? (event: any) => {
         const flexSizeDisabled = flexSizeValue[1] as DisabledType;
@@ -64,6 +64,7 @@ export default function RenderResizeActorItem({
     )) {
         isShowingFSizeActor = true;
     }
+    const type = isHorizontal ? 'h' : 'v';
     return (
         <Fragment key={index}>
             {isShowingFSizeActor && (
@@ -71,18 +72,20 @@ export default function RenderResizeActorItem({
                     isDisableQuickResize={isDisableQuickResize}
                     disable={disableCallback}
                     checkSize={checkSizeCallback}
-                    type={isHorizontal ? 'h' : 'v'}
+                    type={type}
                 />
             )}
             {onHiddenWidgetClick !== null ? (
-                <div title='Enable'
+                <div title={`Enable ${widgetName}`}
                     className={
                         `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
-                        `${HIDDEN_WIDGET_CLASS} pointer`
+                        `${HIDDEN_WIDGET_CLASS} pointer bar-type-${type}`
                     }
                     style={{ color: 'green' }}
                     onClick={onHiddenWidgetClick}
-                />
+                >
+                    <div>{widgetName}</div>
+                </div>
             ) : (
                 <div data-fs={keyToDataFSizeKey(fSizeName, key)}
                     data-fs-default={flexSizeValue[0]}

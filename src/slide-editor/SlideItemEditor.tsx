@@ -37,10 +37,12 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
                 dataInput={[
                     {
                         children: SlideItemEditorCanvas, key: 'v1',
+                        widgetName: 'Slide Item Editor Canvas',
                         className: 'flex-item',
                     },
                     {
-                        children: Tools, key: 'v2', className: 'flex-item',
+                        children: Tools, key: 'v2',
+                        widgetName: 'Tools', className: 'flex-item',
                     },
                 ]} />
         </div>

@@ -13,9 +13,9 @@ function checkIsActiveHiddenWidgetNode(node: HTMLDivElement) {
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
     type: ResizeKindType,
+    isDisableQuickResize: boolean,
     checkSize: () => void,
     disable: (dataFSizeKey: string, target: DisabledType) => void,
-    isDisableQuickResize: boolean,
 }
 export default class FlexResizeActor extends Component<Props, {}> {
     myRef: RefObject<HTMLDivElement>;

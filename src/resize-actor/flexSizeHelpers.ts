@@ -12,6 +12,7 @@ export type DataInputType = {
         render: () => React.JSX.Element | null,
     },
     key: string,
+    widgetName: string,
     className?: string,
     extraStyle?: CSSProperties,
 };

@@ -19,10 +19,13 @@ export default function AppPresentingRight() {
                 'v2': ['1'],
             }}
             dataInput={[
-                { children: BibleList, key: 'v1', className: 'flex-item' },
+                {
+                    children: BibleList, key: 'v1', widgetName: 'Bible List',
+                    className: 'flex-item',
+                },
                 {
                     children: MiniPresentScreen, key: 'v2',
-                    className: 'flex-item',
+                    widgetName: 'Mini Present Screen', className: 'flex-item',
                 },
             ]} />
     );

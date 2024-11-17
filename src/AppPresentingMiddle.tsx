@@ -19,8 +19,14 @@ export default function AppPresentingMiddle() {
                 'v2': ['1'],
             }}
             dataInput={[
-                { children: Presenting, key: 'v1', className: 'flex-item' },
-                { children: Background, key: 'v2', className: 'flex-item' },
+                {
+                    children: Presenting, key: 'v1', widgetName: 'Presenting',
+                    className: 'flex-item',
+                },
+                {
+                    children: Background, key: 'v2', widgetName: 'Background',
+                    className: 'flex-item',
+                },
             ]} />
     );
 }

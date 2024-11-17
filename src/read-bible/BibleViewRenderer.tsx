@@ -62,6 +62,7 @@ export default function BibleViewRenderer({
                         },
                     },
                     key: `${typeText}${i + 1}`,
+                    widgetName: 'Bible View',
                 };
             })} />
     );

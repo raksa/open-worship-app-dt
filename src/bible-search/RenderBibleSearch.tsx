@@ -91,13 +91,14 @@ export default function RenderBibleSearch({
                                 {
                                     children: BibleOnlineSearchBodyPreviewer,
                                     key: 'h1',
+                                    widgetName: 'Bible Online Search',
                                 },
                                 {
                                     children: {
                                         render: () => {
                                             return searchingBody;
                                         },
-                                    }, key: 'h2',
+                                    }, key: 'h2', widgetName: 'Searching',
                                 },
 
                             ]} /> : searchingBody

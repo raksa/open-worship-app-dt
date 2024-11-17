@@ -42,9 +42,18 @@ export default function AppPresenting() {
                     'h3': ['2'],
                 }}
                 dataInput={[
-                    {children: AppPresentingLeft, key: 'h1'},
-                    {children: AppPresentingMiddle, key: 'h2'},
-                    {children: AppPresentingRight, key: 'h3'},
+                    {
+                        children: AppPresentingLeft, key: 'h1',
+                        widgetName: 'App Presenting Left',
+                    },
+                    {
+                        children: AppPresentingMiddle, key: 'h2',
+                        widgetName: 'App Presenting Middle',
+                    },
+                    {
+                        children: AppPresentingRight, key: 'h3',
+                        widgetName: 'App Presenting Right',
+                    },
                 ]} />
             <HandleItemSlideEdit />
         </BibleItemViewControllerContext.Provider>

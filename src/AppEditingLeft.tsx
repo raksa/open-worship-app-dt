@@ -19,8 +19,14 @@ export default function AppEditingLeft() {
                 'v2': ['2'],
             }}
             dataInput={[
-                { children: SlideList, key: 'v1', className: 'flex-item' },
-                { children: SlidePreviewer, key: 'v2', className: 'flex-item' },
+                {
+                    children: SlideList, key: 'v1',
+                    widgetName: 'Slide List', className: 'flex-item',
+                },
+                {
+                    children: SlidePreviewer, key: 'v2',
+                    widgetName: 'Slide Previewer', className: 'flex-item',
+                },
             ]} />
     );
 }

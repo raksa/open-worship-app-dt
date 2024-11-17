@@ -19,8 +19,14 @@ export default function AppEditing() {
                 'h2': ['3'],
             }}
             dataInput={[
-                {children: AppEditingLeft, key: 'h1'},
-                {children: SlideItemEditorGround, key: 'h2'},
+                {
+                    children: AppEditingLeft, key: 'h1',
+                    widgetName: 'App Editing Left',
+                },
+                {
+                    children: SlideItemEditorGround, key: 'h2',
+                    widgetName: 'Slide Item Editing Ground',
+                },
             ]} />
     );
 }
