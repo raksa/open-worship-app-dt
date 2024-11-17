@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "main": "./electron-build/electron/index.js",
     "scripts": {
         "dev": "concurrently -k \"npm run vite:dev\" \"npm run electron:build && npm run electron\"",
