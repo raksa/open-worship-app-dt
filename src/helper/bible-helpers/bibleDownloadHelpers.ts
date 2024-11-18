@@ -61,7 +61,7 @@ const getDownloadHandler = (
             let cur = 0;
             const mb = 1048576;//1048576 - bytes in  1Megabyte
             const total = len / mb;
-            options.onStart(+(total.toFixed(2)));
+            options.onStart(parseInt(total.toFixed(2), 10));
             response.on('data', (chunk: Buffer) => {
                 if (writeStream.writable) {
                     writeStream.write(chunk, (error1) => {

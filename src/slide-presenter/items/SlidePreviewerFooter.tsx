@@ -52,8 +52,10 @@ function ScalePreviewerFooter({
                 step={THUMBNAIL_SCALE_STEP}
                 value={currentScale.toFixed(1)}
                 onChange={(event) => {
-                    setThumbnailSize((+event.target.value) *
-                        DEFAULT_THUMBNAIL_SIZE);
+                    setThumbnailSize(
+                        (parseInt(event.target.value, 10)) *
+                        DEFAULT_THUMBNAIL_SIZE,
+                    );
                 }}
                 onWheel={(event) => {
                     const newScale = Slide.toScaleThumbSize(

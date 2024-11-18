@@ -1,37 +1,26 @@
 import { CSSProperties } from 'react';
 
 import EventHandler from '../event/EventHandler';
-import { isValidJson } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { setSetting } from '../helper/settingHelper';
 import appProviderScreen from './appProviderScreen';
 import {
     AlertType, checkIsCountdownDatesEq, genHtmlAlertCountdown,
     genHtmlAlertMarquee, removeAlert,
 } from './screenAlertHelpers';
 import { sendScreenMessage } from './screenEventHelpers';
-import { ScreenMessageType } from './screenHelpers';
+import {
+    AlertDataType, AlertSrcListType, getAlertDataListOnScreenSetting,
+    ScreenMessageType,
+} from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenTransitionEffect from
     './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
-import { handleError } from '../helper/errorHelpers';
-
-export type AlertDataType = {
-    marqueeData: {
-        text: string,
-    } | null;
-    countdownData: {
-        dateTime: Date,
-    } | null;
-};
-export type AlertSrcListType = {
-    [key: string]: AlertDataType;
-};
+import { screenManagerSettingNames } from '../helper/constants';
 
 export type ScreenAlertEventType = 'update';
 
-const settingName = 'screen-alert-';
 export default class ScreenAlertManager
     extends EventHandler<ScreenAlertEventType>
     implements ScreenManagerInf {
@@ -48,7 +37,7 @@ export default class ScreenAlertManager
         super();
         this.screenId = screenId;
         if (appProviderScreen.isMain) {
-            const allAlertDataList = ScreenAlertManager.getAlertDataList();
+            const allAlertDataList = getAlertDataListOnScreenSetting();
             if (allAlertDataList[this.key] !== undefined) {
                 const {
                     marqueeData,
@@ -77,7 +66,8 @@ export default class ScreenAlertManager
     }
     get ptEffect() {
         return ScreenTransitionEffect.getInstance(
-            this.screenId, this.ptEffectTarget);
+            this.screenId, this.ptEffectTarget,
+        );
     }
     get screenManager() {
         return ScreenManager.getInstance(this.screenId);
@@ -86,7 +76,7 @@ export default class ScreenAlertManager
         return this.screenId.toString();
     }
     saveAlertData() {
-        const allAlertDataList = ScreenAlertManager.getAlertDataList();
+        const allAlertDataList = getAlertDataListOnScreenSetting();
         allAlertDataList[this.key] = this.alertData;
         ScreenAlertManager.setAlertDataList(allAlertDataList);
         this.sendSyncScreen();
@@ -132,43 +122,12 @@ export default class ScreenAlertManager
     static fireUpdateEvent() {
         this.addPropEvent('update');
     }
-    static getAlertDataList(): AlertSrcListType {
-        const str = getSetting(settingName, '');
-        try {
-            if (!isValidJson(str, true)) {
-                return {};
-            }
-            const json = JSON.parse(str);
-            Object.values(json).forEach((item: any) => {
-                const { countdownData } = item;
-                if (
-                    !(
-                        item.marqueeData === null ||
-                        typeof item.marqueeData.text === 'string'
-                    ) ||
-                    !(
-                        countdownData === null ||
-                        typeof countdownData.dateTime === 'string'
-                    )
-                ) {
-                    throw new Error('Invalid alert data');
-                }
-                if (countdownData?.dateTime) {
-                    countdownData.dateTime = new Date(countdownData.dateTime);
-                }
-            });
-            return json;
-        } catch (error) {
-            handleError(error);
-        }
-        return {};
-    }
     static setAlertDataList(alertDataList: AlertSrcListType) {
         const str = JSON.stringify(alertDataList);
-        setSetting(settingName, str);
+        setSetting(screenManagerSettingNames.ALERT, str);
     }
     static getAlertDataListByType(alertType: AlertType) {
-        const alertDataList = this.getAlertDataList();
+        const alertDataList = getAlertDataListOnScreenSetting();
         return Object.entries(alertDataList).filter(([_, bgSrc]) => {
             if (alertType === 'marquee') {
                 return bgSrc.marqueeData !== null;

@@ -13,7 +13,10 @@ import {
 initReceiveScreenMessage();
 export default function ScreenApp() {
     const urlParams = new URLSearchParams(window.location.search);
-    const screenId = +(urlParams.get('screenId') ?? '0');
+    const screenId = parseInt(urlParams.get('screenId') ?? '', 10);
+    if (isNaN(screenId)) {
+        return null;
+    }
     const screenManager = ScreenManager.createInstance(screenId);
     if (screenManager === null) {
         return null;

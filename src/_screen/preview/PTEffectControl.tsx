@@ -9,10 +9,12 @@ export default function PTEffectControl() {
         <>
             <RenderTransitionEffect title='bg:'
                 target={'background'}
-                screenId={screenId} />
+                screenId={screenId}
+            />
             <RenderTransitionEffect title='slide:'
                 target={'slide'}
-                screenId={screenId} />
+                screenId={screenId}
+            />
         </>
     );
 }

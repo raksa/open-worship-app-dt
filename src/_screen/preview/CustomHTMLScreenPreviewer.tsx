@@ -63,7 +63,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
         const root = createRoot(this.mountPoint);
         const idStr = this.getAttribute('screenid');
         if (idStr !== null) {
-            this.screenId = +idStr;
+            this.screenId = parseInt(idStr, 10);
             const screenManager = ScreenManager.getInstance(this.screenId);
             if (screenManager === null) {
                 return;

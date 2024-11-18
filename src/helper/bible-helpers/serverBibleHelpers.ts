@@ -28,7 +28,7 @@ export const toLocaleNum = (n: number, numList: string[]) => {
         return n;
     }
     return `${n}`.split('').map((n1) => {
-        return numList[+n1];
+        return numList[parseInt(n1, 10)];
     }).join('');
 };
 
@@ -193,7 +193,6 @@ export function toChapterList(bibleKey: string, bookKey: string) {
 }
 
 function toIndex(bookKey: string, chapterNum: number) {
-    chapterNum = +chapterNum;
     let index = -1;
     let bIndex = 0;
     while (bibleObj.booksOrder[bIndex]) {

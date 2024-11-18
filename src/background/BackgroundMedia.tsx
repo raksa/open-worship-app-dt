@@ -50,7 +50,8 @@ export default function BackgroundMedia({
             mimetype={bgType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
-            bodyHandler={renderCallback} />
+            bodyHandler={renderCallback}
+        />
     );
 }
 
@@ -63,9 +64,12 @@ function genBody(
         fileSource.src, bgType,
     );
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
-    const title = `${filePath}` + (selectedBGSrcList.length ?
-        ` \nShow in presents:${selectedBGSrcList.map(([key]) => key).join(',')
-        }` : '');
+    const screenKeys = selectedBGSrcList.map(([key]) => key);
+    const title = (
+        `${filePath}` + (selectedBGSrcList.length ?
+            ` \nShow in presents:${screenKeys.join(',')}` : ''
+        )
+    );
 
     return (
         <div key={fileSource.name}

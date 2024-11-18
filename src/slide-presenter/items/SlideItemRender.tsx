@@ -7,13 +7,13 @@ import ScreenSlideManager from '../../_screen/ScreenSlideManager';
 import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
 import { handleDragStart } from '../../bible-list/dragHelpers';
 import { checkIsWindowEditorMode } from '../../router/routeHelpers';
+import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 
 export function RendInfo({ index, slideItem }: Readonly<{
     index: number,
     slideItem: SlideItem,
 }>) {
     const { selectedList } = toCNHighlight(slideItem);
-    const screenIds = selectedList.map(([id]) => id);
     return (
         <>
             <div>
@@ -21,13 +21,12 @@ export function RendInfo({ index, slideItem }: Readonly<{
                     title={`Index: ${index + 1}`}>
                     {index + 1}
                 </span>
-                {selectedList.length > 0 ? (
-                    <span title={
-                        `Showing on screens: ${screenIds.join(', ')}`
-                    }>
-                        <i className='bi bi-collection' />
-                    </span>
-                ) : null}
+                {selectedList.map(([key]) => {
+                    const screenId = parseInt(key, 10);
+                    return (
+                        <ShowingScreenIcon key={key} screenId={screenId} />
+                    );
+                })}
             </div>
             <div className='flex-fill d-flex justify-content-end'>
                 <span title={

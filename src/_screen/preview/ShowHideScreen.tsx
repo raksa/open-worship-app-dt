@@ -3,6 +3,7 @@ import {
 } from '../../event/KeyboardEventListener';
 import { usePMEvents } from '../screenEventHelpers';
 import { useScreenManager } from '../ScreenManager';
+import ShowingScreenIcon from './ShowingScreenIcon';
 
 const showingScreenEventMap = { key: 'F5' };
 export default function ShowHideScreen() {
@@ -18,6 +19,7 @@ export default function ShowHideScreen() {
                 screenManager.isShowing = !isShowing;
             }}
             data-tool-tip={toShortcutKey(showingScreenEventMap)}>
+            <ShowingScreenIcon screenId={screenManager.screenId} />
             <i className='bi bi-file-slides-fill' />
         </div>
     );

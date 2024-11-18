@@ -32,8 +32,9 @@ export function useSlideItemSelecting(
 export function useSlideItemSizing(
     settingName: string, defaultSize: number,
 ): [number, (s: number) => void] {
-    const getDefaultSize = () => +getSetting(
-        settingName, defaultSize.toString());
+    const getDefaultSize = () => {
+        return parseInt(getSetting(settingName, defaultSize.toString()), 10);
+    };
     const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(
         settingName, getDefaultSize());
     useAppEffect(() => {

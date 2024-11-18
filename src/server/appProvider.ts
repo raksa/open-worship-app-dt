@@ -14,10 +14,14 @@ export type MessageUtilsType = {
     },
     sendData: (channel: string, ...args: any[]) => void,
     sendDataSync: (channel: string, ...args: any[]) => any,
-    listenForData: (channel: string,
-        callback: (event: MessageEventType, ...args: any[]) => void) => void,
-    listenOnceForData: (channel: string,
-        callback: (event: MessageEventType, ...args: any[]) => void) => void,
+    listenForData: (
+        channel: string,
+        callback: (event: MessageEventType, ...args: any[]) => void
+    ) => void,
+    listenOnceForData: (
+        channel: string,
+        callback: (event: MessageEventType, ...args: any[]) => void,
+    ) => void,
 };
 
 export type FileUtilsType = {

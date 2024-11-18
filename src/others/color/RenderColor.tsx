@@ -13,8 +13,7 @@ function showContextMenu(event: any, color: AppColorType) {
     }]);
 }
 export default function RenderColor({
-    name, color, isSelected,
-    onClick,
+    name, color, isSelected, onClick,
 }: Readonly<{
     name: string,
     color: AppColorType,
@@ -30,8 +29,10 @@ export default function RenderColor({
             onContextMenu={(event) => {
                 showContextMenu(event, color);
             }}
-            className={'m-1 color-item pointer' +
-                (isSelected ? ' highlight-selected' : '')}
+            className={
+                'm-1 color-item pointer' +
+                (isSelected ? ' highlight-selected' : '')
+            }
             style={{
                 width: '20px',
                 height: '15px',
@@ -39,6 +40,7 @@ export default function RenderColor({
             }}
             onClick={(event) => {
                 onClick?.(event as any, color);
-            }} />
+            }}
+        />
     );
 }

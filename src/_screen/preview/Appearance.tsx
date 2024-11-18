@@ -52,7 +52,7 @@ export default function Appearance() {
                     type='range' min='1'
                     max={ScreenFTManager.maxTextStyleTextFontSize}
                     value={fontSize} onChange={(event) => {
-                        setFontSizeToStyle(+event.target.value);
+                        setFontSizeToStyle(parseInt(event.target.value, 10));
                     }} />
             </div>
         </div>

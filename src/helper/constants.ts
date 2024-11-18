@@ -23,3 +23,10 @@ export const fontSizeSettingNames = {
     BIBLE_PRESENTER: 'bible-preview-font-size:presenter',
     BIBLE_READING: 'bible-preview-font-size:reader',
 };
+
+export const screenManagerSettingNames = {
+    SLIDE: 'screen-slide-manager',
+    ALERT: 'screen-alert-manager',
+    BG: 'screen-bg-manager',
+    FT: 'screen-ft-manager',
+};

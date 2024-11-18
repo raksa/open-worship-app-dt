@@ -49,7 +49,9 @@ export default function Tools() {
                         <div style={{ maxWidth: '200px' }}>
                             <input type='range' className='form-range'
                                 onChange={(event) => {
-                                    const scale = +event.target.value;
+                                    const scale = parseInt(
+                                        event.target.value, 10,
+                                    );
                                     canvasController.scale = scale;
                                 }}
                                 min={canvasController.MIN_SCALE}

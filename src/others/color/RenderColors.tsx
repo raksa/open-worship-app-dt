@@ -8,8 +8,7 @@ import RenderNoColor from './RenderNoColor';
 
 
 export default function RenderColors({
-    colors, selectedColor,
-    onColorChange,
+    colors, selectedColor, onColorChange,
 }: Readonly<{
     colors: AnyObjectType,
     selectedColor: AppColorType | null,
@@ -29,32 +28,38 @@ export default function RenderColors({
     return (
         <div>
             <div>
-                {selectedColor ?
+                {selectedColor ? (
                     <RenderColor
                         name={selectedColor}
                         color={selectedColor}
-                        isSelected /> :
-                    <RenderNoColor
-                        isSelected />
-                }
+                        isSelected
+                    />
+                ) : (
+                    <RenderNoColor isSelected />
+                )}
             </div>
             <div className='d-flex flex-wrap border-white-round'>
                 <RenderNoColor isSelected={!selectedColor}
-                    onClick={onNoColorCallback} />
-                {Object.entries(colors).map(([name, color]:
-                    [string, AppColorType]) => {
-                    return (
-                        <RenderColor key={color} name={name}
-                            color={color}
-                            isSelected={selectedColor !== null &&
-                                compareColor(selectedColor, color)}
-                            onClick={onColorCallback} />
-                    );
-                })}
+                    onClick={onNoColorCallback}
+                />
+                {Object.entries(colors)
+                    .map(([name, color]: [string, AppColorType]) => {
+                        return (
+                            <RenderColor key={color} name={name}
+                                color={color}
+                                isSelected={
+                                    selectedColor !== null &&
+                                    compareColor(selectedColor, color)
+                                }
+                                onClick={onColorCallback}
+                            />
+                        );
+                    })}
             </div>
             <div className='m-2'>
                 <SelectCustomColor color={selectedColor}
-                    onColorSelected={onColorSelectCallback} />
+                    onColorSelected={onColorSelectCallback}
+                />
             </div>
         </div>
     );

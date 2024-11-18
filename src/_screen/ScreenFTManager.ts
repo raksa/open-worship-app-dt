@@ -14,16 +14,19 @@ import appProviderScreen from './appProviderScreen';
 import fullTextScreenHelper from './fullTextScreenHelper';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
-    ScreenFTManagerEventType, FTItemDataType, SCREEN_SETTING_NAME, getFTList,
-    setFTList, renderPFTManager, bibleItemToFtData,
+    ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX, renderPFTManager,
+    bibleItemToFtData,
 } from './screenFTHelpers';
 import {
-    genScreenMouseEvent, ScreenMessageType,
+    FTItemDataType,
+    FTListType,
+    genScreenMouseEvent, getFTListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
 import * as loggerHelpers from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
+import { screenManagerSettingNames } from '../helper/constants';
 
 export default class ScreenFTManager
     extends EventHandler<ScreenFTManagerEventType>
@@ -40,10 +43,12 @@ export default class ScreenFTManager
         super();
         this.screenId = screenId;
         if (appProviderScreen.isMain) {
-            const allFTList = getFTList();
+            const allFTList = getFTListOnScreenSetting();
             this._ftItemData = allFTList[this.key] || null;
 
-            const str = getSetting(`${SCREEN_SETTING_NAME}-style-text`, '');
+            const str = getSetting(
+                `${SCREEN_FT_SETTING_PREFIX}-style-text`, '',
+            );
             try {
                 if (isValidJson(str, true)) {
                     const style = JSON.parse(str);
@@ -67,12 +72,12 @@ export default class ScreenFTManager
     };
     get isLineSync() {
         const screenId = this.screenId;
-        const settingKey = `${SCREEN_SETTING_NAME}-line-sync-${screenId}`;
+        const settingKey = `${SCREEN_FT_SETTING_PREFIX}-line-sync-${screenId}`;
         return getSetting(settingKey) === 'true';
     }
     set isLineSync(isLineSync: boolean) {
         setSetting(
-            `${SCREEN_SETTING_NAME}-line-sync-${this.screenId}`,
+            `${SCREEN_FT_SETTING_PREFIX}-line-sync-${this.screenId}`,
             `${isLineSync}`,
         );
     }
@@ -103,13 +108,13 @@ export default class ScreenFTManager
     set ftItemData(ftItemData: FTItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
-        const allFTList = getFTList();
+        const allFTList = getFTListOnScreenSetting();
         if (ftItemData === null) {
             delete allFTList[this.key];
         } else {
             allFTList[this.key] = ftItemData;
         }
-        setFTList(allFTList);
+        ScreenFTManager.setFTList(allFTList);
         this.sendSyncData();
         this.fireUpdate();
     }
@@ -117,9 +122,9 @@ export default class ScreenFTManager
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
             if (!appProviderScreen.isScreen) {
-                const allFTList = getFTList();
+                const allFTList = getFTListOnScreenSetting();
                 allFTList[this.key] = this._ftItemData;
-                setFTList(allFTList);
+                ScreenFTManager.setFTList(allFTList);
             }
         }
     }
@@ -192,6 +197,10 @@ export default class ScreenFTManager
             },
         }, true);
     }
+    static setFTList(ftList: FTListType) {
+        const str = JSON.stringify(ftList);
+        setSetting(screenManagerSettingNames.FT, str);
+    }
     static receiveSyncSelectedIndex(message: ScreenMessageType) {
         const { data, screenId } = message;
         const screenFTManager = this.getInstanceByScreenId(screenId);
@@ -259,7 +268,7 @@ export default class ScreenFTManager
     static set textStyle(style: AnyObjectType) {
         this._textStyle = style;
         const str = JSON.stringify(style);
-        setSetting(`${SCREEN_SETTING_NAME}-style-text`, str);
+        setSetting(`${SCREEN_FT_SETTING_PREFIX}-style-text`, str);
         this.sendSynTextStyle();
         this.addPropEvent('text-style');
     }

@@ -10,8 +10,8 @@ import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBGManager from './ScreenBGManager';
 import ScreenFTManager from './ScreenFTManager';
 import {
-    getAllDisplays, getAllShowingScreenIds, hideScreen, ScreenMessageType,
-    setDisplay, showScreen,
+    getAllDisplays, getAllShowingScreenIds, hideScreen, screenManagerCache,
+    ScreenMessageType, setDisplay, showScreen,
 } from './screenHelpers';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
@@ -50,7 +50,6 @@ export default class ScreenManager
     name: string;
     _isSelected: boolean = false;
     private _isShowing: boolean;
-    static readonly _cache = new Map<string, ScreenManager>();
 
     constructor(screenId: number) {
         super();
@@ -86,15 +85,16 @@ export default class ScreenManager
         const defaultDisplay = ScreenManager.getDefaultScreenDisplay();
         const str = getSetting(`${settingName}-pid-${screenId}`,
             defaultDisplay.id.toString());
-        if (isNaN(+str)) {
+        if (isNaN(parseInt(str, 10))) {
             return defaultDisplay.id;
         }
-        const id = +str;
+        const id = parseInt(str, 10);
         const { displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id === id;
         })?.id || defaultDisplay.id;
     }
+    // TODO: implement multiple display support
     get displayId() {
         return ScreenManager.getDisplayIdByScreenId(this.screenId);
     }
@@ -190,7 +190,7 @@ export default class ScreenManager
         this.screenSlideManager.delete();
         this.screenAlertManager.delete();
         this.hide();
-        ScreenManager._cache.delete(this.key);
+        screenManagerCache.delete(this.key);
         ScreenManager.saveScreenManagersSetting();
         this.fireInstanceEvent();
     }
@@ -225,10 +225,11 @@ export default class ScreenManager
         }
     }
     static getInstanceByKey(key: string) {
-        return this.getInstance(+key);
+        const screenId = parseInt(key, 10);
+        return this.getInstance(screenId);
     }
     static getAllInstances() {
-        const cachedInstances = Array.from(this._cache.values());
+        const cachedInstances = Array.from(screenManagerCache.values());
         if (cachedInstances.length > 0) {
             return cachedInstances;
         }
@@ -238,22 +239,22 @@ export default class ScreenManager
     }
     static createInstance(screenId: number) {
         const key = screenId.toString();
-        if (!this._cache.has(key)) {
+        if (!screenManagerCache.has(key)) {
             const screenManager = new ScreenManager(screenId);
-            this._cache.set(key, screenManager);
+            screenManagerCache.set(key, screenManager);
             ScreenManager.saveScreenManagersSetting();
         }
-        return this._cache.get(key) as ScreenManager;
+        return screenManagerCache.get(key) as ScreenManager;
     }
     static getInstance(screenId: number) {
         const key = screenId.toString();
-        if (this._cache.has(key)) {
-            return this._cache.get(key) as ScreenManager;
+        if (screenManagerCache.has(key)) {
+            return screenManagerCache.get(key) as ScreenManager;
         }
         return null;
     }
     static getSelectedInstances() {
-        return Array.from(this._cache.values())
+        return Array.from(screenManagerCache.values())
             .filter((screenManager) => {
                 return screenManager.isSelected;
             });

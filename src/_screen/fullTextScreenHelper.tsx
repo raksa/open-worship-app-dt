@@ -104,9 +104,11 @@ const fullTextScreenHelper = {
             });
             span.addEventListener('click', () => {
                 const arrChildren = this.removeClassName(table, 'selected');
-                if (!arrChildren.includes(span) && span.dataset.highlight
-                    && !isNaN(+span.dataset.highlight)) {
-                    onSelectIndex(+span.dataset.highlight);
+                if (
+                    !arrChildren.includes(span) && span.dataset.highlight
+                    && !isNaN(parseInt(span.dataset.highlight, 10))
+                ) {
+                    onSelectIndex(parseInt(span.dataset.highlight, 10));
                 } else {
                     onSelectIndex(null);
                 }

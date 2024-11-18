@@ -55,14 +55,18 @@ export default function ColorPicker({
         setLocalColor(upperColor);
     };
     return (
-        <div className='color-picker border-white-round'>
+        <div className='flex-item color-picker'>
             <div className='p-3 overflow-hidden'>
                 <RenderColors colors={colorList.main}
                     selectedColor={localColor}
-                    onColorChange={onColorChangeCallback} />
-                {localColor !== null && <OpacitySlider
-                    value={colorToTransparent(localColor)}
-                    onOpacityChanged={onOpacityChangedCallback} />}
+                    onColorChange={onColorChangeCallback}
+                />
+                {localColor !== null && (
+                    <OpacitySlider
+                        value={colorToTransparent(localColor)}
+                        onOpacityChanged={onOpacityChangedCallback}
+                    />
+                )}
             </div>
         </div>
     );

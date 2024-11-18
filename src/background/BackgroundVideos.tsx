@@ -53,11 +53,15 @@ function RendBody({ filePath, selectedBGSrcList }: Readonly<{
                 }
             }}>
             <RenderScreenIds
-                ids={selectedBGSrcList.map(([key]) => +key)} />
+                screenIds={selectedBGSrcList.map(([key]) => {
+                    return parseInt(key, 10);
+                })}
+            />
             <video ref={vRef}
                 loop
                 muted
-                src={fileSource.src} />
+                src={fileSource.src}
+            />
         </div>
     );
 }

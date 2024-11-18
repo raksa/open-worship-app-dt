@@ -8,12 +8,13 @@ import {
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
-import ScreenBGManager, {
-    BackgroundType,
-} from '../_screen/ScreenBGManager';
 import {
     usePBGMEvents,
 } from '../_screen/screenEventHelpers';
+import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
+import {
+    BackgroundType, getBGSrcListOnScreenSetting,
+} from '../_screen/screenHelpers';
 
 const BackgroundColors = lazy(() => {
     return import('./BackgroundColors');
@@ -37,7 +38,7 @@ export default function Background() {
         'background-tab', 'image',
     );
     usePBGMEvents(['update']);
-    const bgSrcList = ScreenBGManager.getBGSrcList();
+    const bgSrcList = getBGSrcListOnScreenSetting();
     const toHLS = (type: BackgroundType) => {
         const isSelected = Object.values(bgSrcList).some((src) => {
             return src.type === type;
@@ -63,15 +64,22 @@ export default function Background() {
     );
 }
 
-export function RenderScreenIds({ ids }: Readonly<{
-    ids: number[],
+export function RenderScreenIds({ screenIds }: Readonly<{
+    screenIds: number[],
 }>) {
     return (
         <div style={{
             position: 'absolute',
             textShadow: '1px 1px 5px #000',
         }}>
-            {ids.join(',')}
+            {screenIds.map((screenId) => {
+                return (
+                    <ShowingScreenIcon
+                        key={screenId}
+                        screenId={screenId}
+                    />
+                );
+            })}
         </div>
     );
 }

@@ -23,7 +23,7 @@ export default function AppRange({
                 step={defaultSize.step}
                 value={currentSize.toFixed(1)}
                 onChange={(event) => {
-                    setCurrentSize(+event.target.value);
+                    setCurrentSize(parseInt(event.target.value, 10));
                 }}
             />
         </div>

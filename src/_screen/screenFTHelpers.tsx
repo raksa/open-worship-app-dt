@@ -1,110 +1,20 @@
 import BibleItem from '../bible-list/BibleItem';
-import { isValidJson } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
-import { checkIsValidLocale } from '../lang';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    BibleItemRenderedType, LyricRenderedType,
+    BibleItemRenderedType,
 } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelper';
 import ScreenFTManager from './ScreenFTManager';
 import ScreenManager from './ScreenManager';
-import * as loggerHelpers from '../helper/loggerHelpers';
-import { BibleItemType } from '../bible-list/bibleItemHelpers';
-import { handleError } from '../helper/errorHelpers';
 import { openAlert } from '../alert/alertHelpers';
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
-
-const ftDataTypeList = [
-    'bible-item', 'lyric',
-] as const;
-export type FfDataType = typeof ftDataTypeList[number];
-export type FTItemDataType = {
-    type: FfDataType,
-    bibleItemData?: {
-        renderedList: BibleItemRenderedType[],
-        bibleItem: BibleItemType,
-    },
-    lyricData?: {
-        renderedList: LyricRenderedType[],
-    },
-    scroll: number,
-    selectedIndex: number | null,
-};
-export type FTListType = {
-    [key: string]: FTItemDataType;
-};
+import { FTItemDataType } from './screenHelpers';
 
 export type ScreenFTManagerEventType = 'update' | 'text-style';
 
-export const SCREEN_SETTING_NAME = 'screen-ft-';
-
-const validateBible = ({ renderedList, bibleItem }: any) => {
-    BibleItem.validate(bibleItem);
-    return (
-        !Array.isArray(renderedList) ||
-        renderedList.some(({ locale, bibleKey, title, verses }: any) => {
-            return (
-                !checkIsValidLocale(locale) ||
-                typeof bibleKey !== 'string' ||
-                typeof title !== 'string' ||
-                !Array.isArray(verses) ||
-                verses.some(({ num, text }: any) => {
-                    return (
-                        typeof num !== 'string' || typeof text !== 'string'
-                    );
-                })
-            );
-        })
-    );
-};
-const validateLyric = ({ renderedList }: any) => {
-    return !Array.isArray(renderedList)
-        || renderedList.some(({
-            title, items,
-        }: any) => {
-            return typeof title !== 'string'
-                || !Array.isArray(items)
-                || items.some(({ num, text }: any) => {
-                    return typeof num !== 'number'
-                        || typeof text !== 'string';
-                });
-        });
-};
-export function getFTList(): FTListType {
-    const settingName = `${SCREEN_SETTING_NAME}-ft-data`;
-    const str = getSetting(settingName, '');
-    try {
-        if (!isValidJson(str, true)) {
-            return {};
-        }
-        const json = JSON.parse(str);
-        Object.values(json).forEach((item: any) => {
-            if (
-                !ftDataTypeList.includes(item.type) ||
-                (
-                    item.type === 'bible-item' &&
-                    validateBible(item.bibleItemData)
-                ) ||
-                (item.type === 'lyric' && validateLyric(item.lyricData))
-            ) {
-                loggerHelpers.error(item);
-                throw new Error('Invalid full-text data');
-            }
-        });
-        return json;
-    } catch (error) {
-        setSetting(settingName, '');
-        handleError(error);
-    }
-    return {};
-}
-export function setFTList(ftList: FTListType) {
-    const str = JSON.stringify(ftList);
-    setSetting(`${SCREEN_SETTING_NAME}-ft-data`, str);
-}
+export const SCREEN_FT_SETTING_PREFIX = 'screen-ft-';
 
 function onSelectIndex(
     screenFTManager: ScreenFTManager, selectedIndex: number | null,
@@ -255,8 +165,9 @@ export function renderPFTManager(screenFTManager: ScreenFTManager) {
 }
 
 export async function bibleItemToFtData(bibleItems: BibleItem[]) {
-    const bibleRenderedList = await fullTextScreenHelper.
-        genBibleItemRenderList(bibleItems);
+    const bibleRenderedList = (
+        await fullTextScreenHelper.genBibleItemRenderList(bibleItems)
+    );
     return {
         type: 'bible-item',
         bibleItemData: {

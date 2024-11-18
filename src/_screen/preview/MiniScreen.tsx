@@ -33,7 +33,7 @@ function openContextMenu(event: any) {
 }
 
 initReceiveScreenMessage();
-export default function MiniScreenScreen() {
+export default function MiniScreen() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
         'mini-screen-previewer-tool', true,
     );
@@ -57,7 +57,9 @@ export default function MiniScreenScreen() {
                 style={{
                     overflow: 'auto',
                 }}>
-                {isShowingTools && <ScreenPreviewerTools />}
+                {isShowingTools && (
+                    <ScreenPreviewerTools />
+                )}
                 <div className='w-100'>
                     {screenManagers.map((screenManager) => {
                         return (

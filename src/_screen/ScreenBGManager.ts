@@ -3,35 +3,26 @@ import { CSSProperties } from 'react';
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
-    getImageDim, getVideoDim, isValidJson,
+    getImageDim, getVideoDim,
 } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { setSetting } from '../helper/settingHelper';
 import appProviderScreen from './appProviderScreen';
 import { genHtmlBG } from './ScreenBackground';
 import { sendScreenMessage } from './screenEventHelpers';
-import { ScreenMessageType } from './screenHelpers';
+import {
+    BackgroundSrcType, BackgroundType, BGSrcListType,
+    getBGSrcListOnScreenSetting, ScreenMessageType,
+} from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenTransitionEffect
     from './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { handleError } from '../helper/errorHelpers';
-
-const backgroundTypeList = ['color', 'image', 'video'] as const;
-export type BackgroundType = typeof backgroundTypeList[number];
-export type BackgroundSrcType = {
-    type: BackgroundType;
-    src: string;
-    width?: number;
-    height?: number;
-};
-export type BGSrcListType = {
-    [key: string]: BackgroundSrcType;
-};
+import { screenManagerSettingNames } from '../helper/constants';
 
 export type ScreenBGManagerEventType = 'update';
 
-const settingName = 'screen-bg-';
 export default class ScreenBGManager
     extends EventHandler<ScreenBGManagerEventType>
     implements ScreenManagerInf {
@@ -45,7 +36,7 @@ export default class ScreenBGManager
         super();
         this.screenId = screenId;
         if (appProviderScreen.isMain) {
-            const allBGSrcList = ScreenBGManager.getBGSrcList();
+            const allBGSrcList = getBGSrcListOnScreenSetting();
             this._bgSrc = allBGSrcList[this.key] || null;
         }
     }
@@ -72,7 +63,7 @@ export default class ScreenBGManager
     set bgSrc(bgSrc: BackgroundSrcType | null) {
         this._bgSrc = bgSrc;
         this.render();
-        const allBGSrcList = ScreenBGManager.getBGSrcList();
+        const allBGSrcList = getBGSrcListOnScreenSetting();
         if (bgSrc === null) {
             delete allBGSrcList[this.key];
         } else {
@@ -104,25 +95,12 @@ export default class ScreenBGManager
     static fireUpdateEvent() {
         this.addPropEvent('update');
     }
-    static getBGSrcList(): BGSrcListType {
-        const str = getSetting(settingName, '');
-        if (isValidJson(str, true)) {
-            const json = JSON.parse(str);
-            const items = Object.values(json);
-            if (items.every((item: any) => {
-                return item.type && item.src;
-            })) {
-                return json;
-            }
-        }
-        return {};
-    }
     static setBGSrcList(bgSrcList: BGSrcListType) {
         const str = JSON.stringify(bgSrcList);
-        setSetting(settingName, str);
+        setSetting(screenManagerSettingNames.BG, str);
     }
     static getBGSrcListByType(bgType: BackgroundType) {
-        const bgSrcList = this.getBGSrcList();
+        const bgSrcList = getBGSrcListOnScreenSetting();
         return Object.entries(bgSrcList).filter(([_, bgSrc]) => {
             return bgSrc.type === bgType;
         });

@@ -29,12 +29,16 @@ function rendChild(
     return (
         <div className='card-body'>
             <RenderScreenIds
-                ids={selectedBGSrcList.map(([key]) => +key)} />
+                screenIds={selectedBGSrcList.map(([key]) => {
+                    return parseInt(key, 10);
+                })}
+            />
             <img src={fileSource.src}
                 className='card-img-top' alt='...'
                 style={{
                     pointerEvents: 'none',
-                }} />
+                }}
+            />
         </div>
     );
 }

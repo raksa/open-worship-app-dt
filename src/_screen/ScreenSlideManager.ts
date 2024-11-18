@@ -2,33 +2,26 @@ import { CSSProperties } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { isValidJson } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { setSetting } from '../helper/settingHelper';
 import { PdfImageDataType } from '../pdf/PdfController';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genPdfSlideItem } from '../slide-presenter/items/SlideItemPdfRender';
 import { genHtmlSlideItem } from '../slide-presenter/items/SlideItemRenderer';
 import appProviderScreen from './appProviderScreen';
 import { sendScreenMessage } from './screenEventHelpers';
-import { ScreenMessageType } from './screenHelpers';
+import {
+    getSlideListOnScreenSetting, ScreenMessageType, SlideItemDataType,
+    SlideListType,
+} from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenTransitionEffect
     from './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
-import { handleError } from '../helper/errorHelpers';
-
-export type SlideItemDataType = {
-    slideFilePath: string;
-    slideItemJson: SlideItemType
-};
-export type SlideListType = {
-    [key: string]: SlideItemDataType;
-};
+import { screenManagerSettingNames } from '../helper/constants';
 
 export type ScreenSlideManagerEventType = 'update';
 
-const settingName = 'screen-slide-';
 export default class ScreenSlideManager extends
     EventHandler<ScreenSlideManagerEventType>
     implements ScreenManagerInf {
@@ -42,7 +35,7 @@ export default class ScreenSlideManager extends
         super();
         this.screenId = screenId;
         if (appProviderScreen.isMain) {
-            const allSlideList = ScreenSlideManager.getSlideList();
+            const allSlideList = getSlideListOnScreenSetting();
             this._slideItemData = allSlideList[this.key] || null;
         }
     }
@@ -69,7 +62,7 @@ export default class ScreenSlideManager extends
     set slideItemData(slideItemData: SlideItemDataType | null) {
         this._slideItemData = slideItemData;
         this.render();
-        const allSlideList = ScreenSlideManager.getSlideList();
+        const allSlideList = getSlideListOnScreenSetting();
         if (slideItemData === null) {
             delete allSlideList[this.key];
         } else {
@@ -101,31 +94,12 @@ export default class ScreenSlideManager extends
     static fireUpdate() {
         this.addPropEvent('update');
     }
-    static getSlideList(): SlideListType {
-        const str = getSetting(settingName, '');
-        try {
-            if (!isValidJson(str, true)) {
-                return {};
-            }
-            const json = JSON.parse(str);
-            Object.values(json).forEach((item: any) => {
-                if (typeof item.slideFilePath !== 'string') {
-                    throw new Error('Invalid slide path');
-                }
-                SlideItem.validate(item.slideItemJson);
-            });
-            return json;
-        } catch (error) {
-            handleError(error);
-        }
-        return {};
-    }
     static setSlideList(slideList: SlideListType) {
         const str = JSON.stringify(slideList);
-        setSetting(settingName, str);
+        setSetting(screenManagerSettingNames.SLIDE, str);
     }
     static getDataList(slideFilePath?: string, slideItemId?: number) {
-        const dataList = this.getSlideList();
+        const dataList = getSlideListOnScreenSetting();
         return Object.entries(dataList).filter(([_, data]) => {
             if (
                 slideFilePath !== undefined &&

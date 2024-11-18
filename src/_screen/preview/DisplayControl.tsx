@@ -21,16 +21,17 @@ export default function DisplayControl() {
             <button className='btn btn-sm btn-outline-secondary'
                 onClick={(event) => {
                     const {
-                        primaryDisplay,
-                        displays,
+                        primaryDisplay, displays,
                     } = getAllDisplays();
                     showAppContextMenu(event as any, displays.map((display) => {
+                        const label = (display as any).label ?? 'Unknown';
                         const bounds = display.bounds;
                         const isPrimary = display.id === primaryDisplay.id;
                         const isSelected = display.id === displayId;
                         const title = (
                             (isSelected ? '*' : '') +
-                            `${display.id}: ${bounds.width}x${bounds.height}` +
+                            `${label}(${display.id}): ` +
+                            `${bounds.width}x${bounds.height}` +
                             (isPrimary ? ' (primary)' : '')
                         );
                         return {

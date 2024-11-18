@@ -34,7 +34,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     constructor() {
         super();
         this._canvas = Canvas.genDefaultCanvas();
-        const defaultData = +(getSetting(EDITOR_SCALE_SETTING_NAME) || NaN);
+        const defaultData = parseInt(getSetting(EDITOR_SCALE_SETTING_NAME), 10);
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }

@@ -10,7 +10,7 @@ export default function OpacitySlider({ value, onOpacityChanged }: Readonly<{
             className='form-range'
             step='1'
             min='0' max='255' onChange={(event) => {
-                setLocalValue(+event.target.value);
+                setLocalValue(parseInt(event.target.value, 10));
             }}
             onMouseUp={(event) => {
                 onOpacityChanged(localValue, event as any);
