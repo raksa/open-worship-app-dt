@@ -22,12 +22,12 @@ import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { addExtension } from '../server/fileHelper';
 import {
-    WindowModEnum, checkIsWindowEditingMode,
+    WindowModEnum, checkIsWindowEditorMode,
 } from '../router/routeHelpers';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
-async function getSelectedEditingBibleItem() {
+async function getSelectedEditorBibleItem() {
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
@@ -50,7 +50,7 @@ export function useGetSelectedBibleKey() {
         setBibleKeySelected(bibleKey);
     };
     useAppEffect(() => {
-        getSelectedEditingBibleItem().then((bibleKey) => {
+        getSelectedEditorBibleItem().then((bibleKey) => {
             setBibleKeySelected1(bibleKey);
         });
     });
@@ -111,8 +111,8 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
 export async function addBibleItem(
     bibleItem: BibleItem, windowMode: WindowModEnum | null, onDone: () => void,
 ) {
-    const isWindowEditing = checkIsWindowEditingMode();
-    if (isWindowEditing) {
+    const isWindowEditor = checkIsWindowEditorMode();
+    if (isWindowEditor) {
         const canvasController = CanvasController.getInstance();
         canvasController.addNewBibleItem(bibleItem);
         return null;

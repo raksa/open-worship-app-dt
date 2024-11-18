@@ -4,14 +4,14 @@ import {
 } from 'react-router-dom';
 
 import NotFound404 from './router/NotFound404';
-import AppPresenting from './AppPresenting';
+import AppPresenter from './AppPresenter';
 import {
-    DefaultTabContext, checkHome, editingTab, home, presentingTab, readingTab,
+    DefaultTabContext, checkHome, editorTab, home, presenterTab, readerTab,
     savePathname,
 } from './router/routeHelpers';
 import AppLayout from './router/AppLayout';
-import AppEditing from './AppEditing';
-import AppReading from './AppReading';
+import AppEditor from './AppEditor';
+import AppReader from './AppReader';
 import HandleAlert from './alert/HandleAlert';
 import AppContextMenu from './others/AppContextMenu';
 import Toast from './toast/Toast';
@@ -26,7 +26,7 @@ export default function App() {
     useCheckSelectedDir();
     useHandleFind();
     const tabProps = useMemo(() => {
-        return [editingTab, presentingTab, readingTab];
+        return [editorTab, presenterTab, readerTab];
     }, []);
     checkHome();
     return (
@@ -55,16 +55,16 @@ function AppRouteRender() {
             <Routes location={state?.backgroundLocation || location}>
                 <Route element={<AppLayout />}>
                     <Route path={home.routePath}
-                        element={<RedirectTo to={presentingTab.title} />}
+                        element={<RedirectTo to={presenterTab.title} />}
                     />
-                    <Route path={editingTab.routePath}
-                        element={<AppEditing />}
+                    <Route path={editorTab.routePath}
+                        element={<AppEditor />}
                     />
-                    <Route path={presentingTab.routePath}
-                        element={<AppPresenting />}
+                    <Route path={presenterTab.routePath}
+                        element={<AppPresenter />}
                     />
-                    <Route path={readingTab.routePath}
-                        element={<AppReading />}
+                    <Route path={readerTab.routePath}
+                        element={<AppReader />}
                     />
                 </Route>
                 <Route path='*' element={<NotFound404 />} />

@@ -10,7 +10,7 @@ export type MessageEventType = {
 
 export type MessageUtilsType = {
     channels: {
-        presentMessageChannel: string,
+        screenMessageChannel: string,
     },
     sendData: (channel: string, ...args: any[]) => void,
     sendDataSync: (channel: string, ...args: any[]) => any,
@@ -76,7 +76,7 @@ export enum AppTypeEnum {
 
 const appProvider = (window as any).provider as {
     isMain: boolean,
-    isPresent: boolean,
+    isScreen: boolean,
     appType: AppTypeEnum,
     isDesktop: boolean,
     fontUtils: {

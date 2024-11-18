@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { tran } from '../lang';
-import { presentingTab } from './routeHelpers';
+import { presenterTab } from './routeHelpers';
 
 export default function NotFound404() {
     return (
@@ -11,7 +11,7 @@ export default function NotFound404() {
                 <div className='card-header'>
                     {tran('Nothing Found🙁')}
                 </div>
-                <Link to={presentingTab.routePath}
+                <Link to={presenterTab.routePath}
                     className='btn btn-sm btn-success'>
                     <i className='bi bi-house' />
                 </Link>

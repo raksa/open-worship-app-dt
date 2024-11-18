@@ -98,7 +98,7 @@ export abstract class ItemBase implements ColorNoteInf {
     }
     static setSelectedEditing(item: ItemBase | null) {
         return this._setItemSetting(
-            `${this.SELECT_SETTING_NAME}-editing`, item,
+            `${this.SELECT_SETTING_NAME}-editor`, item,
         );
     }
     static async getSelected(): Promise<ItemBase | null | undefined> {

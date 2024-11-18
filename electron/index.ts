@@ -8,7 +8,7 @@ protocol.registerSchemesAsPrivileged([{
 }]);
 
 import ElectronAppController from './ElectronAppController';
-import { initApp, initPresent } from './electronEventListener';
+import { initApp, initScreen } from './electronEventListener';
 import { initMenu } from './electronMenu';
 import { initDevtools } from './devtools';
 import { isDev } from './electronHelpers';
@@ -20,7 +20,7 @@ app.whenReady().then(() => {
     initCustomSchemeHandler();
     const appController = ElectronAppController.getInstance();
     initApp(appController);
-    initPresent(appController);
+    initScreen(appController);
     initMenu(appController);
     initDevtools(appController);
 });

@@ -10,7 +10,7 @@ import { getSetting } from '../helper/settingHelper';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
-    checkIsWindowReadingMode, WindowModEnum,
+    checkIsWindowReaderMode, WindowModEnum,
 } from '../router/routeHelpers';
 import { BibleItemType } from './bibleItemHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
@@ -27,9 +27,9 @@ export default class Bible extends ItemSource<BibleItem> {
         this._originalJson = cloneJson(json);
     }
     static getDirSourceSettingName(windowMode: WindowModEnum | null) {
-        const isReading = checkIsWindowReadingMode(windowMode);
+        const isReader = checkIsWindowReaderMode(windowMode);
         const dirSourceSettingName = (
-            isReading ? dirSourceSettingNames.BIBLE_READ :
+            isReader ? dirSourceSettingNames.BIBLE_READ :
                 dirSourceSettingNames.BIBLE_PRESENT
         );
         return dirSourceSettingName;

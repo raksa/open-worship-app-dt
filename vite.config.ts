@@ -59,7 +59,7 @@ export default defineConfig({
     build: {
         rollupOptions: {
             input: [
-                'index.html', 'present.html', 'finder.html',
+                'index.html', 'screen.html', 'finder.html',
             ].map(item => resolve(item)),
         },
     },

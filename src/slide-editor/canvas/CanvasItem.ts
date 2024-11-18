@@ -26,7 +26,6 @@ export type CanvasItemPropsType = {
 
 
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
-    static _objectId = 0;
     props: T;
     isSelected: boolean;
     isControlling: boolean;

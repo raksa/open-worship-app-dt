@@ -11,7 +11,7 @@ import {
 } from '../helper/bibleViewHelpers';
 import FullScreenBtn from './FullScreenBtn';
 import {
-    checkIsWindowReadingMode, useWindowMode,
+    checkIsWindowReaderMode, useWindowMode,
 } from '../router/routeHelpers';
 import { fontSizeSettingNames } from '../helper/constants';
 
@@ -22,10 +22,10 @@ const STEP_FONT_SIZE = 2;
 export default function BiblePreviewerRender() {
     const [isFulledScreen, setIsFulledScreen] = useState(false);
     const windowMode = useWindowMode();
-    const isReading = checkIsWindowReadingMode(windowMode);
+    const isReader = checkIsWindowReaderMode(windowMode);
     const fontSizeSettingName = (
-        isReading ? fontSizeSettingNames.BIBLE_READING :
-            fontSizeSettingNames.BIBLE_PRESENTING
+        isReader ? fontSizeSettingNames.BIBLE_READING :
+            fontSizeSettingNames.BIBLE_PRESENTER
     );
     const [fontSize, _setFontSize] = useStateSettingNumber(
         fontSizeSettingName, DEFAULT_BIBLE_TEXT_FONT_SIZE,

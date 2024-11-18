@@ -3,24 +3,19 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    checkIsPdf,
-    MAX_THUMBNAIL_SCALE,
-    MIN_THUMBNAIL_SCALE,
-    openSlideContextMenu,
-    readPdfToSlide,
-    SlideDynamicType,
-    THUMBNAIL_SCALE_STEP,
+    checkIsPdf, MAX_THUMBNAIL_SCALE, MIN_THUMBNAIL_SCALE, openSlideContextMenu,
+    readPdfToSlide, SlideDynamicType, THUMBNAIL_SCALE_STEP,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import SlideEditingCacheManager from './SlideEditingCacheManager';
+import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelper';
-import { DisplayType } from '../_present/presentHelpers';
+import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
 
-export type SlideEditingHistoryType = {
+export type SlideEditorHistoryType = {
     items?: SlideItemType[],
     metadata?: AnyObjectType,
 };
@@ -31,15 +26,15 @@ export type SlideType = {
 };
 
 export default class Slide extends ItemSource<SlideItem> {
-    static mimetype: MimetypeNameType = 'slide';
-    static SELECT_SETTING_NAME = 'slide-selected';
+    static readonly mimetype: MimetypeNameType = 'slide';
+    static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
-    editingCacheManager: SlideEditingCacheManager;
+    editorCacheManager: SlideEditorCacheManager;
     _pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
     constructor(filePath: string, json: SlideType) {
         super(filePath);
-        this.editingCacheManager = new SlideEditingCacheManager(
+        this.editorCacheManager = new SlideEditorCacheManager(
             this.filePath, json,
         );
     }
@@ -50,7 +45,7 @@ export default class Slide extends ItemSource<SlideItem> {
         if (this.isPdf) {
             return false;
         }
-        return this.editingCacheManager.isChanged;
+        return this.editorCacheManager.isChanged;
     }
     get copiedItem() {
         return this.items.find((item) => {
@@ -86,10 +81,10 @@ export default class Slide extends ItemSource<SlideItem> {
         if (this.isPdf) {
             return {};
         }
-        return this.editingCacheManager.presentJson.metadata;
+        return this.editorCacheManager.presenterJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this.editingCacheManager.pushMetadata(metadata);
+        this.editorCacheManager.pushMetadata(metadata);
     }
     get items() {
         if (this.isPdf) {
@@ -106,24 +101,24 @@ export default class Slide extends ItemSource<SlideItem> {
                 return slideItem;
             });
         }
-        const latestHistory = this.editingCacheManager.presentJson;
+        const latestHistory = this.editorCacheManager.presenterJson;
         return latestHistory.items.map((json) => {
             try {
                 return SlideItem.fromJson(
-                    json as any, this.filePath, this.editingCacheManager,
+                    json as any, this.filePath, this.editorCacheManager,
                 );
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
             return SlideItem.fromJsonError(json, this.filePath,
-                this.editingCacheManager);
+                this.editorCacheManager);
         });
     }
     set items(newItems: SlideItem[]) {
         const slideItems = newItems.map((item) => {
             return item.toJson();
         });
-        this.editingCacheManager.pushSlideItems(slideItems);
+        this.editorCacheManager.pushSlideItems(slideItems);
     }
     get maxItemId() {
         if (this.items.length) {
@@ -139,7 +134,7 @@ export default class Slide extends ItemSource<SlideItem> {
         const isSuccess = await super.save();
         if (isSuccess) {
             SlideItem.clearCache();
-            this.editingCacheManager.save();
+            this.editorCacheManager.save();
         }
         return isSuccess;
     }
@@ -201,7 +196,7 @@ export default class Slide extends ItemSource<SlideItem> {
             canvasItems: [], // TODO: add default canvas item
         };
         const newItem = new SlideItem(item.id, this.filePath, json,
-            this.editingCacheManager);
+            this.editorCacheManager);
         this.itemIdShouldToView = newItem.id;
         this.addItem(newItem);
     }
@@ -246,7 +241,7 @@ export default class Slide extends ItemSource<SlideItem> {
             }
             return json;
         });
-        this.editingCacheManager.pushSlideItems(newItemsJson);
+        this.editorCacheManager.pushSlideItems(newItemsJson);
     }
     showSlideItemContextMenu(event: any) {
         showAppContextMenu(event, [{
@@ -266,7 +261,7 @@ export default class Slide extends ItemSource<SlideItem> {
         }]);
     }
     async discardChanged() {
-        this.editingCacheManager.delete();
+        this.editorCacheManager.delete();
         FileSource.getInstance(this.filePath).fireUpdateEvent();
     }
     static toScaleThumbSize(isUp: boolean, currentScale: number) {
@@ -293,10 +288,10 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         if (b) {
             Slide.setSelectedFileSource(this.filePath);
-            previewingEventListener.presentSlide(this);
+            previewingEventListener.showSlide(this);
         } else {
             Slide.setSelectedFileSource(null);
-            previewingEventListener.presentSlide(null);
+            previewingEventListener.showSlide(null);
         }
         FileSource.getInstance(this.filePath).fireSelectEvent();
     }
@@ -314,7 +309,7 @@ export default class Slide extends ItemSource<SlideItem> {
         const data = await super.readFileToDataNoCache(filePath);
         const slide = data as SlideDynamicType;
         if (isOrigin && slide) {
-            slide.editingCacheManager.isUsingHistory = false;
+            slide.editorCacheManager.isUsingHistory = false;
         }
         return slide;
     }

@@ -108,8 +108,8 @@ export async function getVerses(
     return chapterData ? chapterData.verses : null;
 }
 
-type ReadingBibleDataType = BibleInfoType | null;
-type CallbackType = (data: ReadingBibleDataType) => void;
+type ReaderBibleDataType = BibleInfoType | null;
+type CallbackType = (data: ReaderBibleDataType) => void;
 export class BibleDataReader {
     _writableBiblePath: string | null = null;
     _callbackMapper: Map<string, Array<CallbackType>> = new Map();
@@ -120,7 +120,7 @@ export class BibleDataReader {
         this._callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
-    _fullfilCallback(key: string, data: ReadingBibleDataType) {
+    _fullfilCallback(key: string, data: ReaderBibleDataType) {
         const callbackList = this._callbackMapper.get(key) || [];
         this._callbackMapper.delete(key);
         callbackList.forEach((callback) => {
@@ -171,7 +171,7 @@ export class BibleDataReader {
         this._fullfilCallback(filePath, data);
     }
     readBibleData(bibleKey: string, key: string) {
-        return new Promise<ReadingBibleDataType>((resolve) => {
+        return new Promise<ReaderBibleDataType>((resolve) => {
             this._genBibleData(bibleKey, key, resolve);
         });
     }

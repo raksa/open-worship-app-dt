@@ -4,8 +4,8 @@ import { createRef } from 'react';
 
 import {
     BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { RenderPresentIds } from './Background';
+} from '../_screen/ScreenBGManager';
+import { RenderScreenIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
@@ -52,7 +52,7 @@ function RendBody({ filePath, selectedBGSrcList }: Readonly<{
                     vRef.current.currentTime = 0;
                 }
             }}>
-            <RenderPresentIds
+            <RenderScreenIds
                 ids={selectedBGSrcList.map(([key]) => +key)} />
             <video ref={vRef}
                 loop

@@ -2,11 +2,11 @@ import { useCallback, useState } from 'react';
 
 import ColorPicker from '../others/color/ColorPicker';
 import { AppColorType } from '../others/color/colorHelpers';
-import PresentBGManager, {
+import ScreenBGManager, {
     BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { usePBGMEvents } from '../_present/presentEventHelpers';
-import { RenderPresentIds } from './Background';
+} from '../_screen/ScreenBGManager';
+import { usePBGMEvents } from '../_screen/screenEventHelpers';
+import { RenderScreenIds } from './Background';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function BackgroundColors() {
@@ -15,20 +15,20 @@ export default function BackgroundColors() {
     const onNoColorCallback = useCallback(async (
         _newColor: AppColorType, event: any) => {
         setSelectedBGSrcList(null);
-        PresentBGManager.bgSrcSelect(null, event, 'color');
+        ScreenBGManager.bgSrcSelect(null, event, 'color');
     }, []);
     const onColorChangeCallback = useCallback(async (
         newColor: AppColorType, event: any) => {
         setSelectedBGSrcList(null);
-        PresentBGManager.bgSrcSelect(newColor, event, 'color');
+        ScreenBGManager.bgSrcSelect(newColor, event, 'color');
     }, []);
     useAppEffect(() => {
         if (selectedBGSrcList === null) {
-            setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
+            setSelectedBGSrcList(ScreenBGManager.getBGSrcListByType('color'));
         }
     }, [selectedBGSrcList]);
     usePBGMEvents(['update'], undefined, () => {
-        setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
+        setSelectedBGSrcList(ScreenBGManager.getBGSrcListByType('color'));
     });
     if (selectedBGSrcList === null) {
         return null;
@@ -38,8 +38,9 @@ export default function BackgroundColors() {
             <>
                 <div title={'Show in presents:'
                     + selectedBGSrcList.map(([key]) => key).join(',')}>
-                    <RenderPresentIds
-                        ids={selectedBGSrcList.map(([key]) => +key)} />
+                    <RenderScreenIds
+                        ids={selectedBGSrcList.map(([key]) => +key)}
+                    />
                 </div>
                 {selectedBGSrcList.map(([_, bgSrc]) => {
                     return (

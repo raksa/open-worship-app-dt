@@ -68,7 +68,7 @@ export function isVisible(elem: any) {
 }
 
 export function getRotationDeg(str: string) {
-    const match = str.match(/rotate\((.+)deg\)/);
+    const match = RegExp(/rotate\((.+)deg\)/).exec(str);
     return match ? +match[1] : 0;
 }
 export const removePX = (str: string) => +str.replace('px', '');

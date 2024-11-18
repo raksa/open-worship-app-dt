@@ -5,10 +5,10 @@ import SlideItem from '../slide-list/SlideItem';
 import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
-import PresentFTManager from '../_present/PresentFTManager';
+import ScreenFTManager from '../_screen/ScreenFTManager';
 import {
-    WindowModEnum, checkIsWindowEditingMode, checkIsWindowPresentingMode,
-    useWindowIsPresentingMode, useWindowMode,
+    WindowModEnum, checkIsWindowEditorMode, checkIsWindowPresenterMode,
+    useWindowIsPresenterMode, useWindowMode,
 } from '../router/routeHelpers';
 import { usePopupWindowsTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
@@ -20,7 +20,7 @@ import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
 
-const presentEventMapper: KBEventMapper = {
+const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
     key: 'Enter',
 };
@@ -34,11 +34,17 @@ export default function RenderActionButtons({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
     const { data } = usePopupWindowsTypeData();
-    const isBibleEditing = !!data;
-    const isWindowPresenting = useWindowIsPresentingMode();
-    if (!isBibleEditing) {
+    const isBibleEditor = !!data;
+    const isWindowPresenter = useWindowIsPresenterMode();
+    if (!isBibleEditor) {
         return null;
     }
+    const addingListShortcutKey = KeyboardEventListener.toShortcutKey(
+        addListEventMapper,
+    );
+    const savingAndShowingShortcutKey = KeyboardEventListener.toShortcutKey(
+        presenterEventMapper,
+    );
     return (
         <div className='btn-group mx-1'>
             <button type='button'
@@ -46,20 +52,17 @@ export default function RenderActionButtons({ bibleItem }: Readonly<{
                 onClick={() => {
                     updateBibleItem(bibleItem, data);
                 }}
-                data-tool-tip={
-                    `Save bible item [${KeyboardEventListener.
-                        toShortcutKey(addListEventMapper)}]`
-                }>
+                data-tool-tip={`Save bible item [${addingListShortcutKey}]`}>
                 <i className='bi bi-floppy' />
             </button>
-            {!isWindowPresenting ? null : <button type='button'
+            {!isWindowPresenter ? null : <button type='button'
                 className='btn btn-sm btn-info ms-1'
                 onClick={(event) => {
                     const updatedBibleItem = updateBibleItem(
                         bibleItem, data,
                     );
                     if (updatedBibleItem !== null) {
-                        PresentFTManager.ftBibleItemSelect(
+                        ScreenFTManager.ftBibleItemSelect(
                             event, [bibleItem],
                         );
                     } else {
@@ -70,8 +73,8 @@ export default function RenderActionButtons({ bibleItem }: Readonly<{
                     }
                 }}
                 data-tool-tip={
-                    `Save bible item and present [${KeyboardEventListener.
-                        toShortcutKey(presentEventMapper)}]`
+                    'Save bible item and show on screen ' +
+                    `[${savingAndShowingShortcutKey}]`
                 }>
                 <i className='bi bi-floppy' />
                 <i className='bi bi-easel' />
@@ -94,7 +97,7 @@ async function addBibleItemAndPresent(
         bibleItem, windowMode, onDone,
     );
     if (addedBibleItem !== null) {
-        PresentFTManager.ftBibleItemSelect(
+        ScreenFTManager.ftBibleItemSelect(
             event, [addedBibleItem],
         );
     } else {
@@ -105,7 +108,7 @@ async function addBibleItemAndPresent(
 export function useFoundActionKeyboard(bibleItem: BibleItem) {
     const closeModal = useCloseAppModal();
     const windowMode = useWindowMode();
-    const isWindowPresenting = useWindowIsPresentingMode();
+    const isWindowPresenter = useWindowIsPresenterMode();
     const isKeepingPopup = getIsKeepingPopup();
     const onDone = isKeepingPopup ? () => false : closeModal;
     SearchBibleItemViewController.getInstance().onSearchAddBibleItem = onDone;
@@ -116,8 +119,8 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
             }
         });
     });
-    useKeyboardRegistering([presentEventMapper], (event) => {
-        if (!isWindowPresenting || windowMode === null) {
+    useKeyboardRegistering([presenterEventMapper], (event) => {
+        if (!isWindowPresenter || windowMode === null) {
             return;
         }
         addBibleItemAndPresent(
@@ -140,10 +143,10 @@ export function genFoundBibleItemContextMenu(
     onDone: () => void, isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
     // TODO: fix slide select editing
-    const isSlideSelectEditing = !!SlideItem.getSelectedEditingResult();
-    const isWindowEditing = checkIsWindowEditingMode(windowMode);
-    const isWindowPresenting = checkIsWindowPresentingMode(windowMode);
-    if (isWindowEditing && !isSlideSelectEditing) {
+    const isSlideSelectEditor = !!SlideItem.getSelectedEditingResult();
+    const isWindowEditor = checkIsWindowEditorMode(windowMode);
+    const isWindowPresenter = checkIsWindowPresenterMode(windowMode);
+    if (isWindowEditor && !isSlideSelectEditor) {
         return [];
     }
     return [
@@ -160,16 +163,16 @@ export function genFoundBibleItemContextMenu(
                     });
             },
         },
-        ...(isWindowPresenting ? [
+        ...(isWindowPresenter ? [
             {
-                title: 'Present bible item',
+                title: 'Show bible item',
                 onClick: (event: any) => {
-                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+                    ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
                 },
             },
             {
-                title: `Add bible item and present ${toShortcutKey(
-                    presentEventMapper, isKeyboardShortcut,
+                title: `Add bible item and show on screen ${toShortcutKey(
+                    presenterEventMapper, isKeyboardShortcut,
                 )}`,
                 onClick: async (event: any) => {
                     addBibleItemAndPresent(

@@ -21,16 +21,14 @@ const BibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
 });
 
-export default function RenderBibleSearch({
-    editingInputText,
-}: Readonly<{
-    editingInputText: string,
+export default function RenderBibleSearch({ editorInputText }: Readonly<{
+    editorInputText: string,
 }>) {
     const closeButton = useContext(CloseButtonContext);
     const [isSearchOnline, setIsSearchOnline] = useState(false);
     const { data } = usePopupWindowsTypeData();
-    const isBibleEditing = !!data;
-    const [inputText, setInputText] = useState<string>(editingInputText);
+    const isBibleEditor = !!data;
+    const [inputText, setInputText] = useState<string>(editorInputText);
     const [bibleKey, setBibleKey] = useGetSelectedBibleKey();
     const bibleItemViewController = SearchBibleItemViewController.getInstance();
     const setInputText1 = (newText: string) => {
@@ -60,11 +58,12 @@ export default function RenderBibleSearch({
             inputText={inputText}
         />
     );
+
     return (
         <SelectedBibleKeyContext.Provider value={bibleKey}>
             <div id='bible-search-popup' className='app-modal shadow card'>
                 <div className='card-header d-flex text-center w-100'>
-                    {isBibleEditing ? null : <div className='float-start'>
+                    {isBibleEditor ? null : <div className='float-start'>
                         <RenderExtraLeftButtons
                             setIsSearchOnline={setIsSearchOnline}
                             isSearchOnline={isSearchOnline}

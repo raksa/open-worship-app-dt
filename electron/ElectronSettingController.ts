@@ -6,10 +6,10 @@ import electron from 'electron';
 export default class ElectronSettingController {
     _setting: {
         mainWinBounds: Electron.Rectangle | null,
-        appPresentDisplayId: number | null,
+        appScreenDisplayId: number | null,
     } = {
             mainWinBounds: null,
-            appPresentDisplayId: null,
+            appScreenDisplayId: null,
         };
     appController: ElectronAppController;
     constructor(appController: ElectronAppController) {
@@ -18,7 +18,7 @@ export default class ElectronSettingController {
             const str = fs.readFileSync(this.fileSettingPath, 'utf8');
             const json = JSON.parse(str);
             this._setting.mainWinBounds = json.mainWinBounds;
-            this._setting.appPresentDisplayId = json.appPresentDisplayId;
+            this._setting.appScreenDisplayId = json.appScreenDisplayId;
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 this.save();

@@ -3,10 +3,10 @@ import { useCallback } from 'react';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
-import PresentBGManager, {
+import ScreenBGManager, {
     BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { usePBGMEvents } from '../_present/presentEventHelpers';
+} from '../_screen/ScreenBGManager';
+import { usePBGMEvents } from '../_screen/screenEventHelpers';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
@@ -59,7 +59,7 @@ function genBody(
 ) {
     const fileSource = FileSource.getInstance(filePath);
     const bgType = bgTypeMapper[dragType];
-    const selectedBGSrcList = PresentBGManager.getSelectBGSrcList(
+    const selectedBGSrcList = ScreenBGManager.getSelectBGSrcList(
         fileSource.src, bgType,
     );
     const selectedCN = selectedBGSrcList.length ? 'highlight-selected' : '';
@@ -79,7 +79,7 @@ function genBody(
                 showAppContextMenu(event as any, genCommonMenu(filePath));
             }}
             onClick={(event) => {
-                PresentBGManager.bgSrcSelect(fileSource.src, event, bgType);
+                ScreenBGManager.bgSrcSelect(fileSource.src, event, bgType);
             }}>
             {rendChild(filePath, selectedBGSrcList)}
             <div style={{

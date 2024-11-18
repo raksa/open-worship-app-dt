@@ -18,7 +18,7 @@ export default class PreviewingEventListener extends
     updateLyric(lyric: Lyric) {
         this.addPropEvent('update-lyric', lyric);
     }
-    presentSlide(slide: Slide | null) {
+    showSlide(slide: Slide | null) {
         this.addPropEvent('select-slide', slide);
     }
     updateSlide(slide: Slide) {

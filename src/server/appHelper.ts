@@ -45,7 +45,7 @@ export type RenderedType = {
     alert?: boolean,
     show?: boolean,
 };
-export function getPresentRendered() {
+export function getScreenRendered() {
     return new Promise<RenderedType>((resolve) => {
         const newDate = (new Date()).getTime();
         const returningEvent = `main:app:is-rendered-return-${newDate}`;

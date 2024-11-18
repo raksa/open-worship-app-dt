@@ -7,7 +7,7 @@ import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useGenDS } from '../helper/dirSourceHelpers';
 import {
-    checkIsWindowReadingMode, useWindowMode,
+    checkIsWindowReaderMode, useWindowMode,
 } from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelper';
 import {
@@ -16,7 +16,7 @@ import {
 
 export default function BibleList() {
     const windowMode = useWindowMode();
-    const isReading = checkIsWindowReadingMode(windowMode);
+    const isReader = checkIsWindowReaderMode(windowMode);
     const dirSourceSettingName = Bible.getDirSourceSettingName(windowMode);
     const dirSource = useGenDS(dirSourceSettingName);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
@@ -36,7 +36,7 @@ export default function BibleList() {
     Bible.getDefault(windowMode);
     const settingPrefix = getSettingPrefix(windowMode);
     const defaultDataDirName = (
-        isReading ? defaultDataDirNames.BIBLE_READ :
+        isReader ? defaultDataDirNames.BIBLE_READ :
             defaultDataDirNames.BIBLE_PRESENT
     );
     return (

@@ -20,9 +20,9 @@ export type TabOptionType = {
 }
 
 export enum WindowModEnum {
-    'editing' = 0,
-    'presenting' = 1,
-    'reading' = 2,
+    Editor = 0,
+    presenter = 1,
+    reader = 2,
 }
 
 function checkIsActive(routePath: string, routeProps: TabCheckPropsType) {
@@ -47,12 +47,12 @@ export const home: TabOptionType = {
     title: 'Home',
     routePath: '/',
 };
-export const editingTab = genTabItem('Editing', '/editing');
-export const presentingTab = genTabItem('Presenting', '/presenting');
-export const readingTab = genTabItem('Reading', '/reading');
+export const editorTab = genTabItem('Editor', '/editor');
+export const presenterTab = genTabItem('Presenter', '/presenter');
+export const readerTab = genTabItem('Reader', '/reader');
 
-export function goEditingMode(navigate: NavigateFunction) {
-    navigate(editingTab.routePath);
+export function goEditorMode(navigate: NavigateFunction) {
+    navigate(editorTab.routePath);
 }
 
 export const WindowModeContext = createContext<WindowModEnum | null>(null);
@@ -65,12 +65,12 @@ function getWindowMode(props?: TabCheckPropsType): WindowModEnum | null {
             navigate: window.navigator as any as NavigateFunction,
         };
     }
-    if (editingTab.checkIsActive?.(props)) {
-        return WindowModEnum.editing;
-    } else if (presentingTab.checkIsActive?.(props)) {
-        return WindowModEnum.presenting;
-    } else if (readingTab.checkIsActive?.(props)) {
-        return WindowModEnum.reading;
+    if (editorTab.checkIsActive?.(props)) {
+        return WindowModEnum.Editor;
+    } else if (presenterTab.checkIsActive?.(props)) {
+        return WindowModEnum.presenter;
+    } else if (readerTab.checkIsActive?.(props)) {
+        return WindowModEnum.reader;
     }
     return null;
 }
@@ -91,26 +91,26 @@ function checkIsWindowMode(
     mode = mode || getWindowMode();
     return mode === targetMode;
 }
-export function checkIsWindowEditingMode(mode?: WindowModEnum | null) {
-    return checkIsWindowMode(WindowModEnum.editing, mode);
+export function checkIsWindowEditorMode(mode?: WindowModEnum | null) {
+    return checkIsWindowMode(WindowModEnum.Editor, mode);
 }
-export function useWindowIsEditingMode() {
+export function useWindowIsEditorMode() {
     const windowMode = useWindowMode();
-    return checkIsWindowEditingMode(windowMode);
+    return checkIsWindowEditorMode(windowMode);
 }
-export function checkIsWindowPresentingMode(mode?: WindowModEnum | null) {
-    return checkIsWindowMode(WindowModEnum.presenting, mode);
+export function checkIsWindowPresenterMode(mode?: WindowModEnum | null) {
+    return checkIsWindowMode(WindowModEnum.presenter, mode);
 }
-export function useWindowIsPresentingMode() {
+export function useWindowIsPresenterMode() {
     const windowMode = useWindowMode();
-    return checkIsWindowPresentingMode(windowMode);
+    return checkIsWindowPresenterMode(windowMode);
 }
-export function checkIsWindowReadingMode(mode?: WindowModEnum | null) {
-    return checkIsWindowMode(WindowModEnum.reading, mode);
+export function checkIsWindowReaderMode(mode?: WindowModEnum | null) {
+    return checkIsWindowMode(WindowModEnum.reader, mode);
 }
-export function useWindowIsReadingMode() {
+export function useWindowIsReaderMode() {
     const windowMode = useWindowMode();
-    return checkIsWindowReadingMode(windowMode);
+    return checkIsWindowReaderMode(windowMode);
 }
 
 export function goToPath(pathname: string) {
@@ -119,7 +119,7 @@ export function goToPath(pathname: string) {
     window.location.href = url.href;
 }
 export function goHomeBack() {
-    goToPath(presentingTab.routePath);
+    goToPath(presenterTab.routePath);
 }
 
 const ROUTE_PATHNAME_KEY = 'route-pathname';

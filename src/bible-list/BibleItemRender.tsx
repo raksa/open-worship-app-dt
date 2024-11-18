@@ -12,9 +12,9 @@ import {
 import {
     useBibleItemViewControllerContext,
 } from '../read-bible/BibleItemViewController';
-import PresentFTManager from '../_present/PresentFTManager';
+import ScreenFTManager from '../_screen/ScreenFTManager';
 import {
-    checkIsWindowPresentingMode, useWindowMode,
+    checkIsWindowPresenterMode, useWindowMode,
 } from '../router/routeHelpers';
 import {
     openBibleItemContextMenu, useBibleItemRenderTitle,
@@ -65,8 +65,8 @@ export default function BibleItemRender({
                 handleDragStart(event, bibleItem);
             }}
             onDoubleClick={(event) => {
-                if (checkIsWindowPresentingMode()) {
-                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
+                if (checkIsWindowPresenterMode()) {
+                    ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
                 } else {
                     bibleItemViewController.appendBibleItem(bibleItem);
                 }

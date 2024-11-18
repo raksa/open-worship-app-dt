@@ -21,11 +21,11 @@ export default function RenderExtraLeftButtons({
                 <input className='form-check-input pointer'
                     title='Keep window open when add bible item'
                     type='checkbox' role='switch'
-                    id='present-previewer-showing-tool'
                     checked={isKeepingPopup}
                     onChange={(event) => {
                         setIsKeepingPopup(event.target.checked);
-                    }} />
+                    }}
+                />
             </div>
             <button className={
                 `btn btn-sm btn-${isSearchOnline ? '' : 'outline-'}info`

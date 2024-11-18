@@ -22,12 +22,12 @@ export const disablingTargetTypeList = ['first', 'second'] as const;
 export type DisablingTargetType = typeof disablingTargetTypeList[number];
 export type DisabledType = [DisablingTargetType, number];
 export const resizeSettingNames = {
-    appEditing: 'app-editing-main',
-    appEditingLeft: 'app-editing-left',
-    appPresenting: 'app-presenting-main',
-    appPresentingLeft: 'app-presenting-left',
-    appPresentingMiddle: 'app-presenting-middle',
-    appPresentingRight: 'app-presenting-right',
+    appEditor: 'app-editor-main',
+    appEditorLeft: 'app-editor-left',
+    appPresenter: 'app-presenter-main',
+    appPresenterLeft: 'app-presenter-left',
+    appPresenterMiddle: 'app-presenter-middle',
+    appPresenterRight: 'app-presenter-right',
     fullText: 'full-text',
     slideItemEditor: 'slide-item-editor',
     read: 'read',

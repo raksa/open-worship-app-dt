@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import {
-    WindowModEnum, checkIsWindowReadingMode,
+    WindowModEnum, checkIsWindowReaderMode,
 } from '../router/routeHelpers';
 
 export function setSetting(key: string, value: string) {
@@ -108,7 +108,7 @@ export class SettingManager<T> {
 }
 
 export function getSettingPrefix(windowMode: WindowModEnum | null) {
-    const isReading = checkIsWindowReadingMode(windowMode);
-    const prefixSetting = isReading ? 'reading-' : '';
+    const isReader = checkIsWindowReaderMode(windowMode);
+    const prefixSetting = isReader ? 'reader-' : '';
     return prefixSetting;
 }

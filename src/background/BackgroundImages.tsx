@@ -2,8 +2,8 @@ import './BackgroundImages.scss';
 
 import {
     BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { RenderPresentIds } from './Background';
+} from '../_screen/ScreenBGManager';
+import { RenderScreenIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
@@ -28,7 +28,7 @@ function rendChild(
     const fileSource = FileSource.getInstance(filePath);
     return (
         <div className='card-body'>
-            <RenderPresentIds
+            <RenderScreenIds
                 ids={selectedBGSrcList.map(([key]) => +key)} />
             <img src={fileSource.src}
                 className='card-img-top' alt='...'

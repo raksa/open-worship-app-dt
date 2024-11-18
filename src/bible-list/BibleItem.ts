@@ -15,7 +15,7 @@ import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
 import { copyToClipboard } from '../server/appHelper';
 
-const BIBLE_PRESENT_SETTING_NAME = 'bible-present';
+const BIBLE_PRESENT_SETTING_NAME = 'bible-presenter';
 
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
@@ -135,27 +135,27 @@ export default class BibleItem extends ItemBase
         this.metadata = bibleItem.metadata;
     }
     static convertPresent(
-        bibleItem: BibleItem, presentingBibleItems: BibleItem[],
+        bibleItem: BibleItem, presenterBibleItems: BibleItem[],
     ) {
         let list;
-        if (presentingBibleItems.length < 2) {
+        if (presenterBibleItems.length < 2) {
             list = [bibleItem.clone()];
         } else {
-            list = presentingBibleItems.map((presentingBibleItem) => {
+            list = presenterBibleItems.map((presenterBibleItem) => {
                 const newItem = bibleItem.clone();
-                newItem.bibleKey = presentingBibleItem.bibleKey;
+                newItem.bibleKey = presenterBibleItem.bibleKey;
                 return newItem;
             });
         }
         return list.filter((item) => item !== null);
     }
-    static setBiblePresentingSetting(bibleItems: BibleItem[]) {
+    static setBiblePresenterSetting(bibleItems: BibleItem[]) {
         const jsonData = bibleItems.map((bibleItem) => {
             return bibleItem.toJson();
         });
         setSetting(BIBLE_PRESENT_SETTING_NAME, JSON.stringify(jsonData));
     }
-    static getBiblePresentingSetting() {
+    static getBiblePresenterSetting() {
         try {
             const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
             if (isValidJson(str, true)) {

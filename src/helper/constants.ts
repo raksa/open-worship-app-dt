@@ -5,7 +5,7 @@ export const dirSourceSettingNames = {
     LYRIC: `${SELECT_DIR}-lyric`,
     BACKGROUND_VIDEO: `${SELECT_DIR}-video-bg`,
     BACKGROUND_IMAGE: `${SELECT_DIR}-image-bg`,
-    BIBLE_PRESENT: `${SELECT_DIR}-bible-present`,
+    BIBLE_PRESENT: `${SELECT_DIR}-bible-presenter`,
     BIBLE_READ: `${SELECT_DIR}-bible-read`,
 };
 export const defaultDataDirNames = {
@@ -20,6 +20,6 @@ export const defaultDataDirNames = {
 
 
 export const fontSizeSettingNames = {
-    BIBLE_PRESENTING: 'bible-preview-font-size:presenting',
-    BIBLE_READING: 'bible-preview-font-size:reading',
+    BIBLE_PRESENTER: 'bible-preview-font-size:presenter',
+    BIBLE_READING: 'bible-preview-font-size:reader',
 };

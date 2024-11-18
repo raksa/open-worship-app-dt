@@ -1,5 +1,5 @@
 import { BrowserWindow, shell } from 'electron';
-import { channels, PresentMessageType } from './electronEventListener';
+import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
 
 const routeProps = genRoutProps('index');
@@ -44,9 +44,9 @@ export default class ElectronMainController {
     sendData(channel: string, data?: any) {
         this.win.webContents.send(channel, data);
     }
-    sendMessage(message: PresentMessageType) {
+    sendMessage(message: ScreenMessageType) {
         this.win.webContents.send(
-            channels.presentMessageChannel, message);
+            channels.screenMessageChannel, message);
     }
     changeBible(isNext: boolean) {
         this.sendData('app:main:change-bible', isNext);
@@ -54,9 +54,9 @@ export default class ElectronMainController {
     ctrlScrolling(isUp: boolean) {
         this.sendData('app:main:ctrl-scrolling', isUp);
     }
-    sendNotifyInvisibility(presentId: number) {
+    sendNotifyInvisibility(screenId: number) {
         this.sendMessage({
-            presentId,
+            screenId,
             type: 'visible',
             data: {
                 isShowing: false,

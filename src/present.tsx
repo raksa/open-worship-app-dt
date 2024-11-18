@@ -1,18 +1,18 @@
-import './_present/present.scss';
+import './_screen/screen.scss';
 import './others/font.scss';
 
 import { StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
-import appProviderPresent from './_present/appProviderPresent';
-import PresentApp from './_present/PresentApp';
+import appProviderScreen from './_screen/appProviderScreen';
+import ScreenApp from './_screen/ScreenApp';
 
 const container = document.getElementById('root');
 if (container !== null) {
     const root = createRoot(container);
     root.render(
         <StrictMode>
-            <PresentApp />
+            <ScreenApp />
         </StrictMode>
     );
 }
@@ -23,8 +23,8 @@ document.addEventListener('keyup', function (event) {
         ['ArrowLeft', 'ArrowRight'].includes(event.key)
     ) {
         const isNext = event.key === 'ArrowRight';
-        appProviderPresent.messageUtils.sendData(
-            'present:app:change-bible', isNext,
+        appProviderScreen.messageUtils.sendData(
+            'screen:app:change-bible', isNext,
         );
     }
 });

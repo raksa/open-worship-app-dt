@@ -8,7 +8,7 @@ import SlideItem from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import {
     closeSlideItemQuickEdit,
-} from '../slide-presenting/HandleItemSlideEdit';
+} from '../slide-presenter/HandleItemSlideEdit';
 import CanvasController from './canvas/CanvasController';
 import { useModal } from '../app-modal/Modal';
 

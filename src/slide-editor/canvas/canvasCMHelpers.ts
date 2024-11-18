@@ -100,7 +100,7 @@ export function showCanvasItemContextMenu(event: any,
             },
         },
         {
-            title: 'Edit', onClick: async () => {
+            title: 'Edit', onClick: () => {
                 canvasController.stopAllMods();
                 canvasController.setItemIsEditing(canvasItem, true);
             },

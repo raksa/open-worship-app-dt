@@ -4,14 +4,14 @@ import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Slide from './Slide';
 import ItemSource from '../helper/ItemSource';
-import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
+import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useNavigate } from 'react-router-dom';
-import { goEditingMode } from '../router/routeHelpers';
+import { goEditorMode } from '../router/routeHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -27,7 +27,7 @@ export default function SlideFile({
     const onClickCallback = useCallback(() => {
         if (data) {
             if (data.isSelected && !getIsShowingSlidePreviewer()) {
-                previewingEventListener.presentSlide(data);
+                previewingEventListener.showSlide(data);
                 return;
             }
             data.isSelected = true;
@@ -44,7 +44,7 @@ export default function SlideFile({
         if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
         }
-        data?.editingCacheManager.delete();
+        data?.editorCacheManager.delete();
     }, [data, filePath]);
     useAppEffect(() => {
         if (data === null) {
@@ -76,7 +76,7 @@ export default function SlideFile({
                 onClick: () => {
                     if (data) {
                         data.isSelected = true;
-                        goEditingMode(navigator);
+                        goEditorMode(navigator);
                     }
                 },
             }]}

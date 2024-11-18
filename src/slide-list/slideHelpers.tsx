@@ -11,17 +11,17 @@ import appProvider from '../server/appProvider';
 import { AppMimetypeType } from '../server/fileHelper';
 import {
     openSlideItemQuickEdit,
-} from '../slide-presenting/HandleItemSlideEdit';
+} from '../slide-presenter/HandleItemSlideEdit';
 import { showSimpleToast } from '../toast/toastHelpers';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
-import { checkIsWindowEditingMode } from '../router/routeHelpers';
+import { checkIsWindowEditorMode } from '../router/routeHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 0.2;
 export const MAX_THUMBNAIL_SCALE = 3;
 export const DEFAULT_THUMBNAIL_SIZE = 250;
-export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenting-item-thumbnail-size';
+export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenter-item-thumbnail-size';
 
 export type SlideDynamicType = Slide | null | undefined;
 
@@ -54,8 +54,8 @@ export function openSlideContextMenu(event: any,
         {
             title: 'Quick Edit',
             onClick: () => {
-                const isEditing = checkIsWindowEditingMode();
-                if (isEditing) {
+                const isEditor = checkIsWindowEditorMode();
+                if (isEditor) {
                     SlideListEventListener.selectSlideItem(slideItem);
                 } else {
                     openSlideItemQuickEdit(slideItem);

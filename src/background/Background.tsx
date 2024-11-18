@@ -8,12 +8,12 @@ import {
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
-import PresentBGManager, {
+import ScreenBGManager, {
     BackgroundType,
-} from '../_present/PresentBGManager';
+} from '../_screen/ScreenBGManager';
 import {
     usePBGMEvents,
-} from '../_present/presentEventHelpers';
+} from '../_screen/screenEventHelpers';
 
 const BackgroundColors = lazy(() => {
     return import('./BackgroundColors');
@@ -37,7 +37,7 @@ export default function Background() {
         'background-tab', 'image',
     );
     usePBGMEvents(['update']);
-    const bgSrcList = PresentBGManager.getBGSrcList();
+    const bgSrcList = ScreenBGManager.getBGSrcList();
     const toHLS = (type: BackgroundType) => {
         const isSelected = Object.values(bgSrcList).some((src) => {
             return src.type === type;
@@ -63,7 +63,7 @@ export default function Background() {
     );
 }
 
-export function RenderPresentIds({ ids }: Readonly<{
+export function RenderScreenIds({ ids }: Readonly<{
     ids: number[],
 }>) {
     return (
