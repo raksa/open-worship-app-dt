@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { getWindowDim, isValidJson } from '../helper/helpers';
+import { getWindowDim } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelper';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -10,13 +10,14 @@ import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBGManager from './ScreenBGManager';
 import ScreenFTManager from './ScreenFTManager';
 import {
-    getAllDisplays, getAllShowingScreenIds, hideScreen, screenManagerCache,
-    ScreenMessageType, setDisplay, showScreen,
+    getAllDisplays, getAllShowingScreenIds, getScreenManagersInstanceSetting,
+    hideScreen, ScreenMessageType, setDisplay, showScreen,
 } from './screenHelpers';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
 import ScreenTransitionEffect from
     './transition-effect/ScreenTransitionEffect';
+import { screenManagerSettingNames } from '../helper/constants';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'
@@ -35,6 +36,7 @@ export function useScreenManager(): ScreenManager {
     return screenManager;
 }
 
+const cache = new Map<string, any>();
 export default class ScreenManager
     extends EventHandler<ScreenManagerEventType>
     implements ScreenManagerInf {
@@ -190,7 +192,7 @@ export default class ScreenManager
         this.screenSlideManager.delete();
         this.screenAlertManager.delete();
         this.hide();
-        screenManagerCache.delete(this.key);
+        cache.delete(this.key);
         ScreenManager.saveScreenManagersSetting();
         this.fireInstanceEvent();
     }
@@ -228,8 +230,8 @@ export default class ScreenManager
         const screenId = parseInt(key, 10);
         return this.getInstance(screenId);
     }
-    static getAllInstances() {
-        const cachedInstances = Array.from(screenManagerCache.values());
+    static getAllInstances(): ScreenManager[] {
+        const cachedInstances = Array.from(cache.values());
         if (cachedInstances.length > 0) {
             return cachedInstances;
         }
@@ -239,25 +241,24 @@ export default class ScreenManager
     }
     static createInstance(screenId: number) {
         const key = screenId.toString();
-        if (!screenManagerCache.has(key)) {
+        if (!cache.has(key)) {
             const screenManager = new ScreenManager(screenId);
-            screenManagerCache.set(key, screenManager);
+            cache.set(key, screenManager);
             ScreenManager.saveScreenManagersSetting();
         }
-        return screenManagerCache.get(key) as ScreenManager;
+        return cache.get(key) as ScreenManager;
     }
     static getInstance(screenId: number) {
         const key = screenId.toString();
-        if (screenManagerCache.has(key)) {
-            return screenManagerCache.get(key) as ScreenManager;
+        if (cache.has(key)) {
+            return cache.get(key) as ScreenManager;
         }
         return null;
     }
     static getSelectedInstances() {
-        return Array.from(screenManagerCache.values())
-            .filter((screenManager) => {
-                return screenManager.isSelected;
-            });
+        return Array.from(cache.values()).filter((screenManager) => {
+            return screenManager.isSelected;
+        });
     }
     static contextChooseInstances(event: React.MouseEvent) {
         return new Promise<ScreenManager[]>((resolve) => {
@@ -279,19 +280,14 @@ export default class ScreenManager
         });
     }
     static getScreenManagersSetting() {
-        const str = getSetting(`${settingName}instances`, '');
-        if (isValidJson(str, true)) {
-            const json = JSON.parse(str);
-            if (json.length === 0) {
-                this.createInstance(0);
-            } else {
-                json.forEach(({ screenId, isSelected }: any) => {
-                    if (typeof screenId === 'number') {
-                        const screenManager = this.createInstance(screenId);
-                        screenManager._isSelected = !!isSelected;
-                    }
-                });
-            }
+        const instanceSetting = getScreenManagersInstanceSetting();
+        if (instanceSetting.length > 0) {
+            instanceSetting.forEach(({ screenId, isSelected }: any) => {
+                if (typeof screenId === 'number') {
+                    const screenManager = this.createInstance(screenId);
+                    screenManager._isSelected = !!isSelected;
+                }
+            });
         } else {
             this.createInstance(0);
         }
@@ -309,7 +305,7 @@ export default class ScreenManager
                 isSelected: screenManager.isSelected,
             };
         });
-        setSetting(`${settingName}instances`, JSON.stringify(json));
+        setSetting(screenManagerSettingNames.MANAGERS, JSON.stringify(json));
     }
     receiveScreenDrag(droppedData: DroppedDataType) {
         if ([

@@ -29,4 +29,5 @@ export const screenManagerSettingNames = {
     ALERT: 'screen-alert-manager',
     BG: 'screen-bg-manager',
     FT: 'screen-ft-manager',
+    MANAGERS: 'screen-managers',
 };

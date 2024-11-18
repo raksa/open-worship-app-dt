@@ -94,7 +94,6 @@ export type ScreenMessageType = {
     data: any,
 };
 
-export const screenManagerCache = new Map<string, any>();
 const messageUtils = appProviderScreen.messageUtils;
 
 export function calMediaSizes({
@@ -186,14 +185,27 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
     return createMouseEvent(0, 0);
 }
 
-throw new Error('Check screen setting');
+export function getScreenManagersInstanceSetting() {
+    const str = getSetting(screenManagerSettingNames.MANAGERS, '');
+    if (isValidJson(str, true)) {
+        const json = JSON.parse(str);
+        return json.filter(({ screenId, _ }: any) => {
+            return typeof screenId === 'number';
+        });
+    }
+    return [];
+}
 
 function getValidOnScreen(data: { [key: string]: any }) {
-    if (screenManagerCache.size === 0) {
+    const instanceSetting = getScreenManagersInstanceSetting();
+    if (instanceSetting.size === 0) {
         return {};
     }
+    const screenIdList = instanceSetting.map(({ screenId }: any) => {
+        return screenId;
+    });
     const validEntry = Object.entries(data).filter(([key, _]) => {
-        return screenManagerCache.has(key);
+        return screenIdList.includes(parseInt(key));
     });
     return Object.fromEntries(validEntry);
 }
@@ -317,10 +329,10 @@ export function getFTListOnScreenSetting(): FTListType {
                 throw new Error('Invalid full-text data');
             }
         });
-        return json;
+        return getValidOnScreen(json);
     } catch (error) {
         setSetting(screenManagerSettingNames.FT, '');
         handleError(error);
     }
     return {};
-}
+}   
