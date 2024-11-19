@@ -8,8 +8,9 @@ export default function BibleViewSetting({
     setFontSize: (fontSize: number) => void,
 }>) {
     return (
-        // TODO: auto hide footer, transaction back up on hover
-        <div className='bible-view-setting'>
+        <div className='bible-view-setting' style={{
+            maxWidth: 450,
+        }}>
             <div className='input-group d-flex'>
                 <div className='flex-fill d-flex mx-1'>
                     <div className='pe-1'>

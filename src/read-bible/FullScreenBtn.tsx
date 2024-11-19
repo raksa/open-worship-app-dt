@@ -1,20 +1,16 @@
-const enterFullScreen = async () => {
+async function enterFullScreen() {
     if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
         return true;
     }
     return false;
 };
-const exitFullScreen = async () => {
+async function exitFullScreen() {
     if (document.exitFullscreen) {
         await document.exitFullscreen();
         return false;
     }
     return true;
-};
-
-export const genFullScreenClassName = (isFulledScreen: boolean) => {
-    return isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen';
 };
 
 let onFullscreenChange: (() => void) | null = null;
@@ -34,6 +30,9 @@ export default function FullScreenBtn({
     isFulledScreen: boolean,
     setIsFullScreen: (isFullScreen: boolean) => void,
 }>) {
+    const fullScreenCN = (
+        isFulledScreen ? 'fullscreen-exit' : 'arrows-fullscreen'
+    );
     return (
         <div style={{ overflow: 'hidden' }}>
             <button className='btn btn-info btn-sm'
@@ -52,9 +51,7 @@ export default function FullScreenBtn({
                     );
                     setIsFullScreen(isFulledScreenSuccess);
                 }}>
-                <i className={
-                    `bi bi-${genFullScreenClassName(isFulledScreen)}`
-                } />
+                <i className={`bi bi-${fullScreenCN}`} />
                 {isFulledScreen ? 'Exit ' : ''}Full
             </button>
         </div>

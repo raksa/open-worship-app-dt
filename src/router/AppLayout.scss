@@ -182,6 +182,7 @@
     width: 100%;
     height: 100%;
     transition: width 0.3s, height 0.3s, background-color 0.3s;
+    transition-timing-function: step-end;
     $bg-color: var(--bs-gray-700);
     $bg-color-hover: var(--bs-gray-600);
     $color: var(--bs-gray-800);
@@ -235,6 +236,7 @@
       text-align: center;
       font-size: 5px;
       transition: font-size 0.3s;
+      transition-timing-function: step-end;
       padding: 0;
       margin: auto;
       color: var(--bs-gray-400);
@@ -249,5 +251,31 @@
     width: 100vw;
     height: 100vh;
     z-index: $z-index-popup-full-screen;
+  }
+
+  .auto-hide {
+    background-color: transparent;
+
+    &>div {
+      transform: translateY(100%);
+      transition: transform 0.3s, backdrop-filter 2s, background-color 2s;
+      transition-timing-function: step-end;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+
+      &>div {
+        transform: translateY(0);
+      }
+    }
+
+    &.auto-hide-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
   }
 }

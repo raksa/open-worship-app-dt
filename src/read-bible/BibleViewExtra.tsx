@@ -74,7 +74,7 @@ export function BibleViewText({
         }
     };
     return (
-        <div className='bible-view-text app-selectable-text'
+        <div className='bible-view-text app-selectable-text py-3'
             style={{ fontSize: `${fontSize}px` }}>
             {result.map(([verse, text]) => {
                 return (

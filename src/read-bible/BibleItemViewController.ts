@@ -115,7 +115,7 @@ function seekParent(
 
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
-    extends EventHandler<UpdateEventType>{
+    extends EventHandler<UpdateEventType> {
     private _settingNameSuffix: string;
     constructor(settingNameSuffix: string) {
         super();
@@ -294,12 +294,14 @@ export default class BibleItemViewController
 }
 
 export class SearchBibleItemViewController extends BibleItemViewController {
+
     private _nestedBibleItems: NestedBibleItemsType;
     private static _instance: SearchBibleItemViewController | null = null;
     selectedBibleItem: BibleItem;
     setInputText = (_: string) => { };
     setBibleKey = (_: string | null) => { };
     onSearchAddBibleItem = () => { };
+
     constructor() {
         super('');
         this.selectedBibleItem = BibleItem.fromJson({
@@ -315,6 +317,23 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         this._nestedBibleItems = sanitizeNestedItems(newNestedBibleItems);
         this.fireUpdateEvent();
     }
+    convertToStraightBibleItems(nestedBibleItems: NestedBibleItemsType) {
+        const traverse = (items: any): any => {
+            if (items instanceof Array) {
+                return items.flatMap((item) => {
+                    return traverse(item);
+                });
+            }
+            return [items];
+        };
+        const allBibleItems: BibleItem[] = traverse(nestedBibleItems);
+        return allBibleItems;
+    }
+    findSelectedIndex(bibleItems: BibleItem[]) {
+        return bibleItems.findIndex((bibleItem) => {
+            return bibleItem === this.selectedBibleItem;
+        });
+    }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
         return bibleItem === this.selectedBibleItem;
     }
@@ -323,6 +342,15 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             this._instance = new this;
         }
         return this._instance;
+    }
+    editBibleItem(bibleItem: BibleItem) {
+        const newBibleItem = bibleItem.clone(true);
+        this.selectedBibleItem = newBibleItem;
+        this.changeItem(bibleItem, newBibleItem);
+        bibleItem.toTitle().then((inputText) => {
+            this.setInputText(inputText);
+            this.setBibleKey(bibleItem.bibleKey);
+        });
     }
     genContextMenu(
         bibleItem: BibleItem, windowMode?: WindowModEnum | null,
@@ -335,13 +363,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         if (!this.checkIsBibleItemSelected(bibleItem)) {
             menus2.push({
                 title: 'Edit', onClick: () => {
-                    const newBibleItem = bibleItem.clone(true);
-                    this.selectedBibleItem = newBibleItem;
-                    this.changeItem(bibleItem, newBibleItem);
-                    bibleItem.toTitle().then((inputText) => {
-                        this.setInputText(inputText);
-                        this.setBibleKey(bibleItem.bibleKey);
-                    });
+                    this.editBibleItem(bibleItem);
                 },
             });
         }

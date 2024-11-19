@@ -21,15 +21,19 @@ const BibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
 });
 
-export default function RenderBibleSearch({ editorInputText }: Readonly<{
+function RenderBibleSearchHeader({
+    isSearchOnline, setIsSearchOnline, setBibleKey, inputText, setInputText,
+}: Readonly<{
     editorInputText: string,
+    isSearchOnline: boolean,
+    setIsSearchOnline: (isSearchOnline: boolean) => void,
+    setBibleKey: (bibleKey: string | null) => void,
+    inputText: string,
+    setInputText: (inputText: string) => void,
 }>) {
     const closeButton = useContext(CloseButtonContext);
-    const [isSearchOnline, setIsSearchOnline] = useState(false);
     const { data } = usePopupWindowsTypeData();
-    const isBibleEditor = !!data;
-    const [inputText, setInputText] = useState<string>(editorInputText);
-    const [bibleKey, setBibleKey] = useGetSelectedBibleKey();
+
     const bibleItemViewController = SearchBibleItemViewController.getInstance();
     const setInputText1 = (newText: string) => {
         setInputText(newText);
@@ -48,40 +52,65 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
                 setInputText1(newText);
             }
         }, [inputText]);
+    const isBibleEditor = !!data;
+    return (
+        <div className='card-header d-flex text-center w-100'>
+            <div className='flex-item flex-fill'>
+                {isBibleEditor ? null : (
+                    <div className='float-start'>
+                        <RenderExtraLeftButtons
+                            setIsSearchOnline={setIsSearchOnline}
+                            isSearchOnline={isSearchOnline}
+                        />
+                    </div>
+                )}
+            </div>
+            <div className='flex-item input-group input-group-header'
+                style={{ width: 350 }}>
+                <InputHandler
+                    inputText={inputText}
+                    onBibleChange={handleBibleChange}
+                />
+            </div>
+            <div className='flex-item flex-fill'>
+
+            </div>
+            {closeButton}
+        </div>
+    );
+}
+
+export default function RenderBibleSearch({ editorInputText }: Readonly<{
+    editorInputText: string,
+}>) {
+    const [isSearchOnline, setIsSearchOnline] = useState(false);
+    const [inputText, setInputText] = useState<string>(editorInputText);
+    const [bibleKey, setBibleKey] = useGetSelectedBibleKey();
+
     if (bibleKey === null) {
         return (
             <BibleNotAvailable />
         );
     }
     const searchingBody = (
-        <BibleSearchBodyPreviewer
-            inputText={inputText}
-        />
+        <BibleSearchBodyPreviewer inputText={inputText} />
     );
 
     return (
         <SelectedBibleKeyContext.Provider value={bibleKey}>
             <div id='bible-search-popup' className='app-modal shadow card'>
-                <div className='card-header d-flex text-center w-100'>
-                    {isBibleEditor ? null : <div className='float-start'>
-                        <RenderExtraLeftButtons
-                            setIsSearchOnline={setIsSearchOnline}
-                            isSearchOnline={isSearchOnline}
-                        />
-                    </div>}
-                    <div className='input-group input-group-header'
-                        style={{ width: 350 }}>
-                        <InputHandler
-                            inputText={inputText}
-                            onBibleChange={handleBibleChange}
-                        />
-                    </div>
-                    {closeButton}
-                </div>
+                <RenderBibleSearchHeader
+                    editorInputText={editorInputText}
+                    isSearchOnline={isSearchOnline}
+                    setIsSearchOnline={setIsSearchOnline}
+                    setBibleKey={setBibleKey}
+                    inputText={inputText}
+                    setInputText={setInputText}
+                />
                 <div className={
                     'card-body d-flex w-100 h-100 overflow-hidden'
                 }>
-                    {isSearchOnline ?
+                    {isSearchOnline ? (
                         <ResizeActor fSizeName='bible-search-popup-body'
                             isHorizontal
                             isDisableQuickResize
@@ -100,8 +129,9 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
                                     }, key: 'h2', widgetName: 'Searching',
                                 },
 
-                            ]} /> : searchingBody
-                    }
+                            ]}
+                        />
+                    ) : searchingBody}
                 </div>
             </div>
         </SelectedBibleKeyContext.Provider>
