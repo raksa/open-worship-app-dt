@@ -30,19 +30,23 @@ export default function RenderBibleSearchBody({ inputText }: Readonly<{
     }, [bibleKey, inputText]);
     useKeyboardRegistering([{ key: 'Tab' }], (event) => {
         const { bookKey, guessingChapter, bibleItem } = extractedInput;
-        if (
-            bibleItem === null && bookKey !== null && guessingChapter !== null
-        ) {
-            parseChapterFromGuessing(
-                bibleKey, bookKey, guessingChapter,
-            ).then((chapter) => {
-                if (chapter === null) {
-                    return;
-                }
-                event.stopPropagation();
-                event.preventDefault();
-                setInputText(inputText + ':');
-            });
+        if (bibleItem === null) {
+            if (bookKey !== null && guessingChapter !== null) {
+                parseChapterFromGuessing(
+                    bibleKey, bookKey, guessingChapter,
+                ).then((chapter) => {
+                    if (chapter === null) {
+                        return;
+                    }
+                    event.stopPropagation();
+                    event.preventDefault();
+                    setInputText(`${inputText}:`);
+                });
+            }
+        } else if (bibleItem.target.verseStart === bibleItem.target.verseEnd) {
+            event.stopPropagation();
+            event.preventDefault();
+            setInputText(`${inputText}-`);
         }
     });
     const applyBookSelectionCallback = useCallback(
