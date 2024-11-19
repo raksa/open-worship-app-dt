@@ -108,7 +108,7 @@ function useNextEditingBibleItem(
         viewController.editBibleItem(allBibleItems[selectedIndex]);
     });
 }
-function useSplitBibleItemRenderer(key: 's' | 'v') {
+export function useSplitBibleItemRenderer(key: 's' | 'v') {
     useKeyboardRegistering([{ ...metaKeys, key }], () => {
         const viewController = SearchBibleItemViewController.getInstance();
         const bibleItem = viewController.selectedBibleItem;
@@ -124,8 +124,6 @@ function Render() {
     const nestedBibleItems = useBIVCUpdateEvent();
     useNextEditingBibleItem('ArrowLeft', nestedBibleItems);
     useNextEditingBibleItem('ArrowRight', nestedBibleItems);
-    useSplitBibleItemRenderer('s');
-    useSplitBibleItemRenderer('v');
     return (
         <BibleViewRenderer nestedBibleItems={nestedBibleItems} />
     );

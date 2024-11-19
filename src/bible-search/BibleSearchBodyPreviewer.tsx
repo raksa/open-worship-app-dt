@@ -7,6 +7,7 @@ import {
 import BibleView from '../read-bible/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
 import AppSuspense from '../others/AppSuspense';
+import { useSplitBibleItemRenderer } from '../read-bible/BiblePreviewerRender';
 
 const BiblePreviewerRender = lazy(() => {
     return import('../read-bible/BiblePreviewerRender');
@@ -15,6 +16,8 @@ const BiblePreviewerRender = lazy(() => {
 export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
     inputText: string,
 }>) {
+    useSplitBibleItemRenderer('s');
+    useSplitBibleItemRenderer('v');
     const bibleItemViewController = SearchBibleItemViewController.getInstance();
     bibleItemViewController.finalRenderer = (
         bibleItem: BibleItem,
