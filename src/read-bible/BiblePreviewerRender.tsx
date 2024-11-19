@@ -108,7 +108,6 @@ function useNextEditingBibleItem(
         viewController.editBibleItem(allBibleItems[selectedIndex]);
     });
 }
-
 function useSplitBibleItemRenderer(key: 's' | 'v') {
     useKeyboardRegistering([{ ...metaKeys, key }], () => {
         const viewController = SearchBibleItemViewController.getInstance();
