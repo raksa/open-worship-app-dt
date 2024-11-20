@@ -1,6 +1,9 @@
 import BibleItem from '../bible-list/BibleItem';
-import BibleItemViewController from './BibleItemViewController';
+import BibleItemViewController, {
+    SearchBibleItemViewController,
+} from './BibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
+import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
 export enum DraggingPosEnum {
     TOP = '-top',
@@ -58,7 +61,7 @@ export function applyDragged(
             const newBibleItem = BibleItem.fromJson(json.data);
             for (const pos of allPos) {
                 if (pos === DraggingPosEnum.CENTER.toString()) {
-                    bibleItemViewCtl.changeItem(bibleItem, newBibleItem);
+                    bibleItemViewCtl.changeBibleItem(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.LEFT.toString()) {
                     bibleItemViewCtl.addBibleItemLeft(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.RIGHT.toString()) {
@@ -75,4 +78,65 @@ export function applyDragged(
     } catch (error) {
         handleError(error);
     }
+}
+
+
+function changeEditingBibleItem(isLeft = false) {
+    const viewController = SearchBibleItemViewController.getInstance();
+    const allBibleItems = viewController.straightBibleItems;
+    if (allBibleItems.length === 0) {
+        return;
+    }
+    let selectedIndex = viewController.selectedIndex;
+    if (selectedIndex === -1) {
+        return;
+    }
+    selectedIndex = (
+        (selectedIndex + (isLeft ? - 1 : 1) + allBibleItems.length) %
+        allBibleItems.length
+    );
+    viewController.editBibleItem(allBibleItems[selectedIndex]);
+}
+
+const metaKeys: any = {
+    wControlKey: ['Ctrl', 'Shift'],
+    lControlKey: ['Ctrl', 'Shift'],
+    mControlKey: ['Meta', 'Shift'],
+};
+
+export function useNextEditingBibleItem(key: 'ArrowLeft' | 'ArrowRight') {
+    useKeyboardRegistering([{ ...metaKeys, key }], (e) => {
+        e.preventDefault();
+        changeEditingBibleItem(key === 'ArrowLeft');
+    });
+}
+
+export function useSplitBibleItemRenderer(key: 's' | 'v') {
+    useKeyboardRegistering([{ ...metaKeys, key }], () => {
+        const viewController = SearchBibleItemViewController.getInstance();
+        const bibleItem = viewController.selectedBibleItem;
+        if (key === 's') {
+            viewController.addBibleItemLeft(bibleItem, bibleItem);
+        } else {
+            viewController.addBibleItemBottom(bibleItem, bibleItem);
+        }
+    });
+}
+
+export function useCloseBibleItemRenderer() {
+    useKeyboardRegistering([{
+        wControlKey: ['Ctrl'],
+        lControlKey: ['Ctrl'],
+        mControlKey: ['Meta'],
+        key: 'w',
+    }], (e) => {
+        e.preventDefault();
+        const viewController = SearchBibleItemViewController.getInstance();
+        const selectedBibleItem = viewController.selectedBibleItem;
+        if (viewController.straightBibleItems.length < 2) {
+            return;
+        }
+        changeEditingBibleItem(true);
+        viewController.removeBibleItem(selectedBibleItem);
+    });
 }

@@ -50,12 +50,12 @@ export default function BibleView({
                 onChange={(_oldBibleKey: string, newBibleKey: string) => {
                     const newBibleItem = bibleItem.clone(true);
                     newBibleItem.bibleKey = newBibleKey;
-                    bibleItemViewController.changeItem(
+                    bibleItemViewController.changeBibleItem(
                         bibleItem, newBibleItem,
                     );
                 }}
                 onClose={() => {
-                    bibleItemViewController.removeItem(bibleItem);
+                    bibleItemViewController.removeBibleItem(bibleItem);
                 }}
             />
             <div className='card-body p-3'>

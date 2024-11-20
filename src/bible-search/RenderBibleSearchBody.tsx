@@ -18,8 +18,9 @@ export default function RenderBibleSearchBody({ inputText }: Readonly<{
     inputText: string,
 }>) {
     const bibleKey = useContext(SelectedBibleKeyContext);
-    const setInputText = SearchBibleItemViewController.
-        getInstance().setInputText;
+    const setInputText = (
+        SearchBibleItemViewController.getInstance().setInputText
+    );
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );

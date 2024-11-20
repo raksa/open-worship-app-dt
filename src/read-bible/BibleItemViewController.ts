@@ -174,7 +174,7 @@ export default class BibleItemViewController
             nestedBibleItems, parentNestedBibleItems, index, isHorizontal,
         };
     }
-    changeItem(bibleItem: BibleItem, newBibleItem: BibleItem) {
+    changeBibleItem(bibleItem: BibleItem, newBibleItem: BibleItem) {
         try {
             const {
                 nestedBibleItems, parentNestedBibleItems, index,
@@ -186,7 +186,7 @@ export default class BibleItemViewController
         } catch (error) { }
     }
 
-    removeItem(bibleItem: BibleItem) {
+    removeBibleItem(bibleItem: BibleItem) {
         try {
             const {
                 nestedBibleItems, parentNestedBibleItems, index,
@@ -317,7 +317,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         this._nestedBibleItems = sanitizeNestedItems(newNestedBibleItems);
         this.fireUpdateEvent();
     }
-    convertToStraightBibleItems(nestedBibleItems: NestedBibleItemsType) {
+    get straightBibleItems() {
         const traverse = (items: any): any => {
             if (items instanceof Array) {
                 return items.flatMap((item) => {
@@ -326,11 +326,11 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             }
             return [items];
         };
-        const allBibleItems: BibleItem[] = traverse(nestedBibleItems);
+        const allBibleItems: BibleItem[] = traverse(this.nestedBibleItems);
         return allBibleItems;
     }
-    findSelectedIndex(bibleItems: BibleItem[]) {
-        return bibleItems.findIndex((bibleItem) => {
+    get selectedIndex() {
+        return this.straightBibleItems.findIndex((bibleItem) => {
             return bibleItem === this.selectedBibleItem;
         });
     }
@@ -346,7 +346,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     editBibleItem(bibleItem: BibleItem) {
         const newBibleItem = bibleItem.clone(true);
         this.selectedBibleItem = newBibleItem;
-        this.changeItem(bibleItem, newBibleItem);
+        this.changeBibleItem(bibleItem, newBibleItem);
         bibleItem.toTitle().then((inputText) => {
             this.setInputText(inputText);
             this.setBibleKey(bibleItem.bibleKey);
