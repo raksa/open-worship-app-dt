@@ -17,9 +17,7 @@ import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
 
-export default function BibleView({
-    bibleItem,
-}: Readonly<{
+export default function BibleView({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
     const bibleItemViewController = useBibleItemViewControllerContext();
@@ -59,9 +57,7 @@ export default function BibleView({
                 }}
             />
             <div className='card-body p-3'>
-                <BibleViewText
-                    bibleItem={bibleItem}
-                />
+                <BibleViewText bibleItem={bibleItem} />
                 {/* TODO: implement this
                 <RefRenderer bibleItem={bibleItem} /> */}
             </div>

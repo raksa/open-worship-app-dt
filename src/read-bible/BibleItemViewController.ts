@@ -15,6 +15,7 @@ import { showBibleOption } from '../bible-search/BibleSelection';
 import {
     genFoundBibleItemContextMenu,
 } from '../bible-search/RenderActionButtons';
+import { closeCurrentEditingBibleItem } from './readBibleHelper';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -367,7 +368,15 @@ export class SearchBibleItemViewController extends BibleItemViewController {
                 },
             });
         }
-        return [...menu1, ...menus2];
+        return [...menu1, ...menus2, {
+            title: 'Close', onClick: () => {
+                if (bibleItem === this.selectedBibleItem) {
+                    closeCurrentEditingBibleItem();
+                } else {
+                    this.removeBibleItem(bibleItem);
+                }
+            },
+        }];
     }
 }
 

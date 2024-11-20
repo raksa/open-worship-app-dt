@@ -17,6 +17,7 @@ import { useWindowMode } from '../router/routeHelpers';
 import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
+import { closeCurrentEditingBibleItem } from '../read-bible/readBibleHelper';
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange,
@@ -39,13 +40,14 @@ export default function RenderBibleDataFound({
                     ),
                 ]);
             }}>
-            <RenderHeader bibleItem={bibleItem} />
+            <RenderBibleFoundHeader bibleItem={bibleItem} />
             <div className='card-body bg-transparent border-success p-0'>
-                {!isSearching ? null :
+                {!isSearching ? null : (
                     <RenderVerseOptions
                         bibleItem={bibleItem}
-                        onVersesChange={onVerseChange} />
-                }
+                        onVersesChange={onVerseChange}
+                    />
+                )}
                 <div className='p-2'>
                     <BibleViewText bibleItem={bibleItem} />
                 </div>
@@ -54,7 +56,9 @@ export default function RenderBibleDataFound({
     );
 }
 
-function RenderHeader({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
+function RenderBibleFoundHeader({ bibleItem }: Readonly<{
+    bibleItem: BibleItem,
+}>) {
     const fontSize = useBibleViewFontSize();
     return (
         <div className='card-header bg-transparent border-success'
@@ -65,6 +69,13 @@ function RenderHeader({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
                 </div>
                 <div>
                     <RenderActionButtons bibleItem={bibleItem} />
+                </div>
+                <div>
+                    <button className='btn-close'
+                        onClick={() => {
+                            closeCurrentEditingBibleItem();
+                        }}
+                    />
                 </div>
             </div>
         </div>

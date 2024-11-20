@@ -32,7 +32,8 @@ export function RendHeader({
                 <button className='btn-close'
                     onClick={() => {
                         onClose();
-                    }} />
+                    }}
+                />
             </div>
         </div>
     );

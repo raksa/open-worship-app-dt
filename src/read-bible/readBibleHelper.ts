@@ -123,6 +123,16 @@ export function useSplitBibleItemRenderer(key: 's' | 'v') {
     });
 }
 
+export function closeCurrentEditingBibleItem() {
+    const viewController = SearchBibleItemViewController.getInstance();
+    const selectedBibleItem = viewController.selectedBibleItem;
+    if (viewController.straightBibleItems.length < 2) {
+        return;
+    }
+    changeEditingBibleItem(true);
+    viewController.removeBibleItem(selectedBibleItem);
+}
+
 export function useCloseBibleItemRenderer() {
     useKeyboardRegistering([{
         wControlKey: ['Ctrl'],
@@ -131,12 +141,6 @@ export function useCloseBibleItemRenderer() {
         key: 'w',
     }], (e) => {
         e.preventDefault();
-        const viewController = SearchBibleItemViewController.getInstance();
-        const selectedBibleItem = viewController.selectedBibleItem;
-        if (viewController.straightBibleItems.length < 2) {
-            return;
-        }
-        changeEditingBibleItem(true);
-        viewController.removeBibleItem(selectedBibleItem);
+        closeCurrentEditingBibleItem();
     });
 }
