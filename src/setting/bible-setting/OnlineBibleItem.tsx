@@ -2,33 +2,21 @@ import { useState } from 'react';
 
 import { handleError } from '../../helper/errorHelpers';
 import {
-    BibleMinimalInfoType,
-    downloadBible,
-    extractDownloadedBible,
+    BibleMinimalInfoType, downloadBible, extractDownloadedBible,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
-import { showSimpleToast } from '../../toast/toastHelpers';
 
-export default function OnlineBibleItem({
-    bibleInfo,
-    onDownloaded,
-}: {
-    bibleInfo: BibleMinimalInfoType,
-    onDownloaded: () => void,
-}) {
-    const { key, title } = bibleInfo;
+function useDownloadBible(
+    bibleInfo: BibleMinimalInfoType, onDownloaded: () => void,
+): [number | null, () => void] {
     const [
-        downloadingProgress,
-        setDownloadingProgress,
+        downloadingProgress, setDownloadingProgress,
     ] = useState<number | null>(null);
-    const onDownloadHandler = () => {
+    const startDownloadBible = () => {
         setDownloadingProgress(0);
         downloadBible({
             bibleInfo,
             options: {
-                onStart: (fileSize) => {
-                    showSimpleToast(`Start downloading ${key}`,
-                        `Total file size ${fileSize}mb`);
-                },
+                onStart: (_) => { },
                 onProgress: (percentage) => {
                     setDownloadingProgress(percentage);
                 },
@@ -46,30 +34,47 @@ export default function OnlineBibleItem({
             },
         });
     };
+    return [downloadingProgress, startDownloadBible];
+};
+
+export default function OnlineBibleItem({
+    bibleInfo, onDownloaded,
+}: Readonly<{
+    bibleInfo: BibleMinimalInfoType,
+    onDownloaded: () => void,
+}>) {
+    const [downloadingProgress, startDownloadBible] = useDownloadBible(
+        bibleInfo, onDownloaded,
+    );
     return (
         <li className='list-group-item'>
             <div className='w-100'>
-                <span>{title} ({key})</span>
-                {downloadingProgress === null ?
-                    (<div className='float-end'>
+                <span>{bibleInfo.title} ({bibleInfo.key})</span>
+                {downloadingProgress === null ? (
+                    <div className='float-end'>
                         <button className='btn btn-info'
-                            onClick={onDownloadHandler}>
+                            onClick={startDownloadBible}>
                             Download <i className='bi bi-cloud-arrow-down' />
                         </button>
-                    </div>) : (<div>
+                    </div>
+                ) : (
+                    <div>
                         <div className='progress'>
-                            <div className={'progress-bar progress-bar-striped '
-                                + 'progress-bar-animated'}
+                            <div className={
+                                'progress-bar progress-bar-striped ' +
+                                'progress-bar-animated'
+                            }
                                 role='progressbar'
                                 aria-valuenow={downloadingProgress * 100}
                                 aria-valuemin={0}
                                 aria-valuemax={100}
                                 style={{
                                     width: `${downloadingProgress * 100}%`,
-                                }} />
+                                }}
+                            />
                         </div>
-                    </div>)
-                }
+                    </div>
+                )}
             </div>
         </li>
     );

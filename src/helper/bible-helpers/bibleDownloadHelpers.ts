@@ -13,6 +13,8 @@ import {
 } from './bibleInfoHelpers';
 import { appApiFetch } from '../networkHelpers';
 
+const TOAST_TITLE = 'Bible Download';
+
 export function httpsRequest(
     pathName: string,
     callback: (error: Error | null, response?: any) => void,
@@ -61,6 +63,11 @@ const getDownloadHandler = (
             let cur = 0;
             const mb = 1048576;//1048576 - bytes in  1Megabyte
             const total = len / mb;
+            const fileSize = parseInt(total.toFixed(2), 10);
+            showSimpleToast(
+                TOAST_TITLE,
+                `Start downloading "${fileName}". File size ${fileSize}mb`,
+            );
             options.onStart(parseInt(total.toFixed(2), 10));
             response.on('data', (chunk: Buffer) => {
                 if (writeStream.writable) {
@@ -90,9 +97,7 @@ const getDownloadHandler = (
     };
 };
 export async function startDownloadBible({
-    bibleFileFullName,
-    fileName,
-    options,
+    bibleFileFullName, fileName, options,
 }: {
     bibleFileFullName: string,
     fileName: string,
@@ -117,8 +122,7 @@ export type BibleMinimalInfoType = {
 };
 
 export async function downloadBible({
-    bibleInfo,
-    options,
+    bibleInfo, options,
 }: {
     bibleInfo: BibleMinimalInfoType,
     options: DownloadOptionsType,
@@ -142,6 +146,9 @@ export async function downloadBible({
 }
 export async function extractDownloadedBible(filePath: string) {
     try {
+        showSimpleToast(
+            TOAST_TITLE, `Start extracting bible from file "${filePath}"`,
+        );
         const downloadPath = await bibleDataReader.getWritableBiblePath();
         await appProvider.fileUtils.tarExtract({
             file: filePath,
@@ -151,7 +158,7 @@ export async function extractDownloadedBible(filePath: string) {
         return true;
     } catch (error: any) {
         handleError(error);
-        showSimpleToast('Extracting Bible', 'Fail to extract bible');
+        showSimpleToast(TOAST_TITLE, 'Fail to extract bible');
     }
     return false;
 }

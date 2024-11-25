@@ -170,7 +170,7 @@ function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
         args = args || [];
         args.push(function (error: any, ...args1: any) {
             if (error) {
-                reject(error);
+                reject(error as Error);
             } else {
                 args1 = args1 || [];
                 (resolve as any)(...args1);
@@ -305,7 +305,7 @@ export async function fsListFilesWithMimetype(
             return getFileMetaData(fileName, mimetypeList);
         }).filter((d) => {
             return !!d;
-        }) as FileMetadataType[];
+        });
         return matchedFiles.map((fileMetadata) => {
             return FileSource.getInstance(dir, fileMetadata.fileName).filePath;
         });
