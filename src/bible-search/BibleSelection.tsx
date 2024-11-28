@@ -29,7 +29,11 @@ export async function showBibleOption(
             return !excludeBibleKey.includes(bibleInfo.key);
         }).map((bibleInfo) => {
             return {
-                menuTitle: bibleInfo.key,
+                menuTitle: bibleInfo.title,
+                otherChild: (
+                    <span className='text-muted'>{bibleInfo.key}</span>
+                ),
+                title: bibleInfo.title,
                 onClick: () => {
                     onSelect(bibleInfo.key);
                 },

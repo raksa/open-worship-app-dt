@@ -116,18 +116,17 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
                             flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
                             dataInput={[
                                 {
-                                    children: BibleOnlineSearchBodyPreviewer,
-                                    key: 'h1',
-                                    widgetName: 'Bible Online Search',
-                                },
-                                {
                                     children: {
                                         render: () => {
                                             return searchingBody;
                                         },
                                     }, key: 'h2', widgetName: 'Searching',
                                 },
-
+                                {
+                                    children: BibleOnlineSearchBodyPreviewer,
+                                    key: 'h1',
+                                    widgetName: 'Bible Online Search',
+                                },
                             ]}
                         />
                     ) : searchingBody}

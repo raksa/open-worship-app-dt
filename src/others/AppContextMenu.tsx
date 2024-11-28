@@ -2,7 +2,9 @@ import './AppContextMenu.scss';
 
 import { ReactElement, useState } from 'react';
 
-import KeyboardEventListener from '../event/KeyboardEventListener';
+import KeyboardEventListener, {
+    EventMapper, toShortcutKey,
+} from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -10,6 +12,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
     menuTitle: string,
+    title?: string,
     onClick?: (event: MouseEvent, data?: any) => (void | Promise<void>),
     disabled?: boolean,
     otherChild?: ReactElement,
@@ -111,7 +114,7 @@ export default function AppContextMenu() {
         return null;
     }
     return (
-        <div id="context-menu-container"
+        <div id="app-context-menu-container"
             onClick={(event) => {
                 event.stopPropagation();
                 setDataDelegator?.(null);
@@ -120,11 +123,12 @@ export default function AppContextMenu() {
                 if (self !== null) {
                     setPositionMenu(self, data.event);
                 }
-            }} className='app-context-menu'>
+            }} className='app-context-menu overflow-hidden'>
                 {data.items.map((item) => {
                     return (
                         <ContextMenuItem key={item.menuTitle}
-                            item={item} />
+                            item={item}
+                        />
                     );
                 })}
             </div>
@@ -136,8 +140,11 @@ function ContextMenuItem({ item }: Readonly<{
     item: ContextMenuItemType,
 }>) {
     return (
-        <div className={'app-context-menu-item'
-            + ` ${item.disabled ? 'disabled' : ''}`}
+        <div className={
+            'app-context-menu-item d-flex w-100 overflow-hidden' +
+            `${item.disabled ? 'disabled' : ''}`
+        }
+            title={item.title ?? item.menuTitle}
             onClick={(event) => {
                 if (item.disabled) {
                     return;
@@ -146,8 +153,22 @@ function ContextMenuItem({ item }: Readonly<{
                     item.onClick?.(event as any);
                 }, 0);
             }}>
-            {item.menuTitle}
+            <div className='app-ellipsis flex-fill'>
+                {item.menuTitle}
+            </div>
             {item.otherChild || null}
+        </div>
+    );
+}
+
+export function ContextMenuItemShortcutKey({ eventMapper }: Readonly<{
+    eventMapper: EventMapper,
+}>) {
+    return (
+        <div className='align-self-end'>
+            <span className='text-muted badge text-bg-primary'>
+                {toShortcutKey(eventMapper)}
+            </span>
         </div>
     );
 }

@@ -102,11 +102,9 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
             <div className='card-header input-group overflow-hidden' style={{
                 height: 45,
             }}>
-                <span className='input-group-text select'>
-                    <BibleSelection bibleKey={bibleKey}
-                        onChange={setBibleKey1}
-                    />
-                </span>
+                <BibleSelection bibleKey={bibleKey}
+                    onBibleKeyChange={setBibleKey1}
+                />
                 <input type='text'
                     className='form-control'
                     value={inputText}

@@ -12,7 +12,9 @@ import {
 } from '../router/routeHelpers';
 import { usePopupWindowsTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
-import { ContextMenuItemType } from '../others/AppContextMenu';
+import {
+    ContextMenuItemShortcutKey, ContextMenuItemType,
+} from '../others/AppContextMenu';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
 import { getIsKeepingPopup } from './RenderExtraLeftButtons';
@@ -151,9 +153,10 @@ export function genFoundBibleItemContextMenu(
     }
     return [
         {
-            menuTitle: `Add bible item ${toShortcutKey(
-                addListEventMapper, isKeyboardShortcut,
-            )}`,
+            menuTitle: 'Add bible item',
+            otherChild: isKeyboardShortcut ? (
+                <ContextMenuItemShortcutKey eventMapper={addListEventMapper} />
+            ) : undefined,
             onClick: () => {
                 addBibleItem(bibleItem, windowMode, onDone).
                     then((addedBibleItem) => {
