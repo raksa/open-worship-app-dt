@@ -211,7 +211,7 @@ export class BibleDataReader {
         }
         return this._writableBiblePath;
     }
-    async removeBibleData(bibleKey: string) {
+    async clearBibleDBData(bibleKey: string) {
         const dbController = await this.getDbController();
         const keys = await dbController.getKeys(bibleKey);
         if (keys === null) {

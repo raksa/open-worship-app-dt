@@ -4,7 +4,9 @@ import { handleError } from '../../helper/errorHelpers';
 import {
     BibleMinimalInfoType, downloadBible, extractDownloadedBible,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
-import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
+import {
+    bibleDataReader, getBibleInfo,
+} from '../../helper/bible-helpers/bibleInfoHelpers';
 import { getLangAsync } from '../../lang';
 
 async function syncBibleLanguage(bibleKey: string) {
@@ -22,6 +24,7 @@ function useDownloadBible(
         downloadingProgress, setDownloadingProgress,
     ] = useState<number | null>(null);
     const startDownloadBible = () => {
+        bibleDataReader.clearBibleDBData(bibleInfo.key);
         setDownloadingProgress(0);
         downloadBible({
             bibleInfo,

@@ -30,7 +30,7 @@ export default function DownloadedBibleItem({
                 await fsCheckDirExist(bibleDestination)
             ) {
                 await fsDeleteDir(bibleDestination);
-                await bibleDataReader.removeBibleData(key);
+                await bibleDataReader.clearBibleDBData(key);
             }
             hideProgressBard(progressKey);
             onDeleted();
