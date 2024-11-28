@@ -1,0 +1,17 @@
+@use '../others/variables.scss' as *;
+
+.app-top-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: $z-index-progress-bar;
+
+  div {
+    width: 100%;
+    height: 100%;
+    animation-duration: 0.2s !important;
+    animation-direction: reverse !important;
+  }
+}

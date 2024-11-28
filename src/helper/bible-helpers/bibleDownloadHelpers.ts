@@ -145,6 +145,7 @@ export async function downloadBible({
     }
 }
 export async function extractDownloadedBible(filePath: string) {
+    let isExtracted = false;
     try {
         showSimpleToast(
             TOAST_TITLE, `Start extracting bible from file "${filePath}"`,
@@ -154,13 +155,18 @@ export async function extractDownloadedBible(filePath: string) {
             file: filePath,
             cwd: downloadPath,
         });
-        await fsDeleteFile(filePath);
-        return true;
+        isExtracted = true;
     } catch (error: any) {
         handleError(error);
         showSimpleToast(TOAST_TITLE, 'Fail to extract bible');
+    } finally {
+        showSimpleToast(TOAST_TITLE, 'Bible extracted');
+        fsDeleteFile(filePath).catch((error) => {
+            handleError(error);
+            showSimpleToast(TOAST_TITLE, 'Fail to delete downloaded file');
+        });
     }
-    return false;
+    return isExtracted;
 }
 
 export async function getOnlineBibleInfoList():

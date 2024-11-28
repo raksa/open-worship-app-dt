@@ -37,15 +37,17 @@ export default function Toast() {
     };
     useToastSimpleShowing((toast: SimpleToastType) => {
         setSimpleToast(toast);
-        initTimeout(toast.timeout || 4e3);
+        initTimeout(toast.timeout ?? 4e3);
     });
+    if (!simpleToast) {
+        return null;
+    }
     return (
-        <>
-            {simpleToast && <SimpleToast
-                onMouseEnter={onMouseEventCallback}
-                onMouseLeave={onMouseLeaveCallback}
-                onClose={onCloseCallback}
-                toast={simpleToast} />}
-        </>
+        <SimpleToast
+            onMouseEnter={onMouseEventCallback}
+            onMouseLeave={onMouseLeaveCallback}
+            onClose={onCloseCallback}
+            toast={simpleToast}
+        />
     );
 }

@@ -22,7 +22,7 @@ export default function RenderVerseOptions({
         return null;
     }
     return (
-        <div className='render-found sticky-top'>
+        <div className='render-found'>
             <div className={
                 'verse-select d-flex p-1 align-content-start flex-wrap'
             }>
@@ -34,7 +34,8 @@ export default function RenderVerseOptions({
                             verseNum={verseNum}
                             verseNumText={verseNumStr}
                             onVerseChange={onVersesChange}
-                            bibleItem={bibleItem} />
+                            bibleItem={bibleItem}
+                        />
                     );
                 })}
             </div>

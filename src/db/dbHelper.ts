@@ -64,7 +64,7 @@ class InitDBOpeningQueue {
 export abstract class IndexedDbController implements DbControllerInterface {
     private static _instance: IndexedDbController | null = null;
     abstract get storeName(): string;
-    private _initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
+    private readonly initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
     static instantiate(): IndexedDbController {
         throw new Error('Not implemented');
     }
@@ -116,7 +116,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
     }
     init() {
         return new Promise<void>((resolve, reject) => {
-            this._initQueue.attemptDbOpening(this, resolve, reject);
+            this.initQueue.attemptDbOpening(this, resolve, reject);
         });
     }
 
@@ -139,13 +139,14 @@ export abstract class IndexedDbController implements DbControllerInterface {
             await this.deleteItem(id);
         }
         await this._asyncOperation('readwrite', (store) => {
-            return store.add({
-                id, data,
-                ...{
+            const newItem: RecordType = {
+                id, data, ...{
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
-            });
+            };
+            debugger;
+            return store.add(newItem);
         });
     }
     async getItem<T>(id: string) {

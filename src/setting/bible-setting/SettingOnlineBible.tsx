@@ -56,7 +56,8 @@ export default function SettingOnlineBible({
                     return (
                         <OnlineBibleItem key={bibleInfo.key}
                             bibleInfo={bibleInfo}
-                            onDownloaded={onDownloadedCallback} />
+                            onDownloaded={onDownloadedCallback}
+                        />
                     );
                 })}
             </ul>

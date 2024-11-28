@@ -21,6 +21,7 @@ import AppPopupWindows, {
 import RedirectTo from './others/RedirectTo';
 import { useHandleFind } from './_find/finderHelpers';
 import { useCheckSelectedDir } from './helper/tourHelpers';
+import ProgressBar from './progress-bar/ProgressBar';
 
 export default function App() {
     useCheckSelectedDir();
@@ -36,6 +37,7 @@ export default function App() {
                     <AppRouteRender />
                 </BrowserRouter>
             </DefaultTabContext.Provider>
+            <ProgressBar />
             <Toast />
             <AppContextMenu />
             <HandleAlert />

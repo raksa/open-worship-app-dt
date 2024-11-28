@@ -65,7 +65,8 @@ export default function SettingDownloadedBible({
                                 bibleInfoList={bibleInfoList}
                                 bibleInfo={bibleInfo}
                                 setDownloadedBibleInfoList={
-                                    setDownloadedBibleInfoList} />
+                                    setDownloadedBibleInfoList}
+                            />
                         );
                     })}
                 </>)}
@@ -96,13 +97,15 @@ function RenderItem({
         return (
             <OnlineBibleItem key={`${index}`}
                 bibleInfo={bibleInfo}
-                onDownloaded={onDownloadedCallback} />
+                onDownloaded={onDownloadedCallback}
+            />
         );
     }
     return (
         <DownloadedBibleItem key={`${index}`}
             bibleInfo={bibleInfo}
             onDeleted={onDeletedCallback}
-            onUpdate={onUpdateCallback} />
+            onUpdate={onUpdateCallback}
+        />
     );
 }

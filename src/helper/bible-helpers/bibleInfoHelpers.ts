@@ -12,6 +12,9 @@ import {
 } from './serverBibleHelpers';
 import { handleError } from '../errorHelpers';
 import { IndexedDbController } from '../../db/dbHelper';
+import {
+    hideProgressBard, showProgressBard,
+} from '../../progress-bar/progressBarHelpers';
 
 const { base64Decode, base64Encode } = appProvider.appUtils;
 
@@ -134,6 +137,9 @@ export class BibleDataReader {
         return this._dbController;
     }
     async _readBibleData(filePath: string) {
+        const progressKey = `Reading bible data from "${filePath}"`;
+        showProgressBard(progressKey);
+        let data = null;
         try {
             const dbController = await this.getDbController();
             const record = await dbController.getItem<string>(filePath);
@@ -146,14 +152,15 @@ export class BibleDataReader {
                 await dbController.addItem(filePath, b64Data, true);
             }
             const rawData = base64Decode(b64Data);
-            const data = JSON.parse(rawData);
-            return data;
+            data = JSON.parse(rawData);
         } catch (error: any) {
             if (error.code !== 'ENOENT') {
                 handleError(error);
             }
+        } finally {
+            hideProgressBard(progressKey);
         }
-        return null;
+        return data;
     }
     async _genBibleData(
         bibleKey: string, key: string, callback: CallbackType,

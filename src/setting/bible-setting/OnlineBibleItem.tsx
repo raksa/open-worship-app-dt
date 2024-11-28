@@ -4,6 +4,16 @@ import { handleError } from '../../helper/errorHelpers';
 import {
     BibleMinimalInfoType, downloadBible, extractDownloadedBible,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
+import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
+import { getLangAsync } from '../../lang';
+
+async function syncBibleLanguage(bibleKey: string) {
+    const bibleInfo = await getBibleInfo(bibleKey);
+    if (bibleInfo === null) {
+        throw new Error('Cannot get bible info');
+    }
+    await getLangAsync(bibleInfo.locale);
+}
 
 function useDownloadBible(
     bibleInfo: BibleMinimalInfoType, onDownloaded: () => void,
@@ -25,7 +35,12 @@ function useDownloadBible(
                         if (error) {
                             handleError(error);
                         } else {
-                            await extractDownloadedBible(filePath as string);
+                            const isSuccess = await extractDownloadedBible(
+                                filePath as string,
+                            );
+                            if (isSuccess) {
+                                await syncBibleLanguage(bibleInfo.key);
+                            }
                             onDownloaded();
                         }
                         setDownloadingProgress(null);

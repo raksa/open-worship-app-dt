@@ -9,7 +9,7 @@ export type SlideListEventType = 'slide-item-select' | 'slide-item-sizing';
 
 export default class SlideListEventListener extends
     EventHandler<SlideListEventType> {
-    static eventNamePrefix: string = 'slide-list';
+    static readonly eventNamePrefix: string = 'slide-list';
     static selectSlideItem(slideItem: SlideItem | null) {
         this.addPropEvent('slide-item-select', slideItem);
     }
