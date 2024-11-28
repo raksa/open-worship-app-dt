@@ -42,7 +42,9 @@ async function downloadBibleRef(key: string) {
 async function saveCacheBibleRef(key: string, data: object) {
     try {
         const dbController = await BibleRefsDbController.getInstance();
-        return dbController.addItem(key, data, true);
+        return dbController.addItem({
+            id: key, data, isForceOverride: true,
+        });
     } catch (error) {
         handleError(error);
     }

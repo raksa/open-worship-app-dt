@@ -58,6 +58,7 @@ export type AppInfoType = {
     author: string;
     homepage: string;
     version: string;
+    versionNumber: number;
 };
 export type FontListType = {
     [key: string]: string[],

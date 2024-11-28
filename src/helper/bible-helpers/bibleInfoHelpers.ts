@@ -11,7 +11,7 @@ import {
     getKJVChapterCount, toFileName,
 } from './serverBibleHelpers';
 import { handleError } from '../errorHelpers';
-import { IndexedDbController } from '../../db/dbHelper';
+import { IndexedDbController, ItemParamsType } from '../../db/dbHelper';
 import {
     hideProgressBard, showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
@@ -25,13 +25,16 @@ export class BibleDbController extends IndexedDbController {
     static instantiate() {
         return new this();
     }
-    async addItem(id: string, data: any, isForceOverride = false) {
-        const b64Id = base64Encode(id);
-        return super.addItem(b64Id, data, isForceOverride);
+    async addItem(item: ItemParamsType) {
+        item.id = base64Encode(item.id);
+        return super.addItem(item);
     }
     async getItem<T>(id: string) {
         const b64Id = base64Encode(id);
         return super.getItem<T>(b64Id);
+    }
+    async getKeys(bibleKey: string) {
+        return super.getKeys(bibleKey);
     }
 }
 
@@ -132,11 +135,11 @@ export class BibleDataReader {
     }
     async getDbController() {
         if (this._dbController === null) {
-            this._dbController = await BibleDbController.getInstance();
+            this._dbController = await BibleDbController.getInstance() as any;
         }
-        return this._dbController;
+        return this._dbController as BibleDbController;
     }
-    async _readBibleData(filePath: string) {
+    async _readBibleData(filePath: string, bibleKey: string) {
         const progressKey = `Reading bible data from "${filePath}"`;
         showProgressBard(progressKey);
         let data = null;
@@ -149,7 +152,10 @@ export class BibleDataReader {
             } else {
                 const fileData = await fsReadFile(filePath);
                 b64Data = decrypt(fileData);
-                await dbController.addItem(filePath, b64Data, true);
+                await dbController.addItem({
+                    id: filePath, data: b64Data, isForceOverride: true,
+                    secondaryId: bibleKey,
+                });
             }
             const rawData = base64Decode(b64Data);
             data = JSON.parse(rawData);
@@ -174,7 +180,7 @@ export class BibleDataReader {
         if (!isFist) {
             return;
         }
-        const data = await this._readBibleData(filePath);
+        const data = await this._readBibleData(filePath, bibleKey);
         this._fullfilCallback(filePath, data);
     }
     readBibleData(bibleKey: string, key: string) {
@@ -204,6 +210,18 @@ export class BibleDataReader {
             this._writableBiblePath = pathJoin(userWritablePath, 'bibles');
         }
         return this._writableBiblePath;
+    }
+    async removeBibleData(bibleKey: string) {
+        const dbController = await this.getDbController();
+        const keys = await dbController.getKeys(bibleKey);
+        if (keys === null) {
+            return;
+        }
+        Promise.all(
+            keys.map(async (key) => {
+                await dbController.deleteItem(key);
+            }),
+        );
     }
 }
 export const bibleDataReader = new BibleDataReader();

@@ -1,3 +1,5 @@
+import appProvider from '../server/appProvider';
+
 export const DB_NAME = 'bible';
 
 interface DbControllerInterface {
@@ -9,11 +11,19 @@ interface DbControllerInterface {
         reject: (e: string) => void) => void;
 };
 
-export type RecordType = {
+export type ItemParamsType = {
+    id: string, data: any, isForceOverride?: boolean,
+    secondaryId?: string | null,
+};
+
+type BasicRecordType = {
     id: string;
-    data: any;
+    secondaryId?: string | null;
     createdAt: Date;
     updatedAt: Date;
+};
+export type RecordType = BasicRecordType & {
+    data: any;
 };
 
 class InitDBOpeningQueue {
@@ -44,7 +54,9 @@ class InitDBOpeningQueue {
         if (this.request !== null) {
             return;
         }
-        const request = window.indexedDB.open(DB_NAME);
+        const request = window.indexedDB.open(
+            DB_NAME, appProvider.appInfo.versionNumber,
+        );
         this.request = request;
         request.onupgradeneeded = (event: any) => {
             dbController.db = event.target.result;
@@ -106,13 +118,12 @@ export abstract class IndexedDbController implements DbControllerInterface {
         return { store, transaction };
     }
     createObjectStore() {
-        if (this.db.objectStoreNames.contains(this.storeName)) {
-            return;
-        }
-        this.db.createObjectStore(this.storeName, {
+        this.db.deleteObjectStore(this.storeName);
+        const store = this.db.createObjectStore(this.storeName, {
             keyPath: 'id',
             autoIncrement: false,
         });
+        store.createIndex('index1', ['secondaryId'], { unique: false });
     }
     init() {
         return new Promise<void>((resolve, reject) => {
@@ -122,6 +133,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
 
     _asyncOperation<T>(mode: IDBTransactionMode,
         init: (target: IDBObjectStore) => T) {
+
         return new Promise<T>((resolve, reject) => {
             const { store } = this._getTransaction(mode);
             const target = init(store);
@@ -130,7 +142,9 @@ export abstract class IndexedDbController implements DbControllerInterface {
             }, reject);
         });
     }
-    async addItem(id: string, data: any, isForceOverride = false) {
+    async addItem({
+        id, data, isForceOverride = false, secondaryId = null,
+    }: ItemParamsType) {
         const oldData = await this.getItem(id);
         if (oldData !== undefined) {
             if (!isForceOverride) {
@@ -140,12 +154,11 @@ export abstract class IndexedDbController implements DbControllerInterface {
         }
         await this._asyncOperation('readwrite', (store) => {
             const newItem: RecordType = {
-                id, data, ...{
+                id, secondaryId, data, ...{
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
             };
-            debugger;
             return store.add(newItem);
         });
     }
@@ -156,12 +169,18 @@ export abstract class IndexedDbController implements DbControllerInterface {
         if (!request.result) {
             return null;
         }
-        return request.result as {
-            id: string;
-            data: T;
-            createdAt: Date;
-            updatedAt: Date;
-        };
+        return request.result as BasicRecordType & { data: T };
+    }
+    async getKeys(secondaryId: string) {
+        const request = await this._asyncOperation('readonly', (store) => {
+            const index = store.index('index1');
+            const range = IDBKeyRange.only([secondaryId]);
+            return index.getAllKeys(range);
+        });
+        if (!request.result) {
+            return null;
+        }
+        return request.result as string[];
     }
     updateItem(id: string, data: any) {
         return this._asyncOperation('readwrite', (store) => {

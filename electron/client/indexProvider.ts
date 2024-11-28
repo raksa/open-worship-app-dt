@@ -10,6 +10,14 @@ import fontUtils from './fontUtils';
 import appUtils from './appUtils';
 import pdfUtils from './pdfUtils';
 
+
+function toVersionNumber(version: string) {
+    const [major, minor, patch] = (
+        version.split('.').map((str) => parseInt(str, 10))
+    );
+    return major * 10000 + minor * 100 + patch;
+}
+
 const provider = {
     isMain: true,
     isScreen: false,
@@ -30,6 +38,7 @@ const provider = {
         author: appInfo.author,
         homepage: appInfo.homepage,
         version: appInfo.version,
+        versionNumber: toVersionNumber(appInfo.version),
     },
     reload: () => {
         window.location.reload();
