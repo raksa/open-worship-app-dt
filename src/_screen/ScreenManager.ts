@@ -271,7 +271,7 @@ export default class ScreenManager
                 event as any, allScreenManagers.map((screenManager,
                 ) => {
                     return {
-                        title: screenManager.name,
+                        menuTitle: screenManager.name,
                         onClick: () => {
                             resolve([screenManager]);
                         },

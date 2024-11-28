@@ -23,8 +23,8 @@ export function RendHeader({
             <div className='flex-fill d-flex'>
                 <div>
                     <BibleSelectionMini
-                        value={bibleItem.bibleKey}
-                        onChange={onChange}
+                        bibleKey={bibleItem.bibleKey}
+                        onBibleKeyChange={onChange}
                     />
                 </div>
                 <BibleViewTitle bibleItem={bibleItem} />

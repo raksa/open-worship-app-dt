@@ -11,7 +11,7 @@ function openContextMenu(event: any,
     showAppContextMenu(event, ptEffectList.map(([effect, [icon]]) => {
         const isSelected = effect === ptEffect.effectType;
         return {
-            title: effect,
+            menuTitle: effect,
             onClick: () => {
                 ptEffect.effectType = effect as ScreenTransitionEffectType;
             },

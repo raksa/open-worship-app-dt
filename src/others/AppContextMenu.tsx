@@ -9,8 +9,8 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
-    title: string,
-    onClick?: (event: MouseEvent, data?: any) => void,
+    menuTitle: string,
+    onClick?: (event: MouseEvent, data?: any) => (void | Promise<void>),
     disabled?: boolean,
     otherChild?: ReactElement,
 };
@@ -123,7 +123,7 @@ export default function AppContextMenu() {
             }} className='app-context-menu'>
                 {data.items.map((item) => {
                     return (
-                        <ContextMenuItem key={item.title}
+                        <ContextMenuItem key={item.menuTitle}
                             item={item} />
                     );
                 })}
@@ -146,7 +146,7 @@ function ContextMenuItem({ item }: Readonly<{
                     item.onClick?.(event as any);
                 }, 0);
             }}>
-            {item.title}
+            {item.menuTitle}
             {item.otherChild || null}
         </div>
     );

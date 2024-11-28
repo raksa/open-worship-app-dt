@@ -7,14 +7,14 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
     const isShowingFT = !!screenFTManager.ftItemData;
     const isLineSync = screenFTManager.isLineSync;
     const extraMenuItems = isShowingFT ? [{
-        title: `${isLineSync ? 'Un' : ''}Set Line Sync`,
+        menuTitle: `${isLineSync ? 'Un' : ''}Set Line Sync`,
         onClick() {
             screenFTManager.isLineSync = !isLineSync;
         },
     }] : [];
     showAppContextMenu(event, [
         ...isOne ? [] : [{
-            title: 'Solo',
+            menuTitle: 'Solo',
             onClick() {
                 ScreenManager.getSelectedInstances()
                     .forEach((screenManager1) => {
@@ -24,13 +24,13 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             },
         }],
         ...[{
-            title: screenManager.isSelected ? 'Unselect' : 'Select',
+            menuTitle: screenManager.isSelected ? 'Unselect' : 'Select',
             onClick() {
                 screenManager.isSelected = !screenManager.isSelected;
             },
         }],
         ...isOne ? [] : [{
-            title: 'Delete',
+            menuTitle: 'Delete',
             onClick() {
                 screenManager.delete();
             },

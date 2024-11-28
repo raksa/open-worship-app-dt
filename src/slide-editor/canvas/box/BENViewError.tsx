@@ -12,13 +12,13 @@ export default function BENViewError({ canvasItem }: Readonly<{
             onContextMenu={async (event) => {
                 event.stopPropagation();
                 showAppContextMenu(event as any, [{
-                    title: 'Delete',
+                    menuTitle: 'Delete',
                     onClick: () => {
                         const canvasController = CanvasController.getInstance();
                         canvasController.deleteItem(canvasItem);
                     },
                 }, {
-                    title: 'Copy Error Json',
+                    menuTitle: 'Copy Error Json',
                     onClick: () => {
                         appProvider.browserUtils.copyToClipboard(
                             JSON.stringify(canvasItem.props));

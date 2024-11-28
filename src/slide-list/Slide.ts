@@ -245,17 +245,17 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     showSlideItemContextMenu(event: any) {
         showAppContextMenu(event, [{
-            title: 'Deselect',
+            menuTitle: 'Deselect',
             onClick: () => {
                 this.isSelected = false;
             },
         }, {
-            title: 'New Slide Item',
+            menuTitle: 'New Slide Item',
             onClick: () => {
                 this.addNewItem();
             },
         }, {
-            title: 'Paste',
+            menuTitle: 'Paste',
             disabled: SlideItem.copiedItem === null,
             onClick: () => this.pasteItem(),
         }]);

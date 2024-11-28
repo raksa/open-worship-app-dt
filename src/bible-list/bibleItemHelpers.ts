@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import Bible from './Bible';
 import { WindowModEnum } from '../router/routeHelpers';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenu';
 import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -18,22 +20,24 @@ export type BibleItemType = {
     metadata: AnyObjectType,
 }
 
-export function genDefaultBibleItemContextMenu(bibleItem: BibleItem) {
+export function genDefaultBibleItemContextMenu(
+    bibleItem: BibleItem,
+): ContextMenuItemType[] {
     return [
         {
-            title: '(*T) ' + 'Copy Title',
+            menuTitle: '(*T) ' + 'Copy Title',
             onClick: () => {
                 bibleItem.copyTitleToClipboard();
             },
         },
         {
-            title: '(*T) ' + 'Copy Text',
+            menuTitle: '(*T) ' + 'Copy Text',
             onClick: () => {
                 bibleItem.copyTextToClipboard();
             },
         },
         {
-            title: '(*T) ' + 'Copy All',
+            menuTitle: '(*T) ' + 'Copy All',
             onClick: () => {
                 bibleItem.copyToClipboard();
             },
@@ -50,29 +54,29 @@ export async function openBibleItemContextMenu(
         showSimpleToast('Open Bible Item Context Menu', 'Unable to get bible');
         return;
     }
-    const menuItem = [
+    const menuItem: ContextMenuItemType[] = [
         ...genDefaultBibleItemContextMenu(bibleItem),
         {
-            title: '(*T) ' + 'Quick Edit',
+            menuTitle: '(*T) ' + 'Quick Edit',
             onClick: () => {
                 openBibleSearch();
             },
         },
         {
-            title: '(*T) ' + 'Duplicate',
+            menuTitle: '(*T) ' + 'Duplicate',
             onClick: () => {
                 bible.duplicate(index);
                 bible.save();
             },
         },
         {
-            title: '(*T) ' + 'Move To',
+            menuTitle: '(*T) ' + 'Move To',
             onClick: (event1: any) => {
                 moveBibleItemTo(event1, bible, windowMode, index);
             },
         },
         {
-            title: '(*T) ' + 'Delete',
+            menuTitle: '(*T) ' + 'Delete',
             onClick: () => {
                 bible.removeItemAtIndex(index);
                 bible.save();
@@ -81,7 +85,7 @@ export async function openBibleItemContextMenu(
     ];
     if (index !== 0) {
         menuItem.push({
-            title: '(*T) ' + 'Move up',
+            menuTitle: '(*T) ' + 'Move up',
             onClick: () => {
                 bible.swapItem(index, index - 1);
                 bible.save();
@@ -90,7 +94,7 @@ export async function openBibleItemContextMenu(
     }
     if (index !== bible.itemsLength - 1) {
         menuItem.push({
-            title: '(*T) ' + 'Move down',
+            menuTitle: '(*T) ' + 'Move down',
             onClick: () => {
                 bible.swapItem(index, index + 1);
                 bible.save();

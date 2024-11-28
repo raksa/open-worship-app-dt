@@ -16,13 +16,13 @@ export function pathPreviewer(dirPath: string) {
     const onContextMenu = (event: any) => {
         showAppContextMenu(event, [
             {
-                title: 'Copy to Clipboard',
+                menuTitle: 'Copy to Clipboard',
                 onClick: () => {
                     copyToClipboard(dirPath);
                 },
             },
             {
-                title: `Reveal in ${appProvider.systemUtils.isMac ?
+                menuTitle: `Reveal in ${appProvider.systemUtils.isMac ?
                     'Finder' : 'File Explorer'}`,
                 onClick: () => {
                     openExplorer(dirPath);

@@ -151,7 +151,7 @@ export function genFoundBibleItemContextMenu(
     }
     return [
         {
-            title: `Add bible item ${toShortcutKey(
+            menuTitle: `Add bible item ${toShortcutKey(
                 addListEventMapper, isKeyboardShortcut,
             )}`,
             onClick: () => {
@@ -165,13 +165,13 @@ export function genFoundBibleItemContextMenu(
         },
         ...(isWindowPresenter ? [
             {
-                title: 'Show bible item',
+                menuTitle: 'Show bible item',
                 onClick: (event: any) => {
                     ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
                 },
             },
             {
-                title: `Add bible item and show on screen ${toShortcutKey(
+                menuTitle: `Add bible item and show on screen ${toShortcutKey(
                     presenterEventMapper, isKeyboardShortcut,
                 )}`,
                 onClick: async (event: any) => {

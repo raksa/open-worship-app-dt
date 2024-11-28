@@ -18,16 +18,18 @@ const RenderRenaming = lazy(() => {
     return import('./RenderRenaming');
 });
 
-export const genCommonMenu = (filePath: string) => {
+export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
     return [
         {
-            title: 'Copy Path to Clipboard', onClick: () => {
+            menuTitle: 'Copy Path to Clipboard', onClick: () => {
                 copyToClipboard(filePath);
             },
         },
         {
-            title: `Reveal in ${appProvider.systemUtils.isMac ?
-                'Finder' : 'File Explorer'}`,
+            menuTitle: (
+                `Reveal in ${appProvider.systemUtils.isMac ?
+                    'Finder' : 'File Explorer'}`
+            ),
             onClick: () => {
                 openExplorer(filePath);
             },
@@ -39,25 +41,25 @@ function genContextMenu(
     filePath: string, setIsRenaming: (value: boolean) => void,
     reload: () => void, onDelete?: () => void,
 
-) {
+): ContextMenuItemType[] {
     return [
         {
-            title: 'Duplicate',
+            menuTitle: 'Duplicate',
             onClick: () => {
                 FileSource.getInstance(filePath).duplicate();
             },
         }, {
-            title: 'Rename',
+            menuTitle: 'Rename',
             onClick: () => {
                 setIsRenaming(true);
             },
         }, {
-            title: 'Reload',
+            menuTitle: 'Reload',
             onClick: () => {
                 reload();
             },
         }, {
-            title: 'Delete',
+            menuTitle: 'Delete',
             onClick: async () => {
                 const fileSource = FileSource.getInstance(filePath);
                 const isOk = await openConfirm(
@@ -113,8 +115,9 @@ export default function FileItemHandler({
     if (data === undefined) {
         return <FileReadError onContextMenu={callContextMenu} />;
     }
-    const moreClassName = `${data.isSelected ? 'active' : ''} `
-        + `${className || ''}`;
+    const moreClassName = (
+        `${data.isSelected ? 'active' : ''} ` + `${className || ''}`
+    );
     const fileSource = FileSource.getInstance(filePath);
     return (
         <li className={`list-group-item mx-1 ${moreClassName} ${userClassName}
@@ -132,34 +135,34 @@ export default function FileItemHandler({
             onDragOver={(event) => {
                 if (onDrop) {
                     event.preventDefault();
-                    event.currentTarget.classList
-                        .add('receiving-child');
+                    event.currentTarget.classList.add('receiving-child');
                 }
             }}
             onDragLeave={(event) => {
                 if (onDrop) {
                     event.preventDefault();
-                    event.currentTarget.classList
-                        .remove('receiving-child');
+                    event.currentTarget.classList.remove('receiving-child');
                 }
             }}
             onDrop={(event) => {
                 if (onDrop) {
-                    event.currentTarget.classList
-                        .remove('receiving-child');
+                    event.currentTarget.classList.remove('receiving-child');
                     onDrop(event);
                 }
             }}>
-            {isRenaming ? <RenderRenaming
-                setIsRenaming={setIsRenaming}
-                filePath={filePath} /> :
+            {isRenaming ? (
+                <RenderRenaming
+                    setIsRenaming={setIsRenaming}
+                    filePath={filePath}
+                />
+            ) :
                 <>
                     {renderChild(data)}
-                    {!isDisabledColorNote &&
+                    {!isDisabledColorNote && (
                         <div className='color-note-container'>
                             <ItemColorNote item={fileSource} />
                         </div>
-                    }
+                    )}
                 </>
             }
         </li>

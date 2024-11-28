@@ -76,8 +76,8 @@ export default function BibleItemRender({
                 <ItemColorNote item={bibleItem} />
                 <div className='px-1'>
                     <BibleSelectionMini
-                        value={bibleItem.bibleKey}
-                        onChange={(_, newValue) => {
+                        bibleKey={bibleItem.bibleKey}
+                        onBibleKeyChange={(_, newValue) => {
                             changeBible(newValue);
                         }}
                         isMinimal />

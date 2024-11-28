@@ -1,5 +1,7 @@
 import BibleItem from '../bible-list/BibleItem';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenu';
 import {
     BibleItemRenderedType,
 } from './fullTextScreenComps';
@@ -62,36 +64,36 @@ async function onBibleSelect(
         const newFtItemData = await bibleItemToFtData(newBibleItems);
         screenFTManager.ftItemData = newFtItemData;
     };
-    showAppContextMenu(event,
-        [
-            ...bibleRenderedList.length > 1 ? [{
-                title: 'Remove(' + bibleRenderedList[index].bibleKey + ')',
-                onClick: async () => {
-                    bibleItemingList.splice(index, 1);
+    const menuItems: ContextMenuItemType[] = [
+        ...bibleRenderedList.length > 1 ? [{
+            menuTitle: 'Remove(' + bibleRenderedList[index].bibleKey + ')',
+            onClick: async () => {
+                bibleItemingList.splice(index, 1);
+                applyBibleItems(bibleItemingList);
+            },
+            otherChild: (<i className='bi bi-x-lg'
+                style={{ color: 'red' }} />),
+        }] : [],
+        ...bibleListFiltered.length > 0 ? [{
+            menuTitle: 'Shift Click to Add',
+            disabled: true,
+        }] : [],
+        ...bibleListFiltered.map((bibleInfo) => {
+            const bibleKey = bibleInfo.key;
+            return {
+                menuTitle: bibleKey,
+                onClick: async (event1: any) => {
+                    if (event1.shiftKey) {
+                        bibleItemingList.push(bibleKey);
+                    } else {
+                        bibleItemingList[index] = bibleKey;
+                    }
                     applyBibleItems(bibleItemingList);
                 },
-                otherChild: (<i className='bi bi-x-lg'
-                    style={{ color: 'red' }} />),
-            }] : [],
-            ...bibleListFiltered.length > 0 ? [{
-                title: 'Shift Click to Add',
-                disabled: true,
-            }] : [],
-            ...bibleListFiltered.map((bibleInfo) => {
-                const bibleKey = bibleInfo.key;
-                return {
-                    title: bibleKey,
-                    onClick: async (event1: any) => {
-                        if (event1.shiftKey) {
-                            bibleItemingList.push(bibleKey);
-                        } else {
-                            bibleItemingList[index] = bibleKey;
-                        }
-                        applyBibleItems(bibleItemingList);
-                    },
-                };
-            }),
-        ]);
+            };
+        }),
+    ];
+    showAppContextMenu(event, menuItems);
 }
 
 export function renderPFTManager(screenFTManager: ScreenFTManager) {

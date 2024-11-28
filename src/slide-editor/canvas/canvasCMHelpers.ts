@@ -20,20 +20,20 @@ export async function showCanvasContextMenu(event: any) {
     });
     showAppContextMenu(event, [
         {
-            title: 'New',
+            menuTitle: 'New',
             onClick: () => {
                 canvasController.addNewTextItem();
             },
         },
         {
-            title: 'Paste',
+            menuTitle: 'Paste',
             disabled: canvasController.isCopied === null,
             onClick: () => {
                 canvasController.paste();
             },
         },
         {
-            title: 'Insert Medias',
+            menuTitle: 'Insert Medias',
             onClick: () => {
                 const imageExts = getMimetypeExtensions('image');
                 const videoExts = getMimetypeExtensions('video');
@@ -59,7 +59,7 @@ export async function showCanvasContextMenu(event: any) {
         },
         ...(isPastingImage ? [
             {
-                title: 'Paste Image',
+                menuTitle: 'Paste Image',
                 onClick: async () => {
                     const clipboardItems = await navigator.clipboard.read();
                     for (const clipboardItem of clipboardItems) {
@@ -90,23 +90,23 @@ export function showCanvasItemContextMenu(event: any,
     const canvasController = CanvasController.getInstance();
     showAppContextMenu(event, [
         {
-            title: 'Copy', onClick: () => {
+            menuTitle: 'Copy', onClick: () => {
                 canvasController.copiedItem = canvasItem;
             },
         },
         {
-            title: 'Duplicate', onClick: () => {
+            menuTitle: 'Duplicate', onClick: () => {
                 canvasController.duplicate(canvasItem);
             },
         },
         {
-            title: 'Edit', onClick: () => {
+            menuTitle: 'Edit', onClick: () => {
                 canvasController.stopAllMods();
                 canvasController.setItemIsEditing(canvasItem, true);
             },
         },
         {
-            title: 'Delete', onClick: () => {
+            menuTitle: 'Delete', onClick: () => {
                 canvasController.deleteItem(canvasItem);
             },
         },

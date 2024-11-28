@@ -56,6 +56,15 @@ function RenderBibleSearchHeader({
     return (
         <div className='card-header d-flex text-center w-100'>
             <div className='flex-item flex-fill'>
+            </div>
+            <div className='flex-item input-group app-input-group-header'
+                style={{ width: 350 }}>
+                <InputHandler
+                    inputText={inputText}
+                    onBibleChange={handleBibleChange}
+                />
+            </div>
+            <div className='flex-item flex-fill justify-content-end pe-5'>
                 {isBibleEditor ? null : (
                     <div className='float-start'>
                         <RenderExtraLeftButtons
@@ -64,16 +73,6 @@ function RenderBibleSearchHeader({
                         />
                     </div>
                 )}
-            </div>
-            <div className='flex-item input-group input-group-header'
-                style={{ width: 350 }}>
-                <InputHandler
-                    inputText={inputText}
-                    onBibleChange={handleBibleChange}
-                />
-            </div>
-            <div className='flex-item flex-fill'>
-
             </div>
             {closeButton}
         </div>

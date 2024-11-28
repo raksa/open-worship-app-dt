@@ -64,7 +64,7 @@ export default function SlideFile({
             onClick={onClickCallback}
             renderChild={renderChildCallback}
             contextMenu={data?.isPdf ? [{
-                title: 'Preview PDF',
+                menuTitle: 'Preview PDF',
                 onClick: () => {
                     const fileSource = FileSource.getInstance(data.filePath);
                     appProvider.messageUtils.sendData(
@@ -72,7 +72,7 @@ export default function SlideFile({
                     );
                 },
             }] : [{
-                title: 'Edit',
+                menuTitle: 'Edit',
                 onClick: () => {
                     if (data) {
                         data.isSelected = true;

@@ -45,14 +45,14 @@ export default function ItemColorNote({ item }: Readonly<{
                 });
                 // unique colors by key
                 const items: ContextMenuItemType[] = [{
-                    title: 'no color',
+                    menuTitle: 'no color',
                     disabled: colorNote === null,
                     onClick: () => {
                         setColorNote(null);
                     },
                 }, ...colors.map(([name, colorCode]): ContextMenuItemType => {
                     return {
-                        title: name,
+                        menuTitle: name,
                         disabled: colorNote === colorCode,
                         onClick: () => {
                             setColorNote(colorCode);

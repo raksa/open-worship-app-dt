@@ -15,7 +15,7 @@ import {
 import {
     SearchBibleItemViewController,
 } from '../read-bible/BibleItemViewController';
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
 export default function InputHandler({
@@ -46,7 +46,10 @@ export default function InputHandler({
         setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
     });
     return (
-        <>
+        <Fragment>
+            <BibleSelection bibleKey={bibleKey}
+                onBibleKeyChange={onBibleChange}
+            />
             <input id={INPUT_ID} type='text'
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
@@ -55,12 +58,8 @@ export default function InputHandler({
                 onChange={(event) => {
                     const value = event.target.value;
                     setInputText(value);
-                }} />
-            <span className='input-group-text select'>
-                <BibleSelection bibleKey={bibleKey}
-                    onChange={onBibleChange}
-                />
-            </span>
-        </>
+                }}
+            />
+        </Fragment>
     );
 }

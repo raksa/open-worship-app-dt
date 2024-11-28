@@ -18,7 +18,7 @@ import ScreenPreviewerTools from './ScreenPreviewerTools';
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
         {
-            title: 'Add New Screen',
+            menuTitle: 'Add New Screen',
             onClick() {
                 const instances = ScreenManager.getAllInstances();
                 const ids = instances.map((screenManager) => {

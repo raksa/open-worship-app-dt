@@ -180,7 +180,7 @@ export async function moveBibleItemTo(
         }
         showAppContextMenu(event, targetNames.map((name) => {
             return {
-                title: name,
+                menuTitle: name,
                 onClick: async () => {
                     const bibleFileSource = FileSource.getInstance(
                         bible.filePath,

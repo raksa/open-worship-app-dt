@@ -11,6 +11,7 @@ import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelper';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
+import { ContextMenuItemType } from '../others/AppContextMenu';
 
 const RenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
@@ -18,12 +19,12 @@ const RenderBibleItems = lazy(() => {
 
 function genContextMenu(bible: Bible | null | undefined,
     windowMode: WindowModEnum | null,
-) {
+): ContextMenuItemType[] {
     if (!bible) {
         return [];
     }
     return [{
-        title: '(*T) ' + 'Empty',
+        menuTitle: '(*T) ' + 'Empty',
         onClick: () => {
             openConfirm(
                 'Empty Bible List',
@@ -38,7 +39,7 @@ function genContextMenu(bible: Bible | null | undefined,
         },
     },
     {
-        title: '(*T) ' + 'Copy All Items',
+        menuTitle: '(*T) ' + 'Copy All Items',
         onClick: async () => {
             const promises = bible.items.map((item) => {
                 return item.toTitleText();
@@ -50,7 +51,7 @@ function genContextMenu(bible: Bible | null | undefined,
             copyToClipboard(text.join('\n\n'));
         },
     }, {
-        title: '(*T) ' + 'Move All Items To',
+        menuTitle: '(*T) ' + 'Move All Items To',
         onClick: (event: any) => {
             moveBibleItemTo(event, bible, windowMode);
         },

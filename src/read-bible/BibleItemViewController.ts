@@ -117,7 +117,8 @@ function seekParent(
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType> {
-    private _settingNameSuffix: string;
+
+    private readonly _settingNameSuffix: string;
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
@@ -254,11 +255,11 @@ export default class BibleItemViewController
     ): ContextMenuItemType[] {
         return [
             {
-                title: 'Split Horizontal', onClick: () => {
+                menuTitle: 'Split Horizontal', onClick: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
                 },
             }, {
-                title: 'Split Horizontal To', onClick: (event: any) => {
+                menuTitle: 'Split Horizontal To', onClick: (event: any) => {
                     showBibleOption(event, [], (bibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = bibleKey;
@@ -267,11 +268,11 @@ export default class BibleItemViewController
                 },
             },
             {
-                title: 'Split Vertical', onClick: () => {
+                menuTitle: 'Split Vertical', onClick: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
                 },
             }, {
-                title: 'Split Vertical To', onClick: (event: any) => {
+                menuTitle: 'Split Vertical To', onClick: (event: any) => {
                     showBibleOption(event, [], (bibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
                         newBibleItem.bibleKey = bibleKey;
@@ -363,13 +364,13 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         const menus2 = super.genContextMenu(bibleItem, windowMode);
         if (!this.checkIsBibleItemSelected(bibleItem)) {
             menus2.push({
-                title: 'Edit', onClick: () => {
+                menuTitle: 'Edit', onClick: () => {
                     this.editBibleItem(bibleItem);
                 },
             });
         }
         return [...menu1, ...menus2, {
-            title: 'Close', onClick: () => {
+            menuTitle: 'Close', onClick: () => {
                 if (bibleItem === this.selectedBibleItem) {
                     closeCurrentEditingBibleItem();
                 } else {
