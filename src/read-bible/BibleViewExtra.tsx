@@ -7,7 +7,7 @@ import {
 import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
-import { Fragment } from 'react';
+import { createContext, Fragment, useContext } from 'react';
 
 export function RendHeader({
     bibleItem, onChange, onClose,
@@ -24,7 +24,8 @@ export function RendHeader({
                 <div>
                     <BibleSelectionMini
                         value={bibleItem.bibleKey}
-                        onChange={onChange} />
+                        onChange={onChange}
+                    />
                 </div>
                 <BibleViewTitle bibleItem={bibleItem} />
             </div>
@@ -39,14 +40,26 @@ export function RendHeader({
     );
 }
 
+export const BibleViewTitleMaterialContext = (
+    createContext<{ onDBClick: (bibleItem: BibleItem) => void } | null>(null)
+);
+
 export function BibleViewTitle({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
+    const materialContext = useContext(BibleViewTitleMaterialContext);
     const title = useBibleItemRenderTitle(bibleItem);
     const fontSize = useBibleViewFontSize();
     return (
-        <div className='title app-selectable-text'
-            style={{ fontSize }}>
+        <div className='title' style={{ fontSize }}
+            title={
+                materialContext !== null ? 'Double click to edit' : undefined
+            }
+            onDoubleClick={() => {
+                if (materialContext !== null) {
+                    materialContext.onDBClick(bibleItem);
+                }
+            }}>
             {title}
         </div>
     );

@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useMemo } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import {
@@ -11,6 +11,7 @@ import {
     useCloseBibleItemRenderer, useNextEditingBibleItem,
     useSplitBibleItemRenderer,
 } from '../read-bible/readBibleHelper';
+import { BibleViewTitleMaterialContext } from '../read-bible/BibleViewExtra';
 
 const BiblePreviewerRender = lazy(() => {
     return import('../read-bible/BiblePreviewerRender');
@@ -25,20 +26,22 @@ export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
     useSplitBibleItemRenderer('s');
     useSplitBibleItemRenderer('v');
     const bibleItemViewController = SearchBibleItemViewController.getInstance();
-    bibleItemViewController.finalRenderer = (
-        bibleItem: BibleItem,
-    ) => {
+    const contextValue = useMemo(() => ({
+        onDBClick: (bibleItem: BibleItem) => {
+            bibleItemViewController.editBibleItem(bibleItem);
+        },
+    }), [bibleItemViewController]);
+    bibleItemViewController.finalRenderer = function (bibleItem: BibleItem) {
         const isSelected = bibleItemViewController.checkIsBibleItemSelected(
             bibleItem,
         );
+        if (isSelected) {
+            return (<RenderBibleSearchBody inputText={inputText} />);
+        }
         return (
-            isSelected ?
-                <RenderBibleSearchBody
-                    inputText={inputText}
-                /> :
-                <BibleView
-                    bibleItem={bibleItem}
-                />
+            <BibleViewTitleMaterialContext.Provider value={contextValue}>
+                <BibleView bibleItem={bibleItem} />
+            </BibleViewTitleMaterialContext.Provider>
         );
     };
     return (
