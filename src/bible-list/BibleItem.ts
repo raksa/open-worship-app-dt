@@ -51,6 +51,16 @@ export default class BibleItem extends ItemBase
     checkIsSameId(bibleItem: BibleItem) {
         return this.id === bibleItem.id;
     }
+    checkIsTargetIdentical(bibleItem: BibleItem) {
+        const { target } = this;
+        const { target: target2 } = bibleItem;
+        return (
+            target.bookKey === target2.bookKey &&
+            target.chapter === target2.chapter &&
+            target.verseStart === target2.verseStart &&
+            target.verseEnd === target2.verseEnd
+        );
+    }
     static fromJson(json: BibleItemType, filePath?: string) {
         this.validate(json);
         return new BibleItem(json.id, json, filePath);

@@ -130,7 +130,7 @@ export default class BibleItemViewController
     extends EventHandler<UpdateEventType> {
 
     private readonly _settingNameSuffix: string;
-    private readonly colorNoteMap: WeakMap<BibleItem, string> = new WeakMap();
+    readonly colorNoteMap: WeakMap<BibleItem, string> = new WeakMap();
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
@@ -158,8 +158,6 @@ export default class BibleItemViewController
         this.fireUpdateEvent();
     }
     getColorNote(bibleItem: BibleItem) {
-        console.log('get colorNoteMap', this.colorNoteMap);
-
         return this.colorNoteMap.get(bibleItem) || '';
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
@@ -168,7 +166,6 @@ export default class BibleItemViewController
         } else {
             this.colorNoteMap.set(bibleItem, color);
         }
-        console.log('set colorNoteMap', this.colorNoteMap);
     }
     toSettingName(preSettingName: string) {
         return preSettingName + this._settingNameSuffix;
@@ -209,8 +206,11 @@ export default class BibleItemViewController
                 bibleItem, 'Change Item', 'Unable to change bible item',
             );
             parentNestedBibleItems[index] = newBibleItem;
+            this.setColorNote(newBibleItem, this.getColorNote(bibleItem));
             this.nestedBibleItems = nestedBibleItems;
-        } catch (error) { }
+        } catch (error) {
+            handleError(error);
+        }
     }
 
     removeBibleItem(bibleItem: BibleItem) {
@@ -256,10 +256,10 @@ export default class BibleItemViewController
                         [bibleItem, newBibleItem]
                 );
             }
-            this.nestedBibleItems = nestedBibleItems;
             if (sourceColor) {
                 this.setColorNote(newBibleItem, sourceColor);
             }
+            this.nestedBibleItems = nestedBibleItems;
         } catch (error) {
             handleError(error);
         }
@@ -373,6 +373,16 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             return bibleItem === this.selectedBibleItem;
         });
     }
+    setColorNote(bibleItem: BibleItem, color: string | null) {
+        super.setColorNote(bibleItem, color);
+        if (color) {
+            if (this.checkIsBibleItemSelected(bibleItem)) {
+                this.syncBibleItems();
+            } else {
+                this.syncBibleItem(bibleItem);
+            }
+        }
+    }
     checkIsBibleItemSelected(bibleItem: BibleItem) {
         return bibleItem === this.selectedBibleItem;
     }
@@ -438,6 +448,27 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             },
         ];
         return [...menu1, ...menus2, ...menu3];
+    }
+    syncBibleItems() {
+        this.straightBibleItems.forEach((bibleItem) => {
+            this.syncBibleItem(bibleItem);
+        });
+    }
+    syncBibleItem(bibleItem: BibleItem) {
+        if (
+            this.checkIsBibleItemSelected(bibleItem) ||
+            bibleItem.checkIsTargetIdentical(this.selectedBibleItem)
+        ) {
+            return;
+        }
+        const editingColor = this.getColorNote(this.selectedBibleItem);
+        const currentColor = this.getColorNote(bibleItem);
+        if (!editingColor || !currentColor || currentColor !== editingColor) {
+            return;
+        }
+        const newBibleItem = bibleItem.clone(true);
+        newBibleItem.target = this.selectedBibleItem.clone().target;
+        this.changeBibleItem(bibleItem, newBibleItem);
     }
 }
 

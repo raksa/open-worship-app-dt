@@ -12,24 +12,26 @@ import {
 import ItemColorNote from '../others/ItemColorNote';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
+import { useBibleItem } from './BibleItemContext';
 
 export function RenderTitleMaterial({
-    bibleItem, onBibleKeyChange,
+    editingBibleItem, onBibleKeyChange,
 }: Readonly<{
-    bibleItem: BibleItem,
+    editingBibleItem?: BibleItem,
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
-    console.log('init', bibleItem);
-
+    const bibleItem = useBibleItem();
     const bibleItemViewController = useBibleItemViewControllerContext();
     const colorNoteHandler: ColorNoteInf = {
         getColorNote: async () => {
-            return bibleItemViewController.getColorNote(bibleItem);
+            return bibleItemViewController.getColorNote(
+                editingBibleItem ?? bibleItem
+            );
         },
         setColorNote: async (color) => {
-            console.log('setting', bibleItem);
-
-            bibleItemViewController.setColorNote(bibleItem, color);
+            bibleItemViewController.setColorNote(
+                editingBibleItem ?? bibleItem, color,
+            );
         },
     };
     return (
@@ -45,15 +47,14 @@ export function RenderTitleMaterial({
                     <ItemColorNote item={colorNoteHandler} />
                 </div>
             </div>
-            <BibleViewTitle bibleItem={bibleItem} />
+            <BibleViewTitle />
         </div>
     );
 }
 
-export function RendHeader({
-    bibleItem, onChange, onClose,
+export function RenderHeader({
+    onChange, onClose,
 }: Readonly<{
-    bibleItem: BibleItem,
     onChange: (oldBibleKey: string, newBibleKey: string) => void,
     onClose: () => void,
 }>) {
@@ -61,7 +62,7 @@ export function RendHeader({
     return (
         <div className='card-header d-flex'
             style={fontSizeToHeightStyle(fontSize)}>
-            <RenderTitleMaterial bibleItem={bibleItem}
+            <RenderTitleMaterial
                 onBibleKeyChange={onChange}
             />
             <div>
@@ -79,9 +80,8 @@ export const BibleViewTitleMaterialContext = (
     createContext<{ onDBClick: (bibleItem: BibleItem) => void } | null>(null)
 );
 
-export function BibleViewTitle({ bibleItem }: Readonly<{
-    bibleItem: BibleItem,
-}>) {
+export function BibleViewTitle() {
+    const bibleItem = useBibleItem();
     const materialContext = useContext(BibleViewTitleMaterialContext);
     const title = useBibleItemRenderTitle(bibleItem);
     const fontSize = useBibleViewFontSize();
@@ -100,11 +100,8 @@ export function BibleViewTitle({ bibleItem }: Readonly<{
     );
 }
 
-export function BibleViewText({
-    bibleItem,
-}: Readonly<{
-    bibleItem: BibleItem,
-}>) {
+export function BibleViewText() {
+    const bibleItem = useBibleItem();
     const fontSize = useBibleViewFontSize();
     const result = useBibleItemVerseTextList(bibleItem);
     if (result === null) {
@@ -142,7 +139,8 @@ export function BibleViewText({
 }
 
 
-export function RefRenderer({ bibleItem }: Readonly<{ bibleItem: BibleItem }>) {
+export function RefRenderer() {
+    const bibleItem = useBibleItem();
     const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
     const arr: number[] = [];
     for (let i = verseStart; i <= verseEnd; i++) {

@@ -121,7 +121,7 @@ export function genDuplicatedMessage(list: BibleItem[],
 }
 
 
-export function useBibleItemRenderTitle(bibleItem: BibleItem,) {
+export function useBibleItemRenderTitle(bibleItem: BibleItem) {
     const [title, setTitle] = useState<string>('');
     useAppEffect(() => {
         bibleItem.toTitle().then((text) => {

@@ -20,7 +20,8 @@ export default function RenderBibleItems({ bible }: Readonly<{
                         warningMessage={
                             genDuplicatedMessage(items, bibleItem, i1)
                         }
-                        bibleItem={bibleItem} />
+                        bibleItem={bibleItem}
+                    />
                 );
             })}
             {bible.isDefault && <button

@@ -6,6 +6,7 @@ import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
+import { BibleItemContext } from '../bible-reader/BibleItemContext';
 
 export default function RenderSearchSuggestion({
     bibleResult, applyChapterSelection, applyVerseSelection,
@@ -30,10 +31,11 @@ export default function RenderSearchSuggestion({
 
     if (bibleItem !== null) {
         return (
-            <RenderBibleDataFound
-                bibleItem={bibleItem}
-                onVerseChange={onVerseChangeCallback}
-            />
+            <BibleItemContext.Provider value={bibleItem}>
+                <RenderBibleDataFound
+                    onVerseChange={onVerseChangeCallback}
+                />
+            </BibleItemContext.Provider>
         );
     }
     return (

@@ -21,6 +21,7 @@ import { getIsKeepingPopup } from './RenderExtraLeftButtons';
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
+import { useBibleItem } from '../bible-reader/BibleItemContext';
 
 const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -32,9 +33,8 @@ const addListEventMapper: KBEventMapper = {
     key: 'Enter',
 };
 
-export default function RenderActionButtons({ bibleItem }: Readonly<{
-    bibleItem: BibleItem,
-}>) {
+export default function RenderActionButtons() {
+    const bibleItem = useBibleItem();
     const { data } = usePopupWindowsTypeData();
     const isBibleEditor = !!data;
     const isWindowPresenter = useWindowIsPresenterMode();

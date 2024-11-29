@@ -13,20 +13,48 @@ import {
 } from '../bible-reader/BibleItemViewController';
 import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
+let syncTimeoutId: any = null;
+function checkShouldSync(
+    oldResult: ExtractedBibleResult, newResult: ExtractedBibleResult,
+) {
+    if (oldResult.bibleItem === null && newResult.bibleItem !== null) {
+        return true;
+    }
+    if (oldResult.bibleItem !== null && newResult.bibleItem !== null) {
+        return !oldResult.bibleItem.checkIsTargetIdentical(newResult.bibleItem);
+    }
+    return false;
+}
+
+function checkAndSyncResult(
+    oldResult: ExtractedBibleResult, newResult: ExtractedBibleResult,
+) {
+    if (syncTimeoutId !== null) {
+        clearTimeout(syncTimeoutId);
+    }
+    syncTimeoutId = setTimeout(() => {
+        syncTimeoutId = null;
+        if (checkShouldSync(oldResult, newResult)) {
+            SearchBibleItemViewController.getInstance().syncBibleItems();
+        }
+    }, 100);
+}
 
 export default function RenderBibleSearchBody({ inputText }: Readonly<{
     inputText: string,
 }>) {
+    const viewController = SearchBibleItemViewController.getInstance();
     const bibleKey = useContext(SelectedBibleKeyContext);
-    const setInputText = (
-        SearchBibleItemViewController.getInstance().setInputText
-    );
+    const setInputText = viewController.setInputText;
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
     useAppEffect(() => {
         extractBibleTitle(bibleKey, inputText).then((result) => {
-            setExtractedInput(result);
+            setExtractedInput((prev) => {
+                checkAndSyncResult(prev, result);
+                return result;
+            });
         });
     }, [bibleKey, inputText]);
     useKeyboardRegistering([{ key: 'Tab' }], (event) => {
