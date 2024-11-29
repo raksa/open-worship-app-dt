@@ -74,7 +74,7 @@ export default function BibleSelection({
         <button className='input-group-text' onClick={(event) => {
             handleClickEvent(event, bibleKey, onBibleKeyChange);
         }}>
-            {bibleKey}
+            <BibleKeyWithTile bibleKey={bibleKey} />
             <i className='bi bi-chevron-down' />
         </button>
     );
@@ -108,6 +108,18 @@ export function BibleSelectionMini({
             onClick={(event) => {
                 handleClickEvent(event, bibleKey, onBibleKeyChange);
             }}>
+            <BibleKeyWithTile bibleKey={bibleKey} />
+        </span>
+    );
+}
+
+function BibleKeyWithTile({ bibleKey }: Readonly<{ bibleKey: string }>) {
+    const [bibleInfoList] = useDownloadedBibleInfoList();
+    const currentBibleInfo = bibleInfoList?.find(
+        (bibleInfo) => bibleInfo.key === bibleKey
+    );
+    return (
+        <span title={currentBibleInfo?.title}>
             {bibleKey}
         </span>
     );
