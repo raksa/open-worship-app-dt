@@ -17,9 +17,7 @@ const BiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRender');
 });
 
-export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
-    inputText: string,
-}>) {
+export default function BibleSearchBodyPreviewer() {
     useNextEditingBibleItem('ArrowLeft');
     useNextEditingBibleItem('ArrowRight');
     useCloseBibleItemRenderer();
@@ -36,7 +34,7 @@ export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
             bibleItem,
         );
         if (isSelected) {
-            return (<RenderBibleSearchBody inputText={inputText} />);
+            return (<RenderBibleSearchBody />);
         }
         return (
             <BibleViewTitleMaterialContext.Provider value={contextValue}>

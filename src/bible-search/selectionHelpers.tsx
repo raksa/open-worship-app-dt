@@ -144,10 +144,10 @@ export function userEnteringSelected(
     });
 }
 
-export const INPUT_ID = 'app-bible-search-input';
+export const BIBLE_SEARCH_INPUT_ID = 'app-bible-search-input';
 
 export function getBibleSearchInputElement(): HTMLInputElement | null {
-    return document.getElementById(INPUT_ID) as HTMLInputElement;
+    return document.getElementById(BIBLE_SEARCH_INPUT_ID) as HTMLInputElement;
 }
 export function getBibleSearchInputText() {
     const inputElement = getBibleSearchInputElement();

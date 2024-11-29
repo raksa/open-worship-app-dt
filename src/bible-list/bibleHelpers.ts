@@ -73,9 +73,8 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
 export async function genInputText(
     oldBibleKey: string, newBibleKey: string, inputText: string,
 ) {
-    const {
-        bookKey, chapter, bibleItem,
-    } = await extractBibleTitle(oldBibleKey, inputText);
+    const { result } = await extractBibleTitle(oldBibleKey, inputText);
+    const { bookKey, chapter, bibleItem } = result;
     const target = bibleItem?.target;
     if (bookKey !== null) {
         const newBook = await keyToBook(newBibleKey, bookKey);

@@ -1,3 +1,5 @@
+import { createContext, Fragment, useContext } from 'react';
+
 import {
     useGetBookKVList,
 } from '../helper/bible-helpers/serverBibleHelpers';
@@ -6,7 +8,7 @@ import {
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
 import {
-    INPUT_ID, INPUT_TEXT_CLASS, checkIsBibleSearchInputFocused,
+    BIBLE_SEARCH_INPUT_ID, INPUT_TEXT_CLASS, checkIsBibleSearchInputFocused,
     setBibleSearchInputFocus,
 } from './selectionHelpers';
 import {
@@ -15,17 +17,34 @@ import {
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
-import { Fragment, useContext } from 'react';
 import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
+export const InputTextContext = createContext<{
+    inputText: string,
+    setInputText: (text: string) => void,
+} | null>(null);
+export function useInputText() {
+    const inputTextContext = useContext(InputTextContext);
+    if (inputTextContext === null) {
+        throw new Error('InputTextContext is not provided');
+    }
+    return inputTextContext;
+}
+
+export function getInputTrueValue() {
+    const input = document.getElementById(BIBLE_SEARCH_INPUT_ID);
+    return (input as HTMLInputElement)?.value || null;
+}
+
 export default function InputHandler({
-    inputText, onBibleChange,
+    onBibleChange,
 }: Readonly<{
-    inputText: string
     onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
-    const setInputText = SearchBibleItemViewController.
-        getInstance().setInputText;
+    const { inputText } = useInputText();
+    const setInputText = (
+        SearchBibleItemViewController.getInstance().setInputText
+    );
     const bibleKey = useContext(SelectedBibleKeyContext);
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
@@ -50,7 +69,7 @@ export default function InputHandler({
             <BibleSelection bibleKey={bibleKey}
                 onBibleKeyChange={onBibleChange}
             />
-            <input id={INPUT_ID} type='text'
+            <input id={BIBLE_SEARCH_INPUT_ID} type='text'
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus

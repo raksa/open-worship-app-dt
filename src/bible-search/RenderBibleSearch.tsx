@@ -1,6 +1,6 @@
-import { lazy, useCallback, useContext, useState } from 'react';
+import { lazy, useCallback, useContext, useMemo, useState } from 'react';
 
-import InputHandler from './InputHandler';
+import InputHandler, { InputTextContext, useInputText } from './InputHandler';
 import {
     SelectedBibleKeyContext, genInputText, useGetSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
@@ -23,15 +23,14 @@ const BibleOnlineSearchBodyPreviewer = lazy(() => {
 });
 
 function RenderBibleSearchHeader({
-    isSearchOnline, setIsSearchOnline, setBibleKey, inputText, setInputText,
+    isSearchOnline, setIsSearchOnline, setBibleKey,
 }: Readonly<{
     editorInputText: string,
     isSearchOnline: boolean,
     setIsSearchOnline: (isSearchOnline: boolean) => void,
     setBibleKey: (bibleKey: string | null) => void,
-    inputText: string,
-    setInputText: (inputText: string) => void,
 }>) {
+    const { inputText, setInputText } = useInputText();
     const closeButton = useContext(CloseButtonContext);
     const { data } = usePopupWindowsTypeData();
 
@@ -68,7 +67,6 @@ function RenderBibleSearchHeader({
             <div className='flex-item input-group app-input-group-header'
                 style={{ width: 350 }}>
                 <InputHandler
-                    inputText={inputText}
                     onBibleChange={handleBibleChange}
                 />
             </div>
@@ -93,6 +91,9 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
     const [isSearchOnline, setIsSearchOnline] = useState(false);
     const [inputText, setInputText] = useState<string>(editorInputText);
     const [bibleKey, setBibleKey] = useGetSelectedBibleKey();
+    const inputTextContextValue = useMemo(() => ({
+        inputText, setInputText,
+    }), [inputText, setInputText]);
 
     if (bibleKey === null) {
         return (
@@ -100,46 +101,47 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
         );
     }
     const searchingBody = (
-        <BibleSearchBodyPreviewer inputText={inputText} />
+        <BibleSearchBodyPreviewer />
     );
-
+    const resizeData = [
+        {
+            children: {
+                render: () => {
+                    return searchingBody;
+                },
+            }, key: 'h2', widgetName: 'Searching',
+        },
+        {
+            children: BibleOnlineSearchBodyPreviewer,
+            key: 'h1',
+            widgetName: 'Bible Online Search',
+        },
+    ];
     return (
         <SelectedBibleKeyContext.Provider value={bibleKey}>
-            <div id='bible-search-popup' className='app-modal shadow card'>
-                <RenderBibleSearchHeader
-                    editorInputText={editorInputText}
-                    isSearchOnline={isSearchOnline}
-                    setIsSearchOnline={setIsSearchOnline}
-                    setBibleKey={setBibleKey}
-                    inputText={inputText}
-                    setInputText={setInputText}
-                />
-                <div className={
-                    'card-body d-flex w-100 h-100 overflow-hidden'
-                }>
-                    {isSearchOnline ? (
-                        <ResizeActor fSizeName='bible-search-popup-body'
-                            isHorizontal
-                            isDisableQuickResize
-                            flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
-                            dataInput={[
-                                {
-                                    children: {
-                                        render: () => {
-                                            return searchingBody;
-                                        },
-                                    }, key: 'h2', widgetName: 'Searching',
-                                },
-                                {
-                                    children: BibleOnlineSearchBodyPreviewer,
-                                    key: 'h1',
-                                    widgetName: 'Bible Online Search',
-                                },
-                            ]}
-                        />
-                    ) : searchingBody}
+            <InputTextContext.Provider value={inputTextContextValue}>
+
+                <div id='bible-search-popup' className='app-modal shadow card'>
+                    <RenderBibleSearchHeader
+                        editorInputText={editorInputText}
+                        isSearchOnline={isSearchOnline}
+                        setIsSearchOnline={setIsSearchOnline}
+                        setBibleKey={setBibleKey}
+                    />
+                    <div className={
+                        'card-body d-flex w-100 h-100 overflow-hidden'
+                    }>
+                        {isSearchOnline ? (
+                            <ResizeActor fSizeName='bible-search-popup-body'
+                                isHorizontal
+                                isDisableQuickResize
+                                flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
+                                dataInput={resizeData}
+                            />
+                        ) : searchingBody}
+                    </div>
                 </div>
-            </div>
+            </InputTextContext.Provider>
         </SelectedBibleKeyContext.Provider>
     );
 }
