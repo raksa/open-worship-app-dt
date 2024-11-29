@@ -403,12 +403,11 @@ export function fsReadFile(filePath: string) {
     return _fsReadFile(filePath, 'utf8');
 }
 export async function fsCopyFilePathToPath(
-    file: File | string, destinationPath: string,
+    file: File | string, destinationPath: string, fileFullName?: string,
 ) {
     const progressKey = 'Copying File';
     showProgressBard(progressKey);
-    const isString = typeof file === 'string';
-    const fileFullName = isString ? pathBasename(file) : file.name;
+    fileFullName = fileFullName ?? getFileFullName(file);
     const targetPath = pathJoin(destinationPath, fileFullName);
     try {
         const isFileExist = await fsCheckFileExist(targetPath);

@@ -10,6 +10,7 @@ import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import {
     AppMimetypeType, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
+    pathBasename,
 } from '../server/fileHelper';
 import {
     openSlideItemQuickEdit,
@@ -19,6 +20,9 @@ import Slide from './Slide';
 import SlideItem from './SlideItem';
 import { checkIsWindowEditorMode } from '../router/routeHelpers';
 import { DroppedFileType } from '../others/droppingFileHelpers';
+import {
+    hideProgressBard, showProgressBard,
+} from '../progress-bar/progressBarHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 0.2;
@@ -96,6 +100,19 @@ export const supportOfficeFE = [
     '.odp',
 ];
 
+const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
+    <b>LibreOffice</b>
+    {' is required to convert Office file to PDF.'}
+    <br />
+    <b>
+        <a href={
+            'https://www.google.com/search?q=download+libreoffice'
+        }
+            target='_blank'>
+            Download
+        </a>
+    </b>
+</div>);
 export async function convertOfficeFile(
     file: DroppedFileType, dirSource: DirSource,
 ) {
@@ -114,50 +131,36 @@ export async function convertOfficeFile(
     if (!isOk) {
         return;
     }
-    const isFilePath = typeof file === 'string';
-    let filePath = '';
+    const tempFilePath = appProvider.pathUtils.join(
+        dirSource.dirPath, 'temp-to-pdf',
+    );
     try {
-        if (isFilePath) {
-            filePath = file;
-        } else {
-            filePath = appProvider.pathUtils.join(
-                dirSource.dirPath, 'temp-dropped-file',
-            );
-            if (!await fsCopyFilePathToPath(file, filePath)) {
-                throw new Error('Fail to copy file');
-            }
+        showProgressBard(title);
+        await fsDeleteFile(tempFilePath);
+        if (!await fsCopyFilePathToPath(
+            file, dirSource.dirPath, pathBasename(tempFilePath),
+        )) {
+            throw new Error('Fail to copy file');
         }
         showSimpleToast(
-            title, `"${toHtmlBold(filePath)}", do not close application`,
+            title, 'Do not close application',
         );
-        await appProvider.pdfUtils.toPdf(filePath, dirPath, fileFullName);
+        await appProvider.pdfUtils.toPdf(tempFilePath, dirPath, fileFullName);
         showSimpleToast(
             title, `${toHtmlBold(fileFullName)} is converted to PDF`,
         );
     } catch (error: any) {
         if (error.message.includes('Could not find office binary')) {
-            const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
-                <b>LibreOffice</b>
-                {' is required to convert Office file to PDF.'}
-                <br />
-                <b>
-                    <a href={
-                        'https://www.google.com/search?q=download+libreoffice'
-                    }
-                        target='_blank'>
-                        Download
-                    </a>
-                </b>
-            </div>);
             openAlert('LibreOffice is not installed', alertMessage);
-            return;
-        }
-        handleError(error);
-        showSimpleToast(title, `Fail to convert ${toHtmlBold(filePath)}`);
-        if (!isFilePath) {
-            await fsDeleteFile(filePath);
+        } else {
+            handleError(error);
+            showSimpleToast(title, 'Fail to convert to PDF');
+            fsDeleteFile(tempFilePath).catch((error) => {
+                handleError(error);
+            });
         }
     }
+    hideProgressBard(title);
 }
 
 export async function readPdfToSlide(filePath: string) {
