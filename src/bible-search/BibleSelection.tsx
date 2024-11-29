@@ -45,11 +45,11 @@ export async function showBibleOption(
 
 function handleClickEvent(
     event: any, bibleKey: string,
-    onChange: (oldValue: string, newValue: string) => void,
+    onChange: (oldBibleKey: string, newBibleKey: string) => void,
 ) {
     event.stopPropagation();
-    showBibleOption(event, [bibleKey], (bibleKey: string) => {
-        onChange(bibleKey, bibleKey);
+    showBibleOption(event, [bibleKey], (newBibleKey: string) => {
+        onChange(bibleKey, newBibleKey);
     });
 }
 
@@ -57,7 +57,7 @@ export default function BibleSelection({
     bibleKey, onBibleKeyChange,
 }: Readonly<{
     bibleKey: string,
-    onBibleKeyChange: (oldValue: string, newValue: string) => void,
+    onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
@@ -85,7 +85,7 @@ export function BibleSelectionMini({
     bibleKey, onBibleKeyChange, isMinimal,
 }: Readonly<{
     bibleKey: string,
-    onBibleKeyChange: (oldValue: string, newValue: string) => void,
+    onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
     isMinimal?: boolean,
 }>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();

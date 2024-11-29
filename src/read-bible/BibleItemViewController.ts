@@ -271,9 +271,9 @@ export default class BibleItemViewController
                 }, id: splitHorizontalId,
             }, {
                 menuTitle: 'Split Horizontal To', onClick: (event: any) => {
-                    showBibleOption(event, [], (bibleKey: string) => {
+                    showBibleOption(event, [], (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
-                        newBibleItem.bibleKey = bibleKey;
+                        newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemLeft(bibleItem, newBibleItem);
                     });
                 },
@@ -284,9 +284,9 @@ export default class BibleItemViewController
                 }, id: splitVerticalId,
             }, {
                 menuTitle: 'Split Vertical To', onClick: (event: any) => {
-                    showBibleOption(event, [], (bibleKey: string) => {
+                    showBibleOption(event, [], (newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone();
-                        newBibleItem.bibleKey = bibleKey;
+                        newBibleItem.bibleKey = newBibleKey;
                         this.addBibleItemBottom(
                             bibleItem, newBibleItem,
                         );
