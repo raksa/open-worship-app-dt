@@ -10,7 +10,7 @@ import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import {
     SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 
 

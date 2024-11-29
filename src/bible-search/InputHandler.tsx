@@ -14,7 +14,7 @@ import {
 } from '../bible-list/bibleItemHelpers';
 import {
     SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 import { Fragment, useContext } from 'react';
 import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
 

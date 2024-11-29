@@ -6,19 +6,19 @@ import RenderActionButtons, {
 import {
     BibleViewText, BibleViewTitle,
     RenderTitleMaterial,
-} from '../read-bible/BibleViewExtra';
+} from '../bible-reader/BibleViewExtra';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
 import {
     SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 import { useWindowMode } from '../router/routeHelpers';
 import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
-import { closeCurrentEditingBibleItem } from '../read-bible/readBibleHelper';
+import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelper';
 import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
 import { BibleSelectionMini } from './BibleSelection';
 

@@ -3,18 +3,18 @@ import { lazy, useMemo } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import {
     BibleItemViewControllerContext, SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
-import BibleView from '../read-bible/BibleView';
+} from '../bible-reader/BibleItemViewController';
+import BibleView from '../bible-reader/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
 import AppSuspense from '../others/AppSuspense';
 import {
     useCloseBibleItemRenderer, useNextEditingBibleItem,
     useSplitBibleItemRenderer,
-} from '../read-bible/readBibleHelper';
-import { BibleViewTitleMaterialContext } from '../read-bible/BibleViewExtra';
+} from '../bible-reader/readBibleHelper';
+import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
 
 const BiblePreviewerRender = lazy(() => {
-    return import('../read-bible/BiblePreviewerRender');
+    return import('../bible-reader/BiblePreviewerRender');
 });
 
 export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{

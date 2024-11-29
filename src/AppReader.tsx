@@ -4,15 +4,15 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import BibleItemViewController, {
     BibleItemViewControllerContext,
-} from './read-bible/BibleItemViewController';
-import BibleView from './read-bible/BibleView';
+} from './bible-reader/BibleItemViewController';
+import BibleView from './bible-reader/BibleView';
 import BibleItem from './bible-list/BibleItem';
 
 const BibleList = lazy(() => {
     return import('./bible-list/BibleList');
 });
 const BiblePreviewerRender = lazy(() => {
-    return import('./read-bible/BiblePreviewerRender');
+    return import('./bible-reader/BiblePreviewerRender');
 });
 
 export default function AppReader() {

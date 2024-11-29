@@ -11,7 +11,7 @@ import {
 } from '../bible-search/BibleSelection';
 import {
     useBibleItemViewControllerContext,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 import ScreenFTManager from '../_screen/ScreenFTManager';
 import {
     checkIsWindowPresenterMode, useWindowMode,

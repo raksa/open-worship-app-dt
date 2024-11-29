@@ -17,7 +17,7 @@ const SlidePreviewer = lazy(() => {
     return import('./items/SlidePreviewer');
 });
 const BiblePreviewerRender = lazy(() => {
-    return import('../read-bible/BiblePreviewerRender');
+    return import('../bible-reader/BiblePreviewerRender');
 });
 const LyricPreviewer = lazy(() => {
     return import('../full-text-presenter/LyricPreviewer');

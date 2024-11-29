@@ -13,7 +13,7 @@ import { usePopupWindowsTypeData } from '../app-modal/helpers';
 import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
 import {
     SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
 import { CloseButtonContext } from '../app-modal/Modal';
 

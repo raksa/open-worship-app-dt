@@ -20,7 +20,7 @@ import { useCloseAppModal } from '../app-modal/LinkToAppModal';
 import { getIsKeepingPopup } from './RenderExtraLeftButtons';
 import {
     SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 
 const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],

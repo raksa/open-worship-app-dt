@@ -4,9 +4,9 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import BibleItemViewController, {
     BibleItemViewControllerContext,
-} from './read-bible/BibleItemViewController';
+} from './bible-reader/BibleItemViewController';
 import BibleItem from './bible-list/BibleItem';
-import BibleView from './read-bible/BibleView';
+import BibleView from './bible-reader/BibleView';
 import HandleItemSlideEdit from './slide-presenter/HandleItemSlideEdit';
 
 const AppPresenterLeft = lazy(() => {
