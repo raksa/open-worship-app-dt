@@ -17,9 +17,8 @@ import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
 
-export default function BibleView({ bibleItem, isEditing }: Readonly<{
+export default function BibleView({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
-    isEditing?: boolean,
 }>) {
     const bibleItemViewController = useBibleItemViewControllerContext();
     return (

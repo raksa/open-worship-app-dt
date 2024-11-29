@@ -22,8 +22,19 @@ import RedirectTo from './others/RedirectTo';
 import { useHandleFind } from './_find/finderHelpers';
 import { useCheckSelectedDir } from './helper/tourHelpers';
 import ProgressBar from './progress-bar/ProgressBar';
+import { useKeyboardRegistering } from './event/KeyboardEventListener';
+
+function useQuickExitOnMac() {
+    useKeyboardRegistering([{
+        key: 'q',
+        mControlKey: ['Meta'],
+    }], (event) => {
+        event.preventDefault();
+    });
+}
 
 export default function App() {
+    useQuickExitOnMac();
     useCheckSelectedDir();
     useHandleFind();
     const tabProps = useMemo(() => {

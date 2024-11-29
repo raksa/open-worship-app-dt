@@ -124,7 +124,7 @@ export default function AppContextMenu() {
                 if (self !== null) {
                     setPositionMenu(self, data.event);
                 }
-            }} className='app-context-menu overflow-hidden'>
+            }} className='app-context-menu'>
                 {data.items.map((item) => {
                     return (
                         <ContextMenuItem key={item.menuTitle}

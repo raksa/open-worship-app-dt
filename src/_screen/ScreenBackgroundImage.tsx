@@ -1,6 +1,5 @@
-import { BackgroundSrcType } from './ScreenBGManager';
 import { usePBGMEvents } from './screenEventHelpers';
-import { calMediaSizes } from './screenHelpers';
+import { BackgroundSrcType, calMediaSizes } from './screenHelpers';
 import { useScreenManager } from './ScreenManager';
 
 export default function ScreenBackgroundImage({ bgSrc }: Readonly<{

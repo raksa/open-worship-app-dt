@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 
 import ReactDOMServer from 'react-dom/server';
-import { BackgroundSrcType } from './ScreenBGManager';
 import ScreenManager, {
     ScreenManagerContext, useScreenManager,
 } from './ScreenManager';
@@ -11,6 +10,7 @@ import ScreenBackgroundVideo from './ScreenBackgroundVideo';
 import { usePMEvents } from './screenEventHelpers';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { BackgroundSrcType } from './screenHelpers';
 
 export default function ScreenBackground() {
     const screenManager = useScreenManager();

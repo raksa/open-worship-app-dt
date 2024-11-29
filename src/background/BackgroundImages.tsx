@@ -1,8 +1,5 @@
 import './BackgroundImages.scss';
 
-import {
-    BackgroundSrcType,
-} from '../_screen/ScreenBGManager';
 import { RenderScreenIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
@@ -10,6 +7,7 @@ import { DragTypeEnum } from '../helper/DragInf';
 import {
     defaultDataDirNames, dirSourceSettingNames,
 } from '../helper/constants';
+import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 export default function BackgroundImages() {
     return (

@@ -15,8 +15,9 @@
     background-color: var(--bs-gray-600);
     padding: 10px 0;
     z-index: $z-index-context-menu+1;
-    box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
     color: white;
+    overflow: auto;
 
 
     .app-context-menu-item {

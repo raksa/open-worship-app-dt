@@ -130,6 +130,7 @@ export default class BibleItemViewController
     extends EventHandler<UpdateEventType> {
 
     private readonly _settingNameSuffix: string;
+    private readonly colorNoteMap: WeakMap<BibleItem, string> = new WeakMap();
     constructor(settingNameSuffix: string) {
         super();
         this._settingNameSuffix = `-${settingNameSuffix}`;
@@ -155,6 +156,19 @@ export default class BibleItemViewController
         );
         setSetting(this.settingName, jsonStr);
         this.fireUpdateEvent();
+    }
+    getColorNote(bibleItem: BibleItem) {
+        console.log('get colorNoteMap', this.colorNoteMap);
+
+        return this.colorNoteMap.get(bibleItem) || '';
+    }
+    setColorNote(bibleItem: BibleItem, color: string | null) {
+        if (!color) {
+            this.colorNoteMap.delete(bibleItem);
+        } else {
+            this.colorNoteMap.set(bibleItem, color);
+        }
+        console.log('set colorNoteMap', this.colorNoteMap);
     }
     toSettingName(preSettingName: string) {
         return preSettingName + this._settingNameSuffix;
@@ -211,9 +225,13 @@ export default class BibleItemViewController
         } catch (error) { }
     }
 
-    addBibleItem(bibleItem: BibleItem | null, newBibleItem: BibleItem,
+    addBibleItem(
+        bibleItem: BibleItem | null, newBibleItem: BibleItem,
         isHorizontal: boolean, isBefore: boolean,
     ) {
+        const sourceColor = (
+            bibleItem === null ? null : this.getColorNote(bibleItem)
+        );
         newBibleItem = newBibleItem.clone();
         newBibleItem.id = this.genBibleItemUniqueId();
         if (bibleItem === null) {
@@ -239,7 +257,12 @@ export default class BibleItemViewController
                 );
             }
             this.nestedBibleItems = nestedBibleItems;
-        } catch (error) { }
+            if (sourceColor) {
+                this.setColorNote(newBibleItem, sourceColor);
+            }
+        } catch (error) {
+            handleError(error);
+        }
     }
     addBibleItemLeft(
         bibleItem: BibleItem, newBibleItem: BibleItem,
@@ -418,9 +441,9 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     }
 }
 
-export const BibleItemViewControllerContext = createContext<
-    BibleItemViewController
->(new BibleItemViewController(''));
+export const BibleItemViewControllerContext = (
+    createContext<BibleItemViewController>(new BibleItemViewController(''))
+);
 
 export function useBibleItemViewControllerContext() {
     return useContext(BibleItemViewControllerContext);

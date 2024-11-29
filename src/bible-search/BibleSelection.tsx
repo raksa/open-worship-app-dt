@@ -85,7 +85,7 @@ export function BibleSelectionMini({
     bibleKey, onBibleKeyChange, isMinimal,
 }: Readonly<{
     bibleKey: string,
-    onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
+    onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
     isMinimal?: boolean,
 }>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
@@ -101,14 +101,15 @@ export function BibleSelectionMini({
             </div>
         );
     }
+    const isHandleClickEvent = onBibleKeyChange !== undefined;
     return (
         <span className={
-            'bible-selector pointer ' +
+            `bible-selector ${isHandleClickEvent ? 'pointer' : ''} ` +
             (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')
         }
-            onClick={(event) => {
+            onClick={isHandleClickEvent ? (event) => {
                 handleClickEvent(event, bibleKey, onBibleKeyChange);
-            }}>
+            } : undefined}>
             <BibleKeyWithTile bibleKey={bibleKey} />
         </span>
     );

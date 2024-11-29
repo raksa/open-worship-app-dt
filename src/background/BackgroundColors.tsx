@@ -2,10 +2,11 @@ import { useCallback, useState } from 'react';
 
 import ColorPicker from '../others/color/ColorPicker';
 import { AppColorType } from '../others/color/colorHelpers';
-import ScreenBGManager, { BackgroundSrcType } from '../_screen/ScreenBGManager';
+import ScreenBGManager from '../_screen/ScreenBGManager';
 import { usePBGMEvents } from '../_screen/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
+import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 export default function BackgroundColors() {
     const [selectedBGSrcList, setSelectedBGSrcList] = (

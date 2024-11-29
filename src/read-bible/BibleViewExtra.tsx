@@ -1,3 +1,5 @@
+import { createContext, Fragment, useContext } from 'react';
+
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMini } from '../bible-search/BibleSelection';
 import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
@@ -7,7 +9,46 @@ import {
 import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
-import { createContext, Fragment, useContext } from 'react';
+import ItemColorNote from '../others/ItemColorNote';
+import ColorNoteInf from '../helper/ColorNoteInf';
+import { useBibleItemViewControllerContext } from './BibleItemViewController';
+
+export function RenderTitleMaterial({
+    bibleItem, onBibleKeyChange,
+}: Readonly<{
+    bibleItem: BibleItem,
+    onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
+}>) {
+    console.log('init', bibleItem);
+
+    const bibleItemViewController = useBibleItemViewControllerContext();
+    const colorNoteHandler: ColorNoteInf = {
+        getColorNote: async () => {
+            return bibleItemViewController.getColorNote(bibleItem);
+        },
+        setColorNote: async (color) => {
+            console.log('setting', bibleItem);
+
+            bibleItemViewController.setColorNote(bibleItem, color);
+        },
+    };
+    return (
+        <div className='d-flex flex-fill text-nowrap'>
+            <div className='d-flex flex-column'>
+                <div>
+                    <BibleSelectionMini
+                        bibleKey={bibleItem.bibleKey}
+                        onBibleKeyChange={onBibleKeyChange}
+                    />
+                </div>
+                <div>
+                    <ItemColorNote item={colorNoteHandler} />
+                </div>
+            </div>
+            <BibleViewTitle bibleItem={bibleItem} />
+        </div>
+    );
+}
 
 export function RendHeader({
     bibleItem, onChange, onClose,
@@ -20,15 +61,9 @@ export function RendHeader({
     return (
         <div className='card-header d-flex'
             style={fontSizeToHeightStyle(fontSize)}>
-            <div className='flex-fill d-flex'>
-                <div>
-                    <BibleSelectionMini
-                        bibleKey={bibleItem.bibleKey}
-                        onBibleKeyChange={onChange}
-                    />
-                </div>
-                <BibleViewTitle bibleItem={bibleItem} />
-            </div>
+            <RenderTitleMaterial bibleItem={bibleItem}
+                onBibleKeyChange={onChange}
+            />
             <div>
                 <button className='btn-close'
                     onClick={() => {

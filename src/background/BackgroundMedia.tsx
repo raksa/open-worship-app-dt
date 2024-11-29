@@ -3,15 +3,14 @@ import { useCallback } from 'react';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
-import ScreenBGManager, {
-    BackgroundSrcType,
-} from '../_screen/ScreenBGManager';
+import ScreenBGManager from '../_screen/ScreenBGManager';
 import { usePBGMEvents } from '../_screen/screenEventHelpers';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
 import { handleDragStart } from '../bible-list/dragHelpers';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 export type RenderChildType = (
     filePath: string,

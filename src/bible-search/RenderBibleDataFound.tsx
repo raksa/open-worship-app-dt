@@ -5,6 +5,7 @@ import RenderActionButtons, {
 } from './RenderActionButtons';
 import {
     BibleViewText, BibleViewTitle,
+    RenderTitleMaterial,
 } from '../read-bible/BibleViewExtra';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
@@ -19,6 +20,7 @@ import {
 } from '../helper/bibleViewHelpers';
 import { closeCurrentEditingBibleItem } from '../read-bible/readBibleHelper';
 import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
+import { BibleSelectionMini } from './BibleSelection';
 
 export const closeEventMapper: EventMapper = {
     wControlKey: ['Ctrl'],
@@ -73,9 +75,7 @@ function RenderBibleFoundHeader({ bibleItem }: Readonly<{
         <div className='card-header bg-transparent border-success'
             style={fontSizeToHeightStyle(fontSize)}>
             <div className='d-flex w-100 h-100'>
-                <div className='flex-fill text-nowrap'>
-                    <BibleViewTitle bibleItem={bibleItem} />
-                </div>
+                <RenderTitleMaterial bibleItem={bibleItem} />
                 <div>
                     <RenderActionButtons bibleItem={bibleItem} />
                 </div>
