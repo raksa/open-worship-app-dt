@@ -102,13 +102,15 @@ export const supportOfficeFE = [
 
 const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
     <b>LibreOffice</b>
-    {' is required to convert Office file to PDF.'}
+    {
+        'is required for converting Office file to PDF. ' +
+        'Please install it and try again.'
+    }
     <br />
     <b>
         <a href={
-            'https://www.google.com/search?q=download+libreoffice'
-        }
-            target='_blank'>
+            'https://www.google.com/search?q=libreoffice+download'
+        } target='_blank'>
             Download
         </a>
     </b>
@@ -150,7 +152,8 @@ export async function convertOfficeFile(
             title, `${toHtmlBold(fileFullName)} is converted to PDF`,
         );
     } catch (error: any) {
-        if (error.message.includes('Could not find office binary')) {
+        const regex = /Could not find .+ binary/i;
+        if (regex.test(error.message)) {
             openAlert('LibreOffice is not installed', alertMessage);
         } else {
             handleError(error);
