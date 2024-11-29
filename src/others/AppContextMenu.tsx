@@ -11,6 +11,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
+    id?: string,
     menuTitle: string,
     title?: string,
     onClick?: (event: MouseEvent, data?: any) => (void | Promise<void>),
@@ -161,9 +162,7 @@ function ContextMenuItem({ item }: Readonly<{
     );
 }
 
-export function ContextMenuItemShortcutKey({ eventMapper }: Readonly<{
-    eventMapper: EventMapper,
-}>) {
+export function genContextMenuItemShortcutKey(eventMapper: EventMapper) {
     return (
         <div className='align-self-end'>
             <span className='text-muted badge text-bg-primary'>

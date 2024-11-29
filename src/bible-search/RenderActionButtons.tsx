@@ -13,7 +13,7 @@ import {
 import { usePopupWindowsTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
-    ContextMenuItemShortcutKey, ContextMenuItemType,
+    genContextMenuItemShortcutKey, ContextMenuItemType,
 } from '../others/AppContextMenu';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { useCloseAppModal } from '../app-modal/LinkToAppModal';
@@ -155,7 +155,7 @@ export function genFoundBibleItemContextMenu(
         {
             menuTitle: 'Add bible item',
             otherChild: isKeyboardShortcut ? (
-                <ContextMenuItemShortcutKey eventMapper={addListEventMapper} />
+                genContextMenuItemShortcutKey(addListEventMapper)
             ) : undefined,
             onClick: () => {
                 addBibleItem(bibleItem, windowMode, onDone).

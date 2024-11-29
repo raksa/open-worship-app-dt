@@ -18,6 +18,14 @@ import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
 import { closeCurrentEditingBibleItem } from '../read-bible/readBibleHelper';
+import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
+
+export const closeEventMapper: EventMapper = {
+    wControlKey: ['Ctrl'],
+    lControlKey: ['Ctrl'],
+    mControlKey: ['Meta'],
+    key: 'w',
+};
 
 export default function RenderBibleDataFound({
     bibleItem, onVerseChange,
@@ -60,6 +68,7 @@ function RenderBibleFoundHeader({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
     const fontSize = useBibleViewFontSize();
+    const viewController = SearchBibleItemViewController.getInstance();
     return (
         <div className='card-header bg-transparent border-success'
             style={fontSizeToHeightStyle(fontSize)}>
@@ -71,11 +80,14 @@ function RenderBibleFoundHeader({ bibleItem }: Readonly<{
                     <RenderActionButtons bibleItem={bibleItem} />
                 </div>
                 <div>
-                    <button className='btn-close'
-                        onClick={() => {
-                            closeCurrentEditingBibleItem();
-                        }}
-                    />
+                    {viewController.isAlone ? null : (
+                        <button className='btn-close'
+                            data-tool-tip={toShortcutKey(closeEventMapper)}
+                            onClick={() => {
+                                closeCurrentEditingBibleItem();
+                            }}
+                        />
+                    )}
                 </div>
             </div>
         </div>

@@ -10,7 +10,9 @@ import { handleError } from '../helper/errorHelpers';
 import { WindowModEnum } from '../router/routeHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { ContextMenuItemType } from '../others/AppContextMenu';
+import {
+    ContextMenuItemType, genContextMenuItemShortcutKey,
+} from '../others/AppContextMenu';
 import { showBibleOption } from '../bible-search/BibleSelection';
 import {
     genFoundBibleItemContextMenu,
@@ -22,6 +24,15 @@ export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 
 export type NestedBibleItemsType = BibleItem | NestedBibleItemsType[];
 export type NestedObjectsType = BibleItemType | NestedObjectsType[];
+
+export const metaKeys: any = {
+    wControlKey: ['Ctrl', 'Shift'],
+    lControlKey: ['Ctrl', 'Shift'],
+    mControlKey: ['Meta', 'Shift'],
+};
+
+const splitHorizontalId = 'split-horizontal';
+const splitVerticalId = 'split-vertical';
 
 function parseNestedBibleItem(json: any): NestedBibleItemsType {
     if (json instanceof Array) {
@@ -257,7 +268,7 @@ export default class BibleItemViewController
             {
                 menuTitle: 'Split Horizontal', onClick: () => {
                     this.addBibleItemLeft(bibleItem, bibleItem);
-                },
+                }, id: splitHorizontalId,
             }, {
                 menuTitle: 'Split Horizontal To', onClick: (event: any) => {
                     showBibleOption(event, [], (bibleKey: string) => {
@@ -270,7 +281,7 @@ export default class BibleItemViewController
             {
                 menuTitle: 'Split Vertical', onClick: () => {
                     this.addBibleItemBottom(bibleItem, bibleItem);
-                },
+                }, id: splitVerticalId,
             }, {
                 menuTitle: 'Split Vertical To', onClick: (event: any) => {
                     showBibleOption(event, [], (bibleKey: string) => {
@@ -331,6 +342,9 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         const allBibleItems: BibleItem[] = traverse(this.nestedBibleItems);
         return allBibleItems;
     }
+    get isAlone() {
+        return this.straightBibleItems.length < 2;
+    }
     get selectedIndex() {
         return this.straightBibleItems.findIndex((bibleItem) => {
             return bibleItem === this.selectedBibleItem;
@@ -368,16 +382,39 @@ export class SearchBibleItemViewController extends BibleItemViewController {
                     this.editBibleItem(bibleItem);
                 },
             });
+        } else {
+            const menu2IdMap: { [key: string]: ContextMenuItemType } = (
+                Object.fromEntries(
+                    menus2.map((menuItem) => [menuItem.id, menuItem]),
+                )
+            );
+            if (menu2IdMap[splitHorizontalId]) {
+                menu2IdMap[splitHorizontalId].otherChild = (
+                    genContextMenuItemShortcutKey({
+                        ...metaKeys, key: 's',
+                    })
+                );
+            }
+            if (menu2IdMap[splitVerticalId]) {
+                menu2IdMap[splitVerticalId].otherChild = (
+                    genContextMenuItemShortcutKey({
+                        ...metaKeys, key: 'v',
+                    })
+                );
+            }
         }
-        return [...menu1, ...menus2, {
-            menuTitle: 'Close', onClick: () => {
-                if (bibleItem === this.selectedBibleItem) {
-                    closeCurrentEditingBibleItem();
-                } else {
-                    this.removeBibleItem(bibleItem);
-                }
+        const menu3: ContextMenuItemType[] = this.isAlone ? [] : [
+            {
+                menuTitle: 'Close', onClick: () => {
+                    if (bibleItem === this.selectedBibleItem) {
+                        closeCurrentEditingBibleItem();
+                    } else {
+                        this.removeBibleItem(bibleItem);
+                    }
+                },
             },
-        }];
+        ];
+        return [...menu1, ...menus2, ...menu3];
     }
 }
 

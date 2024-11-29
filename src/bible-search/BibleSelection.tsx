@@ -71,9 +71,10 @@ export default function BibleSelection({
         );
     }
     return (
-        <button className='input-group-text' onClick={(event) => {
-            handleClickEvent(event, bibleKey, onBibleKeyChange);
-        }}>
+        <button className='input-group-text'
+            onClick={(event) => {
+                handleClickEvent(event, bibleKey, onBibleKeyChange);
+            }}>
             <BibleKeyWithTile bibleKey={bibleKey} />
             <i className='bi bi-chevron-down' />
         </button>

@@ -1,9 +1,11 @@
 import BibleItem from '../bible-list/BibleItem';
 import BibleItemViewController, {
+    metaKeys,
     SearchBibleItemViewController,
 } from './BibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
+import { closeEventMapper } from '../bible-search/RenderBibleDataFound';
 
 export enum DraggingPosEnum {
     TOP = '-top',
@@ -98,12 +100,6 @@ function changeEditingBibleItem(isLeft = false) {
     viewController.editBibleItem(allBibleItems[selectedIndex]);
 }
 
-const metaKeys: any = {
-    wControlKey: ['Ctrl', 'Shift'],
-    lControlKey: ['Ctrl', 'Shift'],
-    mControlKey: ['Meta', 'Shift'],
-};
-
 export function useNextEditingBibleItem(key: 'ArrowLeft' | 'ArrowRight') {
     useKeyboardRegistering([{ ...metaKeys, key }], (e) => {
         e.preventDefault();
@@ -134,12 +130,7 @@ export function closeCurrentEditingBibleItem() {
 }
 
 export function useCloseBibleItemRenderer() {
-    useKeyboardRegistering([{
-        wControlKey: ['Ctrl'],
-        lControlKey: ['Ctrl'],
-        mControlKey: ['Meta'],
-        key: 'w',
-    }], (e) => {
+    useKeyboardRegistering([closeEventMapper], (e) => {
         e.preventDefault();
         closeCurrentEditingBibleItem();
     });
