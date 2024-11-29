@@ -147,8 +147,7 @@ export default class ScreenSlideManager extends
             child.remove();
         });
         const { src: pdfImageSrc } = pdfImageData;
-        const parentWidth = screenManager.width;
-        const content = genPdfSlideItem(parentWidth, pdfImageSrc);
+        const content = genPdfSlideItem(pdfImageSrc);
         const divContainer = document.createElement('div');
         Object.assign(divContainer.style, {
             width: '100%',

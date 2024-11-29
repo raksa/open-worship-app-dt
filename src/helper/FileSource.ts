@@ -17,29 +17,30 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FSEventType = 'select' | 'update' | 'history-update' | 'edit'
-    | 'delete' | 'delete-cache';
+export type FSEventType = (
+    'select' | 'update' | 'history-update' | 'edit' | 'delete' | 'delete-cache'
+);
 
+const cache = new Map<string, FileSource>();
 export default class FileSource extends EventHandler<FSEventType>
     implements DragInf<string>, ColorNoteInf {
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
-    fileName: string;
+    fileFullName: string;
     filePath: string;
     src: string;
     colorNote: string | null = null;
-    private static _cache = new Map<string, FileSource>();
     constructor(
-        basePath: string, fileName: string, filePath: string, src: string,
+        basePath: string, fileFullName: string, filePath: string, src: string,
     ) {
         super();
         this.basePath = basePath;
-        this.fileName = fileName;
+        this.fileFullName = fileFullName;
         this.filePath = filePath;
         this.src = src;
     }
     get isAppFile() {
-        return !checkIsAppFile(this.fileName);
+        return !checkIsAppFile(this.fileFullName);
     }
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
@@ -68,20 +69,20 @@ export default class FileSource extends EventHandler<FSEventType>
         this.dirSource?.fireReloadEvent();
     }
     get metadata() {
-        return getFileMetaData(this.fileName);
+        return getFileMetaData(this.fileFullName);
     }
     get name() {
-        return this.fileName.substring(0,
-            this.fileName.lastIndexOf('.'));
+        return this.fileFullName.substring(0,
+            this.fileFullName.lastIndexOf('.'));
     }
     get extension() {
-        return extractExtension(this.fileName);
+        return extractExtension(this.fileFullName);
     }
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
     }
     deleteCache() {
-        FileSource._cache.delete(this.filePath);
+        cache.delete(this.filePath);
         ItemSource.deleteCache(this.filePath);
         this.fireDeleteCacheEvent();
     }
@@ -126,30 +127,30 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
-    static getInstanceNoCache(filePath: string, fileName?: string) {
+    static getInstanceNoCache(filePath: string, fileFullName?: string) {
         let basePath;
-        if (fileName) {
+        if (fileFullName) {
             basePath = filePath;
-            filePath = pathJoin(filePath, fileName);
+            filePath = pathJoin(filePath, fileFullName);
         } else {
             const index = filePath.lastIndexOf(pathSeparator);
             basePath = filePath.substring(0, index);
-            fileName = pathBasename(filePath);
+            fileFullName = pathBasename(filePath);
         }
         return new FileSource(
-            basePath, fileName, filePath, pathToFileURL(filePath),
+            basePath, fileFullName, filePath, pathToFileURL(filePath),
         );
     }
-    static getInstance(filePath: string, fileName?: string,
+    static getInstance(filePath: string, fileFullName?: string,
         refreshCache?: boolean) {
-        const fileSource = this.getInstanceNoCache(filePath, fileName);
+        const fileSource = this.getInstanceNoCache(filePath, fileFullName);
         if (refreshCache) {
-            this._cache.delete(fileSource.filePath);
+            cache.delete(fileSource.filePath);
         }
-        if (this._cache.has(fileSource.filePath)) {
-            return this._cache.get(fileSource.filePath) as FileSource;
+        if (cache.has(fileSource.filePath)) {
+            return cache.get(fileSource.filePath) as FileSource;
         }
-        this._cache.set(fileSource.filePath, fileSource);
+        cache.set(fileSource.filePath, fileSource);
         return fileSource;
     }
     dragSerialize(type?: DragTypeEnum) {
@@ -166,7 +167,7 @@ export default class FileSource extends EventHandler<FSEventType>
             return false;
         }
         try {
-            await fsRenameFile(this.basePath, this.fileName,
+            await fsRenameFile(this.basePath, this.fileFullName,
                 newName + this.extension);
             return true;
         } catch (error: any) {

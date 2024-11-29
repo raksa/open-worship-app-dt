@@ -64,7 +64,7 @@ export default class FileSourceMetaManager {
     }
     static async getColorNote(filePath: string) {
         const fileSource = FileSource.getInstance(filePath);
-        const isAppFile = checkIsAppFile(fileSource.fileName);
+        const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {
             return this.getColorNoteSetting(filePath);
         }
@@ -82,7 +82,7 @@ export default class FileSourceMetaManager {
         filePath: string, color: string | null,
     ) {
         const fileSource = FileSource.getInstance(filePath);
-        const isAppFile = checkIsAppFile(fileSource.fileName);
+        const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {
             this.setColorNoteSetting(filePath, color);
             return;

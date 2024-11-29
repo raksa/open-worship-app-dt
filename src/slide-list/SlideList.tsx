@@ -8,20 +8,21 @@ import Slide from './Slide';
 import {
     checkIsPdf, convertOfficeFile, pdfMimetype, supportOfficeFE,
 } from './slideHelpers';
-import { extractExtension } from '../server/fileHelper';
+import { extractExtension, getFileFullName } from '../server/fileHelper';
 import FileSource from '../helper/FileSource';
 import { useGenDS } from '../helper/dirSourceHelpers';
 import {
     defaultDataDirNames, dirSourceSettingNames,
 } from '../helper/constants';
+import { DroppedFileType } from '../others/droppingFileHelpers';
 
 export default function SlideList() {
     const dirSource = useGenDS(dirSourceSettingNames.SLIDE);
     if (dirSource !== null) {
-        dirSource.checkExtraFile = (fileName: string) => {
-            if (checkIsPdf(extractExtension(fileName))) {
+        dirSource.checkExtraFile = (fileFullName: string) => {
+            if (checkIsPdf(extractExtension(fileFullName))) {
                 return {
-                    fileName,
+                    fileFullName: fileFullName,
                     appMimetype: pdfMimetype,
                 };
             }
@@ -35,14 +36,14 @@ export default function SlideList() {
         }
         return false;
     }, [dirSource]);
-    const takeDropFileCallback = useCallback((filePath: string) => {
+    const takeDropFileCallback = useCallback((file: DroppedFileType) => {
         if (dirSource === null) {
             return false;
         }
-        const fileSource = FileSource.getInstance(filePath);
-        const ext = fileSource.extension.toLocaleLowerCase();
+        const fileFullName = getFileFullName(file);
+        const ext = extractExtension(fileFullName).toLocaleLowerCase();
         if (supportOfficeFE.includes(ext)) {
-            convertOfficeFile(filePath, dirSource);
+            convertOfficeFile(file, dirSource);
             return true;
         }
         return false;
@@ -50,7 +51,7 @@ export default function SlideList() {
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return filePaths.map((filePath, i) => {
             const fileSource = FileSource.getInstance(filePath);
-            return <SlideFile key={fileSource.fileName}
+            return <SlideFile key={fileSource.fileFullName}
                 index={i}
                 filePath={filePath} />;
         });

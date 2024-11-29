@@ -101,9 +101,9 @@ function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
 function SlideFilePreviewPdf({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
-        <>
+        <div className='w-100 h-100 app-ellipsis'>
             <i className='bi bi-filetype-pdf' />
             {fileSource.name}
-        </>
+        </div>
     );
 }

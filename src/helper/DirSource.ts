@@ -51,17 +51,17 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             return cacheKey.includes(dirPath);
         }) ?? null;
     }
-    getFileSourceInstance(fileName: string) {
-        return FileSource.getInstance(this.dirPath, fileName);
+    getFileSourceInstance(fileFullName: string) {
+        return FileSource.getInstance(this.dirPath, fileFullName);
     }
     fireReloadEvent() {
         this.addPropEvent('reload');
     }
-    fireReloadFileEvent(fileName: string) {
+    fireReloadFileEvent(fileFullName: string) {
         if (!this.dirPath) {
             return;
         }
-        const fileSource = this.getFileSourceInstance(fileName);
+        const fileSource = this.getFileSourceInstance(fileFullName);
         fileSource.fireUpdateEvent();
     }
     async getFilePaths(mimetype: MimetypeNameType) {
@@ -71,10 +71,12 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         try {
             const mimetypeList = getAppMimetype(mimetype);
             const files = await fsListFiles(this.dirPath);
-            const matchedFiles = files.map((fileName) => {
-                const fileMetadata = getFileMetaData(fileName, mimetypeList);
+            const matchedFiles = files.map((fileFullName) => {
+                const fileMetadata = getFileMetaData(
+                    fileFullName, mimetypeList,
+                );
                 if (fileMetadata === null && this.checkExtraFile) {
-                    return this.checkExtraFile(fileName);
+                    return this.checkExtraFile(fileFullName);
                 }
                 return fileMetadata;
             }).filter((fileMetadata) => {
@@ -82,7 +84,7 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             });
             const filePaths = matchedFiles.map((fileMetadata) => {
                 const fileSource = this.getFileSourceInstance(
-                    fileMetadata.fileName,
+                    fileMetadata.fileFullName,
                 );
                 return fileSource.filePath;
             });

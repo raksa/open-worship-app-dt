@@ -63,7 +63,7 @@ function genContextMenu(
             onClick: async () => {
                 const fileSource = FileSource.getInstance(filePath);
                 const isOk = await openConfirm(
-                    `Deleting "${fileSource.fileName}"`,
+                    `Deleting "${fileSource.fileFullName}"`,
                     'Are you sure to delete this file?',
                 );
                 if (isOk) {

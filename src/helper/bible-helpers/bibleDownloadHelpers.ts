@@ -44,7 +44,7 @@ export type DownloadOptionsType = {
 }
 
 const getDownloadHandler = (
-    filePath: string, fileName: string, options: DownloadOptionsType,
+    filePath: string, fileFullName: string, options: DownloadOptionsType,
 ) => {
     return async (error: any, response: any) => {
         if (await fsCheckFileExist(filePath)) {
@@ -66,7 +66,7 @@ const getDownloadHandler = (
             const fileSize = parseInt(total.toFixed(2), 10);
             showSimpleToast(
                 TOAST_TITLE,
-                `Start downloading "${fileName}". File size ${fileSize}mb`,
+                `Start downloading "${fileFullName}". File size ${fileSize}mb`,
             );
             options.onStart(parseInt(total.toFixed(2), 10));
             response.on('data', (chunk: Buffer) => {
@@ -82,7 +82,7 @@ const getDownloadHandler = (
             });
             response.on('end', async () => {
                 writeStream.close();
-                await getBibleInfo(fileName);
+                await getBibleInfo(fileFullName);
                 options.onDone(null, filePath);
             });
         } catch (error2) {
@@ -97,10 +97,10 @@ const getDownloadHandler = (
     };
 };
 export async function startDownloadBible({
-    bibleFileFullName, fileName, options,
+    bibleFileFullName, fileFullName, options,
 }: {
     bibleFileFullName: string,
-    fileName: string,
+    fileFullName: string,
     options: DownloadOptionsType
 }) {
     const filePath = await bibleDataReader.toBiblePath(bibleFileFullName);
@@ -108,7 +108,7 @@ export async function startDownloadBible({
         return options.onDone(new Error('Invalid file path'));
     }
     httpsRequest(bibleFileFullName, (error, response) => {
-        getDownloadHandler(filePath, fileName, options)(error, response);
+        getDownloadHandler(filePath, fileFullName, options)(error, response);
     });
 }
 
@@ -137,7 +137,7 @@ export async function downloadBible({
         }
         await startDownloadBible({
             bibleFileFullName: `/${encodeURI(bibleInfo.filePath)}`,
-            fileName: bibleInfo.key,
+            fileFullName: bibleInfo.key,
             options,
         });
     } catch (error: any) {

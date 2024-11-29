@@ -100,12 +100,14 @@ export async function getBookChapterData(
         return null;
     }
     const fileName = toFileName(bookKey, chapter);
-    const vInfo = await bibleDataReader
-        .readBibleData(bibleKey, fileName) as ChapterType | null;
-    if (vInfo === null) {
+    const verseInfo = (
+        await bibleDataReader.readBibleData(bibleKey, fileName) as
+        ChapterType | null
+    );
+    if (verseInfo === null) {
         return null;
     }
-    return vInfo;
+    return verseInfo;
 }
 export async function getVerses(
     bibleKey: string, bookKey: string, chapter: number,

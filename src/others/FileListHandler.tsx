@@ -14,6 +14,7 @@ import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
 import {
     genOnDragOver, genOnDragLeave, genOnDrop, genOnContextMenu,
+    DroppedFileType,
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -32,14 +33,14 @@ async function watch(dirSource: DirSource, signal: AbortSignal) {
     try {
         appProvider.fileUtils.watch(dirSource.dirPath, {
             signal,
-        }, (eventType, fileName) => {
-            if (fileName === null) {
+        }, (eventType, fileFullName) => {
+            if (fileFullName === null) {
                 return;
             }
             if (eventType === 'rename') {
                 dirSource.fireReloadEvent();
             } else if (eventType === 'change') {
-                dirSource.fireReloadFileEvent(fileName);
+                dirSource.fireReloadFileEvent(fileFullName);
             }
         });
     } catch (error) {
@@ -65,7 +66,7 @@ export default function FileListHandler({
     onFileDeleted?: (filePath: string) => void,
     contextMenu?: ContextMenuItemType[],
     checkExtraFile?: (filePath: string) => boolean,
-    takeDroppedFile?: (filePath: string) => boolean,
+    takeDroppedFile?: (file: DroppedFileType) => boolean,
     userClassName?: string,
     defaultFolderName: string,
 }>) {
@@ -92,9 +93,8 @@ export default function FileListHandler({
                 onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
-                    dirSource,
-                    mimetype,
-                    checkExtraFile,
+                    dirSource, mimetype,
+                    checkIsExtraFile: checkExtraFile,
                     takeDroppedFile,
                 })}>
                 {header && <div className='card-header'>{header}

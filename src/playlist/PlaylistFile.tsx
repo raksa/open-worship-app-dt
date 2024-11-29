@@ -85,7 +85,7 @@ function PlaylistPreview({
                 {playlist.items.map((playlistItem, i) => {
                     return (
                         <RenderPlaylistItem
-                            key={fileSource.fileName}
+                            key={fileSource.fileFullName}
                             index={i}
                             playlistItem={playlistItem} />
                     );
@@ -140,6 +140,7 @@ function PlaylistBibleItem({
     }
     return (
         <BibleItemRender index={index}
-            bibleItem={bibleItem} />
+            bibleItem={bibleItem}
+        />
     );
 }

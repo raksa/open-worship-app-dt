@@ -8,22 +8,20 @@ import {
 import ReactDOMServer from 'react-dom/server';
 
 export function SlideItemPdfRenderContent({
-    width, pdfImageSrc,
+    pdfImageSrc,
 }: Readonly<{
-    width: number,
     pdfImageSrc: string,
 }>) {
     return (
-        <img alt='pdf-image' width={width}
+        <img alt='pdf-image' style={{ width: '100%' }}
             src={pdfImageSrc}
         />
     );
 }
 
-export function genPdfSlideItem(width: number, pdfImageSrc: string) {
+export function genPdfSlideItem(pdfImageSrc: string) {
     const str = ReactDOMServer.renderToStaticMarkup(
-        <SlideItemPdfRenderContent width={width}
-            pdfImageSrc={pdfImageSrc} />);
+        <SlideItemPdfRenderContent pdfImageSrc={pdfImageSrc} />);
     const div = document.createElement('div');
     div.innerHTML = str;
     return div.firstChild as HTMLDivElement;
@@ -55,8 +53,9 @@ export default function SlideItemPdfRender({
             </div>
             <div className='card-body overflow-hidden'
                 style={{ padding: '0px' }} >
-                <SlideItemPdfRenderContent width={width}
-                    pdfImageSrc={slideItem.pdfImageSrc} />
+                <SlideItemPdfRenderContent
+                    pdfImageSrc={slideItem.pdfImageSrc}
+                />
             </div>
         </div>
     );

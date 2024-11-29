@@ -38,6 +38,7 @@ export default class ScreenFTManager
     private static _textStyle: AnyObjectType = {};
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
+    private _divScrollListenerBind: (() => void) | null = null;
 
     constructor(screenId: number) {
         super();
@@ -82,7 +83,7 @@ export default class ScreenFTManager
         );
     }
     get div() {
-        return this._div;
+        return this._div || null;
     }
     set div(div: HTMLDivElement | null) {
         this._div = div;
@@ -157,12 +158,20 @@ export default class ScreenFTManager
         this._setMetadata('scroll', scroll);
     }
     registerScrollListener() {
-        this.div?.addEventListener('scroll', this._divScrollListener);
+        this.unregisterScrollListener();
+        this._divScrollListenerBind = this._divScrollListener.bind(this);
+        this.div?.addEventListener('scroll', this._divScrollListenerBind);
     }
     unregisterScrollListener() {
-        this.div?.removeEventListener('scroll', this._divScrollListener);
+        if (this._divScrollListenerBind === null) {
+            return;
+        }
+        this.div?.removeEventListener(
+            'scroll', this._divScrollListenerBind,
+        );
+        this._divScrollListenerBind = null;
     }
-    sendSyncScroll() {
+    async sendSyncScroll() {
         sendScreenMessage({
             screenId: this.screenId,
             type: 'full-text-scroll',
@@ -181,10 +190,16 @@ export default class ScreenFTManager
             clearTimeout(screenFTManager._syncScrollTimeout);
         }
         screenFTManager.unregisterScrollListener();
-        screenFTManager._syncScrollTimeout = setTimeout(() => {
+        const reRegisterScrollListener = () => {
+            if (screenFTManager._syncScrollTimeout !== null) {
+                clearTimeout(screenFTManager._syncScrollTimeout);
+            }
             screenFTManager._syncScrollTimeout = null;
             screenFTManager.registerScrollListener();
-        }, 1e3);
+        };
+        screenFTManager._syncScrollTimeout = setTimeout(
+            reRegisterScrollListener, 3e3,
+        );
         screenFTManager.scroll = data.scroll;
         screenFTManager.renderScroll();
     }

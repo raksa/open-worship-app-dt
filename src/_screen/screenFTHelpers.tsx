@@ -106,11 +106,15 @@ export function renderPFTManager(screenFTManager: ScreenFTManager) {
             const targetDiv = screenFTManager.div.lastChild as HTMLDivElement;
             targetDiv.remove();
         }
+        screenFTManager.div.style.pointerEvents = 'none';
         return;
     }
+    screenFTManager.div.style.pointerEvents = 'auto';
     let newTable: HTMLTableElement | null = null;
-    if (ftItemData.type === 'bible-item' &&
-        ftItemData.bibleItemData !== undefined) {
+    if (
+        ftItemData.type === 'bible-item' &&
+        ftItemData.bibleItemData !== undefined
+    ) {
         newTable = fullTextScreenHelper.genHtmlFromFtBibleItem(
             ftItemData.bibleItemData.renderedList, screenFTManager.isLineSync,
         );

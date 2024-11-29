@@ -11,6 +11,10 @@ import mimeSlide from './mime/slide-types.json';
 import mimeImage from './mime/image-types.json';
 import mimePlaylist from './mime/playlist-types.json';
 import mimeVideo from './mime/video-types.json';
+import { openConfirm } from '../alert/alertHelpers';
+import {
+    hideProgressBard, showProgressBard,
+} from '../progress-bar/progressBarHelpers';
 
 const appMimeTypesMapper = {
     bible: mimeBible,
@@ -45,19 +49,19 @@ export type AppMimetypeType = {
 };
 
 export type FileMetadataType = {
-    fileName: string,
+    fileFullName: string,
     appMimetype: AppMimetypeType,
 };
 
-export function checkIsAppFile(fileName: string) {
-    const ext = extractExtension(fileName);
+export function checkIsAppFile(fileFullName: string) {
+    const ext = extractExtension(fileFullName);
     const isAppFile = appExtensions.includes(ext);
     return isAppFile;
 }
 
 export const pathSeparator = appProvider.pathUtils.sep;
-export function pathJoin(filePath: string, fileName: string) {
-    return appProvider.pathUtils.join(filePath, fileName);
+export function pathJoin(filePath: string, fileFullName: string) {
+    return appProvider.pathUtils.join(filePath, fileFullName);
 }
 export function pathBasename(filePath: string) {
     return appProvider.pathUtils.basename(filePath);
@@ -67,9 +71,9 @@ export const createNewFileDetail = async (dir: string, name: string,
     content: string, mimetype: MimetypeNameType) => {
     // TODO: verify file name before create
     const mimetypeList = getAppMimetype(mimetype);
-    const fileName = `${name}${mimetypeList[0].extensions[0]}`;
+    const fileFullName = `${name}${mimetypeList[0].extensions[0]}`;
     try {
-        const filePath = pathJoin(dir, fileName);
+        const filePath = pathJoin(dir, fileFullName);
         return await fsCreateFile(filePath,
             content);
     } catch (error: any) {
@@ -84,15 +88,15 @@ export const mimetypeNameTypeList = [
 ] as const;
 export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 
-export function getFileMetaData(fileName: string,
+export function getFileMetaData(fileFullName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
     mimetypeList = mimetypeList || getAllAppMimetype();
-    const ext = extractExtension(fileName);
+    const ext = extractExtension(fileFullName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);
     });
     if (foundMT) {
-        return { fileName, appMimetype: foundMT };
+        return { fileFullName: fileFullName, appMimetype: foundMT };
     }
     return null;
 }
@@ -135,18 +139,18 @@ export function isSupportedMimetype(fileMimetype: string,
     });
 }
 
-export function extractExtension(fileName: string) {
-    return fileName.substring(fileName.lastIndexOf('.'));
+export function extractExtension(fileFullName: string) {
+    return fileFullName.substring(fileFullName.lastIndexOf('.'));
 }
 export function addExtension(name: string, extension: string) {
     return `${name}${extension}`;
 }
 
 export function isSupportedExt(
-    fileName: string, mimetype: MimetypeNameType,
+    fileFullName: string, mimetype: MimetypeNameType,
 ) {
     const mimetypeList = getAppMimetype(mimetype);
-    const ext = extractExtension(fileName);
+    const ext = extractExtension(fileFullName);
     return mimetypeList.map((newMimetype) => {
         return newMimetype.extensions;
     }).some((extensions) => {
@@ -156,6 +160,10 @@ export function isSupportedExt(
 
 export function fsCreateWriteStream(filePath: string) {
     return appProvider.fileUtils.createWriteStream(filePath);
+}
+
+export function fsCreateReadStream(filePath: string) {
+    return appProvider.fileUtils.createReadStream(filePath);
 }
 
 export type FileResultType = {
@@ -211,17 +219,34 @@ function _fsRename(oldPath: string, newPath: string) {
 function _fsUnlink(filePath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.unlink, filePath);
 }
-function _fsCopyFile(src: string, dest: string) {
+function _fsCopyFile(src: File | string, dest: string) {
+    if (src instanceof File) {
+        return new Promise<void>((resolve, reject) => {
+            const writeStream = fsCreateWriteStream(dest);
+            const writableStream = new WritableStream({
+                write(chunk) {
+                    writeStream.write(chunk);
+                },
+                close() {
+                    resolve();
+                },
+                abort() {
+                    reject(new Error('Error during copying file'));
+                },
+            });
+            src.stream().pipeTo(writableStream).then(resolve).catch(reject);
+        });
+    }
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
 }
 async function _fsCheckExist(
-    isFile: boolean, filePath: string, fileName?: string,
+    isFile: boolean, filePath: string, fileFullName?: string,
 ) {
     if (!filePath) {
         return false;
     }
-    if (fileName) {
-        filePath = pathJoin(filePath, fileName);
+    if (fileFullName) {
+        filePath = pathJoin(filePath, fileFullName);
     }
     try {
         const stat = await _fsStat(filePath);
@@ -242,8 +267,8 @@ async function _fsCheckExist(
 export function fsCheckDirExist(dirPath: string) {
     return _fsCheckExist(false, dirPath);
 }
-export function fsCheckFileExist(filePath: string, fileName?: string) {
-    return _fsCheckExist(true, filePath, fileName);
+export function fsCheckFileExist(filePath: string, fileFullName?: string) {
+    return _fsCheckExist(true, filePath, fileFullName);
 }
 
 export async function fsList(dir: string) {
@@ -301,13 +326,15 @@ export async function fsListFilesWithMimetype(
     try {
         const mimetypeList = getAppMimetype(mimetype);
         const files = await fsListFiles(dir);
-        const matchedFiles = files.map((fileName) => {
-            return getFileMetaData(fileName, mimetypeList);
+        const matchedFiles = files.map((fileFullName) => {
+            return getFileMetaData(fileFullName, mimetypeList);
         }).filter((d) => {
             return !!d;
         });
         return matchedFiles.map((fileMetadata) => {
-            return FileSource.getInstance(dir, fileMetadata.fileName).filePath;
+            return FileSource.getInstance(
+                dir, fileMetadata.fileFullName,
+            ).filePath;
         });
     } catch (error) {
         handleError(error);
@@ -375,8 +402,43 @@ export async function fsDeleteDir(filePath: string) {
 export function fsReadFile(filePath: string) {
     return _fsReadFile(filePath, 'utf8');
 }
-export function fsCopyFileToPath(filePath: string,
-    fileName: string, destinationPath: string) {
-    const targetPath = pathJoin(destinationPath, fileName);
-    return _fsCopyFile(filePath, targetPath);
+export async function fsCopyFilePathToPath(
+    file: File | string, destinationPath: string,
+) {
+    const progressKey = 'Copying File';
+    showProgressBard(progressKey);
+    const isString = typeof file === 'string';
+    const fileFullName = isString ? pathBasename(file) : file.name;
+    const targetPath = pathJoin(destinationPath, fileFullName);
+    try {
+        const isFileExist = await fsCheckFileExist(targetPath);
+        if (isFileExist) {
+            const isConfirm = await openConfirm(
+                'Copy File',
+                `File path "${targetPath}" exist, do you want to override it?`,
+            );
+            if (!isConfirm) {
+                throw new Error('Canceled by user');
+            }
+        }
+        await _fsCopyFile(file, targetPath);
+        hideProgressBard(progressKey);
+        return targetPath;
+    } catch (error: any) {
+        if (error.message !== 'Canceled by user') {
+            handleError(error);
+            showSimpleToast('Copying File', 'Error: ' + error.message);
+            try {
+                await fsDeleteFile(targetPath);
+            } catch (error) {
+                handleError(error);
+            }
+        }
+    }
+    hideProgressBard(progressKey);
+    return null;
+}
+
+export function getFileFullName(file: File | string) {
+    return typeof file === 'string' ? file : file.name;
 }

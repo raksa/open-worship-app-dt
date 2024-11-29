@@ -147,9 +147,8 @@ export function sendScreenMessage(
     console.assert(isSent, JSON.stringify({ channel, message }));
 }
 export function initReceiveScreenMessage() {
-    messageUtils.listenForData(
-        messageUtils.channels.screenMessageChannel,
-        (_, message: ScreenMessageType) => {
-            ScreenManager.receiveSyncScreen(message);
-        });
+    const channel = messageUtils.channels.screenMessageChannel;
+    messageUtils.listenForData(channel, (_, message: ScreenMessageType) => {
+        ScreenManager.receiveSyncScreen(message);
+    });
 }

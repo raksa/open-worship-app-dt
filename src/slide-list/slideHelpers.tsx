@@ -8,7 +8,9 @@ import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
-import { AppMimetypeType } from '../server/fileHelper';
+import {
+    AppMimetypeType, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
+} from '../server/fileHelper';
 import {
     openSlideItemQuickEdit,
 } from '../slide-presenter/HandleItemSlideEdit';
@@ -16,6 +18,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
 import { checkIsWindowEditorMode } from '../router/routeHelpers';
+import { DroppedFileType } from '../others/droppingFileHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 0.2;
@@ -94,16 +97,16 @@ export const supportOfficeFE = [
 ];
 
 export async function convertOfficeFile(
-    filePath: string, dirSource: DirSource,
+    file: DroppedFileType, dirSource: DirSource,
 ) {
     const toHtmlBold = (text: string) => {
         return `<b>${text}</b>`;
     };
-    const fileSource = FileSource.getInstance(filePath);
     const { dirPath } = dirSource;
     const title = 'Converting to PDF';
+    const fileFullName = getFileFullName(file);
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
-        <b>{fileSource.fileName}</b>
+        <b>{fileFullName}</b>
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);
@@ -111,11 +114,25 @@ export async function convertOfficeFile(
     if (!isOk) {
         return;
     }
-    showSimpleToast(title, `${toHtmlBold(filePath)}, do not close application`);
+    const isFilePath = typeof file === 'string';
+    let filePath = '';
     try {
-        await appProvider.pdfUtils.toPdf(filePath, dirPath);
+        if (isFilePath) {
+            filePath = file;
+        } else {
+            filePath = appProvider.pathUtils.join(
+                dirSource.dirPath, 'temp-dropped-file',
+            );
+            if (!await fsCopyFilePathToPath(file, filePath)) {
+                throw new Error('Fail to copy file');
+            }
+        }
         showSimpleToast(
-            title, `${toHtmlBold(fileSource.fileName)} is converted to PDF`,
+            title, `"${toHtmlBold(filePath)}", do not close application`,
+        );
+        await appProvider.pdfUtils.toPdf(filePath, dirPath, fileFullName);
+        showSimpleToast(
+            title, `${toHtmlBold(fileFullName)} is converted to PDF`,
         );
     } catch (error: any) {
         if (error.message.includes('Could not find office binary')) {
@@ -137,6 +154,9 @@ export async function convertOfficeFile(
         }
         handleError(error);
         showSimpleToast(title, `Fail to convert ${toHtmlBold(filePath)}`);
+        if (!isFilePath) {
+            await fsDeleteFile(filePath);
+        }
     }
 }
 

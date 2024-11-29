@@ -93,7 +93,7 @@ function genBody(
             </div>
             <div className='card-footer'>
                 <p className='ellipsis-left card-text'>
-                    {fileSource.fileName}
+                    {fileSource.fileFullName}
                 </p>
             </div>
         </div>

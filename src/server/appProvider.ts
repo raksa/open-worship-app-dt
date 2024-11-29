@@ -2,7 +2,7 @@ import pdfjsLibType from 'pdfjs-dist';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import tar from 'tar';
+import { x } from 'tar';
 
 export type MessageEventType = {
     returnValue: any,
@@ -26,6 +26,7 @@ export type MessageUtilsType = {
 
 export type FileUtilsType = {
     createWriteStream: typeof fs.createWriteStream,
+    createReadStream: typeof fs.createWriteStream,
     readdir: typeof fs.readdir,
     stat: typeof fs.stat,
     mkdir: typeof fs.mkdir,
@@ -35,7 +36,10 @@ export type FileUtilsType = {
     rmdir: typeof fs.rmdir,
     readFile: typeof fs.readFile,
     copyFile: typeof fs.copyFile,
-    tarExtract: typeof tar.x,
+    copyBlobFile: (
+        blobUrl: string, dest: fs.PathLike, callback: fs.NoParamCallback,
+    ) => void,
+    tarExtract: typeof x,
     watch: typeof fs.watch,
 };
 
@@ -69,7 +73,9 @@ export type AppUtilsType = {
     base64Decode: (str: string) => string,
 };
 export type PdfUtilsType = {
-    toPdf: (filePath: string, outputDir: string) => Promise<void>,
+    toPdf: (
+        filePath: string, outputDir: string, fileFullName: string,
+    ) => Promise<void>,
     pdfjsLib: typeof pdfjsLibType,
 }
 
