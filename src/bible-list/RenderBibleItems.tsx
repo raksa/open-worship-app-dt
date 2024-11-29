@@ -27,8 +27,8 @@ export default function RenderBibleItems({ bible }: Readonly<{
             {bible.isDefault && <button
                 type='button'
                 className={
-                    'btn btn-sm btn-labeled btn-outline-primary p-2 '
-                    + 'pointer border-white-round'
+                    'btn btn-sm btn-labeled btn-outline-primary p-2 ' +
+                    'pointer border-white-round'
                 }
                 style={{
                     margin: 'auto',

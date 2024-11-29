@@ -18,6 +18,7 @@ import {
     genFoundBibleItemContextMenu,
 } from '../bible-search/RenderActionButtons';
 import { closeCurrentEditingBibleItem } from './readBibleHelper';
+import { attemptAddingHistory } from '../bible-search/InputHistory';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -260,6 +261,9 @@ export default class BibleItemViewController
                 this.setColorNote(newBibleItem, sourceColor);
             }
             this.nestedBibleItems = nestedBibleItems;
+            newBibleItem.toTitle().then((title) => {
+                attemptAddingHistory(title, true);
+            });
         } catch (error) {
             handleError(error);
         }
@@ -393,6 +397,9 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         return this._instance;
     }
     editBibleItem(bibleItem: BibleItem) {
+        this.selectedBibleItem.toTitle().then((inputText) => {
+            attemptAddingHistory(inputText, true);
+        });
         const newBibleItem = bibleItem.clone(true);
         this.selectedBibleItem = newBibleItem;
         this.changeBibleItem(bibleItem, newBibleItem);

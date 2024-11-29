@@ -7,6 +7,7 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
+import { attemptAddingHistory } from './InputHistory';
 
 export default function RenderSearchSuggestion({
     bibleResult, applyChapterSelection, applyVerseSelection,
@@ -30,6 +31,9 @@ export default function RenderSearchSuggestion({
     } = bibleResult;
 
     if (bibleItem !== null) {
+        bibleItem.toTitle().then((text) => {
+            attemptAddingHistory(text);
+        });
         return (
             <BibleItemContext.Provider value={bibleItem}>
                 <RenderBibleDataFound

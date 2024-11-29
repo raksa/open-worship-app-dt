@@ -16,6 +16,7 @@ import {
 } from '../bible-reader/BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
 import { CloseButtonContext } from '../app-modal/Modal';
+import InputHistory from './InputHistory';
 
 const BibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
@@ -55,7 +56,14 @@ function RenderBibleSearchHeader({
     const isBibleEditor = !!data;
     return (
         <div className='card-header d-flex text-center w-100'>
-            <div className='flex-item flex-fill'>
+            <div className='flex-item' style={{
+                width: 'calc(50% - 175px)',
+            }}>
+                <InputHistory onPutHistoryBack={(historyText: string) => {
+                    if (historyText !== inputText) {
+                        setInputText1(historyText);
+                    }
+                }} />
             </div>
             <div className='flex-item input-group app-input-group-header'
                 style={{ width: 350 }}>
