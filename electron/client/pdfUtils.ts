@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const pdfjsLib = require('pdfjs-dist/build/pdf');
 
 const ext = '.pdf';
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
 
 function toPdf(filePath: string, outputDir: string, fileFullName: string) {
     return new Promise<void>((resolve, reject) => {

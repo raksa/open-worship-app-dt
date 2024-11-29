@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 
 const resolveAlias = {
-    '/js/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
+    '/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
 };
 
 const htmlPlugin = () => {
