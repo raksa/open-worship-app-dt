@@ -8,20 +8,30 @@ import {
 import ReactDOMServer from 'react-dom/server';
 
 export function SlideItemPdfRenderContent({
-    pdfImageSrc,
+    pdfImageSrc, isFullWidth = false,
 }: Readonly<{
     pdfImageSrc: string,
+    isFullWidth?: boolean,
 }>) {
     return (
-        <img alt='pdf-image' style={{ width: '100%' }}
+        <img alt='pdf-image' style={isFullWidth ? {
+            width: '100%',
+        } : {
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+        }}
             src={pdfImageSrc}
         />
     );
 }
 
-export function genPdfSlideItem(pdfImageSrc: string) {
+export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
     const str = ReactDOMServer.renderToStaticMarkup(
-        <SlideItemPdfRenderContent pdfImageSrc={pdfImageSrc} />);
+        <SlideItemPdfRenderContent pdfImageSrc={pdfImageSrc}
+            isFullWidth={isFullWidth}
+        />,
+    );
     const div = document.createElement('div');
     div.innerHTML = str;
     return div.firstChild as HTMLDivElement;

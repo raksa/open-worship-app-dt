@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelper';
 import { PdfImageDataType } from '../pdf/PdfController';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genPdfSlideItem } from '../slide-presenter/items/SlideItemPdfRender';
@@ -14,6 +14,7 @@ import {
     SlideListType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
+// TODO: cyclic dependency ScreenManager<->ScreenSlideManager
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenTransitionEffect
     from './transition-effect/ScreenTransitionEffect';
@@ -21,6 +22,16 @@ import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 
 export type ScreenSlideManagerEventType = 'update';
+
+const PDF_FULL_WIDTH_SETTING_NAME = 'pdf-full-width';
+
+export function checkIsPDFFullWidth() {
+    const originalSettingName = getSetting(PDF_FULL_WIDTH_SETTING_NAME);
+    return originalSettingName === 'true';
+}
+export function setIsPDFFullWidth(b: boolean) {
+    setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${b}`);
+}
 
 export default class ScreenSlideManager extends
     EventHandler<ScreenSlideManagerEventType>
@@ -58,6 +69,12 @@ export default class ScreenSlideManager extends
     }
     get slideItemData() {
         return this._slideItemData;
+    }
+    static get isPDFFullWidth() {
+        return checkIsPDFFullWidth();
+    }
+    static set isPDFFullWidth(isFullWidth: boolean) {
+        setIsPDFFullWidth(isFullWidth);
     }
     set slideItemData(slideItemData: SlideItemDataType | null) {
         this._slideItemData = slideItemData;
@@ -146,13 +163,14 @@ export default class ScreenSlideManager extends
         Array.from(this.div.children).forEach((child) => {
             child.remove();
         });
+        const isFullWidth = checkIsPDFFullWidth();
         const { src: pdfImageSrc } = pdfImageData;
-        const content = genPdfSlideItem(pdfImageSrc);
+        const content = genPdfSlideItem(pdfImageSrc, isFullWidth);
         const divContainer = document.createElement('div');
         Object.assign(divContainer.style, {
             width: '100%',
             height: '100%',
-            overflow: 'auto',
+            overflow: isFullWidth ? 'auto' : 'hidden',
         });
         divContainer.appendChild(content);
         this.div.appendChild(divContainer);
