@@ -59,6 +59,7 @@ export function RenderHeader({
     onClose: () => void,
 }>) {
     const fontSize = useBibleViewFontSize();
+    // TODO: reduce size of the header
     return (
         <div className='card-header d-flex'
             style={fontSizeToHeightStyle(fontSize)}>

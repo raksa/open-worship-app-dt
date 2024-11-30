@@ -101,6 +101,7 @@ function changeEditingBibleItem(isLeft = false) {
 }
 
 export function useNextEditingBibleItem(key: 'ArrowLeft' | 'ArrowRight') {
+    // TODO: improve move position
     useKeyboardRegistering([{ ...metaKeys, key }], (e) => {
         e.preventDefault();
         changeEditingBibleItem(key === 'ArrowLeft');
