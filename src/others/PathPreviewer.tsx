@@ -12,7 +12,7 @@ const cleanPath = (path: string) => {
     return path;
 };
 
-export function pathPreviewer(dirPath: string) {
+export function pathPreviewer(dirPath: string, isShowingNameOnly = false) {
     const onContextMenu = (event: any) => {
         showAppContextMenu(event, [
             {
@@ -22,19 +22,30 @@ export function pathPreviewer(dirPath: string) {
                 },
             },
             {
-                menuTitle: `Reveal in ${appProvider.systemUtils.isMac ?
-                    'Finder' : 'File Explorer'}`,
+                menuTitle: (
+                    `Reveal in ${appProvider.systemUtils.isMac ?
+                        'Finder' : 'File Explorer'}`
+                ),
                 onClick: () => {
                     openExplorer(dirPath);
                 },
             },
         ]);
     };
+    const cleanedPath = cleanPath(dirPath);
+    let path = cleanedPath;
+    if (isShowingNameOnly) {
+        path = appProvider.pathUtils.basename(cleanedPath);
+        const index = path.indexOf('.');
+        if (index > 0) {
+            path = path.substring(0, index);
+        }
+    }
     return (
         <div className='ellipsis-left border-white-round px-1 flex-fill'
             onContextMenu={onContextMenu}
-            title={cleanPath(dirPath)}>
-            {cleanPath(dirPath)}
+            title={cleanedPath}>
+            {path}
         </div>
     );
 }

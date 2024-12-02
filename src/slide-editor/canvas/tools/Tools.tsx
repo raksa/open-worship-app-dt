@@ -9,6 +9,7 @@ import { CanvasItemContext } from '../CanvasItem';
 import {
     useCanvasControllerEvents, useCCScale,
 } from '../canvasEventHelpers';
+import AppRange from '../../../others/AppRange';
 
 const ToolsBox = lazy(() => {
     return import('./ToolsBox');
@@ -47,21 +48,17 @@ export default function Tools() {
                     <div className='canvas-board-size-container d-flex ps-1'>
                         <span>{scale.toFixed(1)}x</span>
                         <div style={{ maxWidth: '200px' }}>
-                            <input type='range' className='form-range'
-                                onChange={(event) => {
-                                    const scale = parseInt(
-                                        event.target.value, 10,
-                                    );
+                            <AppRange
+                                value={scale}
+                                title='Canvas Scale'
+                                setValue={(scale) => {
                                     canvasController.scale = scale;
                                 }}
-                                min={canvasController.MIN_SCALE}
-                                max={canvasController.MAX_SCALE}
-                                step={canvasController.SCALE_STEP}
-                                value={scale}
-                                onWheel={(event) => {
-                                    canvasController.applyScale(
-                                        event.deltaY > 0,
-                                    );
+                                defaultSize={{
+                                    size: scale,
+                                    min: canvasController.MIN_SCALE,
+                                    max: canvasController.MAX_SCALE,
+                                    step: canvasController.SCALE_STEP,
                                 }} />
                         </div>
                     </div>

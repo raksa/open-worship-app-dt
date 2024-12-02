@@ -3,8 +3,7 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    checkIsPdf, MAX_THUMBNAIL_SCALE, MIN_THUMBNAIL_SCALE, openSlideContextMenu,
-    readPdfToSlide, SlideDynamicType, THUMBNAIL_SCALE_STEP,
+    checkIsPdf, openSlideContextMenu, readPdfToSlide, SlideDynamicType,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
@@ -263,16 +262,6 @@ export default class Slide extends ItemSource<SlideItem> {
     async discardChanged() {
         this.editorCacheManager.delete();
         FileSource.getInstance(this.filePath).fireUpdateEvent();
-    }
-    static toScaleThumbSize(isUp: boolean, currentScale: number) {
-        let newScale = currentScale + (isUp ? -1 : 1) * THUMBNAIL_SCALE_STEP;
-        if (newScale < MIN_THUMBNAIL_SCALE) {
-            newScale = MIN_THUMBNAIL_SCALE;
-        }
-        if (newScale > MAX_THUMBNAIL_SCALE) {
-            newScale = MAX_THUMBNAIL_SCALE;
-        }
-        return newScale;
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);

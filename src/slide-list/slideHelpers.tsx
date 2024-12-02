@@ -23,25 +23,34 @@ import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
+import {
+    wheelToScaleThumbnailSize,
+} from '../others/AppRange';
 
 export const MIN_THUMBNAIL_SCALE = 1;
-export const THUMBNAIL_SCALE_STEP = 0.2;
-export const MAX_THUMBNAIL_SCALE = 3;
-export const DEFAULT_THUMBNAIL_SIZE = 250;
+export const THUMBNAIL_SCALE_STEP = 1;
+export const MAX_THUMBNAIL_SCALE = 10;
+export const DEFAULT_THUMBNAIL_SIZE_FACTOR = 1000 / MAX_THUMBNAIL_SCALE;
 export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenter-item-thumbnail-size';
 
 export type SlideDynamicType = Slide | null | undefined;
 
-export function toScaleThumbSize(isUp: boolean, currentScale: number) {
-    let newScale = currentScale + (isUp ? -1 : 1) * THUMBNAIL_SCALE_STEP;
-    if (newScale < MIN_THUMBNAIL_SCALE) {
-        newScale = MIN_THUMBNAIL_SCALE;
+export function handleWheelSlideThumbnailSize(
+    event: any, thumbSize: number, setThumbnailSize: (size: number) => void,
+) {
+    if (!event.ctrlKey) {
+        return;
     }
-    if (newScale > MAX_THUMBNAIL_SCALE) {
-        newScale = MAX_THUMBNAIL_SCALE;
-    }
-    return newScale;
-}
+    const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE_FACTOR);
+    const newScale = wheelToScaleThumbnailSize(
+        {
+            size: MIN_THUMBNAIL_SCALE, min: MIN_THUMBNAIL_SCALE,
+            max: MAX_THUMBNAIL_SCALE, step: THUMBNAIL_SCALE_STEP,
+        },
+        event.deltaY > 0, currentScale,
+    );
+    setThumbnailSize(newScale);
+};
 
 export function openSlideContextMenu(event: any,
     slide: Slide, slideItem: SlideItem) {

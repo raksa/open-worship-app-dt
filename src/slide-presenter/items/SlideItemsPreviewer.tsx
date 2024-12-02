@@ -1,18 +1,19 @@
 import {
-    useSlideItemSizing,
+    useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import SlideItems from './SlideItems';
 import {
-    DEFAULT_THUMBNAIL_SIZE,
-    THUMBNAIL_WIDTH_SETTING_NAME,
+    MAX_THUMBNAIL_SCALE, MIN_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
 } from '../../slide-list/slideHelpers';
 import Slide from '../../slide-list/Slide';
+import { wheelToScaleThumbnailSize } from '../../others/AppRange';
 
 export default function SlideItemsPreviewer({ slide }: Readonly<{
     slide: Slide,
 }>) {
-    const [thumbSize, setThumbSize] = useSlideItemSizing(
-        THUMBNAIL_WIDTH_SETTING_NAME, DEFAULT_THUMBNAIL_SIZE);
+    const [
+        thumbSizeScale, setThumbnailSizeScale,
+    ] = useSlideItemThumbnailSizeScale();
     return (
         <div className='w-100 h-100 pb-5'
             style={{ overflow: 'auto' }}
@@ -20,10 +21,14 @@ export default function SlideItemsPreviewer({ slide }: Readonly<{
                 if (!event.ctrlKey) {
                     return;
                 }
-                const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE);
-                const newScale = Slide.toScaleThumbSize(
-                    event.deltaY > 0, currentScale);
-                setThumbSize(newScale * DEFAULT_THUMBNAIL_SIZE);
+                const newScale = wheelToScaleThumbnailSize(
+                    {
+                        size: MIN_THUMBNAIL_SCALE, min: MIN_THUMBNAIL_SCALE,
+                        max: MAX_THUMBNAIL_SCALE, step: THUMBNAIL_SCALE_STEP,
+                    },
+                    event.deltaY > 0, thumbSizeScale,
+                );
+                setThumbnailSizeScale(newScale);
             }}
             onContextMenu={(event) => {
                 slide.showSlideItemContextMenu(event);

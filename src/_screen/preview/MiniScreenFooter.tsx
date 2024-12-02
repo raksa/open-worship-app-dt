@@ -1,29 +1,26 @@
 import AppRange from '../../others/AppRange';
 
-export const DEFAULT_PREVIEW_SIZE = 200;
-
+export const defaultAppRangeSize = {
+    size: 1, min: 1, max: 20, step: 1,
+};
 export default function MiniScreenFooter({
-    previewSize, setPreviewSize, isShowingTools, setIsShowingTools,
+    previewSizeScale, setPreviewSizeScale, isShowingTools, setIsShowingTools,
 }: Readonly<{
-    previewSize: number,
-    setPreviewSize: (size: number) => void,
+    previewSizeScale: number,
+    setPreviewSizeScale: (size: number) => void,
     setIsShowingTools: (isShowing: boolean) => void,
     isShowingTools: boolean,
 }>) {
-    const defaultSize = {
-        size: DEFAULT_PREVIEW_SIZE,
-        min: DEFAULT_PREVIEW_SIZE,
-        max: DEFAULT_PREVIEW_SIZE * 10,
-        step: 10,
-    };
     return (
         <div className='card-footer w-100'>
             <div className='d-flex w-100 h-100'>
                 <div className='row'>
                     <div className='col-auto'>
-                        <AppRange currentSize={previewSize}
-                            setCurrentSize={setPreviewSize}
-                            defaultSize={defaultSize} />
+                        <AppRange value={previewSizeScale}
+                            title='Preview Size Scale'
+                            setValue={setPreviewSizeScale}
+                            defaultSize={defaultAppRangeSize}
+                        />
                     </div>
                     <div className='form-check form-switch col-auto'>
                         <label className='form-check-label'
@@ -36,7 +33,8 @@ export default function MiniScreenFooter({
                             checked={isShowingTools}
                             onChange={(event) => {
                                 setIsShowingTools(event.target.checked);
-                            }} />
+                            }}
+                        />
                     </div>
                 </div>
             </div>

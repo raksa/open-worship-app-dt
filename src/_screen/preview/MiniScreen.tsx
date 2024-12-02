@@ -5,15 +5,14 @@ import {
     initReceiveScreenMessage, usePMEvents,
 } from '../screenEventHelpers';
 import ScreenPreviewerItem from './ScreenPreviewerItem';
-import MiniScreenFooter, {
-    DEFAULT_PREVIEW_SIZE,
-} from './MiniScreenFooter';
+import MiniScreenFooter, { defaultAppRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
 } from '../../helper/settingHelper';
 import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
+import { wheelToScaleThumbnailSize } from '../../others/AppRange';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
@@ -32,31 +31,43 @@ function openContextMenu(event: any) {
     ]);
 }
 
+const DEFAULT_PREVIEW_SIZE = 50;
 initReceiveScreenMessage();
 export default function MiniScreen() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
         'mini-screen-previewer-tool', true,
     );
-    const [previewWith, _setPreviewWidth] = useStateSettingNumber(
+    const [previewScale, setPreviewScale] = useStateSettingNumber(
         'mini-screen-previewer', DEFAULT_PREVIEW_SIZE,
     );
-    const setPreviewWidth = (size: number) => {
-        _setPreviewWidth(size);
+    const setPreviewScale1 = (size: number) => {
+        setPreviewScale(size);
         ScreenManager.getAllInstances().forEach((screenManager) => {
             screenManager.fireResizeEvent();
         });
     };
     usePMEvents(['instance']);
     const screenManagers = ScreenManager.getScreenManagersSetting();
+    const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;
     return (
         <div className='card w-100 h-100'>
             <div className={'card-body d-flex flex-column'}
+                style={{
+                    overflow: 'auto',
+                }}
                 onContextMenu={(event) => {
                     openContextMenu(event);
                 }}
-                style={{
-                    overflow: 'auto',
-                }}>
+                onWheel={(event) => {
+                    if (!event.ctrlKey) {
+                        return;
+                    }
+                    const newScale = wheelToScaleThumbnailSize(
+                        defaultAppRangeSize, event.deltaY > 0, previewScale,
+                    );
+                    setPreviewScale1(newScale);
+                }}
+            >
                 {isShowingTools && (
                     <ScreenPreviewerTools />
                 )}
@@ -67,7 +78,7 @@ export default function MiniScreen() {
                                 key={screenManager.key}
                                 value={screenManager}>
                                 <ScreenPreviewerItem
-                                    width={previewWith}
+                                    width={previewWidth}
                                 />
                             </ScreenManagerContext.Provider>
                         );
@@ -75,8 +86,8 @@ export default function MiniScreen() {
                 </div>
             </div>
             <MiniScreenFooter
-                previewSize={previewWith}
-                setPreviewSize={setPreviewWidth}
+                previewSizeScale={previewScale}
+                setPreviewSizeScale={setPreviewScale1}
                 isShowingTools={isShowingTools}
                 setIsShowingTools={setIsShowingTools}
             />

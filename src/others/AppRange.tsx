@@ -5,25 +5,49 @@ export type AppRangeDefaultType = {
     step: number,
 };
 
+export function wheelToScaleThumbnailSize(
+    defaultSize: AppRangeDefaultType, isUp: boolean, currentScale: number,
+) {
+    let newScale = currentScale + (isUp ? 1 : -1) * defaultSize.step;
+    if (newScale < defaultSize.min) {
+        newScale = defaultSize.min;
+    }
+    if (newScale > defaultSize.max) {
+        newScale = defaultSize.max;
+    }
+    return newScale;
+}
+
 export default function AppRange({
-    currentSize, setCurrentSize, defaultSize,
+    value, title, id, setValue, defaultSize,
 }: Readonly<{
-    currentSize: number,
-    setCurrentSize: (size: number) => void,
+    value: number,
+    title: string,
+    id?: string,
+    setValue: (newValue: number) => void,
     defaultSize: AppRangeDefaultType,
 }>) {
+    const currentValue = Math.min(
+        defaultSize.max, Math.max(defaultSize.min, value),
+    ).toFixed(1);
     return (
         <div className='form form-inline d-flex flex-row-reverse'
+            title={title}
             style={{ minWidth: '100px' }}>
             <label className='form-label'>
-                Size:{currentSize.toFixed(1)}
+                {currentValue}
             </label>
-            <input type='range' className='form-range'
+            <input id={id} type='range' className='form-range'
                 min={defaultSize.min} max={defaultSize.max}
                 step={defaultSize.step}
-                value={currentSize.toFixed(1)}
+                value={currentValue}
+                onWheel={(event) => {
+                    setValue(wheelToScaleThumbnailSize(
+                        defaultSize, event.deltaY > 0, value,
+                    ));
+                }}
                 onChange={(event) => {
-                    setCurrentSize(parseInt(event.target.value, 10));
+                    setValue(parseInt(event.target.value, 10));
                 }}
             />
         </div>

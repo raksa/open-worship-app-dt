@@ -1,3 +1,6 @@
+import AppRange from '../others/AppRange';
+
+const rangeId = 'preview-fon-size';
 export default function BibleViewSetting({
     fontSize, setFontSize, minFontSize, maxFontSize, stepFontSize,
 }: Readonly<{
@@ -13,20 +16,20 @@ export default function BibleViewSetting({
         }}>
             <div className='input-group d-flex'>
                 <div className='flex-fill d-flex mx-1'>
-                    <div className='pe-1'>
-                        <label htmlFor="preview-fon-size"
-                            className="form-label">
+                    <div className='d-flex flex-fill'>
+                        <label htmlFor={rangeId} className='form-label'>
                             Font Size ({fontSize}px):
                         </label>
-                    </div>
-                    <div className='flex-fill'>
-                        <input id="preview-fon-size"
-                            type='range' className='form-range'
-                            min={minFontSize} max={maxFontSize}
-                            step={stepFontSize}
+                        <AppRange
                             value={fontSize}
-                            onChange={(event) => {
-                                setFontSize(Number(event.target.value));
+                            title='Font Size'
+                            id={rangeId}
+                            setValue={setFontSize}
+                            defaultSize={{
+                                size: fontSize,
+                                min: minFontSize,
+                                max: maxFontSize,
+                                step: stepFontSize,
                             }}
                         />
                     </div>

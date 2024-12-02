@@ -27,6 +27,7 @@ export default function AppEditorLeft() {
                     children: SlidePreviewer, key: 'v2',
                     widgetName: 'Slide Previewer', className: 'flex-item',
                 },
-            ]} />
+            ]}
+        />
     );
 }

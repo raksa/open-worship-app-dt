@@ -5,6 +5,7 @@ import { usePFTMEvents } from '../screenEventHelpers';
 import ScreenFTManager from '../ScreenFTManager';
 import ScreenSlideManager from '../ScreenSlideManager';
 import ScreenManager from '../ScreenManager';
+import AppRange from '../../others/AppRange';
 
 export default function Appearance() {
     const [color, setColor] = useState(
@@ -57,11 +58,14 @@ export default function Appearance() {
                 value={color}
             />
             <div>
-                <input className='form-range'
-                    type='range' min='1'
-                    max={ScreenFTManager.maxTextStyleTextFontSize}
-                    value={fontSize} onChange={(event) => {
-                        setFontSizeToStyle(parseInt(event.target.value, 10));
+                <AppRange value={fontSize}
+                    title='Font Size'
+                    setValue={setFontSizeToStyle}
+                    defaultSize={{
+                        size: fontSize,
+                        min: 1,
+                        max: ScreenFTManager.maxTextStyleTextFontSize,
+                        step: 1,
                     }}
                 />
             </div>

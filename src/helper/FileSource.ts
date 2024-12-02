@@ -72,8 +72,9 @@ export default class FileSource extends EventHandler<FSEventType>
         return getFileMetaData(this.fileFullName);
     }
     get name() {
-        return this.fileFullName.substring(0,
-            this.fileFullName.lastIndexOf('.'));
+        return this.fileFullName.substring(
+            0, this.fileFullName.lastIndexOf('.'),
+        );
     }
     get extension() {
         return extractExtension(this.fileFullName);
