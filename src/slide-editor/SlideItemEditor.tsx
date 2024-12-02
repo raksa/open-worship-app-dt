@@ -4,6 +4,8 @@ import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
+import { handleCtrlWheel } from '../others/AppRange';
+import { defaultRangeSize } from './canvas/tools/Tools';
 
 const SlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
@@ -20,13 +22,17 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
             <div className='alert alert-danger'>Error</div>
         );
     }
+    const canvasController = CanvasController.getInstance();
     return (
         <div className='slide-item-editor w-100 h-100 overflow-hidden'
             onWheel={(event) => {
-                if (event.ctrlKey) {
-                    CanvasController.getInstance()
-                        .applyScale(event.deltaY > 0);
-                }
+                handleCtrlWheel({
+                    event, value: canvasController.scale,
+                    setValue: (scale) => {
+                        canvasController.scale = scale;
+                    },
+                    defaultSize: defaultRangeSize,
+                });
             }}>
             <ResizeActor fSizeName={resizeSettingNames.slideItemEditor}
                 isHorizontal={false}

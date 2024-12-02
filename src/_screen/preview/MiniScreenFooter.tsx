@@ -1,6 +1,6 @@
 import AppRange from '../../others/AppRange';
 
-export const defaultAppRangeSize = {
+export const defaultRangeSize = {
     size: 1, min: 1, max: 20, step: 1,
 };
 export default function MiniScreenFooter({
@@ -19,7 +19,7 @@ export default function MiniScreenFooter({
                         <AppRange value={previewSizeScale}
                             title='Preview Size Scale'
                             setValue={setPreviewSizeScale}
-                            defaultSize={defaultAppRangeSize}
+                            defaultSize={defaultRangeSize}
                         />
                     </div>
                     <div className='form-check form-switch col-auto'>

@@ -5,14 +5,14 @@ import {
     initReceiveScreenMessage, usePMEvents,
 } from '../screenEventHelpers';
 import ScreenPreviewerItem from './ScreenPreviewerItem';
-import MiniScreenFooter, { defaultAppRangeSize } from './MiniScreenFooter';
+import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
 } from '../../helper/settingHelper';
 import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
-import { wheelToScaleThumbnailSize } from '../../others/AppRange';
+import { handleCtrlWheel } from '../../others/AppRange';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
@@ -59,15 +59,12 @@ export default function MiniScreen() {
                     openContextMenu(event);
                 }}
                 onWheel={(event) => {
-                    if (!event.ctrlKey) {
-                        return;
-                    }
-                    const newScale = wheelToScaleThumbnailSize(
-                        defaultAppRangeSize, event.deltaY > 0, previewScale,
-                    );
-                    setPreviewScale1(newScale);
-                }}
-            >
+                    handleCtrlWheel({
+                        event, value: previewScale,
+                        setValue: setPreviewScale1,
+                        defaultSize: defaultRangeSize,
+                    });
+                }}>
                 {isShowingTools && (
                     <ScreenPreviewerTools />
                 )}

@@ -12,7 +12,11 @@ const cleanPath = (path: string) => {
     return path;
 };
 
-export function pathPreviewer(dirPath: string, isShowingNameOnly = false) {
+export function pathPreviewer({
+    dirPath, isShowingNameOnly = false,
+}: {
+    dirPath: string, isShowingNameOnly?: boolean,
+}) {
     const onContextMenu = (event: any) => {
         showAppContextMenu(event, [
             {

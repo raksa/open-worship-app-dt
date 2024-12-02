@@ -23,9 +23,6 @@ import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
-import {
-    wheelToScaleThumbnailSize,
-} from '../others/AppRange';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -34,23 +31,6 @@ export const DEFAULT_THUMBNAIL_SIZE_FACTOR = 1000 / MAX_THUMBNAIL_SCALE;
 export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenter-item-thumbnail-size';
 
 export type SlideDynamicType = Slide | null | undefined;
-
-export function handleWheelSlideThumbnailSize(
-    event: any, thumbSize: number, setThumbnailSize: (size: number) => void,
-) {
-    if (!event.ctrlKey) {
-        return;
-    }
-    const currentScale = (thumbSize / DEFAULT_THUMBNAIL_SIZE_FACTOR);
-    const newScale = wheelToScaleThumbnailSize(
-        {
-            size: MIN_THUMBNAIL_SCALE, min: MIN_THUMBNAIL_SCALE,
-            max: MAX_THUMBNAIL_SCALE, step: THUMBNAIL_SCALE_STEP,
-        },
-        event.deltaY > 0, currentScale,
-    );
-    setThumbnailSize(newScale);
-};
 
 export function openSlideContextMenu(event: any,
     slide: Slide, slideItem: SlideItem) {

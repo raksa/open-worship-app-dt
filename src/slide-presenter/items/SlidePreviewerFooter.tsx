@@ -37,18 +37,18 @@ function HistoryPreviewerFooter({ slide }: Readonly<{ slide: Slide }>) {
     );
 }
 
+export const defaultRangeSize = {
+    size: MIN_THUMBNAIL_SCALE,
+    min: MIN_THUMBNAIL_SCALE,
+    max: MAX_THUMBNAIL_SCALE,
+    step: THUMBNAIL_SCALE_STEP,
+};
 export default function SlidePreviewerFooter({ slide }: Readonly<{
     slide: Slide,
 }>) {
     const [
         thumbnailSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();
-    const defaultSize = {
-        size: MIN_THUMBNAIL_SCALE,
-        min: MIN_THUMBNAIL_SCALE,
-        max: MAX_THUMBNAIL_SCALE,
-        step: THUMBNAIL_SCALE_STEP,
-    };
     return (
         <div className='card-footer w-100'>
             <div className='d-flex w-100 h-100'>
@@ -56,9 +56,12 @@ export default function SlidePreviewerFooter({ slide }: Readonly<{
                     <AppRange value={thumbnailSizeScale}
                         title='SlideItem Thumbnail Size Scale'
                         setValue={setThumbnailSizeScale}
-                        defaultSize={defaultSize}
+                        defaultSize={defaultRangeSize}
                     />
-                    {pathPreviewer(slide.filePath, true)}
+                    {pathPreviewer({
+                        dirPath: slide.filePath,
+                        isShowingNameOnly: true,
+                    })}
                 </div>
                 <div className='flex-item'>
                     <HistoryPreviewerFooter slide={slide} />

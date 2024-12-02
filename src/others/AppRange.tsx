@@ -5,9 +5,13 @@ export type AppRangeDefaultType = {
     step: number,
 };
 
-export function wheelToScaleThumbnailSize(
-    defaultSize: AppRangeDefaultType, isUp: boolean, currentScale: number,
-) {
+export function wheelToRangeValue({
+    defaultSize, isUp, currentScale,
+}: {
+    defaultSize: AppRangeDefaultType,
+    isUp: boolean,
+    currentScale: number,
+}) {
     let newScale = currentScale + (isUp ? 1 : -1) * defaultSize.step;
     if (newScale < defaultSize.min) {
         newScale = defaultSize.min;
@@ -16,6 +20,21 @@ export function wheelToScaleThumbnailSize(
         newScale = defaultSize.max;
     }
     return newScale;
+}
+
+export function handleCtrlWheel({
+    event, value, setValue, defaultSize,
+}: {
+    event: any, value: number, setValue: (newValue: number) => void,
+    defaultSize: AppRangeDefaultType,
+}) {
+    if (!event.ctrlKey) {
+        return;
+    }
+    const newValue = wheelToRangeValue({
+        defaultSize, isUp: event.deltaY > 0, currentScale: value,
+    });
+    setValue(newValue);
 }
 
 export default function AppRange({
@@ -42,9 +61,10 @@ export default function AppRange({
                 step={defaultSize.step}
                 value={currentValue}
                 onWheel={(event) => {
-                    setValue(wheelToScaleThumbnailSize(
-                        defaultSize, event.deltaY > 0, value,
-                    ));
+                    setValue(wheelToRangeValue({
+                        defaultSize, isUp: event.deltaY > 0,
+                        currentScale: value,
+                    }));
                 }}
                 onChange={(event) => {
                     setValue(parseInt(event.target.value, 10));

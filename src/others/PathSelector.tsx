@@ -47,7 +47,7 @@ function RenderTitle({ dirSource }: Readonly<{ dirSource: DirSource }>) {
     }
     return (
         <>
-            {pathPreviewer(dirSource.dirPath)}
+            {pathPreviewer({ dirPath: dirSource.dirPath })}
             <div className='px-2'
                 onClick={(event) => {
                     event.stopPropagation();

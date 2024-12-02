@@ -27,9 +27,6 @@ export default class CanvasController extends EventHandler<CCEventType> {
     copiedItem: CanvasItem<any> | null = null;
     _canvas: Canvas;
     _slideItem: SlideItem | null = null;
-    MAX_SCALE = 3;
-    MIN_SCALE = 0.2;
-    SCALE_STEP = 0.1;
     _scale: number = 1;
     constructor() {
         super();
@@ -241,16 +238,6 @@ export default class CanvasController extends EventHandler<CCEventType> {
                 this.setItemIsEditing(item, false);
             }
         });
-    }
-    applyScale(isUp: boolean) {
-        let newScale = this.scale + (isUp ? -1 : 1) * this.SCALE_STEP;
-        if (newScale < this.MIN_SCALE) {
-            newScale = this.MIN_SCALE;
-        }
-        if (newScale > this.MAX_SCALE) {
-            newScale = this.MAX_SCALE;
-        }
-        this.scale = newScale;
     }
     setCanvasItems(canvasItems: CanvasItem<any>[]) {
         this.canvas.canvasItems = canvasItems;

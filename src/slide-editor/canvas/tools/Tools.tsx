@@ -21,6 +21,17 @@ const ToolCanvasItems = lazy(() => {
     return import('./ToolCanvasItems');
 });
 
+const MAX_SCALE = 3;
+const MIN_SCALE = 0.2;
+const SCALE_STEP = 0.1;
+
+export const defaultRangeSize = {
+    size: MAX_SCALE,
+    min: MIN_SCALE,
+    max: MAX_SCALE,
+    step: SCALE_STEP,
+};
+
 const tabTypeList = [
     ['t', 'Text'],
     ['b', 'Box'],
@@ -54,12 +65,7 @@ export default function Tools() {
                                 setValue={(scale) => {
                                     canvasController.scale = scale;
                                 }}
-                                defaultSize={{
-                                    size: scale,
-                                    min: canvasController.MIN_SCALE,
-                                    max: canvasController.MAX_SCALE,
-                                    step: canvasController.SCALE_STEP,
-                                }} />
+                                defaultSize={defaultRangeSize} />
                         </div>
                     </div>
                 </div>

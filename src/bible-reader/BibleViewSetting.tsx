@@ -1,12 +1,18 @@
 import AppRange from '../others/AppRange';
 
+const MIN_FONT_SIZE = 5;
+const MAX_FONT_SIZE = 150;
+const STEP_FONT_SIZE = 2;
+export const defaultRangeSize = {
+    size: MIN_FONT_SIZE,
+    min: MIN_FONT_SIZE,
+    max: MAX_FONT_SIZE,
+    step: STEP_FONT_SIZE,
+};
+
 const rangeId = 'preview-fon-size';
-export default function BibleViewSetting({
-    fontSize, setFontSize, minFontSize, maxFontSize, stepFontSize,
-}: Readonly<{
-    minFontSize: number,
-    maxFontSize: number,
-    stepFontSize: number,
+
+export default function BibleViewSetting({ fontSize, setFontSize }: Readonly<{
     fontSize: number,
     setFontSize: (fontSize: number) => void,
 }>) {
@@ -25,12 +31,7 @@ export default function BibleViewSetting({
                             title='Font Size'
                             id={rangeId}
                             setValue={setFontSize}
-                            defaultSize={{
-                                size: fontSize,
-                                min: minFontSize,
-                                max: maxFontSize,
-                                step: stepFontSize,
-                            }}
+                            defaultSize={defaultRangeSize}
                         />
                     </div>
                 </div>
