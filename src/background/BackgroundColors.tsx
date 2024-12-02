@@ -42,11 +42,9 @@ export default function BackgroundColors() {
             />
         );
     }
-    console.log(selectedBGSrcList);
-
     return (
         <div className={
-            'd-flex align-content-start flex-wrap w-100 h-100 overflow-hidden'
+            'd-flex align-content-start flex-wrap w-100 overflow-hidden'
         }>
             {selectedBGSrcList.map(([key, bgSrc]) => {
                 const screenId = parseInt(key, 10);
