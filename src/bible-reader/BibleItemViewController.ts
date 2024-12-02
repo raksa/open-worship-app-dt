@@ -180,6 +180,15 @@ function getFirstBibleItemAtIndex(
     return null;
 }
 
+const movingPosition: { [key: string]: [boolean, boolean] } = {
+    // [isHorizontal, isGoBack]
+    left: [true, true],
+    right: [true, false],
+    top: [false, true],
+    bottom: [false, false],
+};
+export type MovingPositionType = keyof typeof movingPosition;
+
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
 export default class BibleItemViewController
     extends EventHandler<UpdateEventType> {
@@ -237,15 +246,22 @@ export default class BibleItemViewController
     fireUpdateEvent() {
         this.addPropEvent('update');
     }
-    getNeighborBibleItems(bibleItem: BibleItem): {
+    getNeighborBibleItems(
+        bibleItem: BibleItem,
+        positions: MovingPositionType[],
+    ): {
         left: BibleItem | null, right: BibleItem | null,
         top: BibleItem | null, bottom: BibleItem | null,
     } {
         const seek = (
             nestedBibleItems: NestedBibleItemsType,
             targetNestedBibleItem: NestedBibleItemsType,
-            isHorizontal: boolean, isGoBack: boolean,
+            position: MovingPositionType,
         ): BibleItem | null => {
+            if (positions.indexOf(position) === -1) {
+                return null;
+            }
+            const [isHorizontal, isGoBack] = movingPosition[position];
             const found = seekParent(nestedBibleItems, targetNestedBibleItem);
             if (found === null) {
                 return null;
@@ -259,31 +275,25 @@ export default class BibleItemViewController
                     index, found.parentNestedBibleItems.length,
                 )
             );
-            if (isOrientation && isMatchIndex) {
-                return getFirstBibleItemAtIndex(
-                    found.parentNestedBibleItems, index + (isGoBack ? -1 : 1),
-                    isOrientation, isGoBack,
+            if (!(isOrientation && isMatchIndex)) {
+                const found1 = seek(
+                    nestedBibleItems, found.parentNestedBibleItems, position,
                 );
-            } else {
-                const parentLeft = seek(
-                    nestedBibleItems, found.parentNestedBibleItems,
-                    isHorizontal, isGoBack,
-                );
-                if (parentLeft !== null) {
-                    return parentLeft;
+                if (found1 !== null) {
+                    console.log('found1', found1);
+                    return found1;
                 }
-                return getFirstBibleItemAtIndex(
-                    found.parentNestedBibleItems,
-                    isGoBack ? found.parentNestedBibleItems.length - 1 : 0,
-                    isOrientation, isGoBack,
-                );
             }
+            return getFirstBibleItemAtIndex(
+                found.parentNestedBibleItems, index + (isGoBack ? -1 : 1),
+                isOrientation, isGoBack,
+            );
         };
         const nestedBibleItems = this.nestedBibleItems;
-        const left = seek(nestedBibleItems, bibleItem, true, true);
-        const right = seek(nestedBibleItems, bibleItem, true, false);
-        const top = seek(nestedBibleItems, bibleItem, false, true);
-        const bottom = seek(nestedBibleItems, bibleItem, false, false);
+        const left = seek(nestedBibleItems, bibleItem, 'left');
+        const right = seek(nestedBibleItems, bibleItem, 'right');
+        const top = seek(nestedBibleItems, bibleItem, 'top');
+        const bottom = seek(nestedBibleItems, bibleItem, 'bottom');
         return {
             left, right, top, bottom,
         };

@@ -35,19 +35,21 @@ export function RenderTitleMaterial({
         },
     };
     return (
-        <div className='d-flex flex-fill text-nowrap'>
-            <div className='d-flex flex-column'>
-                <div>
-                    <BibleSelectionMini
-                        bibleKey={bibleItem.bibleKey}
-                        onBibleKeyChange={onBibleKeyChange}
-                    />
+        <div className='d-flex text-nowrap w-100'>
+            <ItemColorNote item={colorNoteHandler} />
+            <div className='d-flex flex-fill'>
+                <div className='d-flex ps-1'>
+                    <div style={{ margin: 'auto' }}>
+                        <BibleSelectionMini
+                            bibleKey={bibleItem.bibleKey}
+                            onBibleKeyChange={onBibleKeyChange}
+                        />
+                    </div>
                 </div>
-                <div>
-                    <ItemColorNote item={colorNoteHandler} />
+                <div className='flex-item'>
+                    <BibleViewTitle />
                 </div>
             </div>
-            <BibleViewTitle />
         </div>
     );
 }
@@ -87,7 +89,7 @@ export function BibleViewTitle() {
     const title = useBibleItemRenderTitle(bibleItem);
     const fontSize = useBibleViewFontSize();
     return (
-        <div className='title' style={{ fontSize }}
+        <span className='title' style={{ fontSize }}
             title={
                 materialContext !== null ? 'Double click to edit' : undefined
             }
@@ -97,7 +99,7 @@ export function BibleViewTitle() {
                 }
             }}>
             {title}
-        </div>
+        </span>
     );
 }
 

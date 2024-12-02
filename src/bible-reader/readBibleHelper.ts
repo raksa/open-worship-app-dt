@@ -95,8 +95,14 @@ function changeEditingBibleItem(
     if (selectedIndex === -1) {
         return;
     }
+    const arrowPosMap = {
+        ArrowLeft: 'left',
+        ArrowRight: 'right',
+        ArrowUp: 'top',
+        ArrowDown: 'bottom',
+    };
     const neighborBibleItems = viewController.getNeighborBibleItems(
-        viewController.selectedBibleItem,
+        viewController.selectedBibleItem, [arrowPosMap[eventKey]],
     );
     let targetBibleItem: BibleItem | null = null;
     if (eventKey === 'ArrowUp' || eventKey === 'ArrowDown') {
