@@ -18,8 +18,7 @@ const BiblePreviewerRender = lazy(() => {
 });
 
 export default function BibleSearchBodyPreviewer() {
-    useNextEditingBibleItem('ArrowLeft');
-    useNextEditingBibleItem('ArrowRight');
+    useNextEditingBibleItem();
     useCloseBibleItemRenderer();
     useSplitBibleItemRenderer('s');
     useSplitBibleItemRenderer('v');

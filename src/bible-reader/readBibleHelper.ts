@@ -83,28 +83,50 @@ export function applyDragged(
 }
 
 
-function changeEditingBibleItem(isLeft = false) {
+function changeEditingBibleItem(
+    eventKey: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
+) {
     const viewController = SearchBibleItemViewController.getInstance();
     const allBibleItems = viewController.straightBibleItems;
     if (allBibleItems.length === 0) {
         return;
     }
-    let selectedIndex = viewController.selectedIndex;
+    const selectedIndex = viewController.selectedIndex;
     if (selectedIndex === -1) {
         return;
     }
-    selectedIndex = (
-        (selectedIndex + (isLeft ? - 1 : 1) + allBibleItems.length) %
-        allBibleItems.length
+    const neighborBibleItems = viewController.getNeighborBibleItems(
+        viewController.selectedBibleItem,
     );
-    viewController.editBibleItem(allBibleItems[selectedIndex]);
+    let targetBibleItem: BibleItem | null = null;
+    if (eventKey === 'ArrowUp' || eventKey === 'ArrowDown') {
+        if (eventKey === 'ArrowUp') {
+            targetBibleItem = neighborBibleItems.top;
+        } else {
+            targetBibleItem = neighborBibleItems.bottom;
+        }
+    } else if (eventKey === 'ArrowLeft' || eventKey === 'ArrowRight') {
+        if (eventKey === 'ArrowLeft') {
+            targetBibleItem = neighborBibleItems.left;
+        } else {
+            targetBibleItem = neighborBibleItems.right;
+        }
+    }
+    if (targetBibleItem === null) {
+        return;
+    }
+    viewController.editBibleItem(targetBibleItem);
 }
 
-export function useNextEditingBibleItem(key: 'ArrowLeft' | 'ArrowRight') {
-    // TODO: improve move position
-    useKeyboardRegistering([{ ...metaKeys, key }], (e) => {
-        e.preventDefault();
-        changeEditingBibleItem(key === 'ArrowLeft');
+export function useNextEditingBibleItem() {
+    const eventMapperList = [
+        'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    ].map((key) => {
+        return { ...metaKeys, key };
+    });
+    useKeyboardRegistering(eventMapperList, (event) => {
+        event.preventDefault();
+        changeEditingBibleItem(event.key as any);
     });
 }
 
@@ -126,7 +148,7 @@ export function closeCurrentEditingBibleItem() {
     if (viewController.straightBibleItems.length < 2) {
         return;
     }
-    changeEditingBibleItem(true);
+    changeEditingBibleItem('ArrowLeft');
     viewController.removeBibleItem(selectedBibleItem);
 }
 

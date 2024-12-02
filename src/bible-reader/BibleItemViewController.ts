@@ -100,27 +100,81 @@ function stringifyNestedBibleItem(
     return nestedBibleItems.toJson();
 }
 
+function checkIsIdentical(
+    nestedBibleItem1: NestedBibleItemsType,
+    nestedBibleItem2: NestedBibleItemsType,
+) {
+    if (nestedBibleItem1 instanceof Array) {
+        if (!(nestedBibleItem2 instanceof Array)) {
+            return false;
+        }
+        if (nestedBibleItem1.length !== nestedBibleItem2.length) {
+            return false;
+        }
+        for (let i = 0; i < nestedBibleItem1.length; i++) {
+            if (!checkIsIdentical(nestedBibleItem1[i], nestedBibleItem2[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    if (nestedBibleItem2 instanceof Array) {
+        return false;
+    }
+    return nestedBibleItem1.checkIsSameId(nestedBibleItem2);
+}
+function checkIsIndexGTZero(index: number) {
+    return index > 0;
+}
+function checkIsIndexLTLengthM1(index: number, length: number) {
+    return index < length - 1;
+}
+
 function seekParent(
-    nestedBibleItems: NestedBibleItemsType, bibleItem: BibleItem,
+    nestedBibleItems: NestedBibleItemsType,
+    targetNestedBibleItem: NestedBibleItemsType,
     isHorizontal: boolean = true,
 ): {
-    nestedBibleItems: NestedBibleItemsType[], isHorizontal: boolean,
-    bibleItem: BibleItem,
+    parentNestedBibleItems: NestedBibleItemsType[], isHorizontal: boolean,
+    targetNestedBibleItem: NestedBibleItemsType,
 } | null {
     if (nestedBibleItems instanceof Array) {
         for (const nestedBibleItem of nestedBibleItems) {
-            if (nestedBibleItem instanceof Array) {
+            if (checkIsIdentical(nestedBibleItem, targetNestedBibleItem)) {
+                return {
+                    parentNestedBibleItems: nestedBibleItems, isHorizontal,
+                    targetNestedBibleItem: nestedBibleItem,
+                };
+            } else if (nestedBibleItem instanceof Array) {
                 const foundParent = seekParent(
-                    nestedBibleItem, bibleItem, !isHorizontal,
+                    nestedBibleItem, targetNestedBibleItem, !isHorizontal,
                 );
                 if (foundParent !== null) {
                     return foundParent;
                 }
-            } else if (nestedBibleItem.checkIsSameId(bibleItem)) {
-                return {
-                    nestedBibleItems, isHorizontal, bibleItem: nestedBibleItem,
-                };
             }
+        }
+    }
+    return null;
+}
+function getFirstBibleItemAtIndex(
+    nestedBibleItems: NestedBibleItemsType, index: number,
+    isOrientation: boolean, isGoBack: boolean,
+): BibleItem | null {
+    if (nestedBibleItems instanceof Array) {
+        if (index < 0) {
+            index = nestedBibleItems.length - 1;
+        } else if (index >= nestedBibleItems.length) {
+            index = 0;
+        }
+        const target = nestedBibleItems[index];
+        if (target instanceof BibleItem) {
+            return target;
+        } else {
+            return getFirstBibleItemAtIndex(
+                target, isOrientation ? 0 : target.length - 1,
+                isGoBack ? !isOrientation : isOrientation, isGoBack,
+            );
         }
     }
     return null;
@@ -183,6 +237,57 @@ export default class BibleItemViewController
     fireUpdateEvent() {
         this.addPropEvent('update');
     }
+    getNeighborBibleItems(bibleItem: BibleItem): {
+        left: BibleItem | null, right: BibleItem | null,
+        top: BibleItem | null, bottom: BibleItem | null,
+    } {
+        const seek = (
+            nestedBibleItems: NestedBibleItemsType,
+            targetNestedBibleItem: NestedBibleItemsType,
+            isHorizontal: boolean, isGoBack: boolean,
+        ): BibleItem | null => {
+            const found = seekParent(nestedBibleItems, targetNestedBibleItem);
+            if (found === null) {
+                return null;
+            }
+            const index = found.parentNestedBibleItems.indexOf(
+                found.targetNestedBibleItem,
+            );
+            const isOrientation = found.isHorizontal === isHorizontal;
+            const isMatchIndex = isGoBack ? checkIsIndexGTZero(index) : (
+                checkIsIndexLTLengthM1(
+                    index, found.parentNestedBibleItems.length,
+                )
+            );
+            if (isOrientation && isMatchIndex) {
+                return getFirstBibleItemAtIndex(
+                    found.parentNestedBibleItems, index + (isGoBack ? -1 : 1),
+                    isOrientation, isGoBack,
+                );
+            } else {
+                const parentLeft = seek(
+                    nestedBibleItems, found.parentNestedBibleItems,
+                    isHorizontal, isGoBack,
+                );
+                if (parentLeft !== null) {
+                    return parentLeft;
+                }
+                return getFirstBibleItemAtIndex(
+                    found.parentNestedBibleItems,
+                    isGoBack ? found.parentNestedBibleItems.length - 1 : 0,
+                    isOrientation, isGoBack,
+                );
+            }
+        };
+        const nestedBibleItems = this.nestedBibleItems;
+        const left = seek(nestedBibleItems, bibleItem, true, true);
+        const right = seek(nestedBibleItems, bibleItem, true, false);
+        const top = seek(nestedBibleItems, bibleItem, false, true);
+        const bottom = seek(nestedBibleItems, bibleItem, false, false);
+        return {
+            left, right, top, bottom,
+        };
+    }
     seek(bibleItem: BibleItem, toastTitle: string, toastMessage: string) {
         const nestedBibleItems = this.nestedBibleItems;
         const foundParent = seekParent(nestedBibleItems, bibleItem);
@@ -191,8 +296,8 @@ export default class BibleItemViewController
             throw new Error();
         }
         const {
-            nestedBibleItems: parentNestedBibleItems, isHorizontal,
-            bibleItem: foundBibleItem,
+            parentNestedBibleItems, isHorizontal,
+            targetNestedBibleItem: foundBibleItem,
         } = foundParent;
         const index = parentNestedBibleItems.indexOf(foundBibleItem);
         return {
