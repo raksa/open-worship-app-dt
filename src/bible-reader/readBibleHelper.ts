@@ -154,7 +154,6 @@ export function closeCurrentEditingBibleItem() {
     if (viewController.straightBibleItems.length < 2) {
         return;
     }
-    changeEditingBibleItem('ArrowLeft');
     viewController.removeBibleItem(selectedBibleItem);
 }
 

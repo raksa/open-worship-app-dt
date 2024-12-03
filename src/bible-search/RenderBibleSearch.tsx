@@ -34,13 +34,13 @@ function RenderBibleSearchHeader({
     const closeButton = useContext(CloseButtonContext);
     const { data } = usePopupWindowsTypeData();
 
-    const bibleItemViewController = SearchBibleItemViewController.getInstance();
+    const viewController = SearchBibleItemViewController.getInstance();
     const setInputText1 = (newText: string) => {
         setInputText(newText);
         setBibleSearchInputFocus();
     };
-    bibleItemViewController.setInputText = setInputText1;
-    bibleItemViewController.setBibleKey = setBibleKey;
+    viewController.setInputText = setInputText1;
+    viewController.setBibleKey = setBibleKey;
 
     const handleBibleChange = useCallback(
         async (oldBibleKey: string, newBibleKey: string) => {
@@ -58,7 +58,15 @@ function RenderBibleSearchHeader({
             <div className='flex-item' style={{
                 width: 'calc(50% - 175px)',
             }}>
-                <InputHistory onPutHistoryBack={(historyText: string) => {
+                <InputHistory onPutHistoryBack={(
+                    historyText, isShift,
+                ) => {
+                    if (isShift) {
+                        viewController.addBibleItemLeft(
+                            viewController.selectedBibleItem,
+                            viewController.selectedBibleItem,
+                        );
+                    }
                     if (historyText !== inputText) {
                         setInputText1(historyText);
                     }

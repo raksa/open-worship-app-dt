@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { getSetting, setSetting } from '../helper/settingHelper';
 
 let addHistory: (text: string) => void = () => { };
 let timeoutId: any = null;
@@ -18,34 +19,54 @@ export function attemptAddingHistory(text: string, isQuick = false) {
     }, 4e3);
 }
 
-export default function InputHistory({
-    maxHistoryCount = 10, onPutHistoryBack,
-}: Readonly<{
-    maxHistoryCount?: number,
-    onPutHistoryBack: (historyText: string) => void,
-}>) {
-    const [historyTextList, setHistoryTextList] = useState<string[]>([]);
+const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
+function useHistoryTextList(maxHistoryCount: number) {
+    const historyTextListJson = getSetting(
+        HISTORY_TEXT_LIST_SETTING_NAME, '[]'
+    );
+    const defaultHistoryTextList = JSON.parse(historyTextListJson) as string[];
+    const [historyTextList, setHistoryTextList] = useState<string[]>(
+        defaultHistoryTextList,
+    );
+    const setHistoryTextList1 = (newHistoryTextList: string[]) => {
+        setHistoryTextList(newHistoryTextList);
+        setSetting(
+            HISTORY_TEXT_LIST_SETTING_NAME, JSON.stringify(newHistoryTextList),
+        );
+    };
     useAppEffect(() => {
         addHistory = (text: string) => {
-            setHistoryTextList((prev) => {
-                if (prev.includes(text)) {
-                    return prev;
-                }
-                const newHistory = [text, ...prev];
-                return newHistory.slice(0, maxHistoryCount);
-            });
+            if (historyTextList.includes(text)) {
+                return historyTextList;
+            }
+            let newHistory = [text, ...historyTextList];
+            newHistory = newHistory.slice(0, maxHistoryCount);
+            setHistoryTextList1(newHistory);
         };
         return () => {
             addHistory = () => { };
         };
     });
+    return [historyTextList, setHistoryTextList1] as const;
+}
+
+export default function InputHistory({
+    maxHistoryCount = 20, onPutHistoryBack,
+}: Readonly<{
+    maxHistoryCount?: number,
+    onPutHistoryBack: (historyText: string, isShift: boolean) => void,
+}>) {
+    const [historyTextList, setHistoryTextList] = useHistoryTextList(
+        maxHistoryCount,
+    );
     const removeHistory = (historyText: string) => {
-        setHistoryTextList((prev) => {
-            return prev.filter((h) => h !== historyText);
+        const newHistoryTextList = historyTextList.filter((h) => {
+            return h !== historyText;
         });
+        setHistoryTextList(newHistoryTextList);
     };
     return (
-        <div className='d-flex shadow-sm rounded p-1' style={{
+        <div className='d-flex shadow-sm rounded px-1' style={{
             overflowX: 'auto',
             overflowY: 'hidden',
             minWidth: '150px',
@@ -53,17 +74,21 @@ export default function InputHistory({
             {historyTextList.map((historyText) => {
                 return (
                     <button key={historyText}
-                        title='Double click to put back'
+                        title={
+                            'Double click to put back, shift double click to ' +
+                            'put back split'
+                        }
                         className='btn btn-sm d-flex border-white-round'
-                        onDoubleClick={() => {
-                            onPutHistoryBack(historyText);
+                        style={{ height: '25px' }}
+                        onDoubleClick={(event) => {
+                            onPutHistoryBack(historyText, event.shiftKey);
                         }}>
                         <small className='flex-fill'>{historyText}</small>
                         <small title='Remove'
                             style={{ color: 'red' }} onClick={() => {
                                 removeHistory(historyText);
                             }}>
-                            x
+                            <i className='bi bi-x' />
                         </small>
                     </button>
                 );
