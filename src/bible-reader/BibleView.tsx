@@ -17,10 +17,12 @@ import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
 import { BibleItemContext } from './BibleItemContext';
+import { useWindowMode } from '../router/routeHelpers';
 
 export default function BibleView({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
+    const windowMode = useWindowMode();
     const bibleItemViewController = useBibleItemViewControllerContext();
     return (
         <BibleItemContext.Provider value={bibleItem}>
@@ -42,7 +44,9 @@ export default function BibleView({ bibleItem }: Readonly<{
                 onContextMenu={(event: any) => {
                     showAppContextMenu(event, [
                         ...genDefaultBibleItemContextMenu(bibleItem),
-                        ...bibleItemViewController.genContextMenu(bibleItem),
+                        ...bibleItemViewController.genContextMenu(
+                            bibleItem, windowMode,
+                        ),
                     ]);
                 }}>
                 <RenderHeader

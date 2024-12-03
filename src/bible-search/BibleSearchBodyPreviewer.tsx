@@ -20,8 +20,7 @@ const BiblePreviewerRender = lazy(() => {
 export default function BibleSearchBodyPreviewer() {
     useNextEditingBibleItem();
     useCloseBibleItemRenderer();
-    useSplitBibleItemRenderer('s');
-    useSplitBibleItemRenderer('v');
+    useSplitBibleItemRenderer();
     const bibleItemViewController = SearchBibleItemViewController.getInstance();
     const contextValue = useMemo(() => ({
         onDBClick: (bibleItem: BibleItem) => {

@@ -19,6 +19,7 @@ import {
 } from '../bible-search/RenderActionButtons';
 import { closeCurrentEditingBibleItem } from './readBibleHelper';
 import { attemptAddingHistory } from '../bible-search/InputHistory';
+import { EventMapper } from '../event/KeyboardEventListener';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -26,7 +27,14 @@ export const RESIZE_SETTING_NAME = 'bible-previewer-render';
 export type NestedBibleItemsType = BibleItem | NestedBibleItemsType[];
 export type NestedObjectsType = BibleItemType | NestedObjectsType[];
 
-export const metaKeys: any = {
+export const closeEventMapper: EventMapper = {
+    wControlKey: ['Ctrl'],
+    lControlKey: ['Ctrl'],
+    mControlKey: ['Meta'],
+    key: 'w',
+};
+
+export const ctrlShiftMetaKeys: any = {
     wControlKey: ['Ctrl', 'Shift'],
     lControlKey: ['Ctrl', 'Shift'],
     mControlKey: ['Meta', 'Shift'],
@@ -528,14 +536,16 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     genContextMenu(
         bibleItem: BibleItem, windowMode?: WindowModEnum | null,
     ): ContextMenuItemType[] {
+        const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = !windowMode ? [] : genFoundBibleItemContextMenu(
             bibleItem, windowMode, this.onSearchAddBibleItem,
-            this.checkIsBibleItemSelected(bibleItem),
+            isBibleItemSelected,
         );
         const menus2 = super.genContextMenu(bibleItem, windowMode);
-        if (!this.checkIsBibleItemSelected(bibleItem)) {
+        if (!isBibleItemSelected) {
             menus2.push({
-                menuTitle: 'Edit', onClick: () => {
+                menuTitle: 'Edit', title: 'Double click on header to edit',
+                onClick: () => {
                     this.editBibleItem(bibleItem);
                 },
             });
@@ -548,21 +558,25 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             if (menu2IdMap[splitHorizontalId]) {
                 menu2IdMap[splitHorizontalId].otherChild = (
                     genContextMenuItemShortcutKey({
-                        ...metaKeys, key: 's',
+                        ...ctrlShiftMetaKeys, key: 's',
                     })
                 );
             }
             if (menu2IdMap[splitVerticalId]) {
                 menu2IdMap[splitVerticalId].otherChild = (
                     genContextMenuItemShortcutKey({
-                        ...metaKeys, key: 'v',
+                        ...ctrlShiftMetaKeys, key: 'v',
                     })
                 );
             }
         }
         const menu3: ContextMenuItemType[] = this.isAlone ? [] : [
             {
-                menuTitle: 'Close', onClick: () => {
+                menuTitle: 'Close',
+                otherChild: isBibleItemSelected ? (
+                    genContextMenuItemShortcutKey(closeEventMapper)
+                ) : undefined,
+                onClick: () => {
                     if (bibleItem === this.selectedBibleItem) {
                         closeCurrentEditingBibleItem();
                     } else {

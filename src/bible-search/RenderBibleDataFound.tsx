@@ -1,4 +1,3 @@
-import BibleItem from '../bible-list/BibleItem';
 import RenderVerseOptions from './RenderVerseOptions';
 import RenderActionButtons, {
     useFoundActionKeyboard,
@@ -11,22 +10,15 @@ import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';
 import {
-    SearchBibleItemViewController,
+    closeEventMapper, SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import { useWindowMode } from '../router/routeHelpers';
 import {
     fontSizeToHeightStyle, useBibleViewFontSize,
 } from '../helper/bibleViewHelpers';
 import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelper';
-import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
+import { toShortcutKey } from '../event/KeyboardEventListener';
 import { useBibleItem } from '../bible-reader/BibleItemContext';
-
-export const closeEventMapper: EventMapper = {
-    wControlKey: ['Ctrl'],
-    lControlKey: ['Ctrl'],
-    mControlKey: ['Meta'],
-    key: 'w',
-};
 
 export default function RenderBibleDataFound({
     onVerseChange,

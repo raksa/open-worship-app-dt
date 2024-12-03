@@ -1,11 +1,9 @@
 import BibleItem from '../bible-list/BibleItem';
 import BibleItemViewController, {
-    metaKeys,
-    SearchBibleItemViewController,
+    closeEventMapper, ctrlShiftMetaKeys, SearchBibleItemViewController,
 } from './BibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { closeEventMapper } from '../bible-search/RenderBibleDataFound';
 
 export enum DraggingPosEnum {
     TOP = '-top',
@@ -128,7 +126,7 @@ export function useNextEditingBibleItem() {
     const eventMapperList = [
         'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
     ].map((key) => {
-        return { ...metaKeys, key };
+        return { ...ctrlShiftMetaKeys, key };
     });
     useKeyboardRegistering(eventMapperList, (event) => {
         event.preventDefault();
@@ -136,11 +134,13 @@ export function useNextEditingBibleItem() {
     });
 }
 
-export function useSplitBibleItemRenderer(key: 's' | 'v') {
-    useKeyboardRegistering([{ ...metaKeys, key }], () => {
+export function useSplitBibleItemRenderer() {
+    useKeyboardRegistering(['s', 'v'].map((key) => {
+        return { ...ctrlShiftMetaKeys, key };
+    }), (event) => {
         const viewController = SearchBibleItemViewController.getInstance();
         const bibleItem = viewController.selectedBibleItem;
-        if (key === 's') {
+        if (event.key === 's') {
             viewController.addBibleItemLeft(bibleItem, bibleItem);
         } else {
             viewController.addBibleItemBottom(bibleItem, bibleItem);
