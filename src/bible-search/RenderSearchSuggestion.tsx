@@ -32,7 +32,7 @@ export default function RenderSearchSuggestion({
 
     if (bibleItem !== null) {
         bibleItem.toTitle().then((text) => {
-            attemptAddingHistory(text);
+            attemptAddingHistory(bibleItem.bibleKey, text);
         });
         return (
             <BibleItemContext.Provider value={bibleItem}>

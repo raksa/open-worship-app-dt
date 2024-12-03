@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
     ExtractedBibleResult, genExtractedBible, extractBibleTitle, toInputText,
@@ -11,7 +11,7 @@ import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { getInputTrueValue, useInputText } from './InputHandler';
 
 let syncTimeoutId: any = null;
@@ -135,7 +135,7 @@ function useMethods(
 export default function RenderBibleSearchBody() {
     const { inputText } = useInputText();
     const viewController = SearchBibleItemViewController.getInstance();
-    const bibleKey = useContext(SelectedBibleKeyContext);
+    const bibleKey = useBibleKeyContext();;
     const setInputText = viewController.setInputText;
     const extractedInput = useExtractInput(bibleKey, inputText);
     const {

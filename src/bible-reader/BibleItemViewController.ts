@@ -402,7 +402,7 @@ export default class BibleItemViewController
             }
             this.nestedBibleItems = nestedBibleItems;
             newBibleItem.toTitle().then((title) => {
-                attemptAddingHistory(title, true);
+                attemptAddingHistory(newBibleItem.bibleKey, title, true);
             });
         } catch (error) {
             handleError(error);
@@ -523,7 +523,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     }
     editBibleItem(bibleItem: BibleItem) {
         this.selectedBibleItem.toTitle().then((inputText) => {
-            attemptAddingHistory(inputText, true);
+            attemptAddingHistory(bibleItem.bibleKey, inputText, true);
         });
         const newBibleItem = bibleItem.clone(true);
         this.selectedBibleItem = newBibleItem;

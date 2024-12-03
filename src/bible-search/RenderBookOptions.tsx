@@ -1,4 +1,4 @@
-import { Fragment, useContext } from 'react';
+import { Fragment } from 'react';
 
 import {
     useBookMatch,
@@ -10,7 +10,7 @@ import {
     SelectBookType,
     processSelection, userEnteringSelected,
 } from './selectionHelpers';
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
 const OPTION_CLASS = 'bible-search-book-option';
 const OPTION_SELECTED_CLASS = 'active';
@@ -40,7 +40,7 @@ function BookOptions({
     onSelect: SelectBookType,
     guessingBook: string,
 }>) {
-    const bibleKey = useContext(SelectedBibleKeyContext);
+    const bibleKey = useBibleKeyContext();;
     const matches = useBookMatch(bibleKey, guessingBook);
     const useKeyEvent = (key: KeyboardType) => {
         useKeyboardRegistering([{ key }], (event: KeyboardEvent) => {

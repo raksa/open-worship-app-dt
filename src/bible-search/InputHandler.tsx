@@ -17,7 +17,7 @@ import {
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
 export const InputTextContext = createContext<{
     inputText: string,
@@ -37,15 +37,15 @@ export function getInputTrueValue() {
 }
 
 export default function InputHandler({
-    onBibleChange,
+    onBibleKeyChange,
 }: Readonly<{
-    onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
+    onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
     const { inputText } = useInputText();
     const setInputText = (
         SearchBibleItemViewController.getInstance().setInputText
     );
-    const bibleKey = useContext(SelectedBibleKeyContext);
+    const bibleKey = useBibleKeyContext();
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(
@@ -67,7 +67,7 @@ export default function InputHandler({
     return (
         <Fragment>
             <BibleSelection bibleKey={bibleKey}
-                onBibleKeyChange={onBibleChange}
+                onBibleKeyChange={onBibleKeyChange}
             />
             <input id={BIBLE_SEARCH_INPUT_ID} type='text'
                 className={`form-control ${INPUT_TEXT_CLASS}`}

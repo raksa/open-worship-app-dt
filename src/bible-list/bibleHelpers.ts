@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 import {
     getSetting, setSetting,
@@ -42,9 +42,13 @@ async function getSelectedEditorBibleItem() {
     return bibleKey;
 }
 export const SelectedBibleKeyContext = createContext<string>('KJV');
-export function useGetSelectedBibleKey() {
-    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
-        null);
+export function useBibleKeyContext() {
+    return useContext(SelectedBibleKeyContext);
+}
+export function useSelectedBibleKey() {
+    const [bibleKeySelected, setBibleKeySelected] = (
+        useState<string | null>(null)
+    );
     const setBibleKeySelected1 = (bibleKey: string | null) => {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
         setBibleKeySelected(bibleKey);
@@ -54,8 +58,7 @@ export function useGetSelectedBibleKey() {
             setBibleKeySelected1(bibleKey);
         });
     });
-    return [bibleKeySelected, setBibleKeySelected1] as
-        [string | null, (b: string | null) => void];
+    return [bibleKeySelected, setBibleKeySelected1] as const;
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {

@@ -4,9 +4,12 @@ import { getSetting, setSetting } from '../helper/settingHelper';
 
 let addHistory: (text: string) => void = () => { };
 let timeoutId: any = null;
-export function attemptAddingHistory(text: string, isQuick = false) {
+export function attemptAddingHistory(
+    bibleKey: string, text: string, isQuick = false,
+) {
+    const newText = `${bibleKey}>${text}`;
     if (isQuick) {
-        addHistory(text);
+        addHistory(newText);
         return;
     }
     if (timeoutId !== null) {
@@ -15,7 +18,7 @@ export function attemptAddingHistory(text: string, isQuick = false) {
     }
     timeoutId = setTimeout(() => {
         timeoutId = null;
-        addHistory(text);
+        addHistory(newText);
     }, 4e3);
 }
 
@@ -54,7 +57,9 @@ export default function InputHistory({
     maxHistoryCount = 20, onPutHistoryBack,
 }: Readonly<{
     maxHistoryCount?: number,
-    onPutHistoryBack: (historyText: string, isShift: boolean) => void,
+    onPutHistoryBack: (
+        bibleKey: string, historyText: string, isShift: boolean,
+    ) => void,
 }>) {
     const [historyTextList, setHistoryTextList] = useHistoryTextList(
         maxHistoryCount,
@@ -81,7 +86,8 @@ export default function InputHistory({
                         className='btn btn-sm d-flex border-white-round'
                         style={{ height: '25px' }}
                         onDoubleClick={(event) => {
-                            onPutHistoryBack(historyText, event.shiftKey);
+                            const text = historyText.split('>');
+                            onPutHistoryBack(text[0], text[1], event.shiftKey);
                         }}>
                         <small className='flex-fill'>{historyText}</small>
                         <small title='Remove'

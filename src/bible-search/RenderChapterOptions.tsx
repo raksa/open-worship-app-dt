@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 
 import {
     allArrows, KeyboardType, useKeyboardRegistering,
@@ -9,7 +8,7 @@ import {
 import {
     useChapterMatch,
 } from '../helper/bible-helpers/serverBibleHelpers';
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
 const OPTION_CLASS = 'bible-search-chapter-option';
 const OPTION_SELECTED_CLASS = 'active';
@@ -40,7 +39,7 @@ function ChapterOptions({
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
 }>) {
-    const bibleKey = useContext(SelectedBibleKeyContext);
+    const bibleKey = useBibleKeyContext();;
     const matches = useChapterMatch(bibleKey, bookKey, guessingChapter);
     const arrowListener = (event: KeyboardEvent) => {
         processSelection(

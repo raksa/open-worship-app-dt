@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 import {
     AllDataType, BibleSearchForType, searchOnline, calcPaging, findPageNumber,
     APIDataType, SelectedBookKeyType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderData from './BibleOnlineRenderData';
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
@@ -66,7 +66,7 @@ export default function BibleOnlineSearchBodyPreviewer() {
 function BibleOnlineSearchBody({ apiData }: Readonly<{
     apiData: APIDataType,
 }>) {
-    const selectedBibleKey = useContext(SelectedBibleKeyContext);
+    const selectedBibleKey = useBibleKeyContext();
     const [bibleKey, setBibleKey] = useState(selectedBibleKey);
     const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(
         null,

@@ -2,7 +2,8 @@ import { lazy, useCallback, useContext, useMemo, useState } from 'react';
 
 import InputHandler, { InputTextContext, useInputText } from './InputHandler';
 import {
-    SelectedBibleKeyContext, genInputText, useGetSelectedBibleKey,
+    SelectedBibleKeyContext, genInputText, useBibleKeyContext,
+    useSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
 import {
     BibleNotAvailable,
@@ -30,6 +31,7 @@ function RenderBibleSearchHeader({
     setIsSearchOnline: (isSearchOnline: boolean) => void,
     setBibleKey: (bibleKey: string | null) => void,
 }>) {
+    const bibleKey = useBibleKeyContext();
     const { inputText, setInputText } = useInputText();
     const closeButton = useContext(CloseButtonContext);
     const { data } = usePopupWindowsTypeData();
@@ -40,9 +42,8 @@ function RenderBibleSearchHeader({
         setBibleSearchInputFocus();
     };
     viewController.setInputText = setInputText1;
-    viewController.setBibleKey = setBibleKey;
 
-    const handleBibleChange = useCallback(
+    const handleBibleKeyChange = useCallback(
         async (oldBibleKey: string, newBibleKey: string) => {
             const newText = await genInputText(
                 oldBibleKey, newBibleKey, inputText,
@@ -59,13 +60,16 @@ function RenderBibleSearchHeader({
                 width: 'calc(50% - 175px)',
             }}>
                 <InputHistory onPutHistoryBack={(
-                    historyText, isShift,
+                    bibleKey1, historyText, isShift,
                 ) => {
                     if (isShift) {
                         viewController.addBibleItemLeft(
                             viewController.selectedBibleItem,
                             viewController.selectedBibleItem,
                         );
+                    }
+                    if (bibleKey !== bibleKey1) {
+                        handleBibleKeyChange(bibleKey, bibleKey1);
                     }
                     if (historyText !== inputText) {
                         setInputText1(historyText);
@@ -75,7 +79,7 @@ function RenderBibleSearchHeader({
             <div className='flex-item input-group app-input-group-header'
                 style={{ width: 350 }}>
                 <InputHandler
-                    onBibleChange={handleBibleChange}
+                    onBibleKeyChange={handleBibleKeyChange}
                 />
             </div>
             <div className='flex-item flex-fill justify-content-end pe-5'>
@@ -98,7 +102,9 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
 }>) {
     const [isSearchOnline, setIsSearchOnline] = useState(false);
     const [inputText, setInputText] = useState<string>(editorInputText);
-    const [bibleKey, setBibleKey] = useGetSelectedBibleKey();
+    const [bibleKey, setBibleKey] = useSelectedBibleKey();
+    const viewController = SearchBibleItemViewController.getInstance();
+    viewController.setBibleKey = setBibleKey;
     const inputTextContextValue = useMemo(() => ({
         inputText, setInputText,
     }), [inputText, setInputText]);
