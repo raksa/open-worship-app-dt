@@ -21,14 +21,14 @@ export default function BibleSearchBodyPreviewer() {
     useNextEditingBibleItem();
     useCloseBibleItemRenderer();
     useSplitBibleItemRenderer();
-    const bibleItemViewController = SearchBibleItemViewController.getInstance();
+    const viewController = SearchBibleItemViewController.getInstance();
     const contextValue = useMemo(() => ({
         onDBClick: (bibleItem: BibleItem) => {
-            bibleItemViewController.editBibleItem(bibleItem);
+            viewController.editBibleItem(bibleItem);
         },
-    }), [bibleItemViewController]);
-    bibleItemViewController.finalRenderer = function (bibleItem: BibleItem) {
-        const isSelected = bibleItemViewController.checkIsBibleItemSelected(
+    }), [viewController]);
+    viewController.finalRenderer = function (bibleItem: BibleItem) {
+        const isSelected = viewController.checkIsBibleItemSelected(
             bibleItem,
         );
         if (isSelected) {
@@ -42,7 +42,7 @@ export default function BibleSearchBodyPreviewer() {
     };
     return (
         <BibleItemViewControllerContext.Provider
-            value={bibleItemViewController}>
+            value={viewController}>
             <AppSuspense>
                 <BiblePreviewerRender />
             </AppSuspense>

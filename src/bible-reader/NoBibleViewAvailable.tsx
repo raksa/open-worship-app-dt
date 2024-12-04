@@ -5,7 +5,7 @@ import {
 } from './BibleItemViewController';
 
 export default function NoBibleViewAvailable() {
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemViewControllerContext();
     return (
         <div className='bible-view card flex-fill'
             style={{ minWidth: '30%' }}
@@ -24,7 +24,7 @@ export default function NoBibleViewAvailable() {
                     const json = JSON.parse(data);
                     if (json.type === 'bibleItem') {
                         const bibleItem = BibleItem.fromJson(json.data);
-                        bibleItemViewController.addBibleItem(
+                        viewController.addBibleItem(
                             null, bibleItem, false, false,
                         );
                     }

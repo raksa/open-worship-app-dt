@@ -14,9 +14,9 @@ export default function BibleViewRenderer({
     classPrefix?: string,
     nestedBibleItems: NestedBibleItemsType,
 }>) {
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemViewControllerContext();
     if (!(nestedBibleItems instanceof Array)) {
-        return bibleItemViewController.finalRenderer(nestedBibleItems);
+        return viewController.finalRenderer(nestedBibleItems);
     }
     if (nestedBibleItems.length === 0) {
         return (
@@ -40,7 +40,7 @@ export default function BibleViewRenderer({
     return (
         <ResizeActor
             fSizeName={
-                bibleItemViewController.toSettingName(
+                viewController.toSettingName(
                     `${RESIZE_SETTING_NAME}-${classPrefix}`
                 )
             }

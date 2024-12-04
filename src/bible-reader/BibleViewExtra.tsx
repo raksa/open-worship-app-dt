@@ -21,15 +21,15 @@ export function RenderTitleMaterial({
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
     const bibleItem = useBibleItem();
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemViewControllerContext();
     const colorNoteHandler: ColorNoteInf = {
         getColorNote: async () => {
-            return bibleItemViewController.getColorNote(
+            return viewController.getColorNote(
                 editingBibleItem ?? bibleItem
             );
         },
         setColorNote: async (color) => {
-            bibleItemViewController.setColorNote(
+            viewController.setColorNote(
                 editingBibleItem ?? bibleItem, color,
             );
         },

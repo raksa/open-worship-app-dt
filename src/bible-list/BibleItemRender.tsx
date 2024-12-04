@@ -29,7 +29,7 @@ export default function BibleItemRender({
     warningMessage?: string,
     filePath?: string,
 }>) {
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemViewControllerContext();
     const openBibleSearch = useOpenBibleSearch(bibleItem);
     const windowMode = useWindowMode();
     useFSEvents(['select'], filePath);
@@ -68,7 +68,7 @@ export default function BibleItemRender({
                 if (checkIsWindowPresenterMode()) {
                     ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
                 } else {
-                    bibleItemViewController.appendBibleItem(bibleItem);
+                    viewController.appendBibleItem(bibleItem);
                 }
             }}
             onContextMenu={onContextMenuCallback}>

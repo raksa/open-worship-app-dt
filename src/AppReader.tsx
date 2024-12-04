@@ -16,18 +16,18 @@ const BiblePreviewerRender = lazy(() => {
 });
 
 export default function AppReader() {
-    const bibleItemViewController = useMemo(() => {
-        const bibleItemViewController = new BibleItemViewController('reader');
-        bibleItemViewController.finalRenderer = (bibleItem: BibleItem) => {
+    const viewController = useMemo(() => {
+        const viewController1 = new BibleItemViewController('reader');
+        viewController1.finalRenderer = (bibleItem: BibleItem) => {
             return (<BibleView
                 bibleItem={bibleItem}
             />);
         };
-        return bibleItemViewController;
+        return viewController1;
     }, []);
     return (
         <BibleItemViewControllerContext.Provider
-            value={bibleItemViewController}>
+            value={viewController}>
             <ResizeActor fSizeName={resizeSettingNames.read}
                 isHorizontal
                 flexSizeDefault={{

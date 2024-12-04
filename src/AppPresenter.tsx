@@ -20,22 +20,22 @@ const AppPresenterRight = lazy(() => {
 });
 
 export default function AppPresenter() {
-    const bibleItemViewController = useMemo(() => {
-        const bibleItemViewController = new BibleItemViewController(
+    const viewController = useMemo(() => {
+        const viewController1 = new BibleItemViewController(
             'presenter',
         );
-        bibleItemViewController.finalRenderer = (bibleItem: BibleItem) => {
+        viewController1.finalRenderer = (bibleItem: BibleItem) => {
             return (
                 <BibleView
                     bibleItem={bibleItem}
                 />
             );
         };
-        return bibleItemViewController;
+        return viewController1;
     }, []);
     return (
         <BibleItemViewControllerContext.Provider
-            value={bibleItemViewController}>
+            value={viewController}>
             <ResizeActor fSizeName={resizeSettingNames.appPresenter}
                 isHorizontal
                 flexSizeDefault={{

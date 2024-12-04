@@ -29,15 +29,15 @@ export default function RenderBibleDataFound({
     const windowMode = useWindowMode();
     const isSearching = onVerseChange !== undefined;
     useFoundActionKeyboard(bibleItem);
-    const bibleItemViewController = SearchBibleItemViewController.getInstance();
-    bibleItemViewController.selectedBibleItem.syncData(bibleItem);
+    const viewController = SearchBibleItemViewController.getInstance();
+    viewController.selectedBibleItem.syncData(bibleItem);
     return (
         <div className='card border-success w-100 h-100'
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     ...genDefaultBibleItemContextMenu(bibleItem),
-                    ...bibleItemViewController.genContextMenu(
-                        bibleItemViewController.selectedBibleItem, windowMode,
+                    ...viewController.genContextMenu(
+                        viewController.selectedBibleItem, windowMode,
                     ),
                 ]);
             }}>

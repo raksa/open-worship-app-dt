@@ -23,7 +23,7 @@ export default function BibleView({ bibleItem }: Readonly<{
     bibleItem: BibleItem,
 }>) {
     const windowMode = useWindowMode();
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemViewControllerContext();
     return (
         <BibleItemContext.Provider value={bibleItem}>
             <div className='bible-view card flex-fill w-100 h-100'
@@ -39,12 +39,12 @@ export default function BibleView({ bibleItem }: Readonly<{
                     removeDraggingClass(event);
                 }}
                 onDrop={async (event) => {
-                    applyDragged(event, bibleItemViewController, bibleItem);
+                    applyDragged(event, viewController, bibleItem);
                 }}
                 onContextMenu={(event: any) => {
                     showAppContextMenu(event, [
                         ...genDefaultBibleItemContextMenu(bibleItem),
-                        ...bibleItemViewController.genContextMenu(
+                        ...viewController.genContextMenu(
                             bibleItem, windowMode,
                         ),
                     ]);
@@ -53,12 +53,12 @@ export default function BibleView({ bibleItem }: Readonly<{
                     onChange={(_oldBibleKey: string, newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone(true);
                         newBibleItem.bibleKey = newBibleKey;
-                        bibleItemViewController.changeBibleItem(
+                        viewController.changeBibleItem(
                             bibleItem, newBibleItem,
                         );
                     }}
                     onClose={() => {
-                        bibleItemViewController.removeBibleItem(bibleItem);
+                        viewController.removeBibleItem(bibleItem);
                     }}
                 />
                 <div className='card-body p-3'>
