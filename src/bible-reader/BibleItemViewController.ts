@@ -629,20 +629,20 @@ export function useBibleItemViewControllerContext() {
 }
 
 export function useBIVCUpdateEvent() {
-    const bibleItemViewController = useBibleItemViewControllerContext();
+    const viewController = useBibleItemViewControllerContext();
     const [nestedBibleItems, setNestedBibleItems] = useState(
-        bibleItemViewController.nestedBibleItems,
+        viewController.nestedBibleItems,
     );
     useAppEffect(() => {
         const update = () => {
-            setNestedBibleItems(bibleItemViewController.nestedBibleItems);
+            setNestedBibleItems(viewController.nestedBibleItems);
         };
-        const instanceEvents = bibleItemViewController.registerEventListener(
+        const instanceEvents = viewController.registerEventListener(
             ['update'], update,
         ) || [];
         return () => {
-            bibleItemViewController.unregisterEventListener(instanceEvents);
+            viewController.unregisterEventListener(instanceEvents);
         };
-    }, [bibleItemViewController]);
+    }, [viewController]);
     return nestedBibleItems;
 }

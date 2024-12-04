@@ -66,9 +66,10 @@ export default function BibleFile({
 }>) {
     const windowMode = useWindowMode();
     const [data, setData] = useState<Bible | null | undefined>(null);
-    useAppEffect(() => {
+    useAppEffect(async () => {
         if (data === null) {
-            Bible.readFileToData(filePath).then(setData);
+            const bible = await Bible.readFileToData(filePath);
+            setData(bible);
         }
     }, [data]);
     const renderChildCallback = useCallback((bible: ItemSource<any>) => {

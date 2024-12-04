@@ -31,7 +31,8 @@ export function useWindowEvent(eventMapper: EventMapper,
     useAppEffect(() => {
         const eventName = WindowEventListener.toEventMapperKey(eventMapper);
         const event = WindowEventListener.registerEventListener(
-            [eventName], listener);
+            [eventName], listener,
+        );
         return () => {
             WindowEventListener.unregisterEventListener(event);
         };

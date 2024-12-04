@@ -18,13 +18,10 @@ export default function SlidePreviewer() {
     useSlideSelecting(() => {
         setSlide(null);
     });
-    const reloadSlide = async () => {
-        const newSlide = await Slide.getSelected();
-        setSlide(newSlide || undefined);
-    };
-    useAppEffect(() => {
+    useAppEffect(async () => {
         if (slide === null) {
-            reloadSlide();
+            const newSlide = await Slide.getSelected();
+            setSlide(newSlide || undefined);
         }
     }, [slide]);
     useFSEvents(['delete', 'update'], slide?.filePath, () => {

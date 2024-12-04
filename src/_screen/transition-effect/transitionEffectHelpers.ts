@@ -202,8 +202,9 @@ export function usePTEEvents(events: PTFEventType[],
             setN(n + 1);
             callback?.();
         };
-        const instanceEvents = ptEffect.registerEventListener(
-            events, update) || [];
+        const instanceEvents = (
+            ptEffect.registerEventListener(events, update) || []
+        );
         return () => {
             ptEffect.unregisterEventListener(instanceEvents);
         };

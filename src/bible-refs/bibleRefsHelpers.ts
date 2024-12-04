@@ -103,11 +103,10 @@ export async function getBibleRef(key: string) {
 export function useGetBibleRef(bookKey: string, chapter: number,
     verseNum: number) {
     const [bibleRef, setBibleRef] = useState<BibleRefType[][] | null>(null);
-    useAppEffect(() => {
+    useAppEffect(async () => {
         const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
-        getBibleRef(key).then((data) => {
-            setBibleRef(data);
-        });
+        const data = await getBibleRef(key);
+        setBibleRef(data);
     }, [bookKey, chapter]);
     return bibleRef;
 }

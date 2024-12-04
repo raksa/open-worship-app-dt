@@ -123,28 +123,25 @@ export function genDuplicatedMessage(list: BibleItem[],
 
 export function useBibleItemRenderTitle(bibleItem: BibleItem) {
     const [title, setTitle] = useState<string>('');
-    useAppEffect(() => {
-        bibleItem.toTitle().then((text) => {
-            setTitle(text);
-        });
+    useAppEffect(async () => {
+        const title = await bibleItem.toTitle();
+        setTitle(title);
     }, [bibleItem]);
     return title;
 }
 export function useBibleItemRenderText(bibleItem: BibleItem) {
     const [text, setText] = useState<string>('');
-    useAppEffect(() => {
-        bibleItem.toText().then((text) => {
-            setText(text);
-        });
+    useAppEffect(async () => {
+        const text = await bibleItem.toText();
+        setText(text);
     }, [bibleItem]);
     return text;
 }
 export function useBibleItemVerseTextList(bibleItem: BibleItem) {
     const [result, setResult] = useState<[string, string][] | null>(null);
-    useAppEffect(() => {
-        bibleItem.toVerseTextList().then((result) => {
-            setResult(result);
-        });
+    useAppEffect(async () => {
+        const result = await bibleItem.toVerseTextList();
+        setResult(result);
     }, [bibleItem]);
     return result;
 }
@@ -154,11 +151,11 @@ export function useBibleItemPropsToInputText(
     verseStart?: number | null, verseEnd?: number | null,
 ) {
     const [text, setText] = useState<string>('');
-    useAppEffect(() => {
-        toInputText(bibleKey, book, chapter, verseStart, verseEnd)
-            .then((text1) => {
-                setText(text1);
-            });
+    useAppEffect(async () => {
+        const text1 = await toInputText(
+            bibleKey, book, chapter, verseStart, verseEnd,
+        );
+        setText(text1);
     }, [bibleKey, book, chapter, verseStart, verseEnd]);
     return text;
 }

@@ -53,21 +53,19 @@ export function useSelectedBibleKey() {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
         setBibleKeySelected(bibleKey);
     };
-    useAppEffect(() => {
-        getSelectedEditorBibleItem().then((bibleKey) => {
-            setBibleKeySelected1(bibleKey);
-        });
+    useAppEffect(async () => {
+        const bibleKey = await getSelectedEditorBibleItem();
+        setBibleKeySelected1(bibleKey);
     });
     return [bibleKeySelected, setBibleKeySelected1] as const;
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
-    useAppEffect(() => {
+    useAppEffect(async () => {
         if (bibleItem !== null) {
-            bibleItem.toTitle().then((text) => {
-                setInputText(text);
-            });
+            const title = await bibleItem.toTitle();
+            setInputText(title);
         }
     }, [bibleItem]);
     return [inputText, setInputText] as [string, (s: string) => void];

@@ -22,7 +22,8 @@ function genShadow1(color1: string, color2: string) {
 export default function TextShadow() {
     useAppEffect(() => {
         const divList = document.querySelectorAll<HTMLDivElement>(
-            '.ow-outline-demo');
+            '.ow-outline-demo',
+        );
         const listenList = Array.from(divList).map((d) => {
             const listener = () => {
                 ScreenFTManager.applyTextStyle({

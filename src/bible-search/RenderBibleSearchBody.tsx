@@ -45,21 +45,21 @@ function useExtractInput(bibleKey: string, inputText: string) {
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
-    useAppEffect(() => {
-        extractBibleTitle(bibleKey, inputText).then(({
+    useAppEffect(async () => {
+        const extractedResult = await extractBibleTitle(bibleKey, inputText);
+        const {
             result, bibleKey: bibleKey1, inputText: inputText1,
-        }) => {
-            const trueValue = getInputTrueValue();
-            if (
-                inputText1 &&
-                (bibleKey1 !== bibleKey || inputText1 !== trueValue)
-            ) {
-                return;
-            }
-            setExtractedInput((prev) => {
-                checkAndSyncResult(prev, result);
-                return result;
-            });
+        } = extractedResult;
+        const trueValue = getInputTrueValue();
+        if (
+            inputText1 &&
+            (bibleKey1 !== bibleKey || inputText1 !== trueValue)
+        ) {
+            return;
+        }
+        setExtractedInput((prev) => {
+            checkAndSyncResult(prev, result);
+            return result;
         });
     }, [bibleKey, inputText]);
     return extractedInput;

@@ -1,5 +1,5 @@
 import {
-    DependencyList, EffectCallback, useEffect, useState,
+    DependencyList, useEffect, useState,
 } from 'react';
 
 import { log, warn } from './loggerHelpers';
@@ -34,7 +34,7 @@ function restore(toKey: string) {
 
 const mapper = new Map<string, StoreType>();
 export function useAppEffect(
-    effect: EffectCallback,
+    effect: () => void | (() => void) | Promise<void>,
     deps?: DependencyList,
     key?: string,
 ) {
@@ -50,7 +50,14 @@ export function useAppEffect(
         }
         return effect();
     };
-    useEffect(toEffect, deps);
+    useEffect(() => {
+        const unmount = toEffect();
+        return () => {
+            if (unmount && typeof unmount === 'function') {
+                unmount();
+            }
+        };
+    }, deps);
 }
 
 export function TestInfinite() {
