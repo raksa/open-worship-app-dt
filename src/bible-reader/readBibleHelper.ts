@@ -140,7 +140,7 @@ export function useSplitBibleItemRenderer() {
     }), (event) => {
         const viewController = SearchBibleItemViewController.getInstance();
         const bibleItem = viewController.selectedBibleItem;
-        if (event.key === 's') {
+        if (event.key.toLowerCase() === 's') {
             viewController.addBibleItemLeft(bibleItem, bibleItem);
         } else {
             viewController.addBibleItemBottom(bibleItem, bibleItem);
