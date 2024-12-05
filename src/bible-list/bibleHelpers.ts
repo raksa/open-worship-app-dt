@@ -50,24 +50,24 @@ export function useSelectedBibleKey() {
         useState<string | null>(null)
     );
     const setBibleKeySelected1 = (bibleKey: string | null) => {
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
         setBibleKeySelected(bibleKey);
     };
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         const bibleKey = await getSelectedEditorBibleItem();
-        setBibleKeySelected1(bibleKey);
-    });
+        methodContext.setBibleKeySelected1(bibleKey);
+    }, [], { methods: { setBibleKeySelected1 } });
     return [bibleKeySelected, setBibleKeySelected1] as const;
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         if (bibleItem !== null) {
             const title = await bibleItem.toTitle();
-            setInputText(title);
+            methodContext.setInputText(title);
         }
-    }, [bibleItem]);
+    }, [bibleItem], { methods: { setInputText } });
     return [inputText, setInputText] as [string, (s: string) => void];
 }
 

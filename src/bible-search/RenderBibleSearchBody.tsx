@@ -45,7 +45,7 @@ function useExtractInput(bibleKey: string, inputText: string) {
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         const extractedResult = await extractBibleTitle(bibleKey, inputText);
         const {
             result, bibleKey: bibleKey1, inputText: inputText1,
@@ -57,11 +57,11 @@ function useExtractInput(bibleKey: string, inputText: string) {
         ) {
             return;
         }
-        setExtractedInput((prev) => {
+        methodContext.setExtractedInput((prev) => {
             checkAndSyncResult(prev, result);
             return result;
         });
-    }, [bibleKey, inputText]);
+    }, [bibleKey, inputText], { methods: { setExtractedInput } });
     return extractedInput;
 }
 
@@ -69,20 +69,19 @@ function useMethods(
     bibleKey: string, extractedInput: ExtractedBibleResult,
     inputText: string, setInputText: (text: string) => void,
 ) {
-    useKeyboardRegistering([{ key: 'Tab' }], (event) => {
+    useKeyboardRegistering([{ key: 'Tab' }], async (event) => {
         const { bookKey, guessingChapter, bibleItem } = extractedInput;
         if (bibleItem === null) {
             if (bookKey !== null && guessingChapter !== null) {
-                parseChapterFromGuessing(
+                const chapter = await parseChapterFromGuessing(
                     bibleKey, bookKey, guessingChapter,
-                ).then((chapter) => {
-                    if (chapter === null) {
-                        return;
-                    }
-                    event.stopPropagation();
-                    event.preventDefault();
-                    setInputText(`${inputText}:`);
-                });
+                );
+                if (chapter === null) {
+                    return;
+                }
+                event.stopPropagation();
+                event.preventDefault();
+                setInputText(`${inputText}:`);
             }
         } else if (bibleItem.target.verseStart === bibleItem.target.verseEnd) {
             event.stopPropagation();

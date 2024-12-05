@@ -19,14 +19,14 @@ export default function BibleSearchPopup() {
     const [inputText, setInputText] = useState<string | null>(
         bibleItem !== null ? null : '',
     );
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         if (bibleItem === null || inputText !== null) {
             return;
         }
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleItem.bibleKey);
         const title = await bibleItem.toTitle();
-        setInputText(title);
-    }, [bibleItem, inputText]);
+        methodContext.setInputText(title);
+    }, [bibleItem, inputText], { methods: { setInputText } });
     return (
         <Modal>
             {inputText === null ? (

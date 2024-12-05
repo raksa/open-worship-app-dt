@@ -18,19 +18,19 @@ export default function SlidePreviewer() {
     useSlideSelecting(() => {
         setSlide(null);
     });
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         if (slide === null) {
             const newSlide = await Slide.getSelected();
-            setSlide(newSlide || undefined);
+            methodContext.setSlide(newSlide || undefined);
         }
-    }, [slide]);
+    }, [slide], { methods: { setSlide } });
     useFSEvents(['delete', 'update'], slide?.filePath, () => {
         setSlide(null);
     });
     if (!slide) {
         return (
             <div className='alert alert-warning'>
-                "Node Slide Selected" please select one!
+                "No Slide Selected" please select one!
             </div>
         );
     }

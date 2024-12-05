@@ -29,12 +29,12 @@ export default function BibleOnlineSearchBodyPreviewer() {
     const [apiData, setApiData] = useState<APIDataType | null | undefined>(
         undefined,
     );
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         if (apiData === undefined) {
             const apiData1 = await loadApiData();
-            setApiData(apiData1);
+            methodContext.setApiData(apiData1);
         }
-    }, [apiData]);
+    }, [apiData], { methods: { setApiData } });
     if (apiData === undefined) {
         return (
             <div>Loading...</div>

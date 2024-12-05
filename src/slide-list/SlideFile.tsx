@@ -46,12 +46,12 @@ export default function SlideFile({
         }
         data?.editorCacheManager.delete();
     }, [data, filePath]);
-    useAppEffect(async () => {
+    useAppEffect(async (methodContext) => {
         if (data === null) {
             const slide = await Slide.readFileToData(filePath);
-            setData(slide);
+            methodContext.setData(slide);
         }
-    }, [data]);
+    }, [data], { methods: { setData } });
     useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
         setData(null);
     });

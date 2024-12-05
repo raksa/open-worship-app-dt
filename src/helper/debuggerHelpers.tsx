@@ -32,14 +32,25 @@ function restore(toKey: string) {
     return store;
 }
 
+function warningMethod(key: string) {
+    warn(
+        `[useAppEffect] ${key} is called after unmounting`,
+    );
+};
+type MethodContextType = { [key: string]: any }
 const mapper = new Map<string, StoreType>();
-export function useAppEffect(
-    effect: () => void | (() => void) | Promise<void>,
+export function useAppEffect<T extends MethodContextType>(
+    effect: (methodContext: T) => (
+        void | (() => void) | Promise<void>
+    ),
     deps?: DependencyList,
-    key?: string,
+    context?: {
+        key?: string,
+        methods?: T,
+    },
 ) {
-    const toKey = key || effect.toString();
-    const toEffect = () => {
+    const toKey = context?.key ?? effect.toString();
+    const toEffect = (methodContext: T) => {
         const store = restore(toKey);
         mapper.set(toKey, store);
         if (store.count > THRESHOLD) {
@@ -48,16 +59,23 @@ export function useAppEffect(
                 + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
             );
         }
-        return effect();
+        return effect(methodContext);
     };
+    const totalDeps: any[] = [
+        ...(deps || []), ...Object.values(context?.methods ?? {}),
+    ];
     useEffect(() => {
-        const unmount = toEffect();
+        const methodContext = { ...context?.methods ?? {} };
+        const unmount = toEffect(methodContext as T);
         return () => {
+            Object.keys(methodContext).forEach((key) => {
+                methodContext[key] = warningMethod.bind(null, key);
+            });
             if (unmount && typeof unmount === 'function') {
                 unmount();
             }
         };
-    }, deps);
+    }, totalDeps.length ? totalDeps : undefined);
 }
 
 export function TestInfinite() {
@@ -70,7 +88,7 @@ export function TestInfinite() {
         setTimeout(() => {
             setCount(count + 1);
         }, 10);
-    }, [count], 'test');
+    }, [count], { key: 'test' });
     return (
         <h2>
             <button onClick={() => {

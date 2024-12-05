@@ -20,15 +20,13 @@ export default function SlideItems({ slide }: Readonly<{ slide: Slide }>) {
     const isEditorMode = useWindowIsEditorMode();
     useFSEvents(['select', 'edit'], slide.filePath);
     const slideItems = slide.items;
-    if (!isEditorMode) {
-        const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
-        const useCallback = (key: KeyboardType) => {
-            useKeyboardRegistering(
-                [{ key }], genArrowListener(slide, slideItems),
-            );
-        };
-        arrows.forEach(useCallback);
-    }
+    const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
+    const arrowListener = (
+        isEditorMode ? () => { } : genArrowListener(slide, slideItems)
+    );
+    useKeyboardRegistering(arrows.map((key) => {
+        return { key };
+    }), arrowListener);
     const slideItemThumbnailSize = (
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR
     );
