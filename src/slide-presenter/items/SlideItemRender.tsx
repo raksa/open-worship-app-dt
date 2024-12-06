@@ -1,7 +1,7 @@
 import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
-import SlideItem from '../../slide-list/SlideItem';
+import SlideItem, { useSelectedSlideItem } from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
 import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
@@ -44,9 +44,16 @@ export function RendInfo({ index, slideItem }: Readonly<{
     );
 }
 
-export function toCNHighlight(slideItem: SlideItem) {
+export function toCNHighlight(
+    slideItem: SlideItem, selectedSlideItem?: SlideItem,
+) {
     const isEditor = checkIsWindowEditorMode();
-    const activeCN = isEditor && slideItem.isSelected ? 'active' : '';
+    const activeCN = (
+        (
+            isEditor && selectedSlideItem !== undefined &&
+            slideItem.checkIsSame(selectedSlideItem)
+        ) ? 'active' : ''
+    );
     const selectedList = ScreenSlideManager.getDataList(
         slideItem.filePath, slideItem.id,
     );
@@ -71,10 +78,11 @@ export default function SlideItemRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
+    const { selectedSlideItem } = useSelectedSlideItem();
     usePSlideMEvents(['update']);
     const {
         activeCN, presenterCN,
-    } = toCNHighlight(slideItem);
+    } = toCNHighlight(slideItem, selectedSlideItem);
     return (
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             data-slide-item-id={slideItem.id}

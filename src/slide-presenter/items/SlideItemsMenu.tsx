@@ -2,7 +2,7 @@ import {
     EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
-import Slide from '../../slide-list/Slide';
+import Slide, { useSelectedSlide } from '../../slide-list/Slide';
 import ScreenManager from '../../_screen/ScreenManager';
 import MenuIsModifying from './MenuIsModifying';
 
@@ -10,16 +10,17 @@ const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],
     key: 's',
 };
-export default function SlideItemsMenu({ slide }: Readonly<{
-    slide: Slide,
-}>) {
+export default function SlideItemsMenu() {
+    const { selectedSlide } = useSelectedSlide();
     const screenDisplay = ScreenManager.getDefaultScreenDisplay();
-    useFSEvents(['update'], slide.filePath);
+    useFSEvents(['update'], selectedSlide.filePath);
     useKeyboardRegistering([savingEventMapper], () => {
-        slide.save();
+        selectedSlide.save();
     });
-    const foundWrongDimension = slide.checkIsWrongDimension(screenDisplay);
-    const editCacheManager = slide.editorCacheManager;
+    const foundWrongDimension = selectedSlide.checkIsWrongDimension(
+        screenDisplay,
+    );
+    const editCacheManager = selectedSlide.editorCacheManager;
     const undo = editCacheManager.undoQueue;
     const redo = editCacheManager.redoQueue;
     const isHavingHistories = !!undo.length || !!redo.length;
@@ -28,7 +29,9 @@ export default function SlideItemsMenu({ slide }: Readonly<{
         <div style={{
             borderBottom: '1px solid #00000024',
             backgroundColor: '#00000020',
-            minHeight: (isHavingHistories || slide.isChanged) ? '35px' : '0px',
+            minHeight: (
+                (isHavingHistories || selectedSlide.isChanged) ? '35px' : '0px'
+            ),
             display: isShowingMenu ? 'block' : 'none',
         }}>
             <div className='btn-group control d-flex justify-content-center'>
@@ -50,7 +53,6 @@ export default function SlideItemsMenu({ slide }: Readonly<{
                     <i className='bi bi-arrow-90deg-right' />
                 </button>
                 <MenuIsModifying
-                    slide={slide}
                     isHavingHistories={isHavingHistories}
                     eventMapper={savingEventMapper}
                 />
@@ -62,7 +64,7 @@ export default function SlideItemsMenu({ slide }: Readonly<{
                             Slide.toWrongDimensionString(foundWrongDimension)
                         }
                         onClick={() => {
-                            slide.fixSlideDimension(screenDisplay);
+                            selectedSlide.fixSlideDimension(screenDisplay);
                         }}>
                         <i className='bi bi-hammer' />
                     </button>

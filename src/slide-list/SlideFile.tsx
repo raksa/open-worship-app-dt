@@ -35,9 +35,11 @@ export default function SlideFile({
     }, [data]);
     const renderChildCallback = useCallback((slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
-        return slide1.isPdf ?
-            <SlideFilePreviewPdf slide={slide1} /> :
-            <SlideFilePreviewNormal slide={slide1} />;
+        return slide1.isPdf ? (
+            <SlideFilePreviewPdf slide={slide1} />
+        ) : (
+            <SlideFilePreviewNormal slide={slide1} />
+        );
     }, []);
     const onDeleteCallback = useCallback(() => {
         const selectedFilePath = Slide.getSelectedFilePath();
@@ -93,8 +95,9 @@ function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
         <div className='w-100 h-100 app-ellipsis'>
             <i className='bi bi-file-earmark-slides' />
             {fileSource.name}
-            {slide.isChanged && <span
-                style={{ color: 'red' }}>*</span>}
+            {slide.isChanged && (
+                <span style={{ color: 'red' }}>*</span>
+            )}
         </div>
     );
 }

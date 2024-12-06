@@ -1,16 +1,13 @@
-import FileSource from '../helper/FileSource';
 import { ItemBase } from '../helper/ItemBase';
-// TODO: remove Slide
-import Slide from './Slide';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditorCacheManager from './SlideEditorCacheManager';
-import SlideListEventListener from '../event/SlideListEventListener';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import { createContext, useContext } from 'react';
 
 export type SlideItemType = {
     id: number,
@@ -63,11 +60,14 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     get originalJson() {
         return this._json;
     }
+    checkIsSame(slideItem: SlideItemType | SlideItem) {
+        return this.id === slideItem.id;
+    }
     set originalJson(json: SlideItemType) {
         this._json = json;
         const items = this.editorCacheManager.presenterJson.items;
         const newItems = items.map((item) => {
-            if (item.id === this.id) {
+            if (this.checkIsSame(item)) {
                 return this.toJson();
             }
             return item;
@@ -126,43 +126,8 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         metadata.height = height;
         this.metadata = metadata;
     }
-    get isSelected() {
-        const selected = SlideItem.getSelectedResult();
-        return (
-            selected?.filePath === this.filePath && selected?.id === this.id
-        );
-    }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
-            return;
-        }
-        if (b) {
-            SlideItem.setSelected(this);
-            SlideListEventListener.selectSlideItem(this);
-        } else {
-            SlideItem.setSelected(null);
-            SlideListEventListener.selectSlideItem(null);
-        }
-        FileSource.getInstance(this.filePath).fireSelectEvent();
-    }
     get isChanged() {
         return this.editorCacheManager.checkIsSlideItemChanged(this.id);
-    }
-    static getSelectedEditingResult() {
-        const selectedData = this.getSelectedResult();
-        const selectedFilePath = Slide.getSelectedFilePath();
-        if (selectedData?.filePath === selectedFilePath) {
-            return selectedData;
-        }
-        return null;
-    }
-    static async getSelected() {
-        const selectedData = this.getSelectedEditingResult();
-        if (selectedData !== null) {
-            const slide = await Slide.readFileToData(selectedData.filePath);
-            return slide?.getItemById(selectedData.id);
-        }
-        return null;
     }
     static defaultSlideItemData(id: number) {
         const { width, height } = Canvas.getDefaultDim();
@@ -222,33 +187,8 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         }
         return slideItem;
     }
-    static async fromKey(key: string) {
-        const extracted = this.extractKey(key);
-        if (extracted === null) {
-            return null;
-        }
-        const { filePath, id } = extracted;
-        if (filePath === undefined || id === undefined) {
-            return null;
-        }
-        const slide = await Slide.readFileToData(filePath);
-        if (!slide) {
-            return null;
-        }
-        return slide.getItemById(id);
-    }
     static genKeyByFileSource(filePath: string, id: number) {
         return `${filePath}:${id}`;
-    }
-    static extractKey(key: string) {
-        const [filePath, id] = key.split(':');
-        if (filePath === undefined || id === undefined) {
-            return null;
-        }
-        return {
-            filePath,
-            id: parseInt(id),
-        };
     }
     static clearCache() {
         this._cache = new Map();
@@ -263,7 +203,20 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             data: this.key,
         };
     }
-    static dragDeserialize(data: any) {
-        return this.fromKey(data);
+}
+
+export const SelectedSlideItemContext = createContext<{
+    selectedSlideItem: SlideItem,
+    setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
+} | null>(null);
+
+export function useSelectedSlideItem() {
+    const context = useContext(SelectedSlideItemContext);
+    if (!context) {
+        throw new Error(
+            'useSelectedSlideItem must be used within a ' +
+            'SelectedSlideItemProvider'
+        );
     }
+    return context;
 }

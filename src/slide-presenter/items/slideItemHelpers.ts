@@ -15,9 +15,12 @@ export function getPresenterIndex(slide: Slide) {
     }
     return -1;
 }
-export function handleSlideItemSelecting(slideItem: SlideItem, event: any) {
+export function handleSlideItemSelecting(
+    selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
+    slideItem: SlideItem, event: any,
+) {
     if (checkIsWindowEditorMode()) {
-        slideItem.isSelected = true;
+        selectSelectedSlideItem(slideItem);
     } else {
         ScreenSlideManager.slideSelect(
             slideItem.filePath, slideItem.toJson(), event,
@@ -38,7 +41,10 @@ export function checkSlideItemToView(slide: Slide, element: HTMLElement) {
         slide.itemIdShouldToView = -1;
     }, 0);
 }
-export const genArrowListener = (slide: Slide, slideItems: SlideItem[]) => {
+export function genArrowListener(
+    selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
+    slide: Slide, slideItems: SlideItem[],
+) {
     return (event: KeyboardEvent) => {
         const presenterIndex = getPresenterIndex(slide);
         if (presenterIndex === -1) {
@@ -54,8 +60,9 @@ export const genArrowListener = (slide: Slide, slideItems: SlideItem[]) => {
                 ind = length - 1;
             }
             handleSlideItemSelecting(
+                selectSelectedSlideItem,
                 slideItems[ind], genScreenMouseEvent() as any,
             );
         }
     };
-};
+}

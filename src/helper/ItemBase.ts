@@ -1,11 +1,9 @@
-import { setSetting, getSetting } from '../helper/settingHelper';
 import ColorNoteInf from './ColorNoteInf';
 import { AnyObjectType, cloneJson } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
     abstract id: number;
     abstract filePath?: string | null;
-    protected static SELECT_SETTING_NAME = '';
     protected static copiedItem: ItemBase | null = null;
     jsonError: any;
     get isError() {
@@ -54,54 +52,5 @@ export abstract class ItemBase implements ColorNoteInf {
             return null;
         }
         return `${filePath},${id}`;
-    }
-    toSelectedItemSetting() {
-        if (!this.filePath) {
-            return null;
-        }
-        return ItemBase._toSelectedItemSetting(this.filePath, this.id);
-    }
-    static extractItemSetting(selectedItemSetting: string | null) {
-        if (selectedItemSetting === null) {
-            return null;
-        }
-        const [bibleFilePath, id] = selectedItemSetting.split(',');
-        if (isNaN(Number(id))) {
-            return null;
-        }
-        return {
-            filePath: bibleFilePath,
-            id: Number(id),
-        };
-    }
-    static _setItemSetting(settingName: string, item: ItemBase | null) {
-        if (item === null) {
-            setSetting(settingName, '');
-            return;
-        }
-        const selectedStr = item.toSelectedItemSetting();
-        if (selectedStr !== null) {
-            setSetting(settingName, selectedStr);
-            return true;
-        }
-        return false;
-    }
-    static _getSettingResult(settingName: string) {
-        const selectedStr = getSetting(settingName, '');
-        return this.extractItemSetting(selectedStr);
-    }
-    static setSelected(item: ItemBase | null) {
-        return this._setItemSetting(this.SELECT_SETTING_NAME, item);
-    }
-    static getSelectedResult() {
-        return this._getSettingResult(this.SELECT_SETTING_NAME);
-    }
-    static setSelectedEditing(item: ItemBase | null) {
-        return this._setItemSetting(
-            `${this.SELECT_SETTING_NAME}-editor`, item,
-        );
-    }
-    static async getSelected(): Promise<ItemBase | null | undefined> {
-        throw new Error('Method not implemented.');
     }
 }

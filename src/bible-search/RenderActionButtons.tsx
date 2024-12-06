@@ -145,10 +145,9 @@ export function genFoundBibleItemContextMenu(
     onDone: () => void, isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
     // TODO: fix slide select editing
-    const isSlideSelectEditor = !!SlideItem.getSelectedEditingResult();
     const isWindowEditor = checkIsWindowEditorMode(windowMode);
     const isWindowPresenter = checkIsWindowPresenterMode(windowMode);
-    if (isWindowEditor && !isSlideSelectEditor) {
+    if (isWindowEditor) {
         return [];
     }
     return [

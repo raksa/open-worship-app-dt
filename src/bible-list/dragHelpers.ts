@@ -5,6 +5,7 @@ import DragInf, {
     DragDataType, DragTypeEnum, DroppedDataType,
 } from '../helper/DragInf';
 import FileSource from '../helper/FileSource';
+import Slide from '../slide-list/Slide';
 
 export function handleDragStart(event: any, item: DragInf<any>,
     type?: DragTypeEnum) {
@@ -23,7 +24,7 @@ async function deserializeDragData({
 }: DragDataType<any>): Promise<DroppedDataType | null> {
     let item: any = null;
     if (type === DragTypeEnum.SLIDE_ITEM) {
-        item = await SlideItem.dragDeserialize(data);
+        item = await Slide.slideItemDragDeserialize(data);
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);
     } else if ([

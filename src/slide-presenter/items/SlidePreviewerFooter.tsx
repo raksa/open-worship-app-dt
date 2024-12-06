@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { PathPreviewer } from '../../others/PathPreviewer';
-import Slide from '../../slide-list/Slide';
+import { useSelectedSlide } from '../../slide-list/Slide';
 import {
     MIN_THUMBNAIL_SCALE, MAX_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
 } from '../../slide-list/slideHelpers';
@@ -13,10 +13,11 @@ import {
 } from '../../event/SlideListEventListener';
 
 
-function HistoryPreviewerFooter({ slide }: Readonly<{ slide: Slide }>) {
+function HistoryPreviewerFooter() {
+    const { selectedSlide } = useSelectedSlide();
     const [history, setHistory] = useState<number[]>([]);
     usePSlideMEvents(['update'], undefined, () => {
-        const index = getPresenterIndex(slide);
+        const index = getPresenterIndex(selectedSlide);
         if (index < 0) {
             return;
         }
@@ -47,9 +48,8 @@ export const defaultRangeSize = {
     max: MAX_THUMBNAIL_SCALE,
     step: THUMBNAIL_SCALE_STEP,
 };
-export default function SlidePreviewerFooter({ slide }: Readonly<{
-    slide: Slide,
-}>) {
+export default function SlidePreviewerFooter() {
+    const { selectedSlide } = useSelectedSlide();
     const [
         thumbnailSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();
@@ -63,7 +63,7 @@ export default function SlidePreviewerFooter({ slide }: Readonly<{
                         defaultSize={defaultRangeSize}
                     />
                     <PathPreviewer
-                        dirPath={slide.filePath}
+                        dirPath={selectedSlide.filePath}
                         isShowingNameOnly
                         onClick={(event) => {
                             choseNewSlide(event);
@@ -71,7 +71,7 @@ export default function SlidePreviewerFooter({ slide }: Readonly<{
                     />
                 </div>
                 <div className='flex-item'>
-                    <HistoryPreviewerFooter slide={slide} />
+                    <HistoryPreviewerFooter />
                 </div>
             </div>
         </div>

@@ -5,7 +5,6 @@ import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
 import LyricItem from '../lyric-list/LyricItem';
-import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricPreviewer() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
@@ -28,13 +27,6 @@ export default function LyricPreviewer() {
             return i !== index;
         });
         setLyric(newLyric);
-    }, [lyric]);
-    useAppEffect(() => {
-        if (lyric === null) {
-            Lyric.getSelected().then((lr) => {
-                setLyric(lr || undefined);
-            });
-        }
     }, [lyric]);
     if (!lyric) {
         return (
