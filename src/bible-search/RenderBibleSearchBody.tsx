@@ -5,7 +5,7 @@ import {
     parseChapterFromGuessing,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderSearchSuggestion from './RenderSearchSuggestion';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import {
@@ -45,7 +45,7 @@ function useExtractInput(bibleKey: string, inputText: string) {
     const [extractedInput, setExtractedInput] = useState<ExtractedBibleResult>(
         genExtractedBible(),
     );
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const extractedResult = await extractBibleTitle(bibleKey, inputText);
         const {
             result, bibleKey: bibleKey1, inputText: inputText1,

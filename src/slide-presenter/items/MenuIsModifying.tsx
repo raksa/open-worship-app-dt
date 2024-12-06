@@ -14,18 +14,23 @@ export default function MenuIsModifying({
         <>
             <button type='button'
                 className='btn btn-sm btn-info'
+                title='Discard changed'
                 disabled={!slide.isChanged}
                 onClick={() => {
                     slide.discardChanged();
-                }}>Discard Changed</button>
+                }}>
+                <i className='bi bi-x-octagon' />
+            </button>
             <button type='button'
                 className='btn btn-sm btn-success'
                 disabled={!slide.isChanged}
                 data-tool-tip={toShortcutKey(eventMapper)}
-                title='save slide thumbs'
+                title='Save'
                 onClick={() => {
                     slide.save();
-                }}>Save</button>
+                }}>
+                <i className='bi bi-check2' />
+            </button>
         </>
     );
 }

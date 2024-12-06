@@ -9,7 +9,7 @@ import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 
@@ -123,7 +123,7 @@ export function genDuplicatedMessage(list: BibleItem[],
 
 export function useBibleItemRenderTitle(bibleItem: BibleItem) {
     const [title, setTitle] = useState<string>('');
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const title = await bibleItem.toTitle();
         methodContext.setTitle(title);
     }, [bibleItem], { methods: { setTitle } });
@@ -131,7 +131,7 @@ export function useBibleItemRenderTitle(bibleItem: BibleItem) {
 }
 export function useBibleItemRenderText(bibleItem: BibleItem) {
     const [text, setText] = useState<string>('');
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const text = await bibleItem.toText();
         methodContext.setText(text);
     }, [bibleItem], { methods: { setText } });
@@ -139,7 +139,7 @@ export function useBibleItemRenderText(bibleItem: BibleItem) {
 }
 export function useBibleItemVerseTextList(bibleItem: BibleItem) {
     const [result, setResult] = useState<[string, string][] | null>(null);
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const result = await bibleItem.toVerseTextList();
         methodContext.setResult(result);
     }, [bibleItem], { methods: { setResult } });
@@ -151,7 +151,7 @@ export function useBibleItemPropsToInputText(
     verseStart?: number | null, verseEnd?: number | null,
 ) {
     const [text, setText] = useState<string>('');
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const text1 = await toInputText(
             bibleKey, book, chapter, verseStart, verseEnd,
         );

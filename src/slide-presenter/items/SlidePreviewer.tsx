@@ -11,14 +11,14 @@ import Slide from '../../slide-list/Slide';
 import { useSlideSelecting } from '../../event/PreviewingEventListener';
 import SlideItemsMenu from './SlideItemsMenu';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
-import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../../helper/debuggerHelpers';
 
 export default function SlidePreviewer() {
     const [slide, setSlide] = useState<SlideDynamicType>(null);
     useSlideSelecting(() => {
         setSlide(null);
     });
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         if (slide === null) {
             const newSlide = await Slide.getSelected();
             methodContext.setSlide(newSlide || undefined);

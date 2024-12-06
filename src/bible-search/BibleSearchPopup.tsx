@@ -5,7 +5,7 @@ import { useState } from 'react';
 import RenderBibleSearch from './RenderBibleSearch';
 import { useModal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import {
     SELECTED_BIBLE_SETTING_NAME,
 } from '../bible-list/bibleHelpers';
@@ -19,7 +19,7 @@ export default function BibleSearchPopup() {
     const [inputText, setInputText] = useState<string | null>(
         bibleItem !== null ? null : '',
     );
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         if (bibleItem === null || inputText !== null) {
             return;
         }

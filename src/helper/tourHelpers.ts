@@ -1,7 +1,7 @@
 import { openConfirm } from '../alert/alertHelpers';
 import { getDesktopPath } from '../server/appHelper';
 import appProvider from '../server/appProvider';
-import { fsCreateDir } from '../server/fileHelper';
+import { fsCheckDirExist, fsCreateDir } from '../server/fileHelper';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { defaultDataDirNames, dirSourceSettingNames } from './constants';
 import { useAppEffect } from './debuggerHelpers';
@@ -25,19 +25,21 @@ async function selectDefaultData() {
     }
     try {
         await fsCreateDir(defaultDataDir);
-        const promises = Object.entries(defaultDataDirNames)
-            .map<Promise<[string, string]>>(async ([k, v]) => {
-                const settingName = (dirSourceSettingNames as any)[k];
-                const dirPath = appProvider.pathUtils.join(defaultDataDir, v);
-                await fsCreateDir(defaultDataDir);
-                return [settingName, dirPath];
-            });
-        Promise.all(promises).then((pairs) => {
-            for (const [settingName, dirPath] of pairs) {
+        for (const [k, v] of Object.entries(defaultDataDirNames)) {
+            const settingName = (dirSourceSettingNames as any)[k];
+            const dirPath = appProvider.pathUtils.join(defaultDataDir, v);
+            await fsCreateDir(dirPath);
+            const isSuccess = await fsCheckDirExist(dirPath);
+            if (isSuccess) {
                 setSetting(settingName, dirPath);
+            } else {
+                await openConfirm(
+                    'Creating Default Folder',
+                    `Fail to create folder "${dirPath}"`,
+                );
             }
-            appProvider.reload();
-        });
+        }
+        appProvider.reload();
     } catch (error: any) {
         if (!error.message.includes('file already exists')) {
             handleError(error);

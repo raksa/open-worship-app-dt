@@ -16,7 +16,7 @@ import {
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
@@ -53,7 +53,7 @@ export function useSelectedBibleKey() {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
         setBibleKeySelected(bibleKey);
     };
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const bibleKey = await getSelectedEditorBibleItem();
         methodContext.setBibleKeySelected1(bibleKey);
     }, [], { methods: { setBibleKeySelected1 } });
@@ -62,7 +62,7 @@ export function useSelectedBibleKey() {
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         if (bibleItem !== null) {
             const title = await bibleItem.toTitle();
             methodContext.setInputText(title);

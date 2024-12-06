@@ -6,7 +6,7 @@ import Bible from './Bible';
 import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelper';
 import { useFSEvents } from '../helper/dirSourceHelpers';
@@ -66,7 +66,7 @@ export default function BibleFile({
 }>) {
     const windowMode = useWindowMode();
     const [data, setData] = useState<Bible | null | undefined>(null);
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         if (data === null) {
             const bible = await Bible.readFileToData(filePath);
             methodContext.setData(bible);

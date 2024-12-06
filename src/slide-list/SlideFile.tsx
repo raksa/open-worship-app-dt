@@ -9,7 +9,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { useNavigate } from 'react-router-dom';
 import { goEditorMode } from '../router/routeHelpers';
 
@@ -46,7 +46,7 @@ export default function SlideFile({
         }
         data?.editorCacheManager.delete();
     }, [data, filePath]);
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         if (data === null) {
             const slide = await Slide.readFileToData(filePath);
             methodContext.setData(slide);

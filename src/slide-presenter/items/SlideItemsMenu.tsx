@@ -33,36 +33,40 @@ export default function SlideItemsMenu({ slide }: Readonly<{
         }}>
             <div className='btn-group control d-flex justify-content-center'>
                 <button type='button' className='btn btn-sm btn-info'
-                    title='clear all' disabled={!undo.length}
+                    title='Undo'
+                    disabled={!undo.length}
                     onClick={() => {
                         editCacheManager.popUndo();
                     }}>
-                    undo <i className='bi bi-arrow-90deg-left' />
+                    <i className='bi bi-arrow-90deg-left' />
                 </button>
                 <button type='button'
                     className='btn btn-sm btn-info'
-                    title='clear background'
+                    title='Redo'
                     disabled={redo.length === 0}
                     onClick={() => {
                         editCacheManager.popRedo();
                     }}>
-                    redo <i className='bi bi-arrow-90deg-right' />
+                    <i className='bi bi-arrow-90deg-right' />
                 </button>
                 <MenuIsModifying
                     slide={slide}
                     isHavingHistories={isHavingHistories}
-                    eventMapper={savingEventMapper} />
-                {foundWrongDimension !== null &&
+                    eventMapper={savingEventMapper}
+                />
+                {foundWrongDimension !== null && (
                     <button type='button'
                         className='btn btn-sm btn-warning'
-                        title={Slide.toWrongDimensionString(
-                            foundWrongDimension)}
+                        title={
+                            'Fix slide dimension: ' +
+                            Slide.toWrongDimensionString(foundWrongDimension)
+                        }
                         onClick={() => {
                             slide.fixSlideDimension(screenDisplay);
                         }}>
-                        Fix Slide Dimension
+                        <i className='bi bi-hammer' />
                     </button>
-                }
+                )}
             </div>
         </div>
     );

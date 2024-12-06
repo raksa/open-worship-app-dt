@@ -5,37 +5,39 @@ import appProvider from '../server/appProvider';
 import { showAppContextMenu } from './AppContextMenu';
 
 // TODO: check direction rtl error with /*
-const cleanPath = (path: string) => {
+function cleanPath(path: string) {
     if (path.startsWith('/')) {
         path = path.substring(1);
     }
     return path;
 };
+function openContextMenu(dirPath: string, event: any) {
+    showAppContextMenu(event, [
+        {
+            menuTitle: 'Copy to Clipboard',
+            onClick: () => {
+                copyToClipboard(dirPath);
+            },
+        },
+        {
+            menuTitle: (
+                `Reveal in ${appProvider.systemUtils.isMac ?
+                    'Finder' : 'File Explorer'}`
+            ),
+            onClick: () => {
+                openExplorer(dirPath);
+            },
+        },
+    ]);
+};
 
-export function pathPreviewer({
-    dirPath, isShowingNameOnly = false,
-}: {
-    dirPath: string, isShowingNameOnly?: boolean,
-}) {
-    const onContextMenu = (event: any) => {
-        showAppContextMenu(event, [
-            {
-                menuTitle: 'Copy to Clipboard',
-                onClick: () => {
-                    copyToClipboard(dirPath);
-                },
-            },
-            {
-                menuTitle: (
-                    `Reveal in ${appProvider.systemUtils.isMac ?
-                        'Finder' : 'File Explorer'}`
-                ),
-                onClick: () => {
-                    openExplorer(dirPath);
-                },
-            },
-        ]);
-    };
+export function PathPreviewer({
+    dirPath, isShowingNameOnly = false, onClick,
+}: Readonly<{
+    dirPath: string,
+    isShowingNameOnly?: boolean,
+    onClick?: (event: any) => void,
+}>) {
     const cleanedPath = cleanPath(dirPath);
     let path = cleanedPath;
     if (isShowingNameOnly) {
@@ -46,8 +48,12 @@ export function pathPreviewer({
         }
     }
     return (
-        <div className='ellipsis-left border-white-round px-1 flex-fill'
-            onContextMenu={onContextMenu}
+        <div className={
+            'ellipsis-left border-white-round px-1 flex-fill' +
+            ` ${onClick ? 'pointer' : ''}`
+        }
+            onContextMenu={openContextMenu.bind(null, cleanedPath)}
+            onClick={onClick}
             title={cleanedPath}>
             {path}
         </div>

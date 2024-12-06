@@ -1,3 +1,4 @@
+import { handleError } from '../helper/errorHelpers';
 import appProvider from '../server/appProvider';
 
 export const DB_NAME = 'bible';
@@ -118,7 +119,11 @@ export abstract class IndexedDbController implements DbControllerInterface {
         return { store, transaction };
     }
     createObjectStore() {
-        this.db.deleteObjectStore(this.storeName);
+        try {
+            this.db.deleteObjectStore(this.storeName);
+        } catch (error) {
+            handleError(error);
+        }
         const store = this.db.createObjectStore(this.storeName, {
             keyPath: 'id',
             autoIncrement: false,

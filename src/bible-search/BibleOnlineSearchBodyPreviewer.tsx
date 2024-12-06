@@ -6,7 +6,7 @@ import {
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderData from './BibleOnlineRenderData';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
 import BibleSelection from './BibleSelection';
@@ -29,7 +29,7 @@ export default function BibleOnlineSearchBodyPreviewer() {
     const [apiData, setApiData] = useState<APIDataType | null | undefined>(
         undefined,
     );
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         if (apiData === undefined) {
             const apiData1 = await loadApiData();
             methodContext.setApiData(apiData1);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { pathPreviewer } from '../../others/PathPreviewer';
+import { PathPreviewer } from '../../others/PathPreviewer';
 import Slide from '../../slide-list/Slide';
 import {
     MIN_THUMBNAIL_SCALE, MAX_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
@@ -37,6 +37,10 @@ function HistoryPreviewerFooter({ slide }: Readonly<{ slide: Slide }>) {
     );
 }
 
+function choseNewSlide(event: any) {
+    console.log('choseNewSlide', event);
+}
+
 export const defaultRangeSize = {
     size: MIN_THUMBNAIL_SCALE,
     min: MIN_THUMBNAIL_SCALE,
@@ -58,10 +62,13 @@ export default function SlidePreviewerFooter({ slide }: Readonly<{
                         setValue={setThumbnailSizeScale}
                         defaultSize={defaultRangeSize}
                     />
-                    {pathPreviewer({
-                        dirPath: slide.filePath,
-                        isShowingNameOnly: true,
-                    })}
+                    <PathPreviewer
+                        dirPath={slide.filePath}
+                        isShowingNameOnly
+                        onClick={(event) => {
+                            choseNewSlide(event);
+                        }}
+                    />
                 </div>
                 <div className='flex-item'>
                     <HistoryPreviewerFooter slide={slide} />

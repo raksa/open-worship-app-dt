@@ -116,12 +116,17 @@ export default function FileItemHandler({
         return <FileReadError onContextMenu={callContextMenu} />;
     }
     const moreClassName = (
-        `${data.isSelected ? 'active' : ''} ` + `${className || ''}`
+        `${data.isSelected ? 'active' : ''} ` + `${className ?? ''}`
     );
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <li className={`list-group-item mx-1 ${moreClassName} ${userClassName}
-        ${isPointer ? 'pointer' : ''}`}
+        <li className={
+            `list-group-item m-1 ${moreClassName} ` +
+            `${userClassName ?? ''} ${isPointer ? 'pointer' : ''}`
+        }
+            style={{
+                borderRadius: '0.25rem',
+            }}
             onClick={applyClick}
             data-index={index + 1}
             title={filePath}

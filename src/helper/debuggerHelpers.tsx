@@ -1,5 +1,5 @@
 import {
-    DependencyList, useEffect, useState,
+    DependencyList, EffectCallback, useEffect, useMemo, useState,
 } from 'react';
 
 import { log, warn } from './loggerHelpers';
@@ -37,9 +37,20 @@ function warningMethod(key: string) {
         `[useAppEffect] ${key} is called after unmounting`,
     );
 };
-type MethodContextType = { [key: string]: any }
+function checkStore(toKey: string) {
+    const store = restore(toKey);
+    mapper.set(toKey, store);
+    if (store.count > THRESHOLD) {
+        warn(
+            `[useAppEffect] ${toKey} is called more than `
+            + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
+        );
+    }
+}
 const mapper = new Map<string, StoreType>();
-export function useAppEffect<T extends MethodContextType>(
+
+type MethodContextType = { [key: string]: any }
+export function useAppEffectAsync<T extends MethodContextType>(
     effect: (methodContext: T) => (
         void | (() => void) | Promise<void>
     ),
@@ -49,19 +60,14 @@ export function useAppEffect<T extends MethodContextType>(
         methods?: T,
     },
 ) {
-    const toKey = context?.key ?? effect.toString();
+    const toKey = useMemo(() => {
+        return context?.key ?? effect.toString();
+    }, []);
     const toEffect = (methodContext: T) => {
-        const store = restore(toKey);
-        mapper.set(toKey, store);
-        if (store.count > THRESHOLD) {
-            warn(
-                `[useAppEffect] ${toKey} is called more than `
-                + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
-            );
-        }
+        checkStore(toKey);
         return effect(methodContext);
     };
-    const totalDeps: any[] = [
+    const totalDeps = (!deps && !context?.methods) ? undefined : [
         ...(deps || []), ...Object.values(context?.methods ?? {}),
     ];
     useEffect(() => {
@@ -75,10 +81,24 @@ export function useAppEffect<T extends MethodContextType>(
                 unmount();
             }
         };
-    }, totalDeps.length ? totalDeps : undefined);
+    }, totalDeps);
 }
 
-export function TestInfinite() {
+export function useAppEffect(
+    effect: EffectCallback,
+    deps?: DependencyList,
+    key?: string,
+) {
+    const toKey = useMemo(() => {
+        return key ?? effect.toString();
+    }, []);
+    useEffect(() => {
+        checkStore(toKey);
+        return effect();
+    }, deps);
+}
+
+function TestInfinite() {
     const [count, setCount] = useState(0);
     const [isStopped, setIsStopped] = useState(false);
     useAppEffect(() => {
@@ -88,7 +108,7 @@ export function TestInfinite() {
         setTimeout(() => {
             setCount(count + 1);
         }, 10);
-    }, [count], { key: 'test' });
+    }, [count], 'test');
     return (
         <h2>
             <button onClick={() => {

@@ -6,8 +6,8 @@ import ResizeActor from './resize-actor/ResizeActor';
 const SlideItemEditorGround = lazy(() => {
     return import('./slide-editor/SlideItemEditorGround');
 });
-const AppEditorLeft = lazy(() => {
-    return import('./AppEditorLeft');
+const SlidePreviewer = lazy(() => {
+    return import('./slide-presenter/items/SlidePreviewer');
 });
 
 export default function AppEditor() {
@@ -20,7 +20,7 @@ export default function AppEditor() {
             }}
             dataInput={[
                 {
-                    children: AppEditorLeft, key: 'h1',
+                    children: SlidePreviewer, key: 'h1',
                     widgetName: 'App Editor Left',
                 },
                 {

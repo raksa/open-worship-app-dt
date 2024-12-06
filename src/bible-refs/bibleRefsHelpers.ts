@@ -5,7 +5,7 @@ import {
 } from '../_owa-crypto';
 import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { IndexedDbController } from '../db/dbHelper';
 import { appApiFetch } from '../helper/networkHelpers';
 
@@ -103,7 +103,7 @@ export async function getBibleRef(key: string) {
 export function useGetBibleRef(bookKey: string, chapter: number,
     verseNum: number) {
     const [bibleRef, setBibleRef] = useState<BibleRefType[][] | null>(null);
-    useAppEffect(async (methodContext) => {
+    useAppEffectAsync(async (methodContext) => {
         const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
         const data = await getBibleRef(key);
         methodContext.setBibleRef(data);
