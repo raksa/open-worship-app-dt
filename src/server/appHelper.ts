@@ -64,6 +64,9 @@ export function getUserWritablePath() {
 export function getDesktopPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
 }
+export function getTempPath() {
+    return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
+}
 
 export async function initApp() {
     await initCrypto();

@@ -1,11 +1,14 @@
 import path from 'node:path';
 import fs from 'node:fs';
+const a = require('libreoffice-convert');
 const pdfjsLib = require('pdfjs-dist/build/pdf');
 
 const ext = '.pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
 
-function toPdf(filePath: string, outputDir: string, fileFullName: string) {
+function officeFileToPdf(
+    filePath: string, outputDir: string, fileFullName: string,
+) {
     return new Promise<void>((resolve, reject) => {
         const { convert } = require('libreoffice-convert');
         const fileName = path.parse(fileFullName).name;
@@ -32,6 +35,6 @@ function toPdf(filePath: string, outputDir: string, fileFullName: string) {
 }
 
 export default {
-    toPdf,
+    officeFileToPdf,
     pdfjsLib,
 };

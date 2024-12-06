@@ -9,8 +9,8 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import {
-    AppMimetypeType, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
-    pathBasename,
+    AppMimetypeType, fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile,
+    getFileFullName,
 } from '../server/fileHelper';
 import {
     openSlideItemQuickEdit,
@@ -23,6 +23,7 @@ import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
+import { getTempPath } from '../server/appHelper';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -90,11 +91,8 @@ export const supportOfficeFE = [
 ];
 
 const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
-    <b>LibreOffice</b>
-    {
-        'is required for converting Office file to PDF. ' +
-        'Please install it and try again.'
-    }
+    <b>LibreOffice </b>
+    is required for converting Office file to PDF.
     <br />
     <b>
         <a href={
@@ -102,43 +100,61 @@ const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
         } target='_blank'>
             Download
         </a>
+        <hr />
+        <span>
+            Please download and install LibreOffice then try again.
+        </span>
     </b>
 </div>);
-export async function convertOfficeFile(
-    file: DroppedFileType, dirSource: DirSource,
-) {
-    const toHtmlBold = (text: string) => {
-        return `<b>${text}</b>`;
-    };
-    const { dirPath } = dirSource;
-    const title = 'Converting to PDF';
+
+const WIDGET_TITLE = 'Converting to PDF';
+
+function showConfirmPDFConvert(dirPath: string, file: DroppedFileType) {
     const fileFullName = getFileFullName(file);
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
         <b>{fileFullName}</b>
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);
-    const isOk = await openConfirm(title, confirmMessage);
-    if (!isOk) {
-        return;
+    return openConfirm(WIDGET_TITLE, confirmMessage);
+}
+
+async function getTempFilePath() {
+    const tempDir = getTempPath();
+    let tempFilePath: string | null = null;
+    let i = 0;
+    while (
+        tempFilePath === null || await fsCheckFileExist(tempFilePath)
+    ) {
+        tempFilePath = appProvider.pathUtils.join(tempDir, `temp-to-pdf-${i}`);
+        i++;
     }
-    const tempFilePath = appProvider.pathUtils.join(
-        dirSource.dirPath, 'temp-to-pdf',
-    );
+    return tempFilePath;
+}
+
+function toHtmlBold(text: string) {
+    return `<b>${text}</b>`;
+};
+
+async function startConvertingOfficeFile(
+    file: DroppedFileType, dirSource: DirSource,
+    retryCount = 5,
+) {
+    const fileFullName = getFileFullName(file);
+    const tempFilePath = await getTempFilePath();
     try {
-        showProgressBard(title);
-        await fsDeleteFile(tempFilePath);
-        if (!await fsCopyFilePathToPath(
-            file, dirSource.dirPath, pathBasename(tempFilePath),
-        )) {
+        showProgressBard(WIDGET_TITLE);
+        if (!await fsCopyFilePathToPath(file, tempFilePath, '')) {
             throw new Error('Fail to copy file');
         }
         showSimpleToast(
-            title, 'Do not close application',
+            WIDGET_TITLE, 'Do not close application',
         );
-        await appProvider.pdfUtils.toPdf(tempFilePath, dirPath, fileFullName);
+        await appProvider.pdfUtils.officeFileToPdf(
+            tempFilePath, dirSource.dirPath, fileFullName,
+        );
         showSimpleToast(
-            title, `${toHtmlBold(fileFullName)} is converted to PDF`,
+            WIDGET_TITLE, `${toHtmlBold(fileFullName)} is converted to PDF`,
         );
     } catch (error: any) {
         const regex = /Could not find .+ binary/i;
@@ -146,13 +162,28 @@ export async function convertOfficeFile(
             openAlert('LibreOffice is not installed', alertMessage);
         } else {
             handleError(error);
-            showSimpleToast(title, 'Fail to convert to PDF');
+            if (retryCount > 0) {
+                return await startConvertingOfficeFile(
+                    file, dirSource, retryCount - 1,
+                );
+            }
+            showSimpleToast(WIDGET_TITLE, 'Fail to convert to PDF');
             fsDeleteFile(tempFilePath).catch((error) => {
                 handleError(error);
             });
         }
     }
-    hideProgressBard(title);
+    hideProgressBard(WIDGET_TITLE);
+}
+
+export async function convertOfficeFile(
+    file: DroppedFileType, dirSource: DirSource,
+) {
+    const isConfirm = await showConfirmPDFConvert(dirSource.dirPath, file);
+    if (!isConfirm) {
+        return;
+    }
+    await startConvertingOfficeFile(file, dirSource);
 }
 
 export async function readPdfToSlide(filePath: string) {

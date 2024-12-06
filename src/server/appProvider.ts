@@ -73,7 +73,7 @@ export type AppUtilsType = {
     base64Decode: (str: string) => string,
 };
 export type PdfUtilsType = {
-    toPdf: (
+    officeFileToPdf: (
         filePath: string, outputDir: string, fileFullName: string,
     ) => Promise<void>,
     pdfjsLib: typeof pdfjsLibType,
