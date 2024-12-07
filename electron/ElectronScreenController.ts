@@ -49,7 +49,8 @@ export default class ElectronScreenController {
     }
     destroyInstance() {
         ElectronMainController.getInstance().sendNotifyInvisibility(
-            this.screenId);
+            this.screenId,
+        );
         cache.delete(this.screenId.toString());
     }
     close() {
