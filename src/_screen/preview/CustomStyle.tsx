@@ -2,13 +2,13 @@ import './CustomStyle.scss';
 
 import { lazy } from 'react';
 
-import { useStateSettingString } from '../../helper/settingHelper';
+import { useStateSettingString } from '../../helper/settingHelpers';
 import TabRender, { genTabBody } from '../../others/TabRender';
 
-const Appearance = lazy(() => {
+const LazyAppearance = lazy(() => {
     return import('./Appearance');
 });
-const TextShadow = lazy(() => {
+const LazyTextShadow = lazy(() => {
     return import('./TextShadow');
 });
 
@@ -21,8 +21,8 @@ export default function CustomStyle() {
 }
 
 const tabTypeList = [
-    ['a', 'Appearance', Appearance],
-    ['s', 'Shadow', TextShadow],
+    ['a', 'Appearance', LazyAppearance],
+    ['s', 'Shadow', LazyTextShadow],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 function Body() {

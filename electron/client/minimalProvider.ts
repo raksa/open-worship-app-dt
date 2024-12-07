@@ -5,7 +5,7 @@ import pathUtils from './pathUtils';
 import appUtils from './appUtils';
 
 const provider = {
-    isMain: false,
+    isPresenter: false,
     isScreen: true,
     messageUtils,
     fileUtils,

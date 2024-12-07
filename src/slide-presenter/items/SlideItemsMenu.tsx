@@ -2,7 +2,7 @@ import {
     EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
-import Slide, { useSelectedSlide } from '../../slide-list/Slide';
+import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import ScreenManager from '../../_screen/ScreenManager';
 import MenuIsModifying from './MenuIsModifying';
 
@@ -11,7 +11,7 @@ const savingEventMapper: KBEventMapper = {
     key: 's',
 };
 export default function SlideItemsMenu() {
-    const { selectedSlide } = useSelectedSlide();
+    const { selectedSlide } = useSelectedSlideContext();
     const screenDisplay = ScreenManager.getDefaultScreenDisplay();
     useFSEvents(['update'], selectedSlide.filePath);
     useKeyboardRegistering([savingEventMapper], () => {

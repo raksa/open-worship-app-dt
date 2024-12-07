@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genPdfSlideItem } from '../slide-presenter/items/SlideItemPdfRender';
@@ -45,7 +45,7 @@ export default class ScreenSlideManager extends
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isMain) {
+        if (appProviderScreen.isPresenter) {
             const allSlideList = getSlideListOnScreenSetting();
             this._slideItemData = allSlideList[this.key] || null;
         }

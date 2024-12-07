@@ -2,11 +2,11 @@ import './SlidePreviewer.scss';
 
 import SlideItemsPreviewer from './SlideItemsPreviewer';
 import SlidePreviewerFooter from './SlidePreviewerFooter';
-import { useSelectedSlide } from '../../slide-list/Slide';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
 import SlideItemsMenu from './SlideItemsMenu';
 
 export default function SlidePreviewer() {
-    const { selectedSlide } = useSelectedSlide();
+    const { selectedSlide } = useSelectedSlideContext();
     if (!selectedSlide) {
         return (
             <div className='alert alert-warning'>

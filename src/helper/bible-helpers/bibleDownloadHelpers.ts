@@ -7,7 +7,7 @@ import {
 import appProvider from '../../server/appProvider';
 import {
     fsCheckFileExist, fsDeleteFile, fsCreateWriteStream, fsListDirectories,
-} from '../../server/fileHelper';
+} from '../../server/fileHelpers';
 import {
     bibleDataReader, getBibleInfo,
 } from './bibleInfoHelpers';

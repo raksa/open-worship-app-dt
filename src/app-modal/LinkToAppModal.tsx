@@ -1,20 +1,20 @@
 import { ReactNode } from 'react';
 
-import {
-    Link, useLocation, useNavigate,
-} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
     APP_MODAL_ROUTE_PATH, toAppModalTypeData,
 } from './helpers';
-import { goHomeBack } from '../router/routeHelpers';
+import {
+    goHomeBack, useRouteLocationContext, useRouteNavigateContext,
+} from '../router/routeHelpers';
 
 export function useCloseAppModal() {
-    const location = useLocation();
-    const appNav = useNavigate();
+    const location = useRouteLocationContext();
+    const navigate = useRouteNavigateContext();
     return () => {
         const backgroundLocation = location.state?.backgroundLocation;
         if (backgroundLocation) {
-            appNav(backgroundLocation);
+            navigate(backgroundLocation);
             return;
         }
         goHomeBack();
@@ -22,8 +22,8 @@ export function useCloseAppModal() {
 }
 
 export function useOpenAppModal(modalType: string, data?: string) {
-    const appNav = useNavigate();
-    const location = useLocation();
+    const appNav = useRouteNavigateContext();
+    const location = useRouteLocationContext();
     return () => {
         const queryData = toAppModalTypeData(modalType, data ?? '');
         appNav(`${APP_MODAL_ROUTE_PATH}${queryData}`, {
@@ -39,7 +39,7 @@ export default function LinkToAppModal({
     modalType: string,
     data?: string,
 }>) {
-    const location = useLocation();
+    const location = useRouteLocationContext();
     const modalTypeData = toAppModalTypeData(modalType, data || '');
     const routePath = `${APP_MODAL_ROUTE_PATH}${modalTypeData}`;
     return (

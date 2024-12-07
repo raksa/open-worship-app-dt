@@ -1,14 +1,19 @@
 import { BrowserWindow, shell } from 'electron';
 import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
+import { htmlFiles } from './fsServe';
 
-const routeProps = genRoutProps('index');
+// const routeProps = genRoutProps(htmlFiles.presenter);
+const routeProps = genRoutProps(htmlFiles.reader);
+let instance: ElectronMainController | null = null;
+
 export default class ElectronMainController {
     win: BrowserWindow;
-    private static _instance: ElectronMainController | null = null;
+
     constructor() {
         this.win = this.createMainWindow();
     }
+
     previewPdf(pdfFilePath: string) {
         const mainWin = this.win;
         const pdfWin = new BrowserWindow({
@@ -16,6 +21,7 @@ export default class ElectronMainController {
         });
         pdfWin.loadURL(pdfFilePath);
     }
+
     createMainWindow() {
         const win = new BrowserWindow({
             backgroundColor: '#000000',
@@ -37,23 +43,29 @@ export default class ElectronMainController {
         routeProps.loadURL(win);
         return win;
     }
+
     close() {
         this.win.close();
         process.exit(0);
     }
+
     sendData(channel: string, data?: any) {
         this.win.webContents.send(channel, data);
     }
+
     sendMessage(message: ScreenMessageType) {
         this.win.webContents.send(
             channels.screenMessageChannel, message);
     }
+
     changeBible(isNext: boolean) {
         this.sendData('app:main:change-bible', isNext);
     }
+
     ctrlScrolling(isUp: boolean) {
         this.sendData('app:main:ctrl-scrolling', isUp);
     }
+
     sendNotifyInvisibility(screenId: number) {
         this.sendMessage({
             screenId,
@@ -63,10 +75,11 @@ export default class ElectronMainController {
             },
         });
     }
+
     static getInstance() {
-        if (this._instance === null) {
-            this._instance = new this();
+        if (instance === null) {
+            instance = new this();
         }
-        return this._instance;
+        return instance;
     }
 }

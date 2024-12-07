@@ -5,7 +5,7 @@ import {
 import {
     BibleItemRenderedType,
 } from './fullTextScreenComps';
-import fullTextScreenHelper from './fullTextScreenHelper';
+import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFTManager from './ScreenFTManager';
 import ScreenManager from './ScreenManager';
 import { openAlert } from '../alert/alertHelpers';

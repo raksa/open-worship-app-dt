@@ -1,12 +1,4 @@
 import appProvider, { FontListType } from './appProvider';
-import {
-    defaultLocal, getCurrentLangAsync, getLangAsync,
-} from '../lang';
-import initCrypto from '../_owa-crypto';
-import {
-    getDownloadedBibleInfoList,
-} from '../helper/bible-helpers/bibleDownloadHelpers';
-import FileSourceMetaManager from '../helper/FileSourceMetaManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export function getFontListByNodeFont() {
@@ -66,18 +58,4 @@ export function getDesktopPath() {
 }
 export function getTempPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
-}
-
-export async function initApp() {
-    await initCrypto();
-    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
-    const promises = [
-        FileSourceMetaManager.checkAllColorNotes(),
-        getCurrentLangAsync(),
-        getLangAsync(defaultLocal),
-    ];
-    for (const bibleInfo of downloadedBibleInfoList || []) {
-        promises.push(getLangAsync(bibleInfo.locale));
-    }
-    await Promise.all(promises);
 }

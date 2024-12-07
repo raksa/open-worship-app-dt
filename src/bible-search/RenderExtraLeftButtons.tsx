@@ -1,4 +1,4 @@
-import { getSetting, useStateSettingBoolean } from '../helper/settingHelper';
+import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
 
 const CLOSE_ON_ADD_BIBLE_ITEM = 'close-on-add-bible-item';
 

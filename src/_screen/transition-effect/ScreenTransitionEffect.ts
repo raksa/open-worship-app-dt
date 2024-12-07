@@ -1,5 +1,5 @@
 import EventHandler from '../../event/EventHandler';
-import { getSetting, setSetting } from '../../helper/settingHelper';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { sendScreenMessage } from '../screenEventHelpers';
 import {
     ScreenMessageType,
@@ -14,11 +14,11 @@ import {
     transitionEffect,
 } from './transitionEffectHelpers';
 
+const cache = new Map<string, ScreenTransitionEffect>();
 class ScreenTransitionEffect extends EventHandler<PTFEventType> {
     readonly screenId: number;
     readonly target: TargetType;
     private _effectType: ScreenTransitionEffectType;
-    static readonly _cache = new Map<string, ScreenTransitionEffect>();
     constructor(screenId: number, target: TargetType) {
         super();
         this.screenId = screenId;
@@ -81,11 +81,11 @@ class ScreenTransitionEffect extends EventHandler<PTFEventType> {
     }
     static getInstance(screenId: number, target: TargetType) {
         const key = `${screenId}-${target}`;
-        if (!this._cache.has(key)) {
+        if (!cache.has(key)) {
             const screenManager = new ScreenTransitionEffect(screenId, target);
-            this._cache.set(key, screenManager);
+            cache.set(key, screenManager);
         }
-        return this._cache.get(key) as ScreenTransitionEffect;
+        return cache.get(key) as ScreenTransitionEffect;
     }
 }
 

@@ -2,12 +2,12 @@ import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { usePMEvents } from '../screenEventHelpers';
-import { useScreenManager } from '../ScreenManager';
+import { useScreenManagerContext } from '../ScreenManager';
 import ShowingScreenIcon from './ShowingScreenIcon';
 
 const showingScreenEventMap = { key: 'F5' };
 export default function ShowHideScreen() {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     useKeyboardRegistering([showingScreenEventMap], () => {
         screenManager.isShowing = !isShowing;
     });

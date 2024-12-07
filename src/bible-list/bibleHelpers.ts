@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react';
 
 import {
     getSetting, setSetting,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import {
     VerseList, getVerses, keyToBook,
@@ -20,7 +20,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { addExtension } from '../server/fileHelper';
+import { addExtension } from '../server/fileHelpers';
 import {
     WindowModEnum, checkIsWindowEditorMode,
 } from '../router/routeHelpers';

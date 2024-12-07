@@ -1,13 +1,13 @@
 import {
     toShortcutKey,
 } from '../../event/KeyboardEventListener';
-import { useSelectedSlide } from '../../slide-list/Slide';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
 
 export default function MenuIsModifying({ eventMapper }: Readonly<{
     eventMapper: any,
     isHavingHistories: boolean,
 }>) {
-    const { selectedSlide } = useSelectedSlide();
+    const { selectedSlide } = useSelectedSlideContext();
     return (
         <>
             <button type='button'

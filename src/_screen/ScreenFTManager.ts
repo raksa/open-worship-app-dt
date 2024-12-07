@@ -8,10 +8,10 @@ import {
 import {
     AnyObjectType, isValidJson,
 } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 import Lyric from '../lyric-list/Lyric';
 import appProviderScreen from './appProviderScreen';
-import fullTextScreenHelper from './fullTextScreenHelper';
+import fullTextScreenHelper from './fullTextScreenHelpers';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
     ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX, renderPFTManager,
@@ -28,6 +28,7 @@ import * as loggerHelpers from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 
+let textStyle: AnyObjectType = {};
 export default class ScreenFTManager
     extends EventHandler<ScreenFTManagerEventType>
     implements ScreenManagerInf {
@@ -35,7 +36,6 @@ export default class ScreenFTManager
     static readonly eventNamePrefix: string = 'screen-ft-m';
     readonly screenId: number;
     private _ftItemData: FTItemDataType | null = null;
-    private static _textStyle: AnyObjectType = {};
     private _div: HTMLDivElement | null = null;
     private _syncScrollTimeout: any = null;
     private _divScrollListenerBind: (() => void) | null = null;
@@ -43,7 +43,7 @@ export default class ScreenFTManager
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isMain) {
+        if (appProviderScreen.isPresenter) {
             const allFTList = getFTListOnScreenSetting();
             this._ftItemData = allFTList[this.key] || null;
 
@@ -57,7 +57,7 @@ export default class ScreenFTManager
                         loggerHelpers.error(style);
                         throw new Error('Invalid style data');
                     }
-                    ScreenFTManager._textStyle = style;
+                    textStyle = style;
                 }
             } catch (error) {
                 handleError(error);
@@ -278,10 +278,10 @@ export default class ScreenFTManager
         `;
     }
     static get textStyle(): AnyObjectType {
-        return this._textStyle;
+        return textStyle;
     }
     static set textStyle(style: AnyObjectType) {
-        this._textStyle = style;
+        textStyle = style;
         const str = JSON.stringify(style);
         setSetting(`${SCREEN_FT_SETTING_PREFIX}-style-text`, str);
         this.sendSynTextStyle();

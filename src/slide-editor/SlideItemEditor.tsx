@@ -6,10 +6,10 @@ import CanvasController from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRange';
 import { defaultRangeSize } from './canvas/tools/Tools';
 
-const SlideItemEditorCanvas = lazy(() => {
+const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
 });
-const Tools = lazy(() => {
+const LazyTools = lazy(() => {
     return import('./canvas/tools/Tools');
 });
 
@@ -34,12 +34,12 @@ export default function SlideItemEditor() {
                 }}
                 dataInput={[
                     {
-                        children: SlideItemEditorCanvas, key: 'v1',
+                        children: LazySlideItemEditorCanvas, key: 'v1',
                         widgetName: 'Slide Item Editor Canvas',
                         className: 'flex-item',
                     },
                     {
-                        children: Tools, key: 'v2',
+                        children: LazyTools, key: 'v2',
                         widgetName: 'Tools', className: 'flex-item',
                     },
                 ]} />

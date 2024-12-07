@@ -17,7 +17,7 @@ export type SlideItemType = {
 };
 
 export default class SlideItem extends ItemBase implements DragInf<string> {
-    _json: SlideItemType;
+    private _originalJson: SlideItemType;
     static readonly SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     filePath: string;
@@ -26,14 +26,13 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     // TODO: implement copying elements
     static copiedItem: SlideItem | null = null;
     editorCacheManager: SlideEditorCacheManager;
-    private static _cache = new Map<string, SlideItem>();
     constructor(
         id: number, filePath: string, json: SlideItemType,
         editorCacheManager?: SlideEditorCacheManager,
     ) {
         super();
         this.id = id;
-        this._json = cloneJson(json);
+        this._originalJson = cloneJson(json);
         this.filePath = filePath;
         if (editorCacheManager !== undefined) {
             this.editorCacheManager = editorCacheManager;
@@ -46,25 +45,30 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             this.editorCacheManager.isUsingHistory = false;
         }
         this.isCopied = false;
-        SlideItem._cache.set(this.key, this);
     }
+
     get key() {
         return SlideItem.genKeyByFileSource(this.filePath, this.id);
     }
+
     get pdfImageData() {
         return this.originalJson.pdfImageData || null;
     }
+
     get isPdf() {
         return this.pdfImageData !== null;
     }
+
     get originalJson() {
-        return this._json;
+        return this._originalJson;
     }
+
     checkIsSame(slideItem: SlideItemType | SlideItem) {
         return this.id === slideItem.id;
     }
+
     set originalJson(json: SlideItemType) {
-        this._json = json;
+        this._originalJson = json;
         const items = this.editorCacheManager.presenterJson.items;
         const newItems = items.map((item) => {
             if (this.checkIsSame(item)) {
@@ -74,61 +78,74 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         });
         this.editorCacheManager.pushSlideItems(newItems);
     }
+
     get metadata() {
         return this.originalJson.metadata;
     }
+
     set metadata(metadata: AnyObjectType) {
         const json = cloneJson(this.originalJson);
         json.metadata = metadata;
         this.originalJson = json;
     }
+
     get pdfImageSrc() {
         return this.pdfImageData?.src || '';
     }
+
     get canvas() {
         return Canvas.fromJson({
             metadata: this.metadata,
             canvasItems: this.canvasItemsJson,
         });
     }
+
     set canvas(canvas: Canvas) {
         this.canvasItemsJson = canvas.canvasItems.map((item) => {
             return item.toJson();
         });
     }
+
     get canvasItemsJson() {
         return this.originalJson.canvasItems;
     }
+
     set canvasItemsJson(canvasItemsJson: CanvasItemPropsType[]) {
         const json = cloneJson(this.originalJson);
         json.canvasItems = canvasItemsJson;
         this.originalJson = json;
     }
+
     get width() {
         if (this.isPdf) {
             return Math.floor(this.pdfImageData?.width || 0);
         }
         return this.metadata.width;
     }
+
     set width(width: number) {
         const metadata = this.metadata;
         metadata.width = width;
         this.metadata = metadata;
     }
+
     get height() {
         if (this.isPdf) {
             return Math.floor(this.pdfImageData?.height || 0);
         }
         return this.metadata.height;
     }
+
     set height(height: number) {
         const metadata = this.metadata;
         metadata.height = height;
         this.metadata = metadata;
     }
+
     get isChanged() {
         return this.editorCacheManager.checkIsSlideItemChanged(this.id);
     }
+
     static defaultSlideItemData(id: number) {
         const { width, height } = Canvas.getDefaultDim();
         return {
@@ -140,12 +157,14 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             canvasItems: [],
         };
     }
+
     static fromJson(
         json: SlideItemType, filePath: string,
         editorCacheManager?: SlideEditorCacheManager,
     ) {
         return new SlideItem(json.id, filePath, json, editorCacheManager);
     }
+
     static fromJsonError(
         json: AnyObjectType, filePath: string,
         editorCacheManager?: SlideEditorCacheManager,
@@ -159,6 +178,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         item.jsonError = json;
         return item;
     }
+
     toJson(): SlideItemType {
         if (this.isError) {
             return this.jsonError;
@@ -170,6 +190,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             metadata: this.metadata,
         };
     }
+
     static validate(json: AnyObjectType) {
         if (typeof json.id !== 'number' ||
             typeof json.metadata !== 'object' ||
@@ -180,6 +201,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             throw new Error('Invalid slide item data');
         }
     }
+
     clone(isDuplicateId?: boolean) {
         const slideItem = SlideItem.fromJson(this.toJson(), this.filePath);
         if (!isDuplicateId) {
@@ -187,16 +209,16 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         }
         return slideItem;
     }
+
     static genKeyByFileSource(filePath: string, id: number) {
         return `${filePath}:${id}`;
     }
-    static clearCache() {
-        this._cache = new Map();
-    }
+
     checkIsWrongDimension({ bounds }: DisplayType) {
         return bounds.width !== this.width ||
             bounds.height !== this.height;
     }
+
     dragSerialize() {
         return {
             type: DragTypeEnum.SLIDE_ITEM,
@@ -210,7 +232,7 @@ export const SelectedSlideItemContext = createContext<{
     setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
 } | null>(null);
 
-export function useSelectedSlideItem() {
+export function useSelectedSlideItemContext() {
     const context = useContext(SelectedSlideItemContext);
     if (!context) {
         throw new Error(

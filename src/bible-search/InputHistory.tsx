@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 
 let addHistory: (text: string) => void = () => { };
 let timeoutId: any = null;

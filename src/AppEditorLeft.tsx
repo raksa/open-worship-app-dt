@@ -3,10 +3,10 @@ import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const SlideList = lazy(() => {
+const LazySlideList = lazy(() => {
     return import('./slide-list/SlideList');
 });
-const SlidePreviewer = lazy(() => {
+const LazySlidePreviewer = lazy(() => {
     return import('./slide-presenter/items/SlidePreviewer');
 });
 
@@ -20,11 +20,11 @@ export default function AppEditorLeft() {
             }}
             dataInput={[
                 {
-                    children: SlideList, key: 'v1',
+                    children: LazySlideList, key: 'v1',
                     widgetName: 'Slide List', className: 'flex-item',
                 },
                 {
-                    children: SlidePreviewer, key: 'v2',
+                    children: LazySlidePreviewer, key: 'v2',
                     widgetName: 'Slide Previewer', className: 'flex-item',
                 },
             ]}

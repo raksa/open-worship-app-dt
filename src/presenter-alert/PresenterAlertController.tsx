@@ -1,4 +1,4 @@
-import { useStateSettingString } from '../helper/settingHelper';
+import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/ScreenAlertManager';
 
 export default function PresenterAlertController() {

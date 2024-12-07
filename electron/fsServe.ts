@@ -2,7 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { app, net, protocol, session } from 'electron';
 
-const indexHtml = 'index.html';
+export const htmlFiles = {
+    presenter: 'presenter.html',
+    screen: 'screen.html',
+    reader: 'reader.html',
+    finder: 'finder.html',
+};
 export const customScheme = 'owa';
 export const schemePrivileges = {
     standard: true,
@@ -30,7 +35,9 @@ function toFileFullPath(filePath: string) {
 function genFilePathUrl(dirPath: string, url: string) {
     url = decodeURIComponent((new URL(url)).pathname);
     let filePath = path.join(dirPath, url);
-    filePath = toFileFullPath(filePath) ?? path.join(dirPath, indexHtml);
+    filePath = toFileFullPath(filePath) ?? path.join(
+        dirPath, htmlFiles.presenter,
+    );
     return `file://${filePath}`;
 }
 

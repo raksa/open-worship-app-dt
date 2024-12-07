@@ -12,7 +12,7 @@ import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import { getInputTrueValue, useInputText } from './InputHandler';
+import { getInputTrueValue, useInputTextContext } from './InputHandler';
 
 let syncTimeoutId: any = null;
 function checkShouldSync(
@@ -132,7 +132,7 @@ function useMethods(
 }
 
 export default function RenderBibleSearchBody() {
-    const { inputText } = useInputText();
+    const { inputText } = useInputTextContext();
     const viewController = SearchBibleItemViewController.getInstance();
     const bibleKey = useBibleKeyContext();;
     const setInputText = viewController.setInputText;

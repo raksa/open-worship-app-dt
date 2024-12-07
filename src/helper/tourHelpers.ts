@@ -1,13 +1,13 @@
 import { openConfirm } from '../alert/alertHelpers';
-import { getDesktopPath } from '../server/appHelper';
+import { getDesktopPath } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
-import { fsCheckDirExist, fsCreateDir } from '../server/fileHelper';
+import { fsCheckDirExist, fsCreateDir } from '../server/fileHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { defaultDataDirNames, dirSourceSettingNames } from './constants';
 import { useAppEffect } from './debuggerHelpers';
 import DirSource from './DirSource';
 import { handleError } from './errorHelpers';
-import { getSetting, setSetting } from './settingHelper';
+import { getSetting, setSetting } from './settingHelpers';
 
 function getDefaultDataDir() {
     const desktopPath = getDesktopPath();

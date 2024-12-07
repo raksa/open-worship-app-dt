@@ -4,7 +4,7 @@ import {
 } from '../server/appProvider';
 
 const appProviderScreen = (window as any).provider as {
-    isMain: boolean,
+    isPresenter: boolean,
     isScreen: boolean,
     messageUtils: MessageUtilsType;
     fileUtils: FileUtilsType,

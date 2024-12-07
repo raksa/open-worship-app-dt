@@ -1,12 +1,12 @@
 import {
     fsListFilesWithMimetype, MimetypeNameType,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import {
     AnyObjectType, cloneJson, toMaxId,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { getSetting } from '../helper/settingHelper';
+import { getSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
@@ -21,10 +21,10 @@ export type BibleType = {
 }
 export default class Bible extends ItemSource<BibleItem> {
     static readonly DEFAULT_FILE_NAME = 'Default';
-    _originalJson: BibleType;
+    private readonly originalJson: BibleType;
     constructor(filePath: string, json: BibleType) {
         super(filePath);
-        this._originalJson = cloneJson(json);
+        this.originalJson = cloneJson(json);
     }
     static getDirSourceSettingName(windowMode: WindowModEnum | null) {
         const isReader = checkIsWindowReaderMode(windowMode);
@@ -39,13 +39,13 @@ export default class Bible extends ItemSource<BibleItem> {
         return new Bible(filePath, json);
     }
     get metadata() {
-        return this._originalJson.metadata;
+        return this.originalJson.metadata;
     }
     get itemsLength() {
-        return this._originalJson.items.length;
+        return this.originalJson.items.length;
     }
     get items() {
-        return this._originalJson.items.map((json) => {
+        return this.originalJson.items.map((json) => {
             try {
                 return BibleItem.fromJson(json, this.filePath);
             } catch (error: any) {
@@ -56,7 +56,7 @@ export default class Bible extends ItemSource<BibleItem> {
     }
     set items(newBibleItems: BibleItem[]) {
         const bibleItems = newBibleItems.map((item) => item.toJson());
-        this._originalJson.items = bibleItems;
+        this.originalJson.items = bibleItems;
     }
     get maxItemId() {
         if (this.items.length) {

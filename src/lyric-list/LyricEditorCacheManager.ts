@@ -6,17 +6,17 @@ import { LyricItemType } from './LyricItem';
 export default class LyricEditorCacheManager
     extends EditorCacheManager<LyricEditorHistoryType, LyricType> {
 
-    _originalJson: Readonly<LyricType>;
+    private originalJson: Readonly<LyricType>;
 
     constructor(filePath: string, json: LyricType) {
         super(filePath, 'lyric');
-        this._originalJson = Object.freeze(cloneJson(json));
+        this.originalJson = Object.freeze(cloneJson(json));
     }
     get cloneItems() {
-        return cloneJson(this._originalJson.items);
+        return cloneJson(this.originalJson.items);
     }
     get cloneMetadata() {
-        return cloneJson(this._originalJson.metadata);
+        return cloneJson(this.originalJson.metadata);
     }
     get presenterJson() {
         if (this.isUsingHistory) {
@@ -46,7 +46,7 @@ export default class LyricEditorCacheManager
     }
     checkIsLyricItemChanged(id: number) {
         const newItem = this.getLyricItemById(id);
-        const lyricItems = this._originalJson.items;
+        const lyricItems = this.originalJson.items;
         const originalItem = lyricItems.find((item) => {
             return item.id === id;
         });
@@ -66,7 +66,7 @@ export default class LyricEditorCacheManager
         this.pushUndo(newHistory);
     }
     save() {
-        this._originalJson = Object.freeze(this.presenterJson);
+        this.originalJson = Object.freeze(this.presenterJson);
         this.delete();
     }
 }

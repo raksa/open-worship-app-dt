@@ -10,8 +10,7 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { useNavigate } from 'react-router-dom';
-import { goEditorMode } from '../router/routeHelpers';
+import { goEditorMode, useRouteNavigateContext } from '../router/routeHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -19,7 +18,7 @@ export default function SlideFile({
     index: number,
     filePath: string,
 }>) {
-    const navigator = useNavigate();
+    const navigate = useRouteNavigateContext();
     const [data, setData] = useState<SlideDynamicType>(null);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -79,7 +78,7 @@ export default function SlideFile({
                 onClick: () => {
                     if (data) {
                         data.isSelected = true;
-                        goEditorMode(navigator);
+                        goEditorMode(navigate);
                     }
                 },
             }]}

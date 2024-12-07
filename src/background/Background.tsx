@@ -4,7 +4,7 @@ import { lazy } from 'react';
 
 import {
     useStateSettingString,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import TabRender, {
     genTabBody,
 } from '../others/TabRender';
@@ -16,21 +16,21 @@ import {
     BackgroundType, getBGSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
 
-const BackgroundColors = lazy(() => {
+const LazyBackgroundColors = lazy(() => {
     return import('./BackgroundColors');
 });
-const BackgroundImages = lazy(() => {
+const LazyBackgroundImages = lazy(() => {
     return import('./BackgroundImages');
 });
-const BackgroundVideos = lazy(() => {
+const LazyBackgroundVideos = lazy(() => {
     return import('./BackgroundVideos');
 });
 
 
 const tabTypeList = [
-    ['color', 'Colors', BackgroundColors],
-    ['image', 'Images', BackgroundImages],
-    ['video', 'Videos', BackgroundVideos],
+    ['color', 'Colors', LazyBackgroundColors],
+    ['image', 'Images', LazyBackgroundImages],
+    ['video', 'Videos', LazyBackgroundVideos],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Background() {

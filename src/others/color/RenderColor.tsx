@@ -1,5 +1,5 @@
 import { showAppContextMenu } from '../AppContextMenu';
-import { copyToClipboard } from '../../server/appHelper';
+import { copyToClipboard } from '../../server/appHelpers';
 import {
     AppColorType, serializeForDragging,
 } from './colorHelpers';

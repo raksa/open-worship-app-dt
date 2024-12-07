@@ -1,6 +1,8 @@
 import { lazy, useCallback, useContext, useMemo, useState } from 'react';
 
-import InputHandler, { InputTextContext, useInputText } from './InputHandler';
+import InputHandler, {
+    InputTextContext, useInputTextContext,
+} from './InputHandler';
 import {
     SelectedBibleKeyContext, genInputText, useBibleKeyContext,
     useSelectedBibleKey,
@@ -18,8 +20,9 @@ import {
 import ResizeActor from '../resize-actor/ResizeActor';
 import { CloseButtonContext } from '../app-modal/Modal';
 import InputHistory from './InputHistory';
+import { MultiContextRender } from '../helper/MultiContextRender';
 
-const BibleOnlineSearchBodyPreviewer = lazy(() => {
+const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
 });
 
@@ -32,7 +35,7 @@ function RenderBibleSearchHeader({
     setBibleKey: (bibleKey: string | null) => void,
 }>) {
     const bibleKey = useBibleKeyContext();
-    const { inputText, setInputText } = useInputText();
+    const { inputText, setInputText } = useInputTextContext();
     const closeButton = useContext(CloseButtonContext);
     const { data } = usePopupWindowsTypeData();
 
@@ -97,8 +100,8 @@ function RenderBibleSearchHeader({
     );
 }
 
-export default function RenderBibleSearch({ editorInputText }: Readonly<{
-    editorInputText: string,
+export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
+    editorInputText?: string,
 }>) {
     const [isSearchOnline, setIsSearchOnline] = useState(false);
     const [inputText, setInputText] = useState<string>(editorInputText);
@@ -126,36 +129,39 @@ export default function RenderBibleSearch({ editorInputText }: Readonly<{
             }, key: 'h2', widgetName: 'Searching',
         },
         {
-            children: BibleOnlineSearchBodyPreviewer,
+            children: LazyBibleOnlineSearchBodyPreviewer,
             key: 'h1',
             widgetName: 'Bible Online Search',
         },
     ];
     return (
-        <SelectedBibleKeyContext.Provider value={bibleKey}>
-            <InputTextContext.Provider value={inputTextContextValue}>
-
-                <div id='bible-search-popup' className='app-modal shadow card'>
-                    <RenderBibleSearchHeader
-                        editorInputText={editorInputText}
-                        isSearchOnline={isSearchOnline}
-                        setIsSearchOnline={setIsSearchOnline}
-                        setBibleKey={setBibleKey}
-                    />
-                    <div className={
-                        'card-body d-flex w-100 h-100 overflow-hidden'
-                    }>
-                        {isSearchOnline ? (
-                            <ResizeActor fSizeName='bible-search-popup-body'
-                                isHorizontal
-                                isDisableQuickResize
-                                flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
-                                dataInput={resizeData}
-                            />
-                        ) : searchingBody}
-                    </div>
+        <MultiContextRender contexts={[{
+            context: SelectedBibleKeyContext,
+            value: bibleKey,
+        }, {
+            context: InputTextContext,
+            value: inputTextContextValue,
+        }]}>
+            <div id='bible-search-popup' className='app-modal shadow card'>
+                <RenderBibleSearchHeader
+                    editorInputText={editorInputText}
+                    isSearchOnline={isSearchOnline}
+                    setIsSearchOnline={setIsSearchOnline}
+                    setBibleKey={setBibleKey}
+                />
+                <div className={
+                    'card-body d-flex w-100 h-100 overflow-hidden'
+                }>
+                    {isSearchOnline ? (
+                        <ResizeActor fSizeName='bible-search-popup-body'
+                            isHorizontal
+                            isDisableQuickResize
+                            flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
+                            dataInput={resizeData}
+                        />
+                    ) : searchingBody}
                 </div>
-            </InputTextContext.Provider>
-        </SelectedBibleKeyContext.Provider>
+            </div>
+        </MultiContextRender>
     );
 }

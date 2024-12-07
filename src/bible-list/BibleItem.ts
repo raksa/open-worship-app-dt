@@ -4,7 +4,7 @@ import {
 import { ItemBase } from '../helper/ItemBase';
 import {
     setSetting, getSetting,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
@@ -13,14 +13,14 @@ import {
 } from './bibleRenderHelpers';
 import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
-import { copyToClipboard } from '../server/appHelper';
+import { copyToClipboard } from '../server/appHelpers';
 
 const BIBLE_PRESENT_SETTING_NAME = 'bible-presenter';
 
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
     static readonly SELECT_SETTING_NAME = 'bible-item-selected';
-    _originalJson: BibleItemType;
+    private originalJson: BibleItemType;
     id: number;
     filePath?: string;
     constructor(id: number, json: BibleItemType,
@@ -28,25 +28,25 @@ export default class BibleItem extends ItemBase
         super();
         this.id = id;
         this.filePath = filePath;
-        this._originalJson = cloneJson(json);
+        this.originalJson = cloneJson(json);
     }
     get bibleKey() {
-        return this._originalJson.bibleKey;
+        return this.originalJson.bibleKey;
     }
     set bibleKey(name: string) {
-        this._originalJson.bibleKey = name;
+        this.originalJson.bibleKey = name;
     }
     get target() {
-        return this._originalJson.target;
+        return this.originalJson.target;
     }
     set target(target: BibleTargetType) {
-        this._originalJson.target = target;
+        this.originalJson.target = target;
     }
     get metadata() {
-        return this._originalJson.metadata;
+        return this.originalJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this._originalJson.metadata = metadata;
+        this.originalJson.metadata = metadata;
     }
     checkIsSameId(bibleItem: BibleItem) {
         return this.id === bibleItem.id;
@@ -205,7 +205,7 @@ export default class BibleItem extends ItemBase
         copyToClipboard(`${title}\n${text}`);
     }
     syncData(bibleItem: BibleItem) {
-        this._originalJson = bibleItem._originalJson;
+        this.originalJson = bibleItem.originalJson;
     }
     dragSerialize() {
         return {

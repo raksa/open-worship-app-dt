@@ -23,7 +23,7 @@ export const InputTextContext = createContext<{
     inputText: string,
     setInputText: (text: string) => void,
 } | null>(null);
-export function useInputText() {
+export function useInputTextContext() {
     const inputTextContext = useContext(InputTextContext);
     if (inputTextContext === null) {
         throw new Error('InputTextContext is not provided');
@@ -41,7 +41,7 @@ export default function InputHandler({
 }: Readonly<{
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
-    const { inputText } = useInputText();
+    const { inputText } = useInputTextContext();
     const setInputText = (
         SearchBibleItemViewController.getInstance().setInputText
     );

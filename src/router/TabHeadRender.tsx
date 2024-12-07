@@ -1,9 +1,8 @@
-import {
-    useLocation, useNavigate,
-} from 'react-router-dom';
 import { tran } from '../lang';
 import {
     TabCheckPropsType, TabOptionType,
+    useRouteLocationContext,
+    useRouteNavigateContext,
 } from './routeHelpers';
 
 export default function TabRender({
@@ -12,12 +11,12 @@ export default function TabRender({
     tabs: TabOptionType[],
     className?: string,
 }>) {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const _renderItem = renderItem.bind(null, { navigate, location });
+    const navigate = useRouteNavigateContext();
+    const location = useRouteLocationContext();
+    const renderItem1 = renderItem.bind(null, { navigate, location });
     return (
         <ul className={`nav nav-tabs ${className}`}>
-            {tabs.map(_renderItem)}
+            {tabs.map(renderItem1)}
         </ul>
     );
 }

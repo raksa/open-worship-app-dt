@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePFTMEvents, usePMEvents } from './screenEventHelpers';
 import ScreenFTManager from './ScreenFTManager';
-import { useScreenManager } from './ScreenManager';
+import { useScreenManagerContext } from './ScreenManager';
 
 const styleText = `
 #full-text {
@@ -103,7 +103,7 @@ const styleText = `
 }`;
 
 export default function ScreenFullText() {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     usePMEvents(['resize'], screenManager, () => {
         screenManager.screenFTManager.render();
     });

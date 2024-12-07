@@ -1,6 +1,6 @@
 import {
     copyToClipboard, openExplorer,
-} from '../server/appHelper';
+} from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { showAppContextMenu } from './AppContextMenu';
 

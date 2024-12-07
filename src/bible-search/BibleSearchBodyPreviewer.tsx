@@ -10,10 +10,10 @@ import AppSuspense from '../others/AppSuspense';
 import {
     useCloseBibleItemRenderer, useNextEditingBibleItem,
     useSplitBibleItemRenderer,
-} from '../bible-reader/readBibleHelper';
+} from '../bible-reader/readBibleHelpers';
 import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
 
-const BiblePreviewerRender = lazy(() => {
+const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRender');
 });
 
@@ -44,7 +44,7 @@ export default function BibleSearchBodyPreviewer() {
         <BibleItemViewControllerContext.Provider
             value={viewController}>
             <AppSuspense>
-                <BiblePreviewerRender />
+                <LazyBiblePreviewerRender />
             </AppSuspense>
         </BibleItemViewControllerContext.Provider>
     );

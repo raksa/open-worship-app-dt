@@ -8,12 +8,12 @@ import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
-import { copyToClipboard } from '../server/appHelper';
+import { copyToClipboard } from '../server/appHelpers';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 
-const RenderBibleItems = lazy(() => {
+const LazyRenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
 });
 
@@ -119,7 +119,7 @@ function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
                 }}>
                 {bible.isOpened && <div className='accordion-body p-0'>
                     <AppSuspense>
-                        <RenderBibleItems bible={bible} />
+                        <LazyRenderBibleItems bible={bible} />
                     </AppSuspense>
                 </div>}
             </div>

@@ -1,9 +1,9 @@
-import { useScreenManager } from '../ScreenManager';
+import { useScreenManagerContext } from '../ScreenManager';
 import RenderTransitionEffect
     from '../transition-effect/RenderTransitionEffect';
 
 export default function PTEffectControl() {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     const screenId = screenManager.screenId;
     return (
         <>

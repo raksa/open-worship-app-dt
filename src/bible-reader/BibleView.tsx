@@ -9,7 +9,7 @@ import {
 } from './BibleItemViewController';
 import {
     applyDragged, genDraggingClass, removeDraggingClass,
-} from './readBibleHelper';
+} from './readBibleHelpers';
 import {
     BibleViewText, RenderHeader,
 } from './BibleViewExtra';
@@ -68,5 +68,11 @@ export default function BibleView({ bibleItem }: Readonly<{
                 </div>
             </div>
         </BibleItemContext.Provider>
+    );
+}
+
+export function finalRenderer(bibleItem: BibleItem) {
+    return (
+        <BibleView bibleItem={bibleItem} />
     );
 }

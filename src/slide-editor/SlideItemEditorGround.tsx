@@ -1,11 +1,11 @@
 import './SlideItemEditorPreviewer.scss';
 
-import { useSelectedSlideItem } from '../slide-list/SlideItem';
+import { useSelectedSlideItemContext } from '../slide-list/SlideItem';
 import SlideItemEditor from './SlideItemEditor';
 import CanvasController from './canvas/CanvasController';
 
 export default function SlideItemEditorGround() {
-    const { selectedSlideItem } = useSelectedSlideItem();
+    const { selectedSlideItem } = useSelectedSlideItemContext();
     CanvasController.getInstance().init(selectedSlideItem);
     return (
         <SlideItemEditor />

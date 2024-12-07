@@ -71,6 +71,7 @@ export type AppUtilsType = {
     handleError: (error: any) => void,
     base64Encode: (str: string) => string,
     base64Decode: (str: string) => string,
+    quitApp: () => void,
 };
 export type PdfUtilsType = {
     officeFileToPdf: (
@@ -86,7 +87,7 @@ export enum AppTypeEnum {
 }
 
 const appProvider = (window as any).provider as {
-    isMain: boolean,
+    isPresenter: boolean,
     isScreen: boolean,
     appType: AppTypeEnum,
     isDesktop: boolean,
@@ -112,6 +113,8 @@ const appProvider = (window as any).provider as {
     reload: () => void,
     appUtils: AppUtilsType,
     pdfUtils: PdfUtilsType,
+    presenterHomePage: string,
+    readerHomePage: string,
 };
 
 export default appProvider;

@@ -7,17 +7,17 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import SlideItemGhost from './SlideItemGhost';
-import { useSelectedSlide } from '../../slide-list/Slide';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
 import { useWindowIsEditorMode } from '../../router/routeHelpers';
 import { genArrowListener, checkSlideItemToView } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
-import { useSelectedSlideItem } from '../../slide-list/SlideItem';
+import { useSelectedSlideItemContext } from '../../slide-list/SlideItem';
 
 export default function SlideItems() {
-    const { selectedSlide } = useSelectedSlide();
-    const { setSelectedSlideItem } = useSelectedSlideItem();
+    const { selectedSlide } = useSelectedSlideContext();
+    const { setSelectedSlideItem } = useSelectedSlideItemContext();
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const isEditorMode = useWindowIsEditorMode();

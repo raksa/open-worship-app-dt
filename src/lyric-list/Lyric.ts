@@ -1,5 +1,5 @@
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
@@ -111,7 +111,6 @@ export default class Lyric extends ItemSource<LyricItem>{
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
         if (isSuccess) {
-            LyricItem.clearCache();
             this.editorCacheManager.save();
         }
         return isSuccess;

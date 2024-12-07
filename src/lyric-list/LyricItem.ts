@@ -13,7 +13,7 @@ export type LyricItemType = {
 
 export default class LyricItem extends ItemBase
     implements DragInf<LyricItemType> {
-    _originalJson: Readonly<LyricItemType>;
+    private readonly _originalJson: Readonly<LyricItemType>;
     static readonly SELECT_SETTING_NAME = 'lyric-item-selected';
     id: number;
     filePath: string;
@@ -22,7 +22,6 @@ export default class LyricItem extends ItemBase
     // TODO: implement copying elements
     static copiedItem: LyricItem | null = null;
     editorCacheManager: LyricEditorCacheManager;
-    private static _cache = new Map<string, LyricItem>();
     constructor(
         id: number, filePath: string, json: LyricItemType,
         editorCacheManager?: LyricEditorCacheManager,
@@ -43,8 +42,6 @@ export default class LyricItem extends ItemBase
             this.editorCacheManager.isUsingHistory = false;
         }
         this.isCopied = false;
-        const key = LyricItem.genKeyByFileSource(filePath, id);
-        LyricItem._cache.set(key, this);
     }
     get metadata() {
         const json = this.editorCacheManager.getLyricItemById(this.id);
@@ -138,9 +135,6 @@ export default class LyricItem extends ItemBase
             content: 'Block1\n===\nBlock2\n===\nBlock3',
             metadata: {},
         };
-    }
-    static clearCache() {
-        this._cache = new Map();
     }
     dragSerialize() {
         return {

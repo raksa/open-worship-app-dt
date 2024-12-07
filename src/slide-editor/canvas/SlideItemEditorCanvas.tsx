@@ -5,7 +5,7 @@ import {
 import {
     showCanvasContextMenu,
 } from './canvasCMHelpers';
-import { isSupportedMimetype } from '../../server/fileHelper';
+import { isSupportedMimetype } from '../../server/fileHelpers';
 import CanvasController from './CanvasController';
 import { useCCScale, useCanvasControllerEvents } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';

@@ -8,7 +8,7 @@ import ScreenPreviewerItem from './ScreenPreviewerItem';
 import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
-} from '../../helper/settingHelper';
+} from '../../helper/settingHelpers';
 import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';

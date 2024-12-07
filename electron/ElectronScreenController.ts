@@ -4,8 +4,9 @@ import {
 } from './electronEventListener';
 import ElectronMainController from './ElectronMainController';
 import { genRoutProps } from './protocolHelpers';
+import { htmlFiles } from './fsServe';
 
-const routeProps = genRoutProps('screen');
+const routeProps = genRoutProps(htmlFiles.screen);
 const cache = new Map<string, ElectronScreenController>();
 export default class ElectronScreenController {
 
@@ -16,6 +17,7 @@ export default class ElectronScreenController {
         this.screenId = screenId;
         this.win = this.createScreenWindow();
     }
+
     createScreenWindow() {
         const isWin32 = process.platform === 'win32';
         const isScreenCanFullScreen = isWin32;
@@ -40,6 +42,7 @@ export default class ElectronScreenController {
         });
         return screenWin;
     }
+
     listenLoading() {
         return new Promise<void>((resolve) => {
             this.win.webContents.once('did-finish-load', () => {
@@ -47,24 +50,29 @@ export default class ElectronScreenController {
             });
         });
     }
+
     destroyInstance() {
         ElectronMainController.getInstance().sendNotifyInvisibility(
             this.screenId,
         );
         cache.delete(this.screenId.toString());
     }
+
     close() {
         if (!this.win.isDestroyed()) {
             this.win.close();
         }
     }
+
     setDisplay(display: Electron.Display) {
         const bounds = display.bounds;
         this.win.setBounds(bounds);
     }
+
     sendData(channel: string, data: any) {
         this.win.webContents.send(channel, data);
     }
+
     sendMessage(type: string, data: AnyObjectType) {
         this.win.webContents.send(
             channels.screenMessageChannel, {
@@ -73,11 +81,13 @@ export default class ElectronScreenController {
             data,
         });
     }
+
     static getAllIds(): number[] {
         return Array.from(cache.keys()).map(key => {
             return +key;
         });
     }
+
     static createInstance(screenId: number) {
         const key = screenId.toString();
         if (!cache.has(key)) {
@@ -86,6 +96,7 @@ export default class ElectronScreenController {
         }
         return cache.get(key) as ElectronScreenController;
     }
+
     static getInstance(screenId: number): ElectronScreenController | null {
         const key = screenId.toString();
         if (!cache.has(key)) {

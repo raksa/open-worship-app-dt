@@ -2,8 +2,8 @@ import { Fragment, useCallback } from 'react';
 
 import SlideItemRender from './SlideItemRender';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import { useSelectedSlide } from '../../slide-list/Slide';
-import SlideItem, { useSelectedSlideItem } from '../../slide-list/SlideItem';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
+import SlideItem, { useSelectedSlideItemContext } from '../../slide-list/SlideItem';
 import SlideItemPdfRender from './SlideItemPdfRender';
 import {
     handleSlideItemSelecting,
@@ -17,8 +17,8 @@ export default function SlideItemRenderWrapper({
     index: number,
     setDraggingIndex: (index: number | null) => void,
 }>) {
-    const { selectedSlide } = useSelectedSlide();
-    const { setSelectedSlideItem } = useSelectedSlideItem();
+    const { selectedSlide } = useSelectedSlideContext();
+    const { setSelectedSlideItem } = useSelectedSlideItemContext();
     const onDropCallback = useCallback((id: number, isLeft: boolean) => {
         selectedSlide.moveItem(id, index, isLeft);
     }, [selectedSlide, index]);

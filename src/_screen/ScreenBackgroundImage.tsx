@@ -1,11 +1,11 @@
 import { usePBGMEvents } from './screenEventHelpers';
 import { BackgroundSrcType, calMediaSizes } from './screenHelpers';
-import { useScreenManager } from './ScreenManager';
+import { useScreenManagerContext } from './ScreenManager';
 
 export default function ScreenBackgroundImage({ bgSrc }: Readonly<{
     bgSrc: BackgroundSrcType,
 }>) {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     const { screenBGManager } = screenManager;
     usePBGMEvents(['update'], screenBGManager);
     const {

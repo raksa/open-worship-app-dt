@@ -2,13 +2,13 @@ import { CSSProperties, LazyExoticComponent } from 'react';
 
 import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
-import { setSetting, getSetting } from '../helper/settingHelper';
+import { setSetting, getSetting } from '../helper/settingHelpers';
 
 export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
 };
 export type DataInputType = {
-    children: LazyExoticComponent<() => React.JSX.Element | null> | {
+    children: LazyExoticComponent<(props?: any) => React.JSX.Element | null> | {
         render: () => React.JSX.Element | null,
     },
     key: string,

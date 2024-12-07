@@ -1,4 +1,3 @@
-import { MimetypeNameType } from '../server/fileHelper';
 import {
     AnyObjectType, cloneJson, isValidJson,
 } from '../helper/helpers';
@@ -11,10 +10,8 @@ export type PlaylistType = {
     metadata: AnyObjectType,
 }
 
-export default class Playlist extends ItemSource<PlaylistItem>{
-    static SELECT_DIR_SETTING = 'playlist-list-selected-dir';
-    static mimetype: MimetypeNameType = 'playlist';
-    _originalJson: PlaylistType;
+export default class Playlist extends ItemSource<PlaylistItem> {
+    private readonly _originalJson: PlaylistType;
     constructor(filePath: string, json: PlaylistType) {
         super(filePath);
         this._originalJson = cloneJson(json);

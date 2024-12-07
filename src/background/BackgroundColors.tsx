@@ -13,7 +13,8 @@ export default function BackgroundColors() {
         useState<[string, BackgroundSrcType][] | null>(null)
     );
     const onNoColorCallback = useCallback(async (
-        _newColor: AppColorType, event: any) => {
+        _newColor: AppColorType, event: any,
+    ) => {
         setSelectedBGSrcList(null);
         ScreenBGManager.bgSrcSelect(null, event, 'color');
     }, []);

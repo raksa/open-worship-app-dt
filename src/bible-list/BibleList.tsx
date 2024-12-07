@@ -9,7 +9,7 @@ import { useGenDS } from '../helper/dirSourceHelpers';
 import {
     checkIsWindowReaderMode, useWindowMode,
 } from '../router/routeHelpers';
-import { getSettingPrefix } from '../helper/settingHelper';
+import { getSettingPrefix } from '../helper/settingHelpers';
 import {
     defaultDataDirNames,
 } from '../helper/constants';

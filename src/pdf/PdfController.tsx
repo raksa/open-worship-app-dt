@@ -1,4 +1,4 @@
-import pdfjsLibType, {
+import {
     PDFDocumentProxy,
 } from 'pdfjs-dist';
 import appProvider from '../server/appProvider';
@@ -11,9 +11,8 @@ export type PdfImageDataType = {
 
 const mapper = new Map<string, PdfImageDataType[]>();
 
+let instance: PdfController | null = null;
 export default class PdfController {
-    static _instance: PdfController | null = null;
-    static pdfjsLib: typeof pdfjsLibType | null = null;
     async genPdfImages(pdfPath: string) {
         if (mapper.has(pdfPath)) {
             return mapper.get(pdfPath) as PdfImageDataType[];
@@ -21,20 +20,20 @@ export default class PdfController {
         const pdfjsLib = appProvider.pdfUtils.pdfjsLib;
         const loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
-        const pdfImageDataList = await this._genImages(pdf);
+        const pdfImageDataList = await this.genImages(pdf);
         mapper.set(pdfPath, pdfImageDataList);
         return pdfImageDataList;
     }
-    _genImages(pdf: PDFDocumentProxy) {
+    private genImages(pdf: PDFDocumentProxy) {
         return new Promise<PdfImageDataType[]>((resolve, reject) => {
             const pageNumbers = Array.from(Array(pdf.numPages).keys());
             const promises = pageNumbers.map((pageNumber) => {
-                return this._genImage(pdf, pageNumber + 1);
+                return this.genImage(pdf, pageNumber + 1);
             });
             Promise.all(promises).then(resolve).catch(reject);
         });
     }
-    _genImage(pdf: PDFDocumentProxy, pageNumber: number) {
+    private genImage(pdf: PDFDocumentProxy, pageNumber: number) {
         return new Promise<PdfImageDataType>((resolve, reject) => {
             pdf.getPage(pageNumber).then((page) => {
                 const viewport = page.getViewport({ scale: 1 });
@@ -58,15 +57,15 @@ export default class PdfController {
                         src: dataURL,
                     });
                 }).catch((error) => {
-                    reject(error);
+                    reject(new Error(error));
                 });
             });
         });
     }
     static getInstance() {
-        if (PdfController._instance === null) {
-            PdfController._instance = new PdfController();
+        if (instance === null) {
+            instance = new PdfController();
         }
-        return PdfController._instance;
+        return instance;
     }
 }

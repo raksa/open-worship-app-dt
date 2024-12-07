@@ -9,7 +9,7 @@ import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -30,7 +30,7 @@ export default class Slide extends ItemSource<SlideItem> {
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editorCacheManager: SlideEditorCacheManager;
-    _pdfImageDataList: PdfImageDataType[] | null = null;
+    pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
     constructor(filePath: string, json: SlideType) {
         super(filePath);
@@ -39,7 +39,7 @@ export default class Slide extends ItemSource<SlideItem> {
         );
     }
     get isPdf() {
-        return this._pdfImageDataList !== null;
+        return this.pdfImageDataList !== null;
     }
     get isChanged() {
         if (this.isPdf) {
@@ -71,7 +71,7 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     get items() {
         if (this.isPdf) {
-            return (this._pdfImageDataList || []).map((pdfImageData, i) => {
+            return (this.pdfImageDataList || []).map((pdfImageData, i) => {
                 const slideItem = new SlideItem(i, this.filePath, {
                     id: i,
                     canvasItems: [],
@@ -116,7 +116,6 @@ export default class Slide extends ItemSource<SlideItem> {
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
         if (isSuccess) {
-            SlideItem.clearCache();
             this.editorCacheManager.save();
         }
         return isSuccess;
@@ -336,7 +335,7 @@ export const SelectedSlideContext = createContext<{
     setSelectedSlide: (newSelectedSlide: Slide) => void,
 } | null>(null);
 
-export function useSelectedSlide() {
+export function useSelectedSlideContext() {
     const context = useContext(SelectedSlideContext);
     if (context === null) {
         throw new Error('useSelectedSlide must be used within a SlideProvider');

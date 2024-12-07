@@ -9,7 +9,7 @@ export const BibleViewFontSizeContext = createContext<number>(
     DEFAULT_BIBLE_TEXT_FONT_SIZE,
 );
 
-export function useBibleViewFontSize() {
+export function useBibleViewFontSizeContext() {
     const fontSize = useContext(BibleViewFontSizeContext);
     return fontSize;
 }

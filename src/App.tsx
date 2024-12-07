@@ -1,17 +1,15 @@
 import { useMemo } from 'react';
 import {
-    Routes, Route, BrowserRouter, useLocation,
+    Routes, Route, BrowserRouter, useLocation, useNavigate,
 } from 'react-router-dom';
 
 import NotFound404 from './router/NotFound404';
-import AppPresenter from './AppPresenter';
 import {
-    DefaultTabContext, checkHome, editorTab, home, presenterTab, readerTab,
-    savePathname,
+    DefaultTabContext, RouteLocationContext, RouteNavigateContext, checkHome,
+    editorTab, home, presenterTab, readerTab, savePathname,
 } from './router/routeHelpers';
 import AppLayout from './router/AppLayout';
 import AppEditor from './AppEditor';
-import AppReader from './AppReader';
 import HandleAlert from './alert/HandleAlert';
 import AppContextMenu from './others/AppContextMenu';
 import Toast from './toast/Toast';
@@ -22,19 +20,53 @@ import RedirectTo from './others/RedirectTo';
 import { useHandleFind } from './_find/finderHelpers';
 import { useCheckSelectedDir } from './helper/tourHelpers';
 import ProgressBar from './progress-bar/ProgressBar';
-import { useKeyboardRegistering } from './event/KeyboardEventListener';
+import AppPresenter from './AppPresenter';
+import { MultiContextRender } from './helper/MultiContextRender';
+import { useQuickExitBlock } from './appInitHelpers';
 
-function useQuickExitOnMac() {
-    useKeyboardRegistering([{
-        key: 'q',
-        mControlKey: ['Meta'],
-    }], (event) => {
-        event.preventDefault();
-    });
+function AppRouteRender() {
+    const navigation = useNavigate();
+    const location = useLocation();
+    const state = location.state as {
+        backgroundLocation?: Location,
+    };
+    const targetLocation = state?.backgroundLocation ?? location;
+    savePathname(targetLocation);
+    return (
+        <MultiContextRender contexts={[{
+            context: RouteNavigateContext,
+            value: navigation,
+        }, {
+            context: RouteLocationContext,
+            value: targetLocation,
+        }]}>
+            <Routes location={state?.backgroundLocation || location}>
+                <Route element={<AppLayout />}>
+                    <Route path={home.routePath}
+                        element={<RedirectTo to={presenterTab.title} />}
+                    />
+                    <Route path={editorTab.routePath}
+                        element={<AppEditor />}
+                    />
+                    <Route path={presenterTab.routePath}
+                        element={<AppPresenter />}
+                    />
+                </Route>
+                <Route path='*' element={<NotFound404 />} />
+            </Routes>
+            {state?.backgroundLocation && (
+                <Routes>
+                    <Route path={APP_MODAL_QUERY_ROUTE_PATH}
+                        element={<AppPopupWindows />}
+                    />
+                </Routes>
+            )}
+        </MultiContextRender>
+    );
 }
 
 export default function App() {
-    useQuickExitOnMac();
+    useQuickExitBlock();
     useCheckSelectedDir();
     useHandleFind();
     const tabProps = useMemo(() => {
@@ -53,42 +85,5 @@ export default function App() {
             <AppContextMenu />
             <HandleAlert />
         </div>
-    );
-}
-
-function AppRouteRender() {
-    const location = useLocation();
-    const state = location.state as {
-        backgroundLocation?: Location,
-    };
-    const targetLocation = state?.backgroundLocation ?? location;
-    savePathname(targetLocation);
-    return (
-        <>
-            <Routes location={state?.backgroundLocation || location}>
-                <Route element={<AppLayout />}>
-                    <Route path={home.routePath}
-                        element={<RedirectTo to={presenterTab.title} />}
-                    />
-                    <Route path={editorTab.routePath}
-                        element={<AppEditor />}
-                    />
-                    <Route path={presenterTab.routePath}
-                        element={<AppPresenter />}
-                    />
-                    <Route path={readerTab.routePath}
-                        element={<AppReader />}
-                    />
-                </Route>
-                <Route path='*' element={<NotFound404 />} />
-            </Routes>
-            {state?.backgroundLocation && (
-                <Routes>
-                    <Route path={APP_MODAL_QUERY_ROUTE_PATH}
-                        element={<AppPopupWindows />}
-                    />
-                </Routes>
-            )}
-        </>
     );
 }

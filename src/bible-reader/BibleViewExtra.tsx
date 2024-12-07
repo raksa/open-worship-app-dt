@@ -7,12 +7,12 @@ import {
     useBibleItemRenderTitle, useBibleItemVerseTextList,
 } from '../bible-list/bibleItemHelpers';
 import {
-    fontSizeToHeightStyle, useBibleViewFontSize,
+    fontSizeToHeightStyle, useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
-import { useBibleItem } from './BibleItemContext';
+import { useBibleItemContext } from './BibleItemContext';
 
 export function RenderTitleMaterial({
     editingBibleItem, onBibleKeyChange,
@@ -20,7 +20,7 @@ export function RenderTitleMaterial({
     editingBibleItem?: BibleItem,
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
-    const bibleItem = useBibleItem();
+    const bibleItem = useBibleItemContext();
     const viewController = useBibleItemViewControllerContext();
     const colorNoteHandler: ColorNoteInf = {
         getColorNote: async () => {
@@ -60,7 +60,7 @@ export function RenderHeader({
     onChange: (oldBibleKey: string, newBibleKey: string) => void,
     onClose: () => void,
 }>) {
-    const fontSize = useBibleViewFontSize();
+    const fontSize = useBibleViewFontSizeContext();
     // TODO: reduce size of the header
     return (
         <div className='card-header d-flex'
@@ -84,10 +84,10 @@ export const BibleViewTitleMaterialContext = (
 );
 
 export function BibleViewTitle() {
-    const bibleItem = useBibleItem();
+    const bibleItem = useBibleItemContext();
     const materialContext = useContext(BibleViewTitleMaterialContext);
     const title = useBibleItemRenderTitle(bibleItem);
-    const fontSize = useBibleViewFontSize();
+    const fontSize = useBibleViewFontSizeContext();
     return (
         <span className='title' style={{ fontSize }}
             title={
@@ -104,8 +104,8 @@ export function BibleViewTitle() {
 }
 
 export function BibleViewText() {
-    const bibleItem = useBibleItem();
-    const fontSize = useBibleViewFontSize();
+    const bibleItem = useBibleItemContext();
+    const fontSize = useBibleViewFontSizeContext();
     const result = useBibleItemVerseTextList(bibleItem);
     if (result === null) {
         return null;
@@ -143,7 +143,7 @@ export function BibleViewText() {
 
 
 export function RefRenderer() {
-    const bibleItem = useBibleItem();
+    const bibleItem = useBibleItemContext();
     const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
     const arr: number[] = [];
     for (let i = verseStart; i <= verseEnd; i++) {

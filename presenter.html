@@ -13,10 +13,6 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Open Worship App" />
     <title>Open Worship App</title>
-    <!-- open-dev -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' http://localhost:8097">
-    <script src="http://localhost:8097"></script>
-    <!-- close-dev -->
 </head>
 
 <body style="background-color: transparent !important">
@@ -26,7 +22,8 @@
         <img style="position: absolute; width: 70px; top: 50%; left: 50%; transform: translate(-35px);" class="loading"
             src="/loading.gif" alt="loading">
     </div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/presenter.tsx"></script>
+    <script type="module" src="node_modules/pdfjs-dist/"></script>
 </body>
 
 </html>

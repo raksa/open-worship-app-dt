@@ -2,11 +2,11 @@ import EventHandler from '../event/EventHandler';
 import {
     FileMetadataType, getFileMetaData, MimetypeNameType, getAppMimetype,
     fsListFiles, fsCheckDirExist,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import { getSetting, setSetting } from './settingHelper';
+import { getSetting, setSetting } from './settingHelpers';
 
 export type DirSourceEventType = 'reload';
 

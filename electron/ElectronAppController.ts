@@ -3,10 +3,11 @@ import ElectronMainController from './ElectronMainController';
 import ElectronSettingController from './ElectronSettingController';
 import electron from 'electron';
 
+let instance: ElectronAppController | null = null;
+let settingController: ElectronSettingController | null = null;
+let finderController: ElectronFinderController | null = null;
 export default class ElectronAppController {
-    private static _instance: ElectronAppController | null = null;
-    private _settingController: ElectronSettingController | null = null;
-    private _finderController: ElectronFinderController | null = null;
+
     constructor() {
         this.settingController.syncMainWindow();
         const app = electron.app;
@@ -16,28 +17,33 @@ export default class ElectronAppController {
             }
         });
     }
+
     get mainWin() {
         return this.mainController.win;
     }
+
     get settingController() {
-        if (this._settingController === null) {
-            this._settingController = new ElectronSettingController(this);
+        if (settingController === null) {
+            settingController = new ElectronSettingController(this);
         }
-        return this._settingController;
+        return settingController;
     }
+
     get mainController() {
         return ElectronMainController.getInstance();
     }
+
     get finderController() {
-        if (this._finderController === null) {
-            this._finderController = new ElectronFinderController();
+        if (finderController === null) {
+            finderController = new ElectronFinderController();
         }
-        return this._finderController;
+        return finderController;
     }
+
     static getInstance() {
-        if (this._instance === null) {
-            this._instance = new ElectronAppController();
+        if (instance === null) {
+            instance = new ElectronAppController();
         }
-        return this._instance;
+        return instance;
     }
 }
