@@ -18,7 +18,7 @@ export default function ConfirmPopup({ data }: Readonly<{
     return (
         <PrimitiveModal>
             <div id='confirm-popup'
-                className='app-modal shadow card'>
+                className='shadow card'>
                 <HeaderAlertPopup header={<>
                     <i className='bi bi-exclamation-circle' />
                     {data.title}

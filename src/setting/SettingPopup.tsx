@@ -23,7 +23,7 @@ export default function SettingPopup() {
     return (
         <Modal>
             <div id='setting-popup'
-                className='app-modal shadow card'>
+                className='shadow card'>
                 <HeaderSettingPopup />
                 <Setting />
             </div>

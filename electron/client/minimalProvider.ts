@@ -7,6 +7,7 @@ import appUtils from './appUtils';
 const provider = {
     isPresenter: false,
     isScreen: true,
+    isReader: false,
     messageUtils,
     fileUtils,
     pathUtils,

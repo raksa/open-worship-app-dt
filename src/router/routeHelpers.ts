@@ -16,7 +16,9 @@ export type TabOptionType = {
     title: string,
     tabClassName?: string,
     routePath: string,
+    extraChildren?: React.ReactNode,
     checkIsActive?: (_: TabCheckPropsType) => boolean,
+    customNavigate?: () => void,
 }
 
 export enum WindowModEnum {
@@ -39,7 +41,7 @@ function checkIsActive(routePath: string, routeProps: TabCheckPropsType) {
 function genTabItem(title: string, routePath: string): TabOptionType {
     return {
         title,
-        routePath: `${appProvider.presenterHomePage}?${routePath}`,
+        routePath: `${appProvider.presenterHomePage}`,
         checkIsActive: checkIsActive.bind(null, routePath),
     };
 }
@@ -53,6 +55,9 @@ export const presenterTab = genTabItem('Presenter', 'presenter');
 export const readerTab: TabOptionType = {
     title: 'Reader',
     routePath: appProvider.readerHomePage,
+    customNavigate: () => {
+        goToPath(appProvider.readerHomePage);
+    },
 };
 
 export function goEditorMode(navigate: NavigateFunction) {
@@ -118,7 +123,6 @@ export function useWindowIsReaderMode() {
 export function goToPath(pathname: string) {
     const url = new URL(window.location.href);
     url.pathname = pathname;
-    debugger;
     window.location.href = url.href;
 }
 export function goHomeBack() {
@@ -132,6 +136,9 @@ export function checkHome() {
     if (url.pathname === home.routePath) {
         if (appProvider.isDesktop) {
             const savedPathname = getSetting(ROUTE_PATHNAME_KEY);
+            if (savedPathname === url.pathname) {
+                return;
+            }
             if (![home.routePath, '/', ''].includes(savedPathname)) {
                 return goToPath(savedPathname);
             }

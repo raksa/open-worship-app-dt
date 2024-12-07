@@ -88,6 +88,7 @@ export enum AppTypeEnum {
 
 const appProvider = (window as any).provider as {
     isPresenter: boolean,
+    isReader: boolean,
     isScreen: boolean,
     appType: AppTypeEnum,
     isDesktop: boolean,

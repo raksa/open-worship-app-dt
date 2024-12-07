@@ -1,7 +1,6 @@
 import KeyboardEventListener, {
     EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import SlideItem from '../slide-list/SlideItem';
 import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
@@ -92,7 +91,7 @@ function showAddingBibleItemFail() {
 }
 
 async function addBibleItemAndPresent(
-    event: any, bibleItem: BibleItem, windowMode: WindowModEnum,
+    event: any, bibleItem: BibleItem, windowMode: WindowModEnum | null,
     onDone: () => void,
 ) {
     const addedBibleItem = await addBibleItem(
@@ -141,7 +140,7 @@ function toShortcutKey(
 }
 
 export function genFoundBibleItemContextMenu(
-    bibleItem: BibleItem, windowMode: WindowModEnum,
+    bibleItem: BibleItem, windowMode: WindowModEnum | null,
     onDone: () => void, isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
     // TODO: fix slide select editing
@@ -156,13 +155,13 @@ export function genFoundBibleItemContextMenu(
             otherChild: isKeyboardShortcut ? (
                 genContextMenuItemShortcutKey(addListEventMapper)
             ) : undefined,
-            onClick: () => {
-                addBibleItem(bibleItem, windowMode, onDone).
-                    then((addedBibleItem) => {
-                        if (addedBibleItem === null) {
-                            showAddingBibleItemFail();
-                        }
-                    });
+            onClick: async () => {
+                const addedBibleItem = await addBibleItem(
+                    bibleItem, windowMode, onDone,
+                );
+                if (addedBibleItem === null) {
+                    showAddingBibleItemFail();
+                }
             },
         },
         ...(isWindowPresenter ? [

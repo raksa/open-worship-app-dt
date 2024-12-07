@@ -24,8 +24,7 @@ export default function TabRender({
 function renderItem(
     routeProps: TabCheckPropsType,
     {
-        title, tabClassName,
-        routePath, checkIsActive,
+        title, tabClassName, routePath, checkIsActive, customNavigate,
     }: TabOptionType,
 ) {
     const isActive = !!checkIsActive?.(routeProps);
@@ -34,7 +33,11 @@ function renderItem(
         <button
             className={`btn btn-link nav-link ${isActive ? 'active' : ''}`}
             onClick={() => {
-                routeProps.navigate(routePath);
+                if (customNavigate) {
+                    customNavigate();
+                } else {
+                    routeProps.navigate(routePath);
+                }
             }}>
             {tran(title)}
         </button>

@@ -230,6 +230,10 @@
       }
     }
 
+    *:not(.hidden-context) {
+      display: none;
+    }
+
     * {
       width: 100%;
       position: relative;

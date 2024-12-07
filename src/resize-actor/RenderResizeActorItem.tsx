@@ -84,7 +84,7 @@ export default function RenderResizeActorItem({
                     style={{ color: 'green' }}
                     onClick={onHiddenWidgetClick}
                 >
-                    <div>{widgetName}</div>
+                    <div className='hidden-context'>{widgetName}</div>
                 </div>
             ) : (
                 <div data-fs={keyToDataFSizeKey(fSizeName, key)}

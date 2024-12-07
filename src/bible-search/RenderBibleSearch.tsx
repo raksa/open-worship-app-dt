@@ -21,6 +21,7 @@ import ResizeActor from '../resize-actor/ResizeActor';
 import { CloseButtonContext } from '../app-modal/Modal';
 import InputHistory from './InputHistory';
 import { MultiContextRender } from '../helper/MultiContextRender';
+import appProvider from '../server/appProvider';
 
 const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
@@ -85,7 +86,10 @@ function RenderBibleSearchHeader({
                     onBibleKeyChange={handleBibleKeyChange}
                 />
             </div>
-            <div className='flex-item flex-fill justify-content-end pe-5'>
+            <div className={
+                'flex-item flex-fill justify-content-end' +
+                (appProvider.isPresenter ? ' pe-5' : '')
+            }>
                 {isBibleEditor ? null : (
                     <div className='float-start'>
                         <RenderExtraLeftButtons
@@ -142,7 +146,7 @@ export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
             context: InputTextContext,
             value: inputTextContextValue,
         }]}>
-            <div id='bible-search-popup' className='app-modal shadow card'>
+            <div id='bible-search-popup' className='shadow card w-100 h-100'>
                 <RenderBibleSearchHeader
                     editorInputText={editorInputText}
                     isSearchOnline={isSearchOnline}

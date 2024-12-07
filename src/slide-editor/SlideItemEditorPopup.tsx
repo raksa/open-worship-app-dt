@@ -21,10 +21,10 @@ export default function SlideItemEditorPopup({ slideItem }: Readonly<{
     return (
         <Modal>
             <div id='slide-item-editor-popup'
-                className='app-modal shadow card'>
+                className='shadow card'>
                 <SlideItemEditorPopupHeader />
                 <div className='body card-body w-100 overflow-hidden'>
-                    <SlideItemEditor slideItem={slideItem} />
+                    <SlideItemEditor />
                 </div>
             </div>
         </Modal>

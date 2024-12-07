@@ -11,14 +11,12 @@ import ProgressBar from './progress-bar/ProgressBar';
 import Toast from './toast/Toast';
 import { MultiContextRender } from './helper/MultiContextRender';
 import {
+    goToPath,
     RouteLocationContext, RouteNavigateContext,
 } from './router/routeHelpers';
 import { getRootElement, initApp, useQuickExitBlock } from './appInitHelpers';
 
 const location = window.location;
-function navigate(routePath: string) {
-    location.href = routePath;
-}
 export function Reader() {
     useQuickExitBlock();
     useCheckSelectedDir();
@@ -28,7 +26,7 @@ export function Reader() {
             <MultiContextRender contexts={[
                 {
                     context: RouteNavigateContext,
-                    value: navigate,
+                    value: goToPath,
                 },
                 {
                     context: RouteLocationContext,

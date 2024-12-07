@@ -66,7 +66,7 @@ export default function RenderSearchSuggestion({
 
 export function BibleNotAvailable() {
     return (
-        <div id='bible-search-popup' className='app-modal shadow card'>
+        <div id='bible-search-popup' className='shadow card'>
             <div className='body card-body w-100'>
                 Bible not available!
             </div>
