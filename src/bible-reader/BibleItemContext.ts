@@ -6,7 +6,7 @@ export const BibleItemContext = (
     createContext<BibleItem | null>(null)
 );
 
-export function useBibleItem() {
+export function useBibleItemContext() {
     const bibleItem = useContext(BibleItemContext);
     if (bibleItem === null) {
         throw new Error('BibleItemContext is null');

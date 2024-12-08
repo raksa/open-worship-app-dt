@@ -74,14 +74,14 @@ class InitDBOpeningQueue {
     }
 }
 
+let instance: IndexedDbController | null = null;
 export abstract class IndexedDbController implements DbControllerInterface {
-    private static _instance: IndexedDbController | null = null;
     abstract get storeName(): string;
     private readonly initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
     static instantiate(): IndexedDbController {
         throw new Error('Not implemented');
     }
-    _db: IDBDatabase | null = null;
+    private _db: IDBDatabase | null = null;
     get isDbOpened() {
         return this._db !== null;
     }
@@ -110,7 +110,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
             reject(this.error);
         };
     }
-    _getTransaction(mode: IDBTransactionMode) {
+    private getTransaction(mode: IDBTransactionMode) {
         if (!this.db.objectStoreNames.contains(this.storeName)) {
             throw new Error(`Object store ${this.storeName} does not exist`);
         }
@@ -136,11 +136,11 @@ export abstract class IndexedDbController implements DbControllerInterface {
         });
     }
 
-    _asyncOperation<T>(mode: IDBTransactionMode,
+    private asyncOperation<T>(mode: IDBTransactionMode,
         init: (target: IDBObjectStore) => T) {
 
         return new Promise<T>((resolve, reject) => {
-            const { store } = this._getTransaction(mode);
+            const { store } = this.getTransaction(mode);
             const target = init(store);
             this.initCallback(target, () => {
                 resolve(target);
@@ -157,7 +157,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
             }
             await this.deleteItem(id);
         }
-        await this._asyncOperation('readwrite', (store) => {
+        await this.asyncOperation('readwrite', (store) => {
             const newItem: RecordType = {
                 id, secondaryId, data, ...{
                     createdAt: new Date(),
@@ -168,7 +168,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         });
     }
     async getItem<T>(id: string) {
-        const request = await this._asyncOperation('readonly', (store) => {
+        const request = await this.asyncOperation('readonly', (store) => {
             return store.get(id);
         });
         if (!request.result) {
@@ -177,7 +177,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         return request.result as BasicRecordType & { data: T };
     }
     async getKeys(secondaryId: string) {
-        const request = await this._asyncOperation('readonly', (store) => {
+        const request = await this.asyncOperation('readonly', (store) => {
             const index = store.index('index1');
             const range = IDBKeyRange.only([secondaryId]);
             return index.getAllKeys(range);
@@ -188,7 +188,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         return request.result as string[];
     }
     updateItem(id: string, data: any) {
-        return this._asyncOperation('readwrite', (store) => {
+        return this.asyncOperation('readwrite', (store) => {
             return store.put({
                 id, data, ...{
                     updatedAt: new Date(),
@@ -197,17 +197,17 @@ export abstract class IndexedDbController implements DbControllerInterface {
         });
     }
     deleteItem(id: string) {
-        return this._asyncOperation('readwrite', (store) => {
+        return this.asyncOperation('readwrite', (store) => {
             return store.delete(id);
         });
     }
     countAllItems() {
-        return this._asyncOperation('readonly', (store) => {
+        return this.asyncOperation('readonly', (store) => {
             return store.count();
         });
     }
     clearAllItems() {
-        return this._asyncOperation('readwrite', (store) => {
+        return this.asyncOperation('readwrite', (store) => {
             return store.clear();
         });
     }
@@ -215,10 +215,10 @@ export abstract class IndexedDbController implements DbControllerInterface {
         this.db = null;
     }
     static async getInstance() {
-        if (this._instance === null) {
-            this._instance = this.instantiate();
+        if (instance === null) {
+            instance = this.instantiate();
         }
-        await this._instance.init();
-        return this._instance;
+        await instance.init();
+        return instance;
     }
 }

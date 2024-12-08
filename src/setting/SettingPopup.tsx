@@ -2,18 +2,18 @@ import './SettingPopup.scss';
 
 import { lazy } from 'react';
 
-import { useStateSettingString } from '../helper/settingHelper';
+import { useStateSettingString } from '../helper/settingHelpers';
 import TabRender, { genTabBody } from '../others/TabRender';
 import { useModal } from '../app-modal/Modal';
 import HeaderSettingPopup from './HeaderSettingPopup';
 
-const SettingGeneral = lazy(() => {
+const LazySettingGeneral = lazy(() => {
     return import('./SettingGeneral');
 });
-const SettingBible = lazy(() => {
+const LazySettingBible = lazy(() => {
     return import('./bible-setting/SettingBible');
 });
-const SettingAbout = lazy(() => {
+const LazySettingAbout = lazy(() => {
     return import('./SettingAbout');
 });
 
@@ -23,7 +23,7 @@ export default function SettingPopup() {
     return (
         <Modal>
             <div id='setting-popup'
-                className='app-modal shadow card'>
+                className='shadow card'>
                 <HeaderSettingPopup />
                 <Setting />
             </div>
@@ -31,9 +31,9 @@ export default function SettingPopup() {
     );
 }
 const tabTypeList = [
-    ['g', 'General', SettingGeneral],
-    ['b', 'Bible', SettingBible],
-    ['a', 'About', SettingAbout],
+    ['g', 'General', LazySettingGeneral],
+    ['b', 'Bible', LazySettingBible],
+    ['a', 'About', LazySettingAbout],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 function Setting() {

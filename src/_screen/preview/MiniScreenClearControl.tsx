@@ -4,13 +4,13 @@ import {
 import {
     usePBGMEvents, usePFTMEvents, usePSlideMEvents,
 } from '../screenEventHelpers';
-import { useScreenManager } from '../ScreenManager';
+import { useScreenManagerContext } from '../ScreenManager';
 
 export default function MiniScreenClearControl() {
     usePBGMEvents(['update']);
     usePSlideMEvents(['update']);
     usePFTMEvents(['update']);
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     const {
         screenBGManager, screenSlideManager, screenFTManager,
     } = screenManager;

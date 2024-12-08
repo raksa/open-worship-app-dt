@@ -121,7 +121,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
 }
 
 export class CanvasItemError extends CanvasItem<any> {
-    _jsonError: AnyObjectType | null = null;
+    jsonError: AnyObjectType | null = null;
     get type(): CanvasItemKindType {
         return 'error';
     }
@@ -139,11 +139,11 @@ export class CanvasItemError extends CanvasItem<any> {
         const props = genTextDefaultBoxStyle() as any;
         props.type = 'error';
         const item = new CanvasItemError(props);
-        item._jsonError = json;
+        item.jsonError = json;
         return item;
     }
     toJson() {
-        return this._jsonError as any;
+        return this.jsonError as any;
     }
 }
 

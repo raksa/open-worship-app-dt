@@ -5,7 +5,7 @@ import CanvasItem, {
 } from './CanvasItem';
 import {
     getSetting, setSetting,
-} from '../../helper/settingHelper';
+} from '../../helper/settingHelpers';
 import FileSource from '../../helper/FileSource';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
@@ -21,13 +21,13 @@ import { handleError } from '../../helper/errorHelpers';
 
 const EDITOR_SCALE_SETTING_NAME = 'editor-scale';
 
+let instance: CanvasController | null = null;
 export default class CanvasController extends EventHandler<CCEventType> {
     static readonly eventNamePrefix: string = 'canvas-c';
-    private static _instance: CanvasController | null = null;
     copiedItem: CanvasItem<any> | null = null;
-    _canvas: Canvas;
-    _slideItem: SlideItem | null = null;
-    _scale: number = 1;
+    private _canvas: Canvas;
+    private _slideItem: SlideItem | null = null;
+    private _scale: number = 1;
     constructor() {
         super();
         this._canvas = Canvas.genDefaultCanvas();
@@ -257,9 +257,9 @@ export default class CanvasController extends EventHandler<CCEventType> {
         this.fireTextEditEvent(canvasItem);
     }
     static getInstance() {
-        if (this._instance === null) {
-            this._instance = new this();
+        if (instance === null) {
+            instance = new this();
         }
-        return this._instance;
+        return instance;
     }
 }

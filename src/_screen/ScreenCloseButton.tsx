@@ -1,9 +1,9 @@
 import './ScreenCloseButton.scss';
 
-import { useScreenManager } from './ScreenManager';
+import { useScreenManagerContext } from './ScreenManager';
 
 export default function ScreenCloseButton() {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     return (
         <button id="close" onClick={() => {
             screenManager.hide();

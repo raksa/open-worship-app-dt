@@ -2,10 +2,10 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { usePMEvents } from './screenEventHelpers';
-import { useScreenManager } from './ScreenManager';
+import { useScreenManagerContext } from './ScreenManager';
 
 export default function ScreenSlide() {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     usePMEvents(['resize'], screenManager, () => {
         screenManager.screenSlideManager.render();
     });

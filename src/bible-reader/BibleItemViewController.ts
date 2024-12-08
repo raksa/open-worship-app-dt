@@ -5,7 +5,7 @@ import EventHandler from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     getSetting, setSetting,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { WindowModEnum } from '../router/routeHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
@@ -17,9 +17,10 @@ import { showBibleOption } from '../bible-search/BibleSelection';
 import {
     genFoundBibleItemContextMenu,
 } from '../bible-search/RenderActionButtons';
-import { closeCurrentEditingBibleItem } from './readBibleHelper';
+import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { attemptAddingHistory } from '../bible-search/InputHistory';
 import { EventMapper } from '../event/KeyboardEventListener';
+import BibleView, { finalRenderer } from './BibleView';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -258,8 +259,8 @@ export default class BibleItemViewController
         return preSettingName + this._settingNameSuffix;
     }
 
-    finalRenderer(_: BibleItem): ReactNode {
-        return null;
+    finalRenderer(bibleItem: BibleItem): ReactNode {
+        return finalRenderer(bibleItem);
     }
 
     genBibleItemUniqueId() {
@@ -473,10 +474,10 @@ export default class BibleItemViewController
     }
 }
 
+let instance: SearchBibleItemViewController | null = null;
 export class SearchBibleItemViewController extends BibleItemViewController {
 
     private _nestedBibleItems: NestedBibleItemsType;
-    private static _instance: SearchBibleItemViewController | null = null;
     selectedBibleItem: BibleItem;
     setInputText = (_: string) => { };
     setBibleKey = (_: string | null) => { };
@@ -516,10 +517,10 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         return bibleItem === this.selectedBibleItem;
     }
     static getInstance() {
-        if (this._instance === null) {
-            this._instance = new this;
+        if (instance === null) {
+            instance = new this;
         }
-        return this._instance;
+        return instance;
     }
     editBibleItem(bibleItem: BibleItem) {
         this.selectedBibleItem.toTitle().then((inputText) => {
@@ -534,10 +535,10 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         });
     }
     genContextMenu(
-        bibleItem: BibleItem, windowMode?: WindowModEnum | null,
+        bibleItem: BibleItem, windowMode: WindowModEnum | null = null,
     ): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
-        const menu1 = !windowMode ? [] : genFoundBibleItemContextMenu(
+        const menu1 = genFoundBibleItemContextMenu(
             bibleItem, windowMode, this.onSearchAddBibleItem,
             isBibleItemSelected,
         );

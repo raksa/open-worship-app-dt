@@ -2,33 +2,35 @@ import { Fragment, useCallback } from 'react';
 
 import SlideItemRender from './SlideItemRender';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import Slide from '../../slide-list/Slide';
-import SlideItem from '../../slide-list/SlideItem';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
+import SlideItem, { useSelectedSlideItemContext } from '../../slide-list/SlideItem';
 import SlideItemPdfRender from './SlideItemPdfRender';
 import {
     handleSlideItemSelecting,
 } from './slideItemHelpers';
 
 export default function SlideItemRenderWrapper({
-    draggingIndex, slide, thumbSize, slideItem, index, setDraggingIndex,
+    draggingIndex, thumbSize, slideItem, index, setDraggingIndex,
 }: Readonly<{
-    draggingIndex: number | null, slide: Slide,
+    draggingIndex: number | null,
     thumbSize: number, slideItem: SlideItem,
     index: number,
     setDraggingIndex: (index: number | null) => void,
 }>) {
+    const { selectedSlide } = useSelectedSlideContext();
+    const { setSelectedSlideItem } = useSelectedSlideItemContext();
     const onDropCallback = useCallback((id: number, isLeft: boolean) => {
-        slide.moveItem(id, index, isLeft);
-    }, [slide, index]);
+        selectedSlide.moveItem(id, index, isLeft);
+    }, [selectedSlide, index]);
     const onClickCallback = useCallback((event: any) => {
-        handleSlideItemSelecting(slideItem, event);
+        handleSlideItemSelecting(setSelectedSlideItem, slideItem, event);
     }, [slideItem]);
     const onContextMenuCallback = useCallback((event: any) => {
-        slide.openContextMenu(event, slideItem);
-    }, [slide, slideItem]);
+        selectedSlide.openContextMenu(event, slideItem);
+    }, [selectedSlide, slideItem]);
     const onCopyCallback = useCallback(() => {
-        slide.copiedItem = slideItem;
-    }, [slide, slideItem]);
+        selectedSlide.copiedItem = slideItem;
+    }, [selectedSlide, slideItem]);
     const onDragStartCallback = useCallback(() => {
         setDraggingIndex(index);
     }, [index, setDraggingIndex]);

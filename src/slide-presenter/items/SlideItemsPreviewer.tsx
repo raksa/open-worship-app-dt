@@ -2,13 +2,12 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import SlideItems from './SlideItems';
-import Slide from '../../slide-list/Slide';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleCtrlWheel } from '../../others/AppRange';
 import { defaultRangeSize } from './SlidePreviewerFooter';
 
-export default function SlideItemsPreviewer({ slide }: Readonly<{
-    slide: Slide,
-}>) {
+export default function SlideItemsPreviewer() {
+    const { selectedSlide } = useSelectedSlideContext();
     const [
         thumbSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();
@@ -23,10 +22,12 @@ export default function SlideItemsPreviewer({ slide }: Readonly<{
                 });
             }}
             onContextMenu={(event) => {
-                slide.showSlideItemContextMenu(event);
+                selectedSlide.showSlideItemContextMenu(event);
             }}
-            onPaste={() => slide.pasteItem()}>
-            <SlideItems slide={slide} />
+            onPaste={() => {
+                selectedSlide.pasteItem();
+            }}>
+            <SlideItems />
         </div>
     );
 }

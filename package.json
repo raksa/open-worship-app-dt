@@ -106,7 +106,6 @@
         "eslint": "^8.57.1",
         "nodemon": "^3.1.7",
         "react": "^18.3.1",
-        "react-devtools": "^6.0.1",
         "react-dom": "^18.3.1",
         "react-router-dom": "^7.0.1",
         "sass": "^1.81.0",
@@ -117,7 +116,7 @@
         "electron-font-manager": "^0.0.1",
         "font-list": "^1.5.1",
         "libreoffice-convert": "^1.6.0",
-        "pdfjs-dist": "^2.16.105",
+        "pdfjs-dist": "^4.9.155",
         "tar": "^7.4.3"
     }
 }

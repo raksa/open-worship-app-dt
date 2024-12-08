@@ -8,7 +8,7 @@ import Slide from './Slide';
 import {
     checkIsPdf, convertOfficeFile, pdfMimetype, supportOfficeFE,
 } from './slideHelpers';
-import { extractExtension, getFileFullName } from '../server/fileHelper';
+import { extractExtension, getFileFullName } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import { useGenDS } from '../helper/dirSourceHelpers';
 import {

@@ -1,10 +1,3 @@
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import '../others/font.scss';
-import './AppLayout.scss';
-import '../others/bootstrap-override.scss';
-import '../others/scrollbar.scss';
-
 import { useContext } from 'react';
 
 import { Outlet } from 'react-router-dom';

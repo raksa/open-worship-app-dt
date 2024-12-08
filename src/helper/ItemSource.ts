@@ -1,13 +1,14 @@
 import {
     MimetypeNameType, createNewFileDetail, fsCheckFileExist,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import FileSource from './FileSource';
 import {
     AnyObjectType, validateAppMeta,
 } from './helpers';
-import { setSetting, getSetting } from './settingHelper';
+import { setSetting, getSetting } from './settingHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 
+const cache = new Map<string, ItemSource<any>>();
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
 }> {
@@ -15,7 +16,6 @@ export default abstract class ItemSource<T extends {
     SELECT_SETTING_NAME: string = '';
     protected static mimetype: MimetypeNameType = 'other';
     filePath: string;
-    private static _cache = new Map<string, ItemSource<any>>();
     constructor(filePath: string) {
         this.filePath = filePath;
     }
@@ -87,7 +87,7 @@ export default abstract class ItemSource<T extends {
         const fileSource = FileSource.getInstance(this.filePath);
         const isSuccess = await fileSource.saveDataFromItem(this);
         if (isSuccess) {
-            ItemSource._cache.set(this.filePath, this);
+            cache.set(this.filePath, this);
         }
         return isSuccess;
     }
@@ -101,7 +101,8 @@ export default abstract class ItemSource<T extends {
             items,
         });
         const filePath = await createNewFileDetail(dir, name, data,
-            this.mimetype);
+            this.mimetype,
+        );
         if (filePath !== null) {
             return FileSource.getInstance(filePath);
         }
@@ -123,7 +124,7 @@ export default abstract class ItemSource<T extends {
         return undefined;
     }
     static deleteCache(key: string) {
-        this._cache.delete(key);
+        cache.delete(key);
     }
     static async readFileToData(
         filePath: string | null, refreshCache?: boolean,
@@ -134,12 +135,12 @@ export default abstract class ItemSource<T extends {
         if (refreshCache) {
             this.deleteCache(filePath);
         }
-        if (this._cache.has(filePath)) {
-            return this._cache.get(filePath);
+        if (cache.has(filePath)) {
+            return cache.get(filePath);
         }
         const data = await this.readFileToDataNoCache(filePath);
         if (data) {
-            this._cache.set(filePath, data);
+            cache.set(filePath, data);
         } else {
             this.deleteCache(filePath);
         }

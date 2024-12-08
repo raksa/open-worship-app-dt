@@ -5,7 +5,7 @@ import {
 import PathSelector from '../others/PathSelector';
 import {
     MimetypeNameType, fsCheckDirExist,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import {
     ContextMenuItemType,
 } from './AppContextMenu';
@@ -21,7 +21,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import NoDirSelected from './NoDirSelected';
 
-const AskingNewName = lazy(() => {
+const LazyAskingNewName = lazy(() => {
     return import('./AskingNewName');
 });
 
@@ -119,7 +119,7 @@ export default function FileListHandler({
                         (
                             <ul className='list-group flex-fill d-flex'>
                                 {onNewFile && isCreatingNew && (
-                                    <AskingNewName
+                                    <LazyAskingNewName
                                         applyName={applyNameCallback}
                                     />
                                 )}

@@ -1,5 +1,5 @@
 @use "sass:math";
-@use '../others/variables.scss' as *;
+@use './others/variables.scss' as *;
 
 #app {
   width: 100vw !important;
@@ -228,6 +228,10 @@
         font-size: 10px;
         color: var(--bs-gray-100);
       }
+    }
+
+    *:not(.hidden-context) {
+      display: none;
     }
 
     * {

@@ -3,14 +3,14 @@ import './RenderVersesOption.scss';
 import RenderVerseNumOption, { mouseUp } from './RenderVerseNumOption';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useGenVerseList } from '../helper/bible-helpers/serverBibleHelpers';
-import { useBibleItem } from '../bible-reader/BibleItemContext';
+import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 
 export default function RenderVerseOptions({
     onVersesChange,
 }: Readonly<{
     onVersesChange: (verseStart?: number, verseEnd?: number) => void,
 }>) {
-    const bibleItem = useBibleItem();
+    const bibleItem = useBibleItemContext();
     const verseList = useGenVerseList(bibleItem);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);

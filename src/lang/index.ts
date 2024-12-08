@@ -1,6 +1,6 @@
 import { handleError } from '../helper/errorHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 
 import kmLangData from './data/km';
 import enLangData from './data/en';

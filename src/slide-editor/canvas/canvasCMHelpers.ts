@@ -1,7 +1,7 @@
-import { selectFiles } from '../../server/appHelper';
+import { selectFiles } from '../../server/appHelpers';
 import {
     getMimetypeExtensions, isSupportedMimetype,
-} from '../../server/fileHelper';
+} from '../../server/fileHelpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';

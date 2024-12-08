@@ -2,12 +2,12 @@ import './PathSelector.scss';
 
 import { lazy } from 'react';
 
-import { useStateSettingBoolean } from '../helper/settingHelper';
+import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
 import AppSuspense from './AppSuspense';
 import { PathPreviewer } from './PathPreviewer';
 
-const PathEditor = lazy(() => {
+const LazyPathEditor = lazy(() => {
     return import('./PathEditor');
 });
 
@@ -39,7 +39,7 @@ export default function PathSelector({
             </div>
             {isShowingEditor && (
                 <AppSuspense>
-                    <PathEditor dirSource={dirSource} prefix={prefix} />
+                    <LazyPathEditor dirSource={dirSource} prefix={prefix} />
                 </AppSuspense>
             )}
         </div>

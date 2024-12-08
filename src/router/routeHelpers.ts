@@ -1,10 +1,10 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 
 import {
-    useLocation, useNavigate, NavigateFunction, Location,
+    NavigateFunction, Location,
 } from 'react-router-dom';
 
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 import appProvider from '../server/appProvider';
 
 export type TabCheckPropsType = {
@@ -16,7 +16,9 @@ export type TabOptionType = {
     title: string,
     tabClassName?: string,
     routePath: string,
+    extraChildren?: React.ReactNode,
     checkIsActive?: (_: TabCheckPropsType) => boolean,
+    customNavigate?: () => void,
 }
 
 export enum WindowModEnum {
@@ -38,18 +40,25 @@ function checkIsActive(routePath: string, routeProps: TabCheckPropsType) {
 }
 function genTabItem(title: string, routePath: string): TabOptionType {
     return {
-        title, routePath,
+        title,
+        routePath: `${appProvider.presenterHomePage}`,
         checkIsActive: checkIsActive.bind(null, routePath),
     };
 }
 
 export const home: TabOptionType = {
     title: 'Home',
-    routePath: '/',
+    routePath: appProvider.presenterHomePage,
 };
-export const editorTab = genTabItem('Editor', '/editor');
-export const presenterTab = genTabItem('Presenter', '/presenter');
-export const readerTab = genTabItem('Reader', '/reader');
+export const editorTab = genTabItem('Editor', 'editor');
+export const presenterTab = genTabItem('Presenter', 'presenter');
+export const readerTab: TabOptionType = {
+    title: 'Reader',
+    routePath: appProvider.readerHomePage,
+    customNavigate: () => {
+        goToPath(appProvider.readerHomePage);
+    },
+};
 
 export function goEditorMode(navigate: NavigateFunction) {
     navigate(editorTab.routePath);
@@ -69,17 +78,15 @@ function getWindowMode(props?: TabCheckPropsType): WindowModEnum | null {
         return WindowModEnum.Editor;
     } else if (presenterTab.checkIsActive?.(props)) {
         return WindowModEnum.presenter;
-    } else if (readerTab.checkIsActive?.(props)) {
-        return WindowModEnum.reader;
     }
     return null;
 }
 export function useWindowMode(): WindowModEnum | null {
-    let location = useLocation();
+    let location = useRouteLocationContext();
     location = location.state?.backgroundLocation || location;
+    const navigate = useRouteNavigateContext();
     const props = {
-        location,
-        navigate: useNavigate(),
+        location, navigate,
     };
     return getWindowMode(props);
 }
@@ -126,11 +133,14 @@ const ROUTE_PATHNAME_KEY = 'route-pathname';
 
 export function checkHome() {
     const url = new URL(window.location.href);
-    if (url.pathname === '/') {
+    if (url.pathname === home.routePath) {
         if (appProvider.isDesktop) {
-            const savePathname = getSetting(ROUTE_PATHNAME_KEY);
-            if (!['/', ''].includes(savePathname)) {
-                return goToPath(savePathname);
+            const savedPathname = getSetting(ROUTE_PATHNAME_KEY);
+            if (savedPathname === url.pathname) {
+                return;
+            }
+            if (![home.routePath, '/', ''].includes(savedPathname)) {
+                return goToPath(savedPathname);
             }
         }
         goHomeBack();
@@ -141,4 +151,30 @@ export function savePathname(location: { pathname: string }) {
     if (appProvider.isDesktop) {
         setSetting(ROUTE_PATHNAME_KEY, location.pathname);
     }
+}
+
+export const RouteNavigateContext = (
+    createContext<NavigateFunction | null>(null)
+);
+export function useRouteNavigateContext() {
+    const location = useContext(RouteNavigateContext);
+    if (location === null) {
+        throw new Error(
+            'useRouteNavigate must be used within a RouteNavigateContext',
+        );
+    }
+    return location;
+}
+
+export const RouteLocationContext = (
+    createContext<Location | null>(null)
+);
+export function useRouteLocationContext() {
+    const location = useContext(RouteLocationContext);
+    if (location === null) {
+        throw new Error(
+            'useRouteLocation must be used within a RouteLocationProvider',
+        );
+    }
+    return location;
 }

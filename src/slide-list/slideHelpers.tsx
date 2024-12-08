@@ -11,7 +11,7 @@ import appProvider from '../server/appProvider';
 import {
     AppMimetypeType, fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile,
     getFileFullName,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import {
     openSlideItemQuickEdit,
 } from '../slide-presenter/HandleItemSlideEdit';
@@ -23,7 +23,7 @@ import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
-import { getTempPath } from '../server/appHelper';
+import { getTempPath } from '../server/appHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -195,7 +195,7 @@ export async function readPdfToSlide(filePath: string) {
             items: [],
             metadata: {},
         });
-        slide._pdfImageDataList = imageDataList;
+        slide.pdfImageDataList = imageDataList;
         return slide;
     } catch (error) {
         handleError(error);

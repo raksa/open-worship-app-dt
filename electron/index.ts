@@ -13,14 +13,24 @@ import { initMenu } from './electronMenu';
 import { initDevtools } from './devtools';
 import { isDev } from './electronHelpers';
 
-if (isDev) {
-    app.commandLine.appendSwitch('ignore-certificate-errors');
-}
-app.whenReady().then(() => {
+async function main() {
+    if (isDev) {
+        app.commandLine.appendSwitch('ignore-certificate-errors');
+    }
+    await app.whenReady();
+    const gotTheLock = app.requestSingleInstanceLock({
+        myKey: 'open-worship-app',
+    });
+    if (!gotTheLock) {
+        app.quit();
+        return;
+    }
     initCustomSchemeHandler();
     const appController = ElectronAppController.getInstance();
     initApp(appController);
     initScreen(appController);
     initMenu(appController);
     initDevtools(appController);
-});
+}
+
+main();

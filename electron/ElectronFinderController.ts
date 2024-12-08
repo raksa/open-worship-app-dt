@@ -1,7 +1,8 @@
 import { BrowserWindow } from 'electron';
 import { genRoutProps } from './protocolHelpers';
+import { htmlFiles } from './fsServe';
 
-const routeProps = genRoutProps('finder');
+const routeProps = genRoutProps(htmlFiles.finder);
 export default class ElectronFinderController {
     win: BrowserWindow | null = null;
     mainWin: BrowserWindow | null = null;

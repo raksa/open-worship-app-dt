@@ -6,7 +6,7 @@ import { SlideItemType } from './SlideItem';
 export default class SlideEditorCacheManager
     extends EditorCacheManager<SlideEditorHistoryType, SlideType> {
 
-    _originalJson: Readonly<SlideType>;
+    private _originalJson: Readonly<SlideType>;
 
     constructor(filePath: string, json: SlideType) {
         super(filePath, 'slide');

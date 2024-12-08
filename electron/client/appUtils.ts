@@ -1,3 +1,5 @@
+import electron from 'electron';
+
 const appUtils = {
     handleError: (error: any) => {
         console.error(error);
@@ -7,6 +9,9 @@ const appUtils = {
     },
     base64Decode: (str: string) => {
         return Buffer.from(str, 'base64').toString();
+    },
+    quitApp: () => {
+        electron.app.quit();
     },
 };
 

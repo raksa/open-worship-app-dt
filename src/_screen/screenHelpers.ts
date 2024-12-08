@@ -4,7 +4,7 @@ import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../others/AppContextMenu';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';

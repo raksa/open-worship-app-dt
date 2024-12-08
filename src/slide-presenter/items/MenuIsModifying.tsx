@@ -1,33 +1,31 @@
 import {
     toShortcutKey,
 } from '../../event/KeyboardEventListener';
-import Slide from '../../slide-list/Slide';
+import { useSelectedSlideContext } from '../../slide-list/Slide';
 
-export default function MenuIsModifying({
-    slide, eventMapper,
-}: Readonly<{
-    slide: Slide,
+export default function MenuIsModifying({ eventMapper }: Readonly<{
     eventMapper: any,
     isHavingHistories: boolean,
 }>) {
+    const { selectedSlide } = useSelectedSlideContext();
     return (
         <>
             <button type='button'
-                className='btn btn-sm btn-info'
+                className='btn btn-sm btn-danger'
                 title='Discard changed'
-                disabled={!slide.isChanged}
+                disabled={!selectedSlide.isChanged}
                 onClick={() => {
-                    slide.discardChanged();
+                    selectedSlide.discardChanged();
                 }}>
                 <i className='bi bi-x-octagon' />
             </button>
             <button type='button'
                 className='btn btn-sm btn-success'
-                disabled={!slide.isChanged}
+                disabled={!selectedSlide.isChanged}
                 data-tool-tip={toShortcutKey(eventMapper)}
                 title='Save'
                 onClick={() => {
-                    slide.save();
+                    selectedSlide.save();
                 }}>
                 <i className='bi bi-check2' />
             </button>

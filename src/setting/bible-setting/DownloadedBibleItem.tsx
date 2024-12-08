@@ -3,7 +3,7 @@ import {
 } from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
     fsCheckDirExist, fsDeleteDir,
-} from '../../server/fileHelper';
+} from '../../server/fileHelpers';
 import {
     BibleMinimalInfoType,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';

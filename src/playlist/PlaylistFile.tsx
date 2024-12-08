@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { useStateSettingBoolean } from '../helper/settingHelper';
+import { useStateSettingBoolean } from '../helper/settingHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
 import FileItemHandler from '../others/FileItemHandler';

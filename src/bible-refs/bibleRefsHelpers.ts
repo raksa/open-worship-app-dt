@@ -6,7 +6,7 @@ import {
 import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { IndexedDbController } from '../db/dbHelper';
+import { IndexedDbController } from '../db/dbHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 
 export type RawBibleRefListType = string[][];

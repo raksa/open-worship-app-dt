@@ -3,7 +3,7 @@ import { isValidJson } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
 import {
     getSetting, setSetting,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 
 type ChangeObjectType<T> = {
     undoQueue: T[],

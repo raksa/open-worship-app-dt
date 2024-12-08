@@ -1,5 +1,5 @@
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
@@ -92,22 +92,9 @@ export default class Lyric extends ItemSource<LyricItem>{
             filePath, isForceCache,
         ) as Promise<Lyric | null | undefined>;
     }
-    static async getSelected() {
-        const fileSource = this.getSelectedFilePath();
-        if (fileSource !== null) {
-            return Lyric.readFileToData(fileSource);
-        }
-        return null;
-    }
     static async create(dir: string, name: string) {
         return super.create(dir, name,
             [LyricItem.genDefaultLyric(name)]);
-    }
-    static async clearSelection() {
-        const lyric = await this.getSelected();
-        if (lyric) {
-            lyric.isSelected = false;
-        }
     }
     addItem(lyricItem: LyricItem) {
         const items = this.items;
@@ -119,16 +106,11 @@ export default class Lyric extends ItemSource<LyricItem>{
         const newItems = this.items.filter((item) => {
             return item.id !== lyricItem.id;
         });
-        const result = LyricItem.getSelectedResult();
-        if (result?.id === lyricItem.id) {
-            LyricItem.setSelected(null);
-        }
         this.items = newItems;
     }
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
         if (isSuccess) {
-            LyricItem.clearCache();
             this.editorCacheManager.save();
         }
         return isSuccess;

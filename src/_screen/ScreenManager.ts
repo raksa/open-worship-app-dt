@@ -4,7 +4,7 @@ import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { getWindowDim } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBGManager from './ScreenBGManager';
@@ -25,7 +25,7 @@ export type ScreenManagerEventType = (
 const settingName = 'screen-display-';
 
 export const ScreenManagerContext = createContext<ScreenManager | null>(null);
-export function useScreenManager(): ScreenManager {
+export function useScreenManagerContext(): ScreenManager {
     const screenManager = useContext(ScreenManagerContext);
     if (screenManager === null) {
         throw new Error(
@@ -50,7 +50,7 @@ export default class ScreenManager
     width: number;
     height: number;
     name: string;
-    _isSelected: boolean = false;
+    private _isSelected: boolean = false;
     private _isShowing: boolean;
 
     constructor(screenId: number) {

@@ -2,7 +2,7 @@ import './CustomHTMLScreenPreviewer';
 
 import ShowHideScreen from './ShowHideScreen';
 import MiniScreenClearControl from './MiniScreenClearControl';
-import { useScreenManager } from '../ScreenManager';
+import { useScreenManagerContext } from '../ScreenManager';
 import DisplayControl from './DisplayControl';
 import PTEffectControl from './PTEffectControl';
 import { handleDrop } from '../../bible-list/dragHelpers';
@@ -12,7 +12,7 @@ import ShowingScreenIcon from './ShowingScreenIcon';
 export default function ScreenPreviewerItem({ width }: Readonly<{
     width: number,
 }>) {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     const selectedCN = screenManager.isSelected ? 'highlight-selected' : '';
     return (
         <div key={screenManager.key}

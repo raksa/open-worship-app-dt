@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import ReactDOMServer from 'react-dom/server';
 import ScreenManager, {
-    ScreenManagerContext, useScreenManager,
+    ScreenManagerContext, useScreenManagerContext,
 } from './ScreenManager';
 import ScreenBackgroundColor from './ScreenBackgroundColor';
 import ScreenBackgroundImage from './ScreenBackgroundImage';
@@ -13,7 +13,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
 
 export default function ScreenBackground() {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     usePMEvents(['resize'], screenManager, () => {
         screenManager.screenBGManager.render();
     });
@@ -47,7 +47,7 @@ export function genHtmlBG(
 export function RenderBG({ bgSrc }: Readonly<{
     bgSrc: BackgroundSrcType,
 }>) {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     const { screenBGManager } = screenManager;
     return (
         <div style={{

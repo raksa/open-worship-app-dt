@@ -2,26 +2,18 @@ import { lazy } from 'react';
 
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
-import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRange';
 import { defaultRangeSize } from './canvas/tools/Tools';
 
-const SlideItemEditorCanvas = lazy(() => {
+const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
 });
-const Tools = lazy(() => {
+const LazyTools = lazy(() => {
     return import('./canvas/tools/Tools');
 });
 
-export default function SlideItemEditor({ slideItem }: Readonly<{
-    slideItem: SlideItem
-}>) {
-    if (slideItem.isError) {
-        return (
-            <div className='alert alert-danger'>Error</div>
-        );
-    }
+export default function SlideItemEditor() {
     const canvasController = CanvasController.getInstance();
     return (
         <div className='slide-item-editor w-100 h-100 overflow-hidden'
@@ -42,12 +34,12 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
                 }}
                 dataInput={[
                     {
-                        children: SlideItemEditorCanvas, key: 'v1',
+                        children: LazySlideItemEditorCanvas, key: 'v1',
                         widgetName: 'Slide Item Editor Canvas',
                         className: 'flex-item',
                     },
                     {
-                        children: Tools, key: 'v2',
+                        children: LazyTools, key: 'v2',
                         widgetName: 'Tools', className: 'flex-item',
                     },
                 ]} />

@@ -9,7 +9,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import {
     SELECTED_BIBLE_SETTING_NAME,
 } from '../bible-list/bibleHelpers';
-import { setSetting } from '../helper/settingHelper';
+import { setSetting } from '../helper/settingHelpers';
 import { usePopupWindowsTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {

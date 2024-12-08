@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useStateSettingNumber } from '../helper/settingHelper';
+import { useStateSettingNumber } from '../helper/settingHelpers';
 import BibleViewSetting, { defaultRangeSize } from './BibleViewSetting';
 import {
     useBIVCUpdateEvent,

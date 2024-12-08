@@ -1,9 +1,9 @@
 import appProvider from '../../server/appProvider';
 import {
     fsCreateDir, fsReadFile, pathJoin,
-} from '../../server/fileHelper';
+} from '../../server/fileHelpers';
 import { LocaleType } from '../../lang';
-import { getUserWritablePath } from '../../server/appHelper';
+import { getUserWritablePath } from '../../server/appHelpers';
 import {
     is_dev, decrypt,
 } from '../../_owa-crypto/owa_crypto';
@@ -11,7 +11,7 @@ import {
     getKJVChapterCount, toFileName,
 } from './serverBibleHelpers';
 import { handleError } from '../errorHelpers';
-import { IndexedDbController, ItemParamsType } from '../../db/dbHelper';
+import { IndexedDbController, ItemParamsType } from '../../db/dbHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
@@ -119,18 +119,21 @@ export async function getVerses(
 type ReaderBibleDataType = BibleInfoType | null;
 type CallbackType = (data: ReaderBibleDataType) => void;
 export class BibleDataReader {
-    _writableBiblePath: string | null = null;
-    _callbackMapper: Map<string, Array<CallbackType>> = new Map();
-    _dbController: BibleDbController | null = null;
-    _pushCallback(key: string, callback: CallbackType) {
-        const callbackList = this._callbackMapper.get(key) || [];
+    private _writableBiblePath: string | null = null;
+    private readonly callbackMapper: Map<string, Array<CallbackType>>;
+    private _dbController: BibleDbController | null = null;
+    constructor() {
+        this.callbackMapper = new Map();
+    }
+    private _pushCallback(key: string, callback: CallbackType) {
+        const callbackList = this.callbackMapper.get(key) || [];
         callbackList.push(callback);
-        this._callbackMapper.set(key, callbackList);
+        this.callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
-    _fullfilCallback(key: string, data: ReaderBibleDataType) {
-        const callbackList = this._callbackMapper.get(key) || [];
-        this._callbackMapper.delete(key);
+    private fullfilCallback(key: string, data: ReaderBibleDataType) {
+        const callbackList = this.callbackMapper.get(key) || [];
+        this.callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(data);
         });
@@ -183,7 +186,7 @@ export class BibleDataReader {
             return;
         }
         const data = await this._readBibleData(filePath, bibleKey);
-        this._fullfilCallback(filePath, data);
+        this.fullfilCallback(filePath, data);
     }
     readBibleData(bibleKey: string, key: string) {
         return new Promise<ReaderBibleDataType>((resolve) => {

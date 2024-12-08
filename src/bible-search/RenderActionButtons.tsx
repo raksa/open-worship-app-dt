@@ -1,7 +1,6 @@
 import KeyboardEventListener, {
     EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
-import SlideItem from '../slide-list/SlideItem';
 import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
@@ -21,7 +20,7 @@ import { getIsKeepingPopup } from './RenderExtraLeftButtons';
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
-import { useBibleItem } from '../bible-reader/BibleItemContext';
+import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 
 const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -34,7 +33,7 @@ const addListEventMapper: KBEventMapper = {
 };
 
 export default function RenderActionButtons() {
-    const bibleItem = useBibleItem();
+    const bibleItem = useBibleItemContext();
     const { data } = usePopupWindowsTypeData();
     const isBibleEditor = !!data;
     const isWindowPresenter = useWindowIsPresenterMode();
@@ -92,7 +91,7 @@ function showAddingBibleItemFail() {
 }
 
 async function addBibleItemAndPresent(
-    event: any, bibleItem: BibleItem, windowMode: WindowModEnum,
+    event: any, bibleItem: BibleItem, windowMode: WindowModEnum | null,
     onDone: () => void,
 ) {
     const addedBibleItem = await addBibleItem(
@@ -141,14 +140,13 @@ function toShortcutKey(
 }
 
 export function genFoundBibleItemContextMenu(
-    bibleItem: BibleItem, windowMode: WindowModEnum,
+    bibleItem: BibleItem, windowMode: WindowModEnum | null,
     onDone: () => void, isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
     // TODO: fix slide select editing
-    const isSlideSelectEditor = !!SlideItem.getSelectedEditingResult();
     const isWindowEditor = checkIsWindowEditorMode(windowMode);
     const isWindowPresenter = checkIsWindowPresenterMode(windowMode);
-    if (isWindowEditor && !isSlideSelectEditor) {
+    if (isWindowEditor) {
         return [];
     }
     return [
@@ -157,13 +155,13 @@ export function genFoundBibleItemContextMenu(
             otherChild: isKeyboardShortcut ? (
                 genContextMenuItemShortcutKey(addListEventMapper)
             ) : undefined,
-            onClick: () => {
-                addBibleItem(bibleItem, windowMode, onDone).
-                    then((addedBibleItem) => {
-                        if (addedBibleItem === null) {
-                            showAddingBibleItemFail();
-                        }
-                    });
+            onClick: async () => {
+                const addedBibleItem = await addBibleItem(
+                    bibleItem, windowMode, onDone,
+                );
+                if (addedBibleItem === null) {
+                    showAddingBibleItemFail();
+                }
             },
         },
         ...(isWindowPresenter ? [

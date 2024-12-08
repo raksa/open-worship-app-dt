@@ -1,5 +1,5 @@
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { useScreenManager } from '../ScreenManager';
+import { useScreenManagerContext } from '../ScreenManager';
 import ScreenTransitionEffect from './ScreenTransitionEffect';
 import {
     ScreenTransitionEffectType, TargetType, transitionEffect, usePTEEvents,
@@ -48,7 +48,7 @@ export default function RenderTransitionEffect({
 export function RendStyle({ ptEffectTarget }: Readonly<{
     ptEffectTarget: TargetType,
 }>) {
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     const ptEffect = ScreenTransitionEffect.getInstance(
         screenManager.screenId, ptEffectTarget,
     );

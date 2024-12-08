@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { selectDirs } from '../server/appHelper';
+import { selectDirs } from '../server/appHelpers';
 import DirSource from '../helper/DirSource';
 
 export default function PathEditor({ dirSource }: Readonly<{

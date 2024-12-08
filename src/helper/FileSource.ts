@@ -3,7 +3,7 @@ import {
     checkIsAppFile, extractExtension, fsCheckFileExist, fsCreateFile,
     fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
     pathBasename, pathJoin, pathSeparator,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
 import { pathToFileURL } from '../server/helpers';
@@ -30,6 +30,7 @@ export default class FileSource extends EventHandler<FSEventType>
     filePath: string;
     src: string;
     colorNote: string | null = null;
+
     constructor(
         basePath: string, fileFullName: string, filePath: string, src: string,
     ) {
@@ -39,9 +40,11 @@ export default class FileSource extends EventHandler<FSEventType>
         this.filePath = filePath;
         this.src = src;
     }
+
     get isAppFile() {
         return !checkIsAppFile(this.fileFullName);
     }
+
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
             appProvider.fileUtils.readFile(this.filePath, {
@@ -61,32 +64,40 @@ export default class FileSource extends EventHandler<FSEventType>
             });
         });
     }
+
     getColorNote() {
         return FileSourceMetaManager.getColorNote(this.filePath);
     }
+
     async setColorNote(color: string | null) {
         FileSourceMetaManager.setColorNote(this.filePath, color);
         this.dirSource?.fireReloadEvent();
     }
+
     get metadata() {
         return getFileMetaData(this.fileFullName);
     }
+
     get name() {
         return this.fileFullName.substring(
             0, this.fileFullName.lastIndexOf('.'),
         );
     }
+
     get extension() {
         return extractExtension(this.fileFullName);
     }
+
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
     }
+
     deleteCache() {
         cache.delete(this.filePath);
         ItemSource.deleteCache(this.filePath);
         this.fireDeleteCacheEvent();
     }
+
     async readFileToJsonData() {
         try {
             const str = await fsReadFile(this.filePath);
@@ -98,6 +109,7 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return null;
     }
+
     async saveData(data: string) {
         try {
             const isFileExist = await fsCheckFileExist(this.filePath);
@@ -113,10 +125,12 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
+
     async saveDataFromItem(item: ItemSource<any>) {
         const content = JSON.stringify(item.toJson());
         return this.saveData(content);
     }
+
     async delete() {
         try {
             await fsDeleteFile(this.filePath);
@@ -128,6 +142,7 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
+
     static getInstanceNoCache(filePath: string, fileFullName?: string) {
         let basePath;
         if (fileFullName) {
@@ -142,6 +157,7 @@ export default class FileSource extends EventHandler<FSEventType>
             basePath, fileFullName, filePath, pathToFileURL(filePath),
         );
     }
+
     static getInstance(filePath: string, fileFullName?: string,
         refreshCache?: boolean) {
         const fileSource = this.getInstanceNoCache(filePath, fileFullName);
@@ -154,15 +170,18 @@ export default class FileSource extends EventHandler<FSEventType>
         cache.set(fileSource.filePath, fileSource);
         return fileSource;
     }
+
     dragSerialize(type?: DragTypeEnum) {
         return {
             type: type || DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
     }
+
     static dragDeserialize(data: any) {
         return this.getInstance(data);
     }
+
     async renameTo(newName: string) {
         if (newName === this.name) {
             return false;
@@ -178,6 +197,7 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
+
     private async _duplicate() {
         let i = 1;
         let newName = this.name + ' (Copy)';
@@ -192,6 +212,7 @@ export default class FileSource extends EventHandler<FSEventType>
             await fsCreateFile(newFilePath, JSON.stringify(data));
         }
     }
+
     async duplicate() {
         try {
             await this._duplicate();
@@ -200,6 +221,7 @@ export default class FileSource extends EventHandler<FSEventType>
             handleError(error);
         }
     }
+
     static registerFSEventListener(
         events: FSEventType[], callback: () => void, filePath?: string,
     ) {
@@ -208,6 +230,7 @@ export default class FileSource extends EventHandler<FSEventType>
         });
         return super.registerEventListener(newEvents, callback);
     }
+
     static addFSPropEvent(
         eventName: FSEventType, filePath: string, data?: any,
     ): void {
@@ -215,18 +238,23 @@ export default class FileSource extends EventHandler<FSEventType>
         super.addPropEvent(eventName, data);
         super.addPropEvent(newEventName, data);
     }
+
     fireSelectEvent() {
         FileSource.addFSPropEvent('select', this.filePath);
     }
+
     fireHistoryUpdateEvent() {
         FileSource.addFSPropEvent('history-update', this.filePath);
     }
+
     fireUpdateEvent() {
         FileSource.addFSPropEvent('update', this.filePath);
     }
+
     fireDeleteEvent() {
         FileSource.addFSPropEvent('delete', this.filePath);
     }
+
     fireDeleteCacheEvent() {
         FileSource.addFSPropEvent('delete-cache', this.filePath);
     }

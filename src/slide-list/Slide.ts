@@ -9,10 +9,11 @@ import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { createContext, useContext } from 'react';
 
 export type SlideEditorHistoryType = {
     items?: SlideItemType[],
@@ -29,7 +30,7 @@ export default class Slide extends ItemSource<SlideItem> {
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editorCacheManager: SlideEditorCacheManager;
-    _pdfImageDataList: PdfImageDataType[] | null = null;
+    pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
     constructor(filePath: string, json: SlideType) {
         super(filePath);
@@ -38,7 +39,7 @@ export default class Slide extends ItemSource<SlideItem> {
         );
     }
     get isPdf() {
-        return this._pdfImageDataList !== null;
+        return this.pdfImageDataList !== null;
     }
     get isChanged() {
         if (this.isPdf) {
@@ -59,23 +60,6 @@ export default class Slide extends ItemSource<SlideItem> {
             newItem.isCopied = true;
         }
     }
-    get selectedIndex() {
-        const foundItem = this.items.find((item) => {
-            return item.isSelected;
-        }) || null;
-        if (foundItem) {
-            return this.items.indexOf(foundItem);
-        }
-        return -1;
-    }
-    set selectedIndex(newIndex: number) {
-        this.items.forEach((item) => {
-            item.isSelected = false;
-        });
-        if (this.items[newIndex]) {
-            this.items[newIndex].isSelected = true;
-        }
-    }
     get metadata() {
         if (this.isPdf) {
             return {};
@@ -87,7 +71,7 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     get items() {
         if (this.isPdf) {
-            return (this._pdfImageDataList || []).map((pdfImageData, i) => {
+            return (this.pdfImageDataList || []).map((pdfImageData, i) => {
                 const slideItem = new SlideItem(i, this.filePath, {
                     id: i,
                     canvasItems: [],
@@ -132,7 +116,6 @@ export default class Slide extends ItemSource<SlideItem> {
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
         if (isSuccess) {
-            SlideItem.clearCache();
             this.editorCacheManager.save();
         }
         return isSuccess;
@@ -203,10 +186,6 @@ export default class Slide extends ItemSource<SlideItem> {
         const newItems = this.items.filter((item) => {
             return item.id !== slideItem.id;
         });
-        const result = SlideItem.getSelectedResult();
-        if (result?.id === slideItem.id) {
-            SlideItem.setSelected(null);
-        }
         this.items = newItems;
     }
     static toWrongDimensionString({ slideItem, display }: {
@@ -307,30 +286,6 @@ export default class Slide extends ItemSource<SlideItem> {
         const slide = super.readFileToData(filePath, isForceCache);
         return slide as Promise<Slide | undefined | null>;
     }
-    static async getSelected() {
-        const fileSource = this.getSelectedFilePath();
-        if (fileSource !== null) {
-            return this.readFileToData(fileSource);
-        }
-        return null;
-    }
-    static async getSelectedSlideItem() {
-        let selectedSlideItem = await SlideItem.getSelected();
-        if (selectedSlideItem === null) {
-            const slide = await this.getSelected();
-            if (slide) {
-                const items = slide.items;
-                if (items.length > 0) {
-                    selectedSlideItem = items[0];
-                }
-            }
-        }
-        if (selectedSlideItem) {
-            selectedSlideItem.isSelected = true;
-            return selectedSlideItem;
-        }
-        return null;
-    }
     static async create(dir: string, name: string) {
         return super.create(dir, name,
             [SlideItem.defaultSlideItemData(0)]);
@@ -345,4 +300,45 @@ export default class Slide extends ItemSource<SlideItem> {
     clone() {
         return Slide.fromJson(this.filePath, this.toJson());
     }
+    static slideItemExtractKey(key: string) {
+        const [filePath, id] = key.split(':');
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        return {
+            filePath,
+            id: parseInt(id),
+        };
+    }
+    static async slideItemFromKey(key: string) {
+        const extracted = this.slideItemExtractKey(key);
+        if (extracted === null) {
+            return null;
+        }
+        const { filePath, id } = extracted;
+        if (filePath === undefined || id === undefined) {
+            return null;
+        }
+        const slide = await Slide.readFileToData(filePath);
+        if (!slide) {
+            return null;
+        }
+        return slide.getItemById(id);
+    }
+    static slideItemDragDeserialize(data: any) {
+        return this.slideItemFromKey(data);
+    }
+}
+
+export const SelectedSlideContext = createContext<{
+    selectedSlide: Slide,
+    setSelectedSlide: (newSelectedSlide: Slide) => void,
+} | null>(null);
+
+export function useSelectedSlideContext() {
+    const context = useContext(SelectedSlideContext);
+    if (context === null) {
+        throw new Error('useSelectedSlide must be used within a SlideProvider');
+    }
+    return context;
 }

@@ -1,6 +1,6 @@
 import {
     fsCopyFilePathToPath, isSupportedExt, MimetypeNameType,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from './AppContextMenu';

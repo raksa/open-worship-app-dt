@@ -6,7 +6,7 @@ import {
 } from '../others/AppContextMenu';
 import {
     copyToClipboard, openExplorer,
-} from '../server/appHelper';
+} from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
@@ -14,7 +14,7 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
 import ItemColorNote from './ItemColorNote';
 
-const RenderRenaming = lazy(() => {
+const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenaming');
 });
 
@@ -156,7 +156,7 @@ export default function FileItemHandler({
                 }
             }}>
             {isRenaming ? (
-                <RenderRenaming
+                <LazyRenderRenaming
                     setIsRenaming={setIsRenaming}
                     filePath={filePath}
                 />

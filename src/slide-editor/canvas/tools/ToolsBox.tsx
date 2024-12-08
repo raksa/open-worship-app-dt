@@ -12,8 +12,7 @@ export default function ToolsBox() {
     const onDataCallback = useCallback((newData: any) => {
         applyBoxData(newData);
     }, []);
-    const onNoColorCallback = useCallback((
-        _newColor: AppColorType) => {
+    const onNoColorCallback = useCallback(() => {
         applyBoxData({
             backgroundColor: null,
         });

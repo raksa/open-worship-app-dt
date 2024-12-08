@@ -14,18 +14,18 @@ import {
 } from '../bible-reader/BibleItemViewController';
 import { useWindowMode } from '../router/routeHelpers';
 import {
-    fontSizeToHeightStyle, useBibleViewFontSize,
+    fontSizeToHeightStyle, useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
-import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelper';
+import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelpers';
 import { toShortcutKey } from '../event/KeyboardEventListener';
-import { useBibleItem } from '../bible-reader/BibleItemContext';
+import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 
 export default function RenderBibleDataFound({
     onVerseChange,
 }: Readonly<{
     onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
 }>) {
-    const bibleItem = useBibleItem();
+    const bibleItem = useBibleItemContext();
     const windowMode = useWindowMode();
     const isSearching = onVerseChange !== undefined;
     useFoundActionKeyboard(bibleItem);
@@ -57,7 +57,7 @@ export default function RenderBibleDataFound({
 }
 
 function RenderBibleFoundHeader() {
-    const fontSize = useBibleViewFontSize();
+    const fontSize = useBibleViewFontSizeContext();
     const viewController = SearchBibleItemViewController.getInstance();
     return (
         <div className='card-header bg-transparent border-success'

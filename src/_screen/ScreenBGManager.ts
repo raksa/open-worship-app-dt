@@ -5,7 +5,7 @@ import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
     getImageDim, getVideoDim,
 } from '../helper/helpers';
-import { setSetting } from '../helper/settingHelper';
+import { setSetting } from '../helper/settingHelpers';
 import appProviderScreen from './appProviderScreen';
 import { genHtmlBG } from './ScreenBackground';
 import { sendScreenMessage } from './screenEventHelpers';
@@ -35,7 +35,7 @@ export default class ScreenBGManager
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isMain) {
+        if (appProviderScreen.isPresenter) {
             const allBGSrcList = getBGSrcListOnScreenSetting();
             this._bgSrc = allBGSrcList[this.key] || null;
         }

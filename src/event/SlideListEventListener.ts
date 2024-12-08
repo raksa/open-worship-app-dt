@@ -1,7 +1,7 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     getSetting, useStateSettingNumber,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import {
     DEFAULT_THUMBNAIL_SIZE_FACTOR, THUMBNAIL_WIDTH_SETTING_NAME,
 } from '../slide-list/slideHelpers';

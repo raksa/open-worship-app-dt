@@ -1,11 +1,11 @@
-import { useScreenManager } from '../ScreenManager';
+import { useScreenManagerContext } from '../ScreenManager';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { usePMEvents } from '../screenEventHelpers';
 import { getAllDisplays } from '../screenHelpers';
 
 export default function DisplayControl() {
 
-    const screenManager = useScreenManager();
+    const screenManager = useScreenManagerContext();
     usePMEvents(['display-id'], screenManager);
     const displayId = screenManager.displayId;
 

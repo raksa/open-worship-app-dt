@@ -10,8 +10,7 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { useNavigate } from 'react-router-dom';
-import { goEditorMode } from '../router/routeHelpers';
+import { goEditorMode, useRouteNavigateContext } from '../router/routeHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -19,7 +18,7 @@ export default function SlideFile({
     index: number,
     filePath: string,
 }>) {
-    const navigator = useNavigate();
+    const navigate = useRouteNavigateContext();
     const [data, setData] = useState<SlideDynamicType>(null);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -35,9 +34,11 @@ export default function SlideFile({
     }, [data]);
     const renderChildCallback = useCallback((slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
-        return slide1.isPdf ?
-            <SlideFilePreviewPdf slide={slide1} /> :
-            <SlideFilePreviewNormal slide={slide1} />;
+        return slide1.isPdf ? (
+            <SlideFilePreviewPdf slide={slide1} />
+        ) : (
+            <SlideFilePreviewNormal slide={slide1} />
+        );
     }, []);
     const onDeleteCallback = useCallback(() => {
         const selectedFilePath = Slide.getSelectedFilePath();
@@ -77,7 +78,7 @@ export default function SlideFile({
                 onClick: () => {
                     if (data) {
                         data.isSelected = true;
-                        goEditorMode(navigator);
+                        goEditorMode(navigate);
                     }
                 },
             }]}
@@ -93,8 +94,9 @@ function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
         <div className='w-100 h-100 app-ellipsis'>
             <i className='bi bi-file-earmark-slides' />
             {fileSource.name}
-            {slide.isChanged && <span
-                style={{ color: 'red' }}>*</span>}
+            {slide.isChanged && (
+                <span style={{ color: 'red' }}>*</span>
+            )}
         </div>
     );
 }
