@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import { readdirSync } from 'node:fs';
 
 const resolveAlias = {
     '/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
@@ -32,6 +33,10 @@ const htmlPlugin = () => {
     };
 };
 
+const htmlFiles = readdirSync(__dirname).filter((fileName) => {
+    return fileName.endsWith('.html');
+});
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
@@ -58,9 +63,7 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            input: [
-                'presenter.html', 'reader.html', 'screen.html', 'finder.html',
-            ].map(item => resolve(item)),
+            input: htmlFiles.map(item => resolve(item)),
         },
     },
 });

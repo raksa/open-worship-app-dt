@@ -53,7 +53,7 @@ export const home: TabOptionType = {
 export const editorTab = genTabItem('Editor', 'editor');
 export const presenterTab = genTabItem('Presenter', 'presenter');
 export const readerTab: TabOptionType = {
-    title: 'Reader',
+    title: 'Reader↗️',
     routePath: appProvider.readerHomePage,
     customNavigate: () => {
         goToPath(appProvider.readerHomePage);

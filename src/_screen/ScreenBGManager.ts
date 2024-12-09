@@ -35,7 +35,7 @@ export default class ScreenBGManager
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isPresenter) {
+        if (appProviderScreen.isPagePresenter) {
             const allBGSrcList = getBGSrcListOnScreenSetting();
             this._bgSrc = allBGSrcList[this.key] || null;
         }

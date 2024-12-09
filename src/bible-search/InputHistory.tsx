@@ -71,7 +71,7 @@ export default function InputHistory({
         setHistoryTextList(newHistoryTextList);
     };
     return (
-        <div className='d-flex shadow-sm rounded px-1' style={{
+        <div className='d-flex shadow-sm rounded px-1 me-1' style={{
             overflowX: 'auto',
             overflowY: 'hidden',
             minWidth: '150px',

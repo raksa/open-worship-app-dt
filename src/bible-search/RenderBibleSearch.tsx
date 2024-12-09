@@ -88,7 +88,7 @@ function RenderBibleSearchHeader({
             </div>
             <div className={
                 'flex-item flex-fill justify-content-end' +
-                (appProvider.isPresenter ? ' pe-5' : '')
+                (appProvider.isPagePresenter ? ' pe-5' : '')
             }>
                 {isBibleEditor ? null : (
                     <div className='float-start'>

@@ -45,7 +45,7 @@ export default class ScreenSlideManager extends
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isPresenter) {
+        if (appProviderScreen.isPagePresenter) {
             const allSlideList = getSlideListOnScreenSetting();
             this._slideItemData = allSlideList[this.key] || null;
         }

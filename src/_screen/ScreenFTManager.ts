@@ -43,7 +43,7 @@ export default class ScreenFTManager
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isPresenter) {
+        if (appProviderScreen.isPagePresenter) {
             const allFTList = getFTListOnScreenSetting();
             this._ftItemData = allFTList[this.key] || null;
 

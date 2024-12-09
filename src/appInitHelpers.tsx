@@ -15,6 +15,11 @@ import FileSourceMetaManager from './helper/FileSourceMetaManager';
 import { getCurrentLangAsync, getLangAsync, defaultLocal } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
+import { initToolTip } from './tool-tip/init';
+import { useHandleFind } from './_find/finderHelpers';
+import { useCheckSelectedDir } from './helper/tourHelpers';
+import { createRoot } from 'react-dom/client';
+import { StrictMode } from 'react';
 
 export async function initApp() {
 
@@ -60,6 +65,7 @@ export async function initApp() {
         promises.push(getLangAsync(bibleInfo.locale));
     }
     await Promise.all(promises);
+    initToolTip();
 }
 
 export function useQuickExitBlock() {
@@ -86,4 +92,30 @@ export function getRootElement<T>(): T {
         throw new Error(message);
     }
     return container as T;
+}
+
+export function RenderApp({ children }: Readonly<{
+    children: React.ReactNode,
+}>) {
+    useQuickExitBlock();
+    useCheckSelectedDir();
+    useHandleFind();
+    return (
+        <div id='app' className='dark' data-bs-theme='dark'>
+            <StrictMode>
+                {children}
+            </StrictMode>
+        </div>
+    );
+}
+
+export async function main(children: React.ReactNode) {
+    await initApp();
+    const container = getRootElement<HTMLDivElement>();
+    const root = createRoot(container);
+    root.render(
+        <RenderApp>
+            {children}
+        </RenderApp>
+    );
 }

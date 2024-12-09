@@ -9,8 +9,6 @@ import appInfo from '../../package.json';
 import fontUtils from './fontUtils';
 import appUtils from './appUtils';
 import pdfUtils from './pdfUtils';
-import { htmlFiles } from '../fsServe';
-
 
 function toVersionNumber(version: string) {
     const [major, minor, patch] = (
@@ -19,10 +17,7 @@ function toVersionNumber(version: string) {
     return major * 10000 + minor * 100 + patch;
 }
 
-const provider = {
-    isPresenter: true,
-    isReader: false,
-    isScreen: false,
+export const provider = {
     appType: 'desktop',
     isDesktop: true,
     fontUtils,
@@ -42,12 +37,8 @@ const provider = {
         version: appInfo.version,
         versionNumber: toVersionNumber(appInfo.version),
     },
-    presenterHomePage: `/${htmlFiles.presenter}`,
-    readerHomePage: `/${htmlFiles.reader}`,
     reload: () => {
         window.location.reload();
     },
     appUtils,
 };
-
-export default provider;

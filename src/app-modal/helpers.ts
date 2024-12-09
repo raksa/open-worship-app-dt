@@ -7,7 +7,6 @@ export const DELIMITER = '_';
 export enum AppPopupWindowsType {
     BIBLE_SEARCH = 'bible-search',
     ALERT = 'alert',
-    SETTING = 'setting',
 };
 
 

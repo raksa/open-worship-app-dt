@@ -86,10 +86,20 @@ export enum AppTypeEnum {
     Mobile = 'mobile',
 }
 
-const appProvider = (window as any).provider as {
-    isPresenter: boolean,
-    isReader: boolean,
-    isScreen: boolean,
+export type PagePropsType = {
+    isPageFinder: boolean,
+    finderHomePage: string,
+    isPagePresenter: boolean,
+    presenterHomePage: string,
+    isPageReader: boolean,
+    readerHomePage: string,
+    isPageScreen: boolean,
+    screenHomePage: string,
+    isPageSetting: boolean,
+    settingHomePage: string,
+}
+
+const appProvider = (window as any).provider as PagePropsType & {
     appType: AppTypeEnum,
     isDesktop: boolean,
     fontUtils: {

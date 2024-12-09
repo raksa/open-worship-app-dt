@@ -1,9 +1,9 @@
 import {
-    AppUtilsType, FileUtilsType, MessageUtilsType, PathUtilsType,
+    AppUtilsType, FileUtilsType, MessageUtilsType, PagePropsType, PathUtilsType,
     SystemUtilsType,
 } from '../server/appProvider';
 
-const appProviderScreen = (window as any).provider as {
+const appProviderScreen = (window as any).provider as PagePropsType & {
     isPresenter: boolean,
     isScreen: boolean,
     messageUtils: MessageUtilsType;

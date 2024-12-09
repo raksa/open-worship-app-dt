@@ -1,12 +1,6 @@
 @use '../others/variables.scss' as *;
 
-#setting-popup {
-  width: 600px;
-  height: 600px;
-  max-width: calc(100vw - 10px);
-  max-height: calc(100vh - $header-height);
-  overflow: auto;
-
+#app-setting-popup {
   .setting-header {
     height: $header-height;
   }

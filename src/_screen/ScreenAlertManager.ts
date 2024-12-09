@@ -37,7 +37,7 @@ export default class ScreenAlertManager
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isPresenter) {
+        if (appProviderScreen.isPagePresenter) {
             const allAlertDataList = getAlertDataListOnScreenSetting();
             if (allAlertDataList[this.key] !== undefined) {
                 const {

@@ -1,13 +1,13 @@
 import { useContext } from 'react';
 
 import { Outlet } from 'react-router-dom';
-import SettingHeader from '../setting/SettingHeader';
 import BibleSearchHeader from '../bible-search/BibleSearchHeader';
 import TabHeadRender from './TabHeadRender';
 import {
     DefaultTabContext,
     TabOptionType, WindowModeContext, useWindowMode,
 } from './routeHelpers';
+import { SettingButton } from '../others/commonButtons';
 
 export default function AppLayout() {
     const tabOptionList = useContext(DefaultTabContext);
@@ -37,7 +37,7 @@ function getHeader(tabOptionList: TabOptionType[]) {
                 <BibleSearchHeader />
             </div>
             <div className='highlight-border-bottom'>
-                <SettingHeader />
+                <SettingButton />
             </div>
         </div>
     );

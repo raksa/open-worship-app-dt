@@ -6,6 +6,7 @@ export const htmlFiles = {
     presenter: 'presenter.html',
     screen: 'screen.html',
     reader: 'reader.html',
+    setting: 'setting.html',
     finder: 'finder.html',
 };
 export const customScheme = 'owa';
@@ -76,3 +77,7 @@ export function initCustomSchemeHandler() {
         }
     );
 };
+
+export function toTitleCase(str: string) {
+    return str[0].toUpperCase() + str.slice(1);
+}
