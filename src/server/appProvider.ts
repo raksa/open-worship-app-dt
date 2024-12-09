@@ -71,7 +71,6 @@ export type AppUtilsType = {
     handleError: (error: any) => void,
     base64Encode: (str: string) => string,
     base64Decode: (str: string) => string,
-    quitApp: () => void,
 };
 export type PdfUtilsType = {
     officeFileToPdf: (

@@ -78,7 +78,7 @@ export function useQuickExitBlock() {
             'Are you sure you want to quit the app?'
         ).then((isOk) => {
             if (isOk) {
-                appProvider.appUtils.quitApp();
+                window.close(); 
             }
         });
     });
