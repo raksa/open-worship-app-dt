@@ -1,5 +1,3 @@
-import { app } from 'electron';
-
 const appUtils = {
     handleError: (error: any) => {
         console.error(error);
