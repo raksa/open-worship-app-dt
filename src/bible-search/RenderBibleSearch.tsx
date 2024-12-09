@@ -12,7 +12,7 @@ import {
 } from './RenderSearchSuggestion';
 import { setBibleSearchInputFocus } from './selectionHelpers';
 import RenderExtraLeftButtons from './RenderExtraLeftButtons';
-import { usePopupWindowsTypeData } from '../app-modal/helpers';
+import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
 import {
     SearchBibleItemViewController,
@@ -39,7 +39,7 @@ function RenderBibleSearchHeader({
     const hideBibleSearchPopup = useShowBibleSearchContext(false);
     const bibleKey = useBibleKeyContext();
     const { inputText, setInputText } = useInputTextContext();
-    const { data } = usePopupWindowsTypeData();
+    const { data } = getPopupWindowTypeData();
 
     const viewController = SearchBibleItemViewController.getInstance();
     const setInputText1 = (newText: string) => {
@@ -58,7 +58,7 @@ function RenderBibleSearchHeader({
                 setInputText1(newText);
             }
         }, [inputText]);
-    const isBibleEditor = !!data;
+    const isEditingBibleItem = !!data;
     return (
         <div className='card-header d-flex text-center w-100'>
             <div className='flex-item' style={{
@@ -91,7 +91,7 @@ function RenderBibleSearchHeader({
                 'flex-item flex-fill justify-content-end' +
                 (appProvider.isPagePresenter ? ' pe-5' : '')
             }>
-                {isBibleEditor ? null : (
+                {isEditingBibleItem ? null : (
                     <div className='float-start'>
                         <RenderExtraLeftButtons
                             setIsSearchOnline={setIsSearchOnline}

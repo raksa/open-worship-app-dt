@@ -5,7 +5,7 @@ import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
 import ScreenFTManager from '../_screen/ScreenFTManager';
-import { usePopupWindowsTypeData } from '../app-modal/helpers';
+import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     genContextMenuItemShortcutKey, ContextMenuItemType,
@@ -31,7 +31,7 @@ const addListEventMapper: KBEventMapper = {
 
 export default function RenderActionButtons() {
     const bibleItem = useBibleItemContext();
-    const { data } = usePopupWindowsTypeData();
+    const { data } = getPopupWindowTypeData();
     const isBibleEditor = !!data;
     if (!isBibleEditor) {
         return null;

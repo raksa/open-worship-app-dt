@@ -1,23 +1,9 @@
-import { useParams } from 'react-router-dom';
-import appProvider from '../server/appProvider';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 
-export const APP_MODAL_ROUTE_PATH = '/modal/';
-export const DELIMITER = '_';
-
-export function toAppModalTypeData(modalType: string, data: string) {
-    const encodedData = appProvider.appUtils.base64Encode(data);
-    return encodeURIComponent(`${modalType}${DELIMITER}${encodedData}`);
+const SETTING_NAME = 'popup-window-type-data';
+export function getPopupWindowTypeData() {
+    return JSON.parse(getSetting(SETTING_NAME) || '{}');
 }
-
-export function fromAppModalTypeData(query?: string) {
-    const [modalType, data] = query ? query.split(DELIMITER) : ['', ''];
-    return {
-        modalType,
-        data: data ? appProvider.appUtils.base64Decode(data) : '',
-    };
-}
-
-export function usePopupWindowsTypeData() {
-    const { query } = useParams<'query'>();
-    return fromAppModalTypeData(query);
+export function setPopupWindowTypeData(modalType: string, data: string) {
+    setSetting(SETTING_NAME, JSON.stringify({ modalType, data }));
 }

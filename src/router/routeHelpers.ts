@@ -1,11 +1,4 @@
-import { NavigateFunction, Location } from 'react-router-dom';
-
 import appProvider from '../server/appProvider';
-
-export type TabCheckPropsType = {
-    navigate: NavigateFunction,
-    location: Location,
-}
 
 export type TabOptionType = {
     title: string,
