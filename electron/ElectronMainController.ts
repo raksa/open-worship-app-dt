@@ -30,7 +30,7 @@ export default class ElectronMainController {
                 webSecurity: true,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: routeProps.preloadFile,
+                preload: routeProps.preloadFilePath,
             },
         });
         win.webContents.setWindowOpenHandler(({ url }) => {

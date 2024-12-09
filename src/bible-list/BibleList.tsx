@@ -6,18 +6,14 @@ import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useGenDS } from '../helper/dirSourceHelpers';
-import {
-    checkIsWindowReaderMode, useWindowMode,
-} from '../router/routeHelpers';
 import { getSettingPrefix } from '../helper/settingHelpers';
 import {
     defaultDataDirNames,
 } from '../helper/constants';
+import appProvider from '../server/appProvider';
 
 export default function BibleList() {
-    const windowMode = useWindowMode();
-    const isReader = checkIsWindowReaderMode(windowMode);
-    const dirSourceSettingName = Bible.getDirSourceSettingName(windowMode);
+    const dirSourceSettingName = Bible.getDirSourceSettingName();
     const dirSource = useGenDS(dirSourceSettingName);
     const bodyHandlerCallback = useCallback((filePaths: string[]) => {
         return (
@@ -33,10 +29,10 @@ export default function BibleList() {
     if (dirSource === null) {
         return null;
     }
-    Bible.getDefault(windowMode);
-    const settingPrefix = getSettingPrefix(windowMode);
+    Bible.getDefault();
+    const settingPrefix = getSettingPrefix();
     const defaultDataDirName = (
-        isReader ? defaultDataDirNames.BIBLE_READ :
+        appProvider.isPageReader ? defaultDataDirNames.BIBLE_READ :
             defaultDataDirNames.BIBLE_PRESENT
     );
     return (

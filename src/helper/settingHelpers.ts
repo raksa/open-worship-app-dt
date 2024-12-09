@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
-    WindowModEnum, checkIsWindowReaderMode,
-} from '../router/routeHelpers';
+import appProvider from '../server/appProvider';
 
 export function setSetting(key: string, value: string) {
     localStorage.setItem(key, value);
@@ -107,8 +105,7 @@ export class SettingManager<T> {
     }
 }
 
-export function getSettingPrefix(windowMode: WindowModEnum | null) {
-    const isReader = checkIsWindowReaderMode(windowMode);
-    const prefixSetting = isReader ? 'reader-' : '';
+export function getSettingPrefix() {
+    const prefixSetting = appProvider.isPageReader ? 'reader-' : '';
     return prefixSetting;
 }

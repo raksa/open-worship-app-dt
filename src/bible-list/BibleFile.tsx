@@ -10,15 +10,14 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { useFSEvents } from '../helper/dirSourceHelpers';
-import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 
 const LazyRenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
 });
 
-function genContextMenu(bible: Bible | null | undefined,
-    windowMode: WindowModEnum | null,
+function genContextMenu(
+    bible: Bible | null | undefined,
 ): ContextMenuItemType[] {
     if (!bible) {
         return [];
@@ -53,7 +52,7 @@ function genContextMenu(bible: Bible | null | undefined,
     }, {
         menuTitle: '(*T) ' + 'Move All Items To',
         onClick: (event: any) => {
-            moveBibleItemTo(event, bible, windowMode);
+            moveBibleItemTo(event, bible);
         },
     }];
 }
@@ -64,7 +63,6 @@ export default function BibleFile({
     index: number,
     filePath: string,
 }>) {
-    const windowMode = useWindowMode();
     const [data, setData] = useState<Bible | null | undefined>(null);
     useAppEffectAsync(async (methodContext) => {
         if (data === null) {
@@ -91,7 +89,7 @@ export default function BibleFile({
             renderChild={renderChildCallback}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
-            contextMenu={genContextMenu(data, windowMode)}
+            contextMenu={genContextMenu(data)}
         />
     );
 }

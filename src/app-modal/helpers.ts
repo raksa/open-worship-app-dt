@@ -4,12 +4,6 @@ import appProvider from '../server/appProvider';
 export const APP_MODAL_ROUTE_PATH = '/modal/';
 export const DELIMITER = '_';
 
-export enum AppPopupWindowsType {
-    BIBLE_SEARCH = 'bible-search',
-    ALERT = 'alert',
-};
-
-
 export function toAppModalTypeData(modalType: string, data: string) {
     const encodedData = appProvider.appUtils.base64Encode(data);
     return encodeURIComponent(`${modalType}${DELIMITER}${encodedData}`);

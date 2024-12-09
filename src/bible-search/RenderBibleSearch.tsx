@@ -1,4 +1,4 @@
-import { lazy, useCallback, useContext, useMemo, useState } from 'react';
+import { lazy, useCallback, useMemo, useState } from 'react';
 
 import InputHandler, {
     InputTextContext, useInputTextContext,
@@ -18,10 +18,11 @@ import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
-import { CloseButtonContext } from '../app-modal/Modal';
 import InputHistory from './InputHistory';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import appProvider from '../server/appProvider';
+import { ModalCloseButton } from '../app-modal/Modal';
+import { useShowBibleSearchContext } from '../others/commonButtons';
 
 const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
@@ -35,9 +36,9 @@ function RenderBibleSearchHeader({
     setIsSearchOnline: (isSearchOnline: boolean) => void,
     setBibleKey: (bibleKey: string | null) => void,
 }>) {
+    const hideBibleSearchPopup = useShowBibleSearchContext(false);
     const bibleKey = useBibleKeyContext();
     const { inputText, setInputText } = useInputTextContext();
-    const closeButton = useContext(CloseButtonContext);
     const { data } = usePopupWindowsTypeData();
 
     const viewController = SearchBibleItemViewController.getInstance();
@@ -99,7 +100,11 @@ function RenderBibleSearchHeader({
                     </div>
                 )}
             </div>
-            {closeButton}
+            {hideBibleSearchPopup === null ? null : (
+                <ModalCloseButton close={() => {
+                    hideBibleSearchPopup();
+                }} />
+            )}
         </div>
     );
 }

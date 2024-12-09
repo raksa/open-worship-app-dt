@@ -10,12 +10,11 @@ import {
     closeSlideItemQuickEdit,
 } from '../slide-presenter/HandleItemSlideEdit';
 import CanvasController from './canvas/CanvasController';
-import { useModal } from '../app-modal/Modal';
+import { Modal } from '../app-modal/Modal';
 
 export default function SlideItemEditorPopup({ slideItem }: Readonly<{
     slideItem: SlideItem
 }>) {
-    const { Modal } = useModal();
     useKeyboardRegistering([{ key: 'Escape' }], closeSlideItemQuickEdit);
     CanvasController.getInstance().init(slideItem);
     return (

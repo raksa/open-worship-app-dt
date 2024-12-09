@@ -1,3 +1,9 @@
+import { createContext, useContext } from 'react';
+
+import {
+    EventMapper, toShortcutKey,
+} from '../event/KeyboardEventListener';
+import { tran } from '../lang';
 import { goToPath } from '../router/routeHelpers';
 import appProvider from '../server/appProvider';
 
@@ -30,6 +36,48 @@ export function SettingButton() {
                 goToPath(appProvider.settingHomePage);
             }}>
             <i className='bi bi-gear-wide-connected' />
+        </button>
+    );
+}
+
+export const BibleSearchShowingContext = createContext<{
+    isShowing: boolean,
+    setIsShowing: (isShowing: boolean) => void,
+} | null>(null);
+const openBibleEventMap: EventMapper = {
+    allControlKey: ['Ctrl'],
+    key: 'b',
+};
+export function useBibleSearchShowingContext() {
+    const context = useContext(BibleSearchShowingContext);
+    if (context === null) {
+        throw new Error(
+            'useBibleSearchShowingContext must be used within a ' +
+            'BibleSearchShowingProvider'
+        );
+    }
+    return context;
+}
+export function useShowBibleSearchContext(isShowing = true) {
+    const context = useContext(BibleSearchShowingContext);
+    if (context === null) {
+        return null;
+    }
+    return context.setIsShowing.bind(null, isShowing);
+}
+export function BibleSearchButton() {
+    return (
+        <button className='btn btn-labeled btn-primary'
+            style={{ width: '220px' }}
+            title={toShortcutKey(openBibleEventMap)}
+            type='button'
+            onClick={() => {
+
+            }}>
+            <span className='btn-label'>
+                <i className='bi bi-book' />
+            </span>
+            {tran('bible-search')}
         </button>
     );
 }

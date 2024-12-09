@@ -21,9 +21,7 @@ import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import { addExtension } from '../server/fileHelpers';
-import {
-    WindowModEnum, checkIsWindowEditorMode,
-} from '../router/routeHelpers';
+import appProvider from '../server/appProvider';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
@@ -109,17 +107,14 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
 };
 
 export async function addBibleItem(
-    bibleItem: BibleItem, windowMode: WindowModEnum | null, onDone: () => void,
+    bibleItem: BibleItem, onDone: () => void,
 ) {
-    const isWindowEditor = checkIsWindowEditorMode();
-    if (isWindowEditor) {
+    if (appProvider.isPageEditor) {
         const canvasController = CanvasController.getInstance();
         canvasController.addNewBibleItem(bibleItem);
         return null;
     }
-    const savedBibleItem = await Bible.addBibleItemToDefault(
-        bibleItem, windowMode,
-    );
+    const savedBibleItem = await Bible.addBibleItemToDefault(bibleItem);
     if (savedBibleItem !== null) {
         showSimpleToast('Adding bible', 'Bible item is added');
         onDone?.();
@@ -161,11 +156,10 @@ export async function genVerseList({
 }
 
 export async function moveBibleItemTo(
-    event: any, bible: Bible, windowMode: WindowModEnum | null,
-    index?: number,
+    event: any, bible: Bible, index?: number,
 ) {
     const dirSource = await DirSource.getInstance(
-        Bible.getDirSourceSettingName(windowMode),
+        Bible.getDirSourceSettingName(),
     );
     dirSource.getFilePaths('bible').then((filePaths) => {
         const targetNames = (filePaths || []).map((filePath) => {

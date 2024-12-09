@@ -1,18 +1,22 @@
 import { BrowserWindow } from 'electron';
 
-import { rootUrl as fsServeRootUrl, toTitleCase } from './fsServe';
+import {
+    rootUrl as fsServeRootUrl, preloadFileMap, toTitleCase,
+} from './fsServe';
 import { isDev } from './electronHelpers';
 
+function getPreloadFilePath(htmlFileFullName: string) {
+    const preloadName = (
+        preloadFileMap.minimal.includes(htmlFileFullName) ? 'minimal' : 'full'
+    );
+    return `${__dirname}/client/preload${toTitleCase(preloadName)}.js`;
+}
+
 export function genRoutProps(htmlFileFullName: string) {
-    const htmlFileName = htmlFileFullName.split('.')[0];
-    const preloadFileFullName = `preload${toTitleCase(htmlFileName)}.js`;
-    const preloadFile = `${__dirname}/client/${preloadFileFullName}`;
+    const preloadFilePath = getPreloadFilePath(htmlFileFullName);
     const loadURL = (browserWindow: BrowserWindow, query: string = '') => {
         const rootUrl = isDev ? 'https://localhost:3000' : fsServeRootUrl;
-        browserWindow.loadURL(`${rootUrl}/${htmlFileFullName}`);
+        browserWindow.loadURL(`${rootUrl}/${htmlFileFullName}${query}`);
     };
-    return {
-        loadURL,
-        preloadFile,
-    };
+    return { loadURL, preloadFilePath };
 }

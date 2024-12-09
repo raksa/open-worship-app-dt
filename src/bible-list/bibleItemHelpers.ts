@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import Bible from './Bible';
-import { WindowModEnum } from '../router/routeHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
@@ -47,7 +46,7 @@ export function genDefaultBibleItemContextMenu(
 
 export async function openBibleItemContextMenu(
     event: any, bibleItem: BibleItem, index: number,
-    windowMode: WindowModEnum | null, openBibleSearch: () => void,
+    openBibleSearch: (() => void) | null,
 ) {
     const bible = await Bible.readFileToData(bibleItem.filePath ?? null);
     if (!bible) {
@@ -56,12 +55,14 @@ export async function openBibleItemContextMenu(
     }
     const menuItem: ContextMenuItemType[] = [
         ...genDefaultBibleItemContextMenu(bibleItem),
-        {
-            menuTitle: '(*T) ' + 'Quick Edit',
-            onClick: () => {
-                openBibleSearch();
+        ...(openBibleSearch !== null ? [
+            {
+                menuTitle: '(*T) ' + 'Quick Edit',
+                onClick: () => {
+                    openBibleSearch();
+                },
             },
-        },
+        ] : []),
         {
             menuTitle: '(*T) ' + 'Duplicate',
             onClick: () => {
@@ -72,7 +73,7 @@ export async function openBibleItemContextMenu(
         {
             menuTitle: '(*T) ' + 'Move To',
             onClick: (event1: any) => {
-                moveBibleItemTo(event1, bible, windowMode, index);
+                moveBibleItemTo(event1, bible, index);
             },
         },
         {

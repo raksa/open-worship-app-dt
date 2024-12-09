@@ -7,7 +7,6 @@ import {
     getSetting, setSetting,
 } from '../helper/settingHelpers';
 import { handleError } from '../helper/errorHelpers';
-import { WindowModEnum } from '../router/routeHelpers';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
@@ -20,7 +19,7 @@ import {
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { attemptAddingHistory } from '../bible-search/InputHistory';
 import { EventMapper } from '../event/KeyboardEventListener';
-import BibleView, { finalRenderer } from './BibleView';
+import { finalRenderer } from './BibleView';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -429,9 +428,7 @@ export default class BibleItemViewController
     ) {
         this.addBibleItem(bibleItem, newBibleItem, false, false);
     }
-    genContextMenu(
-        bibleItem: BibleItem, _?: WindowModEnum | null,
-    ): ContextMenuItemType[] {
+    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         return [
             {
                 menuTitle: 'Split Horizontal', onClick: () => {
@@ -534,15 +531,13 @@ export class SearchBibleItemViewController extends BibleItemViewController {
             this.setBibleKey(bibleItem.bibleKey);
         });
     }
-    genContextMenu(
-        bibleItem: BibleItem, windowMode: WindowModEnum | null = null,
-    ): ContextMenuItemType[] {
+    genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
-            bibleItem, windowMode, this.onSearchAddBibleItem,
+            bibleItem, this.onSearchAddBibleItem,
             isBibleItemSelected,
         );
-        const menus2 = super.genContextMenu(bibleItem, windowMode);
+        const menus2 = super.genContextMenu(bibleItem);
         if (!isBibleItemSelected) {
             menus2.push({
                 menuTitle: 'Edit', title: 'Double click on header to edit',

@@ -18,7 +18,6 @@ import {
 import { showSimpleToast } from '../toast/toastHelpers';
 import Slide from './Slide';
 import SlideItem from './SlideItem';
-import { checkIsWindowEditorMode } from '../router/routeHelpers';
 import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
@@ -51,8 +50,7 @@ export function openSlideContextMenu(event: any,
         {
             menuTitle: 'Quick Edit',
             onClick: () => {
-                const isEditor = checkIsWindowEditorMode();
-                if (isEditor) {
+                if (appProvider.isPageEditor) {
                     SlideListEventListener.selectSlideItem(slideItem);
                 } else {
                     openSlideItemQuickEdit(slideItem);

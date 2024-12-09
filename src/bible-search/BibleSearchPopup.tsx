@@ -3,7 +3,7 @@ import './BibleSearchPopup.scss';
 import { useState } from 'react';
 
 import RenderBibleSearch from './RenderBibleSearch';
-import { useModal } from '../app-modal/Modal';
+import { Modal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import {
@@ -13,7 +13,6 @@ import { setSetting } from '../helper/settingHelpers';
 import { usePopupWindowsTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {
-    const { Modal } = useModal();
     const { data } = usePopupWindowsTypeData();
     const bibleItem = BibleItem.parseBibleSearchData(data);
     const [inputText, setInputText] = useState<string | null>(

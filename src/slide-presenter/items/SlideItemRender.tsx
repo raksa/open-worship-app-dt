@@ -1,13 +1,15 @@
 import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
-import SlideItem, { useSelectedSlideItemContext } from '../../slide-list/SlideItem';
+import SlideItem, {
+    useSelectedSlideItemContext,
+} from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
 import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
 import { handleDragStart } from '../../bible-list/dragHelpers';
-import { checkIsWindowEditorMode } from '../../router/routeHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
+import appProvider from '../../server/appProvider';
 
 export function RendInfo({ index, slideItem }: Readonly<{
     index: number,
@@ -47,10 +49,9 @@ export function RendInfo({ index, slideItem }: Readonly<{
 export function toCNHighlight(
     slideItem: SlideItem, selectedSlideItem?: SlideItem,
 ) {
-    const isEditor = checkIsWindowEditorMode();
     const activeCN = (
         (
-            isEditor && selectedSlideItem !== undefined &&
+            appProvider.isPageEditor && selectedSlideItem !== undefined &&
             slideItem.checkIsSame(selectedSlideItem)
         ) ? 'active' : ''
     );
@@ -58,7 +59,8 @@ export function toCNHighlight(
         slideItem.filePath, slideItem.id,
     );
     const presenterCN = (
-        (isEditor || selectedList.length == 0) ? '' : 'highlight-selected'
+        (appProvider.isPageEditor || selectedList.length == 0) ?
+            '' : 'highlight-selected'
     );
     return {
         selectedList, activeCN, presenterCN,

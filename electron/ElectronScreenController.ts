@@ -29,7 +29,7 @@ export default class ElectronScreenController {
                 webSecurity: true,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: routeProps.preloadFile,
+                preload: routeProps.preloadFilePath,
             },
         });
         const query = `?screenId=${this.screenId}`;

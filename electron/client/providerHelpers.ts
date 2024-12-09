@@ -16,18 +16,13 @@ function freezeObject(obj: any) {
     }
 }
 
-export function initProvider(
-    extraProvider: { [key: string]: any },
-    provider: { [key: string]: any }
-) {
-    const newProvider = {
-        ...provider,
-        ...extraProvider,
-    };
+export function initProvider(provider: { [key: string]: any }) {
+    const pathName = window.location.pathname;
     for (const [name, htmlFileFullName] of Object.entries(htmlFiles)) {
-        newProvider[`${name}HomePage`] = `/${htmlFileFullName}`;
-        newProvider[`isPage${toTitleCase(name)}`] = false;
+        provider[`${name}HomePage`] = `/${htmlFileFullName}`;
+        const isCurrentPage = pathName.startsWith(`/${htmlFileFullName}`);
+        provider[`isPage${toTitleCase(name)}`] = isCurrentPage;
     }
-    freezeObject(newProvider);
-    (global as any).provider = (window as any).provider = newProvider;
+    freezeObject(provider);
+    (global as any).provider = (window as any).provider = provider;
 }

@@ -3,11 +3,19 @@ import path from 'node:path';
 import { app, net, protocol, session } from 'electron';
 
 export const htmlFiles = {
+    editor: 'editor.html',
     presenter: 'presenter.html',
     screen: 'screen.html',
     reader: 'reader.html',
     setting: 'setting.html',
     finder: 'finder.html',
+};
+export const preloadFileMap = {
+    'full': [
+        htmlFiles.editor, htmlFiles.presenter, htmlFiles.reader,
+        htmlFiles.setting,
+    ],
+    'minimal': [htmlFiles.screen, htmlFiles.finder],
 };
 export const customScheme = 'owa';
 export const schemePrivileges = {

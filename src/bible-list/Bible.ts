@@ -9,11 +9,9 @@ import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
-import {
-    checkIsWindowReaderMode, WindowModEnum,
-} from '../router/routeHelpers';
 import { BibleItemType } from './bibleItemHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
+import appProvider from '../server/appProvider';
 
 export type BibleType = {
     items: BibleItemType[],
@@ -26,10 +24,9 @@ export default class Bible extends ItemSource<BibleItem> {
         super(filePath);
         this.originalJson = cloneJson(json);
     }
-    static getDirSourceSettingName(windowMode: WindowModEnum | null) {
-        const isReader = checkIsWindowReaderMode(windowMode);
+    static getDirSourceSettingName() {
         const dirSourceSettingName = (
-            isReader ? dirSourceSettingNames.BIBLE_READ :
+            appProvider.isPageReader ? dirSourceSettingNames.BIBLE_READ :
                 dirSourceSettingNames.BIBLE_PRESENT
         );
         return dirSourceSettingName;
@@ -95,10 +92,8 @@ export default class Bible extends ItemSource<BibleItem> {
         });
         this.items = newItems;
     }
-    static async addBibleItemToDefault(
-        bibleItem: BibleItem, windowMode: WindowModEnum | null,
-    ) {
-        const bible = await Bible.getDefault(windowMode);
+    static async addBibleItemToDefault(bibleItem: BibleItem) {
+        const bible = await Bible.getDefault();
         if (bible) {
             bible.addBibleItem(bibleItem);
             if (await bible.save()) {
@@ -185,8 +180,8 @@ export default class Bible extends ItemSource<BibleItem> {
             filePath, isForceCache,
         ) as Promise<Bible | null | undefined>;
     }
-    static async getDefault(windowMode: WindowModEnum | null) {
-        const dir = getSetting(Bible.getDirSourceSettingName(windowMode), '');
+    static async getDefault() {
+        const dir = getSetting(Bible.getDirSourceSettingName(), '');
         if (!dir) {
             return null;
         }

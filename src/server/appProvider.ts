@@ -91,6 +91,8 @@ export type PagePropsType = {
     finderHomePage: string,
     isPagePresenter: boolean,
     presenterHomePage: string,
+    isPageEditor: boolean,
+    editorHomePage: string,
     isPageReader: boolean,
     readerHomePage: string,
     isPageScreen: boolean,
@@ -99,7 +101,7 @@ export type PagePropsType = {
     settingHomePage: string,
 }
 
-const appProvider = (window as any).provider as PagePropsType & {
+const appProvider = (window as any).provider as Readonly<PagePropsType & {
     appType: AppTypeEnum,
     isDesktop: boolean,
     fontUtils: {
@@ -126,6 +128,6 @@ const appProvider = (window as any).provider as PagePropsType & {
     pdfUtils: PdfUtilsType,
     presenterHomePage: string,
     readerHomePage: string,
-};
+}>;
 
 export default appProvider;

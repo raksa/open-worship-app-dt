@@ -9,23 +9,22 @@ import {
 import SlideItemGhost from './SlideItemGhost';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import { useFSEvents } from '../../helper/dirSourceHelpers';
-import { useWindowIsEditorMode } from '../../router/routeHelpers';
 import { genArrowListener, checkSlideItemToView } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
 import { useSelectedSlideItemContext } from '../../slide-list/SlideItem';
+import appProvider from '../../server/appProvider';
 
 export default function SlideItems() {
     const { selectedSlide } = useSelectedSlideContext();
     const { setSelectedSlideItem } = useSelectedSlideItemContext();
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    const isEditorMode = useWindowIsEditorMode();
     useFSEvents(['select', 'edit'], selectedSlide.filePath);
     const slideItems = selectedSlide.items;
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
     const arrowListener = (
-        isEditorMode ? () => { } :
+        appProvider.isPageEditor ? () => { } :
             genArrowListener(setSelectedSlideItem, selectedSlide, slideItems)
     );
     useKeyboardRegistering(arrows.map((key) => {

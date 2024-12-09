@@ -109,7 +109,7 @@ export default abstract class ItemSource<T extends {
         return null;
     }
     static async readFileToDataNoCache(filePath: string | null) {
-        if (filePath === null) {
+        if (!filePath) {
             return null;
         }
         const fileSource = FileSource.getInstance(filePath);

@@ -12,7 +12,6 @@ import {
 import {
     closeEventMapper, SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
-import { useWindowMode } from '../router/routeHelpers';
 import {
     fontSizeToHeightStyle, useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
@@ -26,7 +25,6 @@ export default function RenderBibleDataFound({
     onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
 }>) {
     const bibleItem = useBibleItemContext();
-    const windowMode = useWindowMode();
     const isSearching = onVerseChange !== undefined;
     useFoundActionKeyboard(bibleItem);
     const viewController = SearchBibleItemViewController.getInstance();
@@ -37,7 +35,7 @@ export default function RenderBibleDataFound({
                 showAppContextMenu(event as any, [
                     ...genDefaultBibleItemContextMenu(bibleItem),
                     ...viewController.genContextMenu(
-                        viewController.selectedBibleItem, windowMode,
+                        viewController.selectedBibleItem,
                     ),
                 ]);
             }}>

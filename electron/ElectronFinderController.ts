@@ -15,7 +15,7 @@ export default class ElectronFinderController {
                 webSecurity: true,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: routeProps.preloadFile,
+                preload: routeProps.preloadFilePath,
             },
             parent: mainWin,
         });

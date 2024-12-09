@@ -111,7 +111,7 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
                         if (event.key === 'Enter') {
                             event.preventDefault();
                             event.stopPropagation();
-                            console.log('search');
+                            alert('search');  
                         }
                     }}
                     onChange={(event) => {

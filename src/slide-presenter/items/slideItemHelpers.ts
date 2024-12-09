@@ -2,7 +2,7 @@ import Slide from '../../slide-list/Slide';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
 import { genScreenMouseEvent } from '../../_screen/screenHelpers';
 import SlideItem from '../../slide-list/SlideItem';
-import { checkIsWindowEditorMode } from '../../router/routeHelpers';
+import appProvider from '../../server/appProvider';
 
 export function getPresenterIndex(slide: Slide) {
     for (let i = 0; i < slide.items.length; i++) {
@@ -19,7 +19,7 @@ export function handleSlideItemSelecting(
     selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
     slideItem: SlideItem, event: any,
 ) {
-    if (checkIsWindowEditorMode()) {
+    if (appProvider.isPageEditor) {
         selectSelectedSlideItem(slideItem);
     } else {
         ScreenSlideManager.slideSelect(

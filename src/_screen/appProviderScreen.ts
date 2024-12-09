@@ -3,7 +3,7 @@ import {
     SystemUtilsType,
 } from '../server/appProvider';
 
-const appProviderScreen = (window as any).provider as PagePropsType & {
+const appProviderScreen = (window as any).provider as Readonly<PagePropsType & {
     isPresenter: boolean,
     isScreen: boolean,
     messageUtils: MessageUtilsType;
@@ -11,6 +11,6 @@ const appProviderScreen = (window as any).provider as PagePropsType & {
     pathUtils: PathUtilsType,
     systemUtils: SystemUtilsType,
     appUtils: AppUtilsType,
-};
+}>;
 
 export default appProviderScreen;

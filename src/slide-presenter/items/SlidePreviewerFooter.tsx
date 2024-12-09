@@ -39,7 +39,7 @@ function HistoryPreviewerFooter() {
 }
 
 function choseNewSlide(event: any) {
-    console.log('choseNewSlide', event);
+    alert('choseNewSlide');
 }
 
 export const defaultRangeSize = {

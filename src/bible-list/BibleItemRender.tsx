@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
@@ -14,12 +12,12 @@ import {
 } from '../bible-reader/BibleItemViewController';
 import ScreenFTManager from '../_screen/ScreenFTManager';
 import {
-    checkIsWindowPresenterMode, useWindowMode,
-} from '../router/routeHelpers';
-import {
     openBibleItemContextMenu, useBibleItemRenderTitle,
 } from './bibleItemHelpers';
-import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
+import {
+    useShowBibleSearchContext,
+} from '../others/commonButtons';
+import appProvider from '../server/appProvider';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage, filePath,
@@ -29,19 +27,10 @@ export default function BibleItemRender({
     warningMessage?: string,
     filePath?: string,
 }>) {
+    const showBibleSearchPopup = useShowBibleSearchContext();
     const viewController = useBibleItemViewControllerContext();
-    const openBibleSearch = useOpenBibleSearch(bibleItem);
-    const windowMode = useWindowMode();
     useFSEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
-    const onContextMenuCallback = useCallback(
-        (event: React.MouseEvent<any>) => {
-            openBibleItemContextMenu(
-                event, bibleItem, index, windowMode, openBibleSearch,
-            );
-        },
-        [bibleItem, index],
-    );
     const changeBible = async (newBibleKey: string) => {
         const bible = bibleItem.filePath ?
             await Bible.readFileToData(bibleItem.filePath) : null;
@@ -51,11 +40,20 @@ export default function BibleItemRender({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
+    const openContextMenu = (event: React.MouseEvent<any>) => {
+        openBibleItemContextMenu(
+            event, bibleItem, index, showBibleSearchPopup,
+        );
+    };
+
     if (bibleItem.isError) {
         return (
-            <ItemReadError onContextMenu={onContextMenuCallback} />
+            <ItemReadError
+                onContextMenu={openContextMenu}
+            />
         );
     }
+
     return (
         <li className='list-group-item item pointer'
             title={title}
@@ -65,13 +63,13 @@ export default function BibleItemRender({
                 handleDragStart(event, bibleItem);
             }}
             onDoubleClick={(event) => {
-                if (checkIsWindowPresenterMode()) {
+                if (appProvider.isPagePresenter) {
                     ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
                 } else {
                     viewController.appendBibleItem(bibleItem);
                 }
             }}
-            onContextMenu={onContextMenuCallback}>
+            onContextMenu={openContextMenu}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />
                 <div className='px-1'>
@@ -80,13 +78,15 @@ export default function BibleItemRender({
                         onBibleKeyChange={(_, newValue) => {
                             changeBible(newValue);
                         }}
-                        isMinimal />
+                        isMinimal
+                    />
                 </div>
                 <span className='app-ellipsis'>
                     {title || 'not found'}
                 </span>
-                {warningMessage && <span className='float-end'
-                    title={warningMessage}>⚠️</span>}
+                {warningMessage && (
+                    <span className='float-end' title={warningMessage}>⚠️</span>
+                )}
             </div>
         </li >
     );

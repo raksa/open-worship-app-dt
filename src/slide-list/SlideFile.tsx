@@ -10,7 +10,7 @@ import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { goEditorMode, useRouteNavigateContext } from '../router/routeHelpers';
+import { editorTab, goToPath } from '../router/routeHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -18,7 +18,6 @@ export default function SlideFile({
     index: number,
     filePath: string,
 }>) {
-    const navigate = useRouteNavigateContext();
     const [data, setData] = useState<SlideDynamicType>(null);
     const reloadCallback = useCallback(() => {
         setData(null);
@@ -78,7 +77,7 @@ export default function SlideFile({
                 onClick: () => {
                     if (data) {
                         data.isSelected = true;
-                        goEditorMode(navigate);
+                        goToPath(editorTab.routePath);
                     }
                 },
             }]}
