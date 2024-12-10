@@ -1,7 +1,4 @@
-import {
-    PDFDocumentProxy,
-} from 'pdfjs-dist';
-import appProvider from '../server/appProvider';
+import pdfJsLibType, { PDFDocumentProxy } from 'pdfjs-dist';
 
 export type PdfImageDataType = {
     width: number;
@@ -9,19 +6,31 @@ export type PdfImageDataType = {
     src: string,
 };
 
-const mapper = new Map<string, PdfImageDataType[]>();
-
+function getPdfJsLib() {
+    return new Promise<typeof pdfJsLibType>((resolve, reject) => {
+        const checkPdfJsLib = (waitCount: number) => {
+            if (--waitCount <= 0) {
+                return reject(new Error('Fail to load pdfjsLib'));
+            }
+            const pdfjsLib = (window as any).pdfjsLib;
+            if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+            }
+            if (pdfjsLib) {
+                return resolve(pdfjsLib);
+            }
+            setTimeout(checkPdfJsLib, 1e3);
+        };
+        checkPdfJsLib(20);
+    });
+}
 let instance: PdfController | null = null;
 export default class PdfController {
     async genPdfImages(pdfPath: string) {
-        if (mapper.has(pdfPath)) {
-            return mapper.get(pdfPath) as PdfImageDataType[];
-        }
-        const pdfjsLib = appProvider.pdfUtils.pdfjsLib;
+        const pdfjsLib = await getPdfJsLib();
         const loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
         const pdfImageDataList = await this.genImages(pdf);
-        mapper.set(pdfPath, pdfImageDataList);
         return pdfImageDataList;
     }
     private genImages(pdf: PDFDocumentProxy) {

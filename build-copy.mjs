@@ -4,7 +4,7 @@ import { resolve, join, basename } from 'node:path';
 
 const filesToCopy = [
     [
-        'node_modules/pdfjs-dist/build/pdf.worker.js',
+        'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
         'dist/',
     ],
 ];

@@ -1,4 +1,3 @@
-import pdfjsLibType from 'pdfjs-dist';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -76,7 +75,6 @@ export type PdfUtilsType = {
     officeFileToPdf: (
         filePath: string, outputDir: string, fileFullName: string,
     ) => Promise<void>,
-    pdfjsLib: typeof pdfjsLibType,
 }
 
 export enum AppTypeEnum {

@@ -5,7 +5,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import { readdirSync } from 'node:fs';
 
 const resolveAlias = {
-    '/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
+    '/pdf.worker.min.mjs': 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
 };
 
 const htmlPlugin = () => {

@@ -32,5 +32,4 @@ function officeFileToPdf(
 
 export default {
     officeFileToPdf,
-    pdfjsLib: {},
 };
