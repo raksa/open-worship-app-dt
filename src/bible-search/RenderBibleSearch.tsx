@@ -1,114 +1,25 @@
 import { lazy, useMemo, useState } from 'react';
 
-import InputHandler, {
-    InputTextContext, useInputTextContext,
+import {
+    InputTextContext,
 } from './InputHandler';
 import {
-    SelectedBibleKeyContext, genInputText, useBibleKeyContext,
-    useSelectedBibleKey,
+    SelectedBibleKeyContext, useSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
 import {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
-import { setBibleSearchInputFocus } from './selectionHelpers';
-import RenderExtraLeftButtons from './RenderExtraLeftButtons';
-import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import ResizeActor from '../resize-actor/ResizeActor';
-import InputHistory from './InputHistory';
 import { MultiContextRender } from '../helper/MultiContextRender';
-import appProvider from '../server/appProvider';
-import { ModalCloseButton } from '../app-modal/Modal';
-import { useShowBibleSearchContext } from '../others/commonButtons';
+import RenderBibleSearchHeader from './RenderBibleSearchHeader';
 
 const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
 });
-
-function RenderBibleSearchHeader({
-    isSearchOnline, setIsSearchOnline, setBibleKey,
-}: Readonly<{
-    editorInputText: string,
-    isSearchOnline: boolean,
-    setIsSearchOnline: (isSearchOnline: boolean) => void,
-    setBibleKey: (bibleKey: string | null) => void,
-}>) {
-    const hideBibleSearchPopup = useShowBibleSearchContext(false);
-    const bibleKey = useBibleKeyContext();
-    const { inputText, setInputText } = useInputTextContext();
-    const { data } = getPopupWindowTypeData();
-
-    const viewController = SearchBibleItemViewController.getInstance();
-    const setInputText1 = (newText: string) => {
-        setInputText(newText);
-        setBibleSearchInputFocus();
-    };
-    viewController.setInputText = setInputText1;
-
-    const handleBibleKeyChanged = async (
-        oldBibleKey: string, newBibleKey: string,
-    ) => {
-        const newText = await genInputText(
-            oldBibleKey, newBibleKey, inputText,
-        );
-        setBibleKey(newBibleKey);
-        if (newText !== null) {
-            setInputText1(newText);
-        }
-    };
-    const isEditingBibleItem = !!data;
-    return (
-        <div className='card-header d-flex text-center w-100'>
-            <div className='flex-item' style={{
-                width: 'calc(50% - 175px)',
-            }}>
-                <InputHistory onPutHistoryBack={(
-                    bibleKey1, historyText, isShift,
-                ) => {
-                    if (isShift) {
-                        viewController.addBibleItemLeft(
-                            viewController.selectedBibleItem,
-                            viewController.selectedBibleItem,
-                        );
-                    }
-                    if (bibleKey !== bibleKey1) {
-                        handleBibleKeyChanged(bibleKey, bibleKey1);
-                    }
-                    if (historyText !== inputText) {
-                        setInputText1(historyText);
-                    }
-                }} />
-            </div>
-            <div className='flex-item input-group app-input-group-header'
-                style={{ width: 350 }}>
-                <InputHandler
-                    onBibleKeyChange={handleBibleKeyChanged}
-                />
-            </div>
-            <div className={
-                'flex-item flex-fill justify-content-end' +
-                (appProvider.isPagePresenter ? ' pe-5' : '')
-            }>
-                {isEditingBibleItem ? null : (
-                    <div className='float-start'>
-                        <RenderExtraLeftButtons
-                            setIsSearchOnline={setIsSearchOnline}
-                            isSearchOnline={isSearchOnline}
-                        />
-                    </div>
-                )}
-            </div>
-            {hideBibleSearchPopup === null ? null : (
-                <ModalCloseButton close={() => {
-                    hideBibleSearchPopup();
-                }} />
-            )}
-        </div>
-    );
-}
 
 export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
     editorInputText?: string,

@@ -8,7 +8,7 @@ import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
 import {
-    useBibleItemViewControllerContext,
+    SearchBibleItemViewController, useBibleItemViewControllerContext,
 } from '../bible-reader/BibleItemViewController';
 import ScreenFTManager from '../_screen/ScreenFTManager';
 import {
@@ -45,6 +45,26 @@ export default function BibleItemRender({
             event, bibleItem, index, showBibleSearchPopup,
         );
     };
+    const handleDBClicking = (event: any) => {
+        if (appProvider.isPagePresenter) {
+            ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
+        } else if (appProvider.isPageReader) {
+            const searchViewController = (
+                SearchBibleItemViewController.getInstance()
+            );
+            if (event.shiftKey) {
+                searchViewController.addBibleItemRight(
+                    searchViewController.selectedBibleItem, bibleItem,
+                );
+            } else {
+                searchViewController.setSearchingContentFromBibleItem(
+                    bibleItem,
+                );
+            }
+        } else {
+            viewController.appendBibleItem(bibleItem);
+        }
+    };
 
     if (bibleItem.isError) {
         return (
@@ -62,13 +82,7 @@ export default function BibleItemRender({
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
-            onDoubleClick={(event) => {
-                if (appProvider.isPagePresenter) {
-                    ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
-                } else {
-                    viewController.appendBibleItem(bibleItem);
-                }
-            }}
+            onDoubleClick={handleDBClicking}
             onContextMenu={openContextMenu}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />

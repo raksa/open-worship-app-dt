@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
+import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
+import {
+    SearchBibleItemViewController,
+} from '../bible-reader/BibleItemViewController';
 
 let addHistory: (text: string) => void = () => { };
 let timeoutId: any = null;
@@ -54,21 +58,29 @@ function useHistoryTextList(maxHistoryCount: number) {
 }
 
 export default function InputHistory({
-    maxHistoryCount = 20, onPutHistoryBack,
+    maxHistoryCount = 20,
 }: Readonly<{
     maxHistoryCount?: number,
-    onPutHistoryBack: (
-        bibleKey: string, historyText: string, isShift: boolean,
-    ) => void,
 }>) {
     const [historyTextList, setHistoryTextList] = useHistoryTextList(
         maxHistoryCount,
     );
-    const removeHistory = (historyText: string) => {
+    const handleHistoryRemoving = (historyText: string) => {
         const newHistoryTextList = historyTextList.filter((h) => {
             return h !== historyText;
         });
         setHistoryTextList(newHistoryTextList);
+    };
+    const handleDBClicking = async (historyText: string) => {
+        const [
+            bibleKey, bibleTitle,
+        ] = historyText.split('>');
+        const { result } = await extractBibleTitle(bibleKey, bibleTitle);
+        if (result.bibleItem === null) {
+            return;
+        }
+        const viewController = SearchBibleItemViewController.getInstance();
+        viewController.setSearchingContentFromBibleItem(result.bibleItem);
     };
     return (
         <div className='d-flex shadow-sm rounded px-1 me-1' style={{
@@ -85,14 +97,13 @@ export default function InputHistory({
                         }
                         className='btn btn-sm d-flex border-white-round'
                         style={{ height: '25px' }}
-                        onDoubleClick={(event) => {
-                            const text = historyText.split('>');
-                            onPutHistoryBack(text[0], text[1], event.shiftKey);
+                        onDoubleClick={() => {
+                            handleDBClicking(historyText);
                         }}>
                         <small className='flex-fill'>{historyText}</small>
                         <small title='Remove'
                             style={{ color: 'red' }} onClick={() => {
-                                removeHistory(historyText);
+                                handleHistoryRemoving(historyText);
                             }}>
                             <i className='bi bi-x' />
                         </small>

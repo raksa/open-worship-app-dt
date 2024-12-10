@@ -468,6 +468,7 @@ export default class BibleItemViewController
             nestedBibleItems = [nestedBibleItems];
         }
         this.nestedBibleItems = [...nestedBibleItems, newBibleItem];
+        return newBibleItem;
     }
 }
 
@@ -519,17 +520,21 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         }
         return instance;
     }
+
+    async setSearchingContentFromBibleItem(bibleItem: BibleItem) {
+        this.setBibleKey(bibleItem.bibleKey);
+        const bibleText = await bibleItem.toTitle();
+        this.setInputText(bibleText);
+    }
+
     editBibleItem(bibleItem: BibleItem) {
         this.selectedBibleItem.toTitle().then((inputText) => {
             attemptAddingHistory(bibleItem.bibleKey, inputText, true);
         });
         const newBibleItem = bibleItem.clone(true);
-        this.selectedBibleItem = newBibleItem;
         this.changeBibleItem(bibleItem, newBibleItem);
-        bibleItem.toTitle().then((inputText) => {
-            this.setInputText(inputText);
-            this.setBibleKey(bibleItem.bibleKey);
-        });
+        this.selectedBibleItem = newBibleItem;
+        this.setSearchingContentFromBibleItem(newBibleItem);
     }
     genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
