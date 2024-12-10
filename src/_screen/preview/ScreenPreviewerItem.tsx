@@ -7,7 +7,6 @@ import DisplayControl from './DisplayControl';
 import PTEffectControl from './PTEffectControl';
 import { handleDrop } from '../../bible-list/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
-import ShowingScreenIcon from './ShowingScreenIcon';
 
 export default function ScreenPreviewerItem({ width }: Readonly<{
     width: number,
@@ -62,7 +61,7 @@ export default function ScreenPreviewerItem({ width }: Readonly<{
                 </div>
             </div>
             <div className='w-100'>
-                <mini-screen-previewer
+                <mini-screen-previewer-custom-html
                     screenId={screenManager.screenId}
                 />
             </div>

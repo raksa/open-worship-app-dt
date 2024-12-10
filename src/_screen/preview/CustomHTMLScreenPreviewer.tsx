@@ -4,6 +4,8 @@ import { createRoot } from 'react-dom/client';
 import ScreenManager from '../ScreenManager';
 import MiniScreenApp from './MiniScreenApp';
 
+const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
+
 type CustomEvents<K extends string> = {
     // eslint-disable-next-line no-unused-vars
     [key in K]: (event: CustomEvent) => void;
@@ -16,11 +18,12 @@ declare global {
     namespace React.JSX {
         // eslint-disable-next-line no-unused-vars
         interface IntrinsicElements {
-            ['mini-screen-previewer']: (
+            [HTML_TAG_NAME]: (
                 CustomElement<
                     CustomHTMLScreenPreviewer, 'FTScroll' | 'VerseHover' |
                     'VerseSelect'
-                >);
+                >
+            );
         }
     }
 }
@@ -61,22 +64,16 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             mode: 'open',
         }).appendChild(this.mountPoint);
         const root = createRoot(this.mountPoint);
-        const idStr = this.getAttribute('screenid');
-        if (idStr !== null) {
-            this.screenId = parseInt(idStr, 10);
-            const screenManager = ScreenManager.getInstance(this.screenId);
-            if (screenManager === null) {
-                return;
-            }
-            screenManager.registerEventListener(['resize'], () => {
-                this.resize();
-            });
-            this.resize();
-            root.render(<MiniScreenApp id={this.screenId} />);
-        } else {
-            root.render(<div>Error during rendering</div>);
+        const screenManager = ScreenManager.getInstance(this.screenId);
+        if (screenManager === null) {
+            return;
         }
+        screenManager.registerEventListener(['resize'], () => {
+            this.resize();
+        });
+        this.resize();
+        root.render(<MiniScreenApp id={this.screenId} />);
     }
 }
 
-customElements.define('mini-screen-previewer', CustomHTMLScreenPreviewer);
+customElements.define(HTML_TAG_NAME, CustomHTMLScreenPreviewer);
