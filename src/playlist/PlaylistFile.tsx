@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import BibleItem from '../bible-list/BibleItem';
@@ -21,28 +21,28 @@ export default function PlaylistFile({
     const [data, setData] = useState<Playlist | null | undefined>(null);
     const settingName = `opened-${filePath}`;
     const [isOpened, setIsOpened] = useStateSettingBoolean(settingName);
-    const reloadCallback = useCallback(() => {
+    const handleReloading = () => {
         setData(null);
-    }, [setData]);
-    const onClickCallback = useCallback(() => {
+    };
+    const handleClicking = () => {
         setIsOpened(!isOpened);
-    }, [isOpened]);
-    const onDropCallback = useCallback(async (event: any) => {
+    };
+    const handleDropping = async (event: any) => {
         if (data) {
             const receivedData = event.dataTransfer.getData('text');
             if (data.addFromData(receivedData)) {
                 data.save();
             }
         }
-    }, [data]);
-    const renderChildCallback = useCallback((playlist: ItemSource<any>) => {
+    };
+    const handleChildRendering = (playlist: ItemSource<any>) => {
         return (
             <PlaylistPreview
                 isOpened={isOpened}
                 setIsOpened={setIsOpened}
                 playlist={playlist as Playlist} />
         );
-    }, [isOpened]);
+    };
     useAppEffect(() => {
         if (data === null) {
             Playlist.readFileToData(filePath).then(setData);
@@ -52,12 +52,12 @@ export default function PlaylistFile({
         <FileItemHandler
             index={index}
             data={data}
-            reload={reloadCallback}
+            reload={handleReloading}
             filePath={filePath}
             className='playlist-file'
-            onClick={onClickCallback}
-            onDrop={onDropCallback}
-            renderChild={renderChildCallback}
+            onClick={handleClicking}
+            onDrop={handleDropping}
+            renderChild={handleChildRendering}
         />
     );
 }

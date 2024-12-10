@@ -1,9 +1,11 @@
-import { Fragment, useCallback } from 'react';
+import { Fragment } from 'react';
 
 import SlideItemRender from './SlideItemRender';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
-import SlideItem, { useSelectedSlideItemContext } from '../../slide-list/SlideItem';
+import SlideItem, {
+    useSelectedSlideItemContext,
+} from '../../slide-list/SlideItem';
 import SlideItemPdfRender from './SlideItemPdfRender';
 import {
     handleSlideItemSelecting,
@@ -19,28 +21,28 @@ export default function SlideItemRenderWrapper({
 }>) {
     const { selectedSlide } = useSelectedSlideContext();
     const { setSelectedSlideItem } = useSelectedSlideItemContext();
-    const onDropCallback = useCallback((id: number, isLeft: boolean) => {
+    const handleDrop = (id: number, isLeft: boolean) => {
         selectedSlide.moveItem(id, index, isLeft);
-    }, [selectedSlide, index]);
-    const onClickCallback = useCallback((event: any) => {
+    };
+    const handleClick = (event: any) => {
         handleSlideItemSelecting(setSelectedSlideItem, slideItem, event);
-    }, [slideItem]);
-    const onContextMenuCallback = useCallback((event: any) => {
+    };
+    const handleContextMenu = (event: any) => {
         selectedSlide.openContextMenu(event, slideItem);
-    }, [selectedSlide, slideItem]);
-    const onCopyCallback = useCallback(() => {
+    };
+    const handleCopy = () => {
         selectedSlide.copiedItem = slideItem;
-    }, [selectedSlide, slideItem]);
-    const onDragStartCallback = useCallback(() => {
+    };
+    const handleDragStart = () => {
         setDraggingIndex(index);
-    }, [index, setDraggingIndex]);
-    const onDragEngCallback = useCallback(() => {
+    };
+    const handleDragEng = () => {
         setDraggingIndex(null);
-    }, [setDraggingIndex]);
+    };
     if (slideItem.isPdf) {
         return (
             <SlideItemPdfRender key={slideItem.id}
-                onClick={onClickCallback}
+                onClick={handleClick}
                 slideItem={slideItem}
                 width={thumbSize} index={index}
             />
@@ -59,22 +61,22 @@ export default function SlideItemRenderWrapper({
                 <SlideItemDragReceiver
                     width={thumbSize}
                     isLeft
-                    onDrop={onDropCallback}
+                    onDrop={handleDrop}
                 />
             )}
             <SlideItemRender index={index}
                 slideItem={slideItem}
                 width={thumbSize}
-                onClick={onClickCallback}
-                onContextMenu={onContextMenuCallback}
-                onCopy={onCopyCallback}
-                onDragStart={onDragStartCallback}
-                onDragEnd={onDragEngCallback}
+                onClick={handleClick}
+                onContextMenu={handleContextMenu}
+                onCopy={handleCopy}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEng}
             />
             {shouldReceiveAtLast && (
                 <SlideItemDragReceiver
                     width={thumbSize}
-                    onDrop={onDropCallback}
+                    onDrop={handleDrop}
                 />
             )}
         </Fragment>

@@ -46,10 +46,11 @@ function ChapterOptions({
             OPTION_CLASS, OPTION_SELECTED_CLASS, event.key as KeyboardType,
         );
     };
-    const useCallback = (key: KeyboardType) => {
-        useKeyboardRegistering([{ key }], arrowListener);
-    };
-    allArrows.forEach(useCallback);
+    useKeyboardRegistering(
+        allArrows.map((key) => {
+            return { key };
+        }), arrowListener,
+    );
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
     if (matches === null) {
         return (

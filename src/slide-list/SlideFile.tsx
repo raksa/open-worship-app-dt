@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
@@ -19,10 +19,10 @@ export default function SlideFile({
     filePath: string,
 }>) {
     const [data, setData] = useState<SlideDynamicType>(null);
-    const reloadCallback = useCallback(() => {
+    const handleReload = () => {
         setData(null);
-    }, [setData]);
-    const onClickCallback = useCallback(() => {
+    };
+    const handleClick = () => {
         if (data) {
             if (data.isSelected && !getIsShowingSlidePreviewer()) {
                 previewingEventListener.showSlide(data);
@@ -30,22 +30,22 @@ export default function SlideFile({
             }
             data.isSelected = true;
         }
-    }, [data]);
-    const renderChildCallback = useCallback((slide: ItemSource<any>) => {
+    };
+    const handleChildRender = (slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
         return slide1.isPdf ? (
             <SlideFilePreviewPdf slide={slide1} />
         ) : (
             <SlideFilePreviewNormal slide={slide1} />
         );
-    }, []);
-    const onDeleteCallback = useCallback(() => {
+    };
+    const handleDeletion = () => {
         const selectedFilePath = Slide.getSelectedFilePath();
         if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
         }
         data?.editorCacheManager.delete();
-    }, [data, filePath]);
+    };
     useAppEffectAsync(async (methodContext) => {
         if (data === null) {
             const slide = await Slide.readFileToData(filePath);
@@ -59,11 +59,11 @@ export default function SlideFile({
         <FileItemHandler
             index={index}
             data={data}
-            reload={reloadCallback}
+            reload={handleReload}
             filePath={filePath}
             isPointer
-            onClick={onClickCallback}
-            renderChild={renderChildCallback}
+            onClick={handleClick}
+            renderChild={handleChildRender}
             contextMenu={data?.isPdf ? [{
                 menuTitle: 'Preview PDF',
                 onClick: () => {
@@ -81,7 +81,7 @@ export default function SlideFile({
                     }
                 },
             }]}
-            onDelete={onDeleteCallback}
+            onDelete={handleDeletion}
         />
     );
 }

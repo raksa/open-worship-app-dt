@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType, compareColor } from './colorHelpers';
 import SelectCustomColor from './SelectCustomColor';
@@ -14,17 +12,17 @@ export default function RenderColors({
     selectedColor: AppColorType | null,
     onColorChange: (color: AppColorType | null, event: MouseEvent) => void,
 }>) {
-    const onNoColorCallback = useCallback((event: any) => {
+    const handleNoColor = (event: any) => {
         onColorChange(null, event);
-    }, [onColorChange]);
-    const onColorCallback = useCallback((
+    };
+    const handleColor = (
         event: any, color: AppColorType) => {
         onColorChange(color, event);
-    }, [onColorChange]);
-    const onColorSelectCallback = useCallback((
+    };
+    const handleColorSelection = (
         color: AppColorType, event: any) => {
         onColorChange(color, event);
-    }, [onColorChange]);
+    };
     return (
         <div>
             <div>
@@ -40,7 +38,7 @@ export default function RenderColors({
             </div>
             <div className='d-flex flex-wrap border-white-round'>
                 <RenderNoColor isSelected={!selectedColor}
-                    onClick={onNoColorCallback}
+                    onClick={handleNoColor}
                 />
                 {Object.entries(colors)
                     .map(([name, color]: [string, AppColorType]) => {
@@ -51,14 +49,14 @@ export default function RenderColors({
                                     selectedColor !== null &&
                                     compareColor(selectedColor, color)
                                 }
-                                onClick={onColorCallback}
+                                onClick={handleColor}
                             />
                         );
                     })}
             </div>
             <div className='m-2'>
                 <SelectCustomColor color={selectedColor}
-                    onColorSelected={onColorSelectCallback}
+                    onColorSelected={handleColorSelection}
                 />
             </div>
         </div>

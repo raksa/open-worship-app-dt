@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import RenderBookOptions from './RenderBookOptions';
 import RenderChapterOptions from './RenderChapterOptions';
 import {
@@ -20,12 +18,11 @@ export default function RenderSearchSuggestion({
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
 }>) {
-    const onVerseChangeCallback = useCallback(
-        (newVerseStart?: number, newVerseEnd?: number) => {
-            applyVerseSelection(newVerseStart, newVerseEnd);
-        },
-        [applyVerseSelection],
-    );
+    const handleVerseChanged = (
+        newVerseStart?: number, newVerseEnd?: number,
+    ) => {
+        applyVerseSelection(newVerseStart, newVerseEnd);
+    };
     const {
         bookKey, guessingBook, chapter, guessingChapter, bibleItem,
     } = bibleResult;
@@ -37,7 +34,7 @@ export default function RenderSearchSuggestion({
         return (
             <BibleItemContext.Provider value={bibleItem}>
                 <RenderBibleDataFound
-                    onVerseChange={onVerseChangeCallback}
+                    onVerseChange={handleVerseChanged}
                 />
             </BibleItemContext.Provider>
         );

@@ -1,4 +1,4 @@
-import { lazy, useCallback, useState } from 'react';
+import { lazy, useState } from 'react';
 
 import FileReadError from './FileReadError';
 import {
@@ -106,14 +106,14 @@ export default function FileItemHandler({
         filePath, setIsRenaming, reload, onDelete,
     );
 
-    const callContextMenu = useCallback((event: any) => {
+    const handleContextMenuOpening = (event: any) => {
         showAppContextMenu(event, selfContextMenu);
-    }, [selfContextMenu]);
+    };
     if (data === null) {
         return null;
     }
     if (data === undefined) {
-        return <FileReadError onContextMenu={callContextMenu} />;
+        return <FileReadError onContextMenu={handleContextMenuOpening} />;
     }
     const moreClassName = (
         `${data.isSelected ? 'active' : ''} ` + `${className ?? ''}`

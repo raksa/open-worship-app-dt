@@ -1,7 +1,5 @@
 import './ConfirmPopup.scss';
 
-import { useCallback } from 'react';
-
 import PrimitiveModal from '../app-modal/PrimitiveModal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
@@ -11,10 +9,10 @@ import {
 export default function ConfirmPopup({ data }: Readonly<{
     data: ConfirmDataType,
 }>) {
-    const onCloseCallback = useCallback(() => {
+    const handClose = () => {
         data.onConfirm(false);
         closeAlert();
-    }, [data]);
+    };
     return (
         <PrimitiveModal>
             <div id='confirm-popup'
@@ -22,7 +20,7 @@ export default function ConfirmPopup({ data }: Readonly<{
                 <HeaderAlertPopup header={<>
                     <i className='bi bi-exclamation-circle' />
                     {data.title}
-                </>} onClose={onCloseCallback} />
+                </>} onClose={handClose} />
                 <div className='card-body d-flex flex-column'>
                     <div className='p-2 flex-fill app-selectable-text'
                         dangerouslySetInnerHTML={{
@@ -31,7 +29,7 @@ export default function ConfirmPopup({ data }: Readonly<{
                     <div className='btn-group float-end'>
                         <button type='button'
                             className='btn btn-sm'
-                            onClick={onCloseCallback}>Cancel</button>
+                            onClick={handClose}>Cancel</button>
                         <button type='button'
                             className='btn btn-sm btn-info'
                             onClick={() => {

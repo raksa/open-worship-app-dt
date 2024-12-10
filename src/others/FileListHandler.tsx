@@ -1,5 +1,5 @@
 import {
-    createContext, lazy, useCallback, useState,
+    createContext, lazy, useState,
 } from 'react';
 
 import PathSelector from '../others/PathSelector';
@@ -70,7 +70,7 @@ export default function FileListHandler({
     userClassName?: string,
     defaultFolderName: string,
 }>) {
-    const applyNameCallback = useCallback(async (name: string | null) => {
+    const handleNameApply = async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
             return;
@@ -78,7 +78,7 @@ export default function FileListHandler({
         onNewFile?.(dirSource.dirPath, name).then((isSuccess) => {
             setIsCreatingNew(isSuccess);
         });
-    }, [onNewFile]);
+    };
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     useAppEffect(() => {
         const abortController = new AbortController();
@@ -120,7 +120,7 @@ export default function FileListHandler({
                             <ul className='list-group flex-fill d-flex'>
                                 {onNewFile && isCreatingNew && (
                                     <LazyAskingNewName
-                                        applyName={applyNameCallback}
+                                        applyName={handleNameApply}
                                     />
                                 )}
                                 <RenderList dirSource={dirSource}

@@ -1,7 +1,5 @@
 import './BibleList.scss';
 
-import { useCallback } from 'react';
-
 import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
@@ -15,7 +13,7 @@ import appProvider from '../server/appProvider';
 export default function BibleList() {
     const dirSourceSettingName = Bible.getDirSourceSettingName();
     const dirSource = useGenDS(dirSourceSettingName);
-    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+    const handleBodyRender = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -25,7 +23,7 @@ export default function BibleList() {
                 })}
             </>
         );
-    }, []);
+    };
     if (dirSource === null) {
         return null;
     }
@@ -44,7 +42,7 @@ export default function BibleList() {
                 return !await Bible.create(dirPath, name);
             }}
             header={<span>Bibles</span>}
-            bodyHandler={bodyHandlerCallback}
+            bodyHandler={handleBodyRender}
             userClassName='p-0' />
     );
 }

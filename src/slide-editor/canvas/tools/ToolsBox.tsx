@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 
 import ColorPicker from '../../../others/color/ColorPicker';
 import Tool from './Tool';
@@ -9,20 +9,19 @@ import { CanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsBox() {
-    const onDataCallback = useCallback((newData: any) => {
+    const handleData = (newData: any) => {
         applyBoxData(newData);
-    }, []);
-    const onNoColorCallback = useCallback(() => {
+    };
+    const handleNoColor = () => {
         applyBoxData({
             backgroundColor: null,
         });
-    }, []);
-    const onColorChangedCallback = useCallback((
-        newColor: AppColorType) => {
+    };
+    const handleColorChanged = (newColor: AppColorType) => {
         applyBoxData({
             backgroundColor: newColor,
         });
-    }, []);
+    };
     const canvasItem = useContext(CanvasItemContext);
     if (canvasItem === null) {
         return null;
@@ -44,12 +43,12 @@ export default function ToolsBox() {
                 }}>
                     <ColorPicker color={canvasItem.props.backgroundColor}
                         defaultColor='#ffffff'
-                        onNoColor={onNoColorCallback}
-                        onColorChange={onColorChangedCallback} />
+                        onNoColor={handleNoColor}
+                        onColorChange={handleColorChanged} />
                 </div>
             </Tool>
             <Tool title='Box Alignment'>
-                <ToolAlign onData={onDataCallback} />
+                <ToolAlign onData={handleData} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info'

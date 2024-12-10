@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import LyricView from './LyricView';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
@@ -9,7 +9,7 @@ import LyricItem from '../lyric-list/LyricItem';
 export default function LyricPreviewer() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
     useLyricSelecting(setLyric);
-    const onLyricChangeCallback = useCallback((
+    const handleLyricChanging = (
         newLyricItem: LyricItem, index: number) => {
         if (!lyric) {
             return;
@@ -17,8 +17,8 @@ export default function LyricPreviewer() {
         const newLyric = lyric.clone();
         newLyric.items[index] = newLyricItem;
         setLyric(newLyric);
-    }, [lyric]);
-    const onCloseCallback = useCallback((index: number) => {
+    };
+    const handleClosing = (index: number) => {
         if (!lyric) {
             return;
         }
@@ -27,7 +27,7 @@ export default function LyricPreviewer() {
             return i !== index;
         });
         setLyric(newLyric);
-    }, [lyric]);
+    };
     if (!lyric) {
         return (
             <LyricList />
@@ -57,8 +57,8 @@ export default function LyricPreviewer() {
                         index={i}
                         lyricItem={lyricItem}
                         lyricItems={lyricItems}
-                        onLyricChange={onLyricChangeCallback}
-                        onClose={onCloseCallback} />
+                        onLyricChange={handleLyricChanging}
+                        onClose={handleClosing} />
                 );
             })}
             <button className='btn btn-info'

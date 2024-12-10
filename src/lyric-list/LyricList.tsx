@@ -1,7 +1,5 @@
 import './LyricList.scss';
 
-import { useCallback } from 'react';
-
 import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';
@@ -12,7 +10,7 @@ import {
 
 export default function LyricList() {
     const dirSource = useGenDS(dirSourceSettingNames.LYRIC);
-    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+    const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -22,7 +20,7 @@ export default function LyricList() {
                 })}
             </>
         );
-    }, []);
+    };
     if (dirSource === null) {
         return null;
     }
@@ -35,6 +33,6 @@ export default function LyricList() {
                 return !await Lyric.create(dirPath, name);
             }}
             header={<span>Lyrics</span>}
-            bodyHandler={bodyHandlerCallback} />
+            bodyHandler={handleBodyRendering} />
     );
 }

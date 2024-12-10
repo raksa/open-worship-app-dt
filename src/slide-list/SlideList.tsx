@@ -1,7 +1,5 @@
 import './SlideList.scss';
 
-import { useCallback } from 'react';
-
 import FileListHandler from '../others/FileListHandler';
 import SlideFile from './SlideFile';
 import Slide from './Slide';
@@ -29,14 +27,14 @@ export default function SlideList() {
             return null;
         };
     }
-    const checkExtraFileCallback = useCallback((filePath: string) => {
+    const handleCheckExtraFile = (filePath: string) => {
         const fileSource = FileSource.getInstance(filePath);
         if (checkIsPdf(fileSource.extension)) {
             return true;
         }
         return false;
-    }, [dirSource]);
-    const takeDropFileCallback = useCallback((file: DroppedFileType) => {
+    };
+    const handleTakeDropFile = (file: DroppedFileType) => {
         if (dirSource === null) {
             return false;
         }
@@ -47,15 +45,15 @@ export default function SlideList() {
             return true;
         }
         return false;
-    }, [dirSource]);
-    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+    };
+    const handleBodyRender = (filePaths: string[]) => {
         return filePaths.map((filePath, i) => {
             const fileSource = FileSource.getInstance(filePath);
             return <SlideFile key={fileSource.fileFullName}
                 index={i}
                 filePath={filePath} />;
         });
-    }, []);
+    };
     if (dirSource === null) {
         return null;
     }
@@ -64,12 +62,13 @@ export default function SlideList() {
             mimetype='slide'
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
-            checkExtraFile={checkExtraFileCallback}
-            takeDroppedFile={takeDropFileCallback}
+            checkExtraFile={handleCheckExtraFile}
+            takeDroppedFile={handleTakeDropFile}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Slide.create(dirPath, name);
             }}
             header={<span>Slides</span>}
-            bodyHandler={bodyHandlerCallback} />
+            bodyHandler={handleBodyRender}
+        />
     );
 }

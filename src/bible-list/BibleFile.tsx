@@ -1,4 +1,4 @@
-import { lazy, useCallback, useState } from 'react';
+import { lazy, useState } from 'react';
 
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
@@ -70,23 +70,23 @@ export default function BibleFile({
             methodContext.setData(bible);
         }
     }, [data], { methods: { setData } });
-    const renderChildCallback = useCallback((bible: ItemSource<any>) => {
+    const handlerChildRender = (bible: ItemSource<any>) => {
         return (
             <BiblePreview bible={bible as Bible} />
         );
-    }, []);
-    const reloadCallback = useCallback(() => {
+    };
+    const handleReload = () => {
         setData(null);
-    }, [setData]);
-    useFSEvents(['update'], filePath, reloadCallback);
+    };
+    useFSEvents(['update'], filePath, handleReload);
     return (
         <FileItemHandler
             index={index}
             data={data}
-            reload={reloadCallback}
+            reload={handleReload}
             filePath={filePath}
             className='bible-file'
-            renderChild={renderChildCallback}
+            renderChild={handlerChildRender}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
             contextMenu={genContextMenu(data)}

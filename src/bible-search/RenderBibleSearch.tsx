@@ -1,4 +1,4 @@
-import { lazy, useCallback, useMemo, useState } from 'react';
+import { lazy, useMemo, useState } from 'react';
 
 import InputHandler, {
     InputTextContext, useInputTextContext,
@@ -48,16 +48,17 @@ function RenderBibleSearchHeader({
     };
     viewController.setInputText = setInputText1;
 
-    const handleBibleKeyChange = useCallback(
-        async (oldBibleKey: string, newBibleKey: string) => {
-            const newText = await genInputText(
-                oldBibleKey, newBibleKey, inputText,
-            );
-            setBibleKey(newBibleKey);
-            if (newText !== null) {
-                setInputText1(newText);
-            }
-        }, [inputText]);
+    const handleBibleKeyChanged = async (
+        oldBibleKey: string, newBibleKey: string,
+    ) => {
+        const newText = await genInputText(
+            oldBibleKey, newBibleKey, inputText,
+        );
+        setBibleKey(newBibleKey);
+        if (newText !== null) {
+            setInputText1(newText);
+        }
+    };
     const isEditingBibleItem = !!data;
     return (
         <div className='card-header d-flex text-center w-100'>
@@ -74,7 +75,7 @@ function RenderBibleSearchHeader({
                         );
                     }
                     if (bibleKey !== bibleKey1) {
-                        handleBibleKeyChange(bibleKey, bibleKey1);
+                        handleBibleKeyChanged(bibleKey, bibleKey1);
                     }
                     if (historyText !== inputText) {
                         setInputText1(historyText);
@@ -84,7 +85,7 @@ function RenderBibleSearchHeader({
             <div className='flex-item input-group app-input-group-header'
                 style={{ width: 350 }}>
                 <InputHandler
-                    onBibleKeyChange={handleBibleKeyChange}
+                    onBibleKeyChange={handleBibleKeyChanged}
                 />
             </div>
             <div className={

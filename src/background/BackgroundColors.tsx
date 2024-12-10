@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import ColorPicker from '../others/color/ColorPicker';
 import { AppColorType } from '../others/color/colorHelpers';
@@ -12,17 +12,17 @@ export default function BackgroundColors() {
     const [selectedBGSrcList, setSelectedBGSrcList] = (
         useState<[string, BackgroundSrcType][] | null>(null)
     );
-    const onNoColorCallback = useCallback(async (
+    const handleNoColor = async (
         _newColor: AppColorType, event: any,
     ) => {
         setSelectedBGSrcList(null);
         ScreenBGManager.bgSrcSelect(null, event, 'color');
-    }, []);
-    const onColorChangeCallback = useCallback(async (
+    };
+    const handleColorChanged = async (
         newColor: AppColorType, event: any) => {
         setSelectedBGSrcList(null);
         ScreenBGManager.bgSrcSelect(newColor, event, 'color');
-    }, []);
+    };
     useAppEffect(() => {
         if (selectedBGSrcList === null) {
             setSelectedBGSrcList(ScreenBGManager.getBGSrcListByType('color'));
@@ -38,8 +38,8 @@ export default function BackgroundColors() {
         return (
             <ColorPicker color={null}
                 defaultColor={'#000000'}
-                onNoColor={onNoColorCallback}
-                onColorChange={onColorChangeCallback}
+                onNoColor={handleNoColor}
+                onColorChange={handleColorChanged}
             />
         );
     }
@@ -56,8 +56,8 @@ export default function BackgroundColors() {
                         <ColorPicker
                             color={bgSrc.src as AppColorType}
                             defaultColor={bgSrc.src as AppColorType}
-                            onNoColor={onNoColorCallback}
-                            onColorChange={onColorChangeCallback}
+                            onNoColor={handleNoColor}
+                            onColorChange={handleColorChanged}
                         />
                     </div>
                 );

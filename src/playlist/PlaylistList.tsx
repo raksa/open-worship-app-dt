@@ -1,7 +1,5 @@
 import './PlaylistList.scss';
 
-import { useCallback } from 'react';
-
 import PlaylistFile from './PlaylistFile';
 import FileListHandler from '../others/FileListHandler';
 import Playlist from './Playlist';
@@ -12,7 +10,7 @@ import {
 
 export default function PlaylistList() {
     const dirSource = useGenDS(dirSourceSettingNames.PLAYLIST);
-    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+    const handleBodyRender = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -22,7 +20,7 @@ export default function PlaylistList() {
                 })}
             </>
         );
-    }, []);
+    };
     if (dirSource === null) {
         return null;
     }
@@ -35,6 +33,6 @@ export default function PlaylistList() {
                 return !await Playlist.create(dirPath, name);
             }}
             header={<span>Playlists</span>}
-            bodyHandler={bodyHandlerCallback} />
+            bodyHandler={handleBodyRender} />
     );
 }

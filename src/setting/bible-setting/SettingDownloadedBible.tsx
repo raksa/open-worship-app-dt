@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import DownloadedBibleItem from './DownloadedBibleItem';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
@@ -83,29 +81,29 @@ function RenderItem({
     index: number,
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {
-    const onDownloadedCallback = useCallback(() => {
+    const handleDownloaded = () => {
         setDownloadedBibleInfoList(null);
-    }, [setDownloadedBibleInfoList]);
-    const onDeletedCallback = useCallback(() => {
+    };
+    const handleDeleted = () => {
         setDownloadedBibleInfoList(null);
-    }, [setDownloadedBibleInfoList]);
-    const onUpdateCallback = useCallback(() => {
+    };
+    const handleUpdate = () => {
         bibleInfo.isDownloading = true;
         setDownloadedBibleInfoList([...bibleInfoList]);
-    }, [bibleInfoList, bibleInfo, setDownloadedBibleInfoList]);
+    };
     if (bibleInfo.isDownloading) {
         return (
             <OnlineBibleItem key={`${index}`}
                 bibleInfo={bibleInfo}
-                onDownloaded={onDownloadedCallback}
+                onDownloaded={handleDownloaded}
             />
         );
     }
     return (
         <DownloadedBibleItem key={`${index}`}
             bibleInfo={bibleInfo}
-            onDeleted={onDeletedCallback}
-            onUpdate={onUpdateCallback}
+            onDeleted={handleDeleted}
+            onUpdate={handleUpdate}
         />
     );
 }

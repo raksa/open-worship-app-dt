@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
@@ -12,7 +12,7 @@ import { AppColorType } from '../../../others/color/colorHelpers';
 import CanvasController from '../CanvasController';
 
 export default function ToolsText() {
-    const onDataCallback = useCallback((newData: any) => {
+    const handleData = (newData: any) => {
         const textData: ToolingTextType = {};
         if (newData.horizontalAlignment !== undefined) {
             textData.textHorizontalAlignment = newData.horizontalAlignment;
@@ -21,19 +21,12 @@ export default function ToolsText() {
             textData.textVerticalAlignment = newData.verticalAlignment;
         }
         applyTextData(textData);
-    }, []);
-    const onNoColorCallback = useCallback((
-        newColor: AppColorType) => {
+    };
+    const handleColorChanged = (newColor: AppColorType) => {
         applyTextData({
             color: newColor,
         });
-    }, []);
-    const onColorChangedCallback = useCallback((
-        newColor: AppColorType) => {
-        applyTextData({
-            color: newColor,
-        });
-    }, []);
+    };
     const canvasItem = useContext(CanvasItemContext);
     if (canvasItem === null) {
         return null;
@@ -53,12 +46,12 @@ export default function ToolsText() {
                 }}>
                     <ColorPicker color={canvasItem.props.color}
                         defaultColor='#ffffff'
-                        onNoColor={onNoColorCallback}
-                        onColorChange={onColorChangedCallback} />
+                        onNoColor={handleColorChanged}
+                        onColorChange={handleColorChanged} />
                 </div>
             </Tool>
             <Tool title='Text Alignment'>
-                <ToolAlign isText onData={onDataCallback} />
+                <ToolAlign isText onData={handleData} />
             </Tool>
             <ToolsTextFontControl
                 canvasItemText={canvasItem} />

@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
 import { genCommonMenu } from '../others/FileItemHandler';
@@ -32,14 +30,14 @@ export default function BackgroundMedia({
 }>) {
     const bgType = bgTypeMapper[dragType];
     const dirSource = useGenDS(dirSourceSettingName);
-    const renderCallback = useCallback((filePaths: string[]) => {
+    const handleBodyRender = (filePaths: string[]) => {
         const genBodyWithChild = genBody.bind(null, rendChild, dragType);
         return (
             <div className='d-flex justify-content-start flex-wrap'>
                 {filePaths.map(genBodyWithChild)}
             </div>
         );
-    }, []);
+    };
     usePBGMEvents(['update']);
     if (dirSource === null) {
         return null;
@@ -49,7 +47,7 @@ export default function BackgroundMedia({
             mimetype={bgType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
-            bodyHandler={renderCallback}
+            bodyHandler={handleBodyRender}
         />
     );
 }

@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback } from 'react';
+import { CSSProperties } from 'react';
 
 import CanvasController from '../CanvasController';
 import CanvasItemText from '../CanvasItemText';
@@ -11,10 +11,10 @@ export default function BENTextEditMode({
     style: CSSProperties
 }>) {
     const canvasController = CanvasController.getInstance();
-    const setTextCallback = useCallback((text: string) => {
+    const handleTextSetting = (text: string) => {
         canvasItemText.applyProps({ text });
         canvasController.fireUpdateEvent();
-    }, [canvasItemText, canvasController]);
+    };
     return (
         <div className='box-editor pointer editable'
             style={style}
@@ -34,7 +34,7 @@ export default function BENTextEditMode({
             <BoxEditorTextArea
                 color={canvasItemText.props.color}
                 text={canvasItemText.props.text}
-                setText={setTextCallback} />
+                setText={handleTextSetting} />
         </div>
     );
 }

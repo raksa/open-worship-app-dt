@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import {
     ExtractedBibleResult, genExtractedBible, extractBibleTitle, toInputText,
@@ -89,27 +89,21 @@ function useMethods(
             setInputText(`${inputText}-`);
         }
     });
-    const applyBookSelectionCallback = useCallback(
-        async (_: string, newBook: string) => {
-            const newText = await toInputText(bibleKey, newBook);
-            setInputText(newText);
-        },
-        [bibleKey, setInputText],
-    );
-    const applyChapterSelectionCallback = useCallback(
-        async (newChapter: number) => {
-            if (bibleKey === null || extractedInput.bookKey === null) {
-                return;
-            }
-            const book = await keyToBook(bibleKey, extractedInput.bookKey);
-            const newText = await toInputText(
-                bibleKey, book, newChapter,
-            );
-            setInputText(`${newText}:`);
-        },
-        [bibleKey, extractedInput.bookKey, setInputText],
-    );
-    const applyVerseSelectionCallback = useCallback(async (
+    const handleBookSelection = async (_: string, newBook: string) => {
+        const newText = await toInputText(bibleKey, newBook);
+        setInputText(newText);
+    };
+    const handleChapterSelection = async (newChapter: number) => {
+        if (bibleKey === null || extractedInput.bookKey === null) {
+            return;
+        }
+        const book = await keyToBook(bibleKey, extractedInput.bookKey);
+        const newText = await toInputText(
+            bibleKey, book, newChapter,
+        );
+        setInputText(`${newText}:`);
+    };
+    const handleVerseSelection = async (
         newVerseStart?: number, newVerseEnd?: number) => {
         if (bibleKey === null || extractedInput.bookKey === null) {
             return;
@@ -120,14 +114,11 @@ function useMethods(
             newVerseStart, newVerseEnd,
         );
         setInputText(txt);
-    }, [
-        bibleKey, extractedInput.bookKey,
-        extractedInput.chapter, setInputText,
-    ]);
+    };
     return {
-        applyBookSelectionCallback,
-        applyChapterSelectionCallback,
-        applyVerseSelectionCallback,
+        applyBookSelectionCallback: handleBookSelection,
+        applyChapterSelectionCallback: handleChapterSelection,
+        applyVerseSelectionCallback: handleVerseSelection,
     };
 }
 

@@ -1,4 +1,4 @@
-import { Fragment, useCallback } from 'react';
+import { Fragment } from 'react';
 
 import AppSuspense from '../others/AppSuspense';
 import FlexResizeActor, {
@@ -35,17 +35,17 @@ export default function RenderResizeActorItem({
     isHorizontal: boolean,
     setFlexSize: (flexSize: FlexSizeType) => void,
 }>) {
-    const disableCallback = useCallback((
+    const handleDisabling = (
         targetDataFSizeKey: string, target: DisabledType) => {
         const size = setDisablingSetting(
             fSizeName, defaultFlexSize, targetDataFSizeKey, target,
         );
         setFlexSize(size);
-    }, [fSizeName, defaultFlexSize]);
-    const checkSizeCallback = useCallback(() => {
+    };
+    const handleSizeChecking = () => {
         const size = genFlexSizeSetting(fSizeName, defaultFlexSize);
         setFlexSize(size);
-    }, [fSizeName, defaultFlexSize]);
+    };
 
     const { children, key, className = '', extraStyle = {}, widgetName } = data;
     const flexSizeValue = (flexSize[key] || defaultFlexSize[key]) || [];
@@ -70,8 +70,8 @@ export default function RenderResizeActorItem({
             {isShowingFSizeActor && (
                 <FlexResizeActor
                     isDisableQuickResize={isDisableQuickResize}
-                    disable={disableCallback}
-                    checkSize={checkSizeCallback}
+                    disable={handleDisabling}
+                    checkSize={handleSizeChecking}
                     type={type}
                 />
             )}
