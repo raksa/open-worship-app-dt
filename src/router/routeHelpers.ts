@@ -17,7 +17,7 @@ export const editorTab: TabOptionType = {
 };
 export const presenterTab: TabOptionType = {
     title: 'Presenter↗️',
-    routePath: appProvider.readerHomePage,
+    routePath: appProvider.presenterHomePage,
 };
 export const readerTab: TabOptionType = {
     title: 'Reader↗️',
