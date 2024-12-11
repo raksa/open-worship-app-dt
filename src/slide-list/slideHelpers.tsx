@@ -110,7 +110,7 @@ const WIDGET_TITLE = 'Converting to PDF';
 function showConfirmPDFConvert(dirPath: string, file: DroppedFileType) {
     const fileFullName = getFileFullName(file);
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
-        <b>{fileFullName}</b>
+        <b>"{fileFullName}"</b>
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);

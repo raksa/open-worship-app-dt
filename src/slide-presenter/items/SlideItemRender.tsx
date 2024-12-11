@@ -2,7 +2,7 @@ import './SlideItemRender.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem, {
-    useSelectedSlideItemContext,
+    useSelectedEditingSlideItemContext,
 } from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
@@ -80,7 +80,7 @@ export default function SlideItemRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
-    const { selectedSlideItem } = useSelectedSlideItemContext();
+    const { selectedSlideItem } = useSelectedEditingSlideItemContext();
     usePSlideMEvents(['update']);
     const {
         activeCN, presenterCN,

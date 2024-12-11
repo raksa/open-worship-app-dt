@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
-import Slide from './Slide';
+import Slide, { useSelectedSlideContext } from './Slide';
 import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
@@ -19,18 +19,21 @@ export default function SlideFile({
     index: number,
     filePath: string,
 }>) {
+    const { setSelectedSlide } = useSelectedSlideContext();
     const [data, setData] = useState<SlideDynamicType>(null);
     const handleReload = () => {
         setData(null);
     };
     const handleClick = () => {
-        if (data) {
-            if (data.isSelected && !getIsShowingSlidePreviewer()) {
-                previewingEventListener.showSlide(data);
-                return;
-            }
-            data.isSelected = true;
+        if (!data) {
+            return;
         }
+        if (data.isSelected && !getIsShowingSlidePreviewer()) {
+            previewingEventListener.showSlide(data);
+            return;
+        }
+        data.isSelected = true;
+        setSelectedSlide(data);
     };
     const handleChildRender = (slide: ItemSource<any>) => {
         const slide1 = slide as Slide;

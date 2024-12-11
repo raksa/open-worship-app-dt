@@ -38,24 +38,25 @@ export function handleCtrlWheel({
 }
 
 export default function AppRange({
-    value, title, id, setValue, defaultSize,
+    value, title, id, setValue, defaultSize, isShowValue,
 }: Readonly<{
     value: number,
     title: string,
     id?: string,
     setValue: (newValue: number) => void,
     defaultSize: AppRangeDefaultType,
+    isShowValue?: boolean,
 }>) {
     const currentValue = Math.min(
         defaultSize.max, Math.max(defaultSize.min, value),
     ).toFixed(1);
     return (
-        <div className='form form-inline d-flex flex-row-reverse'
+        <div className='form form-inline d-flex mx-2'
             title={title}
             style={{ minWidth: '100px' }}>
-            <label className='form-label'>
-                {currentValue}
-            </label>
+            <div className='pointer' onClick={() => {
+                setValue(value - defaultSize.step);
+            }}>-</div>
             <input id={id} type='range' className='form-range'
                 min={defaultSize.min} max={defaultSize.max}
                 step={defaultSize.step}
@@ -70,6 +71,16 @@ export default function AppRange({
                     setValue(parseInt(event.target.value, 10));
                 }}
             />
+            <div className='pointer' onClick={() => {
+                setValue(value + defaultSize.step);
+            }}>+</div>
+            {isShowValue && (
+                <label className='form-label' style={{
+                    'fontVariantNumeric': 'tabular-nums',
+                }}>
+                    :{currentValue}
+                </label>
+            )}
         </div>
     );
 }

@@ -9,6 +9,7 @@ import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import appProvider from '../server/appProvider';
 
 export type SlideItemType = {
     id: number,
@@ -228,18 +229,21 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 }
 
-export const SelectedSlideItemContext = createContext<{
-    selectedSlideItem: SlideItem | null,
-    setSelectedSlideItem: (newSelectedSlideItem: SlideItem | null) => void,
+export const SelectedEditingSlideItemContext = createContext<{
+    selectedSlideItem: SlideItem,
+    setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
 } | null>(null);
 
-export function useSelectedSlideItemContext() {
-    const context = use(SelectedSlideItemContext);
+export function useSelectedEditingSlideItemContext() {
+    const context = use(SelectedEditingSlideItemContext);
     if (!context) {
         throw new Error(
-            'useSelectedSlideItem must be used within a ' +
-            'SelectedSlideItemProvider'
+            'useSelectedEditingSlideItemContext must be used within a ' +
+            'SelectedEditingSlideItemContext'
         );
+    }
+    if (appProvider.isPageEditor && context.selectedSlideItem === null) {
+        throw new Error('No selected slide item');
     }
     return context;
 }

@@ -14,6 +14,7 @@ import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { createContext, use } from 'react';
+import appProvider from '../server/appProvider';
 
 export type SlideEditorHistoryType = {
     items?: SlideItemType[],
@@ -339,6 +340,9 @@ export function useSelectedSlideContext() {
     const context = use(SelectedSlideContext);
     if (context === null) {
         throw new Error('useSelectedSlide must be used within a SlideProvider');
+    }
+    if (appProvider.isPageEditor && context.selectedSlide === null) {
+        throw new Error('No selected slide');
     }
     return context;
 }

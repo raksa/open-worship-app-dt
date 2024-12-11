@@ -7,13 +7,6 @@ import SlideItemsMenu from './SlideItemsMenu';
 
 export default function SlidePreviewer() {
     const { selectedSlide } = useSelectedSlideContext();
-    if (!selectedSlide) {
-        return (
-            <div className='alert alert-warning'>
-                "No Slide Selected" please select one!
-            </div>
-        );
-    }
     return (
         <div id='slide-previewer'
             className='card w-100 h-100'>

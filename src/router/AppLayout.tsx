@@ -14,9 +14,11 @@ import AppContextMenu from '../others/AppContextMenu';
 import HandleAlert from '../alert/HandleAlert';
 import Toast from '../toast/Toast';
 import Slide, { SelectedSlideContext } from '../slide-list/Slide';
-import SlideItem, { SelectedSlideItemContext } from '../slide-list/SlideItem';
+import SlideItem, {
+    SelectedEditingSlideItemContext,
+} from '../slide-list/SlideItem';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { useStateSettingString } from '../helper/settingHelpers';
+import ProgressBar from '../progress-bar/ProgressBar';
 
 
 const tabs: TabOptionType[] = [];
@@ -49,20 +51,24 @@ function TabRender() {
     );
 }
 
-function useSelectedSlide() {
-    const [slideFilePath, setSlideFilePath] = useStateSettingString(
-        'selected-slide',
-    );
+function useSlideContextValues() {
     const [selectedSlide, setSelectedSlide] = useState<Slide | null>(null);
-    useAppEffectAsync(async (methodContext) => {
-        const slide = await Slide.readFileToData(slideFilePath);
-        if (slide) {
-            methodContext.setSelectedSlide(slide);
-        }
-    }, undefined, { methods: { setSelectedSlide } });
     const [selectedSlideItem, setSelectedSlideItem] = (
         useState<SlideItem | null>(null)
     );
+    useAppEffectAsync(async (methodContext) => {
+        const selectedSlideFilePath = Slide.getSelectedFilePath();
+        if (selectedSlideFilePath === null) {
+            return;
+        }
+        const slide = await Slide.readFileToData(selectedSlideFilePath);
+        if (!slide) {
+            return;
+        }
+        methodContext.setSelectedSlide(slide);
+        const firstSlideItem = slide.items[0];
+        methodContext.setSelectedSlideItem(firstSlideItem);
+    }, undefined, { methods: { setSelectedSlide, setSelectedSlideItem } });
     const slideContextValue = useMemo(() => {
         return {
             selectedSlide: selectedSlide as Slide,
@@ -70,13 +76,12 @@ function useSelectedSlide() {
                 setSelectedSlide(newSelectedSlide);
                 const firstSlideItem = newSelectedSlide.items[0];
                 setSelectedSlideItem(firstSlideItem);
-                setSlideFilePath(newSelectedSlide.filePath);
             },
         };
     }, [selectedSlide, setSelectedSlide]);
-    const slideItemContextValue = useMemo(() => {
+    const editingSlideItemContextValue = useMemo(() => {
         return {
-            selectedSlideItem: selectedSlideItem as SlideItem,
+            selectedSlideItem,
             setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => {
                 setSelectedSlideItem(newSelectedSlideItem);
             },
@@ -84,7 +89,7 @@ function useSelectedSlide() {
     }, [selectedSlideItem, setSelectedSlideItem]);
     return {
         slideContextValue,
-        slideItemContextValue,
+        editingSlideItemContextValue,
     };
 }
 
@@ -92,7 +97,9 @@ export default function AppLayout({ children }: Readonly<{
     children: React.ReactNode,
 }>) {
     const [isBibleSearchShowing, setIsBibleSearchShowing] = useState(false);
-    const { slideContextValue, slideItemContextValue } = useSelectedSlide();
+    const {
+        slideContextValue, editingSlideItemContextValue,
+    } = useSlideContextValues();
     return (
         <MultiContextRender contexts={[{
             context: BibleSearchShowingContext,
@@ -104,8 +111,8 @@ export default function AppLayout({ children }: Readonly<{
             context: SelectedSlideContext,
             value: slideContextValue,
         }, {
-            context: SelectedSlideItemContext,
-            value: slideItemContextValue,
+            context: SelectedEditingSlideItemContext,
+            value: editingSlideItemContextValue,
         }]}>
             {/* <TestInfinite /> */}
             < div id='app-header' className='d-flex' >
@@ -123,6 +130,7 @@ export default function AppLayout({ children }: Readonly<{
             <div id='app-body' className='border-white-round'>
                 {children}
             </div>
+            <ProgressBar />
             <Toast />
             <AppContextMenu />
             <HandleAlert />
