@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 
@@ -7,7 +7,7 @@ export const BibleItemContext = (
 );
 
 export function useBibleItemContext() {
-    const bibleItem = useContext(BibleItemContext);
+    const bibleItem = use(BibleItemContext);
     if (bibleItem === null) {
         throw new Error('BibleItemContext is null');
     }

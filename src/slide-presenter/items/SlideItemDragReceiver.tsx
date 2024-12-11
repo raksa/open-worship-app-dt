@@ -50,6 +50,7 @@ export default function SlideItemDragReceiver({
                     return;
                 }
                 onDrop((droppedData.item as SlideItem).id, !!isLeft);
-            }} />
+            }}
+        />
     );
 }

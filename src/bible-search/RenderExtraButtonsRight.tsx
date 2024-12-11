@@ -11,7 +11,7 @@ export function getIsKeepingPopup() {
     return getSetting(CLOSE_ON_ADD_BIBLE_ITEM) === 'true';
 }
 
-export default function RenderExtraLeftButtons({
+export default function RenderExtraButtonsRight({
     setIsSearchOnline, isSearchOnline,
 }: Readonly<{
     setIsSearchOnline: (_: boolean) => void,
@@ -43,8 +43,12 @@ export default function RenderExtraLeftButtons({
                 }}>
                 <i className='bi bi-search' />
             </button>
-            <QuickOrBackButton title='Quit Reader' />
-            <SettingButton />
+            {!appProvider.isPageReader ? null : (
+                <>
+                    <QuickOrBackButton title='Quit Reader' />
+                    <SettingButton />
+                </>
+            )}
         </div>
     );
 }

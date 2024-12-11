@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { use } from 'react';
 
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
@@ -27,7 +27,7 @@ export default function ToolsText() {
             color: newColor,
         });
     };
-    const canvasItem = useContext(CanvasItemContext);
+    const canvasItem = use(CanvasItemContext);
     if (canvasItem === null) {
         return null;
     }

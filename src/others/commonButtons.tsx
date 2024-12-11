@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, use } from 'react';
 
 import {
     EventMapper, toShortcutKey,
@@ -48,8 +48,9 @@ const openBibleEventMap: EventMapper = {
     allControlKey: ['Ctrl'],
     key: 'b',
 };
+
 export function useBibleSearchShowingContext() {
-    const context = useContext(BibleSearchShowingContext);
+    const context = use(BibleSearchShowingContext);
     if (context === null) {
         throw new Error(
             'useBibleSearchShowingContext must be used within a ' +
@@ -58,21 +59,26 @@ export function useBibleSearchShowingContext() {
     }
     return context;
 }
+
 export function useShowBibleSearchContext(isShowing = true) {
-    const context = useContext(BibleSearchShowingContext);
+    const context = use(BibleSearchShowingContext);
     if (context === null) {
         return null;
     }
     return context.setIsShowing.bind(null, isShowing);
 }
+
 export function BibleSearchButton() {
+    const {
+        setIsShowing: setIsBibleSearchShowing,
+    } = useBibleSearchShowingContext();
     return (
         <button className='btn btn-labeled btn-primary'
             style={{ width: '220px' }}
             title={toShortcutKey(openBibleEventMap)}
             type='button'
             onClick={() => {
-
+                setIsBibleSearchShowing(true);
             }}>
             <span className='btn-label'>
                 <i className='bi bi-book' />

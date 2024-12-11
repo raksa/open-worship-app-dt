@@ -33,7 +33,8 @@ export default function SlideItemRendererHtml({ slideItem }: Readonly<{
                 <SlideItemRenderer
                     canvasItemsJson={slideItem.canvasItemsJson}
                     width={`${slideItem.width}px`}
-                    height={`${slideItem.height}px`} />
+                    height={`${slideItem.height}px`}
+                />
             </div>
         </div>
     );

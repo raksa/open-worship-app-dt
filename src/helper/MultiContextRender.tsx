@@ -12,11 +12,11 @@ export function MultiContextRender({
     children: React.ReactNode,
 }>) {
     let result = children;
-    for (const { context, value } of contexts) {
+    for (const { context: Context, value } of contexts) {
         result = (
-            <context.Provider value={value}>
+            <Context value={value}>
                 {result}
-            </context.Provider>
+            </Context>
         );
     }
     return result;

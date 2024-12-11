@@ -9,7 +9,8 @@ export type PdfViewerPropsType = {
 };
 export default class PdfItemViewer extends
     Component<PdfViewerPropsType, PdfViewerStateType> {
-    ref: RefObject<HTMLDivElement>;
+
+    ref: RefObject<HTMLDivElement | null>;
     constructor(props: PdfViewerPropsType) {
         super(props);
         this.ref = createRef();
@@ -19,15 +20,19 @@ export default class PdfItemViewer extends
             <div style={{
                 height: '600px',
                 overflow: 'auto',
-            }} ref={this.ref} >
+            }}
+                ref={this.ref}
+            >
                 {this.props.images.map(({
                     width, height, src,
                 }) => {
                     return (
                         <img key={src}
+                            alt=''
                             width={width}
                             height={height}
-                            src={src} />
+                            src={src}
+                        />
                     );
                 })}
             </div>

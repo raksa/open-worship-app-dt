@@ -13,7 +13,7 @@ import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { createContext, useContext } from 'react';
+import { createContext, use } from 'react';
 
 export type SlideEditorHistoryType = {
     items?: SlideItemType[],
@@ -336,7 +336,7 @@ export const SelectedSlideContext = createContext<{
 } | null>(null);
 
 export function useSelectedSlideContext() {
-    const context = useContext(SelectedSlideContext);
+    const context = use(SelectedSlideContext);
     if (context === null) {
         throw new Error('useSelectedSlide must be used within a SlideProvider');
     }

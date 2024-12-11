@@ -1,4 +1,4 @@
-import { createContext, Fragment, useContext } from 'react';
+import { createContext, Fragment, use } from 'react';
 
 import {
     useGetBookKVList,
@@ -24,7 +24,7 @@ export const InputTextContext = createContext<{
     setInputText: (text: string) => void,
 } | null>(null);
 export function useInputTextContext() {
-    const inputTextContext = useContext(InputTextContext);
+    const inputTextContext = use(InputTextContext);
     if (inputTextContext === null) {
         throw new Error('InputTextContext is not provided');
     }

@@ -18,6 +18,7 @@ export default function ScreenSlide() {
     });
     return (
         <div id='slide' ref={div}
-            style={screenSlideManager.containerStyle} />
+            style={screenSlideManager.containerStyle}
+        />
     );
 }

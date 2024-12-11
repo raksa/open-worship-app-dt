@@ -1,4 +1,4 @@
-import { CSSProperties, createContext, useContext } from 'react';
+import { CSSProperties, createContext, use } from 'react';
 
 export function fontSizeToHeightStyle(fontSize: number): CSSProperties {
     return { height: fontSize >= 20 ? (fontSize + 30) : undefined };
@@ -10,6 +10,6 @@ export const BibleViewFontSizeContext = createContext<number>(
 );
 
 export function useBibleViewFontSizeContext() {
-    const fontSize = useContext(BibleViewFontSizeContext);
+    const fontSize = use(BibleViewFontSizeContext);
     return fontSize;
 }

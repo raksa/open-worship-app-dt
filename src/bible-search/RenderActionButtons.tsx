@@ -11,7 +11,7 @@ import {
     genContextMenuItemShortcutKey, ContextMenuItemType,
 } from '../others/AppContextMenu';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { getIsKeepingPopup } from './RenderExtraLeftButtons';
+import { getIsKeepingPopup } from './RenderExtraButtonsRight';
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';

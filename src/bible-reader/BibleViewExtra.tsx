@@ -1,4 +1,4 @@
-import { createContext, Fragment, useContext } from 'react';
+import { createContext, Fragment, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import { BibleSelectionMini } from '../bible-search/BibleSelection';
@@ -85,7 +85,7 @@ export const BibleViewTitleMaterialContext = (
 
 export function BibleViewTitle() {
     const bibleItem = useBibleItemContext();
-    const materialContext = useContext(BibleViewTitleMaterialContext);
+    const materialContext = use(BibleViewTitleMaterialContext);
     const title = useBibleItemRenderTitle(bibleItem);
     const fontSize = useBibleViewFontSizeContext();
     return (

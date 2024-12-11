@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, use, useState } from 'react';
 
 import {
     getSetting, setSetting,
@@ -41,7 +41,7 @@ async function getSelectedEditorBibleItem() {
 }
 export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {
-    return useContext(SelectedBibleKeyContext);
+    return use(SelectedBibleKeyContext);
 }
 export function useSelectedBibleKey() {
     const [bibleKeySelected, setBibleKeySelected] = (

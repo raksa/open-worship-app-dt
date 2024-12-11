@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, use, useState } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import EventHandler from '../event/EventHandler';
@@ -626,7 +626,7 @@ export const BibleItemViewControllerContext = (
 );
 
 export function useBibleItemViewControllerContext() {
-    return useContext(BibleItemViewControllerContext);
+    return use(BibleItemViewControllerContext);
 }
 
 export function useBIVCUpdateEvent() {

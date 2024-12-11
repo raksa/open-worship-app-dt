@@ -5,7 +5,7 @@ import {
     genInputText,
 } from '../bible-list/bibleHelpers';
 import { setBibleSearchInputFocus } from './selectionHelpers';
-import RenderExtraLeftButtons from './RenderExtraLeftButtons';
+import RenderExtraButtonsRight from './RenderExtraButtonsRight';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import {
     SearchBibleItemViewController,
@@ -66,7 +66,7 @@ export default function RenderBibleSearchHeader({
             }>
                 {isEditingBibleItem ? null : (
                     <div className='float-start'>
-                        <RenderExtraLeftButtons
+                        <RenderExtraButtonsRight
                             setIsSearchOnline={setIsSearchOnline}
                             isSearchOnline={isSearchOnline}
                         />
@@ -74,9 +74,11 @@ export default function RenderBibleSearchHeader({
                 )}
             </div>
             {hideBibleSearchPopup === null ? null : (
-                <ModalCloseButton close={() => {
-                    hideBibleSearchPopup();
-                }} />
+                <ModalCloseButton
+                    close={() => {
+                        hideBibleSearchPopup();
+                    }}
+                />
             )}
         </div>
     );

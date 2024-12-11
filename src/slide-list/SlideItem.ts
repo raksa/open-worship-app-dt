@@ -1,3 +1,5 @@
+import { createContext, use } from 'react';
+
 import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
@@ -7,7 +9,6 @@ import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
-import { createContext, useContext } from 'react';
 
 export type SlideItemType = {
     id: number,
@@ -233,7 +234,7 @@ export const SelectedSlideItemContext = createContext<{
 } | null>(null);
 
 export function useSelectedSlideItemContext() {
-    const context = useContext(SelectedSlideItemContext);
+    const context = use(SelectedSlideItemContext);
     if (!context) {
         throw new Error(
             'useSelectedSlideItem must be used within a ' +

@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, use } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
@@ -26,7 +26,7 @@ const settingName = 'screen-display-';
 
 export const ScreenManagerContext = createContext<ScreenManager | null>(null);
 export function useScreenManagerContext(): ScreenManager {
-    const screenManager = useContext(ScreenManagerContext);
+    const screenManager = use(ScreenManagerContext);
     if (screenManager === null) {
         throw new Error(
             'useScreenManager must be used within a ScreenManager ' +

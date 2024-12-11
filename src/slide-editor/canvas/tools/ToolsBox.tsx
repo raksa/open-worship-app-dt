@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { use } from 'react';
 
 import ColorPicker from '../../../others/color/ColorPicker';
 import Tool from './Tool';
@@ -22,7 +22,7 @@ export default function ToolsBox() {
             backgroundColor: newColor,
         });
     };
-    const canvasItem = useContext(CanvasItemContext);
+    const canvasItem = use(CanvasItemContext);
     if (canvasItem === null) {
         return null;
     }
