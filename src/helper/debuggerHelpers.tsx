@@ -12,7 +12,7 @@ type StoreType = {
     timeoutId: any,
 };
 function restore(toKey: string) {
-    const store = (mapper.get(toKey) || {
+    const store = (storeMapper.get(toKey) || {
         count: 0,
         timeoutId: 0,
     });
@@ -24,7 +24,7 @@ function restore(toKey: string) {
         clearTimeout(store.timeoutId);
     }
     store.timeoutId = setTimeout(() => {
-        mapper.set(toKey, {
+        storeMapper.set(toKey, {
             count: 0,
             timeoutId: 0,
         });
@@ -37,9 +37,11 @@ function warningMethod(key: string) {
         `[useAppEffect] ${key} is called after unmounting`,
     );
 };
+
+const storeMapper = new Map<string, StoreType>();
 function checkStore(toKey: string) {
     const store = restore(toKey);
-    mapper.set(toKey, store);
+    storeMapper.set(toKey, store);
     if (store.count > THRESHOLD) {
         warn(
             `[useAppEffect] ${toKey} is called more than `
@@ -47,7 +49,6 @@ function checkStore(toKey: string) {
         );
     }
 }
-const mapper = new Map<string, StoreType>();
 
 type MethodContextType = { [key: string]: any }
 export function useAppEffectAsync<T extends MethodContextType>(

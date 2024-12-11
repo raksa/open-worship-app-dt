@@ -11,6 +11,7 @@ import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { editorTab, goToPath } from '../router/routeHelpers';
+import { ContextMenuItemType } from '../others/AppContextMenu';
 
 export default function SlideFile({
     index, filePath,
@@ -55,6 +56,23 @@ export default function SlideFile({
     useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
         setData(null);
     });
+    const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
+        menuTitle: 'Preview PDF',
+        onClick: () => {
+            const fileSource = FileSource.getInstance(data.filePath);
+            appProvider.messageUtils.sendData(
+                'app:preview-pdf', fileSource.src,
+            );
+        },
+    }] : [{
+        menuTitle: 'Edit',
+        onClick: () => {
+            if (data) {
+                data.isSelected = true;
+                goToPath(editorTab.routePath);
+            }
+        },
+    }];
     return (
         <FileItemHandler
             index={index}
@@ -64,23 +82,7 @@ export default function SlideFile({
             isPointer
             onClick={handleClick}
             renderChild={handleChildRender}
-            contextMenu={data?.isPdf ? [{
-                menuTitle: 'Preview PDF',
-                onClick: () => {
-                    const fileSource = FileSource.getInstance(data.filePath);
-                    appProvider.messageUtils.sendData(
-                        'app:preview-pdf', fileSource.src,
-                    );
-                },
-            }] : [{
-                menuTitle: 'Edit',
-                onClick: () => {
-                    if (data) {
-                        data.isSelected = true;
-                        goToPath(editorTab.routePath);
-                    }
-                },
-            }]}
+            contextMenuItems={contextMenuItems}
             onDelete={handleDeletion}
         />
     );

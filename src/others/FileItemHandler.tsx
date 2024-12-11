@@ -78,7 +78,7 @@ function genContextMenu(
 
 export default function FileItemHandler({
     data, reload, index, filePath, className,
-    contextMenu, onDrop, onClick, renderChild,
+    contextMenuItems, onDrop, onClick, renderChild,
     isPointer, onDelete, isDisabledColorNote,
     userClassName,
 }: Readonly<{
@@ -87,7 +87,7 @@ export default function FileItemHandler({
     index: number,
     filePath: string,
     className?: string
-    contextMenu?: ContextMenuItemType[],
+    contextMenuItems?: ContextMenuItemType[],
     onDrop?: (event: any) => void,
     onClick?: () => void,
     renderChild: (lyric: ItemSource<any>) => any,
@@ -132,7 +132,7 @@ export default function FileItemHandler({
             title={filePath}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
-                    ...(contextMenu || []),
+                    ...(contextMenuItems || []),
                     ...genCommonMenu(filePath),
                     ...selfContextMenu,
                 ]);

@@ -89,7 +89,7 @@ export default function BibleFile({
             renderChild={handlerChildRender}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
-            contextMenu={genContextMenu(data)}
+            contextMenuItems={genContextMenu(data)}
         />
     );
 }
