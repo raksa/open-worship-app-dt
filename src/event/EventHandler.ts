@@ -64,10 +64,15 @@ export class BasicEventHandler<T extends string> {
 
     private checkOnEvent(eventName: T, data?: any) {
         this.guardEventName(eventName);
-        const listeners = this.eventListenersMapper.get(eventName) || [];
-        listeners.forEach((listener: ListenerType<any>) => {
+        const listeners = [
+            ...(this.eventListenersMapper.get(eventName) || []),
+        ].reverse();
+        for (const listener of listeners) {
             listener(data);
-        });
+            if (data?.defaultPrevented) {
+                break;
+            }
+        }
     }
 
     registerEventListener<F>(eventNames: T[], listener: ListenerType<F>):
@@ -93,7 +98,8 @@ export default class EventHandler<T extends string> extends
     static readonly eventNamePrefix: string = 'event';
 
     static registerEventListener<T extends string, F>(
-        eventNames: T[], listener: ListenerType<F>):
+        eventNames: T[], listener: ListenerType<F>,
+    ):
         RegisteredEventType<T, F>[] {
         return eventNames.map((eventName) => {
             eventHandler.addOnEventListener(

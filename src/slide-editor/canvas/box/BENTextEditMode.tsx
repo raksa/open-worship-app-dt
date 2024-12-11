@@ -26,15 +26,18 @@ export default function BENTextEditMode({
                 canvasController.setItemIsEditing(canvasItemText, false);
             }}
             onKeyUp={(event) => {
-                if (event.key === 'Escape' || (event.key === 'Enter'
-                    && event.ctrlKey)) {
+                if (
+                    event.key === 'Escape' ||
+                    (event.key === 'Enter' && event.ctrlKey)
+                ) {
                     canvasController.setItemIsEditing(canvasItemText, false);
                 }
             }}>
             <BoxEditorTextArea
                 color={canvasItemText.props.color}
                 text={canvasItemText.props.text}
-                setText={handleTextSetting} />
+                setText={handleTextSetting}
+            />
         </div>
     );
 }

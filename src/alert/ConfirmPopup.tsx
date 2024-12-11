@@ -5,6 +5,7 @@ import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     closeAlert, ConfirmDataType,
 } from './alertHelpers';
+import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
 export default function ConfirmPopup({ data }: Readonly<{
     data: ConfirmDataType,
@@ -13,29 +14,42 @@ export default function ConfirmPopup({ data }: Readonly<{
         data.onConfirm(false);
         closeAlert();
     };
+    useKeyboardRegistering([{ key: 'Escape' }], (event) => {
+        event.preventDefault();
+        handClose();
+    });
     return (
         <PrimitiveModal>
             <div id='confirm-popup'
                 className='shadow card'>
-                <HeaderAlertPopup header={<>
-                    <i className='bi bi-exclamation-circle' />
-                    {data.title}
-                </>} onClose={handClose} />
+                <HeaderAlertPopup header={(
+                    <>
+                        <i className='bi bi-exclamation-circle' />
+                        {data.title}
+                    </>
+                )}
+                    onClose={handClose}
+                />
                 <div className='card-body d-flex flex-column'>
                     <div className='p-2 flex-fill app-selectable-text'
                         dangerouslySetInnerHTML={{
                             __html: data.question,
-                        }} />
+                        }}
+                    />
                     <div className='btn-group float-end'>
                         <button type='button'
                             className='btn btn-sm'
-                            onClick={handClose}>Cancel</button>
+                            onClick={handClose}>
+                            Cancel
+                        </button>
                         <button type='button'
                             className='btn btn-sm btn-info'
                             onClick={() => {
                                 data.onConfirm(true);
                                 closeAlert();
-                            }}>Ok</button>
+                            }}>
+                            Ok
+                        </button>
                     </div>
                 </div>
             </div>

@@ -4,11 +4,12 @@ import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
 import { AppWidgetType } from './WindowEventListener';
 
-export type KeyboardType = 'ArrowUp' | 'ArrowRight' | 'ArrowDown'
-    | 'ArrowLeft' | 'Enter' | 'Tab' | 'Escape' | ' ';
+export type KeyboardType = (
+    'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'ArrowLeft' | 'Enter' | 'Tab' |
+    'Escape' | ' '
+);
 export const allArrows: KeyboardType[] = [
-    'ArrowLeft', 'ArrowRight',
-    'ArrowUp', 'ArrowDown',
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
 ];
 export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
@@ -104,8 +105,8 @@ export default class KeyboardEventListener extends EventHandler<string> {
 }
 
 export function useKeyboardRegistering(
-    eventMappers: EventMapper[], listener: ListenerType) {
-
+    eventMappers: EventMapper[], listener: ListenerType,
+) {
     useAppEffect(() => {
         const eventNames = eventMappers.map((eventMapper) => {
             return KeyboardEventListener.toEventMapperKey(eventMapper);
