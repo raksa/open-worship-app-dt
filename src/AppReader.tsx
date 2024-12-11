@@ -32,13 +32,12 @@ const dataInput: DataInputType[] = [
 const viewController = new BibleItemViewController('reader');
 export default function AppReader() {
     return (
-        <BibleItemViewControllerContext.Provider
-            value={viewController}>
+        <BibleItemViewControllerContext value={viewController}>
             <ResizeActor fSizeName={resizeSettingNames.read}
                 isHorizontal
                 flexSizeDefault={flexSizeDefault}
                 dataInput={dataInput}
             />
-        </BibleItemViewControllerContext.Provider>
+        </BibleItemViewControllerContext>
     );
 }

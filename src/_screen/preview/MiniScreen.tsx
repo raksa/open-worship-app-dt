@@ -71,13 +71,13 @@ export default function MiniScreen() {
                 <div className='w-100'>
                     {screenManagers.map((screenManager) => {
                         return (
-                            <ScreenManagerContext.Provider
+                            <ScreenManagerContext
                                 key={screenManager.key}
                                 value={screenManager}>
                                 <ScreenPreviewerItem
                                     width={previewWidth}
                                 />
-                            </ScreenManagerContext.Provider>
+                            </ScreenManagerContext>
                         );
                     })}
                 </div>

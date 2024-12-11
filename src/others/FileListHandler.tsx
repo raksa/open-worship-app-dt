@@ -88,7 +88,7 @@ export default function FileListHandler({
         };
     }, [dirSource.dirPath]);
     return (
-        <DirSourceContext.Provider value={dirSource}>
+        <DirSourceContext value={dirSource}>
             <div className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
                 onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
@@ -131,6 +131,6 @@ export default function FileListHandler({
                         )}
                 </div>
             </div >
-        </DirSourceContext.Provider>
+        </DirSourceContext>
     );
 }

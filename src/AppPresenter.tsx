@@ -20,8 +20,7 @@ const LazyAppPresenterRight = lazy(() => {
 const viewController = new BibleItemViewController('presenter');
 export default function AppPresenter() {
     return (
-        <BibleItemViewControllerContext.Provider
-            value={viewController}>
+        <BibleItemViewControllerContext value={viewController}>
             <ResizeActor fSizeName={resizeSettingNames.appPresenter}
                 isHorizontal
                 flexSizeDefault={{
@@ -44,6 +43,6 @@ export default function AppPresenter() {
                     },
                 ]} />
             <HandleItemSlideEdit />
-        </BibleItemViewControllerContext.Provider>
+        </BibleItemViewControllerContext>
     );
 }

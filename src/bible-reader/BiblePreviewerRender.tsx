@@ -36,9 +36,9 @@ export default function BiblePreviewerRender() {
             <div className={
                 'card-body d-flex overflow-hidden w-100 h-100'
             }>
-                <BibleViewFontSizeContext.Provider value={fontSize}>
+                <BibleViewFontSizeContext value={fontSize}>
                     <Render />
-                </BibleViewFontSizeContext.Provider>
+                </BibleViewFontSizeContext>
             </div>
             <div className='auto-hide auto-hide-bottom'>
                 <div className='d-flex w-100'>

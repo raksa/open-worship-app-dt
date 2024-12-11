@@ -32,11 +32,11 @@ export default function RenderSearchSuggestion({
             attemptAddingHistory(bibleItem.bibleKey, text);
         });
         return (
-            <BibleItemContext.Provider value={bibleItem}>
+            <BibleItemContext value={bibleItem}>
                 <RenderBibleDataFound
                     onVerseChange={handleVerseChanged}
                 />
-            </BibleItemContext.Provider>
+            </BibleItemContext>
         );
     }
     return (

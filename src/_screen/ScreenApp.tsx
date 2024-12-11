@@ -29,7 +29,7 @@ export default function ScreenApp() {
         }, true);
     }
     return (
-        <ScreenManagerContext.Provider value={screenManager}>
+        <ScreenManagerContext value={screenManager}>
             <RendStyle ptEffectTarget='background' />
             <RendStyle ptEffectTarget='slide' />
             <ScreenBackground />
@@ -37,6 +37,6 @@ export default function ScreenApp() {
             <ScreenFullText />
             <ScreenAlert />
             <CloseButton />
-        </ScreenManagerContext.Provider>
+        </ScreenManagerContext>
     );
 }

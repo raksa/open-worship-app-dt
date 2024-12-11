@@ -35,17 +35,16 @@ export default function BibleSearchBodyPreviewer() {
             return (<RenderBibleSearchBody />);
         }
         return (
-            <BibleViewTitleMaterialContext.Provider value={contextValue}>
+            <BibleViewTitleMaterialContext value={contextValue}>
                 <BibleView bibleItem={bibleItem} />
-            </BibleViewTitleMaterialContext.Provider>
+            </BibleViewTitleMaterialContext>
         );
     };
     return (
-        <BibleItemViewControllerContext.Provider
-            value={viewController}>
+        <BibleItemViewControllerContext value={viewController}>
             <AppSuspense>
                 <LazyBiblePreviewerRender />
             </AppSuspense>
-        </BibleItemViewControllerContext.Provider>
+        </BibleItemViewControllerContext>
     );
 }

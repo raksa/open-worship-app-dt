@@ -74,14 +74,14 @@ export default function Tools() {
                 {selectedCanvasItems?.map((canvasItem) => {
                     return (
                         <Fragment key={canvasItem.id}>
-                            <CanvasItemContext.Provider value={canvasItem}>
+                            <CanvasItemContext value={canvasItem}>
                                 {genTabBody<TabType>(
                                     tabType, ['t', LazyToolsText],
                                 )}
                                 {genTabBody<TabType>(
                                     tabType, ['b', LazyToolsBox],
                                 )}
-                            </CanvasItemContext.Provider>
+                            </CanvasItemContext>
                             <hr />
                         </Fragment>
                     );

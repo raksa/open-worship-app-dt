@@ -23,7 +23,7 @@ export default function BibleView({ bibleItem }: Readonly<{
 }>) {
     const viewController = useBibleItemViewControllerContext();
     return (
-        <BibleItemContext.Provider value={bibleItem}>
+        <BibleItemContext value={bibleItem}>
             <div className='bible-view card flex-fill w-100 h-100'
                 style={{ minWidth: '30%' }}
                 onDragOver={(event) => {
@@ -63,7 +63,7 @@ export default function BibleView({ bibleItem }: Readonly<{
                 <RefRenderer /> */}
                 </div>
             </div>
-        </BibleItemContext.Provider>
+        </BibleItemContext>
     );
 }
 

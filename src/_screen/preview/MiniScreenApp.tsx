@@ -18,7 +18,7 @@ export default function MiniScreenApp({ id }: Readonly<{ id: number }>) {
         return null;
     }
     return (
-        <ScreenManagerContext.Provider value={screenManager}>
+        <ScreenManagerContext value={screenManager}>
             <RendStyle ptEffectTarget='background' />
             <RendStyle ptEffectTarget='slide' />
             <div style={{
@@ -34,6 +34,6 @@ export default function MiniScreenApp({ id }: Readonly<{ id: number }>) {
             <ScreenSlide />
             <ScreenFullText />
             <ScreenAlert />
-        </ScreenManagerContext.Provider>
+        </ScreenManagerContext>
     );
 }

@@ -35,9 +35,9 @@ export function genHtmlBG(
     bgSrc: BackgroundSrcType, screenManager: ScreenManager,
 ) {
     const str = ReactDOMServer.renderToStaticMarkup(
-        <ScreenManagerContext.Provider value={screenManager}>
+        <ScreenManagerContext value={screenManager}>
             <RenderBG bgSrc={bgSrc} />
-        </ScreenManagerContext.Provider>
+        </ScreenManagerContext>
     );
     const div = document.createElement('div');
     div.innerHTML = str;
