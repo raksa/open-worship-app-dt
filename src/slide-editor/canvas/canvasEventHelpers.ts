@@ -19,7 +19,7 @@ export function useCanvasControllerEvents(eventTypes: CCEventType[]) {
     }, [n]);
 }
 
-export function useCCScale() {
+export function useSlideItemCanvasScale() {
     const canvasController = CanvasController.getInstance();
     const [scale, setScale] = useState(canvasController.scale);
     useAppEffect(() => {

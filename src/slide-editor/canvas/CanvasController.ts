@@ -19,7 +19,7 @@ import CanvasItemVideo from './CanvasItemVideo';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 
-const EDITOR_SCALE_SETTING_NAME = 'editor-scale';
+const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
 
 let instance: CanvasController | null = null;
 export default class CanvasController extends EventHandler<CCEventType> {
@@ -31,7 +31,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
     constructor() {
         super();
         this._canvas = Canvas.genDefaultCanvas();
-        const defaultData = parseInt(getSetting(EDITOR_SCALE_SETTING_NAME), 10);
+        const defaultData = parseFloat(getSetting(EDITOR_SCALE_SETTING_NAME));
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }

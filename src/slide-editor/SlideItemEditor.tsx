@@ -4,13 +4,13 @@ import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import CanvasController from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRange';
-import { defaultRangeSize } from './canvas/tools/Tools';
+import { defaultRangeSize } from './canvas/tools/SlideItemEditorTools';
 
 const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
 });
-const LazyTools = lazy(() => {
-    return import('./canvas/tools/Tools');
+const LazySlideItemEditorTools = lazy(() => {
+    return import('./canvas/tools/SlideItemEditorTools');
 });
 
 export default function SlideItemEditor() {
@@ -39,7 +39,7 @@ export default function SlideItemEditor() {
                         className: 'flex-item',
                     },
                     {
-                        children: LazyTools, key: 'v2',
+                        children: LazySlideItemEditorTools, key: 'v2',
                         widgetName: 'Tools', className: 'flex-item',
                     },
                 ]} />
