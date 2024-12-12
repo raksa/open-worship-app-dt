@@ -1,25 +1,27 @@
-import ElectronAppController from './ElectronAppController';
 import fs from 'node:fs';
 import path from 'node:path';
-import electron from 'electron';
+import electron, { BrowserWindow } from 'electron';
+import { htmlFiles } from './fsServe';
 
 const settingObject: {
     mainWinBounds: Electron.Rectangle | null,
     appScreenDisplayId: number | null,
+    mainHtmlPath: string,
 } = {
     mainWinBounds: null,
     appScreenDisplayId: null,
+    mainHtmlPath: htmlFiles.presenter,
 };
 export default class ElectronSettingController {
-    appController: ElectronAppController;
-
-    constructor(appController: ElectronAppController) {
-        this.appController = appController;
+    constructor() {
         try {
             const str = fs.readFileSync(this.fileSettingPath, 'utf8');
             const json = JSON.parse(str);
             settingObject.mainWinBounds = json.mainWinBounds;
             settingObject.appScreenDisplayId = json.appScreenDisplayId;
+            settingObject.mainHtmlPath = (
+                json.mainHtmlPath ?? settingObject.mainHtmlPath
+            );
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 this.save();
@@ -43,9 +45,9 @@ export default class ElectronSettingController {
         this.save();
     }
 
-    resetMainBounds() {
+    resetMainBounds(win: BrowserWindow) {
         this.mainWinBounds = this.primaryDisplay.bounds;
-        this.appController.mainWin.setBounds(this.mainWinBounds);
+        win.setBounds(this.mainWinBounds);
     }
 
     get allDisplays() {
@@ -66,17 +68,26 @@ export default class ElectronSettingController {
         );
     }
 
-    syncMainWindow() {
-        this.appController.mainWin.setBounds(this.mainWinBounds);
-        this.appController.mainWin.on('resize', () => {
-            const [width, height] = this.appController.mainWin.getSize();
+    syncMainWindow(win: BrowserWindow) {
+        win.setBounds(this.mainWinBounds);
+        win.on('resize', () => {
+            const [width, height] = win.getSize();
             this.mainWinBounds = { ...this.mainWinBounds, width, height };
             this.save();
         });
-        this.appController.mainWin.on('move', () => {
-            const [x, y] = this.appController.mainWin.getPosition();
+        win.on('move', () => {
+            const [x, y] = win.getPosition();
             this.mainWinBounds = { ...this.mainWinBounds, x, y };
             this.save();
         });
+    }
+
+    get mainHtmlPath() {
+        return settingObject.mainHtmlPath;
+    }
+
+    set mainHtmlPath(path: string) {
+        settingObject.mainHtmlPath = path;
+        this.save();
     }
 }

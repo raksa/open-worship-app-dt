@@ -67,8 +67,9 @@ export function initScreen(appController: ElectronAppController) {
         const screenController = (
             ElectronScreenController.createInstance(data.screenId)
         );
-        const display = appController.settingController.
-            getDisplayById(data.displayId);
+        const display = (
+            appController.settingController.getDisplayById(data.screenId)
+        );
         if (display !== undefined) {
             screenController.listenLoading().then(() => {
                 appController.mainController.sendData(data.replyEventName);
@@ -76,6 +77,10 @@ export function initScreen(appController: ElectronAppController) {
             screenController.setDisplay(display);
             appController.mainWin.focus();
         }
+        screenController.win.on('close', () => {
+            screenController.destroyInstance();
+            appController.mainController.sendNotifyInvisibility(data.screenId);
+        });
         event.returnValue = Promise.resolve('hello');
     });
     ipcMain.on('app:hide-screen', (_, screenId: number) => {

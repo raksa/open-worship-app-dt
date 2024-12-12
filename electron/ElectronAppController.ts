@@ -1,7 +1,8 @@
 import ElectronFinderController from './ElectronFinderController';
 import ElectronMainController from './ElectronMainController';
 import ElectronSettingController from './ElectronSettingController';
-import electron from 'electron';
+import { app, BrowserWindow } from 'electron';
+import { getCurrent } from './fsServe';
 
 let instance: ElectronAppController | null = null;
 let settingController: ElectronSettingController | null = null;
@@ -9,12 +10,15 @@ let finderController: ElectronFinderController | null = null;
 export default class ElectronAppController {
 
     constructor() {
-        this.settingController.syncMainWindow();
-        const app = electron.app;
+        this.settingController.syncMainWindow(this.mainWin);
         app.on('activate', () => {
-            if (electron.BrowserWindow.getAllWindows().length === 0) {
-                this.settingController.syncMainWindow();
+            if (BrowserWindow.getAllWindows().length === 0) {
+                this.settingController.syncMainWindow(this.mainWin);
             }
+        });
+        const webContents = this.mainWin.webContents;
+        webContents.on('did-finish-load', () => {
+            this.settingController.mainHtmlPath = getCurrent(webContents);
         });
     }
 
@@ -24,13 +28,13 @@ export default class ElectronAppController {
 
     get settingController() {
         if (settingController === null) {
-            settingController = new ElectronSettingController(this);
+            settingController = new ElectronSettingController();
         }
         return settingController;
     }
 
     get mainController() {
-        return ElectronMainController.getInstance();
+        return ElectronMainController.getInstance(this.settingController);
     }
 
     get finderController() {

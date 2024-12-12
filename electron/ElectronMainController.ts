@@ -1,17 +1,14 @@
 import { BrowserWindow, shell } from 'electron';
 import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
-import { htmlFiles } from './fsServe';
+import ElectronSettingController from './ElectronSettingController';
 
-// const routeProps = genRoutProps(htmlFiles.presenter);
-const routeProps = genRoutProps(htmlFiles.reader);
 let instance: ElectronMainController | null = null;
-
 export default class ElectronMainController {
     win: BrowserWindow;
 
-    constructor() {
-        this.win = this.createMainWindow();
+    constructor(settingController: ElectronSettingController) {
+        this.win = this.createMainWindow(settingController);
     }
 
     previewPdf(pdfFilePath: string) {
@@ -22,7 +19,8 @@ export default class ElectronMainController {
         pdfWin.loadURL(pdfFilePath);
     }
 
-    createMainWindow() {
+    createMainWindow(settingController: ElectronSettingController) {
+        const routeProps = genRoutProps(settingController.mainHtmlPath);
         const win = new BrowserWindow({
             backgroundColor: '#000000',
             x: 0, y: 0,
@@ -76,9 +74,9 @@ export default class ElectronMainController {
         });
     }
 
-    static getInstance() {
+    static getInstance(settingController: ElectronSettingController) {
         if (instance === null) {
-            instance = new this();
+            instance = new this(settingController);
         }
         return instance;
     }

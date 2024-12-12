@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { app, net, protocol, session } from 'electron';
+import { app, net, protocol, session, WebContents } from 'electron';
 
 export const htmlFiles = {
     editor: 'editor.html',
@@ -88,4 +88,20 @@ export function initCustomSchemeHandler() {
 
 export function toTitleCase(str: string) {
     return str[0].toUpperCase() + str.slice(1);
+}
+
+export function getCurrent(webContents: WebContents) {
+    const url = new URL(webContents.getURL());
+    const htmlFileFullName = (
+        url.pathname.substring(1).split('.html')[0] + '.html'
+    );
+    const validHtmlFiles = [
+        htmlFiles.editor, htmlFiles.presenter, htmlFiles.reader,
+        htmlFiles.setting,
+    ];
+    const currentHtmlPath = (
+        validHtmlFiles.includes(htmlFileFullName) ?
+            htmlFileFullName : htmlFiles.presenter
+    );
+    return currentHtmlPath;
 }

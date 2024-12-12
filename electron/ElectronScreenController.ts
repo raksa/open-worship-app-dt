@@ -2,7 +2,6 @@ import { BrowserWindow } from 'electron';
 import {
     AnyObjectType, channels,
 } from './electronEventListener';
-import ElectronMainController from './ElectronMainController';
 import { genRoutProps } from './protocolHelpers';
 import { htmlFiles } from './fsServe';
 
@@ -52,9 +51,6 @@ export default class ElectronScreenController {
     }
 
     destroyInstance() {
-        ElectronMainController.getInstance().sendNotifyInvisibility(
-            this.screenId,
-        );
         cache.delete(this.screenId.toString());
     }
 
