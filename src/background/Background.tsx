@@ -3,6 +3,7 @@ import './Background.scss';
 import { lazy } from 'react';
 
 import {
+    useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
 import TabRender, {
@@ -34,10 +35,12 @@ const tabTypeList = [
     ['color', 'Colors', LazyBackgroundColors],
     ['image', 'Images', LazyBackgroundImages],
     ['video', 'Videos', LazyBackgroundVideos],
-    ['sound', 'Sounds', LazyBackgroundSounds],
 ] as const;
-type TabType = typeof tabTypeList[number][0];
+type TabType = typeof tabTypeList[number][0] | 'sound';
 export default function Background() {
+    const [isSoundActive, setIsSoundActive] = useStateSettingBoolean(
+        'background-sound', false,
+    );
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'background-tab', 'image',
     );
@@ -51,7 +54,7 @@ export default function Background() {
     };
     return (
         <div className='background w-100 d-flex flex-column'>
-            <div className='background-header'>
+            <div className='background-header d-flex'>
                 <TabRender<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name, toHLS(type)];
@@ -59,11 +62,23 @@ export default function Background() {
                     activeTab={tabType}
                     setActiveTab={setTabType}
                 />
+                <TabRender<'sound' | ''>
+                    tabs={[[
+                        'sound', '♫Sound♫', undefined,
+                    ]]}
+                    activeTab={isSoundActive ? 'sound' : ''}
+                    setActiveTab={() => {
+                        setIsSoundActive(!isSoundActive);
+                    }}
+                />
             </div>
-            <div className='background-body w-100 flex-fill'>
+            <div className='background-body w-100 flex-fill d-flex'>
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}
+                {!isSoundActive ? null : genTabBody<TabType>(
+                    'sound', ['sound', LazyBackgroundSounds],
+                )}
             </div>
         </div>
     );
