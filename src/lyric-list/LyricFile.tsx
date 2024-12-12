@@ -15,7 +15,7 @@ export default function LyricFile({
     filePath: string,
 }>) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
-    const handleReload = () => {
+    const handleReloading = () => {
         setData(null);
     };
     const handleClicking = () => {
@@ -44,7 +44,7 @@ export default function LyricFile({
         <FileItemHandler
             index={index}
             data={data}
-            reload={handleReload}
+            reload={handleReloading}
             filePath={filePath}
             isPointer
             onClick={handleClicking}

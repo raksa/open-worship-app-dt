@@ -21,28 +21,28 @@ export default function SlideItemRenderWrapper({
 }>) {
     const { selectedSlide } = useSelectedSlideContext();
     const { setSelectedSlideItem } = useSelectedEditingSlideItemContext();
-    const handleDrop = (id: number, isLeft: boolean) => {
+    const handleDropping = (id: number, isLeft: boolean) => {
         selectedSlide.moveItem(id, index, isLeft);
     };
-    const handleClick = (event: any) => {
+    const handleClicking = (event: any) => {
         handleSlideItemSelecting(setSelectedSlideItem, slideItem, event);
     };
-    const handleContextMenu = (event: any) => {
+    const handleContextMenuOpening = (event: any) => {
         selectedSlide.openContextMenu(event, slideItem);
     };
-    const handleCopy = () => {
+    const handleCopying = () => {
         selectedSlide.copiedItem = slideItem;
     };
-    const handleDragStart = () => {
+    const handleDragStarting = () => {
         setDraggingIndex(index);
     };
-    const handleDragEng = () => {
+    const handleDragEnding = () => {
         setDraggingIndex(null);
     };
     if (slideItem.isPdf) {
         return (
             <SlideItemPdfRender key={slideItem.id}
-                onClick={handleClick}
+                onClick={handleClicking}
                 slideItem={slideItem}
                 width={thumbSize} index={index}
             />
@@ -61,22 +61,22 @@ export default function SlideItemRenderWrapper({
                 <SlideItemDragReceiver
                     width={thumbSize}
                     isLeft
-                    onDrop={handleDrop}
+                    onDrop={handleDropping}
                 />
             )}
             <SlideItemRender index={index}
                 slideItem={slideItem}
                 width={thumbSize}
-                onClick={handleClick}
-                onContextMenu={handleContextMenu}
-                onCopy={handleCopy}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEng}
+                onClick={handleClicking}
+                onContextMenu={handleContextMenuOpening}
+                onCopy={handleCopying}
+                onDragStart={handleDragStarting}
+                onDragEnd={handleDragEnding}
             />
             {shouldReceiveAtLast && (
                 <SlideItemDragReceiver
                     width={thumbSize}
-                    onDrop={handleDrop}
+                    onDrop={handleDropping}
                 />
             )}
         </Fragment>

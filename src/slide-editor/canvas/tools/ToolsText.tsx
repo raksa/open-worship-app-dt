@@ -12,7 +12,7 @@ import { AppColorType } from '../../../others/color/colorHelpers';
 import CanvasController from '../CanvasController';
 
 export default function ToolsText() {
-    const handleData = (newData: any) => {
+    const handleDataEvent = (newData: any) => {
         const textData: ToolingTextType = {};
         if (newData.horizontalAlignment !== undefined) {
             textData.textHorizontalAlignment = newData.horizontalAlignment;
@@ -22,7 +22,7 @@ export default function ToolsText() {
         }
         applyTextData(textData);
     };
-    const handleColorChanged = (newColor: AppColorType) => {
+    const handleColorChanging = (newColor: AppColorType) => {
         applyTextData({
             color: newColor,
         });
@@ -46,12 +46,12 @@ export default function ToolsText() {
                 }}>
                     <ColorPicker color={canvasItem.props.color}
                         defaultColor='#ffffff'
-                        onNoColor={handleColorChanged}
-                        onColorChange={handleColorChanged} />
+                        onNoColor={handleColorChanging}
+                        onColorChange={handleColorChanging} />
                 </div>
             </Tool>
             <Tool title='Text Alignment'>
-                <ToolAlign isText onData={handleData} />
+                <ToolAlign isText onData={handleDataEvent} />
             </Tool>
             <ToolsTextFontControl
                 canvasItemText={canvasItem} />

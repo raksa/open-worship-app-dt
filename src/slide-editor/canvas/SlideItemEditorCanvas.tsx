@@ -58,7 +58,7 @@ function genBody({
             isSupportedMimetype(fileType, 'video')
         );
     };
-    const handleDragEvent = (event: any) => {
+    const handleDragging = (event: any) => {
         event.preventDefault();
         const items: DataTransferItemList = event.dataTransfer.items;
         if (Array.from(items).every((item) => {
@@ -67,7 +67,7 @@ function genBody({
             event.currentTarget.style.opacity = '0.5';
         }
     };
-    const handleDropEvent = async (event: any) => {
+    const handleDropping = async (event: any) => {
         const dragEvent = event as DragEvent;
         dragEvent.preventDefault();
         const style = (dragEvent.currentTarget as any)?.style || {};
@@ -88,7 +88,7 @@ function genBody({
             }
         });
     };
-    const handleContextMenu = async (event: any) => {
+    const handleContextMenuOpening = async (event: any) => {
         (event.target as HTMLDivElement).focus();
         showCanvasContextMenu(event);
     };
@@ -99,13 +99,13 @@ function genBody({
                 height: `${canvas.height}px`,
                 transform: 'translate(-50%, -50%)',
             }}
-            onDragOver={handleDragEvent}
+            onDragOver={handleDragging}
             onDragLeave={(event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
             }}
-            onDrop={handleDropEvent}
-            onContextMenu={handleContextMenu}
+            onDrop={handleDropping}
+            onContextMenu={handleContextMenuOpening}
             onClick={() => {
                 canvasController.stopAllMods();
             }} >

@@ -18,7 +18,7 @@ export default function RenderSearchSuggestion({
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
 }>) {
-    const handleVerseChanged = (
+    const handleVerseChanging = (
         newVerseStart?: number, newVerseEnd?: number,
     ) => {
         applyVerseSelection(newVerseStart, newVerseEnd);
@@ -34,7 +34,7 @@ export default function RenderSearchSuggestion({
         return (
             <BibleItemContext value={bibleItem}>
                 <RenderBibleDataFound
-                    onVerseChange={handleVerseChanged}
+                    onVerseChange={handleVerseChanging}
                 />
             </BibleItemContext>
         );

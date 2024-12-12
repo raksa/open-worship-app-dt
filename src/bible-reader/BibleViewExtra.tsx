@@ -110,7 +110,7 @@ export function BibleViewText() {
     if (result === null) {
         return null;
     }
-    const handleSelection = (event: any) => {
+    const handleVersesSelecting = (event: any) => {
         const currentTarget = event.currentTarget;
         const classList = currentTarget.classList;
         if (classList.contains('selected')) {
@@ -132,7 +132,7 @@ export function BibleViewText() {
                             <div>{verse}</div>
                         </div>
                         <div className='verse-text'
-                            onClick={handleSelection}
+                            onClick={handleVersesSelecting}
                         >{text}</div>
                     </Fragment>
                 );

@@ -12,14 +12,14 @@ export default function RenderColors({
     selectedColor: AppColorType | null,
     onColorChange: (color: AppColorType | null, event: MouseEvent) => void,
 }>) {
-    const handleNoColor = (event: any) => {
+    const handleNoColoring = (event: any) => {
         onColorChange(null, event);
     };
-    const handleColor = (
+    const handleColorChanging = (
         event: any, color: AppColorType) => {
         onColorChange(color, event);
     };
-    const handleColorSelection = (
+    const handleColorSelecting = (
         color: AppColorType, event: any) => {
         onColorChange(color, event);
     };
@@ -38,7 +38,7 @@ export default function RenderColors({
             </div>
             <div className='d-flex flex-wrap border-white-round'>
                 <RenderNoColor isSelected={!selectedColor}
-                    onClick={handleNoColor}
+                    onClick={handleNoColoring}
                 />
                 {Object.entries(colors)
                     .map(([name, color]: [string, AppColorType]) => {
@@ -49,14 +49,14 @@ export default function RenderColors({
                                     selectedColor !== null &&
                                     compareColor(selectedColor, color)
                                 }
-                                onClick={handleColor}
+                                onClick={handleColorChanging}
                             />
                         );
                     })}
             </div>
             <div className='m-2'>
                 <SelectCustomColor color={selectedColor}
-                    onColorSelected={handleColorSelection}
+                    onColorSelected={handleColorSelecting}
                 />
             </div>
         </div>

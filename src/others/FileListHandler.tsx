@@ -70,7 +70,7 @@ export default function FileListHandler({
     userClassName?: string,
     defaultFolderName: string,
 }>) {
-    const handleNameApply = async (name: string | null) => {
+    const handleNameApplying = async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
             return;
@@ -120,7 +120,7 @@ export default function FileListHandler({
                             <ul className='list-group flex-fill d-flex'>
                                 {onNewFile && isCreatingNew && (
                                     <LazyAskingNewName
-                                        applyName={handleNameApply}
+                                        applyName={handleNameApplying}
                                     />
                                 )}
                                 <RenderList dirSource={dirSource}

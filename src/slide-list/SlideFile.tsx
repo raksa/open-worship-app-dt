@@ -21,10 +21,10 @@ export default function SlideFile({
 }>) {
     const { setSelectedSlide } = useSelectedSlideContext();
     const [data, setData] = useState<SlideDynamicType>(null);
-    const handleReload = () => {
+    const handleReloading = () => {
         setData(null);
     };
-    const handleClick = () => {
+    const handleClicking = () => {
         if (!data) {
             return;
         }
@@ -35,7 +35,7 @@ export default function SlideFile({
         data.isSelected = true;
         setSelectedSlide(data);
     };
-    const handleChildRender = (slide: ItemSource<any>) => {
+    const handleChildRendering = (slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
         return slide1.isPdf ? (
             <SlideFilePreviewPdf slide={slide1} />
@@ -43,7 +43,7 @@ export default function SlideFile({
             <SlideFilePreviewNormal slide={slide1} />
         );
     };
-    const handleDeletion = () => {
+    const handleSlideDeleting = () => {
         const selectedFilePath = Slide.getSelectedFilePath();
         if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
@@ -80,13 +80,13 @@ export default function SlideFile({
         <FileItemHandler
             index={index}
             data={data}
-            reload={handleReload}
+            reload={handleReloading}
             filePath={filePath}
             isPointer
-            onClick={handleClick}
-            renderChild={handleChildRender}
+            onClick={handleClicking}
+            renderChild={handleChildRendering}
             contextMenuItems={contextMenuItems}
-            onDelete={handleDeletion}
+            onDelete={handleSlideDeleting}
         />
     );
 }

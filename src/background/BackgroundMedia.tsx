@@ -30,7 +30,7 @@ export default function BackgroundMedia({
 }>) {
     const bgType = bgTypeMapper[dragType];
     const dirSource = useGenDS(dirSourceSettingName);
-    const handleBodyRender = (filePaths: string[]) => {
+    const handleBodyRendering = (filePaths: string[]) => {
         const genBodyWithChild = genBody.bind(null, rendChild, dragType);
         return (
             <div className='d-flex justify-content-start flex-wrap'>
@@ -47,7 +47,7 @@ export default function BackgroundMedia({
             mimetype={bgType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
-            bodyHandler={handleBodyRender}
+            bodyHandler={handleBodyRendering}
         />
     );
 }

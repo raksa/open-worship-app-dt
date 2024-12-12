@@ -35,7 +35,7 @@ export default function RenderBibleSearchHeader({
     };
     viewController.setInputText = setInputText1;
 
-    const handleBibleKeyChanged = async (
+    const handleBibleKeyChanging = async (
         oldBibleKey: string, newBibleKey: string,
     ) => {
         const newText = await genInputText(
@@ -57,12 +57,12 @@ export default function RenderBibleSearchHeader({
             <div className='flex-item input-group app-input-group-header'
                 style={{ width: 350 }}>
                 <InputHandler
-                    onBibleKeyChange={handleBibleKeyChanged}
+                    onBibleKeyChange={handleBibleKeyChanging}
                 />
             </div>
             <div className={
                 'flex-item flex-fill justify-content-end' +
-                (appProvider.isPagePresenter ? ' pe-5' : '')
+                (!appProvider.isPageReader ? ' pe-5' : '')
             }>
                 {isEditingBibleItem ? null : (
                     <div className='float-start'>

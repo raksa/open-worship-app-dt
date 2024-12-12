@@ -11,13 +11,13 @@ import SimpleToast, {
 
 let timeoutId: any = null;
 export default function Toast() {
-    const handleMouseEvent = () => {
+    const handleMouseEntering = () => {
         clearTimer();
     };
-    const handleMouseLeave = () => {
+    const handleMouseLeaving = () => {
         initTimeout(2e3);
     };
-    const handleClose = () => {
+    const handleClosing = () => {
         setSimpleToast(null);
     };
     const [simpleToast, setSimpleToast] = useState<
@@ -44,9 +44,9 @@ export default function Toast() {
     }
     return (
         <SimpleToast
-            onMouseEnter={handleMouseEvent}
-            onMouseLeave={handleMouseLeave}
-            onClose={handleClose}
+            onMouseEnter={handleMouseEntering}
+            onMouseLeave={handleMouseLeaving}
+            onClose={handleClosing}
             toast={simpleToast}
         />
     );

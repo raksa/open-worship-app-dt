@@ -10,7 +10,7 @@ export default function SettingOnlineBible({
     setOnlineBibleInfoList: (bbList: BibleListType) => void
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {
-    const handleDownloaded = () => {
+    const handleDownloadedEvent = () => {
         setDownloadedBibleInfoList(null);
     };
     if (onlineBibleInfoList === null) {
@@ -54,7 +54,7 @@ export default function SettingOnlineBible({
                     return (
                         <OnlineBibleItem key={bibleInfo.key}
                             bibleInfo={bibleInfo}
-                            onDownloaded={handleDownloaded}
+                            onDownloaded={handleDownloadedEvent}
                         />
                     );
                 })}

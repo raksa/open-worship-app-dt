@@ -10,7 +10,7 @@ import {
 
 export default function PlaylistList() {
     const dirSource = useGenDS(dirSourceSettingNames.PLAYLIST);
-    const handleBodyRender = (filePaths: string[]) => {
+    const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -33,6 +33,6 @@ export default function PlaylistList() {
                 return !await Playlist.create(dirPath, name);
             }}
             header={<span>Playlists</span>}
-            bodyHandler={handleBodyRender} />
+            bodyHandler={handleBodyRendering} />
     );
 }

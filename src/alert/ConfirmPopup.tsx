@@ -14,7 +14,7 @@ export default function ConfirmPopup({ data }: Readonly<{
         data.onConfirm(false);
         closeAlert();
     };
-    const handlerOkClicking = () => {
+    const handleOkClicking = () => {
         data.onConfirm(true);
         closeAlert();
     };
@@ -23,7 +23,7 @@ export default function ConfirmPopup({ data }: Readonly<{
         handleClosing();
     });
     useKeyboardRegistering([{ key: 'Enter' }], () => {
-        handlerOkClicking();
+        handleOkClicking();
     });
     return (
         <PrimitiveModal>
@@ -51,7 +51,7 @@ export default function ConfirmPopup({ data }: Readonly<{
                         </button>
                         <button type='button'
                             className='btn btn-sm btn-info'
-                            onClick={handlerOkClicking}>
+                            onClick={handleOkClicking}>
                             Ok
                         </button>
                     </div>

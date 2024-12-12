@@ -81,13 +81,13 @@ function RenderItem({
     index: number,
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {
-    const handleDownloaded = () => {
+    const handleDownloadedEvent = () => {
         setDownloadedBibleInfoList(null);
     };
-    const handleDeleted = () => {
+    const handleDeleting = () => {
         setDownloadedBibleInfoList(null);
     };
-    const handleUpdate = () => {
+    const handleUpdating = () => {
         bibleInfo.isDownloading = true;
         setDownloadedBibleInfoList([...bibleInfoList]);
     };
@@ -95,15 +95,15 @@ function RenderItem({
         return (
             <OnlineBibleItem key={`${index}`}
                 bibleInfo={bibleInfo}
-                onDownloaded={handleDownloaded}
+                onDownloaded={handleDownloadedEvent}
             />
         );
     }
     return (
         <DownloadedBibleItem key={`${index}`}
             bibleInfo={bibleInfo}
-            onDeleted={handleDeleted}
-            onUpdate={handleUpdate}
+            onDeleted={handleDeleting}
+            onUpdate={handleUpdating}
         />
     );
 }

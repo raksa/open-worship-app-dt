@@ -12,13 +12,13 @@ export default function BackgroundColors() {
     const [selectedBGSrcList, setSelectedBGSrcList] = (
         useState<[string, BackgroundSrcType][] | null>(null)
     );
-    const handleNoColor = async (
+    const handleNoColoring = async (
         _newColor: AppColorType, event: any,
     ) => {
         setSelectedBGSrcList(null);
         ScreenBGManager.bgSrcSelect(null, event, 'color');
     };
-    const handleColorChanged = async (
+    const handleColorChanging = async (
         newColor: AppColorType, event: any) => {
         setSelectedBGSrcList(null);
         ScreenBGManager.bgSrcSelect(newColor, event, 'color');
@@ -38,8 +38,8 @@ export default function BackgroundColors() {
         return (
             <ColorPicker color={null}
                 defaultColor={'#000000'}
-                onNoColor={handleNoColor}
-                onColorChange={handleColorChanged}
+                onNoColor={handleNoColoring}
+                onColorChange={handleColorChanging}
             />
         );
     }
@@ -56,8 +56,8 @@ export default function BackgroundColors() {
                         <ColorPicker
                             color={bgSrc.src as AppColorType}
                             defaultColor={bgSrc.src as AppColorType}
-                            onNoColor={handleNoColor}
-                            onColorChange={handleColorChanged}
+                            onNoColor={handleNoColoring}
+                            onColorChange={handleColorChanging}
                         />
                     </div>
                 );

@@ -33,7 +33,7 @@ export default function ItemColorNote({ item }: Readonly<{
             }, {} as Record<string, string>);
         return reverseColorMap[colorNote] || 'no color';
     }, [colorNote]);
-    const handleColorSelection = (event: any) => {
+    const handleColorSelecting = (event: any) => {
         event.stopPropagation();
         const colors = Object.entries({
             ...colorList.main,
@@ -70,7 +70,7 @@ export default function ItemColorNote({ item }: Readonly<{
     return (
         <span className={`color-note pointer ${colorNote ? 'active' : ''}`}
             title={title}
-            onClick={handleColorSelection} >
+            onClick={handleColorSelecting} >
             <i className='bi bi-record-circle'
                 style={colorNote ? {
                     color: colorNote,

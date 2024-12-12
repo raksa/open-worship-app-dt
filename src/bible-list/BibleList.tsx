@@ -13,7 +13,7 @@ import appProvider from '../server/appProvider';
 export default function BibleList() {
     const dirSourceSettingName = Bible.getDirSourceSettingName();
     const dirSource = useGenDS(dirSourceSettingName);
-    const handleBodyRender = (filePaths: string[]) => {
+    const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -42,7 +42,7 @@ export default function BibleList() {
                 return !await Bible.create(dirPath, name);
             }}
             header={<span>Bibles</span>}
-            bodyHandler={handleBodyRender}
+            bodyHandler={handleBodyRendering}
             userClassName='p-0' />
     );
 }

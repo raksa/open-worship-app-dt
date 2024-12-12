@@ -89,11 +89,11 @@ function useMethods(
             setInputText(`${inputText}-`);
         }
     });
-    const handleBookSelection = async (_: string, newBook: string) => {
+    const handleBookSelecting = async (_: string, newBook: string) => {
         const newText = await toInputText(bibleKey, newBook);
         setInputText(newText);
     };
-    const handleChapterSelection = async (newChapter: number) => {
+    const handleChapterSelecting = async (newChapter: number) => {
         if (bibleKey === null || extractedInput.bookKey === null) {
             return;
         }
@@ -103,7 +103,7 @@ function useMethods(
         );
         setInputText(`${newText}:`);
     };
-    const handleVerseSelection = async (
+    const handleVerseSelecting = async (
         newVerseStart?: number, newVerseEnd?: number) => {
         if (bibleKey === null || extractedInput.bookKey === null) {
             return;
@@ -116,9 +116,9 @@ function useMethods(
         setInputText(txt);
     };
     return {
-        applyBookSelectionCallback: handleBookSelection,
-        applyChapterSelectionCallback: handleChapterSelection,
-        applyVerseSelectionCallback: handleVerseSelection,
+        applyBookSelectionCallback: handleBookSelecting,
+        applyChapterSelectionCallback: handleChapterSelecting,
+        applyVerseSelectionCallback: handleVerseSelecting,
     };
 }
 

@@ -70,23 +70,23 @@ export default function BibleFile({
             methodContext.setData(bible);
         }
     }, [data], { methods: { setData } });
-    const handlerChildRender = (bible: ItemSource<any>) => {
+    const handlerChildRendering = (bible: ItemSource<any>) => {
         return (
             <BiblePreview bible={bible as Bible} />
         );
     };
-    const handleReload = () => {
+    const handleReloading = () => {
         setData(null);
     };
-    useFSEvents(['update'], filePath, handleReload);
+    useFSEvents(['update'], filePath, handleReloading);
     return (
         <FileItemHandler
             index={index}
             data={data}
-            reload={handleReload}
+            reload={handleReloading}
             filePath={filePath}
             className='bible-file'
-            renderChild={handlerChildRender}
+            renderChild={handlerChildRendering}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
             contextMenuItems={genContextMenu(data)}

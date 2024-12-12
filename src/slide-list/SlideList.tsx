@@ -27,14 +27,14 @@ export default function SlideList() {
             return null;
         };
     }
-    const handleCheckExtraFile = (filePath: string) => {
+    const handleExtraFileChecking = (filePath: string) => {
         const fileSource = FileSource.getInstance(filePath);
         if (checkIsPdf(fileSource.extension)) {
             return true;
         }
         return false;
     };
-    const handleTakeDropFile = (file: DroppedFileType) => {
+    const handleDropFileTaking = (file: DroppedFileType) => {
         if (dirSource === null) {
             return false;
         }
@@ -46,7 +46,7 @@ export default function SlideList() {
         }
         return false;
     };
-    const handleBodyRender = (filePaths: string[]) => {
+    const handleBodyRendering = (filePaths: string[]) => {
         return filePaths.map((filePath, i) => {
             const fileSource = FileSource.getInstance(filePath);
             return <SlideFile key={fileSource.fileFullName}
@@ -62,13 +62,13 @@ export default function SlideList() {
             mimetype='slide'
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
-            checkExtraFile={handleCheckExtraFile}
-            takeDroppedFile={handleTakeDropFile}
+            checkExtraFile={handleExtraFileChecking}
+            takeDroppedFile={handleDropFileTaking}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Slide.create(dirPath, name);
             }}
             header={<span>Slides</span>}
-            bodyHandler={handleBodyRender}
+            bodyHandler={handleBodyRendering}
         />
     );
 }

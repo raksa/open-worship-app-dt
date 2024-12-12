@@ -19,7 +19,7 @@ export default function ColorPicker({
     onNoColor?: (color: AppColorType, event: MouseEvent) => void
 }>) {
     const [localColor, setLocalColor] = useState(color);
-    const handleColorChange = (
+    const handleColorChanging = (
         newColor: AppColorType | null, event: any) => {
         if (newColor === null) {
             onNoColor?.(defaultColor, event);
@@ -32,7 +32,7 @@ export default function ColorPicker({
         const newColorStr = newColor + hex;
         applyNewColor(newColorStr, event);
     };
-    const handleOpacityChanged = (
+    const handleOpacityChanging = (
         value: number, event: any) => {
         if (localColor === null) {
             return;
@@ -59,12 +59,12 @@ export default function ColorPicker({
             <div className='p-3 overflow-hidden'>
                 <RenderColors colors={colorList.main}
                     selectedColor={localColor}
-                    onColorChange={handleColorChange}
+                    onColorChange={handleColorChanging}
                 />
                 {localColor !== null && (
                     <OpacitySlider
                         value={colorToTransparent(localColor)}
-                        onOpacityChanged={handleOpacityChanged}
+                        onOpacityChanged={handleOpacityChanging}
                     />
                 )}
             </div>

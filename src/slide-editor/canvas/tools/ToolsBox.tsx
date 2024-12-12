@@ -9,15 +9,15 @@ import { CanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsBox() {
-    const handleData = (newData: any) => {
+    const handleDataEvent = (newData: any) => {
         applyBoxData(newData);
     };
-    const handleNoColor = () => {
+    const handleNoColoring = () => {
         applyBoxData({
             backgroundColor: null,
         });
     };
-    const handleColorChanged = (newColor: AppColorType) => {
+    const handleColorChanging = (newColor: AppColorType) => {
         applyBoxData({
             backgroundColor: newColor,
         });
@@ -43,12 +43,12 @@ export default function ToolsBox() {
                 }}>
                     <ColorPicker color={canvasItem.props.backgroundColor}
                         defaultColor='#ffffff'
-                        onNoColor={handleNoColor}
-                        onColorChange={handleColorChanged} />
+                        onNoColor={handleNoColoring}
+                        onColorChange={handleColorChanging} />
                 </div>
             </Tool>
             <Tool title='Box Alignment'>
-                <ToolAlign onData={handleData} />
+                <ToolAlign onData={handleDataEvent} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info'
