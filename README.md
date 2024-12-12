@@ -24,6 +24,7 @@ $ npm i
 ```bash
 $ npm run dev
 ```
+
 ## Package
 
 ```bash
@@ -33,6 +34,14 @@ $ npm run dev
 # for Apple Mac
 $ npm run pack:mac
 ```
+
+## Linting
+
+```bash
+npx eslint src/**/*.ts*
+```
+
+
 ## Tips
 
 ### Present Screen

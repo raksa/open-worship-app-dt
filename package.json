@@ -23,7 +23,6 @@
         "postinstall": "install-app-deps",
         "vite:dev": "vite",
         "vite:build": "vite build",
-        "lint": "eslint src/**/*.ts*",
         "react-devtools": "react-devtools"
     },
     "browserslist": {

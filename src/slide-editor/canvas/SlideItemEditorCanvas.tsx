@@ -7,7 +7,9 @@ import {
 } from './canvasCMHelpers';
 import { isSupportedMimetype } from '../../server/fileHelpers';
 import CanvasController from './CanvasController';
-import { useSlideItemCanvasScale, useCanvasControllerEvents } from './canvasEventHelpers';
+import {
+    useSlideItemCanvasScale, useCanvasControllerEvents,
+} from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
