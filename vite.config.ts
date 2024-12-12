@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
-// import react from '@vitejs/plugin-react';
 import react from '@vitejs/plugin-react-swc';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { readdirSync } from 'node:fs';
