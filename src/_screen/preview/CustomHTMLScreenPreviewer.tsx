@@ -7,16 +7,13 @@ import MiniScreenApp from './MiniScreenApp';
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 
 type CustomEvents<K extends string> = {
-    // eslint-disable-next-line no-unused-vars
     [key in K]: (event: CustomEvent) => void;
 };
 type CustomElement<T, K extends string> = Partial<T & DOMAttributes<T> & {
     children: any,
 } & CustomEvents<`on${K}`>>;
 declare global {
-    // eslint-disable-next-line no-unused-vars
     namespace React.JSX {
-        // eslint-disable-next-line no-unused-vars
         interface IntrinsicElements {
             [HTML_TAG_NAME]: (
                 CustomElement<

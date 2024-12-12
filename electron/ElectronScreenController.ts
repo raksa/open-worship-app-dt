@@ -4,6 +4,7 @@ import {
 } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
 import { htmlFiles } from './fsServe';
+import { isSecured } from './electronHelpers';
 
 const routeProps = genRoutProps(htmlFiles.screen);
 const cache = new Map<string, ElectronScreenController>();
@@ -25,7 +26,7 @@ export default class ElectronScreenController {
             x: 0, y: 0,
             frame: false,
             webPreferences: {
-                webSecurity: true,
+                webSecurity: isSecured,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFilePath,

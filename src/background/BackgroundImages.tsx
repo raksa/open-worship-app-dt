@@ -9,17 +9,6 @@ import {
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
-export default function BackgroundImages() {
-    return (
-        <BackgroundMedia
-            defaultFolderName={defaultDataDirNames.BACKGROUND_IMAGE}
-            dragType={DragTypeEnum.BG_IMAGE}
-            rendChild={rendChild}
-            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_IMAGE}
-        />
-    );
-}
-
 function rendChild(
     filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
 ) {
@@ -38,5 +27,16 @@ function rendChild(
                 }}
             />
         </div>
+    );
+}
+
+export default function BackgroundImages() {
+    return (
+        <BackgroundMedia
+            defaultFolderName={defaultDataDirNames.BACKGROUND_IMAGE}
+            dragType={DragTypeEnum.BG_IMAGE}
+            rendChild={rendChild}
+            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_IMAGE}
+        />
     );
 }

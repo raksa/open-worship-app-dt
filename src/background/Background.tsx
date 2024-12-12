@@ -25,12 +25,16 @@ const LazyBackgroundImages = lazy(() => {
 const LazyBackgroundVideos = lazy(() => {
     return import('./BackgroundVideos');
 });
+const LazyBackgroundSounds = lazy(() => {
+    return import('./BackgroundSounds');
+});
 
 
 const tabTypeList = [
     ['color', 'Colors', LazyBackgroundColors],
     ['image', 'Images', LazyBackgroundImages],
     ['video', 'Videos', LazyBackgroundVideos],
+    ['sound', 'Sounds', LazyBackgroundSounds],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Background() {
@@ -53,7 +57,8 @@ export default function Background() {
                         return [type, name, toHLS(type)];
                     })}
                     activeTab={tabType}
-                    setActiveTab={setTabType} />
+                    setActiveTab={setTabType}
+                />
             </div>
             <div className='background-body w-100 flex-fill'>
                 {tabTypeList.map(([type, _, target]) => {

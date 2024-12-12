@@ -11,6 +11,7 @@ import mimeSlide from './mime/slide-types.json';
 import mimeImage from './mime/image-types.json';
 import mimePlaylist from './mime/playlist-types.json';
 import mimeVideo from './mime/video-types.json';
+import mimeSound from './mime/sound-types.json';
 import { openConfirm } from '../alert/alertHelpers';
 import {
     hideProgressBard, showProgressBard,
@@ -38,6 +39,7 @@ const mimeTypesMapper = {
     image: mimeImage,
     playlist: mimePlaylist,
     video: mimeVideo,
+    sound: mimeSound,
 };
 
 export type AppMimetypeType = {

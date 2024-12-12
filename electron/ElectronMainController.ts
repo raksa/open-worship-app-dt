@@ -2,6 +2,7 @@ import { BrowserWindow, shell } from 'electron';
 import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
 import ElectronSettingController from './ElectronSettingController';
+import { isSecured } from './electronHelpers';
 
 let instance: ElectronMainController | null = null;
 export default class ElectronMainController {
@@ -25,7 +26,7 @@ export default class ElectronMainController {
             backgroundColor: '#000000',
             x: 0, y: 0,
             webPreferences: {
-                webSecurity: true,
+                webSecurity: isSecured,
                 nodeIntegration: true,
                 contextIsolation: false,
                 preload: routeProps.preloadFilePath,

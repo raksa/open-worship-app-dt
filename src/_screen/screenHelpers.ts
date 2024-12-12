@@ -34,7 +34,7 @@ export type FTListType = {
     [key: string]: FTItemDataType;
 };
 
-const backgroundTypeList = ['color', 'image', 'video'] as const;
+const backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
 export type BackgroundType = typeof backgroundTypeList[number];
 export type BackgroundSrcType = {
     type: BackgroundType;

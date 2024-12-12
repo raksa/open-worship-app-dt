@@ -11,18 +11,6 @@ import {
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
-
-export default function BackgroundVideos() {
-    return (
-        <BackgroundMedia
-            defaultFolderName={defaultDataDirNames.BACKGROUND_VIDEO}
-            dragType={DragTypeEnum.BG_VIDEO}
-            rendChild={rendChild}
-            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_VIDEO}
-        />
-    );
-}
-
 function rendChild(
     filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
 ) {
@@ -61,5 +49,16 @@ function RendBody({ filePath, selectedBGSrcList }: Readonly<{
                 src={fileSource.src}
             />
         </div>
+    );
+}
+
+export default function BackgroundVideos() {
+    return (
+        <BackgroundMedia
+            defaultFolderName={defaultDataDirNames.BACKGROUND_VIDEO}
+            dragType={DragTypeEnum.BG_VIDEO}
+            rendChild={rendChild}
+            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_VIDEO}
+        />
     );
 }

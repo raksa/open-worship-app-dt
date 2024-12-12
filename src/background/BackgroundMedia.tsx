@@ -18,20 +18,27 @@ export type RenderChildType = (
 const bgTypeMapper: any = {
     [DragTypeEnum.BG_IMAGE]: 'image',
     [DragTypeEnum.BG_VIDEO]: 'video',
+    [DragTypeEnum.BG_SOUND]: 'sound',
 };
 
 export default function BackgroundMedia({
     rendChild, dragType, defaultFolderName, dirSourceSettingName,
+    noDraggable = false, noClickable = false, isNameOnTop = false,
 }: Readonly<{
     rendChild: RenderChildType,
     dragType: DragTypeEnum,
     defaultFolderName: string,
     dirSourceSettingName: string,
+    noDraggable?: boolean,
+    noClickable?: boolean,
+    isNameOnTop?: boolean,
 }>) {
     const bgType = bgTypeMapper[dragType];
     const dirSource = useGenDS(dirSourceSettingName);
     const handleBodyRendering = (filePaths: string[]) => {
-        const genBodyWithChild = genBody.bind(null, rendChild, dragType);
+        const genBodyWithChild = genBody.bind(
+            null, rendChild, dragType, noDraggable, noClickable, isNameOnTop,
+        );
         return (
             <div className='d-flex justify-content-start flex-wrap'>
                 {filePaths.map(genBodyWithChild)}
@@ -43,7 +50,7 @@ export default function BackgroundMedia({
         return null;
     }
     return (
-        <FileListHandler id={`background-${bgType}`}
+        <FileListHandler id={`app-background-${bgType}`}
             mimetype={bgType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
@@ -53,7 +60,8 @@ export default function BackgroundMedia({
 }
 
 function genBody(
-    rendChild: RenderChildType, dragType: DragTypeEnum, filePath: string,
+    rendChild: RenderChildType, dragType: DragTypeEnum, noDraggable: boolean,
+    noClickable: boolean, isNameOnTop: boolean, filePath: string,
 ) {
     const fileSource = FileSource.getInstance(filePath);
     const bgType = bgTypeMapper[dragType];
@@ -72,16 +80,19 @@ function genBody(
         <div key={fileSource.name}
             className={`${bgType}-thumbnail card ${selectedCN}`}
             title={title}
-            draggable
+            draggable={!noDraggable}
             onDragStart={(event) => {
                 handleDragStart(event, fileSource, dragType);
             }}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, genCommonMenu(filePath));
             }}
-            onClick={(event) => {
+            onClick={noClickable ? () => { } : (event) => {
                 ScreenBGManager.bgSrcSelect(fileSource.src, event, bgType);
             }}>
+            {!isNameOnTop ? null : (
+                <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
+            )}
             {rendChild(filePath, selectedBGSrcList)}
             <div style={{
                 position: 'absolute',
@@ -89,11 +100,21 @@ function genBody(
             }}>
                 <ItemColorNote item={fileSource} />
             </div>
-            <div className='card-footer'>
-                <p className='ellipsis-left card-text'>
-                    {fileSource.fileFullName}
-                </p>
-            </div>
+            {isNameOnTop ? null : (
+                <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
+            )}
+        </div>
+    );
+}
+
+function FileFullNameRenderer({ fileFullName }: Readonly<{
+    fileFullName: string,
+}>) {
+    return (
+        <div className='card-footer'>
+            <p className='ellipsis-left card-text'>
+                {fileFullName}
+            </p>
         </div>
     );
 }
