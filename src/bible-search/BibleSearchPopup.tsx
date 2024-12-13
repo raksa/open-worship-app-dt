@@ -3,31 +3,29 @@ import './BibleSearchPopup.scss';
 import { useState } from 'react';
 
 import RenderBibleSearch from './RenderBibleSearch';
-import { useModal } from '../app-modal/Modal';
+import { Modal } from '../app-modal/Modal';
 import BibleItem from '../bible-list/BibleItem';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import {
     SELECTED_BIBLE_SETTING_NAME,
 } from '../bible-list/bibleHelpers';
-import { setSetting } from '../helper/settingHelper';
-import { usePopupWindowsTypeData } from '../app-modal/helpers';
+import { setSetting } from '../helper/settingHelpers';
+import { getPopupWindowTypeData } from '../app-modal/helpers';
 
 export default function BibleSearchPopup() {
-    const { Modal } = useModal();
-    const { data } = usePopupWindowsTypeData();
+    const { data } = getPopupWindowTypeData();
     const bibleItem = BibleItem.parseBibleSearchData(data);
     const [inputText, setInputText] = useState<string | null>(
         bibleItem !== null ? null : '',
     );
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (bibleItem === null || inputText !== null) {
             return;
         }
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleItem.bibleKey);
-        bibleItem.toTitle().then((title) => {
-            setInputText(title);
-        });
-    }, [bibleItem, inputText]);
+        const title = await bibleItem.toTitle();
+        methodContext.setInputText(title);
+    }, [bibleItem, inputText], { methods: { setInputText } });
     return (
         <Modal>
             {inputText === null ? (
@@ -35,7 +33,7 @@ export default function BibleSearchPopup() {
                     <span title='Need translation'>(*T)</span> Loading...
                 </div>
             ) : (
-                <RenderBibleSearch editingInputText={inputText} />
+                <RenderBibleSearch editorInputText={inputText} />
             )}
         </Modal>
     );

@@ -4,7 +4,7 @@ import {
 import { ItemBase } from '../helper/ItemBase';
 import {
     setSetting, getSetting,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
@@ -13,14 +13,14 @@ import {
 } from './bibleRenderHelpers';
 import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
-import { copyToClipboard } from '../server/appHelper';
+import { copyToClipboard } from '../server/appHelpers';
 
-const BIBLE_PRESENT_SETTING_NAME = 'bible-present';
+const BIBLE_PRESENT_SETTING_NAME = 'bible-presenter';
 
 export default class BibleItem extends ItemBase
     implements DragInf<BibleItemType> {
     static readonly SELECT_SETTING_NAME = 'bible-item-selected';
-    _originalJson: BibleItemType;
+    private originalJson: BibleItemType;
     id: number;
     filePath?: string;
     constructor(id: number, json: BibleItemType,
@@ -28,28 +28,38 @@ export default class BibleItem extends ItemBase
         super();
         this.id = id;
         this.filePath = filePath;
-        this._originalJson = cloneJson(json);
+        this.originalJson = cloneJson(json);
     }
     get bibleKey() {
-        return this._originalJson.bibleKey;
+        return this.originalJson.bibleKey;
     }
     set bibleKey(name: string) {
-        this._originalJson.bibleKey = name;
+        this.originalJson.bibleKey = name;
     }
     get target() {
-        return this._originalJson.target;
+        return this.originalJson.target;
     }
     set target(target: BibleTargetType) {
-        this._originalJson.target = target;
+        this.originalJson.target = target;
     }
     get metadata() {
-        return this._originalJson.metadata;
+        return this.originalJson.metadata;
     }
     set metadata(metadata: AnyObjectType) {
-        this._originalJson.metadata = metadata;
+        this.originalJson.metadata = metadata;
     }
     checkIsSameId(bibleItem: BibleItem) {
         return this.id === bibleItem.id;
+    }
+    checkIsTargetIdentical(bibleItem: BibleItem) {
+        const { target } = this;
+        const { target: target2 } = bibleItem;
+        return (
+            target.bookKey === target2.bookKey &&
+            target.chapter === target2.chapter &&
+            target.verseStart === target2.verseStart &&
+            target.verseEnd === target2.verseEnd
+        );
     }
     static fromJson(json: BibleItemType, filePath?: string) {
         this.validate(json);
@@ -135,27 +145,27 @@ export default class BibleItem extends ItemBase
         this.metadata = bibleItem.metadata;
     }
     static convertPresent(
-        bibleItem: BibleItem, presentingBibleItems: BibleItem[],
+        bibleItem: BibleItem, presenterBibleItems: BibleItem[],
     ) {
         let list;
-        if (presentingBibleItems.length < 2) {
+        if (presenterBibleItems.length < 2) {
             list = [bibleItem.clone()];
         } else {
-            list = presentingBibleItems.map((presentingBibleItem) => {
+            list = presenterBibleItems.map((presenterBibleItem) => {
                 const newItem = bibleItem.clone();
-                newItem.bibleKey = presentingBibleItem.bibleKey;
+                newItem.bibleKey = presenterBibleItem.bibleKey;
                 return newItem;
             });
         }
         return list.filter((item) => item !== null);
     }
-    static setBiblePresentingSetting(bibleItems: BibleItem[]) {
+    static setBiblePresenterSetting(bibleItems: BibleItem[]) {
         const jsonData = bibleItems.map((bibleItem) => {
             return bibleItem.toJson();
         });
         setSetting(BIBLE_PRESENT_SETTING_NAME, JSON.stringify(jsonData));
     }
-    static getBiblePresentingSetting() {
+    static getBiblePresenterSetting() {
         try {
             const str = getSetting(BIBLE_PRESENT_SETTING_NAME, '');
             if (isValidJson(str, true)) {
@@ -195,7 +205,7 @@ export default class BibleItem extends ItemBase
         copyToClipboard(`${title}\n${text}`);
     }
     syncData(bibleItem: BibleItem) {
-        this._originalJson = bibleItem._originalJson;
+        this.originalJson = bibleItem.originalJson;
     }
     dragSerialize() {
         return {

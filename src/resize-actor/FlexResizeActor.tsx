@@ -13,9 +13,9 @@ function checkIsActiveHiddenWidgetNode(node: HTMLDivElement) {
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
     type: ResizeKindType,
+    isDisableQuickResize: boolean,
     checkSize: () => void,
     disable: (dataFSizeKey: string, target: DisabledType) => void,
-    isDisableQuickResize: boolean,
 }
 export default class FlexResizeActor extends Component<Props, {}> {
     myRef: RefObject<HTMLDivElement>;
@@ -80,8 +80,8 @@ export default class FlexResizeActor extends Component<Props, {}> {
         }
         this.currentNode.classList.add('active');
 
-        this.previousMinSize = +(this.preNode.dataset['minSize'] || '');
-        this.nextMinSize = +(this.nextNode.dataset['minSize'] || '');
+        this.previousMinSize = parseInt(this.preNode.dataset['minSize'] || '');
+        this.nextMinSize = parseInt(this.nextNode.dataset['minSize'] || '', 10);
         this.preSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
         this.sumSize = this.preSize + this.nextSize;
@@ -122,14 +122,14 @@ export default class FlexResizeActor extends Component<Props, {}> {
         }
 
         if (this.preSize < this.previousMinSize) {
-            this.addHideWidget(this.preNode);
+            this.addHiddenWidgetClassName(this.preNode);
         } else {
-            this.removeHideWidget(this.preNode);
+            this.removeHiddenWidgetClassname(this.preNode);
         }
         if (this.nextSize < this.nextMinSize) {
-            this.addHideWidget(this.nextNode);
+            this.addHiddenWidgetClassName(this.nextNode);
         } else {
-            this.removeHideWidget(this.nextNode);
+            this.removeHiddenWidgetClassname(this.nextNode);
         }
         const prevGrowNew = this.sumGrow * (this.preSize / this.sumSize);
         const nextGrowNew = this.sumGrow * (this.nextSize / this.sumSize);
@@ -139,13 +139,13 @@ export default class FlexResizeActor extends Component<Props, {}> {
 
         this.lastPos = pos;
     }
-    addHideWidget(divElement: HTMLDivElement) {
+    addHiddenWidgetClassName(divElement: HTMLDivElement) {
         if (this.props.isDisableQuickResize) {
             return;
         }
         divElement.classList.add(HIDDEN_WIDGET_CLASS);
     }
-    removeHideWidget(divElement: HTMLDivElement) {
+    removeHiddenWidgetClassname(divElement: HTMLDivElement) {
         divElement.classList.remove(HIDDEN_WIDGET_CLASS);
     }
     onMouseUp(event: MouseEvent) {
@@ -172,9 +172,9 @@ export default class FlexResizeActor extends Component<Props, {}> {
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = isFirst ?
-            this.preNode.dataset['fs'] :
-            this.nextNode.dataset['fs'];
+        const dataFSizeKey = (
+            isFirst ? this.preNode.dataset['fs'] : this.nextNode.dataset['fs']
+        );
         if (dataFSizeKey !== undefined) {
             if (isFirst) {
                 this.nextNode.style.flexGrow = `${this.sumGrow}`;

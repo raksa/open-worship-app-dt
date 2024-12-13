@@ -1,35 +1,50 @@
+import { lazy, useMemo } from 'react';
+
 import BibleItem from '../bible-list/BibleItem';
 import {
     BibleItemViewControllerContext, SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
-import BiblePreviewerRender from '../read-bible/BiblePreviewerRender';
-import BibleView from '../read-bible/BibleView';
+} from '../bible-reader/BibleItemViewController';
+import BibleView from '../bible-reader/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
+import AppSuspense from '../others/AppSuspense';
+import {
+    useCloseBibleItemRenderer, useNextEditingBibleItem,
+    useSplitBibleItemRenderer,
+} from '../bible-reader/readBibleHelpers';
+import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
 
-export default function BibleSearchBodyPreviewer({ inputText }: Readonly<{
-    inputText: string,
-}>) {
-    const bibleItemViewController = SearchBibleItemViewController.getInstance();
-    bibleItemViewController.finalRenderer = (
-        bibleItem: BibleItem,
-    ) => {
-        const isSelected = bibleItemViewController.checkIsBibleItemSelected(
+const LazyBiblePreviewerRender = lazy(() => {
+    return import('../bible-reader/BiblePreviewerRender');
+});
+
+export default function BibleSearchBodyPreviewer() {
+    useNextEditingBibleItem();
+    useCloseBibleItemRenderer();
+    useSplitBibleItemRenderer();
+    const viewController = SearchBibleItemViewController.getInstance();
+    const contextValue = useMemo(() => ({
+        onDBClick: (bibleItem: BibleItem) => {
+            viewController.editBibleItem(bibleItem);
+        },
+    }), [viewController]);
+    viewController.finalRenderer = function (bibleItem: BibleItem) {
+        const isSelected = viewController.checkIsBibleItemSelected(
             bibleItem,
         );
+        if (isSelected) {
+            return (<RenderBibleSearchBody />);
+        }
         return (
-            isSelected ?
-                <RenderBibleSearchBody
-                    inputText={inputText}
-                /> :
-                <BibleView
-                    bibleItem={bibleItem}
-                />
+            <BibleViewTitleMaterialContext value={contextValue}>
+                <BibleView bibleItem={bibleItem} />
+            </BibleViewTitleMaterialContext>
         );
     };
     return (
-        <BibleItemViewControllerContext.Provider
-            value={bibleItemViewController}>
-            <BiblePreviewerRender />
-        </BibleItemViewControllerContext.Provider>
+        <BibleItemViewControllerContext value={viewController}>
+            <AppSuspense>
+                <LazyBiblePreviewerRender />
+            </AppSuspense>
+        </BibleItemViewControllerContext>
     );
 }

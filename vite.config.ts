@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import { readdirSync } from 'node:fs';
 
 const resolveAlias = {
-    '/js/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
+    '/pdf.worker.min.mjs': 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
 };
 
 const htmlPlugin = () => {
@@ -32,6 +33,10 @@ const htmlPlugin = () => {
     };
 };
 
+const htmlFiles = readdirSync(__dirname).filter((fileName) => {
+    return fileName.endsWith('.html');
+});
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
@@ -43,6 +48,13 @@ export default defineConfig({
             certDir: '.devServer/cert',
         }),
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern-compiler', // or 'modern'
+            },
+        },
+    },
     server: {
         port: 3000,
     },
@@ -51,9 +63,7 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            input: [
-                'index.html', 'present.html', 'finder.html',
-            ].map(item => resolve(item)),
+            input: htmlFiles.map(item => resolve(item)),
         },
     },
 });

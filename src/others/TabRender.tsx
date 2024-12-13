@@ -20,9 +20,7 @@ export default function TabRender<T extends string>({
                     className={'nav-item ' + (tabClassName || '')}>
                     <button className={`btn btn-link nav-link ${activeClass}`}
                         onClick={() => {
-                            if (tab !== activeTab) {
-                                setActiveTab?.(tab);
-                            }
+                            setActiveTab?.(tab);
                         }}>
                         {tran(title)}
                     </button>

@@ -1,10 +1,11 @@
 @use "sass:string";
+@use "sass:color";
 
 $base-color: white;
-$box-border: 2px ridge darken($base-color, 50%);
+$box-border: 2px ridge color.adjust($base-color, $lightness: 50%);
 $header-height: 37px;
 
-$card-header-height: 41px;
+$card-header-height: 48px;
 
 $base-z-index: 10;
 $z-index-bible-search: $base-z-index + 10;
@@ -13,5 +14,6 @@ $z-index-resize-actor-top: $base-z-index + 30;
 $z-index-finder: $base-z-index + 40;
 $z-index-context-menu: $base-z-index + 50;
 $z-index-toast: $base-z-index + 60;
+$z-index-progress-bar: $base-z-index + 60;
 
 $hight-light-color: #ad0090;

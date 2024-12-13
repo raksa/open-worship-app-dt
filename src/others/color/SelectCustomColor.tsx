@@ -33,6 +33,7 @@ export default function SelectCustomColor({ color, onColorSelected }: Readonly<{
             }}
             onChange={(event) => {
                 setLocalColor(event.target.value as any);
-            }} />
+            }}
+        />
     );
 }

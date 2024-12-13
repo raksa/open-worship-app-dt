@@ -1,5 +1,5 @@
 import {
-    DependencyList, EffectCallback, useEffect, useState,
+    DependencyList, EffectCallback, useEffect, useMemo, useState,
 } from 'react';
 
 import { log, warn } from './loggerHelpers';
@@ -12,7 +12,7 @@ type StoreType = {
     timeoutId: any,
 };
 function restore(toKey: string) {
-    const store = (mapper.get(toKey) || {
+    const store = (storeMapper.get(toKey) || {
         count: 0,
         timeoutId: 0,
     });
@@ -24,7 +24,7 @@ function restore(toKey: string) {
         clearTimeout(store.timeoutId);
     }
     store.timeoutId = setTimeout(() => {
-        mapper.set(toKey, {
+        storeMapper.set(toKey, {
             count: 0,
             timeoutId: 0,
         });
@@ -32,28 +32,74 @@ function restore(toKey: string) {
     return store;
 }
 
-const mapper = new Map<string, StoreType>();
+function warningMethod(key: string) {
+    warn(
+        `[useAppEffect] ${key} is called after unmounting`,
+    );
+};
+
+const storeMapper = new Map<string, StoreType>();
+function checkStore(toKey: string) {
+    const store = restore(toKey);
+    storeMapper.set(toKey, store);
+    if (store.count > THRESHOLD) {
+        warn(
+            `[useAppEffect] ${toKey} is called more than `
+            + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
+        );
+    }
+}
+
+type MethodContextType = { [key: string]: any }
+export function useAppEffectAsync<T extends MethodContextType>(
+    effect: (methodContext: T) => (
+        void | (() => void) | Promise<void>
+    ),
+    deps?: DependencyList,
+    context?: {
+        key?: string,
+        methods?: T,
+    },
+) {
+    const toKey = useMemo(() => {
+        return context?.key ?? effect.toString();
+    }, []);
+    const toEffect = (methodContext: T) => {
+        checkStore(toKey);
+        return effect(methodContext);
+    };
+    const totalDeps = (!deps && !context?.methods) ? undefined : [
+        ...(deps || []), ...Object.values(context?.methods ?? {}),
+    ];
+    useEffect(() => {
+        const methodContext = { ...context?.methods ?? {} };
+        const unmount = toEffect(methodContext as T);
+        return () => {
+            Object.keys(methodContext).forEach((key) => {
+                methodContext[key] = warningMethod.bind(null, key);
+            });
+            if (unmount && typeof unmount === 'function') {
+                unmount();
+            }
+        };
+    }, totalDeps);
+}
+
 export function useAppEffect(
     effect: EffectCallback,
     deps?: DependencyList,
     key?: string,
 ) {
-    const toKey = key || effect.toString();
-    const toEffect = () => {
-        const store = restore(toKey);
-        mapper.set(toKey, store);
-        if (store.count > THRESHOLD) {
-            warn(
-                `[useAppEffect] ${toKey} is called more than `
-                + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
-            );
-        }
+    const toKey = useMemo(() => {
+        return key ?? effect.toString();
+    }, []);
+    useEffect(() => {
+        checkStore(toKey);
         return effect();
-    };
-    useEffect(toEffect, deps);
+    }, deps);
 }
 
-export function TestInfinite() {
+function TestInfinite() {
     const [count, setCount] = useState(0);
     const [isStopped, setIsStopped] = useState(false);
     useAppEffect(() => {

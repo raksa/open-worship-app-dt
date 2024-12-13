@@ -1,13 +1,14 @@
 import { useState } from 'react';
 
-import { selectDirs } from '../server/appHelper';
+import { selectDirs } from '../server/appHelpers';
 import DirSource from '../helper/DirSource';
+
 export default function PathEditor({ dirSource }: Readonly<{
     dirSource: DirSource,
     prefix: string
 }>) {
     const [text, setText] = useState(dirSource.dirPath);
-    const applyNewText = (newText: string) => {
+    const handleNewTextSetting = (newText: string) => {
         setText(newText);
         dirSource.dirPath = newText;
     };
@@ -32,14 +33,14 @@ export default function PathEditor({ dirSource }: Readonly<{
                 className={`form-control ${dirValidCN}`}
                 value={text}
                 onChange={(event) => {
-                    applyNewText(event.target.value);
+                    handleNewTextSetting(event.target.value);
                 }} />
             <button className='btn btn-secondary'
                 type='button'
                 onClick={() => {
                     const dirs = selectDirs();
                     if (dirs.length) {
-                        applyNewText(dirs[0]);
+                        handleNewTextSetting(dirs[0]);
                     }
                 }}>
                 <i className='bi bi-folder2-open' />

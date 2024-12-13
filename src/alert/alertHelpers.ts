@@ -23,7 +23,7 @@ export const alertManager: {
     openAlert: null,
 };
 
-export function openConfirm(title: string, question: string) {
+export function openConfirm(title: string, message: string) {
     if (alertManager.openConfirm === null) {
         return Promise.resolve(false);
     }
@@ -31,7 +31,7 @@ export function openConfirm(title: string, question: string) {
         if (alertManager.openConfirm !== null) {
             alertManager.openConfirm({
                 title,
-                question,
+                question: message,
                 onConfirm: (isOk) => {
                     resolve(isOk);
                 },
@@ -40,7 +40,7 @@ export function openConfirm(title: string, question: string) {
     });
 }
 
-export function openAlert(title: string, question: string) {
+export function openAlert(title: string, message: string) {
     if (alertManager.openAlert === null) {
         return Promise.resolve();
     }
@@ -48,7 +48,7 @@ export function openAlert(title: string, question: string) {
         if (alertManager.openAlert !== null) {
             alertManager.openAlert({
                 title,
-                question,
+                question: message,
                 onClose: () => {
                     resolve();
                 },

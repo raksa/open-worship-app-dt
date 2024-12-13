@@ -2,12 +2,12 @@ import './PathSelector.scss';
 
 import { lazy } from 'react';
 
-import { useStateSettingBoolean } from '../helper/settingHelper';
+import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
 import AppSuspense from './AppSuspense';
-import { pathPreviewer } from './PathPreviewer';
+import { PathPreviewer } from './PathPreviewer';
 
-const PathPreviewer = lazy(() => {
+const LazyPathEditor = lazy(() => {
     return import('./PathEditor');
 });
 
@@ -28,15 +28,20 @@ export default function PathSelector({
                 onClick={() => {
                     setShowing(!showing);
                 }}>
-                <i className={`bi ${isShowingEditor ?
-                    'bi-chevron-down' : 'bi-chevron-right'}`} />
-                {!isShowingEditor && <RenderTitle dirSource={dirSource} />}
+                <i className={
+                    `bi ${isShowingEditor ?
+                        'bi-chevron-down' : 'bi-chevron-right'}`
+                }
+                />
+                {!isShowingEditor && (
+                    <RenderTitle dirSource={dirSource} />
+                )}
             </div>
-            {isShowingEditor && <AppSuspense>
-                <PathPreviewer
-                    dirSource={dirSource}
-                    prefix={prefix} />
-            </AppSuspense>}
+            {isShowingEditor && (
+                <AppSuspense>
+                    <LazyPathEditor dirSource={dirSource} prefix={prefix} />
+                </AppSuspense>
+            )}
         </div>
     );
 }
@@ -47,7 +52,7 @@ function RenderTitle({ dirSource }: Readonly<{ dirSource: DirSource }>) {
     }
     return (
         <>
-            {pathPreviewer(dirSource.dirPath)}
+            <PathPreviewer dirPath={dirSource.dirPath} />
             <div className='px-2'
                 onClick={(event) => {
                     event.stopPropagation();

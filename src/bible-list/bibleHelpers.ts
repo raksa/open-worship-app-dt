@@ -1,8 +1,8 @@
-import { createContext, useState } from 'react';
+import { createContext, use, useState } from 'react';
 
 import {
     getSetting, setSetting,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import {
     VerseList, getVerses, keyToBook,
@@ -16,18 +16,16 @@ import {
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
 import CanvasController from '../slide-editor/canvas/CanvasController';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
-import { addExtension } from '../server/fileHelper';
-import {
-    WindowModEnum, checkIsWindowEditingMode,
-} from '../router/routeHelpers';
+import { addExtension } from '../server/fileHelpers';
+import appProvider from '../server/appProvider';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
-async function getSelectedEditingBibleItem() {
+async function getSelectedEditorBibleItem() {
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
@@ -42,40 +40,40 @@ async function getSelectedEditingBibleItem() {
     return bibleKey;
 }
 export const SelectedBibleKeyContext = createContext<string>('KJV');
-export function useGetSelectedBibleKey() {
-    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
-        null);
+export function useBibleKeyContext() {
+    return use(SelectedBibleKeyContext);
+}
+export function useSelectedBibleKey() {
+    const [bibleKeySelected, setBibleKeySelected] = (
+        useState<string | null>(null)
+    );
     const setBibleKeySelected1 = (bibleKey: string | null) => {
-        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey || '');
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
         setBibleKeySelected(bibleKey);
     };
-    useAppEffect(() => {
-        getSelectedEditingBibleItem().then((bibleKey) => {
-            setBibleKeySelected1(bibleKey);
-        });
-    });
-    return [bibleKeySelected, setBibleKeySelected1] as
-        [string | null, (b: string | null) => void];
+    useAppEffectAsync(async (methodContext) => {
+        const bibleKey = await getSelectedEditorBibleItem();
+        methodContext.setBibleKeySelected1(bibleKey);
+    }, [], { methods: { setBibleKeySelected1 } });
+    return [bibleKeySelected, setBibleKeySelected1] as const;
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
     const [inputText, setInputText] = useState<string>('');
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (bibleItem !== null) {
-            bibleItem.toTitle().then((text) => {
-                setInputText(text);
-            });
+            const title = await bibleItem.toTitle();
+            methodContext.setInputText(title);
         }
-    }, [bibleItem]);
+    }, [bibleItem], { methods: { setInputText } });
     return [inputText, setInputText] as [string, (s: string) => void];
 }
 
 export async function genInputText(
     oldBibleKey: string, newBibleKey: string, inputText: string,
 ) {
-    const {
-        bookKey, chapter, bibleItem,
-    } = await extractBibleTitle(oldBibleKey, inputText);
+    const { result } = await extractBibleTitle(oldBibleKey, inputText);
+    const { bookKey, chapter, bibleItem } = result;
     const target = bibleItem?.target;
     if (bookKey !== null) {
         const newBook = await keyToBook(newBibleKey, bookKey);
@@ -109,17 +107,14 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
 };
 
 export async function addBibleItem(
-    bibleItem: BibleItem, windowMode: WindowModEnum | null, onDone: () => void,
+    bibleItem: BibleItem, onDone: () => void,
 ) {
-    const isWindowEditing = checkIsWindowEditingMode();
-    if (isWindowEditing) {
+    if (appProvider.isPageEditor) {
         const canvasController = CanvasController.getInstance();
         canvasController.addNewBibleItem(bibleItem);
         return null;
     }
-    const savedBibleItem = await Bible.addBibleItemToDefault(
-        bibleItem, windowMode,
-    );
+    const savedBibleItem = await Bible.addBibleItemToDefault(bibleItem);
     if (savedBibleItem !== null) {
         showSimpleToast('Adding bible', 'Bible item is added');
         onDone?.();
@@ -161,11 +156,10 @@ export async function genVerseList({
 }
 
 export async function moveBibleItemTo(
-    event: any, bible: Bible, windowMode: WindowModEnum | null,
-    index?: number,
+    event: any, bible: Bible, index?: number,
 ) {
     const dirSource = await DirSource.getInstance(
-        Bible.getSelectDirSettingName(windowMode),
+        Bible.getDirSourceSettingName(),
     );
     dirSource.getFilePaths('bible').then((filePaths) => {
         const targetNames = (filePaths || []).map((filePath) => {
@@ -180,7 +174,7 @@ export async function moveBibleItemTo(
         }
         showAppContextMenu(event, targetNames.map((name) => {
             return {
-                title: name,
+                menuTitle: name,
                 onClick: async () => {
                     const bibleFileSource = FileSource.getInstance(
                         bible.filePath,

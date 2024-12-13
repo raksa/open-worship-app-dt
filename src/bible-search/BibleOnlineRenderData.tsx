@@ -19,7 +19,7 @@ async function selectBookKey(
     }
     showAppContextMenu(event, [
         {
-            title: 'all books',
+            menuTitle: 'all books',
             onClick: () => {
                 setSelectedBook(null);
             },
@@ -29,7 +29,7 @@ async function selectBookKey(
                 localBookName !== bookName ? `(${bookName})` : ''
             );
             return {
-                title: `${localBookName}${extraName}`,
+                menuTitle: `${localBookName}${extraName}`,
                 disabled: selectedBook?.[0] === bookKey,
                 onClick: () => {
                     setSelectedBook([bookKey, localBookName]);

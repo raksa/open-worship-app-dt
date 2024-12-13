@@ -1,37 +1,63 @@
 import './BibleSelection.scss';
 
-import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    getBibleInfoWithStatusList,
-} from '../helper/bible-helpers/serverBibleHelpers';
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenu';
 import {
     useDownloadedBibleInfoList,
 } from '../setting/bible-setting/bibleSettingHelpers';
-import BibleSelectOption from './BibleSelectOption';
+import {
+    getDownloadedBibleInfoList,
+} from '../helper/bible-helpers/bibleDownloadHelpers';
+import { openAlert } from '../alert/alertHelpers';
 
 export async function showBibleOption(
     event: any, excludeBibleKey: string[],
     onSelect: (bibleKey: string) => void,
 ) {
-    const bibleList = await getBibleInfoWithStatusList();
-    const bibleListFiltered = bibleList.filter(([bibleKey]) => {
-        return !excludeBibleKey.includes(bibleKey);
-    });
-    showAppContextMenu(event,
-        bibleListFiltered.map(([bibleKey, isAvailable]) => {
+    const bibleInfoList = await getDownloadedBibleInfoList();
+    if (bibleInfoList === null) {
+        openAlert(
+            'Unable to get bible info list',
+            'We were sorry, but we are unable to get bible list at the moment' +
+            ' please try again later'
+        );
+        return;
+    }
+    const contextMenuItems: ContextMenuItemType[] = (
+        bibleInfoList.filter((bibleInfo) => {
+            return !excludeBibleKey.includes(bibleInfo.key);
+        }).map((bibleInfo) => {
             return {
-                title: bibleKey,
-                disabled: !isAvailable,
+                menuTitle: bibleInfo.title,
+                otherChild: (
+                    <span className='text-muted'>{bibleInfo.key}</span>
+                ),
+                title: bibleInfo.title,
                 onClick: () => {
-                    onSelect(bibleKey);
+                    onSelect(bibleInfo.key);
                 },
             };
-        }));
+        })
+    );
+    showAppContextMenu(event, contextMenuItems);
 }
 
-export default function BibleSelection({ bibleKey, onChange }: Readonly<{
+function handleClickEvent(
+    event: any, bibleKey: string,
+    onChange: (oldBibleKey: string, newBibleKey: string) => void,
+) {
+    event.stopPropagation();
+    showBibleOption(event, [bibleKey], (newBibleKey: string) => {
+        onChange(bibleKey, newBibleKey);
+    });
+}
+
+export default function BibleSelection({
+    bibleKey, onBibleKeyChange,
+}: Readonly<{
     bibleKey: string,
-    onChange: (oldValue: string, newValue: string) => void,
+    onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
     if (bibleInfoList === null) {
@@ -45,26 +71,21 @@ export default function BibleSelection({ bibleKey, onChange }: Readonly<{
         );
     }
     return (
-        <select className='form-select bible'
-            value={bibleKey}
-            onChange={(event) => {
-                onChange(bibleKey, event.target.value);
+        <button className='input-group-text'
+            onClick={(event) => {
+                handleClickEvent(event, bibleKey, onBibleKeyChange);
             }}>
-            {bibleInfoList.map((bibleInfo) => {
-                return (
-                    <BibleSelectOption key={bibleInfo.key}
-                        bibleKey={bibleInfo.key} />
-                );
-            })}
-        </select>
+            <BibleKeyWithTile bibleKey={bibleKey} />
+            <i className='bi bi-chevron-down' />
+        </button>
     );
 }
 
 export function BibleSelectionMini({
-    value, onChange, isMinimal,
+    bibleKey, onBibleKeyChange, isMinimal,
 }: Readonly<{
-    value: string,
-    onChange: (oldValue: string, newValue: string) => void,
+    bibleKey: string,
+    onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
     isMinimal?: boolean,
 }>) {
     const [bibleInfoList] = useDownloadedBibleInfoList();
@@ -80,19 +101,28 @@ export function BibleSelectionMini({
             </div>
         );
     }
+    const isHandleClickEvent = onBibleKeyChange !== undefined;
     return (
         <span className={
-            'bible-selector pointer ' +
+            `bible-selector ${isHandleClickEvent ? 'pointer' : ''} ` +
             (isMinimal ? ' bg-info' : 'badge rounded-pill text-bg-info')
         }
-            onClick={(event) => {
-                event.stopPropagation();
-                showBibleOption(event, [value],
-                    (bibleKey: string) => {
-                        onChange(value, bibleKey);
-                    });
-            }}>
-            {value}
+            onClick={isHandleClickEvent ? (event) => {
+                handleClickEvent(event, bibleKey, onBibleKeyChange);
+            } : undefined}>
+            <BibleKeyWithTile bibleKey={bibleKey} />
+        </span>
+    );
+}
+
+function BibleKeyWithTile({ bibleKey }: Readonly<{ bibleKey: string }>) {
+    const [bibleInfoList] = useDownloadedBibleInfoList();
+    const currentBibleInfo = bibleInfoList?.find(
+        (bibleInfo) => bibleInfo.key === bibleKey
+    );
+    return (
+        <span title={currentBibleInfo?.title}>
+            {bibleKey}
         </span>
     );
 }

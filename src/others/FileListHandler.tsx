@@ -1,11 +1,11 @@
 import {
-    createContext, lazy, useCallback, useState,
+    createContext, lazy, useState,
 } from 'react';
 
 import PathSelector from '../others/PathSelector';
 import {
     MimetypeNameType, fsCheckDirExist,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import {
     ContextMenuItemType,
 } from './AppContextMenu';
@@ -14,13 +14,14 @@ import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
 import {
     genOnDragOver, genOnDragLeave, genOnDrop, genOnContextMenu,
+    DroppedFileType, FileSelectionOptionType,
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import NoDirSelected from './NoDirSelected';
 
-const AskingNewName = lazy(() => {
+const LazyAskingNewName = lazy(() => {
     return import('./AskingNewName');
 });
 
@@ -32,14 +33,12 @@ async function watch(dirSource: DirSource, signal: AbortSignal) {
     try {
         appProvider.fileUtils.watch(dirSource.dirPath, {
             signal,
-        }, (eventType, fileName) => {
-            if (fileName === null) {
+        }, (eventType, fileFullName) => {
+            if (fileFullName === null) {
                 return;
             }
             if (eventType === 'rename') {
                 dirSource.fireReloadEvent();
-            } else if (eventType === 'change') {
-                dirSource.fireReloadFileEvent(fileName);
             }
         });
     } catch (error) {
@@ -52,10 +51,9 @@ export const DirSourceContext = createContext<DirSource | null>(null);
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
-    id, mimetype, dirSource, header, bodyHandler,
-    contextMenu, onNewFile, checkExtraFile,
-    takeDroppedFile, userClassName,
-    defaultFolderName,
+    id, mimetype, dirSource, header, bodyHandler, contextMenu, onNewFile,
+    checkExtraFile, takeDroppedFile, userClassName, defaultFolderName,
+    fileSelectionOption,
 }: Readonly<{
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
@@ -65,11 +63,12 @@ export default function FileListHandler({
     onFileDeleted?: (filePath: string) => void,
     contextMenu?: ContextMenuItemType[],
     checkExtraFile?: (filePath: string) => boolean,
-    takeDroppedFile?: (filePath: string) => boolean,
+    takeDroppedFile?: (file: DroppedFileType) => boolean,
     userClassName?: string,
     defaultFolderName: string,
+    fileSelectionOption?: FileSelectionOptionType,
 }>) {
-    const applyNameCallback = useCallback(async (name: string | null) => {
+    const handleNameApplying = async (name: string | null) => {
         if (name === null) {
             setIsCreatingNew(false);
             return;
@@ -77,7 +76,7 @@ export default function FileListHandler({
         onNewFile?.(dirSource.dirPath, name).then((isSuccess) => {
             setIsCreatingNew(isSuccess);
         });
-    }, [onNewFile]);
+    };
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     useAppEffect(() => {
         const abortController = new AbortController();
@@ -87,14 +86,13 @@ export default function FileListHandler({
         };
     }, [dirSource.dirPath]);
     return (
-        <DirSourceContext.Provider value={dirSource}>
+        <DirSourceContext value={dirSource}>
             <div className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
                 onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
-                    dirSource,
-                    mimetype,
-                    checkExtraFile,
+                    dirSource, mimetype,
+                    checkIsExtraFile: checkExtraFile,
                     takeDroppedFile,
                 })}>
                 {header && <div className='card-header'>{header}
@@ -108,24 +106,31 @@ export default function FileListHandler({
                     }
                 </div>}
                 <div className='card-body d-flex flex-column'
-                    onContextMenu={genOnContextMenu(contextMenu)}>
+                    onContextMenu={genOnContextMenu(
+                        contextMenu, fileSelectionOption,
+                    )}>
                     <PathSelector prefix={`path-${id}`}
-                        dirSource={dirSource} />
+                        dirSource={dirSource}
+                    />
                     {!dirSource.dirPath ?
                         <NoDirSelected dirSource={dirSource}
                             defaultFolderName={defaultFolderName}
                         /> :
                         (
                             <ul className='list-group flex-fill d-flex'>
-                                {onNewFile && isCreatingNew && <AskingNewName
-                                    applyName={applyNameCallback} />}
+                                {onNewFile && isCreatingNew && (
+                                    <LazyAskingNewName
+                                        applyName={handleNameApplying}
+                                    />
+                                )}
                                 <RenderList dirSource={dirSource}
                                     bodyHandler={bodyHandler}
-                                    mimetype={mimetype} />
+                                    mimetype={mimetype}
+                                />
                             </ul>
                         )}
                 </div>
             </div >
-        </DirSourceContext.Provider>
+        </DirSourceContext>
     );
 }

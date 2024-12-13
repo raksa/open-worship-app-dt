@@ -1,15 +1,16 @@
 import './PlaylistList.scss';
 
-import { useCallback } from 'react';
-
 import PlaylistFile from './PlaylistFile';
 import FileListHandler from '../others/FileListHandler';
 import Playlist from './Playlist';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
 
 export default function PlaylistList() {
-    const dirSource = useGenDS('playlist-list-selected-dir');
-    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+    const dirSource = useGenDS(dirSourceSettingNames.PLAYLIST);
+    const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -19,19 +20,19 @@ export default function PlaylistList() {
                 })}
             </>
         );
-    }, []);
+    };
     if (dirSource === null) {
         return null;
     }
     return (
         <FileListHandler id='playlist-list'
             mimetype='playlist'
-            defaultFolderName='playlists'
+            defaultFolderName={defaultDataDirNames.PLAYLIST}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Playlist.create(dirPath, name);
             }}
             header={<span>Playlists</span>}
-            bodyHandler={bodyHandlerCallback} />
+            bodyHandler={handleBodyRendering} />
     );
 }

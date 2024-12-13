@@ -1,0 +1,86 @@
+.mini-screen {
+
+    .show-hide {
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.24);
+            border-radius: 3px;
+        }
+
+        &.show {
+            color: greenyellow;
+
+            .form-check-input {
+                &:checked {
+                    background-color: greenyellow;
+                }
+            }
+        }
+    }
+
+    .control,
+    .display-control {
+        margin-left: 5px;
+    }
+
+    .card-header {
+        .btn {
+            font-size: 12px;
+            padding: 3px;
+            margin: 1px;
+            height: 25px;
+        }
+    }
+
+    .card-body {
+        padding: 0;
+
+        .image-in,
+        .image-out {
+            width: 100%;
+        }
+
+        .image-in {
+            width: 100%;
+            animation: fade-in 1s;
+        }
+
+        .image-out {
+            width: 100%;
+            opacity: 0.5;
+            animation: fade-out 1s;
+            position: absolute;
+        }
+
+        .scroll-controller {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            opacity: 0;
+
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

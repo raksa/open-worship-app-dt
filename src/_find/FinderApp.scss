@@ -1,12 +1,15 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 
-html, body, #root {
-    width: 100%;
-    height: 100%;
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
 }
 
 .finder-container {
-    .finder {
-        max-width: 350px;
-    }
+  .finder {
+    max-width: 350px;
+  }
 }

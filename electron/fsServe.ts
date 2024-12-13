@@ -1,8 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { app, net, protocol, session } from 'electron';
+import { app, net, protocol, session, WebContents } from 'electron';
 
-const indexHtml = 'index.html';
+export const htmlFiles = {
+    editor: 'editor.html',
+    presenter: 'presenter.html',
+    screen: 'screen.html',
+    reader: 'reader.html',
+    setting: 'setting.html',
+    finder: 'finder.html',
+};
+export const preloadFileMap = {
+    'full': [
+        htmlFiles.editor, htmlFiles.presenter, htmlFiles.reader,
+        htmlFiles.setting,
+    ],
+    'minimal': [htmlFiles.screen, htmlFiles.finder],
+};
 export const customScheme = 'owa';
 export const schemePrivileges = {
     standard: true,
@@ -30,7 +44,9 @@ function toFileFullPath(filePath: string) {
 function genFilePathUrl(dirPath: string, url: string) {
     url = decodeURIComponent((new URL(url)).pathname);
     let filePath = path.join(dirPath, url);
-    filePath = toFileFullPath(filePath) ?? path.join(dirPath, indexHtml);
+    filePath = toFileFullPath(filePath) ?? path.join(
+        dirPath, htmlFiles.presenter,
+    );
     return `file://${filePath}`;
 }
 
@@ -69,3 +85,23 @@ export function initCustomSchemeHandler() {
         }
     );
 };
+
+export function toTitleCase(str: string) {
+    return str[0].toUpperCase() + str.slice(1);
+}
+
+export function getCurrent(webContents: WebContents) {
+    const url = new URL(webContents.getURL());
+    const htmlFileFullName = (
+        url.pathname.substring(1).split('.html')[0] + '.html'
+    );
+    const validHtmlFiles = [
+        htmlFiles.editor, htmlFiles.presenter, htmlFiles.reader,
+        htmlFiles.setting,
+    ];
+    const currentHtmlPath = (
+        validHtmlFiles.includes(htmlFileFullName) ?
+            htmlFileFullName : htmlFiles.presenter
+    );
+    return currentHtmlPath;
+}

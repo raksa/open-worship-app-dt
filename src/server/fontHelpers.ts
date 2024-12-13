@@ -1,13 +1,10 @@
 import { useState } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { handleError } from '../helper/errorHelpers';
 import { LocaleType } from '../lang';
 import { showSimpleToast } from '../toast/toastHelpers';
-import appProvider, {
-    FontListType,
-} from './appProvider';
-import { getFontListByNodeFont } from './appHelper';
+import { FontListType } from './appProvider';
+import { getFontListByNodeFont } from './appHelpers';
 
 
 function showLoadingFontFail() {
@@ -18,20 +15,11 @@ export function useFontList() {
     const [fontList, setFontList] = useState<FontListType | null>(null);
     useAppEffect(() => {
         if (fontList === null) {
-            if (appProvider.systemUtils.isMac) {
-                appProvider.fontUtils.getFonts().then((fonts) => {
-                    setFontList(fonts);
-                }).catch((error) => {
-                    handleError(error);
-                    showLoadingFontFail();
-                });
+            const fonts = getFontListByNodeFont();
+            if (fonts === null) {
+                showLoadingFontFail();
             } else {
-                const fonts = getFontListByNodeFont();
-                if (fonts === null) {
-                    showLoadingFontFail();
-                } else {
-                    setFontList(fonts);
-                }
+                setFontList(fonts);
             }
         }
     });

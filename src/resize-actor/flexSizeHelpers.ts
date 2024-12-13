@@ -1,19 +1,33 @@
+import { CSSProperties, LazyExoticComponent } from 'react';
+
 import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
-import { setSetting, getSetting } from '../helper/settingHelper';
-import { FlexSizeType } from './ResizeActor';
+import { setSetting, getSetting } from '../helper/settingHelpers';
+
+export type FlexSizeType = {
+    [key: string]: [string, DisabledType?],
+};
+export type DataInputType = {
+    children: LazyExoticComponent<(props?: any) => React.JSX.Element | null> | {
+        render: () => React.JSX.Element | null,
+    },
+    key: string,
+    widgetName: string,
+    className?: string,
+    extraStyle?: CSSProperties,
+};
 
 export const settingPrefix = 'widget-size';
 export const disablingTargetTypeList = ['first', 'second'] as const;
 export type DisablingTargetType = typeof disablingTargetTypeList[number];
 export type DisabledType = [DisablingTargetType, number];
 export const resizeSettingNames = {
-    appEditing: 'app-editing-main',
-    appEditingLeft: 'app-editing-left',
-    appPresenting: 'app-presenting-main',
-    appPresentingLeft: 'app-presenting-left',
-    appPresentingMiddle: 'app-presenting-middle',
-    appPresentingRight: 'app-presenting-right',
+    appEditor: 'app-editor-main',
+    appEditorLeft: 'app-editor-left',
+    appPresenter: 'app-presenter-main',
+    appPresenterLeft: 'app-presenter-left',
+    appPresenterMiddle: 'app-presenter-middle',
+    appPresenterRight: 'app-presenter-right',
     fullText: 'full-text',
     slideItemEditor: 'slide-item-editor',
     read: 'read',
@@ -86,26 +100,70 @@ export function getFlexSizeSetting(
     const settingString = toSettingString(fSizeName);
     const str = getSetting(settingString, '');
     try {
-        if (!isValidJson(str, true)) {
-            return defaultSize;
-        }
-        const size = JSON.parse(str);
-        if (Object.keys(defaultSize).every((k) => {
-            const fsValue = size[k];
-            if (!fsValue || fsValue.length === 0 ||
-                (fsValue[1] &&
-                    !disablingTargetTypeList.includes(fsValue[1][0]) &&
-                    typeof fsValue[1][1] !== 'number'
-                )) {
-                return false;
+        if (isValidJson(str, true)) {
+            const size = JSON.parse(str);
+            if (Object.keys(defaultSize).every((k) => {
+                const fsValue = size[k];
+                if (!fsValue || fsValue.length === 0 ||
+                    (fsValue[1] &&
+                        !disablingTargetTypeList.includes(fsValue[1][0]) &&
+                        typeof fsValue[1][1] !== 'number'
+                    )) {
+                    return false;
+                }
+                return true;
+            })) {
+                return size;
             }
-            return true;
-        })) {
-            return size;
         }
     } catch (error) {
         handleError(error);
-        setSetting(settingString, JSON.stringify(defaultSize));
     }
-    return defaultSize;
+    setSetting(settingString, JSON.stringify(defaultSize));
+    return getFlexSizeSetting(fSizeName, defaultSize);
+}
+
+function checkIsHiddenWidget(
+    dataInput: DataInputType[], flexSize: FlexSizeType, index: number,
+) {
+    const preKey = dataInput[index]['key'];
+    const preFlexSizeValue = flexSize[preKey];
+    return !!preFlexSizeValue[1];
+}
+
+export function checkIsThereNotHiddenWidget(
+    dataInput: DataInputType[], flexSize: FlexSizeType, startIndex: number,
+    endIndex?: number,
+) {
+    endIndex = endIndex ?? dataInput.length - 1;
+    for (let i = startIndex; i < endIndex; i++) {
+        if (!checkIsHiddenWidget(dataInput, flexSize, i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function calcShowingHiddenWidget(
+    event: any, key: string, fSizeName: string, defaultFlexSize: FlexSizeType,
+    flexSizeDisabled: DisabledType,
+) {
+    const dataFSizeKey = keyToDataFSizeKey(fSizeName, key);
+    setDisablingSetting(
+        fSizeName, defaultFlexSize, dataFSizeKey,
+    );
+    const current = event.currentTarget;
+    const target = (
+        flexSizeDisabled[0] === 'first' ? current.nextElementSibling :
+            current.previousElementSibling
+    ) as HTMLDivElement;
+    const targetFGrow = Number(target.style.flexGrow);
+    const flexGrow = targetFGrow - flexSizeDisabled[1];
+    target.style.flexGrow = (
+        `${flexGrow < targetFGrow / 10 ? targetFGrow : flexGrow}`
+    );
+    const size = genFlexSizeSetting(
+        fSizeName, defaultFlexSize,
+    );
+    return size;
 }

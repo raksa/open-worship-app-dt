@@ -1,4 +1,4 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 
 #slide-item-editor-popup {
   width: calc(100vw - 10px);

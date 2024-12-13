@@ -1,11 +1,11 @@
-import { useCallback } from 'react';
-
 import RenderBookOptions from './RenderBookOptions';
 import RenderChapterOptions from './RenderChapterOptions';
 import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
+import { BibleItemContext } from '../bible-reader/BibleItemContext';
+import { attemptAddingHistory } from './InputHistory';
 
 export default function RenderSearchSuggestion({
     bibleResult, applyChapterSelection, applyVerseSelection,
@@ -18,22 +18,25 @@ export default function RenderSearchSuggestion({
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
 }>) {
-    const onVerseChangeCallback = useCallback(
-        (newVerseStart?: number, newVerseEnd?: number) => {
-            applyVerseSelection(newVerseStart, newVerseEnd);
-        },
-        [applyVerseSelection],
-    );
+    const handleVerseChanging = (
+        newVerseStart?: number, newVerseEnd?: number,
+    ) => {
+        applyVerseSelection(newVerseStart, newVerseEnd);
+    };
     const {
         bookKey, guessingBook, chapter, guessingChapter, bibleItem,
     } = bibleResult;
 
     if (bibleItem !== null) {
+        bibleItem.toTitle().then((text) => {
+            attemptAddingHistory(bibleItem.bibleKey, text);
+        });
         return (
-            <RenderBibleDataFound
-                bibleItem={bibleItem}
-                onVerseChange={onVerseChangeCallback}
-            />
+            <BibleItemContext value={bibleItem}>
+                <RenderBibleDataFound
+                    onVerseChange={handleVerseChanging}
+                />
+            </BibleItemContext>
         );
     }
     return (
@@ -60,7 +63,7 @@ export default function RenderSearchSuggestion({
 
 export function BibleNotAvailable() {
     return (
-        <div id='bible-search-popup' className='app-modal shadow card'>
+        <div id='bible-search-popup' className='shadow card'>
             <div className='body card-body w-100'>
                 Bible not available!
             </div>

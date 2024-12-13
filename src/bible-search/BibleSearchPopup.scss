@@ -5,9 +5,10 @@
   min-height: 98%;
   margin: auto;
 
-  .input-group-header {
+  .app-input-group-header {
     margin: auto;
-    max-width: 450px;
+    max-width: 350px;
+    transform: translateY(-3px);
   }
 
   .chapter-select {

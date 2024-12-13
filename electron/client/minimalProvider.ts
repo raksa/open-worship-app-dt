@@ -4,9 +4,10 @@ import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
 import appUtils from './appUtils';
 
-const provider = {
-    isMain: false,
-    isPresent: true,
+export const provider = {
+    isPresenter: false,
+    isScreen: true,
+    isReader: false,
     messageUtils,
     fileUtils,
     pathUtils,
@@ -14,4 +15,3 @@ const provider = {
     appUtils,
 };
 
-export default provider;

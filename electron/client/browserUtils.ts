@@ -1,6 +1,7 @@
 import { clipboard } from 'electron';
 import url from 'node:url';
 import { rootUrlAccess } from '../fsServe';
+import { isSecured } from '../electronHelpers';
 
 const browserUtils = {
     copyToClipboard(str: string) {
@@ -8,6 +9,9 @@ const browserUtils = {
     },
     pathToFileURL(filePath: string) {
         let urlPath = url.pathToFileURL(filePath).toString();
+        if (!isSecured) {
+            return urlPath;
+        }
         urlPath = urlPath.slice('file://'.length);
         return `${rootUrlAccess}://${urlPath}`;
     },

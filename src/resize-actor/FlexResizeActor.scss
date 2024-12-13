@@ -1,4 +1,4 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 $color : rgb(73, 103, 123);
 $dot-border: 1px dashed greenyellow;
 

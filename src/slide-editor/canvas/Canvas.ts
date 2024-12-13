@@ -1,6 +1,6 @@
 import { AnyObjectType, toMaxId } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
-import PresentManager from '../../_present/PresentManager';
+import ScreenManager from '../../_screen/ScreenManager';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';
@@ -50,7 +50,7 @@ export default class Canvas {
         });
     }
     static getDefaultDim() {
-        const display = PresentManager.getDefaultPresentDisplay();
+        const display = ScreenManager.getDefaultScreenDisplay();
         const { width, height } = display.bounds;
         return { width, height };
     }

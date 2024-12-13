@@ -1,0 +1,60 @@
+@use '../others/variables.scss' as *;
+
+.bible-view {
+  min-width: 200px;
+
+  &:hover {
+    border: 1px dotted rgba(82, 127, 150, 0.572);
+  }
+
+  .card-header {
+    .btn-close {
+      margin: 5px;
+    }
+
+    .input-group-text {
+      padding: 0;
+      background-color: transparent;
+
+      .form-select {
+        padding: 0;
+        padding-left: 5px;
+        padding-right: 25px;
+        background-color: var(--bs-gray-800);
+      }
+    }
+  }
+
+  .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.bible-view-text {
+
+  .verse-number,
+  .verse-text {
+    display: inline;
+  }
+
+  .verse-number {
+    div {
+      display: inline-block;
+      color: greenyellow;
+      transform: scale(0.8) translateY(-0.3em);
+      opacity: 0.7;
+    }
+  }
+
+  .verse-text {
+    &:hover {
+      border-bottom: 0.01em dashed rgba(134, 134, 134, 0.431);
+    }
+
+    &.selected {
+      background: linear-gradient(transparent, transparent, rgb(134, 0, 120), transparent);
+    }
+  }
+}

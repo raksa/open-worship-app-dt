@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { use } from 'react';
 
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
@@ -9,9 +9,10 @@ import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
 import ColorPicker from '../../../others/color/ColorPicker';
 import { AppColorType } from '../../../others/color/colorHelpers';
+import CanvasController from '../CanvasController';
 
 export default function ToolsText() {
-    const onDataCallback = useCallback((newData: any) => {
+    const handleDataEvent = (newData: any) => {
         const textData: ToolingTextType = {};
         if (newData.horizontalAlignment !== undefined) {
             textData.textHorizontalAlignment = newData.horizontalAlignment;
@@ -20,20 +21,13 @@ export default function ToolsText() {
             textData.textVerticalAlignment = newData.verticalAlignment;
         }
         applyTextData(textData);
-    }, []);
-    const onNoColorCallback = useCallback((
-        newColor: AppColorType) => {
+    };
+    const handleColorChanging = (newColor: AppColorType) => {
         applyTextData({
             color: newColor,
         });
-    }, []);
-    const onColorChangedCallback = useCallback((
-        newColor: AppColorType) => {
-        applyTextData({
-            color: newColor,
-        });
-    }, []);
-    const canvasItem = useContext(CanvasItemContext);
+    };
+    const canvasItem = use(CanvasItemContext);
     if (canvasItem === null) {
         return null;
     }
@@ -42,6 +36,7 @@ export default function ToolsText() {
     }
     const applyTextData = (newData: ToolingTextType) => {
         canvasItem.applyTextData(newData);
+        CanvasController.getInstance().fireUpdateEvent();
     };
     return (
         <div className='d-flex'>
@@ -51,12 +46,12 @@ export default function ToolsText() {
                 }}>
                     <ColorPicker color={canvasItem.props.color}
                         defaultColor='#ffffff'
-                        onNoColor={onNoColorCallback}
-                        onColorChange={onColorChangedCallback} />
+                        onNoColor={handleColorChanging}
+                        onColorChange={handleColorChanging} />
                 </div>
             </Tool>
             <Tool title='Text Alignment'>
-                <ToolAlign isText onData={onDataCallback} />
+                <ToolAlign isText onData={handleDataEvent} />
             </Tool>
             <ToolsTextFontControl
                 canvasItemText={canvasItem} />

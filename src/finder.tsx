@@ -5,7 +5,7 @@ import './others/font.scss';
 import { StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
-import appProviderPresent from './_present/appProviderPresent';
+import appProviderScreen from './_screen/appProviderScreen';
 import FinderApp from './_find/FinderApp';
 
 const container = document.getElementById('root');
@@ -14,7 +14,7 @@ if (container !== null) {
     root.render(
         <StrictMode>
             <FinderApp onClose={() => {
-                appProviderPresent.messageUtils.sendData(
+                appProviderScreen.messageUtils.sendData(
                     'finder:app:close-search',
                 );
             }} />

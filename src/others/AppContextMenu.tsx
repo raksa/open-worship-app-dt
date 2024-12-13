@@ -2,15 +2,19 @@ import './AppContextMenu.scss';
 
 import { ReactElement, useState } from 'react';
 
-import KeyboardEventListener from '../event/KeyboardEventListener';
+import KeyboardEventListener, {
+    EventMapper, toShortcutKey,
+} from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
-    title: string,
-    onClick?: (event: MouseEvent, data?: any) => void,
+    id?: string,
+    menuTitle: string,
+    title?: string,
+    onClick?: (event: MouseEvent, data?: any) => (void | Promise<void>),
     disabled?: boolean,
     otherChild?: ReactElement,
 };
@@ -70,7 +74,8 @@ let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
 export function showAppContextMenu(
     event: MouseEvent,
-    items: ContextMenuItemType[]) {
+    items: ContextMenuItemType[],
+) {
     event.stopPropagation();
     return new Promise<void>((resolve) => {
         setDataDelegator?.({ event, items });
@@ -110,7 +115,7 @@ export default function AppContextMenu() {
         return null;
     }
     return (
-        <div id="context-menu-container"
+        <div id="app-context-menu-container"
             onClick={(event) => {
                 event.stopPropagation();
                 setDataDelegator?.(null);
@@ -122,8 +127,9 @@ export default function AppContextMenu() {
             }} className='app-context-menu'>
                 {data.items.map((item) => {
                     return (
-                        <ContextMenuItem key={item.title}
-                            item={item} />
+                        <ContextMenuItem key={item.menuTitle}
+                            item={item}
+                        />
                     );
                 })}
             </div>
@@ -135,8 +141,11 @@ function ContextMenuItem({ item }: Readonly<{
     item: ContextMenuItemType,
 }>) {
     return (
-        <div className={'app-context-menu-item'
-            + ` ${item.disabled ? 'disabled' : ''}`}
+        <div className={
+            'app-context-menu-item d-flex w-100 overflow-hidden' +
+            `${item.disabled ? 'disabled' : ''}`
+        }
+            title={item.title ?? item.menuTitle}
             onClick={(event) => {
                 if (item.disabled) {
                     return;
@@ -145,8 +154,20 @@ function ContextMenuItem({ item }: Readonly<{
                     item.onClick?.(event as any);
                 }, 0);
             }}>
-            {item.title}
+            <div className='app-ellipsis flex-fill'>
+                {item.menuTitle}
+            </div>
             {item.otherChild || null}
+        </div>
+    );
+}
+
+export function genContextMenuItemShortcutKey(eventMapper: EventMapper) {
+    return (
+        <div className='align-self-end'>
+            <span className='text-muted badge text-bg-primary'>
+                {toShortcutKey(eventMapper)}
+            </span>
         </div>
     );
 }

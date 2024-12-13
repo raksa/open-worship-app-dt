@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 

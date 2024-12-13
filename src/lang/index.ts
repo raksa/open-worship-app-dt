@@ -1,6 +1,6 @@
 import { handleError } from '../helper/errorHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 
 import kmLangData from './data/km';
 import enLangData from './data/en';
@@ -78,7 +78,7 @@ export const toLocaleNum = (locale: LocaleType, n: number): string => {
     }
     const numList = langData.numList;
     return `${n}`.split('').map((n1) => {
-        return numList[+n1];
+        return numList[parseInt(n1, 10)];
     }).join('');
 };
 
@@ -95,7 +95,7 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
         }
         return n;
     }).join('');
-    if (isNaN(+nString)) {
+    if (isNaN(parseInt(nString, 10))) {
         return null;
     }
     return Number(nString);

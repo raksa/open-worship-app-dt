@@ -17,7 +17,6 @@ Special thanks for others frameworks and tools in [npm package](./package.json)
 
 ```bash
 $ npm i
-$ cp node_modules/pdfjs-dist/build/pdf.worker.js public/js
 ```
 
 ## Run
@@ -25,6 +24,7 @@ $ cp node_modules/pdfjs-dist/build/pdf.worker.js public/js
 ```bash
 $ npm run dev
 ```
+
 ## Package
 
 ```bash
@@ -34,6 +34,14 @@ $ npm run dev
 # for Apple Mac
 $ npm run pack:mac
 ```
+
+## Linting
+
+```bash
+npx eslint src/**/*.ts*
+```
+
+
 ## Tips
 
 ### Present Screen

@@ -1,7 +1,9 @@
 import { BrowserWindow } from 'electron';
 import { genRoutProps } from './protocolHelpers';
+import { htmlFiles } from './fsServe';
+import { isSecured } from './electronHelpers';
 
-const routeProps = genRoutProps('finder');
+const routeProps = genRoutProps(htmlFiles.finder);
 export default class ElectronFinderController {
     win: BrowserWindow | null = null;
     mainWin: BrowserWindow | null = null;
@@ -11,10 +13,10 @@ export default class ElectronFinderController {
             x: 0, y: 0,
             width: 350, height: 100,
             webPreferences: {
-                webSecurity: true,
+                webSecurity: isSecured,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: routeProps.preloadFile,
+                preload: routeProps.preloadFilePath,
             },
             parent: mainWin,
         });

@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 import {
     AllDataType, BibleSearchForType, searchOnline, calcPaging, findPageNumber,
     APIDataType, SelectedBookKeyType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderData from './BibleOnlineRenderData';
-import { SelectedBibleKeyContext } from '../bible-list/bibleHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
 import BibleSelection from './BibleSelection';
@@ -29,13 +29,12 @@ export default function BibleOnlineSearchBodyPreviewer() {
     const [apiData, setApiData] = useState<APIDataType | null | undefined>(
         undefined,
     );
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (apiData === undefined) {
-            loadApiData().then((apiData1) => {
-                setApiData(apiData1);
-            });
+            const apiData1 = await loadApiData();
+            methodContext.setApiData(apiData1);
         }
-    }, [apiData]);
+    }, [apiData], { methods: { setApiData } });
     if (apiData === undefined) {
         return (
             <div>Loading...</div>
@@ -66,7 +65,7 @@ export default function BibleOnlineSearchBodyPreviewer() {
 function BibleOnlineSearchBody({ apiData }: Readonly<{
     apiData: APIDataType,
 }>) {
-    const selectedBibleKey = useContext(SelectedBibleKeyContext);
+    const selectedBibleKey = useBibleKeyContext();
     const [bibleKey, setBibleKey] = useState(selectedBibleKey);
     const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(
         null,
@@ -102,11 +101,9 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
             <div className='card-header input-group overflow-hidden' style={{
                 height: 45,
             }}>
-                <span className='input-group-text select'>
-                    <BibleSelection bibleKey={bibleKey}
-                        onChange={setBibleKey1}
-                    />
-                </span>
+                <BibleSelection bibleKey={bibleKey}
+                    onBibleKeyChange={setBibleKey1}
+                />
                 <input type='text'
                     className='form-control'
                     value={inputText}
@@ -114,7 +111,7 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
                         if (event.key === 'Enter') {
                             event.preventDefault();
                             event.stopPropagation();
-                            console.log('search');
+                            alert('search');  
                         }
                     }}
                     onChange={(event) => {

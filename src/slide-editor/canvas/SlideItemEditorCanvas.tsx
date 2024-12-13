@@ -5,16 +5,18 @@ import {
 import {
     showCanvasContextMenu,
 } from './canvasCMHelpers';
-import { isSupportedMimetype } from '../../server/fileHelper';
+import { isSupportedMimetype } from '../../server/fileHelpers';
 import CanvasController from './CanvasController';
-import { useCCScale, useCanvasControllerEvents } from './canvasEventHelpers';
+import {
+    useSlideItemCanvasScale, useCanvasControllerEvents,
+} from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
 
 export default function SlideItemEditorCanvas() {
     const canvasController = CanvasController.getInstance();
-    const scale = useCCScale();
+    const scale = useSlideItemCanvasScale();
     useCanvasControllerEvents(['update']);
     useKeyboardRegistering([{ key: 'Escape' }], () => {
         canvasController.stopAllMods();
@@ -51,23 +53,44 @@ function genBody({
     scale: number,
 }) {
     const isSupportType = (fileType: string) => {
-        return isSupportedMimetype(fileType, 'image') ||
-            isSupportedMimetype(fileType, 'video');
+        return (
+            isSupportedMimetype(fileType, 'image') ||
+            isSupportedMimetype(fileType, 'video')
+        );
     };
-    const onDropHandler = async (event: any) => {
+    const handleDragging = (event: any) => {
+        event.preventDefault();
+        const items: DataTransferItemList = event.dataTransfer.items;
+        if (Array.from(items).every((item) => {
+            return isSupportType(item.type);
+        })) {
+            event.currentTarget.style.opacity = '0.5';
+        }
+    };
+    const handleDropping = async (event: any) => {
         const dragEvent = event as DragEvent;
         dragEvent.preventDefault();
         const style = (dragEvent.currentTarget as any)?.style || {};
         style.opacity = '1';
         const files = dragEvent.dataTransfer?.files || [];
-        for (const file of Array.from(files)) {
+        Array.from(files).forEach((file) => {
             if (!isSupportType(file.type)) {
                 showSimpleToast('Insert Image or Video',
                     'Unsupported file type!');
             } else {
-                canvasController.addNewMediaItem((file as any).path, event);
+                canvasController.genNewMediaItemFromFilePath(
+                    (file as any).path, event,
+                ).then((newCanvasItem) => {
+                    if (newCanvasItem) {
+                        canvasController.addNewItem(newCanvasItem);
+                    }
+                });
             }
-        }
+        });
+    };
+    const handleContextMenuOpening = async (event: any) => {
+        (event.target as HTMLDivElement).focus();
+        showCanvasContextMenu(event);
     };
     return (
         <div className='editor blank-bg border-white-round'
@@ -76,30 +99,23 @@ function genBody({
                 height: `${canvas.height}px`,
                 transform: 'translate(-50%, -50%)',
             }}
-            onDragOver={(event) => {
-                event.preventDefault();
-                const items = event.dataTransfer.items;
-                if (Array.from(items).every((item) => {
-                    return isSupportType(item.type);
-                })) {
-                    event.currentTarget.style.opacity = '0.5';
-                }
-            }}
+            onDragOver={handleDragging}
             onDragLeave={(event) => {
                 event.preventDefault();
                 event.currentTarget.style.opacity = '1';
             }}
-            onDrop={onDropHandler}
-            onContextMenu={(event) => {
-                showCanvasContextMenu(event);
-            }}
+            onDrop={handleDropping}
+            onContextMenu={handleContextMenuOpening}
             onClick={() => {
                 canvasController.stopAllMods();
             }} >
             {canvasItems.map((canvasItem) => {
-                return <BoxEditor key={canvasItem.id}
-                    scale={scale}
-                    canvasItem={canvasItem} />;
+                return (
+                    <BoxEditor key={canvasItem.id}
+                        scale={scale}
+                        canvasItem={canvasItem}
+                    />
+                );
             })}
         </div>
     );

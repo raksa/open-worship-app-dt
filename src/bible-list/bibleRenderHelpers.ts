@@ -18,17 +18,17 @@ export type BibleTargetType = {
 type CallbackType<T extends (string | [string, string][])> = (
     _: T | null,
 ) => void;
+const callbackMapper: Map<string, Array<CallbackType<any>>> = new Map();
 class BibleRenderHelper {
-    _callbackMapper: Map<string, Array<CallbackType<any>>> = new Map();
-    _pushCallback(key: string, callback: CallbackType<any>) {
-        const callbackList = this._callbackMapper.get(key) || [];
+    private pushCallback(key: string, callback: CallbackType<any>) {
+        const callbackList = callbackMapper.get(key) || [];
         callbackList.push(callback);
-        this._callbackMapper.set(key, callbackList);
+        callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
-    _fullfilCallback(key: string, result: any) {
-        const callbackList = this._callbackMapper.get(key) || [];
-        this._callbackMapper.delete(key);
+    private fullfilCallback(key: string, result: any) {
+        const callbackList = callbackMapper.get(key) || [];
+        callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(result);
         });
@@ -66,7 +66,7 @@ class BibleRenderHelper {
 
     async _toTitle(bibleVersesKey: string, callback: CallbackType<string>) {
         const cacheKey = this.toTitleQueueKey(bibleVersesKey);
-        const isFist = this._pushCallback(cacheKey, callback);
+        const isFist = this.pushCallback(cacheKey, callback);
         if (!isFist) {
             return;
         }
@@ -85,7 +85,7 @@ class BibleRenderHelper {
             bookKey = getKJVKeyValue()[book];
         }
         const title = `${bookKey} ${chapterLocale}:${txtV}`;
-        this._fullfilCallback(cacheKey, title);
+        this.fullfilCallback(cacheKey, title);
     }
     toTitle(bibleKey: string, target: BibleTargetType) {
         return new Promise<string>((resolve) => {
@@ -106,7 +106,7 @@ class BibleRenderHelper {
         bibleVersesKey: string, callback: CallbackType<[string, string][]>,
     ) {
         const cacheKey = this.toVerseTextListQueueKey(bibleVersesKey);
-        const isFist = this._pushCallback(cacheKey, callback);
+        const isFist = this.pushCallback(cacheKey, callback);
         if (!isFist) {
             return;
         }
@@ -123,7 +123,7 @@ class BibleRenderHelper {
             const iString = i.toString();
             result.push([localNum ?? iString, verses[iString] ?? '??']);
         }
-        return this._fullfilCallback(cacheKey, result);
+        return this.fullfilCallback(cacheKey, result);
     }
     toVerseTextList(bibleKey: string, target: BibleTargetType) {
         const bibleVersesKey = bibleRenderHelper

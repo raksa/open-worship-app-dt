@@ -2,15 +2,15 @@ import './RenderVersesOption.scss';
 
 import RenderVerseNumOption, { mouseUp } from './RenderVerseNumOption';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import BibleItem from '../bible-list/BibleItem';
 import { useGenVerseList } from '../helper/bible-helpers/serverBibleHelpers';
+import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 
 export default function RenderVerseOptions({
-    bibleItem, onVersesChange,
+    onVersesChange,
 }: Readonly<{
-    bibleItem: BibleItem,
     onVersesChange: (verseStart?: number, verseEnd?: number) => void,
 }>) {
+    const bibleItem = useBibleItemContext();
     const verseList = useGenVerseList(bibleItem);
     useAppEffect(() => {
         document.body.addEventListener('mouseup', mouseUp);
@@ -22,7 +22,7 @@ export default function RenderVerseOptions({
         return null;
     }
     return (
-        <div className='render-found sticky-top'>
+        <div className='render-found'>
             <div className={
                 'verse-select d-flex p-1 align-content-start flex-wrap'
             }>
@@ -34,7 +34,7 @@ export default function RenderVerseOptions({
                             verseNum={verseNum}
                             verseNumText={verseNumStr}
                             onVerseChange={onVersesChange}
-                            bibleItem={bibleItem} />
+                        />
                     );
                 })}
             </div>

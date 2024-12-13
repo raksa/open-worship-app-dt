@@ -2,31 +2,29 @@ import { lazy } from 'react';
 
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
-import SlideItem from '../slide-list/SlideItem';
 import CanvasController from './canvas/CanvasController';
+import { handleCtrlWheel } from '../others/AppRange';
+import { defaultRangeSize } from './canvas/tools/SlideItemEditorTools';
 
-const SlideItemEditorCanvas = lazy(() => {
+const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
 });
-const Tools = lazy(() => {
-    return import('./canvas/tools/Tools');
+const LazySlideItemEditorTools = lazy(() => {
+    return import('./canvas/tools/SlideItemEditorTools');
 });
 
-export default function SlideItemEditor({ slideItem }: Readonly<{
-    slideItem: SlideItem
-}>) {
-    if (slideItem.isError) {
-        return (
-            <div className='alert alert-danger'>Error</div>
-        );
-    }
+export default function SlideItemEditor() {
+    const canvasController = CanvasController.getInstance();
     return (
         <div className='slide-item-editor w-100 h-100 overflow-hidden'
             onWheel={(event) => {
-                if (event.ctrlKey) {
-                    CanvasController.getInstance()
-                        .applyScale(event.deltaY > 0);
-                }
+                handleCtrlWheel({
+                    event, value: canvasController.scale,
+                    setValue: (scale) => {
+                        canvasController.scale = scale;
+                    },
+                    defaultSize: defaultRangeSize,
+                });
             }}>
             <ResizeActor fSizeName={resizeSettingNames.slideItemEditor}
                 isHorizontal={false}
@@ -35,8 +33,15 @@ export default function SlideItemEditor({ slideItem }: Readonly<{
                     'v2': ['1'],
                 }}
                 dataInput={[
-                    [SlideItemEditorCanvas, 'v1', 'flex-item'],
-                    [Tools, 'v2', 'flex-item'],
+                    {
+                        children: LazySlideItemEditorCanvas, key: 'v1',
+                        widgetName: 'Slide Item Editor Canvas',
+                        className: 'flex-item',
+                    },
+                    {
+                        children: LazySlideItemEditorTools, key: 'v2',
+                        widgetName: 'Tools', className: 'flex-item',
+                    },
                 ]} />
         </div>
     );

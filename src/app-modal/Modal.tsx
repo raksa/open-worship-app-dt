@@ -1,11 +1,10 @@
 import './Modal.scss';
 
-import { PropsWithChildren, ReactNode, createContext } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 
 import {
-    EventMapper, toShortcutKey, useKeyboardRegistering,
+    EventMapper, toShortcutKey,
 } from '../event/KeyboardEventListener';
-import { useCloseAppModal } from './LinkToAppModal';
 
 
 interface MyProps {
@@ -17,40 +16,27 @@ const quittingEventMap: EventMapper = {
     key: 'q',
 };
 
-export const CloseButtonContext = createContext<JSX.Element | null>(null);
-
-export function useModal() {
-    const closeModal = useCloseAppModal();
-    useKeyboardRegistering([quittingEventMap], () => {
-        closeModal();
-    });
-    const closeButton = (
+export function ModalCloseButton({ close }: Readonly<{ close: () => void }>) {
+    return (
         <div style={{
             position: 'absolute',
             right: 0,
             top: 0,
         }}>
             <button type='button'
-                onClick={() => {
-                    closeModal();
-                }}
-                data-tool-tip={toShortcutKey(quittingEventMap)}
+                onClick={close}
+                title={`Close [${toShortcutKey(quittingEventMap)}]`}
                 className='btn btn-sm btn-danger'>
                 <i className='bi bi-x-lg' />
             </button>
         </div>
     );
-    function Modal({ children }: PropsWithChildren<MyProps>) {
-        return (
-            <CloseButtonContext.Provider value={closeButton}>
-                <div id='modal-container'>
-                    {children}
-                </div >
-            </CloseButtonContext.Provider>
-        );
-    }
-    return {
-        closeModal,
-        Modal,
-    };
+}
+
+export function Modal({ children }: PropsWithChildren<MyProps>) {
+    return (
+        <div id='modal-container'>
+            {children}
+        </div >
+    );
 }

@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
 
@@ -12,9 +10,9 @@ export default function SettingOnlineBible({
     setOnlineBibleInfoList: (bbList: BibleListType) => void
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {
-    const onDownloadedCallback = useCallback(() => {
+    const handleDownloadedEvent = () => {
         setDownloadedBibleInfoList(null);
-    }, []);
+    };
     if (onlineBibleInfoList === null) {
         return <div>Loading...</div>;
     }
@@ -56,7 +54,8 @@ export default function SettingOnlineBible({
                     return (
                         <OnlineBibleItem key={bibleInfo.key}
                             bibleInfo={bibleInfo}
-                            onDownloaded={onDownloadedCallback} />
+                            onDownloaded={handleDownloadedEvent}
+                        />
                     );
                 })}
             </ul>

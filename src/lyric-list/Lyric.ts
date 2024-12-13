@@ -1,13 +1,13 @@
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import LyricEditingCacheManager from './LyricEditingCacheManager';
+import LyricEditorCacheManager from './LyricEditorCacheManager';
 import LyricItem, { LyricItemType } from './LyricItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 
-export type LyricEditingHistoryType = {
+export type LyricEditorHistoryType = {
     items?: LyricItemType[],
     metadata?: AnyObjectType,
 };
@@ -20,37 +20,37 @@ export default class Lyric extends ItemSource<LyricItem>{
     static readonly mimetype: MimetypeNameType = 'lyric';
     static readonly SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
-    editingCacheManager: LyricEditingCacheManager;
+    editorCacheManager: LyricEditorCacheManager;
     constructor(filePath: string, json: LyricType) {
         super(filePath);
-        this.editingCacheManager = new LyricEditingCacheManager(
+        this.editorCacheManager = new LyricEditorCacheManager(
             this.filePath, json,
         );
     }
     get isChanged() {
-        return this.editingCacheManager.isChanged;
+        return this.editorCacheManager.isChanged;
     }
     get metadata() {
-        return this.editingCacheManager.presentJson.metadata;
+        return this.editorCacheManager.presenterJson.metadata;
     }
     get items() {
-        const latestHistory = this.editingCacheManager.presentJson;
+        const latestHistory = this.editorCacheManager.presenterJson;
         return latestHistory.items.map((json) => {
             try {
                 return LyricItem.fromJson(
-                    json as any, this.filePath, this.editingCacheManager,
+                    json as any, this.filePath, this.editorCacheManager,
                 );
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
             return LyricItem.fromJsonError(
-                json, this.filePath, this.editingCacheManager,
+                json, this.filePath, this.editorCacheManager,
             );
         });
     }
     set items(newItems: LyricItem[]) {
         const lyricItems = newItems.map((item) => item.toJson());
-        this.editingCacheManager.pushLyricItems(lyricItems);
+        this.editorCacheManager.pushLyricItems(lyricItems);
     }
     get maxItemId() {
         if (this.items.length) {
@@ -92,22 +92,9 @@ export default class Lyric extends ItemSource<LyricItem>{
             filePath, isForceCache,
         ) as Promise<Lyric | null | undefined>;
     }
-    static async getSelected() {
-        const fileSource = this.getSelectedFilePath();
-        if (fileSource !== null) {
-            return Lyric.readFileToData(fileSource);
-        }
-        return null;
-    }
     static async create(dir: string, name: string) {
         return super.create(dir, name,
             [LyricItem.genDefaultLyric(name)]);
-    }
-    static async clearSelection() {
-        const lyric = await this.getSelected();
-        if (lyric) {
-            lyric.isSelected = false;
-        }
     }
     addItem(lyricItem: LyricItem) {
         const items = this.items;
@@ -119,17 +106,12 @@ export default class Lyric extends ItemSource<LyricItem>{
         const newItems = this.items.filter((item) => {
             return item.id !== lyricItem.id;
         });
-        const result = LyricItem.getSelectedResult();
-        if (result?.id === lyricItem.id) {
-            LyricItem.setSelectedItem(null);
-        }
         this.items = newItems;
     }
     async save(): Promise<boolean> {
         const isSuccess = await super.save();
         if (isSuccess) {
-            LyricItem.clearCache();
-            this.editingCacheManager.save();
+            this.editorCacheManager.save();
         }
         return isSuccess;
     }

@@ -1,14 +1,17 @@
 import { BrowserWindow, shell } from 'electron';
-import { channels, PresentMessageType } from './electronEventListener';
+import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
+import ElectronSettingController from './ElectronSettingController';
+import { isSecured } from './electronHelpers';
 
-const routeProps = genRoutProps('index');
+let instance: ElectronMainController | null = null;
 export default class ElectronMainController {
     win: BrowserWindow;
-    private static _instance: ElectronMainController | null = null;
-    constructor() {
-        this.win = this.createMainWindow();
+
+    constructor(settingController: ElectronSettingController) {
+        this.win = this.createMainWindow(settingController);
     }
+
     previewPdf(pdfFilePath: string) {
         const mainWin = this.win;
         const pdfWin = new BrowserWindow({
@@ -16,15 +19,17 @@ export default class ElectronMainController {
         });
         pdfWin.loadURL(pdfFilePath);
     }
-    createMainWindow() {
+
+    createMainWindow(settingController: ElectronSettingController) {
+        const routeProps = genRoutProps(settingController.mainHtmlPath);
         const win = new BrowserWindow({
             backgroundColor: '#000000',
             x: 0, y: 0,
             webPreferences: {
-                webSecurity: true,
+                webSecurity: isSecured,
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: routeProps.preloadFile,
+                preload: routeProps.preloadFilePath,
             },
         });
         win.webContents.setWindowOpenHandler(({ url }) => {
@@ -37,36 +42,43 @@ export default class ElectronMainController {
         routeProps.loadURL(win);
         return win;
     }
+
     close() {
         this.win.close();
         process.exit(0);
     }
+
     sendData(channel: string, data?: any) {
         this.win.webContents.send(channel, data);
     }
-    sendMessage(message: PresentMessageType) {
+
+    sendMessage(message: ScreenMessageType) {
         this.win.webContents.send(
-            channels.presentMessageChannel, message);
+            channels.screenMessageChannel, message);
     }
+
     changeBible(isNext: boolean) {
         this.sendData('app:main:change-bible', isNext);
     }
+
     ctrlScrolling(isUp: boolean) {
         this.sendData('app:main:ctrl-scrolling', isUp);
     }
-    sendNotifyInvisibility(presentId: number) {
+
+    sendNotifyInvisibility(screenId: number) {
         this.sendMessage({
-            presentId,
+            screenId,
             type: 'visible',
             data: {
                 isShowing: false,
             },
         });
     }
-    static getInstance() {
-        if (this._instance === null) {
-            this._instance = new this();
+
+    static getInstance(settingController: ElectronSettingController) {
+        if (instance === null) {
+            instance = new this(settingController);
         }
-        return this._instance;
+        return instance;
     }
 }

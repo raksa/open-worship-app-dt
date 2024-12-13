@@ -2,11 +2,11 @@ import ToastEventListener from '../event/ToastEventListener';
 import appProvider from '../server/appProvider';
 import {
     checkIsAppFile, fsCheckFileExist,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { isColor } from './helpers';
-import { SettingManager } from './settingHelper';
+import { SettingManager } from './settingHelpers';
 
 
 async function readJsonData(filePath: string) {
@@ -24,48 +24,49 @@ async function readJsonData(filePath: string) {
     return json;
 }
 
+const settingManager = new SettingManager<{ [key: string]: string }>({
+    settingName: 'itemSourcesMeta',
+    defaultValue: {},
+    isErrorToDefault: true,
+    validate: (jsonString) => {
+        try {
+            const json = JSON.parse(jsonString);
+            return json instanceof Object;
+        } catch (error) {
+            handleError(error);
+        }
+        return false;
+    },
+    serialize: (json) => JSON.stringify(json),
+    deserialize: (jsonString) => JSON.parse(jsonString),
+});
+
+function getColorNoteSetting(filePath: string): string | null {
+    const setting = settingManager.getSetting();
+    const color = setting[filePath];
+    if (isColor(color)) {
+        return color;
+    }
+    return null;
+}
+function setColorNoteSetting(
+    filePath: string, color: string | null,
+) {
+    const setting = settingManager.getSetting();
+    const key = filePath;
+    if (color === null) {
+        delete setting[key];
+    } else if (isColor(color)) {
+        setting[key] = color;
+    }
+    settingManager.setSetting(setting);
+}
 export default class FileSourceMetaManager {
-    static settingManager = new SettingManager<{ [key: string]: string }>({
-        settingName: 'itemSourcesMeta',
-        defaultValue: {},
-        isErrorToDefault: true,
-        validate: (jsonString) => {
-            try {
-                const json = JSON.parse(jsonString);
-                return json instanceof Object;
-            } catch (error) {
-                handleError(error);
-            }
-            return false;
-        },
-        serialize: (json) => JSON.stringify(json),
-        deserialize: (jsonString) => JSON.parse(jsonString),
-    });
-    private static getColorNoteSetting(filePath: string): string | null {
-        const setting = this.settingManager.getSetting();
-        const color = setting[filePath];
-        if (isColor(color)) {
-            return color;
-        }
-        return null;
-    }
-    private static setColorNoteSetting(
-        filePath: string, color: string | null,
-    ) {
-        const setting = this.settingManager.getSetting();
-        const key = filePath;
-        if (color === null) {
-            delete setting[key];
-        } else if (isColor(color)) {
-            setting[key] = color;
-        }
-        this.settingManager.setSetting(setting);
-    }
     static async getColorNote(filePath: string) {
         const fileSource = FileSource.getInstance(filePath);
-        const isAppFile = checkIsAppFile(fileSource.fileName);
+        const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {
-            return this.getColorNoteSetting(filePath);
+            return getColorNoteSetting(filePath);
         }
         const json = await readJsonData(filePath);
         if (json === null) {
@@ -81,9 +82,9 @@ export default class FileSourceMetaManager {
         filePath: string, color: string | null,
     ) {
         const fileSource = FileSource.getInstance(filePath);
-        const isAppFile = checkIsAppFile(fileSource.fileName);
+        const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {
-            this.setColorNoteSetting(filePath, color);
+            setColorNoteSetting(filePath, color);
             return;
         }
         const json = await readJsonData(filePath);
@@ -96,13 +97,13 @@ export default class FileSourceMetaManager {
     }
     static unsetColorNote(filePath: string, isSetting = false) {
         if (isSetting) {
-            this.setColorNoteSetting(filePath, null);
+            setColorNoteSetting(filePath, null);
             return;
         }
         this.setColorNote(filePath, null);
     }
     static async checkAllColorNotes() {
-        const setting = this.settingManager.getSetting();
+        const setting = settingManager.getSetting();
         for (const key in setting) {
             try {
                 if (await fsCheckFileExist(key)) {
@@ -113,6 +114,6 @@ export default class FileSourceMetaManager {
             }
             delete setting[key];
         }
-        this.settingManager.setSetting(setting);
+        settingManager.setSetting(setting);
     }
 }

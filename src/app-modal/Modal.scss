@@ -1,4 +1,4 @@
-@import '../others/variables.scss';
+@use '../others/variables.scss' as *;
 
 #modal-container {
   width: 100%;
@@ -11,6 +11,7 @@
   align-items: flex-start;
   justify-content: center;
   backdrop-filter: blur(5px);
+  padding: 10px;
 
   &>div:first-child {
     background-color: var(--bs-gray-800);

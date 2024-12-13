@@ -1,21 +1,19 @@
 import './BibleList.scss';
 
-import { useCallback } from 'react';
-
 import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useGenDS } from '../helper/dirSourceHelpers';
+import { getSettingPrefix } from '../helper/settingHelpers';
 import {
-    checkIsWindowReadingMode, useWindowMode,
-} from '../router/routeHelpers';
-import { getSettingPrefix } from '../helper/settingHelper';
+    defaultDataDirNames,
+} from '../helper/constants';
+import appProvider from '../server/appProvider';
 
 export default function BibleList() {
-    const windowMode = useWindowMode();
-    const isReadingMode = checkIsWindowReadingMode(windowMode);
-    const dirSource = useGenDS(Bible.getSelectDirSettingName(windowMode));
-    const bodyHandlerCallback = useCallback((filePaths: string[]) => {
+    const dirSourceSettingName = Bible.getDirSourceSettingName();
+    const dirSource = useGenDS(dirSourceSettingName);
+    const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
                 {filePaths.map((filePath, i) => {
@@ -25,22 +23,26 @@ export default function BibleList() {
                 })}
             </>
         );
-    }, []);
+    };
     if (dirSource === null) {
         return null;
     }
-    Bible.getDefault(windowMode);
-    const settingPrefix = getSettingPrefix(windowMode);
+    Bible.getDefault();
+    const settingPrefix = getSettingPrefix();
+    const defaultDataDirName = (
+        appProvider.isPageReader ? defaultDataDirNames.BIBLE_READ :
+            defaultDataDirNames.BIBLE_PRESENT
+    );
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
             mimetype='bible'
-            defaultFolderName={`bibles${isReadingMode ? '-read' : ''}`}
+            defaultFolderName={defaultDataDirName}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
                 return !await Bible.create(dirPath, name);
             }}
             header={<span>Bibles</span>}
-            bodyHandler={bodyHandlerCallback}
+            bodyHandler={handleBodyRendering}
             userClassName='p-0' />
     );
 }

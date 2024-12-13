@@ -1,0 +1,13 @@
+#slide-previewer {
+
+  &>.card-footer {
+    height: 40px;
+
+    .history {
+      overflow: hidden;
+      white-space: nowrap;
+      padding-left: 3px;
+      padding-right: 3px;
+    }
+  }
+}

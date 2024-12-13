@@ -1,6 +1,6 @@
 import {
     SearchBibleItemViewController,
-} from '../read-bible/BibleItemViewController';
+} from '../bible-reader/BibleItemViewController';
 import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
 
 export default function BibleOnlineRenderPerPage({

@@ -1,4 +1,4 @@
-import BibleItem from '../bible-list/BibleItem';
+import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 
 let mouseDownInd: number | null = null;
 export function mouseUp() {
@@ -6,14 +6,14 @@ export function mouseUp() {
 }
 
 export default function RenderVerseNumOption({
-    index, verseNum, verseNumText, bibleItem, onVerseChange,
+    index, verseNum, verseNumText, onVerseChange,
 }: Readonly<{
     index: number,
     verseNum: number,
     verseNumText: string,
-    bibleItem: BibleItem,
     onVerseChange: (verseStart?: number, verseEnd?: number) => void,
 }>) {
+    const bibleItem = useBibleItemContext();
     const { target } = bibleItem;
     const sVerse = target.verseStart;
     const eVerse = target.verseEnd;

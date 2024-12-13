@@ -1,13 +1,13 @@
 {
     "main": {
         "fuchsia": "#FF00FF",
-        "green": "#008000",
         "lime": "#00FF00",
-        "red": "#FF0000",
-        "maroon": "#800000",
-        "purple": "#800080",
-        "olive": "#808000",
         "yellow": "#FFFF00",
+        "green": "#008000",
+        "red": "#FF0000",
+        "purple": "#800080",
+        "maroon": "#800000",
+        "olive": "#808000",
         "navy": "#000080",
         "blue": "#0000FF",
         "teal": "#008080",

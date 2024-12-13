@@ -227,10 +227,14 @@ const regexTitleMap: [
             );
         }],
     ];
-export async function extractBibleTitle(bibleKey: string, inputText: string) {
+export async function extractBibleTitle(
+    bibleKey: string, inputText: string,
+): Promise<{
+    result: ExtractedBibleResult, bibleKey: string, inputText: string,
+}> {
     const cleanText = inputText.trim().replace(/\s+/g, ' ');
     if (cleanText === '') {
-        return genExtractedBible();
+        return { result: genExtractedBible(), bibleKey, inputText: '' };
     }
     for (const [regexStr, matcher] of regexTitleMap) {
         const regex = new RegExp(regexStr);
@@ -240,10 +244,10 @@ export async function extractBibleTitle(bibleKey: string, inputText: string) {
         }
         const result = await matcher(bibleKey, matches);
         if (result !== null) {
-            return result;
+            return { result, bibleKey, inputText };
         }
     };
     const result = genExtractedBible();
     result.guessingBook = cleanText;
-    return result;
+    return { result, bibleKey, inputText: '' };
 }

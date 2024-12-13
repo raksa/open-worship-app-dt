@@ -13,18 +13,18 @@ export type PlaylistItemType = {
 }
 
 export default class PlaylistItem {
-    _originalJson: Readonly<PlaylistItemType>;
+    private readonly originalJson: Readonly<PlaylistItemType>;
     filePath: string;
     jsonError: any;
     constructor(filePath: string, json: PlaylistItemType) {
         this.filePath = filePath;
-        this._originalJson = Object.freeze(cloneJson(json));
+        this.originalJson = Object.freeze(cloneJson(json));
     }
     get isError() {
         return this.type === 'error';
     }
     get type() {
-        return this._originalJson.type;
+        return this.originalJson.type;
     }
     get isSlide() {
         return this.type === 'slide';
@@ -42,7 +42,7 @@ export default class PlaylistItem {
         if (this.isBibleItem) {
             const bible = await Bible.readFileToData(this.filePath);
             if (bible) {
-                return bible.getItemById(this._originalJson.id as number);
+                return bible.getItemById(this.originalJson.id as number);
             }
         }
         return null;
@@ -74,8 +74,8 @@ export default class PlaylistItem {
         }
         return {
             type: this.type,
-            filePath: this._originalJson.filePath,
-            id: this._originalJson.id,
+            filePath: this.originalJson.filePath,
+            id: this.originalJson.id,
         };
     }
     static validate(json: AnyObjectType) {

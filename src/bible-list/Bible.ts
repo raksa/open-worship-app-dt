@@ -1,45 +1,48 @@
 import {
     fsListFilesWithMimetype, MimetypeNameType,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import {
     AnyObjectType, cloneJson, toMaxId,
 } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
-import { getSetting, getSettingPrefix } from '../helper/settingHelper';
+import { getSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
-import { WindowModEnum } from '../router/routeHelpers';
 import { BibleItemType } from './bibleItemHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
+import appProvider from '../server/appProvider';
 
 export type BibleType = {
     items: BibleItemType[],
     metadata: AnyObjectType,
 }
-const SELECT_DIR_SETTING = 'bible-list-selected-dir';
-export default class Bible extends ItemSource<BibleItem>{
+export default class Bible extends ItemSource<BibleItem> {
     static readonly DEFAULT_FILE_NAME = 'Default';
-    _originalJson: BibleType;
+    private readonly originalJson: BibleType;
     constructor(filePath: string, json: BibleType) {
         super(filePath);
-        this._originalJson = cloneJson(json);
+        this.originalJson = cloneJson(json);
     }
-    static getSelectDirSettingName(windowMode: WindowModEnum | null) {
-        const prefixSetting = getSettingPrefix(windowMode);
-        return `${prefixSetting}${SELECT_DIR_SETTING}`;
+    static getDirSourceSettingName() {
+        const dirSourceSettingName = (
+            appProvider.isPageReader ? dirSourceSettingNames.BIBLE_READ :
+                dirSourceSettingNames.BIBLE_PRESENT
+        );
+        return dirSourceSettingName;
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
         return new Bible(filePath, json);
     }
     get metadata() {
-        return this._originalJson.metadata;
+        return this.originalJson.metadata;
     }
     get itemsLength() {
-        return this._originalJson.items.length;
+        return this.originalJson.items.length;
     }
     get items() {
-        return this._originalJson.items.map((json) => {
+        return this.originalJson.items.map((json) => {
             try {
                 return BibleItem.fromJson(json, this.filePath);
             } catch (error: any) {
@@ -50,7 +53,7 @@ export default class Bible extends ItemSource<BibleItem>{
     }
     set items(newBibleItems: BibleItem[]) {
         const bibleItems = newBibleItems.map((item) => item.toJson());
-        this._originalJson.items = bibleItems;
+        this.originalJson.items = bibleItems;
     }
     get maxItemId() {
         if (this.items.length) {
@@ -89,10 +92,8 @@ export default class Bible extends ItemSource<BibleItem>{
         });
         this.items = newItems;
     }
-    static async addBibleItemToDefault(
-        bibleItem: BibleItem, windowMode: WindowModEnum | null,
-    ) {
-        const bible = await Bible.getDefault(windowMode);
+    static async addBibleItemToDefault(bibleItem: BibleItem) {
+        const bible = await Bible.getDefault();
         if (bible) {
             bible.addBibleItem(bibleItem);
             if (await bible.save()) {
@@ -179,8 +180,8 @@ export default class Bible extends ItemSource<BibleItem>{
             filePath, isForceCache,
         ) as Promise<Bible | null | undefined>;
     }
-    static async getDefault(windowMode: WindowModEnum | null) {
-        const dir = getSetting(Bible.getSelectDirSettingName(windowMode), '');
+    static async getDefault() {
+        const dir = getSetting(Bible.getDirSourceSettingName(), '');
         if (!dir) {
             return null;
         }

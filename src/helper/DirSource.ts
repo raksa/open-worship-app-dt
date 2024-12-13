@@ -2,19 +2,19 @@ import EventHandler from '../event/EventHandler';
 import {
     FileMetadataType, getFileMetaData, MimetypeNameType, getAppMimetype,
     fsListFiles, fsCheckDirExist,
-} from '../server/fileHelper';
+} from '../server/fileHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import { getSetting, setSetting } from './settingHelper';
+import { getSetting, setSetting } from './settingHelpers';
 
 export type DirSourceEventType = 'reload';
 
+const fileCacheKeys: string[] = [];
+const cache = new Map<string, DirSource>();
 export default class DirSource extends EventHandler<DirSourceEventType> {
     settingName: string;
     static readonly eventNamePrefix: string = 'dir-source';
-    private static _fileCacheKeys: string[] = [];
-    private static _cache = new Map<string, DirSource>();
     checkExtraFile: ((fName: string) => FileMetadataType | null) | null = null;
     private _isDirPathValid: boolean | null = null;
     constructor(settingName: string) {
@@ -43,25 +43,25 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     }
     static toCacheKey(settingName: string) {
         const cacheKey = `${settingName}-${getSetting(settingName, '')}`;
-        this._fileCacheKeys.push(cacheKey);
+        fileCacheKeys.push(cacheKey);
         return cacheKey;
     }
     static getCacheKeyByDirPath(dirPath: string) {
-        return this._fileCacheKeys.find((cacheKey) => {
+        return fileCacheKeys.find((cacheKey) => {
             return cacheKey.includes(dirPath);
-        }) || null;
+        }) ?? null;
     }
-    getFileSourceInstance(fileName: string) {
-        return FileSource.getInstance(this.dirPath, fileName);
+    getFileSourceInstance(fileFullName: string) {
+        return FileSource.getInstance(this.dirPath, fileFullName);
     }
     fireReloadEvent() {
         this.addPropEvent('reload');
     }
-    fireReloadFileEvent(fileName: string) {
+    fireReloadFileEvent(fileFullName: string) {
         if (!this.dirPath) {
             return;
         }
-        const fileSource = this.getFileSourceInstance(fileName);
+        const fileSource = this.getFileSourceInstance(fileFullName);
         fileSource.fireUpdateEvent();
     }
     async getFilePaths(mimetype: MimetypeNameType) {
@@ -71,18 +71,20 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         try {
             const mimetypeList = getAppMimetype(mimetype);
             const files = await fsListFiles(this.dirPath);
-            const matchedFiles = files.map((fileName) => {
-                const fileMetadata = getFileMetaData(fileName, mimetypeList);
+            const matchedFiles = files.map((fileFullName) => {
+                const fileMetadata = getFileMetaData(
+                    fileFullName, mimetypeList,
+                );
                 if (fileMetadata === null && this.checkExtraFile) {
-                    return this.checkExtraFile(fileName);
+                    return this.checkExtraFile(fileFullName);
                 }
                 return fileMetadata;
             }).filter((fileMetadata) => {
                 return fileMetadata !== null;
-            }) as FileMetadataType[];
+            });
             const filePaths = matchedFiles.map((fileMetadata) => {
                 const fileSource = this.getFileSourceInstance(
-                    fileMetadata.fileName,
+                    fileMetadata.fileFullName,
                 );
                 return fileSource.filePath;
             });
@@ -95,17 +97,17 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
     }
     static async getInstance(settingName: string) {
         const cacheKey = this.toCacheKey(settingName);
-        if (!this._cache.has(cacheKey)) {
+        if (!cache.has(cacheKey)) {
             const dirSource = new DirSource(settingName);
             await dirSource.init();
-            this._cache.set(cacheKey, dirSource);
+            cache.set(cacheKey, dirSource);
         }
-        return this._cache.get(cacheKey) as DirSource;
+        return cache.get(cacheKey) as DirSource;
     }
     static getInstanceByDirPath(dirPath: string) {
         const cacheKey = this.getCacheKeyByDirPath(dirPath);
-        if (cacheKey !== null && this._cache.has(cacheKey)) {
-            return this._cache.get(cacheKey) as DirSource;
+        if (cacheKey !== null && cache.has(cacheKey)) {
+            return cache.get(cacheKey) as DirSource;
         }
         return null;
     }

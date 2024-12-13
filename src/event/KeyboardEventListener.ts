@@ -4,11 +4,12 @@ import appProvider from '../server/appProvider';
 import EventHandler from './EventHandler';
 import { AppWidgetType } from './WindowEventListener';
 
-export type KeyboardType = 'ArrowUp' | 'ArrowRight' | 'ArrowDown'
-    | 'ArrowLeft' | 'Enter' | 'Tab' | 'Escape' | ' ';
+export type KeyboardType = (
+    'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'ArrowLeft' | 'Enter' | 'Tab' |
+    'Escape' | ' '
+);
 export const allArrows: KeyboardType[] = [
-    'ArrowLeft', 'ArrowRight',
-    'ArrowUp', 'ArrowDown',
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
 ];
 export type WindowsControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
@@ -20,7 +21,7 @@ export interface EventMapper {
     mControlKey?: MacControlType[];
     lControlKey?: LinuxControlType[];
     allControlKey?: AllControlType[];
-    key: KeyboardType | string;
+    key: string;
 }
 export interface RegisteredEventMapper extends EventMapper {
     listener: ListenerType;
@@ -32,8 +33,8 @@ export function toShortcutKey(eventMapper: EventMapper) {
 }
 
 export default class KeyboardEventListener extends EventHandler<string> {
-    static eventNamePrefix: string = 'keyboard';
-    static _layers: AppWidgetType[] = ['root'];
+    static readonly eventNamePrefix: string = 'keyboard';
+    static readonly _layers: AppWidgetType[] = ['root'];
     static getLastLayer() {
         return getLastItem(this._layers);
     }
@@ -41,7 +42,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
         this._layers.push(layer);
     }
     static removeLayer(layer: AppWidgetType) {
-        this._layers = this._layers.filter((l1) => l1 !== layer);
+        this._layers.splice(this._layers.indexOf(layer), 1);
     }
     static fireEvent(event: KeyboardEvent) {
         const option = {
@@ -104,7 +105,8 @@ export default class KeyboardEventListener extends EventHandler<string> {
 }
 
 export function useKeyboardRegistering(
-    eventMappers: EventMapper[], listener: ListenerType) {
+    eventMappers: EventMapper[], listener: ListenerType,
+) {
     useAppEffect(() => {
         const eventNames = eventMappers.map((eventMapper) => {
             return KeyboardEventListener.toEventMapperKey(eventMapper);
