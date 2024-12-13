@@ -75,7 +75,7 @@ export function BibleSearchButton() {
     return (
         <button className='btn btn-labeled btn-primary'
             style={{ width: '220px' }}
-            title={toShortcutKey(openBibleEventMap)}
+            title={`Bible search [${toShortcutKey(openBibleEventMap)}]`}
             type='button'
             onClick={() => {
                 setIsBibleSearchShowing(true);

@@ -18,16 +18,21 @@ export function copyToClipboard(str: string) {
 }
 
 export function selectDirs() {
-    return appProvider.messageUtils.
-        sendDataSync('main:app:select-dirs') as string[];
+    return (
+        appProvider.messageUtils.sendDataSync(
+            'main:app:select-dirs',
+        ) as string[]
+    );
 }
 export function selectFiles(filters: {
     name: string,
     extensions: string[],
 }[]) {
-    return appProvider.messageUtils.
-        sendDataSync('main:app:select-files',
-            filters) as string[];
+    return (
+        appProvider.messageUtils.sendDataSync(
+            'main:app:select-files', filters,
+        ) as string[]
+    );
 }
 
 export type RenderedType = {
@@ -41,13 +46,14 @@ export function getScreenRendered() {
     return new Promise<RenderedType>((resolve) => {
         const newDate = (new Date()).getTime();
         const returningEvent = `main:app:is-rendered-return-${newDate}`;
-        appProvider.messageUtils.
-            listenOnceForData(returningEvent,
-                (_event, data: RenderedType) => {
-                    resolve(data);
-                });
-        appProvider.messageUtils.
-            sendData('main:app:is-rendered', returningEvent);
+        appProvider.messageUtils.listenOnceForData(
+            returningEvent, (_event, data: RenderedType) => {
+                resolve(data);
+            },
+        );
+        appProvider.messageUtils.sendData(
+            'main:app:is-rendered', returningEvent,
+        );
     });
 }
 export function getUserWritablePath() {

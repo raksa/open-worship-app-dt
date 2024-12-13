@@ -15,7 +15,6 @@ import FileSourceMetaManager from './helper/FileSourceMetaManager';
 import { getCurrentLangAsync, getLangAsync, defaultLocal } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
-import { initToolTip } from './tool-tip/init';
 import { useHandleFind } from './_find/finderHelpers';
 import { useCheckSelectedDir } from './helper/tourHelpers';
 import { createRoot } from 'react-dom/client';
@@ -65,7 +64,6 @@ export async function initApp() {
         promises.push(getLangAsync(bibleInfo.locale));
     }
     await Promise.all(promises);
-    initToolTip();
 }
 
 export function useQuickExitBlock() {
@@ -78,7 +76,7 @@ export function useQuickExitBlock() {
             'Are you sure you want to quit the app?'
         ).then((isOk) => {
             if (isOk) {
-                window.close(); 
+                window.close();
             }
         });
     });

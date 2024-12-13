@@ -96,8 +96,7 @@ function RenderButton({ btnMaps }: Readonly<{
     return (
         <button type='button'
             className={`btn btn-${isEnabled ? '' : 'outline-'}${btnType}`}
-            title={title}
-            data-tool-tip={toShortcutKey(eventMap)}
+            title={`${title} [${toShortcutKey(eventMap)}]`}
             onClick={onClickCallback}>
             {text}
         </button>

@@ -70,7 +70,7 @@ function RenderBibleFoundHeader() {
                 <div>
                     {viewController.isAlone ? null : (
                         <button className='btn-close'
-                            data-tool-tip={toShortcutKey(closeEventMapper)}
+                            title={`Close [${toShortcutKey(closeEventMapper)}]`}
                             onClick={() => {
                                 closeCurrentEditingBibleItem();
                             }}

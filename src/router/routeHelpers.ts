@@ -1,8 +1,11 @@
+import { openAlert } from '../alert/alertHelpers';
 import appProvider from '../server/appProvider';
+import Slide from '../slide-list/Slide';
 
 export type TabOptionType = {
     title: string,
     routePath: string,
+    preCheck?: () => Promise<boolean>,
 }
 
 export enum WindowModEnum {
@@ -14,6 +17,17 @@ export enum WindowModEnum {
 export const editorTab: TabOptionType = {
     title: 'Editor↗️',
     routePath: appProvider.editorHomePage,
+    preCheck: async () => {
+        const slide = await Slide.readFileToData(Slide.getSelectedFilePath());
+        if (slide && !slide.isPdf) {
+            return true;
+        }
+        openAlert(
+            'No slide selected', 
+            'Please select an Open Worship slide first',
+        );
+        return false;
+    },
 };
 export const presenterTab: TabOptionType = {
     title: 'Presenter↗️',

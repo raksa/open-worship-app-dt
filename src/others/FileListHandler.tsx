@@ -14,7 +14,7 @@ import RenderList from './RenderList';
 import DirSource from '../helper/DirSource';
 import {
     genOnDragOver, genOnDragLeave, genOnDrop, genOnContextMenu,
-    DroppedFileType,
+    DroppedFileType, FileSelectionOptionType,
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -53,10 +53,9 @@ export const DirSourceContext = createContext<DirSource | null>(null);
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
-    id, mimetype, dirSource, header, bodyHandler,
-    contextMenu, onNewFile, checkExtraFile,
-    takeDroppedFile, userClassName,
-    defaultFolderName,
+    id, mimetype, dirSource, header, bodyHandler, contextMenu, onNewFile,
+    checkExtraFile, takeDroppedFile, userClassName, defaultFolderName,
+    fileSelectionOption,
 }: Readonly<{
     id: string, mimetype: MimetypeNameType,
     dirSource: DirSource,
@@ -69,6 +68,7 @@ export default function FileListHandler({
     takeDroppedFile?: (file: DroppedFileType) => boolean,
     userClassName?: string,
     defaultFolderName: string,
+    fileSelectionOption?: FileSelectionOptionType,
 }>) {
     const handleNameApplying = async (name: string | null) => {
         if (name === null) {
@@ -108,7 +108,9 @@ export default function FileListHandler({
                     }
                 </div>}
                 <div className='card-body d-flex flex-column'
-                    onContextMenu={genOnContextMenu(contextMenu)}>
+                    onContextMenu={genOnContextMenu(
+                        contextMenu, fileSelectionOption,
+                    )}>
                     <PathSelector prefix={`path-${id}`}
                         dirSource={dirSource}
                     />

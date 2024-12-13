@@ -11,7 +11,7 @@ const savingEventMapper: KBEventMapper = {
     key: 's',
 };
 export default function SlideItemsMenu() {
-    const { selectedSlide } = useSelectedSlideContext();
+    const selectedSlide = useSelectedSlideContext();
     const screenDisplay = ScreenManager.getDefaultScreenDisplay();
     useFSEvents(['update'], selectedSlide.filePath);
     useKeyboardRegistering([savingEventMapper], () => {

@@ -14,7 +14,7 @@ import {
 
 
 function HistoryPreviewerFooter() {
-    const { selectedSlide } = useSelectedSlideContext();
+    const selectedSlide = useSelectedSlideContext();
     const [history, setHistory] = useState<number[]>([]);
     usePSlideMEvents(['update'], undefined, () => {
         const index = getPresenterIndex(selectedSlide);
@@ -49,7 +49,7 @@ export const defaultRangeSize = {
     step: THUMBNAIL_SCALE_STEP,
 };
 export default function SlidePreviewerFooter() {
-    const { selectedSlide } = useSelectedSlideContext();
+    const selectedSlide = useSelectedSlideContext();
     const [
         thumbnailSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();

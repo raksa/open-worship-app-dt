@@ -80,7 +80,7 @@ export default function SlideItemRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
-    const { selectedSlideItem } = useSelectedEditingSlideItemContext();
+    const selectedSlideItem = useSelectedEditingSlideItemContext();
     usePSlideMEvents(['update']);
     const {
         activeCN, presenterCN,

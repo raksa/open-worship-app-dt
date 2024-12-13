@@ -5,8 +5,8 @@ import {
     ContextMenuItemType, showAppContextMenu,
 } from './AppContextMenu';
 import DirSource from '../helper/DirSource';
-import { openConfirm } from '../alert/alertHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { selectFiles } from '../server/appHelpers';
 
 function changeDragEventStyle(event: React.DragEvent<HTMLDivElement>,
     key: string, value: string) {
@@ -70,6 +70,17 @@ async function* readDroppedFiles(
     }
 }
 
+function checkAndCopyFiles({ checkIsValidFile, takeFile }: {
+    checkIsValidFile: (fileFullName: string) => boolean,
+    takeFile?: (file: DroppedFileType | string) => boolean,
+}, dirPath: string, file: DroppedFileType | string) {
+    const isString = typeof file === 'string';
+    if (!takeFile?.(file) && checkIsValidFile(isString ? file : file.name)) {
+        return fsCopyFilePathToPath(file, dirPath);
+    }
+    return null;
+}
+
 export function genOnDrop({
     dirSource, mimetype, checkIsExtraFile, takeDroppedFile,
 }: {
@@ -95,39 +106,71 @@ export function genOnDrop({
         for await (
             const file of readDroppedFiles(event)
         ) {
-            if (takeDroppedFile?.(file)) {
-                continue;
-            }
-            const isString = typeof file === 'string';
-            if (checkIsValidFile(isString ? file : file.name)) {
-                promises.push(fsCopyFilePathToPath(file, dirSource.dirPath));
+            const copyingPromise = checkAndCopyFiles({
+                checkIsValidFile, takeFile: takeDroppedFile,
+            }, dirSource.dirPath, file);
+            if (copyingPromise !== null) {
+                promises.push(copyingPromise);
             }
         }
         await Promise.all(promises);
     };
 }
 
-export function genOnContextMenu(contextMenu?: ContextMenuItemType[]) {
-    return (event: React.MouseEvent<any>) => {
-        showAppContextMenu(event as any, [
-            {
-                menuTitle: 'Delete All',
-                onClick: () => {
-                    (async () => {
-                        const isOk = await openConfirm(
-                            'Not implemented',
-                            'Read mode is not implemented yet.',
-                        );
-                        if (isOk) {
-                            showSimpleToast(
-                                'Deleting All',
-                                'Not implemented, need input "delete all"',
-                            );
-                        }
-                    })();
-                },
+export type FileSelectionOptionType = {
+    windowTitle: string,
+    extensions: string[],
+
+    dirPath: string,
+    onFileSelected?: (filePaths: string[]) => void,
+    takeSelectedFile?: (filePath: string) => boolean,
+};
+
+async function handleFilesSelectionMenuItem(
+    fileSelectionOption: FileSelectionOptionType,
+) {
+    const {
+        dirPath, windowTitle, extensions, onFileSelected,
+        takeSelectedFile,
+    } = fileSelectionOption;
+    const filePaths = selectFiles(
+        [{ name: windowTitle, extensions }],
+    );
+    onFileSelected?.(filePaths);
+    const promises = [];
+    for (const filePath of filePaths) {
+        const copyingPromise = checkAndCopyFiles({
+            checkIsValidFile: () => true, takeFile: () => {
+                return takeSelectedFile?.(filePath) || false;
             },
+        }, dirPath, filePath);
+        if (copyingPromise !== null) {
+            promises.push(copyingPromise);
+        }
+    }
+    await Promise.all(promises);
+}
+
+export function genOnContextMenu(
+    contextMenu?: ContextMenuItemType[],
+    fileSelectionOption?: FileSelectionOptionType,
+) {
+    return (event: React.MouseEvent<any>) => {
+        const contextMenuItems: ContextMenuItemType[] = [
             ...(contextMenu || []),
-        ]);
+        ];
+        if (fileSelectionOption !== undefined) {
+            contextMenuItems.push({
+                menuTitle: 'Add Items',
+                title: fileSelectionOption.windowTitle,
+                onClick: () => {
+                    handleFilesSelectionMenuItem(fileSelectionOption);
+                },
+            });
+        }
+        if(contextMenuItems.length === 0) {
+            return;
+        }
+        showAppContextMenu(event as any, contextMenuItems);
     };
 }

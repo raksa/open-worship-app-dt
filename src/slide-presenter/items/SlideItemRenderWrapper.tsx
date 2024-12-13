@@ -4,7 +4,7 @@ import SlideItemRender from './SlideItemRender';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import SlideItem, {
-    useSelectedEditingSlideItemContext,
+    useSelectedEditingSlideItemSetterContext,
 } from '../../slide-list/SlideItem';
 import SlideItemPdfRender from './SlideItemPdfRender';
 import {
@@ -19,8 +19,8 @@ export default function SlideItemRenderWrapper({
     index: number,
     setDraggingIndex: (index: number | null) => void,
 }>) {
-    const { selectedSlide } = useSelectedSlideContext();
-    const { setSelectedSlideItem } = useSelectedEditingSlideItemContext();
+    const selectedSlide = useSelectedSlideContext();
+    const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
     const handleDropping = (id: number, isLeft: boolean) => {
         selectedSlide.moveItem(id, index, isLeft);
     };

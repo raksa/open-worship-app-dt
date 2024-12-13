@@ -25,7 +25,7 @@ export function ModalCloseButton({ close }: Readonly<{ close: () => void }>) {
         }}>
             <button type='button'
                 onClick={close}
-                data-tool-tip={toShortcutKey(quittingEventMap)}
+                title={`Close [${toShortcutKey(quittingEventMap)}]`}
                 className='btn btn-sm btn-danger'>
                 <i className='bi bi-x-lg' />
             </button>

@@ -5,22 +5,30 @@ import FileSource from '../helper/FileSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from '../helper/errorHelpers';
 
-import mimeBible from './mime/bible-types.json';
-import mimeLyric from './mime/lyric-types.json';
-import mimeSlide from './mime/slide-types.json';
-import mimeImage from './mime/image-types.json';
-import mimePlaylist from './mime/playlist-types.json';
-import mimeVideo from './mime/video-types.json';
-import mimeSound from './mime/sound-types.json';
+import mimeBibleList from './mime/bible-types.json';
+import mimeLyricList from './mime/lyric-types.json';
+import mimeSlideList from './mime/slide-types.json';
+import mimeImageList from './mime/image-types.json';
+import mimePlaylistList from './mime/playlist-types.json';
+import mimeVideoList from './mime/video-types.json';
+import mimeSoundList from './mime/sound-types.json';
 import { openConfirm } from '../alert/alertHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
 
+export const mimetypePdf: AppMimetypeType = {
+    type: 'PDF File',
+    title: 'PDF File',
+    mimetype: 'application/pdf',
+    mimetypeName: 'other',
+    extensions: ['.pdf'],
+};
+
 const appMimeTypesMapper = {
-    bible: mimeBible,
-    lyric: mimeLyric,
-    slide: mimeSlide,
+    bible: mimeBibleList,
+    lyric: mimeLyricList,
+    slide: mimeSlideList,
 };
 const _mimeTypes = Object.values(appMimeTypesMapper) as AppMimetypeType[][];
 const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
@@ -33,13 +41,14 @@ const appExtensions = _mimeTypes.reduce((acc: string[], cur) => {
 }, []);
 
 const mimeTypesMapper = {
-    bible: mimeBible,
-    lyric: mimeLyric,
-    slide: mimeSlide,
-    image: mimeImage,
-    playlist: mimePlaylist,
-    video: mimeVideo,
-    sound: mimeSound,
+    bible: mimeBibleList,
+    lyric: mimeLyricList,
+    slide: mimeSlideList,
+    pdf: [mimetypePdf],
+    image: mimeImageList,
+    playlist: mimePlaylistList,
+    video: mimeVideoList,
+    sound: mimeSoundList,
 };
 
 export type AppMimetypeType = {
@@ -85,7 +94,7 @@ export const createNewFileDetail = async (dir: string, name: string,
 };
 
 export const mimetypeNameTypeList = [
-    'image', 'video', 'slide',
+    'image', 'video', 'slide', 'pdf',
     'playlist', 'lyric', 'bible', 'other',
 ] as const;
 export type MimetypeNameType = typeof mimetypeNameTypeList[number];
@@ -122,9 +131,9 @@ export function getAppMimetype(mimetype: MimetypeNameType) {
     return json as AppMimetypeType[];
 }
 export function getMimetypeExtensions(mimetype: MimetypeNameType) {
-    const imageTypes = getAppMimetype(mimetype);
-    return imageTypes.reduce((r: string[], imageType) => {
-        r.push(...imageType.extensions);
+    const mimetypeList = getAppMimetype(mimetype);
+    return mimetypeList.reduce((r: string[], mimetype) => {
+        r.push(...mimetype.extensions);
         return r;
     }, []).map((ext) => {
         return ext.replace('.', '');
@@ -441,5 +450,9 @@ export async function fsCopyFilePathToPath(
 }
 
 export function getFileFullName(file: File | string) {
-    return typeof file === 'string' ? file : file.name;
+    if (file instanceof File) {
+        return file.name;
+    }
+    const fileFullName = pathBasename(file);
+    return fileFullName;
 }

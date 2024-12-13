@@ -9,8 +9,8 @@ import { showAppContextMenu } from '../others/AppContextMenu';
 import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import {
-    AppMimetypeType, fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile,
-    getFileFullName,
+    fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
+    mimetypePdf,
 } from '../server/fileHelpers';
 import {
     openSlideItemQuickEdit,
@@ -66,19 +66,11 @@ export function openSlideContextMenu(event: any,
     ]);
 }
 
-export const pdfMimetype: AppMimetypeType = {
-    type: 'PDF File',
-    title: 'PDF File',
-    mimetype: 'application/pdf',
-    mimetypeName: 'other',
-    extensions: ['.pdf'],
-};
-
 export function checkIsPdf(ext: string) {
-    return ext.toLocaleLowerCase() === '.pdf';
+    return mimetypePdf.extensions.includes(ext.toLocaleLowerCase());
 }
 
-export const supportOfficeFE = [
+export const supportOfficeFileExtensions = [
     '.doc',
     '.docx',
     '.xls',

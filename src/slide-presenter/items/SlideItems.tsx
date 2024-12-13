@@ -12,12 +12,14 @@ import { useFSEvents } from '../../helper/dirSourceHelpers';
 import { genArrowListener, checkSlideItemToView } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
-import { useSelectedEditingSlideItemContext } from '../../slide-list/SlideItem';
+import {
+    useSelectedEditingSlideItemSetterContext,
+} from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
 
 export default function SlideItems() {
-    const { selectedSlide } = useSelectedSlideContext();
-    const { setSelectedSlideItem } = useSelectedEditingSlideItemContext();
+    const selectedSlide = useSelectedSlideContext();
+    const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     useFSEvents(['select', 'edit'], selectedSlide.filePath);

@@ -30,19 +30,25 @@ if (!appProvider.isPagePresenter) {
 tabs.push(readerTab);
 
 function TabRender() {
+    const handleClicking = async (tab: TabOptionType) => {
+        if (tab.preCheck) {
+            const isPassed = await tab.preCheck();
+            if (!isPassed) {
+                return;
+            }
+        }
+        goToPath(tab.routePath);
+    };
     return (
         <ul className='nav nav-tabs'>
             {tabs.map((tab) => {
-                const { title, routePath } = tab;
                 return (
                     <li key={tab.title}
                         className='nav-item'>
                         <button
                             className='btn btn-link nav-link'
-                            onClick={() => {
-                                goToPath(routePath);
-                            }}>
-                            {tran(title)}
+                            onClick={handleClicking.bind(null, tab)}>
+                            {tran(tab.title)}
                         </button>
                     </li>
                 );
@@ -71,7 +77,7 @@ function useSlideContextValues() {
     }, undefined, { methods: { setSelectedSlide, setSelectedSlideItem } });
     const slideContextValue = useMemo(() => {
         return {
-            selectedSlide: selectedSlide as Slide,
+            selectedSlide: selectedSlide,
             setSelectedSlide: (newSelectedSlide: Slide) => {
                 setSelectedSlide(newSelectedSlide);
                 const firstSlideItem = newSelectedSlide.items[0];

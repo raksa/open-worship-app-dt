@@ -15,10 +15,13 @@ export default function ShowHideScreen() {
     const isShowing = screenManager.isShowing;
     return (
         <div className={`show-hide pointer ${isShowing ? 'show' : ''}`}
+            title={
+                'Toggle showing screen ' +
+                `[${toShortcutKey(showingScreenEventMap)}]`
+            }
             onClick={() => {
                 screenManager.isShowing = !isShowing;
-            }}
-            data-tool-tip={toShortcutKey(showingScreenEventMap)}>
+            }}>
             <ShowingScreenIcon screenId={screenManager.screenId} />
             <i className='bi bi-file-slides-fill' />
         </div>

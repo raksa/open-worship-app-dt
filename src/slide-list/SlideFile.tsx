@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
-import Slide, { useSelectedSlideContext } from './Slide';
+import Slide, { useSelectedSlideSetterContext } from './Slide';
 import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
@@ -19,7 +19,7 @@ export default function SlideFile({
     index: number,
     filePath: string,
 }>) {
-    const { setSelectedSlide } = useSelectedSlideContext();
+    const setSelectedSlide = useSelectedSlideSetterContext();
     const [data, setData] = useState<SlideDynamicType>(null);
     const handleReloading = () => {
         setData(null);

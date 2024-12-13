@@ -7,7 +7,7 @@ import { handleCtrlWheel } from '../../others/AppRange';
 import { defaultRangeSize } from './SlidePreviewerFooter';
 
 export default function SlideItemsPreviewer() {
-    const { selectedSlide } = useSelectedSlideContext();
+    const selectedSlide = useSelectedSlideContext();
     const [
         thumbSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();

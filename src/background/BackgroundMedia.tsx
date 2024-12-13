@@ -9,6 +9,7 @@ import ItemColorNote from '../others/ItemColorNote';
 import { handleDragStart } from '../bible-list/dragHelpers';
 import { useGenDS } from '../helper/dirSourceHelpers';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
+import { getMimetypeExtensions } from '../server/fileHelpers';
 
 export type RenderChildType = (
     filePath: string,
@@ -55,6 +56,11 @@ export default function BackgroundMedia({
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
             bodyHandler={handleBodyRendering}
+            fileSelectionOption={bgType === 'color' ? undefined : {
+                windowTitle: `Select ${bgType} files`,
+                dirPath: dirSource.dirPath,
+                extensions: getMimetypeExtensions(bgType),
+            }}
         />
     );
 }

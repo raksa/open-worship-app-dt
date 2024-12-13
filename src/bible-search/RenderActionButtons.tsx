@@ -1,5 +1,5 @@
-import KeyboardEventListener, {
-    EventMapper as KBEventMapper, useKeyboardRegistering,
+import {
+    EventMapper as KBEventMapper, toShortcutKey, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import {
     addBibleItem, updateBibleItem,
@@ -36,46 +36,44 @@ export default function RenderActionButtons() {
     if (!isBibleEditor) {
         return null;
     }
-    const addingListShortcutKey = KeyboardEventListener.toShortcutKey(
-        addListEventMapper,
-    );
-    const savingAndShowingShortcutKey = KeyboardEventListener.toShortcutKey(
-        presenterEventMapper,
-    );
+    const addingListShortcutKey = toShortcutKey(addListEventMapper);
+    const savingAndShowingShortcutKey = toShortcutKey(presenterEventMapper);
     return (
         <div className='btn-group mx-1'>
             <button type='button'
                 className='btn btn-sm btn-info'
+                title={`Save bible item [${addingListShortcutKey}]`}
                 onClick={() => {
                     updateBibleItem(bibleItem, data);
-                }}
-                data-tool-tip={`Save bible item [${addingListShortcutKey}]`}>
+                }}>
                 <i className='bi bi-floppy' />
             </button>
-            {!appProvider.isPagePresenter ? null : <button type='button'
-                className='btn btn-sm btn-info ms-1'
-                onClick={(event) => {
-                    const updatedBibleItem = updateBibleItem(
-                        bibleItem, data,
-                    );
-                    if (updatedBibleItem !== null) {
-                        ScreenFTManager.ftBibleItemSelect(
-                            event, [bibleItem],
-                        );
-                    } else {
-                        showSimpleToast(
-                            'Update Bible Item',
-                            'Fail to update bible item',
-                        );
+            {!appProvider.isPagePresenter ? null : (
+                <button type='button'
+                    className='btn btn-sm btn-info ms-1'
+                    title={
+                        'Save bible item and show on screen ' +
+                        `[${savingAndShowingShortcutKey}]`
                     }
-                }}
-                data-tool-tip={
-                    'Save bible item and show on screen ' +
-                    `[${savingAndShowingShortcutKey}]`
-                }>
-                <i className='bi bi-floppy' />
-                <i className='bi bi-easel' />
-            </button>}
+                    onClick={(event) => {
+                        const updatedBibleItem = updateBibleItem(
+                            bibleItem, data,
+                        );
+                        if (updatedBibleItem !== null) {
+                            ScreenFTManager.ftBibleItemSelect(
+                                event, [bibleItem],
+                            );
+                        } else {
+                            showSimpleToast(
+                                'Update Bible Item',
+                                'Fail to update bible item',
+                            );
+                        }
+                    }}>
+                    <i className='bi bi-floppy' />
+                    <i className='bi bi-easel' />
+                </button>
+            )}
         </div>
     );
 }
@@ -122,15 +120,6 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
     });
 }
 
-function toShortcutKey(
-    eventMapper: KBEventMapper, isKeyboardShortcut?: boolean,
-) {
-    if (!isKeyboardShortcut) {
-        return '';
-    }
-    return `[${KeyboardEventListener.toShortcutKey(eventMapper)}]`;
-}
-
 export function genFoundBibleItemContextMenu(
     bibleItem: BibleItem, onDone: () => void, isKeyboardShortcut?: boolean,
 ): ContextMenuItemType[] {
@@ -159,9 +148,10 @@ export function genFoundBibleItemContextMenu(
                 },
             },
             {
-                menuTitle: `Add bible item and show on screen ${toShortcutKey(
-                    presenterEventMapper, isKeyboardShortcut,
-                )}`,
+                otherChild: isKeyboardShortcut ? (
+                    genContextMenuItemShortcutKey(presenterEventMapper)
+                ) : undefined,
+                menuTitle: `Add bible item and show on screen`,
                 onClick: async (event: any) => {
                     addBibleItemAndPresent(event, bibleItem, onDone);
                 },
