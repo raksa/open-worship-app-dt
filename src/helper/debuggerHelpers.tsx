@@ -2,7 +2,7 @@ import {
     DependencyList, EffectCallback, useEffect, useMemo, useState,
 } from 'react';
 
-import { log, warn } from './loggerHelpers';
+import { warn } from './loggerHelpers';
 
 const THRESHOLD = 10;
 const MILLIE_SECOND = 1000;
@@ -16,9 +16,6 @@ function restore(toKey: string) {
         count: 0,
         timeoutId: 0,
     });
-    if (store.count === 0) {
-        log('[useAppEffect] is called for the first time');
-    }
     store.count++;
     if (store.timeoutId) {
         clearTimeout(store.timeoutId);
@@ -52,35 +49,31 @@ function checkStore(toKey: string) {
 
 type MethodContextType = { [key: string]: any }
 export function useAppEffectAsync<T extends MethodContextType>(
-    effect: (methodContext: T) => (
-        void | (() => void) | Promise<void>
-    ),
+    effectMethod: (methodContext: T) => Promise<(() => void) | void>,
     deps?: DependencyList,
-    context?: {
-        key?: string,
-        methods?: T,
-    },
+    methods?: T,
+    key?: string,
 ) {
     const toKey = useMemo(() => {
-        return context?.key ?? effect.toString();
+        return key ?? effectMethod.toString();
     }, []);
-    const toEffect = (methodContext: T) => {
-        checkStore(toKey);
-        return effect(methodContext);
-    };
-    const totalDeps = (!deps && !context?.methods) ? undefined : [
-        ...(deps || []), ...Object.values(context?.methods ?? {}),
+    const isAllUndefined = deps === undefined && methods === undefined;
+    const totalDeps = isAllUndefined ? undefined : [
+        ...(deps || []), ...Object.values(methods ?? {}),
     ];
     useEffect(() => {
-        const methodContext = { ...context?.methods ?? {} };
-        const unmount = toEffect(methodContext as T);
+        const methodContext = { ...(methods ?? {}) } as T;
+        checkStore(toKey);
+        const unmount = effectMethod(methodContext);
         return () => {
-            Object.keys(methodContext).forEach((key) => {
-                methodContext[key] = warningMethod.bind(null, key);
-            });
-            if (unmount && typeof unmount === 'function') {
-                unmount();
+            for (const key in methodContext) {
+                methodContext[key] = warningMethod.bind(null, key) as any;
             }
+            unmount.then((cleanupResolved) => {
+                if (typeof cleanupResolved === 'function') {
+                    cleanupResolved();
+                }
+            });
         };
     }, totalDeps);
 }

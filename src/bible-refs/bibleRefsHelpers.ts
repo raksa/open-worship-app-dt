@@ -107,6 +107,6 @@ export function useGetBibleRef(bookKey: string, chapter: number,
         const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
         const data = await getBibleRef(key);
         methodContext.setBibleRef(data);
-    }, [bookKey, chapter], { methods: { setBibleRef } });
+    }, [bookKey, chapter], { setBibleRef });
     return bibleRef;
 }

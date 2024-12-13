@@ -55,7 +55,7 @@ export default function SlideFile({
             const slide = await Slide.readFileToData(filePath);
             methodContext.setData(slide);
         }
-    }, [data], { methods: { setData } });
+    }, [data], { setData });
     useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
         setData(null);
     });

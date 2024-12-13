@@ -54,7 +54,7 @@ export function useSelectedBibleKey() {
     useAppEffectAsync(async (methodContext) => {
         const bibleKey = await getSelectedEditorBibleItem();
         methodContext.setBibleKeySelected1(bibleKey);
-    }, [], { methods: { setBibleKeySelected1 } });
+    }, [], { setBibleKeySelected1 });
     return [bibleKeySelected, setBibleKeySelected1] as const;
 }
 
@@ -65,7 +65,7 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
             const title = await bibleItem.toTitle();
             methodContext.setInputText(title);
         }
-    }, [bibleItem], { methods: { setInputText } });
+    }, [bibleItem], { setInputText });
     return [inputText, setInputText] as [string, (s: string) => void];
 }
 

@@ -7,7 +7,7 @@ import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
 import { handleDragStart } from '../bible-list/dragHelpers';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 import { getMimetypeExtensions } from '../server/fileHelpers';
 
@@ -35,7 +35,7 @@ export default function BackgroundMedia({
     isNameOnTop?: boolean,
 }>) {
     const bgType = bgTypeMapper[dragType];
-    const dirSource = useGenDS(dirSourceSettingName);
+    const dirSource = useGenDirSource(dirSourceSettingName);
     const handleBodyRendering = (filePaths: string[]) => {
         const genBodyWithChild = genBody.bind(
             null, rendChild, dragType, noDraggable, noClickable, isNameOnTop,

@@ -11,14 +11,14 @@ import {
     mimetypePdf,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
     defaultDataDirNames, dirSourceSettingNames,
 } from '../helper/constants';
 import { DroppedFileType } from '../others/droppingFileHelpers';
 
 export default function SlideList() {
-    const dirSource = useGenDS(dirSourceSettingNames.SLIDE);
+    const dirSource = useGenDirSource(dirSourceSettingNames.SLIDE);
     if (dirSource !== null) {
         dirSource.checkExtraFile = (fileFullName: string) => {
             if (checkIsPdf(extractExtension(fileFullName))) {

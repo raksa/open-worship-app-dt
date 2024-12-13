@@ -3,7 +3,7 @@ import './BibleList.scss';
 import FileListHandler from '../others/FileListHandler';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { getSettingPrefix } from '../helper/settingHelpers';
 import {
     defaultDataDirNames,
@@ -12,7 +12,7 @@ import appProvider from '../server/appProvider';
 
 export default function BibleList() {
     const dirSourceSettingName = Bible.getDirSourceSettingName();
-    const dirSource = useGenDS(dirSourceSettingName);
+    const dirSource = useGenDirSource(dirSourceSettingName);
     const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>

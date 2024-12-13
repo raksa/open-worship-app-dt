@@ -3,13 +3,13 @@ import './LyricList.scss';
 import LyricFile from './LyricFile';
 import FileListHandler from '../others/FileListHandler';
 import Lyric from './Lyric';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
     defaultDataDirNames, dirSourceSettingNames,
 } from '../helper/constants';
 
 export default function LyricList() {
-    const dirSource = useGenDS(dirSourceSettingNames.LYRIC);
+    const dirSource = useGenDirSource(dirSourceSettingNames.LYRIC);
     const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>

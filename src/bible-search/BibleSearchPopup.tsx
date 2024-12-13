@@ -25,7 +25,7 @@ export default function BibleSearchPopup() {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleItem.bibleKey);
         const title = await bibleItem.toTitle();
         methodContext.setInputText(title);
-    }, [bibleItem, inputText], { methods: { setInputText } });
+    }, [bibleItem, inputText], { setInputText });
     return (
         <Modal>
             {inputText === null ? (

@@ -69,7 +69,7 @@ export default function BibleFile({
             const bible = await Bible.readFileToData(filePath);
             methodContext.setData(bible);
         }
-    }, [data], { methods: { setData } });
+    }, [data], { setData });
     const handlerChildRendering = (bible: ItemSource<any>) => {
         return (
             <BiblePreview bible={bible as Bible} />
