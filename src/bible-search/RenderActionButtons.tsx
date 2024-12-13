@@ -151,7 +151,7 @@ export function genFoundBibleItemContextMenu(
                 otherChild: isKeyboardShortcut ? (
                     genContextMenuItemShortcutKey(presenterEventMapper)
                 ) : undefined,
-                menuTitle: `Add bible item and show on screen`,
+                menuTitle: 'Add bible item and show on screen',
                 onClick: async (event: any) => {
                     addBibleItemAndPresent(event, bibleItem, onDone);
                 },

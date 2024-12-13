@@ -73,7 +73,7 @@ export default function SlideList() {
             header={<span>Slides</span>}
             bodyHandler={handleBodyRendering}
             fileSelectionOption={{
-                windowTitle: `Select slide files`,
+                windowTitle: 'Select slide files',
                 dirPath: dirSource.dirPath,
                 extensions: [
                     ...getMimetypeExtensions('slide'),
