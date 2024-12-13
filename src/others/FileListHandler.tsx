@@ -39,8 +39,6 @@ async function watch(dirSource: DirSource, signal: AbortSignal) {
             }
             if (eventType === 'rename') {
                 dirSource.fireReloadEvent();
-            } else if (eventType === 'change') {
-                dirSource.fireReloadFileEvent(fileFullName);
             }
         });
     } catch (error) {
