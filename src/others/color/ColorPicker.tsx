@@ -1,6 +1,7 @@
 import './ColorPicker.scss';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+
 import colorList from '../color-list.json';
 import {
     AppColorType, transparentColor, colorToTransparent,
@@ -18,7 +19,7 @@ export default function ColorPicker({
     onNoColor?: (color: AppColorType, event: MouseEvent) => void
 }>) {
     const [localColor, setLocalColor] = useState(color);
-    const onColorChangeCallback = useCallback((
+    const handleColorChanging = (
         newColor: AppColorType | null, event: any) => {
         if (newColor === null) {
             onNoColor?.(defaultColor, event);
@@ -30,8 +31,8 @@ export default function ColorPicker({
             transparentColor(colorToTransparent(localColor));
         const newColorStr = newColor + hex;
         applyNewColor(newColorStr, event);
-    }, [defaultColor, localColor, onColorChange]);
-    const onOpacityChangedCallback = useCallback((
+    };
+    const handleOpacityChanging = (
         value: number, event: any) => {
         if (localColor === null) {
             return;
@@ -41,7 +42,7 @@ export default function ColorPicker({
         newColor[7] = hex[0];
         newColor[8] = hex[1];
         applyNewColor(newColor.join(''), event);
-    }, [localColor]);
+    };
     useAppEffect(() => {
         setLocalColor(color);
     }, [color]);
@@ -54,14 +55,18 @@ export default function ColorPicker({
         setLocalColor(upperColor);
     };
     return (
-        <div className='color-picker border-white-round'>
+        <div className='flex-item color-picker'>
             <div className='p-3 overflow-hidden'>
                 <RenderColors colors={colorList.main}
                     selectedColor={localColor}
-                    onColorChange={onColorChangeCallback} />
-                {localColor !== null && <OpacitySlider
-                    value={colorToTransparent(localColor)}
-                    onOpacityChanged={onOpacityChangedCallback} />}
+                    onColorChange={handleColorChanging}
+                />
+                {localColor !== null && (
+                    <OpacitySlider
+                        value={colorToTransparent(localColor)}
+                        onOpacityChanged={handleOpacityChanging}
+                    />
+                )}
             </div>
         </div>
     );

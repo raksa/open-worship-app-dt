@@ -1,10 +1,11 @@
 import { useState } from 'react';
+
 import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { MimetypeNameType } from '../server/fileHelper';
+import { MimetypeNameType } from '../server/fileHelpers';
 
-const UNKNOWN = 'unknown';
+const UNKNOWN_COLOR_NOTE = 'unknown';
 
 export default function RenderList({
     dirSource,
@@ -55,11 +56,11 @@ export default function RenderList({
 
     }
     const fileSourceColorMap: { [key: string]: string[] } = {
-        [UNKNOWN]: [],
+        [UNKNOWN_COLOR_NOTE]: [],
     };
     filePaths.forEach((filePath) => {
         const fileSource = FileSource.getInstance(filePath);
-        const colorNote = fileSource.colorNote || UNKNOWN;
+        const colorNote = fileSource.colorNote || UNKNOWN_COLOR_NOTE;
         fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
         fileSourceColorMap[colorNote].push(filePath);
     });
@@ -67,15 +68,15 @@ export default function RenderList({
         return bodyHandler(filePaths);
     }
     const keys = Object.keys(fileSourceColorMap).filter((key) => {
-        return key !== UNKNOWN;
+        return key !== UNKNOWN_COLOR_NOTE;
     }).sort((a, b) => a.localeCompare(b));
-    keys.push(UNKNOWN);
+    keys.push(UNKNOWN_COLOR_NOTE);
     return (
         <>{keys.map((colorNote) => {
             const subFileSources = fileSourceColorMap[colorNote];
             return (
                 <div key={colorNote}>
-                    <hr style={colorNote === UNKNOWN ? {} : {
+                    <hr style={colorNote === UNKNOWN_COLOR_NOTE ? {} : {
                         backgroundColor: colorNote,
                         height: '1px',
                         border: 0,

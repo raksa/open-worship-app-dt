@@ -1,21 +1,12 @@
 import DirSource from './DirSource';
 import {
-    checkIsAppFile,
-    extractExtension,
-    fsCheckFileExist,
-    fsCreateFile,
-    fsDeleteFile,
-    fsReadFile,
-    fsRenameFile,
-    fsWriteFile,
-    getFileMetaData,
-    pathBasename,
-    pathJoin,
-    pathSeparator,
-} from '../server/fileHelper';
+    checkIsAppFile, extractExtension, fsCheckFileExist, fsCreateFile,
+    fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
+    pathBasename, pathJoin, pathSeparator,
+} from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
-import { urlPathToFileURL } from '../server/helpers';
+import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
 import DragInf, { DragTypeEnum } from './DragInf';
@@ -26,29 +17,34 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FSEventType = 'select' | 'update' | 'history-update' | 'edit'
-    | 'delete' | 'delete-cache';
+export type FSEventType = (
+    'select' | 'update' | 'history-update' | 'edit' | 'delete' | 'delete-cache'
+);
 
+const cache = new Map<string, FileSource>();
 export default class FileSource extends EventHandler<FSEventType>
     implements DragInf<string>, ColorNoteInf {
-    static eventNamePrefix: string = 'file-source';
+    static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
-    fileName: string;
+    fileFullName: string;
     filePath: string;
     src: string;
     colorNote: string | null = null;
-    static _cache = new Map<string, FileSource>();
-    constructor(basePath: string, fileName: string,
-        filePath: string, src: string) {
+
+    constructor(
+        basePath: string, fileFullName: string, filePath: string, src: string,
+    ) {
         super();
         this.basePath = basePath;
-        this.fileName = fileName;
+        this.fileFullName = fileFullName;
         this.filePath = filePath;
         this.src = src;
     }
+
     get isAppFile() {
-        return !checkIsAppFile(this.fileName);
+        return !checkIsAppFile(this.fileFullName);
     }
+
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
             appProvider.fileUtils.readFile(this.filePath, {
@@ -68,31 +64,40 @@ export default class FileSource extends EventHandler<FSEventType>
             });
         });
     }
+
     getColorNote() {
         return FileSourceMetaManager.getColorNote(this.filePath);
     }
+
     async setColorNote(color: string | null) {
         FileSourceMetaManager.setColorNote(this.filePath, color);
         this.dirSource?.fireReloadEvent();
     }
+
     get metadata() {
-        return getFileMetaData(this.fileName);
+        return getFileMetaData(this.fileFullName);
     }
+
     get name() {
-        return this.fileName.substring(0,
-            this.fileName.lastIndexOf('.'));
+        return this.fileFullName.substring(
+            0, this.fileFullName.lastIndexOf('.'),
+        );
     }
+
     get extension() {
-        return extractExtension(this.fileName);
+        return extractExtension(this.fileFullName);
     }
+
     get dirSource() {
         return DirSource.getInstanceByDirPath(this.basePath);
     }
+
     deleteCache() {
-        FileSource._cache.delete(this.filePath);
+        cache.delete(this.filePath);
         ItemSource.deleteCache(this.filePath);
         this.fireDeleteCacheEvent();
     }
+
     async readFileToJsonData() {
         try {
             const str = await fsReadFile(this.filePath);
@@ -100,10 +105,15 @@ export default class FileSource extends EventHandler<FSEventType>
                 return JSON.parse(str) as AnyObjectType;
             }
         } catch (error: any) {
-            showSimpleToast('Reading File Data', error.message);
+            showSimpleToast(
+                'Reader File Data',
+                'Error occurred during reading ' +
+                `file: "${this.filePath}", error: ${error.message}`
+            );
         }
         return null;
     }
+
     async saveData(data: string) {
         try {
             const isFileExist = await fsCheckFileExist(this.filePath);
@@ -119,10 +129,12 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
+
     async saveDataFromItem(item: ItemSource<any>) {
         const content = JSON.stringify(item.toJson());
         return this.saveData(content);
     }
+
     async delete() {
         try {
             await fsDeleteFile(this.filePath);
@@ -134,46 +146,52 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
-    static getInstanceNoCache(filePath: string, fileName?: string) {
+
+    static getInstanceNoCache(filePath: string, fileFullName?: string) {
         let basePath;
-        if (fileName) {
+        if (fileFullName) {
             basePath = filePath;
-            filePath = pathJoin(filePath, fileName);
+            filePath = pathJoin(filePath, fileFullName);
         } else {
             const index = filePath.lastIndexOf(pathSeparator);
             basePath = filePath.substring(0, index);
-            fileName = pathBasename(filePath);
+            fileFullName = pathBasename(filePath);
         }
-        return new FileSource(basePath, fileName, filePath,
-            urlPathToFileURL(filePath).toString());
+        return new FileSource(
+            basePath, fileFullName, filePath, pathToFileURL(filePath),
+        );
     }
-    static getInstance(filePath: string, fileName?: string,
+
+    static getInstance(filePath: string, fileFullName?: string,
         refreshCache?: boolean) {
-        const fileSource = this.getInstanceNoCache(filePath, fileName);
+        const fileSource = this.getInstanceNoCache(filePath, fileFullName);
         if (refreshCache) {
-            this._cache.delete(fileSource.filePath);
+            cache.delete(fileSource.filePath);
         }
-        if (this._cache.has(fileSource.filePath)) {
-            return this._cache.get(fileSource.filePath) as FileSource;
+        if (cache.has(fileSource.filePath)) {
+            return cache.get(fileSource.filePath) as FileSource;
         }
-        this._cache.set(fileSource.filePath, fileSource);
+        cache.set(fileSource.filePath, fileSource);
         return fileSource;
     }
+
     dragSerialize(type?: DragTypeEnum) {
         return {
             type: type || DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
     }
+
     static dragDeserialize(data: any) {
         return this.getInstance(data);
     }
+
     async renameTo(newName: string) {
         if (newName === this.name) {
             return false;
         }
         try {
-            await fsRenameFile(this.basePath, this.fileName,
+            await fsRenameFile(this.basePath, this.fileFullName,
                 newName + this.extension);
             return true;
         } catch (error: any) {
@@ -183,6 +201,7 @@ export default class FileSource extends EventHandler<FSEventType>
         }
         return false;
     }
+
     private async _duplicate() {
         let i = 1;
         let newName = this.name + ' (Copy)';
@@ -197,6 +216,7 @@ export default class FileSource extends EventHandler<FSEventType>
             await fsCreateFile(newFilePath, JSON.stringify(data));
         }
     }
+
     async duplicate() {
         try {
             await this._duplicate();
@@ -205,6 +225,7 @@ export default class FileSource extends EventHandler<FSEventType>
             handleError(error);
         }
     }
+
     static registerFSEventListener(
         events: FSEventType[], callback: () => void, filePath?: string,
     ) {
@@ -213,6 +234,7 @@ export default class FileSource extends EventHandler<FSEventType>
         });
         return super.registerEventListener(newEvents, callback);
     }
+
     static addFSPropEvent(
         eventName: FSEventType, filePath: string, data?: any,
     ): void {
@@ -220,18 +242,23 @@ export default class FileSource extends EventHandler<FSEventType>
         super.addPropEvent(eventName, data);
         super.addPropEvent(newEventName, data);
     }
+
     fireSelectEvent() {
         FileSource.addFSPropEvent('select', this.filePath);
     }
+
     fireHistoryUpdateEvent() {
         FileSource.addFSPropEvent('history-update', this.filePath);
     }
+
     fireUpdateEvent() {
         FileSource.addFSPropEvent('update', this.filePath);
     }
+
     fireDeleteEvent() {
         FileSource.addFSPropEvent('delete', this.filePath);
     }
+
     fireDeleteCacheEvent() {
         FileSource.addFSPropEvent('delete-cache', this.filePath);
     }

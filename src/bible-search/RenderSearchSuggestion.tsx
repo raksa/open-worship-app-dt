@@ -1,59 +1,56 @@
-import { useCallback } from 'react';
 import RenderBookOptions from './RenderBookOptions';
 import RenderChapterOptions from './RenderChapterOptions';
 import {
     ExtractedBibleResult,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
-import BibleItem from '../bible-list/BibleItem';
+import { BibleItemContext } from '../bible-reader/BibleItemContext';
+import { attemptAddingHistory } from './InputHistory';
 
 export default function RenderSearchSuggestion({
-    applyChapterSelection, applyVerseSelection, applyBookSelection,
-    bibleResult, bibleKey, pinningBibleItem,
+    bibleResult, applyChapterSelection, applyVerseSelection,
+    applyBookSelection,
 }: Readonly<{
+    bibleResult: ExtractedBibleResult,
     applyChapterSelection: (newChapter: number) => void,
     applyVerseSelection: (
-        newStartVerse?: number, newEndVerse?: number,
+        newVerseStart?: number, newVerseEnd?: number,
     ) => void,
     applyBookSelection: (newBookKey: string, newBook: string) => void,
-    inputText: string,
-    bibleKey: string,
-    bibleResult: ExtractedBibleResult,
-    pinningBibleItem: (bibleItem: BibleItem) => void,
 }>) {
-    const onVerseChangeCallback = useCallback(
-        (newStartVerse?: number, newEndVerse?: number) => {
-            applyVerseSelection(newStartVerse, newEndVerse);
-        },
-        [applyVerseSelection],
-    );
+    const handleVerseChanging = (
+        newVerseStart?: number, newVerseEnd?: number,
+    ) => {
+        applyVerseSelection(newVerseStart, newVerseEnd);
+    };
     const {
         bookKey, guessingBook, chapter, guessingChapter, bibleItem,
     } = bibleResult;
 
     if (bibleItem !== null) {
+        bibleItem.toTitle().then((text) => {
+            attemptAddingHistory(bibleItem.bibleKey, text);
+        });
         return (
-            <div className='d-flex w-100 h-100'>
+            <BibleItemContext value={bibleItem}>
                 <RenderBibleDataFound
-                    bibleItem={bibleItem}
-                    onVerseChange={onVerseChangeCallback}
-                    onPinning={() => pinningBibleItem(bibleItem)}
+                    onVerseChange={handleVerseChanging}
                 />
-            </div>
+            </BibleItemContext>
         );
     }
     return (
-        <div className='w-100 h-100'
-            style={{ overflow: 'auto' }}>
-            <div className='d-flex flex-wrap justify-content-start'>
+        <div className='found w-100 h-100'>
+            <div className={
+                'w-100  d-flex flex-wrap align-items-start '
+                + 'justify-content-start'
+            }>
                 <RenderBookOptions
-                    bibleKey={bibleKey}
                     bookKey={bookKey}
                     guessingBook={guessingBook}
                     onSelect={applyBookSelection}
                 />
                 <RenderChapterOptions
-                    bibleKey={bibleKey}
                     bookKey={bookKey}
                     chapter={chapter}
                     guessingChapter={guessingChapter}
@@ -66,7 +63,7 @@ export default function RenderSearchSuggestion({
 
 export function BibleNotAvailable() {
     return (
-        <div id='bible-search-popup' className='app-modal shadow card'>
+        <div id='bible-search-popup' className='shadow card'>
             <div className='body card-body w-100'>
                 Bible not available!
             </div>

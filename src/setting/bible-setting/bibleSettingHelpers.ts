@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import {
     BibleMinimalInfoType, getDownloadedBibleInfoList, getOnlineBibleInfoList,
@@ -29,8 +30,8 @@ export function useOnlineBibleInfoList() {
             setBibleInfoList(bibleInfoList || undefined);
         });
     }, [bibleInfoList]);
-    const _setBibleInfoList = (bibleInfoList: BibleListType) => {
+    const setBibleInfoList1 = (bibleInfoList: BibleListType) => {
         setBibleInfoList(bibleInfoList);
     };
-    return [bibleInfoList, _setBibleInfoList] as const;
+    return [bibleInfoList, setBibleInfoList1] as const;
 }

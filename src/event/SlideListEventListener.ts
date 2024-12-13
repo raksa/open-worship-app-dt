@@ -1,7 +1,10 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     getSetting, useStateSettingNumber,
-} from '../helper/settingHelper';
+} from '../helper/settingHelpers';
+import {
+    DEFAULT_THUMBNAIL_SIZE_FACTOR, THUMBNAIL_WIDTH_SETTING_NAME,
+} from '../slide-list/slideHelpers';
 import SlideItem from '../slide-list/SlideItem';
 import EventHandler, { ListenerType } from './EventHandler';
 
@@ -9,7 +12,7 @@ export type SlideListEventType = 'slide-item-select' | 'slide-item-sizing';
 
 export default class SlideListEventListener extends
     EventHandler<SlideListEventType> {
-    static eventNamePrefix: string = 'slide-list';
+    static readonly eventNamePrefix: string = 'slide-list';
     static selectSlideItem(slideItem: SlideItem | null) {
         this.addPropEvent('slide-item-select', slideItem);
     }
@@ -29,23 +32,29 @@ export function useSlideItemSelecting(
         };
     });
 }
-export function useSlideItemSizing(settingName: string, defaultSize: number)
-    : [number, (s: number) => void] {
-    const getDefaultSize = () => +getSetting(
-        settingName, defaultSize.toString());
-    const [thumbnailSize, setThumbnailSize] = useStateSettingNumber(
-        settingName, getDefaultSize());
+
+export function useSlideItemThumbnailSizeScale(
+    settingName = THUMBNAIL_WIDTH_SETTING_NAME,
+    defaultSize = DEFAULT_THUMBNAIL_SIZE_FACTOR,
+): [number, (newScale: number) => void] {
+    const getDefaultSize = () => {
+        return parseInt(getSetting(settingName, defaultSize.toString()), 10);
+    };
+    const [thumbnailSizeScale, setThumbnailSizeScale] = useStateSettingNumber(
+        settingName, getDefaultSize(),
+    );
     useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(
-            ['slide-item-sizing'], () => setThumbnailSize(getDefaultSize()),
+            ['slide-item-sizing'],
+            () => setThumbnailSizeScale(getDefaultSize()),
         );
         return () => {
             SlideListEventListener.unregisterEventListener(event);
         };
     });
-    const applyThumbnailSize = (size: number) => {
-        setThumbnailSize(size);
+    const applyThumbnailSizeScale = (size: number) => {
+        setThumbnailSizeScale(size);
         SlideListEventListener.slideItemSizing();
     };
-    return [thumbnailSize, applyThumbnailSize];
+    return [thumbnailSizeScale, applyThumbnailSizeScale];
 }

@@ -40,7 +40,7 @@ export default class CanvasItemBibleItem extends CanvasItemText {
     }
     static async fromBibleItem(id: number, bibleItem: BibleItem) {
         const title = await bibleItem.toTitle();
-        const text = await bibleRenderHelper.bibleItemToText(
+        const text = await bibleRenderHelper.toText(
             bibleItem.bibleKey, bibleItem.target,
         );
         const newTextItem = super.genDefaultItem();

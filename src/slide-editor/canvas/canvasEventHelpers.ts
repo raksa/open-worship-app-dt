@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import CanvasController from './CanvasController';
 import { CCEventType } from './canvasHelpers';
@@ -18,7 +19,7 @@ export function useCanvasControllerEvents(eventTypes: CCEventType[]) {
     }, [n]);
 }
 
-export function useCCScale() {
+export function useSlideItemCanvasScale() {
     const canvasController = CanvasController.getInstance();
     const [scale, setScale] = useState(canvasController.scale);
     useAppEffect(() => {

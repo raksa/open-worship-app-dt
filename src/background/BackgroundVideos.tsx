@@ -1,28 +1,23 @@
 import './BackgroundVideos.scss';
 
 import { createRef } from 'react';
-import {
-    BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { RenderPresentIds } from './Background';
+
+import { RenderScreenIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
-
-
-export default function BackgroundVideos() {
-    return (
-        <BackgroundMedia dragType={DragTypeEnum.BG_VIDEO}
-            rendChild={rendChild} />
-    );
-}
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
+import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
     filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
 ) {
     return (
         <RendBody filePath={filePath}
-            selectedBGSrcList={selectedBGSrcList} />
+            selectedBGSrcList={selectedBGSrcList}
+        />
     );
 }
 
@@ -43,12 +38,27 @@ function RendBody({ filePath, selectedBGSrcList }: Readonly<{
                     vRef.current.currentTime = 0;
                 }
             }}>
-            <RenderPresentIds
-                ids={selectedBGSrcList.map(([key]) => +key)} />
+            <RenderScreenIds
+                screenIds={selectedBGSrcList.map(([key]) => {
+                    return parseInt(key, 10);
+                })}
+            />
             <video ref={vRef}
                 loop
                 muted
-                src={fileSource.src} />
+                src={fileSource.src}
+            />
         </div>
+    );
+}
+
+export default function BackgroundVideos() {
+    return (
+        <BackgroundMedia
+            defaultFolderName={defaultDataDirNames.BACKGROUND_VIDEO}
+            dragType={DragTypeEnum.BG_VIDEO}
+            rendChild={rendChild}
+            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_VIDEO}
+        />
     );
 }

@@ -5,100 +5,123 @@ export type RegisteredEventType<T, F> = {
     listener: ListenerType<F>,
 };
 
-export default class EventHandler<T extends string> {
-    static eventNamePrefix: string = 'event';
-    private static readonly _eventHandler = new EventHandler<any>();
-    private _eventListenersMapper = new Map<string, ListenerType<any>[]>();
-    _propEvent: {
+export class BasicEventHandler<T extends string> {
+    private eventListenersMapper = new Map<string, ListenerType<any>[]>();
+    private readonly propEvent: {
         eventName: T,
         data?: any,
-    }[] = [];
-    _isLockProp: boolean = false;
+    }[];
+    constructor() {
+        this.propEvent = [];
+    }
+    isLockProp: boolean = false;
     public destroy() {
-        this._eventListenersMapper = new Map();
-        this._propEvent = [];
+        this.eventListenersMapper = new Map();
+        this.propEvent.length = 0;
     }
 
-    _checkPropEvent() {
-        if (this._isLockProp) {
+    private checkPropEvent() {
+        if (this.isLockProp) {
             return;
         }
-        while (this._propEvent.length) {
-            const event = this._propEvent.shift();
+        while (this.propEvent.length) {
+            const event = this.propEvent.shift();
             if (event !== undefined) {
-                this._checkOnEvent(event.eventName, event.data);
+                this.checkOnEvent(event.eventName, event.data);
             }
         }
     }
 
     addPropEvent(eventName: T, data?: any) {
-        this._propEvent.push({
+        this.propEvent.push({
             eventName,
             data,
         });
-        this._checkPropEvent();
-    }
-    static addPropEvent<T extends string>(eventName: T, data?: any) {
-        this._eventHandler.addPropEvent(this.prefixEventName(eventName), data);
+        this.checkPropEvent();
     }
 
-    _guardEventName(eventName?: string) {
-        if (!eventName) {
-            throw new Error('invalid event name');
-        }
-    }
-
-    _checkOnEvent(eventName: T, data?: any) {
-        this._guardEventName(eventName);
-        const listeners = this._eventListenersMapper.get(eventName) || [];
-        listeners.forEach((listener: ListenerType<any>) => {
-            listener(data);
-        });
-    }
-
-    _addOnEventListener(eventName: T, listener: ListenerType<any>) {
-        this._guardEventName(eventName);
-        const listeners = this._eventListenersMapper.get(eventName) || [];
+    addOnEventListener(eventName: T, listener: ListenerType<any>) {
+        this.guardEventName(eventName);
+        const listeners = this.eventListenersMapper.get(eventName) || [];
         listeners.push(listener);
-        this._eventListenersMapper.set(eventName, listeners);
+        this.eventListenersMapper.set(eventName, listeners);
     }
 
-    _removeOnEventListener(eventName: T, listener: ListenerType<any>) {
-        this._guardEventName(eventName);
-        const listeners = this._eventListenersMapper.get(eventName) || [];
+    removeOnEventListener(eventName: T, listener: ListenerType<any>) {
+        this.guardEventName(eventName);
+        const listeners = this.eventListenersMapper.get(eventName) || [];
         const index = listeners.indexOf(listener);
         if (index > -1) {
             listeners.splice(index, 1);
         }
     }
+
+    private guardEventName(eventName?: string) {
+        if (!eventName) {
+            throw new Error('invalid event name');
+        }
+    }
+
+    private checkOnEvent(eventName: T, data?: any) {
+        this.guardEventName(eventName);
+        const listeners = [
+            ...(this.eventListenersMapper.get(eventName) || []),
+        ].reverse();
+        for (const listener of listeners) {
+            listener(data);
+            if (data?.defaultPrevented) {
+                break;
+            }
+        }
+    }
+
     registerEventListener<F>(eventNames: T[], listener: ListenerType<F>):
         RegisteredEventType<T, F>[] {
         return eventNames.map((eventName) => {
-            this._addOnEventListener(eventName, listener);
+            this.addOnEventListener(eventName, listener);
             return { eventName, listener };
         });
     }
+
+    unregisterEventListener<F>(regEvents: RegisteredEventType<T, F>[]) {
+        regEvents.forEach(({ eventName, listener }) => {
+            this.removeOnEventListener(eventName, listener);
+        });
+    }
+}
+
+const eventHandler = new BasicEventHandler<any>();
+
+export default class EventHandler<T extends string> extends
+    BasicEventHandler<T> {
+
+    static readonly eventNamePrefix: string = 'event';
+
     static registerEventListener<T extends string, F>(
-        eventNames: T[], listener: ListenerType<F>):
+        eventNames: T[], listener: ListenerType<F>,
+    ):
         RegisteredEventType<T, F>[] {
         return eventNames.map((eventName) => {
-            this._eventHandler._addOnEventListener(
+            eventHandler.addOnEventListener(
                 this.prefixEventName(eventName), listener);
             return { eventName, listener };
         });
     }
-    unregisterEventListener<F>(regEvents: RegisteredEventType<T, F>[]) {
-        regEvents.forEach(({ eventName, listener }) => {
-            this._removeOnEventListener(eventName, listener);
-        });
+
+
+    static addPropEvent<T extends string>(eventName: T, data?: any) {
+        eventHandler.addPropEvent(this.prefixEventName(eventName), data);
     }
+
     static unregisterEventListener<T extends string, F>(
         regEvents: RegisteredEventType<T, F>[]) {
         regEvents.forEach(({ eventName, listener }) => {
-            this._eventHandler._removeOnEventListener(
-                this.prefixEventName(eventName), listener);
+            eventHandler.removeOnEventListener(
+                this.prefixEventName(eventName), listener,
+            );
         });
     }
+
     static prefixEventName(eventName: string) {
         return `${this.eventNamePrefix}-${eventName}`;
     }

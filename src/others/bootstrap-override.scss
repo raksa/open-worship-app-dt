@@ -1,114 +1,114 @@
-@import './variables.scss';
+@use './variables.scss' as *;
 
 $dragging-color-full: rgb(0, 174, 162);
 $dragging-color: greenyellow;
 
 #app {
 
-    // Start: Boootstrap
-    .card-header {
-        height: $card-header-height;
-        padding: 5px;
+  // Start: Boootstrap
+  .card-header {
+    height: $card-header-height;
+    padding: 5px;
+  }
+
+  .card-body {
+    padding: 1px;
+    overflow-y: auto;
+  }
+
+  .receiving-child {
+    border: 1px solid $dragging-color-full;
+    box-sizing: content-box;
+  }
+
+  .receiving-child-left {
+    border-left: 1px dashed $dragging-color;
+  }
+
+  .receiving-child-right {
+    border-right: 1px dashed $dragging-color;
+  }
+
+  .receiving-child-top {
+    border-top: 1px dashed $dragging-color;
+  }
+
+  .receiving-child-bottom {
+    border-bottom: 1px dotted $dragging-color;
+  }
+
+  .list-group-item {
+
+    border: 1px solid var(--bs-gray-700);
+
+    &:before {
+      display: block;
+      position: absolute;
+      content: attr(data-index);
+      white-space: nowrap;
+      opacity: 0.5;
+      transform: translate(-13px, 2px);
+      text-align: right;
+      width: 12px;
+      font-size: 12px;
     }
 
-    .card-body {
-        padding: 5px;
-        overflow-y: auto;
+    &:not(.active):hover {
+      border: 1px solid #0d6dfd83;
     }
 
-    .receiving-child {
-        border: 1px solid $dragging-color-full;
-        box-sizing: content-box;
+    &:hover {
+      .color-note.active {
+        opacity: 1;
+      }
+
     }
 
-    .receiving-child-left {
-        border-left: 1px dashed $dragging-color;
-    }
+    .color-note-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding-right: 2px;
 
-    .receiving-child-right {
-        border-right: 1px dashed $dragging-color;
-    }
-
-    .receiving-child-top {
-        border-top: 1px dashed $dragging-color;
-    }
-
-    .receiving-child-bottom {
-        border-bottom: 1px dotted $dragging-color;
-    }
-
-    .list-group-item {
-
-        border: 1px solid var(--bs-gray-700);
-
-        &:before {
-            display: block;
-            position: absolute;
-            content: attr(data-index);
-            white-space: nowrap;
-            opacity: 0.5;
-            transform: translate(-13px, 2px);
-            text-align: right;
-            width: 12px;
-            font-size: 12px;
-        }
-
-        &:not(.active):hover {
-            border: 1px solid #0d6dfd83;
-        }
-
-        &:hover {
-            .color-note.active {
-                opacity: 1;
-            }
-
-        }
-
-        .color-note-container {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding-right: 2px;
-
-            .color-note {
-                opacity: 0.1;
-
-                &.active {
-                    opacity: 0.4;
-                }
-            }
-        }
+      .color-note {
+        opacity: 0.1;
 
         &.active {
-            background-color: #0d6dfd2f;
-            border-color: #0d6dfd3f;
+          opacity: 0.4;
         }
+      }
     }
 
-    .form-select.bible {
-        border: none;
-        background-size: 16px;
-        cursor: pointer;
+    &.active {
+      background-color: #0d6dfd2f;
+      border-color: #0d6dfd3f;
     }
+  }
+
+  .form-select.bible {
+    border: none;
+    background-size: 16px;
+    cursor: pointer;
+  }
 
 
-    // End: Boootstrap
+  // End: Boootstrap
 
 
 }
 
 .dark {
 
-    .toast-body {
-        word-wrap: break-word;
-    }
+  .toast-body {
+    word-wrap: break-word;
+  }
 
-    .active .text-muted,
-    .btn:hover .text-muted {
-        color: rgb(211, 211, 211) !important;
-    }
+  .active .text-muted,
+  .btn:hover .text-muted {
+    color: rgb(211, 211, 211) !important;
+  }
 
-    .btn {
-        white-space: nowrap;
-    }
+  .btn {
+    white-space: nowrap;
+  }
 }

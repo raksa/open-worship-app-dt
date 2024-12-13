@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
@@ -8,15 +7,17 @@ import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
-import BibleItemViewController from '../read-bible/BibleItemViewController';
-import PresentFTManager from '../_present/PresentFTManager';
 import {
-    checkIsWindowPresentingMode, useWindowMode,
-} from '../router/routeHelpers';
+    SearchBibleItemViewController, useBibleItemViewControllerContext,
+} from '../bible-reader/BibleItemViewController';
+import ScreenFTManager from '../_screen/ScreenFTManager';
 import {
     openBibleItemContextMenu, useBibleItemRenderTitle,
 } from './bibleItemHelpers';
-import { useOpenBibleSearch } from '../bible-search/BibleSearchHeader';
+import {
+    useShowBibleSearchContext,
+} from '../others/commonButtons';
+import appProvider from '../server/appProvider';
 
 export default function BibleItemRender({
     index, bibleItem, warningMessage, filePath,
@@ -26,18 +27,10 @@ export default function BibleItemRender({
     warningMessage?: string,
     filePath?: string,
 }>) {
-    const openBibleSearch = useOpenBibleSearch(bibleItem);
-    const windowMode = useWindowMode();
+    const showBibleSearchPopup = useShowBibleSearchContext();
+    const viewController = useBibleItemViewControllerContext();
     useFSEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
-    const onContextMenuCallback = useCallback(
-        (event: React.MouseEvent<any>) => {
-            openBibleItemContextMenu(
-                event, bibleItem, index, windowMode, openBibleSearch,
-            );
-        },
-        [bibleItem, index],
-    );
     const changeBible = async (newBibleKey: string) => {
         const bible = bibleItem.filePath ?
             await Bible.readFileToData(bibleItem.filePath) : null;
@@ -47,11 +40,40 @@ export default function BibleItemRender({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
+    const openContextMenu = (event: React.MouseEvent<any>) => {
+        openBibleItemContextMenu(
+            event, bibleItem, index, showBibleSearchPopup,
+        );
+    };
+    const handleDBClicking = (event: any) => {
+        if (appProvider.isPagePresenter) {
+            ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
+        } else if (appProvider.isPageReader) {
+            const searchViewController = (
+                SearchBibleItemViewController.getInstance()
+            );
+            if (event.shiftKey) {
+                searchViewController.addBibleItemRight(
+                    searchViewController.selectedBibleItem, bibleItem,
+                );
+            } else {
+                searchViewController.setSearchingContentFromBibleItem(
+                    bibleItem,
+                );
+            }
+        } else {
+            viewController.appendBibleItem(bibleItem);
+        }
+    };
+
     if (bibleItem.isError) {
         return (
-            <ItemReadError onContextMenu={onContextMenuCallback} />
+            <ItemReadError
+                onContextMenu={openContextMenu}
+            />
         );
     }
+
     return (
         <li className='list-group-item item pointer'
             title={title}
@@ -60,28 +82,25 @@ export default function BibleItemRender({
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
-            onDoubleClick={(event) => {
-                BibleItemViewController.getInstance().bibleItems = [bibleItem];
-                if (checkIsWindowPresentingMode()) {
-                    PresentFTManager.ftBibleItemSelect(event, [bibleItem]);
-                }
-            }}
-            onContextMenu={onContextMenuCallback}>
+            onDoubleClick={handleDBClicking}
+            onContextMenu={openContextMenu}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />
                 <div className='px-1'>
                     <BibleSelectionMini
-                        value={bibleItem.bibleKey}
-                        onChange={(_, newValue) => {
+                        bibleKey={bibleItem.bibleKey}
+                        onBibleKeyChange={(_, newValue) => {
                             changeBible(newValue);
                         }}
-                        isMinimal />
+                        isMinimal
+                    />
                 </div>
                 <span className='app-ellipsis'>
                     {title || 'not found'}
                 </span>
-                {warningMessage && <span className='float-end'
-                    title={warningMessage}>⚠️</span>}
+                {warningMessage && (
+                    <span className='float-end' title={warningMessage}>⚠️</span>
+                )}
             </div>
         </li >
     );

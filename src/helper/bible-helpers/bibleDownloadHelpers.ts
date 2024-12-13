@@ -2,23 +2,23 @@ import { handleError } from '../errorHelpers';
 import { LocaleType } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
-    get_api_url,
-    get_api_key,
+    get_api_url, get_api_key,
 } from '../../_owa-crypto/owa_crypto';
 import appProvider from '../../server/appProvider';
 import {
-    fsCheckFileExist,
-    fsDeleteFile,
-    fsCreateWriteStream,
-    fsListDirectories,
-} from '../../server/fileHelper';
+    fsCheckFileExist, fsDeleteFile, fsCreateWriteStream, fsListDirectories,
+} from '../../server/fileHelpers';
 import {
-    bibleDataReader,
-    getBibleInfo,
+    bibleDataReader, getBibleInfo,
 } from './bibleInfoHelpers';
+import { appApiFetch } from '../networkHelpers';
 
-export function httpsRequest(pathName: string,
-    callback: (error: Error | null, response?: any) => void) {
+const TOAST_TITLE = 'Bible Download';
+
+export function httpsRequest(
+    pathName: string,
+    callback: (error: Error | null, response?: any) => void,
+) {
     const hostname = get_api_url().split('//')[1];
     const request = appProvider.httpUtils.request({
         port: 443,
@@ -43,8 +43,9 @@ export type DownloadOptionsType = {
     onDone: (error: Error | null, filePath?: string) => void
 }
 
-const getDownloadHandler = (filePath: string, fileName: string,
-    options: DownloadOptionsType) => {
+const getDownloadHandler = (
+    filePath: string, fileFullName: string, options: DownloadOptionsType,
+) => {
     return async (error: any, response: any) => {
         if (await fsCheckFileExist(filePath)) {
             await fsDeleteFile(filePath);
@@ -62,7 +63,12 @@ const getDownloadHandler = (filePath: string, fileName: string,
             let cur = 0;
             const mb = 1048576;//1048576 - bytes in  1Megabyte
             const total = len / mb;
-            options.onStart(+(total.toFixed(2)));
+            const fileSize = parseInt(total.toFixed(2), 10);
+            showSimpleToast(
+                TOAST_TITLE,
+                `Start downloading "${fileFullName}". File size ${fileSize}mb`,
+            );
+            options.onStart(parseInt(total.toFixed(2), 10));
             response.on('data', (chunk: Buffer) => {
                 if (writeStream.writable) {
                     writeStream.write(chunk, (error1) => {
@@ -76,7 +82,7 @@ const getDownloadHandler = (filePath: string, fileName: string,
             });
             response.on('end', async () => {
                 writeStream.close();
-                await getBibleInfo(fileName);
+                await getBibleInfo(fileFullName);
                 options.onDone(null, filePath);
             });
         } catch (error2) {
@@ -91,12 +97,10 @@ const getDownloadHandler = (filePath: string, fileName: string,
     };
 };
 export async function startDownloadBible({
-    bibleFileFullName,
-    fileName,
-    options,
+    bibleFileFullName, fileFullName, options,
 }: {
     bibleFileFullName: string,
-    fileName: string,
+    fileFullName: string,
     options: DownloadOptionsType
 }) {
     const filePath = await bibleDataReader.toBiblePath(bibleFileFullName);
@@ -104,7 +108,7 @@ export async function startDownloadBible({
         return options.onDone(new Error('Invalid file path'));
     }
     httpsRequest(bibleFileFullName, (error, response) => {
-        getDownloadHandler(filePath, fileName, options)(error, response);
+        getDownloadHandler(filePath, fileFullName, options)(error, response);
     });
 }
 
@@ -118,8 +122,7 @@ export type BibleMinimalInfoType = {
 };
 
 export async function downloadBible({
-    bibleInfo,
-    options,
+    bibleInfo, options,
 }: {
     bibleInfo: BibleMinimalInfoType,
     options: DownloadOptionsType,
@@ -134,7 +137,7 @@ export async function downloadBible({
         }
         await startDownloadBible({
             bibleFileFullName: `/${encodeURI(bibleInfo.filePath)}`,
-            fileName: bibleInfo.key,
+            fileFullName: bibleInfo.key,
             options,
         });
     } catch (error: any) {
@@ -142,31 +145,34 @@ export async function downloadBible({
     }
 }
 export async function extractDownloadedBible(filePath: string) {
+    let isExtracted = false;
     try {
+        showSimpleToast(
+            TOAST_TITLE, `Start extracting bible from file "${filePath}"`,
+        );
         const downloadPath = await bibleDataReader.getWritableBiblePath();
         await appProvider.fileUtils.tarExtract({
             file: filePath,
             cwd: downloadPath,
         });
-        await fsDeleteFile(filePath);
-        return true;
+        isExtracted = true;
     } catch (error: any) {
         handleError(error);
-        showSimpleToast('Extracting Bible', 'Fail to extract bible');
+        showSimpleToast(TOAST_TITLE, 'Fail to extract bible');
+    } finally {
+        showSimpleToast(TOAST_TITLE, 'Bible extracted');
+        fsDeleteFile(filePath).catch((error) => {
+            handleError(error);
+            showSimpleToast(TOAST_TITLE, 'Fail to delete downloaded file');
+        });
     }
-    return false;
+    return isExtracted;
 }
 
 export async function getOnlineBibleInfoList():
     Promise<BibleMinimalInfoType[] | null> {
     try {
-        const apiUrl = get_api_url();
-        const apiKey = get_api_key();
-        const content = await fetch(`${apiUrl}/info.json`, {
-            headers: {
-                'x-api-key': apiKey,
-            },
-        });
+        const content = await appApiFetch('info.json');
         const json = await content.json();
         if (typeof json.mapper !== 'object') {
             throw new Error('Cannot get bible list');

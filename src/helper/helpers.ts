@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
@@ -29,9 +30,15 @@ export const cloneJson = <T>(obj: T): T => {
 // https://stackoverflow.com/a/41698614/17066360
 export function isVisible(elem: any) {
     const style = getComputedStyle(elem);
-    if (style.display === 'none') { return false; }
-    if (style.visibility !== 'visible') { return false; }
-    if (+style.opacity < 0.1) { return false; }
+    if (style.display === 'none') {
+        return false;
+    }
+    if (style.visibility !== 'visible') {
+        return false;
+    }
+    if (parseInt(style.opacity, 10) < 0.1) {
+        return false;
+    }
     if (
         elem.offsetWidth + elem.offsetHeight +
         elem.getBoundingClientRect().height +
@@ -67,10 +74,12 @@ export function isVisible(elem: any) {
 }
 
 export function getRotationDeg(str: string) {
-    const match = str.match(/rotate\((.+)deg\)/);
-    return match ? +match[1] : 0;
+    const match = RegExp(/rotate\((.+)deg\)/).exec(str);
+    return match ? parseInt(match[1], 10) : 0;
 }
-export const removePX = (str: string) => +str.replace('px', '');
+export const removePX = (str: string) => {
+    return parseInt(str.replace('px', ''), 10);
+};
 
 export function genRandomString(length: number = 5) {
     let result = '';
@@ -79,18 +88,23 @@ export function genRandomString(length: number = 5) {
     );
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() *
-            charactersLength));
+        result += (
+            characters.charAt(Math.floor(Math.random() * charactersLength))
+        );
     }
     return result;
 }
 
 export function getWindowDim() {
     const { documentElement } = document;
-    const width = window.innerWidth || documentElement.clientWidth ||
-        document.body.clientWidth;
-    const height = window.innerHeight || documentElement.clientHeight ||
-        document.body.clientHeight;
+    const width = (
+        window.innerWidth || documentElement.clientWidth ||
+        document.body.clientWidth
+    );
+    const height = (
+        window.innerHeight || documentElement.clientHeight ||
+        document.body.clientHeight
+    );
     return { width, height };
 }
 export function validateAppMeta(meta: any) {
@@ -170,4 +184,20 @@ export function isColor(strColor: string) {
     const s = new Option().style;
     s.color = strColor;
     return !!s.color;
+}
+
+export function freezeObject(obj: any) {
+    if (!['object', 'array'].includes(typeof obj)) {
+        return;
+    }
+    Object.freeze(obj);
+    if (Array.isArray(obj)) {
+        obj.forEach((item) => {
+            freezeObject(item);
+        });
+    } else if (obj instanceof Object) {
+        for (const key in obj) {
+            freezeObject(obj[key]);
+        }
+    }
 }

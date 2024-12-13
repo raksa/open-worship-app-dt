@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 const fileUtils = {
     createWriteStream: fs.createWriteStream,
+    createReadStream: fs.createReadStream,
     readdir: fs.readdir,
     stat: fs.stat,
     mkdir: fs.mkdir,

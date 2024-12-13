@@ -1,16 +1,17 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
-import Slide from './Slide';
+import Slide, { useSelectedSlideSetterContext } from './Slide';
 import ItemSource from '../helper/ItemSource';
-import { getIsShowingSlidePreviewer } from '../slide-presenting/Presenting';
+import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import { useNavigate } from 'react-router-dom';
-import { goEditingMode } from '../router/routeHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { editorTab, goToPath } from '../router/routeHelpers';
+import { ContextMenuItemType } from '../others/AppContextMenu';
 
 export default function SlideFile({
     index, filePath,
@@ -18,68 +19,74 @@ export default function SlideFile({
     index: number,
     filePath: string,
 }>) {
-    const navigator = useNavigate();
+    const setSelectedSlide = useSelectedSlideSetterContext();
     const [data, setData] = useState<SlideDynamicType>(null);
-    const reloadCallback = useCallback(() => {
+    const handleReloading = () => {
         setData(null);
-    }, [setData]);
-    const onClickCallback = useCallback(() => {
-        if (data) {
-            if (data.isSelected && !getIsShowingSlidePreviewer()) {
-                previewingEventListener.presentSlide(data);
-                return;
-            }
-            data.isSelected = !data.isSelected;
+    };
+    const handleClicking = () => {
+        if (!data) {
+            return;
         }
-    }, [data]);
-    const renderChildCallback = useCallback((slide: ItemSource<any>) => {
+        if (data.isSelected && !getIsShowingSlidePreviewer()) {
+            previewingEventListener.showSlide(data);
+            return;
+        }
+        data.isSelected = true;
+        setSelectedSlide(data);
+    };
+    const handleChildRendering = (slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
-        return slide1.isPdf ?
-            <SlideFilePreviewPdf slide={slide1} /> :
-            <SlideFilePreviewNormal slide={slide1} />;
-    }, []);
-    const onDeleteCallback = useCallback(() => {
+        return slide1.isPdf ? (
+            <SlideFilePreviewPdf slide={slide1} />
+        ) : (
+            <SlideFilePreviewNormal slide={slide1} />
+        );
+    };
+    const handleSlideDeleting = () => {
         const selectedFilePath = Slide.getSelectedFilePath();
         if (selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
         }
-        data?.editingCacheManager.delete();
-    }, [data, filePath]);
-    useAppEffect(() => {
+        data?.editorCacheManager.delete();
+    };
+    useAppEffectAsync(async (methodContext) => {
         if (data === null) {
-            Slide.readFileToData(filePath).then(setData);
+            const slide = await Slide.readFileToData(filePath);
+            methodContext.setData(slide);
         }
-    }, [data]);
+    }, [data], { methods: { setData } });
     useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
         setData(null);
     });
+    const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
+        menuTitle: 'Preview PDF',
+        onClick: () => {
+            const fileSource = FileSource.getInstance(data.filePath);
+            appProvider.messageUtils.sendData(
+                'app:preview-pdf', fileSource.src,
+            );
+        },
+    }] : [{
+        menuTitle: 'Edit',
+        onClick: () => {
+            if (data) {
+                data.isSelected = true;
+                goToPath(editorTab.routePath);
+            }
+        },
+    }];
     return (
         <FileItemHandler
             index={index}
             data={data}
-            reload={reloadCallback}
+            reload={handleReloading}
             filePath={filePath}
             isPointer
-            onClick={onClickCallback}
-            renderChild={renderChildCallback}
-            contextMenu={data?.isPdf ? [{
-                title: 'Preview PDF',
-                onClick: () => {
-                    const fileSource = FileSource.getInstance(data.filePath);
-                    appProvider.messageUtils.sendData(
-                        'app:preview-pdf', fileSource.src,
-                    );
-                },
-            }] : [{
-                title: 'Edit',
-                onClick: () => {
-                    if (data) {
-                        data.isSelected = true;
-                        goEditingMode(navigator);
-                    }
-                },
-            }]}
-            onDelete={onDeleteCallback}
+            onClick={handleClicking}
+            renderChild={handleChildRendering}
+            contextMenuItems={contextMenuItems}
+            onDelete={handleSlideDeleting}
         />
     );
 }
@@ -88,21 +95,22 @@ export default function SlideFile({
 function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
-        <>
+        <div className='w-100 h-100 app-ellipsis'>
             <i className='bi bi-file-earmark-slides' />
             {fileSource.name}
-            {slide.isChanged && <span
-                style={{ color: 'red' }}>*</span>}
-        </>
+            {slide.isChanged && (
+                <span style={{ color: 'red' }}>*</span>
+            )}
+        </div>
     );
 }
 
 function SlideFilePreviewPdf({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
-        <>
+        <div className='w-100 h-100 app-ellipsis'>
             <i className='bi bi-filetype-pdf' />
             {fileSource.name}
-        </>
+        </div>
     );
 }

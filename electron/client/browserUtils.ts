@@ -1,16 +1,19 @@
-import path from 'node:path';
-import electron from 'electron';
+import { clipboard } from 'electron';
 import url from 'node:url';
+import { rootUrlAccess } from '../fsServe';
+import { isSecured } from '../electronHelpers';
 
 const browserUtils = {
-    openExplorer(dir: string) {
-        electron.shell.showItemInFolder(path.join(dir, ''));
-    },
     copyToClipboard(str: string) {
-        electron.clipboard.writeText(str);
+        clipboard.writeText(str);
     },
-    urlPathToFileURL(urlPath: string) {
-        return url.pathToFileURL(urlPath);
+    pathToFileURL(filePath: string) {
+        let urlPath = url.pathToFileURL(filePath).toString();
+        if (!isSecured) {
+            return urlPath;
+        }
+        urlPath = urlPath.slice('file://'.length);
+        return `${rootUrlAccess}://${urlPath}`;
     },
 };
 

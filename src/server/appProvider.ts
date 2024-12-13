@@ -1,8 +1,7 @@
-import pdfjsLibType from 'pdfjs-dist';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import tar from 'tar';
+import { x } from 'tar';
 
 export type MessageEventType = {
     returnValue: any,
@@ -10,18 +9,23 @@ export type MessageEventType = {
 
 export type MessageUtilsType = {
     channels: {
-        presentMessageChannel: string,
+        screenMessageChannel: string,
     },
     sendData: (channel: string, ...args: any[]) => void,
     sendDataSync: (channel: string, ...args: any[]) => any,
-    listenForData: (channel: string,
-        callback: (event: MessageEventType, ...args: any[]) => void) => void,
-    listenOnceForData: (channel: string,
-        callback: (event: MessageEventType, ...args: any[]) => void) => void,
+    listenForData: (
+        channel: string,
+        callback: (event: MessageEventType, ...args: any[]) => void
+    ) => void,
+    listenOnceForData: (
+        channel: string,
+        callback: (event: MessageEventType, ...args: any[]) => void,
+    ) => void,
 };
 
 export type FileUtilsType = {
     createWriteStream: typeof fs.createWriteStream,
+    createReadStream: typeof fs.createWriteStream,
     readdir: typeof fs.readdir,
     stat: typeof fs.stat,
     mkdir: typeof fs.mkdir,
@@ -31,7 +35,10 @@ export type FileUtilsType = {
     rmdir: typeof fs.rmdir,
     readFile: typeof fs.readFile,
     copyFile: typeof fs.copyFile,
-    tarExtract: typeof tar.x,
+    copyBlobFile: (
+        blobUrl: string, dest: fs.PathLike, callback: fs.NoParamCallback,
+    ) => void,
+    tarExtract: typeof x,
     watch: typeof fs.watch,
 };
 
@@ -54,6 +61,7 @@ export type AppInfoType = {
     author: string;
     homepage: string;
     version: string;
+    versionNumber: number;
 };
 export type FontListType = {
     [key: string]: string[],
@@ -64,8 +72,9 @@ export type AppUtilsType = {
     base64Decode: (str: string) => string,
 };
 export type PdfUtilsType = {
-    toPdf: (filePath: string, outputDir: string) => Promise<void>,
-    pdfjsLib: typeof pdfjsLibType,
+    officeFileToPdf: (
+        filePath: string, outputDir: string, fileFullName: string,
+    ) => Promise<void>,
 }
 
 export enum AppTypeEnum {
@@ -74,9 +83,22 @@ export enum AppTypeEnum {
     Mobile = 'mobile',
 }
 
-const appProvider = (window as any).provider as {
-    isMain: boolean,
-    isPresent: boolean,
+export type PagePropsType = {
+    isPageFinder: boolean,
+    finderHomePage: string,
+    isPagePresenter: boolean,
+    presenterHomePage: string,
+    isPageEditor: boolean,
+    editorHomePage: string,
+    isPageReader: boolean,
+    readerHomePage: string,
+    isPageScreen: boolean,
+    screenHomePage: string,
+    isPageSetting: boolean,
+    settingHomePage: string,
+}
+
+const appProvider = (window as any).provider as Readonly<PagePropsType & {
     appType: AppTypeEnum,
     isDesktop: boolean,
     fontUtils: {
@@ -87,9 +109,8 @@ const appProvider = (window as any).provider as {
         decrypt: (text: string, key: string) => string,
     };
     browserUtils: {
-        openExplorer: (dir: string) => void,
         copyToClipboard: (str: string) => void,
-        urlPathToFileURL: (urlPath: string) => string,
+        pathToFileURL: (filePath: string) => string,
     };
     messageUtils: MessageUtilsType;
     httpUtils: {
@@ -102,6 +123,8 @@ const appProvider = (window as any).provider as {
     reload: () => void,
     appUtils: AppUtilsType,
     pdfUtils: PdfUtilsType,
-};
+    presenterHomePage: string,
+    readerHomePage: string,
+}>;
 
 export default appProvider;

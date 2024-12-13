@@ -1,24 +1,27 @@
-import ElectronAppController from './ElectronAppController';
 import fs from 'node:fs';
 import path from 'node:path';
-import electron from 'electron';
+import electron, { BrowserWindow } from 'electron';
+import { htmlFiles } from './fsServe';
 
+const settingObject: {
+    mainWinBounds: Electron.Rectangle | null,
+    appScreenDisplayId: number | null,
+    mainHtmlPath: string,
+} = {
+    mainWinBounds: null,
+    appScreenDisplayId: null,
+    mainHtmlPath: htmlFiles.presenter,
+};
 export default class ElectronSettingController {
-    _setting: {
-        mainWinBounds: Electron.Rectangle | null,
-        appPresentDisplayId: number | null,
-    } = {
-            mainWinBounds: null,
-            appPresentDisplayId: null,
-        };
-    appController: ElectronAppController;
-    constructor(appController: ElectronAppController) {
-        this.appController = appController;
+    constructor() {
         try {
             const str = fs.readFileSync(this.fileSettingPath, 'utf8');
             const json = JSON.parse(str);
-            this._setting.mainWinBounds = json.mainWinBounds;
-            this._setting.appPresentDisplayId = json.appPresentDisplayId;
+            settingObject.mainWinBounds = json.mainWinBounds;
+            settingObject.appScreenDisplayId = json.appScreenDisplayId;
+            settingObject.mainHtmlPath = (
+                json.mainHtmlPath ?? settingObject.mainHtmlPath
+            );
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 this.save();
@@ -27,46 +30,64 @@ export default class ElectronSettingController {
             }
         }
     }
+
     get fileSettingPath() {
         const useDataPath = electron.app.getPath('userData');
         return path.join(useDataPath, 'setting.json');
     }
+
     get mainWinBounds() {
-        return this._setting.mainWinBounds ?? this.primaryDisplay.bounds;
+        return settingObject.mainWinBounds ?? this.primaryDisplay.bounds;
     }
+
     set mainWinBounds(bounds) {
-        this._setting.mainWinBounds = bounds;
+        settingObject.mainWinBounds = bounds;
         this.save();
     }
-    resetMainBounds() {
+
+    resetMainBounds(win: BrowserWindow) {
         this.mainWinBounds = this.primaryDisplay.bounds;
-        this.appController.mainWin.setBounds(this.mainWinBounds);
+        win.setBounds(this.mainWinBounds);
     }
+
     get allDisplays() {
         return electron.screen.getAllDisplays();
     }
+
     get primaryDisplay() {
         return electron.screen.getPrimaryDisplay();
     }
+
     getDisplayById(id: number) {
         return this.allDisplays.find((newDisplay) => newDisplay.id == id);
     }
+
     save() {
         fs.writeFileSync(
-            this.fileSettingPath, JSON.stringify(this._setting), 'utf8',
+            this.fileSettingPath, JSON.stringify(settingObject), 'utf8',
         );
     }
-    syncMainWindow() {
-        this.appController.mainWin.setBounds(this.mainWinBounds);
-        this.appController.mainWin.on('resize', () => {
-            const [width, height] = this.appController.mainWin.getSize();
+
+    syncMainWindow(win: BrowserWindow) {
+        win.setBounds(this.mainWinBounds);
+        win.on('resize', () => {
+            const [width, height] = win.getSize();
             this.mainWinBounds = { ...this.mainWinBounds, width, height };
             this.save();
         });
-        this.appController.mainWin.on('move', () => {
-            const [x, y] = this.appController.mainWin.getPosition();
+        win.on('move', () => {
+            const [x, y] = win.getPosition();
             this.mainWinBounds = { ...this.mainWinBounds, x, y };
             this.save();
         });
+    }
+
+    get mainHtmlPath() {
+        return settingObject.mainHtmlPath;
+    }
+
+    set mainHtmlPath(path: string) {
+        settingObject.mainHtmlPath = path;
+        this.save();
     }
 }

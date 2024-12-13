@@ -84,8 +84,9 @@ function calcBoxProps(options: CalcBoxPropsType) {
         left, top, xResize, yResize, cosFraction, sinFraction, initW, initH,
         boxProps, mEvent,
     } = options;
-    const wDiff = (mEvent.clientX - boxProps.mousePressX) / boxProps.scaleFactor;
-    const hDiff = (mEvent.clientY - boxProps.mousePressY) / boxProps.scaleFactor;
+    const { scaleFactor, mousePressX, mousePressY } = boxProps;
+    const wDiff = (mEvent.clientX - mousePressX) / scaleFactor;
+    const hDiff = (mEvent.clientY - mousePressY) / scaleFactor;
     const rotatedWDiff = cosFraction * wDiff + sinFraction * hDiff;
     const rotatedHDiff = cosFraction * hDiff - sinFraction * wDiff;
 
@@ -135,14 +136,30 @@ export default class BoxEditorController {
     resizeActorList: {
         [key: string]: ResizeType
     } = {
-            'right-mid': { left: false, top: false, xResize: true, yResize: false },
-            'left-mid': { left: true, top: false, xResize: true, yResize: false },
-            'top-mid': { left: false, top: true, xResize: false, yResize: true },
-            'bottom-mid': { left: false, top: false, xResize: false, yResize: true },
-            'left-top': { left: true, top: true, xResize: true, yResize: true },
-            'right-top': { left: false, top: true, xResize: true, yResize: true },
-            'right-bottom': { left: false, top: false, xResize: true, yResize: true },
-            'left-bottom': { left: true, top: false, xResize: true, yResize: true },
+            'right-mid': {
+                left: false, top: false, xResize: true, yResize: false,
+            },
+            'left-mid': {
+                left: true, top: false, xResize: true, yResize: false,
+            },
+            'top-mid': {
+                left: false, top: true, xResize: false, yResize: true,
+            },
+            'bottom-mid': {
+                left: false, top: false, xResize: false, yResize: true,
+            },
+            'left-top': {
+                left: true, top: true, xResize: true, yResize: true,
+            },
+            'right-top': {
+                left: false, top: true, xResize: true, yResize: true,
+            },
+            'right-bottom': {
+                left: false, top: false, xResize: true, yResize: true,
+            },
+            'left-bottom': {
+                left: true, top: false, xResize: true, yResize: true,
+            },
         };
     rotatorCN = 'rotate';
     listened: ListenedEvent[] = [];
@@ -156,7 +173,9 @@ export default class BoxEditorController {
     release() {
         while (this.listened.length) {
             const obj = this.listened.shift();
-            obj?.target.removeEventListener(obj.eventName, obj.listener as any, false);
+            obj?.target.removeEventListener(
+                obj.eventName, obj.listener as any, false,
+            );
         }
         this.editor = null;
         this.target = null;
@@ -213,9 +232,12 @@ export default class BoxEditorController {
         const eventMouseMoveHandler = (event: MouseEvent) => {
             event.stopPropagation();
             isMoving = true;
+            const {
+                scaleFactor, initX, initY, mousePressX, mousePressY,
+            } = this;
             this.repositionElement(
-                this.initX + (event.clientX - this.mousePressX) / this.scaleFactor,
-                this.initY + (event.clientY - this.mousePressY) / this.scaleFactor,
+                initX + (event.clientX - mousePressX) / scaleFactor,
+                initY + (event.clientY - mousePressY) / scaleFactor,
             );
         };
         const eventMouseUpHandler = (endingEvent: MouseEvent) => {
@@ -228,7 +250,9 @@ export default class BoxEditorController {
             } else {
                 this.onClick(endingEvent);
             }
-            window.removeEventListener('mousemove', eventMouseMoveHandler, false);
+            window.removeEventListener(
+                'mousemove', eventMouseMoveHandler, false,
+            );
             window.removeEventListener('mouseup', eventMouseUpHandler);
         };
         window.addEventListener('mousemove', eventMouseMoveHandler, false);
@@ -239,7 +263,10 @@ export default class BoxEditorController {
         if (tm !== 'none') {
             const values = tm.split('(')[1].split(')')[0].split(',');
             const angle = Math.round(
-                Math.atan2(+values[1], +values[0]) * (180 / Math.PI),
+                Math.atan2(
+                    parseInt(values[1], 10),
+                    parseInt(values[0], 10)) * (180 / Math.PI
+                ),
             );
             return angle < 0 ? angle + 360 : angle;
         }

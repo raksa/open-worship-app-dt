@@ -1,3 +1,5 @@
+import { createContext, Fragment, use } from 'react';
+
 import {
     useGetBookKVList,
 } from '../helper/bible-helpers/serverBibleHelpers';
@@ -6,21 +8,44 @@ import {
 } from '../event/KeyboardEventListener';
 import BibleSelection from './BibleSelection';
 import {
-    INPUT_ID, INPUT_TEXT_CLASS, checkIsBibleSearchInputFocused,
+    BIBLE_SEARCH_INPUT_ID, INPUT_TEXT_CLASS, checkIsBibleSearchInputFocused,
     setBibleSearchInputFocus,
 } from './selectionHelpers';
 import {
     useBibleItemPropsToInputText,
 } from '../bible-list/bibleItemHelpers';
+import {
+    SearchBibleItemViewController,
+} from '../bible-reader/BibleItemViewController';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
+
+export const InputTextContext = createContext<{
+    inputText: string,
+    setInputText: (text: string) => void,
+} | null>(null);
+export function useInputTextContext() {
+    const inputTextContext = use(InputTextContext);
+    if (inputTextContext === null) {
+        throw new Error('InputTextContext is not provided');
+    }
+    return inputTextContext;
+}
+
+export function getInputTrueValue() {
+    const input = document.getElementById(BIBLE_SEARCH_INPUT_ID);
+    return (input as HTMLInputElement)?.value || null;
+}
 
 export default function InputHandler({
-    inputText, onInputChange, onBibleChange, bibleKey,
+    onBibleKeyChange,
 }: Readonly<{
-    inputText: string
-    onInputChange: (str: string) => void
-    onBibleChange: (oldBibleKey: string, newBibleKey: string) => void,
-    bibleKey: string;
+    onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
+    const { inputText } = useInputTextContext();
+    const setInputText = (
+        SearchBibleItemViewController.getInstance().setInputText
+    );
+    const bibleKey = useBibleKeyContext();
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
     const placeholder = useBibleItemPropsToInputText(
@@ -33,28 +58,27 @@ export default function InputHandler({
         }
         const arr = inputText.split(' ').filter((str) => str !== '');
         if (arr.length === 1) {
-            onInputChange('');
+            setInputText('');
             return;
         }
         arr.pop();
-        onInputChange(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
+        setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
     });
     return (
-        <>
-            <input id={INPUT_ID} type='text'
+        <Fragment>
+            <BibleSelection bibleKey={bibleKey}
+                onBibleKeyChange={onBibleKeyChange}
+            />
+            <input id={BIBLE_SEARCH_INPUT_ID} type='text'
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}
                 autoFocus
                 placeholder={placeholder}
                 onChange={(event) => {
                     const value = event.target.value;
-                    onInputChange(value);
-                }} />
-            <span className='input-group-text select'>
-                <i className='bi bi-journal-bookmark' />
-                <BibleSelection value={bibleKey}
-                    onChange={onBibleChange} />
-            </span>
-        </>
+                    setInputText(value);
+                }}
+            />
+        </Fragment>
     );
 }

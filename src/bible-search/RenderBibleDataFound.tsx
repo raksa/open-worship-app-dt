@@ -1,109 +1,83 @@
-import BibleItem from '../bible-list/BibleItem';
-import { useStateSettingNumber } from '../helper/settingHelper';
 import RenderVerseOptions from './RenderVerseOptions';
-import RenderActionButtons from './RenderActionButtons';
+import RenderActionButtons, {
+    useFoundActionKeyboard,
+} from './RenderActionButtons';
 import {
-    BibleViewText, BibleViewTitle,
-} from '../read-bible/BibleViewExtra';
+    BibleViewText, RenderTitleMaterial,
+} from '../bible-reader/BibleViewExtra';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import {
+    genDefaultBibleItemContextMenu,
+} from '../bible-list/bibleItemHelpers';
+import {
+    closeEventMapper, SearchBibleItemViewController,
+} from '../bible-reader/BibleItemViewController';
+import {
+    fontSizeToHeightStyle, useBibleViewFontSizeContext,
+} from '../helper/bibleViewHelpers';
+import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelpers';
+import { toShortcutKey } from '../event/KeyboardEventListener';
+import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 
 export default function RenderBibleDataFound({
-    bibleItem, onVerseChange, onPinning,
+    onVerseChange,
 }: Readonly<{
-    bibleItem: BibleItem,
-    onVerseChange?: (startVerse?: number, endVerse?: number) => void,
-    onPinning: () => void,
+    onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
 }>) {
-    const [fontSize, setFontSize] = useStateSettingNumber(
-        'bible-search-font-size', 16,
-    );
+    const bibleItem = useBibleItemContext();
     const isSearching = onVerseChange !== undefined;
+    useFoundActionKeyboard(bibleItem);
+    const viewController = SearchBibleItemViewController.getInstance();
+    viewController.selectedBibleItem.syncData(bibleItem);
     return (
-        <div className='card border-success mt-1 w-100 h-100'
-            style={{
-                height: '10px',
+        <div className='card border-success w-100 h-100'
+            onContextMenu={(event) => {
+                showAppContextMenu(event as any, [
+                    ...genDefaultBibleItemContextMenu(bibleItem),
+                    ...viewController.genContextMenu(
+                        viewController.selectedBibleItem,
+                    ),
+                ]);
             }}>
-            {renderHeader(bibleItem, isSearching, onPinning)}
-            <div className={
-                'card-body bg-transparent border-success p-0'
-            }>
-                {!isSearching ? null :
+            <RenderBibleFoundHeader />
+            <div className='card-body bg-transparent border-success p-0'>
+                {!isSearching ? null : (
                     <RenderVerseOptions
-                        bibleItem={bibleItem}
-                        onVersesChange={onVerseChange} />
-                }
+                        onVersesChange={onVerseChange}
+                    />
+                )}
                 <div className='p-2'>
-                    <BibleViewText
-                        bibleItem={bibleItem}
-                        fontSize={fontSize}
-                        isEnableContextMenu />
+                    <BibleViewText />
                 </div>
-            </div>
-            <div className='card-footer'>
-                {renderFontSizeController(fontSize, setFontSize)}
             </div>
         </div>
     );
 }
 
-function renderHeader(
-    bibleItem: BibleItem, isSearching: boolean, onPinning: () => void,
-) {
+function RenderBibleFoundHeader() {
+    const fontSize = useBibleViewFontSizeContext();
+    const viewController = SearchBibleItemViewController.getInstance();
     return (
-        <div className='card-header bg-transparent border-success'>
-            <div className='d-flex w-100 h-100' style={{
-                overflowX: 'auto',
-            }}>
-                <div className='flex-fill text-nowrap'>
-                    <BibleViewTitle bibleItem={bibleItem} />
+        <div className='card-header bg-transparent border-success'
+            style={fontSizeToHeightStyle(fontSize)}>
+            <div className='d-flex w-100 h-100'>
+                <RenderTitleMaterial
+                    editingBibleItem={viewController.selectedBibleItem}
+                />
+                <div>
+                    <RenderActionButtons />
                 </div>
                 <div>
-                    <RenderActionButtons bibleItem={bibleItem} />
-                    {genPinButton(isSearching, onPinning)}
+                    {viewController.isAlone ? null : (
+                        <button className='btn-close'
+                            title={`Close [${toShortcutKey(closeEventMapper)}]`}
+                            onClick={() => {
+                                closeCurrentEditingBibleItem();
+                            }}
+                        />
+                    )}
                 </div>
             </div>
-        </div>
-    );
-}
-
-function genPinButton(
-    isSearching: boolean, onClick: () => void,
-) {
-    return (
-        <div className='btn-group float-end'>
-            {isSearching ?
-                <button type='button'
-                    className='btn btn-sm btn-outline-warning'
-                    title='Pin this verse'
-                    onClick={onClick}>
-                    <i className='bi bi-pin' />
-                </button> :
-                <button type='button'
-                    className='btn btn-sm btn-outline-warning'
-                    title='Pin this verse'
-                    onClick={onClick}>
-                    <i className='bi bi-x-lg' />
-                </button>
-            }
-        </div>
-    );
-}
-
-function renderFontSizeController(
-    fontSize: number, setFontSize: (fontSize: number) => void,
-) {
-    return (
-        <div className='form form-inline d-flex'
-            style={{ minWidth: '100px' }}>
-            <label className='form-label' style={{ width: '150px' }}>
-                Font Size:{fontSize}px
-            </label>
-            <input type='range' className='form-range'
-                min={10} max={120}
-                step={2}
-                value={fontSize}
-                onChange={(event) => {
-                    setFontSize(+event.target.value);
-                }} />
         </div>
     );
 }

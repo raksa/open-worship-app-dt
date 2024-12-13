@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+
 import {
     ContextMenuItemType, showAppContextMenu,
 } from './AppContextMenu';
@@ -11,14 +12,14 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 export default function ItemColorNote({ item }: Readonly<{
     item: ColorNoteInf,
 }>) {
-    const [colorNote, _setColorNote] = useState('');
+    const [colorNote, setColorNote] = useState('');
     useAppEffect(() => {
         item.getColorNote().then((colorNote) => {
-            _setColorNote(colorNote || '');
+            setColorNote(colorNote || '');
         });
     }, [item]);
-    const setColorNote = (colorNote: string | null) => {
-        _setColorNote(colorNote || '');
+    const setColorNote1 = (colorNote: string | null) => {
+        setColorNote(colorNote || '');
         item.setColorNote(colorNote);
     };
     const title = useMemo(() => {
@@ -32,42 +33,49 @@ export default function ItemColorNote({ item }: Readonly<{
             }, {} as Record<string, string>);
         return reverseColorMap[colorNote] || 'no color';
     }, [colorNote]);
+    const handleColorSelecting = (event: any) => {
+        event.stopPropagation();
+        const colors = Object.entries({
+            ...colorList.main,
+            ...colorList.extension,
+        });
+        // unique colors by key
+        const items: ContextMenuItemType[] = [
+            {
+                menuTitle: 'no color',
+                disabled: colorNote === null,
+                onClick: () => {
+                    setColorNote1(null);
+                },
+            },
+            ...colors.map(([name, colorCode]): ContextMenuItemType => {
+                return {
+                    menuTitle: name,
+                    disabled: colorNote === colorCode,
+                    onClick: () => {
+                        setColorNote1(colorCode);
+                    },
+                    otherChild: (
+                        <div className='flex-fill'>
+                            <i className='bi bi-record-circle float-end'
+                                style={{ color: colorCode }}
+                            />
+                        </div>
+                    ),
+                };
+            })];
+        showAppContextMenu(event, items);
+    };
 
     return (
-        <span className={`color-note ${colorNote ? 'active' : ''}`}
+        <span className={`color-note pointer ${colorNote ? 'active' : ''}`}
             title={title}
-            onClick={(event) => {
-                event.stopPropagation();
-                const colors = Object.entries({
-                    ...colorList.main,
-                    ...colorList.extension,
-                });
-                // unique colors by key
-                const items: ContextMenuItemType[] = [{
-                    title: 'no color',
-                    disabled: colorNote === null,
-                    onClick: () => {
-                        setColorNote(null);
-                    },
-                }, ...colors.map(([name, colorCode]): ContextMenuItemType => {
-                    return {
-                        title: name,
-                        disabled: colorNote === colorCode,
-                        onClick: () => {
-                            setColorNote(colorCode);
-                        },
-                        otherChild: (<div className='flex-fill'>
-                            <i className='bi bi-record-circle float-end'
-                                style={{ color: colorCode }} />
-                        </div>),
-                    };
-                })];
-                showAppContextMenu(event as any, items);
-            }} >
+            onClick={handleColorSelecting} >
             <i className='bi bi-record-circle'
                 style={colorNote ? {
                     color: colorNote,
-                } : {}} />
+                } : {}}
+            />
         </span>
     );
 }

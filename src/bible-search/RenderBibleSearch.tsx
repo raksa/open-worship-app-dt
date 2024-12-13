@@ -1,72 +1,88 @@
-import { useCallback, useState } from 'react';
-import InputHandler from './InputHandler';
+import { lazy, useMemo, useState } from 'react';
+
 import {
-    genInputText, useGetSelectedBibleKey,
+    InputTextContext,
+} from './InputHandler';
+import {
+    SelectedBibleKeyContext, useSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
 import {
     BibleNotAvailable,
 } from './RenderSearchSuggestion';
-import { setBibleSearchInputFocus } from './selectionHelpers';
-import RenderBibleSearchBody from './RenderBibleSearchBody';
-import RenderKeepWindowOpen from './RenderKeepWindowOpen';
-import { useModalTypeData } from '../app-modal/helpers';
+import BibleSearchBodyPreviewer from './BibleSearchBodyPreviewer';
+import {
+    SearchBibleItemViewController,
+} from '../bible-reader/BibleItemViewController';
+import ResizeActor from '../resize-actor/ResizeActor';
+import { MultiContextRender } from '../helper/MultiContextRender';
+import RenderBibleSearchHeader from './RenderBibleSearchHeader';
 
-export default function RenderBibleSearch({
-    editingInputText,
-}: Readonly<{
-    editingInputText: string,
+const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
+    return import('./BibleOnlineSearchBodyPreviewer');
+});
+
+export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
+    editorInputText?: string,
 }>) {
-    const { data } = useModalTypeData();
-    const isBibleEditing = !!data;
-    const [inputText, _setInputText] = useState<string>(editingInputText);
-    const [bibleKeySelected, setBibleKeySelected] = useGetSelectedBibleKey();
-    const setInputText = (newText: string) => {
-        _setInputText(newText);
-        setBibleSearchInputFocus();
-    };
+    const [isSearchOnline, setIsSearchOnline] = useState(false);
+    const [inputText, setInputText] = useState<string>(editorInputText);
+    const [bibleKey, setBibleKey] = useSelectedBibleKey();
+    const viewController = SearchBibleItemViewController.getInstance();
+    viewController.setBibleKey = setBibleKey;
+    const inputTextContextValue = useMemo(() => ({
+        inputText, setInputText,
+    }), [inputText, setInputText]);
 
-    const handleBibleChange = useCallback(
-        async (oldBibleKey: string, newBibleKey: string) => {
-            const newText = await genInputText(
-                oldBibleKey, newBibleKey, inputText,
-            );
-            setBibleKeySelected(newBibleKey);
-            if (newText !== null) {
-                setInputText(newText);
-            }
-        }, [inputText]);
-    if (bibleKeySelected === null) {
+    if (bibleKey === null) {
         return (
             <BibleNotAvailable />
         );
     }
+    const searchingBody = (
+        <BibleSearchBodyPreviewer />
+    );
+    const resizeData = [
+        {
+            children: {
+                render: () => {
+                    return searchingBody;
+                },
+            }, key: 'h2', widgetName: 'Searching',
+        },
+        {
+            children: LazyBibleOnlineSearchBodyPreviewer,
+            key: 'h1',
+            widgetName: 'Bible Online Search',
+        },
+    ];
     return (
-        <div id='bible-search-popup' className='app-modal shadow card'>
-            <div className='card-header text-center w-100'>
-                {isBibleEditing ? null : <div className='float-start'>
-                    <RenderKeepWindowOpen />
-                </div>}
-                <div className='input-group input-group-header'>
-                    <span className='input-group-text'>
-                        <i className='bi bi-search' />
-                    </span>
-                    <InputHandler
-                        inputText={inputText}
-                        onInputChange={setInputText}
-                        bibleKey={bibleKeySelected}
-                        onBibleChange={handleBibleChange} />
+        <MultiContextRender contexts={[{
+            context: SelectedBibleKeyContext,
+            value: bibleKey,
+        }, {
+            context: InputTextContext,
+            value: inputTextContextValue,
+        }]}>
+            <div id='bible-search-popup' className='shadow card w-100 h-100'>
+                <RenderBibleSearchHeader
+                    editorInputText={editorInputText}
+                    isSearchOnline={isSearchOnline}
+                    setIsSearchOnline={setIsSearchOnline}
+                    setBibleKey={setBibleKey}
+                />
+                <div className={
+                    'card-body d-flex w-100 h-100 overflow-hidden'
+                }>
+                    {isSearchOnline ? (
+                        <ResizeActor fSizeName='bible-search-popup-body'
+                            isHorizontal
+                            isDisableQuickResize
+                            flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}
+                            dataInput={resizeData}
+                        />
+                    ) : searchingBody}
                 </div>
             </div>
-            <div className={
-                'body card-body card w-100 h-100 overflow-hidden d-flex'
-            }>
-                <div className='found h-100 w-100 overflow-hidden'>
-                    <RenderBibleSearchBody
-                        bibleKey={bibleKeySelected}
-                        inputText={inputText}
-                        setInputText={setInputText} />
-                </div>
-            </div>
-        </div>
+        </MultiContextRender>
     );
 }

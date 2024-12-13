@@ -1,34 +1,39 @@
 import './AlertPopup.scss';
 
-import { useCallback } from 'react';
 import PrimitiveModal from '../app-modal/PrimitiveModal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     AlertDataType, closeAlert,
 } from './alertHelpers';
+import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
 export default function AlertPopup({ data }: Readonly<{
     data: AlertDataType,
 }>) {
-    const onCloseCallback = useCallback(() => {
+    const handClose = () => {
         data.onClose();
         closeAlert();
-    }, [closeAlert, data]);
+    };
+    useKeyboardRegistering([{ key: 'Escape' }], (event) => {
+        event.preventDefault();
+        handClose();
+    });
     return (
         <PrimitiveModal>
-            <div id='alert-popup'
-                className='app-modal shadow card'>
+            <div id='alert-popup' className='shadow card'>
                 <HeaderAlertPopup
                     header={<>
                         <i className='bi bi-exclamation-circle' />
                         {data.title}
                     </>}
-                    onClose={onCloseCallback} />
+                    onClose={handClose}
+                />
                 <div className='card-body d-flex flex-column'>
-                    <div className='p-2 flex-fill flex h app-selectable-text'
+                    <div className='p-2 flex-fill app-selectable-text'
                         dangerouslySetInnerHTML={{
                             __html: data.question,
-                        }} />
+                        }}
+                    />
                 </div>
             </div>
         </PrimitiveModal>

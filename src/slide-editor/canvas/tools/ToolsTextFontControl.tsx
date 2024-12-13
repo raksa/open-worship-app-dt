@@ -1,9 +1,11 @@
 import { useState } from 'react';
+
 import Tool from './Tool';
 import CanvasItemText from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
+import CanvasController from '../CanvasController';
 
 export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
@@ -27,6 +29,7 @@ function FontSize({ canvasItemText }: Readonly<{
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
         canvasItemText.applyTextData({ fontSize });
+        CanvasController.getInstance().fireUpdateEvent();
     };
     return (
         <div>
@@ -34,12 +37,12 @@ function FontSize({ canvasItemText }: Readonly<{
                 style={{ maxWidth: '100px' }}
                 value={localFontSize}
                 onChange={(event) => {
-                    applyFontSize(+event.target.value);
+                    applyFontSize(parseInt(event.target.value, 10));
                 }} />
             <select className='form-select form-select-sm'
                 value={localFontSize}
                 onChange={(event) => {
-                    applyFontSize(+event.target.value);
+                    applyFontSize(parseInt(event.target.value, 10));
                 }} >
                 <option>--</option>
                 {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)
@@ -56,12 +59,13 @@ function FontFamily({ canvasItemText }: Readonly<{
 }>) {
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(
-        canvasItemText.props.fontFamily || '');
+        canvasItemText.props.fontFamily ?? '');
     const applyFontFamily = (fontFamily: string) => {
         setLocalFontFamily(fontFamily);
         canvasItemText.applyTextData({
             fontFamily: fontFamily || null,
         });
+        CanvasController.getInstance().fireUpdateEvent();
     };
     if (fontList === null) {
         return (
@@ -113,6 +117,7 @@ function FontWeight({
         canvasItemText.applyTextData({
             fontWeight: newFontWeight || null,
         });
+        CanvasController.getInstance().fireUpdateEvent();
     };
     return (
         <div>

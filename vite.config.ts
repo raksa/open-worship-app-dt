@@ -1,40 +1,60 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { resolve } from 'node:path';
+import react from '@vitejs/plugin-react-swc';
+import basicSsl from '@vitejs/plugin-basic-ssl';
+import { readdirSync } from 'node:fs';
 
 const resolveAlias = {
-    '/js/pdf.worker.js': 'node_modules/pdfjs-dist/build/pdf.worker.js',
+    '/pdf.worker.min.mjs': 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
 };
 
 const htmlPlugin = () => {
     return {
         name: 'html-transform',
-        transformIndexHtml(html) {
-            return html.replace(
-                '<!-- CONTENT_SECURITY_POLICY -->',
-                // eslint-disable-next-line quotes
-                `<meta http-equiv="Content-Security-Policy" content="script-src`
-                + ` 'self' 'unsafe-inline'">`,
-            );
+        transformIndexHtml(html: string) {
+            // <!-- prod<meta ..>prod -->
+            html = html.replace(/<!-- prod/g, '');
+            html = html.replace(/prod -->/g, '');
+            // <!-- prod<meta ..>prod -->
+            /*
+            <!-- open-dev -->
+            <meta ..>
+            <!-- close-dev -->
+            */
+            html = html.split('<!-- open-dev -->').map((htmlChunk) => {
+                const htmlChunkArr = htmlChunk.split('<!-- close-dev -->');
+                if (htmlChunkArr.length > 1) {
+                    htmlChunkArr.shift();
+                }
+                return htmlChunkArr.join('');
+            }).join('');
+            return html;
         },
     };
 };
 
+const htmlFiles = readdirSync(__dirname).filter((fileName) => {
+    return fileName.endsWith('.html');
+});
+
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
-        viteStaticCopy({
-            targets: Object.entries(resolveAlias).map(([from, to]) => {
-                const regex = new RegExp(/^\/(\w+)\//);
-                return {
-                    src: to,
-                    dest: regex.exec(from)?.[1] ?? '',
-                };
-            }).filter((target) => target.dest !== ''),
-        }),
         react(),
         htmlPlugin(),
+        basicSsl({
+            name: 'localhost',
+            domains: ['localhost'],
+            certDir: '.devServer/cert',
+        }),
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern-compiler', // or 'modern'
+            },
+        },
+    },
     server: {
         port: 3000,
     },
@@ -43,7 +63,7 @@ export default defineConfig({
     },
     build: {
         rollupOptions: {
-            input: ['index.html', 'present.html', 'finder.html'],
+            input: htmlFiles.map(item => resolve(item)),
         },
     },
 });

@@ -1,4 +1,5 @@
-import { useCallback, useContext } from 'react';
+import { use } from 'react';
+
 import ColorPicker from '../../../others/color/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
@@ -8,22 +9,20 @@ import { CanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsBox() {
-    const onDataCallback = useCallback((newData: any) => {
+    const handleDataEvent = (newData: any) => {
         applyBoxData(newData);
-    }, []);
-    const onNoColorCallback = useCallback((
-        _newColor: AppColorType) => {
+    };
+    const handleNoColoring = () => {
         applyBoxData({
             backgroundColor: null,
         });
-    }, []);
-    const onColorChangedCallback = useCallback((
-        newColor: AppColorType) => {
+    };
+    const handleColorChanging = (newColor: AppColorType) => {
         applyBoxData({
             backgroundColor: newColor,
         });
-    }, []);
-    const canvasItem = useContext(CanvasItemContext);
+    };
+    const canvasItem = use(CanvasItemContext);
     if (canvasItem === null) {
         return null;
     }
@@ -34,6 +33,7 @@ export default function ToolsBox() {
     };
     const applyBoxData = (newData: ToolingBoxType) => {
         canvasItem.applyBoxData(parentDimension, newData);
+        canvasController.fireUpdateEvent();
     };
     return (
         <>
@@ -43,12 +43,12 @@ export default function ToolsBox() {
                 }}>
                     <ColorPicker color={canvasItem.props.backgroundColor}
                         defaultColor='#ffffff'
-                        onNoColor={onNoColorCallback}
-                        onColorChange={onColorChangedCallback} />
+                        onNoColor={handleNoColoring}
+                        onColorChange={handleColorChanging} />
                 </div>
             </Tool>
             <Tool title='Box Alignment'>
-                <ToolAlign onData={onDataCallback} />
+                <ToolAlign onData={handleDataEvent} />
             </Tool>
             <Tool title='Box Layer'>
                 <button className='btn btn-info'
@@ -72,12 +72,26 @@ export default function ToolsBox() {
                         applyBoxData({
                             rotate: 0,
                         });
-                    }}>UnRotate</button>
+                    }}>
+                    UnRotate
+                </button>
                 <hr />
                 <button className='btn btn-secondary'
                     onClick={() => {
-                        canvasController.applyItemFully(canvasItem);
-                    }}>Full</button>
+                        canvasController.applyCanvasItemFully(canvasItem);
+                    }}>
+                    Full
+                </button>
+                {['image', 'video'].includes(canvasItem.type) ? (
+                    <button className='btn btn-secondary'
+                        onClick={() => {
+                            canvasController.applyCanvasItemMediaStrip(
+                                canvasItem,
+                            );
+                        }}>
+                        Strip
+                    </button>
+                ) : null}
             </Tool>
         </>
     );

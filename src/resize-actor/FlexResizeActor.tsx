@@ -1,23 +1,28 @@
 import './FlexResizeActor.scss';
 
 import { Component, RefObject, createRef } from 'react';
+
 import { DisabledType } from './flexSizeHelpers';
 
-const HIDDEN_WIDGET_CLASS = 'hidden-widget';
+export const HIDDEN_WIDGET_CLASS = 'hidden-widget';
+export const ACTIVE_HIDDEN_WIDGET_CLASS = 'active-hidden-widget';
+function checkIsActiveHiddenWidgetNode(node: HTMLDivElement) {
+    return node.classList.contains(ACTIVE_HIDDEN_WIDGET_CLASS);
+}
 
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
     type: ResizeKindType,
+    isDisableQuickResize: boolean,
     checkSize: () => void,
     disable: (dataFSizeKey: string, target: DisabledType) => void,
-    isDisableQuickResize: boolean,
 }
 export default class FlexResizeActor extends Component<Props, {}> {
     myRef: RefObject<HTMLDivElement>;
     lastPos: number = 0;
     previousMinSize: number = 0;
     nextMinSize: number = 0;
-    previousSize: number = 0;
+    preSize: number = 0;
     nextSize: number = 0;
     previousGrow: number = 0;
     nextGrow: number = 0;
@@ -33,11 +38,27 @@ export default class FlexResizeActor extends Component<Props, {}> {
             this.onMouseUp(event);
         };
     }
-    get previous() {
-        return this.myRef.current?.previousElementSibling as HTMLDivElement;
+    private get currentNode() {
+        return this.myRef.current as HTMLDivElement;
     }
-    get next() {
-        return this.myRef.current?.nextElementSibling as HTMLDivElement;
+    private getSiblingFromNode(node: HTMLDivElement, isNext: boolean) {
+        if (isNext) {
+            return node.nextElementSibling as HTMLDivElement;
+        }
+        return node.previousElementSibling as HTMLDivElement;
+    }
+    private getSibling(isNext: boolean) {
+        let node = this.getSiblingFromNode(this.currentNode, isNext);
+        while (checkIsActiveHiddenWidgetNode(node)) {
+            node = this.getSiblingFromNode(node, isNext);
+        }
+        return node;
+    }
+    get preNode() {
+        return this.getSibling(false);
+    }
+    get nextNode() {
+        return this.getSibling(true);
     }
     get isVertical() {
         return this.props.type === 'v';
@@ -49,22 +70,21 @@ export default class FlexResizeActor extends Component<Props, {}> {
         return this.isVertical ? div.offsetHeight : div.offsetWidth;
     }
     init() {
-        const current = this.myRef.current;
-        if (!current) {
+        if (!this.currentNode) {
             return;
         }
-        const prev = current.previousElementSibling as HTMLDivElement;
-        const next = current.nextElementSibling as HTMLDivElement;
+        const prev = this.preNode;
+        const next = this.nextNode;
         if (!prev || !next) {
             return;
         }
-        current.classList.add('active');
+        this.currentNode.classList.add('active');
 
-        this.previousMinSize = +(this.previous.dataset['minSize'] || '');
-        this.nextMinSize = +(this.next.dataset['minSize'] || '');
-        this.previousSize = this.getOffsetSize(prev);
+        this.previousMinSize = parseInt(this.preNode.dataset['minSize'] || '');
+        this.nextMinSize = parseInt(this.nextNode.dataset['minSize'] || '', 10);
+        this.preSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
-        this.sumSize = this.previousSize + this.nextSize;
+        this.sumSize = this.preSize + this.nextSize;
         this.previousGrow = Number(prev.style.flexGrow);
         this.nextGrow = Number(next.style.flexGrow);
         this.sumGrow = this.previousGrow + this.nextGrow;
@@ -88,63 +108,62 @@ export default class FlexResizeActor extends Component<Props, {}> {
         }
         let pos = this.getMousePagePos(event);
         const d = pos - this.lastPos;
-        this.previousSize += d;
+        this.preSize += d;
         this.nextSize -= d;
-        if (this.previousSize < 0) {
-            this.nextSize += this.previousSize;
-            pos -= this.previousSize;
-            this.previousSize = 0;
+        if (this.preSize < 0) {
+            this.nextSize += this.preSize;
+            pos -= this.preSize;
+            this.preSize = 0;
         }
         if (this.nextSize < 0) {
-            this.previousSize += this.nextSize;
+            this.preSize += this.nextSize;
             pos += this.nextSize;
             this.nextSize = 0;
         }
 
-        if (this.previousSize < this.previousMinSize) {
-            this.addHideWidget(this.previous);
+        if (this.preSize < this.previousMinSize) {
+            this.addHiddenWidgetClassName(this.preNode);
         } else {
-            this.removeHideWidget(this.previous);
+            this.removeHiddenWidgetClassname(this.preNode);
         }
         if (this.nextSize < this.nextMinSize) {
-            this.addHideWidget(this.next);
+            this.addHiddenWidgetClassName(this.nextNode);
         } else {
-            this.removeHideWidget(this.next);
+            this.removeHiddenWidgetClassname(this.nextNode);
         }
-        const prevGrowNew = this.sumGrow * (this.previousSize / this.sumSize);
+        const prevGrowNew = this.sumGrow * (this.preSize / this.sumSize);
         const nextGrowNew = this.sumGrow * (this.nextSize / this.sumSize);
 
-        this.previous.style.flexGrow = `${prevGrowNew}`;
-        this.next.style.flexGrow = `${nextGrowNew}`;
+        this.preNode.style.flexGrow = `${prevGrowNew}`;
+        this.nextNode.style.flexGrow = `${nextGrowNew}`;
 
         this.lastPos = pos;
     }
-    addHideWidget(divElement: HTMLDivElement) {
+    addHiddenWidgetClassName(divElement: HTMLDivElement) {
         if (this.props.isDisableQuickResize) {
             return;
         }
         divElement.classList.add(HIDDEN_WIDGET_CLASS);
     }
-    removeHideWidget(divElement: HTMLDivElement) {
+    removeHiddenWidgetClassname(divElement: HTMLDivElement) {
         divElement.classList.remove(HIDDEN_WIDGET_CLASS);
     }
     onMouseUp(event: MouseEvent) {
         if (this.isShouldIgnore(event)) {
             return;
         }
-        const current = this.myRef.current;
-        if (!current) {
+        if (!this.currentNode) {
             return;
         }
         window.removeEventListener('mousemove', this.mouseMoveListener);
         window.removeEventListener('mouseup', this.mouseUpListener);
 
-        current.classList.remove('active');
-        if (this.previous.classList.contains('hidden-widget')) {
+        this.currentNode.classList.remove('active');
+        if (this.preNode.classList.contains('hidden-widget')) {
             this.quicMove('left');
             return;
         }
-        if (this.next.classList.contains('hidden-widget')) {
+        if (this.nextNode.classList.contains('hidden-widget')) {
             this.quicMove('right');
             return;
         }
@@ -153,24 +172,24 @@ export default class FlexResizeActor extends Component<Props, {}> {
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = isFirst ?
-            this.previous.dataset['fs'] :
-            this.next.dataset['fs'];
+        const dataFSizeKey = (
+            isFirst ? this.preNode.dataset['fs'] : this.nextNode.dataset['fs']
+        );
         if (dataFSizeKey !== undefined) {
             if (isFirst) {
-                this.next.style.flexGrow = `${this.sumGrow}`;
+                this.nextNode.style.flexGrow = `${this.sumGrow}`;
             } else {
-                this.previous.style.flexGrow = `${this.sumGrow}`;
+                this.preNode.style.flexGrow = `${this.sumGrow}`;
             }
             this.props.disable(dataFSizeKey, [
                 isFirst ? 'first' : 'second',
                 isFirst ? this.previousGrow : this.nextGrow,
             ]);
         }
-        this.myRef.current?.classList.remove('active');
+        this.currentNode.classList.remove('active');
     }
     componentDidMount() {
-        const target = this.myRef.current;
+        const target = this.currentNode;
         if (target) {
             target.addEventListener('mousedown', (md) => {
                 this.onMouseDown(md);
@@ -198,12 +217,12 @@ export default class FlexResizeActor extends Component<Props, {}> {
         return (
             <div className={`flex-resize-actor ${props.type}`}
                 onDoubleClick={() => {
-                    const prevGrowNew = this.previous.dataset['fsDefault'] || 1;
-                    const nextGrowNew = this.next.dataset['fsDefault'] || 1;
-                    this.previous.style.flex = `${prevGrowNew}`;
-                    this.previous.style.flexGrow = '';
-                    this.next.style.flex = `${nextGrowNew}`;
-                    this.next.style.flexGrow = '';
+                    const prevGrowNew = this.preNode.dataset['fsDefault'] || 1;
+                    const nextGrowNew = this.nextNode.dataset['fsDefault'] || 1;
+                    this.preNode.style.flex = `${prevGrowNew}`;
+                    this.preNode.style.flexGrow = '';
+                    this.nextNode.style.flex = `${nextGrowNew}`;
+                    this.nextNode.style.flexGrow = '';
                     props.checkSize();
                 }}
                 ref={this.myRef}>

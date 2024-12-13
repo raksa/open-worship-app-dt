@@ -15,4 +15,7 @@ indent_style = tab
 [*.{html,css,scss,json,js,ts,tsx}]
 charset = utf-8
 indent_style = space
+[*.{html,json,js,ts,tsx}]
 indent_size = 4
+[*.{css,scss}]
+indent_size = 2

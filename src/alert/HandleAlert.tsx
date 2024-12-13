@@ -1,35 +1,44 @@
 import { lazy, useState } from 'react';
+
 import {
     AlertDataType, alertManager, ConfirmDataType,
 } from './alertHelpers';
-import AlertPopup from './AlertPopup';
 import AppSuspense from '../others/AppSuspense';
 
-const ConfirmPopup = lazy(() => {
+const LazyAlertPopup = lazy(() => {
+    return import('./AlertPopup');
+});
+
+const LazyConfirmPopup = lazy(() => {
     return import('./ConfirmPopup');
 });
 
 export type AlertType = 'confirm' | null;
 
 export default function HandleAlert() {
-    const [confirmData, setConfirmData] = useState<
-        ConfirmDataType | null>(null);
+    const [confirmData, setConfirmData] = (
+        useState<ConfirmDataType | null>(null)
+    );
+    const [alertData, setAlertData] = useState<AlertDataType | null>(null);
+
     alertManager.openConfirm = (newConfirmData) => {
         setConfirmData(newConfirmData);
     };
-    const [alertData, setAlertData] = useState<AlertDataType | null>(null);
     alertManager.openAlert = (newAlertData) => {
         setAlertData(newAlertData);
     };
-
     return (
         <>
-            {confirmData !== null && <AppSuspense>
-                <ConfirmPopup data={confirmData} />
-            </AppSuspense>}
-            {alertData !== null && <AppSuspense>
-                <AlertPopup data={alertData} />
-            </AppSuspense>}
+            {confirmData !== null && (
+                <AppSuspense>
+                    <LazyConfirmPopup data={confirmData} />
+                </AppSuspense>
+            )}
+            {alertData !== null && (
+                <AppSuspense>
+                    <LazyAlertPopup data={alertData} />
+                </AppSuspense>
+            )}
         </>
     );
 }

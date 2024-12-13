@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+
 import CanvasItemImage, {
     CanvasItemImagePropsType,
 } from '../CanvasItemImage';
@@ -55,7 +56,7 @@ export function BENImageRender({ props }: Readonly<{
             justifyContent: 'center',
             alignItems: 'center',
         }}>
-            <img className='align-self-center'
+            <img alt='' className='align-self-center'
                 width={width}
                 style={{
                     pointerEvents: 'none',

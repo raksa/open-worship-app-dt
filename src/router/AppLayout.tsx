@@ -1,58 +1,146 @@
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import '../others/font.scss';
-import './AppLayout.scss';
-import '../others/bootstrap-override.scss';
-import '../others/scrollbar.scss';
+import { useMemo, useState } from 'react';
 
-import { useContext } from 'react';
-import { Outlet } from 'react-router-dom';
-import SettingHeader from '../setting/SettingHeader';
-import BibleSearchHeader from '../bible-search/BibleSearchHeader';
-import TabHeadRender from './TabHeadRender';
 import {
-    DefaultTabContext,
-    TabOptionType, WindowModeContext, useWindowMode,
+    TabOptionType, editorTab, goToPath, presenterTab, readerTab,
 } from './routeHelpers';
+import {
+    BibleSearchButton, BibleSearchShowingContext, SettingButton,
+} from '../others/commonButtons';
+import { tran } from '../lang';
+import appProvider from '../server/appProvider';
+import { MultiContextRender } from '../helper/MultiContextRender';
+import AppPopupWindows from '../app-modal/AppPopupWindows';
+import AppContextMenu from '../others/AppContextMenu';
+import HandleAlert from '../alert/HandleAlert';
+import Toast from '../toast/Toast';
+import Slide, { SelectedSlideContext } from '../slide-list/Slide';
+import SlideItem, {
+    SelectedEditingSlideItemContext,
+} from '../slide-list/SlideItem';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import ProgressBar from '../progress-bar/ProgressBar';
 
-export default function AppLayout() {
-    const tabOptionList = useContext(DefaultTabContext);
-    const windowMode = useWindowMode();
-    if (tabOptionList === null) {
-        return <Outlet />;
-    }
+
+const tabs: TabOptionType[] = [];
+if (!appProvider.isPagePresenter) {
+    tabs.push(presenterTab);
+} else if (!appProvider.isPageEditor) {
+    tabs.push(editorTab);
+}
+tabs.push(readerTab);
+
+function TabRender() {
+    const handleClicking = async (tab: TabOptionType) => {
+        if (tab.preCheck) {
+            const isPassed = await tab.preCheck();
+            if (!isPassed) {
+                return;
+            }
+        }
+        goToPath(tab.routePath);
+    };
     return (
-        <WindowModeContext.Provider value={windowMode}>
-            <div className='d-flex flex-column w-100 h-100'>
-                {/* <TestInfinite /> */}
-                {getHeader(tabOptionList)}
-                {genBody()}
-            </div>
-        </WindowModeContext.Provider>
+        <ul className='nav nav-tabs'>
+            {tabs.map((tab) => {
+                return (
+                    <li key={tab.title}
+                        className='nav-item'>
+                        <button
+                            className='btn btn-link nav-link'
+                            onClick={handleClicking.bind(null, tab)}>
+                            {tran(tab.title)}
+                        </button>
+                    </li>
+                );
+            })}
+        </ul>
     );
 }
 
-function getHeader(tabOptionList: TabOptionType[]) {
-    return (
-        <div className='app-header d-flex'>
-            <TabHeadRender tabs={tabOptionList || []} />
-            <div className={
-                'highlight-border-bottom d-flex'
-                + ' justify-content-center flex-fill'
-            }>
-                <BibleSearchHeader />
-            </div>
-            <div className='highlight-border-bottom'>
-                <SettingHeader />
-            </div>
-        </div>
+function useSlideContextValues() {
+    const [selectedSlide, setSelectedSlide] = useState<Slide | null>(null);
+    const [selectedSlideItem, setSelectedSlideItem] = (
+        useState<SlideItem | null>(null)
     );
+    useAppEffectAsync(async (methodContext) => {
+        const selectedSlideFilePath = Slide.getSelectedFilePath();
+        if (selectedSlideFilePath === null) {
+            return;
+        }
+        const slide = await Slide.readFileToData(selectedSlideFilePath);
+        if (!slide) {
+            return;
+        }
+        methodContext.setSelectedSlide(slide);
+        const firstSlideItem = slide.items[0];
+        methodContext.setSelectedSlideItem(firstSlideItem);
+    }, undefined, { methods: { setSelectedSlide, setSelectedSlideItem } });
+    const slideContextValue = useMemo(() => {
+        return {
+            selectedSlide: selectedSlide,
+            setSelectedSlide: (newSelectedSlide: Slide) => {
+                setSelectedSlide(newSelectedSlide);
+                const firstSlideItem = newSelectedSlide.items[0];
+                setSelectedSlideItem(firstSlideItem);
+            },
+        };
+    }, [selectedSlide, setSelectedSlide]);
+    const editingSlideItemContextValue = useMemo(() => {
+        return {
+            selectedSlideItem,
+            setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => {
+                setSelectedSlideItem(newSelectedSlideItem);
+            },
+        };
+    }, [selectedSlideItem, setSelectedSlideItem]);
+    return {
+        slideContextValue,
+        editingSlideItemContextValue,
+    };
 }
 
-function genBody() {
+export default function AppLayout({ children }: Readonly<{
+    children: React.ReactNode,
+}>) {
+    const [isBibleSearchShowing, setIsBibleSearchShowing] = useState(false);
+    const {
+        slideContextValue, editingSlideItemContextValue,
+    } = useSlideContextValues();
     return (
-        <div className='app-body flex-fill flex h border-white-round'>
-            <Outlet />
-        </div>
+        <MultiContextRender contexts={[{
+            context: BibleSearchShowingContext,
+            value: {
+                isShowing: isBibleSearchShowing,
+                setIsShowing: setIsBibleSearchShowing,
+            },
+        }, {
+            context: SelectedSlideContext,
+            value: slideContextValue,
+        }, {
+            context: SelectedEditingSlideItemContext,
+            value: editingSlideItemContextValue,
+        }]}>
+            {/* <TestInfinite /> */}
+            < div id='app-header' className='d-flex' >
+                <TabRender />
+                <div className={
+                    'highlight-border-bottom d-flex' +
+                    ' justify-content-center flex-fill'
+                }>
+                    <BibleSearchButton />
+                </div>
+                <div className='highlight-border-bottom'>
+                    <SettingButton />
+                </div>
+            </div >
+            <div id='app-body' className='border-white-round'>
+                {children}
+            </div>
+            <ProgressBar />
+            <Toast />
+            <AppContextMenu />
+            <HandleAlert />
+            <AppPopupWindows />
+        </MultiContextRender >
     );
 }

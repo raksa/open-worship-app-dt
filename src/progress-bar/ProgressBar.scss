@@ -1,0 +1,36 @@
+@use '../others/variables.scss' as *;
+
+// animation fade-in-out
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  75% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.app-top-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px !important;
+  opacity: 1;
+  z-index: $z-index-progress-bar;
+  animation-duration: 1s;
+  animation-name: fade-in;
+  overflow: hidden;
+
+  div {
+    width: 100%;
+    height: 100%;
+    animation-duration: 0.2s !important;
+    animation-direction: reverse !important;
+  }
+}

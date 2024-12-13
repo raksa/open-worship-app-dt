@@ -1,15 +1,36 @@
-import ElectronAppController from './ElectronAppController';
+import { app, protocol } from 'electron';
 import {
-    initApp, initPresent,
-} from './electronEventListener';
+    customScheme, initCustomSchemeHandler, schemePrivileges,
+} from './fsServe';
+
+protocol.registerSchemesAsPrivileged([{
+    scheme: customScheme, privileges: schemePrivileges,
+}]);
+
+import ElectronAppController from './ElectronAppController';
+import { initApp, initScreen } from './electronEventListener';
 import { initMenu } from './electronMenu';
 import { initDevtools } from './devtools';
-import electron from 'electron';
+import { isDev } from './electronHelpers';
 
-electron.app.whenReady().then(() => {
+async function main() {
+    if (isDev) {
+        app.commandLine.appendSwitch('ignore-certificate-errors');
+    }
+    await app.whenReady();
+    const gotTheLock = app.requestSingleInstanceLock({
+        myKey: 'open-worship-app',
+    });
+    if (!gotTheLock) {
+        app.quit();
+        return;
+    }
+    initCustomSchemeHandler();
     const appController = ElectronAppController.getInstance();
     initApp(appController);
-    initPresent(appController);
+    initScreen(appController);
     initMenu(appController);
     initDevtools(appController);
-});
+}
+
+main();

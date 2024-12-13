@@ -1,3 +1,4 @@
+
 import {
     allArrows, KeyboardType, useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
@@ -7,25 +8,24 @@ import {
 import {
     useChapterMatch,
 } from '../helper/bible-helpers/serverBibleHelpers';
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
 const OPTION_CLASS = 'bible-search-chapter-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderChapterOptions({
-    bibleKey, bookKey, chapter, guessingChapter, onSelect,
+    bookKey, chapter, guessingChapter, onSelect,
 }: Readonly<{
-    bibleKey: string,
     bookKey: string | null,
     chapter: number | null,
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
 }>) {
-    if (bookKey == null || chapter !== null) {
+    if (bookKey === null || chapter !== null) {
         return null;
     }
     return (
         <ChapterOptions
-            bibleKey={bibleKey}
             bookKey={bookKey}
             guessingChapter={guessingChapter}
             onSelect={onSelect} />
@@ -33,23 +33,24 @@ export default function RenderChapterOptions({
 }
 
 function ChapterOptions({
-    bibleKey, bookKey, guessingChapter, onSelect,
+    bookKey, guessingChapter, onSelect,
 }: Readonly<{
-    bibleKey: string,
     bookKey: string,
     guessingChapter: string | null,
     onSelect: (chapter: number) => void,
 }>) {
+    const bibleKey = useBibleKeyContext();;
     const matches = useChapterMatch(bibleKey, bookKey, guessingChapter);
     const arrowListener = (event: KeyboardEvent) => {
         processSelection(
             OPTION_CLASS, OPTION_SELECTED_CLASS, event.key as KeyboardType,
         );
     };
-    const useCallback = (key: KeyboardType) => {
-        useKeyboardRegistering([{ key }], arrowListener);
-    };
-    allArrows.forEach(useCallback);
+    useKeyboardRegistering(
+        allArrows.map((key) => {
+            return { key };
+        }), arrowListener,
+    );
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
     if (matches === null) {
         return (

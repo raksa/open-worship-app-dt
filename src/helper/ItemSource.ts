@@ -1,22 +1,21 @@
 import {
-    MimetypeNameType,
-    createNewFileDetail,
-} from '../server/fileHelper';
+    MimetypeNameType, createNewFileDetail, fsCheckFileExist,
+} from '../server/fileHelpers';
 import FileSource from './FileSource';
 import {
     AnyObjectType, validateAppMeta,
 } from './helpers';
-import { setSetting, getSetting } from './settingHelper';
+import { setSetting, getSetting } from './settingHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 
+const cache = new Map<string, ItemSource<any>>();
 export default abstract class ItemSource<T extends {
     toJson(): AnyObjectType;
 }> {
-    static SELECT_SETTING_NAME = '';
+    protected static SELECT_SETTING_NAME = 'selected';
     SELECT_SETTING_NAME: string = '';
-    static mimetype: MimetypeNameType;
+    protected static mimetype: MimetypeNameType = 'other';
     filePath: string;
-    static _cache = new Map<string, ItemSource<any>>();
     constructor(filePath: string) {
         this.filePath = filePath;
     }
@@ -62,28 +61,33 @@ export default abstract class ItemSource<T extends {
             throw new Error('Invalid item source data');
         }
     }
-    static setSelectedFileSource(filePath: string | null,
-        settingName?: string) {
-        settingName = settingName || this.SELECT_SETTING_NAME;
-        if (!settingName) {
-            return;
-        }
+    private static toSettingName(settingName?: string): string {
+        return settingName || this.SELECT_SETTING_NAME;
+    }
+    static setSelectedFileSource(
+        filePath: string | null, settingName?: string,
+    ) {
+        settingName = this.toSettingName(settingName);
         setSetting(settingName, filePath || '');
     }
     static getSelectedFilePath(settingName?: string) {
-        settingName = settingName || this.SELECT_SETTING_NAME;
-        if (!settingName) {
-            return null;
+        settingName = this.toSettingName(settingName);
+        const selectedFilePath = getSetting(settingName, '');
+        if (selectedFilePath) {
+            fsCheckFileExist(selectedFilePath).then((isFileExist) => {
+                if (!isFileExist) {
+                    this.setSelectedFileSource(null, settingName);
+                }
+            });
         }
-        const selected = getSetting(settingName, '');
-        return selected || null;
+        return selectedFilePath || null;
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
         const fileSource = FileSource.getInstance(this.filePath);
         const isSuccess = await fileSource.saveDataFromItem(this);
         if (isSuccess) {
-            ItemSource._cache.set(this.filePath, this);
+            cache.set(this.filePath, this);
         }
         return isSuccess;
     }
@@ -97,14 +101,15 @@ export default abstract class ItemSource<T extends {
             items,
         });
         const filePath = await createNewFileDetail(dir, name, data,
-            this.mimetype);
+            this.mimetype,
+        );
         if (filePath !== null) {
             return FileSource.getInstance(filePath);
         }
         return null;
     }
     static async readFileToDataNoCache(filePath: string | null) {
-        if (filePath === null) {
+        if (!filePath) {
             return null;
         }
         const fileSource = FileSource.getInstance(filePath);
@@ -119,7 +124,7 @@ export default abstract class ItemSource<T extends {
         return undefined;
     }
     static deleteCache(key: string) {
-        this._cache.delete(key);
+        cache.delete(key);
     }
     static async readFileToData(
         filePath: string | null, refreshCache?: boolean,
@@ -130,12 +135,12 @@ export default abstract class ItemSource<T extends {
         if (refreshCache) {
             this.deleteCache(filePath);
         }
-        if (this._cache.has(filePath)) {
-            return this._cache.get(filePath);
+        if (cache.has(filePath)) {
+            return cache.get(filePath);
         }
         const data = await this.readFileToDataNoCache(filePath);
         if (data) {
-            this._cache.set(filePath, data);
+            cache.set(filePath, data);
         } else {
             this.deleteCache(filePath);
         }

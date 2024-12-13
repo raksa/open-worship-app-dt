@@ -1,11 +1,13 @@
 import { useState } from 'react';
+
 import {
-    get_api_url, get_api_key, decrypt, bible_ref,
+    decrypt, bible_ref,
 } from '../_owa-crypto';
 import { handleError } from '../helper/errorHelpers';
 import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
-import { IndexedDbController } from '../db/dbHelper';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { IndexedDbController } from '../db/dbHelpers';
+import { appApiFetch } from '../helper/networkHelpers';
 
 export type RawBibleRefListType = string[][];
 export type BibleRefType = {
@@ -29,13 +31,7 @@ export class BibleRefsDbController extends IndexedDbController {
 
 async function downloadBibleRef(key: string) {
     try {
-        const apiUrl = get_api_url();
-        const apiKey = get_api_key();
-        const content = await fetch(`${apiUrl}/bible-refs/${key}`, {
-            headers: {
-                'x-api-key': apiKey,
-            },
-        });
+        const content = await appApiFetch(`bible-refs/${key}`);
         return await content.text();
     } catch (error) {
         handleError(error);
@@ -46,7 +42,9 @@ async function downloadBibleRef(key: string) {
 async function saveCacheBibleRef(key: string, data: object) {
     try {
         const dbController = await BibleRefsDbController.getInstance();
-        return dbController.addItem(key, data, true);
+        return dbController.addItem({
+            id: key, data, isForceOverride: true,
+        });
     } catch (error) {
         handleError(error);
     }
@@ -105,11 +103,10 @@ export async function getBibleRef(key: string) {
 export function useGetBibleRef(bookKey: string, chapter: number,
     verseNum: number) {
     const [bibleRef, setBibleRef] = useState<BibleRefType[][] | null>(null);
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
-        getBibleRef(key).then((data) => {
-            setBibleRef(data);
-        });
-    }, [bookKey, chapter]);
+        const data = await getBibleRef(key);
+        methodContext.setBibleRef(data);
+    }, [bookKey, chapter], { methods: { setBibleRef } });
     return bibleRef;
 }

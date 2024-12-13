@@ -1,6 +1,7 @@
 import './Toast.scss';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+
 import {
     useToastSimpleShowing,
 } from '../event/ToastEventListener';
@@ -10,15 +11,15 @@ import SimpleToast, {
 
 let timeoutId: any = null;
 export default function Toast() {
-    const onMouseEventCallback = useCallback(() => {
+    const handleMouseEntering = () => {
         clearTimer();
-    }, []);
-    const onMouseLeaveCallback = useCallback(() => {
+    };
+    const handleMouseLeaving = () => {
         initTimeout(2e3);
-    }, []);
-    const onCloseCallback = useCallback(() => {
+    };
+    const handleClosing = () => {
         setSimpleToast(null);
-    }, []);
+    };
     const [simpleToast, setSimpleToast] = useState<
         SimpleToastType | null>(null);
     const clearTimer = () => {
@@ -36,15 +37,17 @@ export default function Toast() {
     };
     useToastSimpleShowing((toast: SimpleToastType) => {
         setSimpleToast(toast);
-        initTimeout(toast.timeout || 4e3);
+        initTimeout(toast.timeout ?? 4e3);
     });
+    if (!simpleToast) {
+        return null;
+    }
     return (
-        <>
-            {simpleToast && <SimpleToast
-                onMouseEnter={onMouseEventCallback}
-                onMouseLeave={onMouseLeaveCallback}
-                onClose={onCloseCallback}
-                toast={simpleToast} />}
-        </>
+        <SimpleToast
+            onMouseEnter={handleMouseEntering}
+            onMouseLeave={handleMouseLeaving}
+            onClose={handleClosing}
+            toast={simpleToast}
+        />
     );
 }

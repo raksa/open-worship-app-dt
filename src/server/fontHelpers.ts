@@ -1,22 +1,26 @@
 import { useState } from 'react';
+
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { handleError } from '../helper/errorHelpers';
 import { LocaleType } from '../lang';
 import { showSimpleToast } from '../toast/toastHelpers';
-import appProvider, {
-    FontListType,
-} from './appProvider';
+import { FontListType } from './appProvider';
+import { getFontListByNodeFont } from './appHelpers';
+
+
+function showLoadingFontFail() {
+    showSimpleToast('Loading Fonts', 'Fail to load font list');
+}
 
 export function useFontList() {
     const [fontList, setFontList] = useState<FontListType | null>(null);
     useAppEffect(() => {
         if (fontList === null) {
-            appProvider.fontUtils.getFonts().then((fonts) => {
+            const fonts = getFontListByNodeFont();
+            if (fonts === null) {
+                showLoadingFontFail();
+            } else {
                 setFontList(fonts);
-            }).catch((error) => {
-                handleError(error);
-                showSimpleToast('Loading Fonts', 'Fail to load font list');
-            });
+            }
         }
     });
     return fontList;

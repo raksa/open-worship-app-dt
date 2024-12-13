@@ -1,4 +1,5 @@
 import { CSSProperties, createContext } from 'react';
+
 import {
     AnyObjectType, cloneJson,
 } from '../../helper/helpers';
@@ -25,7 +26,6 @@ export type CanvasItemPropsType = {
 
 
 export default abstract class CanvasItem<T extends CanvasItemPropsType> {
-    static _objectId = 0;
     props: T;
     isSelected: boolean;
     isControlling: boolean;
@@ -91,11 +91,6 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
-        import('./CanvasController').then(({
-            default: CanvasController,
-        }: any) => {
-            CanvasController.getInstance().fireUpdateEvent();
-        });
     }
     clone() {
         const newItem = (this.constructor as typeof CanvasItem<any>)
@@ -126,7 +121,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
 }
 
 export class CanvasItemError extends CanvasItem<any> {
-    _jsonError: AnyObjectType | null = null;
+    jsonError: AnyObjectType | null = null;
     get type(): CanvasItemKindType {
         return 'error';
     }
@@ -144,11 +139,11 @@ export class CanvasItemError extends CanvasItem<any> {
         const props = genTextDefaultBoxStyle() as any;
         props.type = 'error';
         const item = new CanvasItemError(props);
-        item._jsonError = json;
+        item.jsonError = json;
         return item;
     }
     toJson() {
-        return this._jsonError as any;
+        return this.jsonError as any;
     }
 }
 

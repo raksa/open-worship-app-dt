@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+
 import { createMouseEvent } from '../AppContextMenu';
 import { AppColorType } from './colorHelpers';
 
@@ -32,6 +33,7 @@ export default function SelectCustomColor({ color, onColorSelected }: Readonly<{
             }}
             onChange={(event) => {
                 setLocalColor(event.target.value as any);
-            }} />
+            }}
+        />
     );
 }

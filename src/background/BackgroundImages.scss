@@ -1,6 +1,7 @@
-@import '../others/variables.scss';
+// @use is deprecated, use @use instead
+@use '../others/variables.scss' as *;
 
-.background-image {
+.app-background-image {
   .image-thumbnail {
     width: 100px;
     margin: 5px;

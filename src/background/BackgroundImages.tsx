@@ -1,19 +1,13 @@
 import './BackgroundImages.scss';
 
-import {
-    BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { RenderPresentIds } from './Background';
+import { RenderScreenIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
-
-export default function BackgroundImages() {
-    return (
-        <BackgroundMedia dragType={DragTypeEnum.BG_IMAGE}
-            rendChild={rendChild} />
-    );
-}
+import {
+    defaultDataDirNames, dirSourceSettingNames,
+} from '../helper/constants';
+import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
     filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
@@ -21,13 +15,28 @@ function rendChild(
     const fileSource = FileSource.getInstance(filePath);
     return (
         <div className='card-body'>
-            <RenderPresentIds
-                ids={selectedBGSrcList.map(([key]) => +key)} />
+            <RenderScreenIds
+                screenIds={selectedBGSrcList.map(([key]) => {
+                    return parseInt(key, 10);
+                })}
+            />
             <img src={fileSource.src}
                 className='card-img-top' alt='...'
                 style={{
                     pointerEvents: 'none',
-                }} />
+                }}
+            />
         </div>
+    );
+}
+
+export default function BackgroundImages() {
+    return (
+        <BackgroundMedia
+            defaultFolderName={defaultDataDirNames.BACKGROUND_IMAGE}
+            dragType={DragTypeEnum.BG_IMAGE}
+            rendChild={rendChild}
+            dirSourceSettingName={dirSourceSettingNames.BACKGROUND_IMAGE}
+        />
     );
 }

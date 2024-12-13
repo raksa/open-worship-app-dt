@@ -1,28 +1,29 @@
-import { lazy, useCallback, useState } from 'react';
+import { lazy, useState } from 'react';
+
 import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
 import { openConfirm } from '../alert/alertHelpers';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
-import { copyToClipboard } from '../server/appHelper';
+import { copyToClipboard } from '../server/appHelpers';
 import { useFSEvents } from '../helper/dirSourceHelpers';
-import { WindowModEnum, useWindowMode } from '../router/routeHelpers';
+import { ContextMenuItemType } from '../others/AppContextMenu';
 
-const RenderBibleItems = lazy(() => {
+const LazyRenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
 });
 
-function genContextMenu(bible: Bible | null | undefined,
-    windowMode: WindowModEnum | null,
-) {
+function genContextMenu(
+    bible: Bible | null | undefined,
+): ContextMenuItemType[] {
     if (!bible) {
         return [];
     }
     return [{
-        title: '(*T) ' + 'Empty',
+        menuTitle: '(*T) ' + 'Empty',
         onClick: () => {
             openConfirm(
                 'Empty Bible List',
@@ -37,7 +38,7 @@ function genContextMenu(bible: Bible | null | undefined,
         },
     },
     {
-        title: '(*T) ' + 'Copy All Items',
+        menuTitle: '(*T) ' + 'Copy All Items',
         onClick: async () => {
             const promises = bible.items.map((item) => {
                 return item.toTitleText();
@@ -49,9 +50,9 @@ function genContextMenu(bible: Bible | null | undefined,
             copyToClipboard(text.join('\n\n'));
         },
     }, {
-        title: '(*T) ' + 'Move All Items To',
+        menuTitle: '(*T) ' + 'Move All Items To',
         onClick: (event: any) => {
-            moveBibleItemTo(event, bible, windowMode);
+            moveBibleItemTo(event, bible);
         },
     }];
 }
@@ -62,33 +63,33 @@ export default function BibleFile({
     index: number,
     filePath: string,
 }>) {
-    const windowMode = useWindowMode();
     const [data, setData] = useState<Bible | null | undefined>(null);
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (data === null) {
-            Bible.readFileToData(filePath).then(setData);
+            const bible = await Bible.readFileToData(filePath);
+            methodContext.setData(bible);
         }
-    }, [data]);
-    const renderChildCallback = useCallback((bible: ItemSource<any>) => {
+    }, [data], { methods: { setData } });
+    const handlerChildRendering = (bible: ItemSource<any>) => {
         return (
             <BiblePreview bible={bible as Bible} />
         );
-    }, []);
-    const reloadCallback = useCallback(() => {
+    };
+    const handleReloading = () => {
         setData(null);
-    }, [setData]);
-    useFSEvents(['update'], filePath, reloadCallback);
+    };
+    useFSEvents(['update'], filePath, handleReloading);
     return (
         <FileItemHandler
             index={index}
             data={data}
-            reload={reloadCallback}
+            reload={handleReloading}
             filePath={filePath}
-            className={'bible-file'}
-            renderChild={renderChildCallback}
+            className='bible-file'
+            renderChild={handlerChildRendering}
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
-            contextMenu={genContextMenu(data, windowMode)}
+            contextMenuItems={genContextMenu(data)}
         />
     );
 }
@@ -116,7 +117,7 @@ function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
                 }}>
                 {bible.isOpened && <div className='accordion-body p-0'>
                     <AppSuspense>
-                        <RenderBibleItems bible={bible} />
+                        <LazyRenderBibleItems bible={bible} />
                     </AppSuspense>
                 </div>}
             </div>

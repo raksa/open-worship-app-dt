@@ -11,15 +11,15 @@ export type EventMapper = {
 };
 
 export default class WindowEventListener extends EventHandler<string> {
-    static eventNamePrefix: string = 'window';
+    static readonly eventNamePrefix: string = 'window';
     static fireEvent(event: EventMapper, data?: any) {
         if (event.state === 'open') {
             KeyboardEventListener.addLayer(event.widget);
         } else {
             KeyboardEventListener.removeLayer(event.widget);
         }
-        const k = this.toEventMapperKey(event);
-        this.addPropEvent(k, data);
+        const eventKey = this.toEventMapperKey(event);
+        this.addPropEvent(eventKey, data);
     }
     static toEventMapperKey(event: EventMapper) {
         return `${event.widget}-${event.state}`;
@@ -31,7 +31,8 @@ export function useWindowEvent(eventMapper: EventMapper,
     useAppEffect(() => {
         const eventName = WindowEventListener.toEventMapperKey(eventMapper);
         const event = WindowEventListener.registerEventListener(
-            [eventName], listener);
+            [eventName], listener,
+        );
         return () => {
             WindowEventListener.unregisterEventListener(event);
         };

@@ -1,61 +1,67 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+
 import ColorPicker from '../others/color/ColorPicker';
 import { AppColorType } from '../others/color/colorHelpers';
-import PresentBGManager, {
-    BackgroundSrcType,
-} from '../_present/PresentBGManager';
-import { usePBGMEvents } from '../_present/presentEventHelpers';
-import { RenderPresentIds } from './Background';
+import ScreenBGManager from '../_screen/ScreenBGManager';
+import { usePBGMEvents } from '../_screen/screenEventHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
+import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 export default function BackgroundColors() {
-    const [selectedBGSrcList, setSelectedBGSrcList] = useState<
-        [string, BackgroundSrcType][] | null>(null);
-    const onNoColorCallback = useCallback(async (
-        _newColor: AppColorType, event: any) => {
+    const [selectedBGSrcList, setSelectedBGSrcList] = (
+        useState<[string, BackgroundSrcType][] | null>(null)
+    );
+    const handleNoColoring = async (
+        _newColor: AppColorType, event: any,
+    ) => {
         setSelectedBGSrcList(null);
-        PresentBGManager.bgSrcSelect(null, event, 'color');
-    }, []);
-    const onColorChangeCallback = useCallback(async (
+        ScreenBGManager.bgSrcSelect(null, event, 'color');
+    };
+    const handleColorChanging = async (
         newColor: AppColorType, event: any) => {
         setSelectedBGSrcList(null);
-        PresentBGManager.bgSrcSelect(newColor, event, 'color');
-    }, []);
+        ScreenBGManager.bgSrcSelect(newColor, event, 'color');
+    };
     useAppEffect(() => {
         if (selectedBGSrcList === null) {
-            setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
+            setSelectedBGSrcList(ScreenBGManager.getBGSrcListByType('color'));
         }
     }, [selectedBGSrcList]);
     usePBGMEvents(['update'], undefined, () => {
-        setSelectedBGSrcList(PresentBGManager.getBGSrcListByType('color'));
+        setSelectedBGSrcList(ScreenBGManager.getBGSrcListByType('color'));
     });
     if (selectedBGSrcList === null) {
         return null;
     }
-    if (selectedBGSrcList.length) {
+    if (selectedBGSrcList.length === 0) {
         return (
-            <>
-                <div title={'Show in presents:'
-                    + selectedBGSrcList.map(([key]) => key).join(',')}>
-                    <RenderPresentIds
-                        ids={selectedBGSrcList.map(([key]) => +key)} />
-                </div>
-                {selectedBGSrcList.map(([_, bgSrc]) => {
-                    return (
-                        <ColorPicker key={bgSrc.src}
-                            color={bgSrc.src as AppColorType}
-                            defaultColor={bgSrc.src as AppColorType}
-                            onNoColor={onNoColorCallback}
-                            onColorChange={onColorChangeCallback} />
-                    );
-                })}
-            </>
+            <ColorPicker color={null}
+                defaultColor={'#000000'}
+                onNoColor={handleNoColoring}
+                onColorChange={handleColorChanging}
+            />
         );
     }
     return (
-        <ColorPicker color={null}
-            defaultColor={'#000000'}
-            onNoColor={onNoColorCallback}
-            onColorChange={onColorChangeCallback} />
+        <div className={
+            'd-flex align-content-start flex-wrap w-100 overflow-hidden'
+        }>
+            {selectedBGSrcList.map(([key, bgSrc]) => {
+                const screenId = parseInt(key, 10);
+                return (
+                    <div key={bgSrc.src}
+                        className='p-1 m-1 border-white-round'>
+                        <ShowingScreenIcon screenId={screenId} />
+                        <ColorPicker
+                            color={bgSrc.src as AppColorType}
+                            defaultColor={bgSrc.src as AppColorType}
+                            onNoColor={handleNoColoring}
+                            onColorChange={handleColorChanging}
+                        />
+                    </div>
+                );
+            })}
+        </div>
     );
 }

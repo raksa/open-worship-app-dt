@@ -1,6 +1,6 @@
 import { handleError } from '../helper/errorHelpers';
 import { AnyObjectType } from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelper';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 
 import kmLangData from './data/km';
 import enLangData from './data/en';
@@ -20,17 +20,19 @@ export type LanguageType = {
     flagSVG: string;
 };
 
+const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
+
 export const defaultLocal: LocaleType = 'en';
 let currentLocale: LocaleType = defaultLocal;
 export function setCurrentLocale(locale: LocaleType) {
-    setSetting('language-locale', locale);
+    setSetting(LANGUAGE_LOCALE_SETTING_NAME, locale);
     currentLocale = locale;
 }
 export function checkIsValidLocale(locale: any) {
     return locales.includes(locale);
 }
 export function getCurrentLocale() {
-    const lc = getSetting('language-locale', 'en');
+    const lc = getSetting(LANGUAGE_LOCALE_SETTING_NAME, 'en');
     if (checkIsValidLocale(lc)) {
         currentLocale = lc as LocaleType;
     }
@@ -76,7 +78,7 @@ export const toLocaleNum = (locale: LocaleType, n: number): string => {
     }
     const numList = langData.numList;
     return `${n}`.split('').map((n1) => {
-        return numList[+n1];
+        return numList[parseInt(n1, 10)];
     }).join('');
 };
 
@@ -93,7 +95,7 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
         }
         return n;
     }).join('');
-    if (isNaN(+nString)) {
+    if (isNaN(parseInt(nString, 10))) {
         return null;
     }
     return Number(nString);
