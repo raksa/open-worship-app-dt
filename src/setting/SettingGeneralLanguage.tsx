@@ -38,7 +38,7 @@ export default function SettingGeneralLanguage() {
                 </button>
                 {isSelecting &&
                     <div className='options d-flex flex-wrap'>
-                        {allLangs.map((lang, i) => {
+                        {allLangs.map((lang) => {
                             const btnType = lang.locale === currentLocale ?
                                 'btn-info' : 'btn-outline-info';
                             return (

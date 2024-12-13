@@ -159,9 +159,19 @@ export function initScreen(appController: ElectronAppController) {
         shell.showItemInFolder(path);
     });
 
+    ipcMain.on('main:app:trash-path', (_, data: {
+        path: string,
+        replyEventName: string
+    }) => {
+        shell.trashItem(data.path).then(() => {
+            appController.mainController.sendData(data.replyEventName);
+        });
+    });
+
     ipcMain.on('main:app:open-search', () => {
         appController.finderController.open(appController.mainWin);
     });
+
     ipcMain.on('finder:app:close-search', () => {
         appController.finderController.close();
     });

@@ -5,7 +5,7 @@ import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
-    copyToClipboard, openExplorer,
+    copyToClipboard, openExplorer, trashFile,
 } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
@@ -13,7 +13,6 @@ import appProvider from '../server/appProvider';
 import { useFSEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
 import ItemColorNote from './ItemColorNote';
-
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenaming');
 });
@@ -39,7 +38,7 @@ export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
 
 function genContextMenu(
     filePath: string, setIsRenaming: (value: boolean) => void,
-    reload: () => void, onDelete?: () => void,
+    reload: () => void, onTrashed?: () => void,
 
 ): ContextMenuItemType[] {
     return [
@@ -59,16 +58,17 @@ function genContextMenu(
                 reload();
             },
         }, {
-            menuTitle: 'Delete',
+            menuTitle: 'Move to Trash',
             onClick: async () => {
                 const fileSource = FileSource.getInstance(filePath);
                 const isOk = await openConfirm(
-                    `Deleting "${fileSource.fileFullName}"`,
-                    'Are you sure to delete this file?',
+                    'Moving File to Trash',
+                    'Are you sure you want to move ' +
+                    `"${fileSource.fileFullName}" to trash?`,
                 );
                 if (isOk) {
-                    await fileSource.delete();
-                    onDelete?.();
+                    await trashFile(filePath);
+                    onTrashed?.();
                 }
             },
         },
@@ -79,7 +79,7 @@ function genContextMenu(
 export default function FileItemHandler({
     data, reload, index, filePath, className,
     contextMenuItems, onDrop, onClick, renderChild,
-    isPointer, onDelete, isDisabledColorNote,
+    isPointer, onTrashed, isDisabledColorNote,
     userClassName,
 }: Readonly<{
     data: ItemSource<any> | null | undefined,
@@ -92,7 +92,7 @@ export default function FileItemHandler({
     onClick?: () => void,
     renderChild: (lyric: ItemSource<any>) => any,
     isPointer?: boolean,
-    onDelete?: () => void,
+    onTrashed?: () => void,
     isDisabledColorNote?: boolean,
     userClassName?: string,
 }>) {
@@ -103,7 +103,7 @@ export default function FileItemHandler({
         onClick?.();
     };
     const selfContextMenu = genContextMenu(
-        filePath, setIsRenaming, reload, onDelete,
+        filePath, setIsRenaming, reload, onTrashed,
     );
 
     const handleContextMenuOpening = (event: any) => {

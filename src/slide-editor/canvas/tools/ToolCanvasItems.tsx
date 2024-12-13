@@ -10,7 +10,7 @@ export default function ToolCanvasItems() {
     useCanvasControllerEvents(['update']);
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
-            {canvasItems.map((canvasItem, i) => {
+            {canvasItems.map((canvasItem) => {
                 return (
                     <div key={canvasItem.id}
                         className='card pointer align-self-start m-2'

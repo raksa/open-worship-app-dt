@@ -1,10 +1,10 @@
 export default function HeaderAlertPopup({ header, onClose }: Readonly<{
-    header: JSX.Element,
+    header: React.ReactNode,
     onClose: () => void,
 }>) {
     return (
         <div className='card-header text-center w-100'>
-            <span>{header}</span>
+            <div>{header}</div>
             <button type='button'
                 onClick={() => {
                     onClose();

@@ -92,6 +92,7 @@ export function useAppEffect(
     }, deps);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TestInfinite() {
     const [count, setCount] = useState(0);
     const [isStopped, setIsStopped] = useState(false);

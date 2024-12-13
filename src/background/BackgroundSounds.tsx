@@ -1,6 +1,5 @@
 import './BackgroundSounds.scss';
 
-import { RenderScreenIds } from './Background';
 import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';

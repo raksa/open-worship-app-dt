@@ -2,8 +2,8 @@ import ReactDOMServer from 'react-dom/server';
 import Countdown from './Countdown';
 import ScreenManager from './ScreenManager';
 
-const alertTypeList = ['marquee', 'countdown', 'toast'] as const;
-export type AlertType = typeof alertTypeList[number];
+const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
+export type AlertType = typeof _alertTypeList[number];
 
 const classNameMapper = {
     marquee: 'marquee-actor',

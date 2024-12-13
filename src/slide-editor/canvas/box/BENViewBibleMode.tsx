@@ -6,6 +6,7 @@ import CanvasItemBibleItem, {
     CanvasItemBiblePropsType,
 } from '../CanvasItemBibleItem';
 import { BENViewErrorRender } from './BENViewError';
+import { handleError } from '../../../helper/errorHelpers';
 
 export default function BENViewBibleMode({
     canvasItemBible, style,
@@ -38,6 +39,7 @@ export function BENBibleRender({ props }: Readonly<{
     try {
         CanvasItemBibleItem.validate(props);
     } catch (error) {
+        handleError(error);
         return (
             <BENViewErrorRender />
         );

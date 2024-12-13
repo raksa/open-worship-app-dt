@@ -5,7 +5,6 @@ import { lazy } from 'react';
 import { useStateSettingString } from '../helper/settingHelpers';
 import TabRender, { genTabBody } from '../others/TabRender';
 import { QuickOrBackButton } from '../others/commonButtons';
-import appProvider from '../server/appProvider';
 
 const LazySettingGeneral = lazy(() => {
     return import('./SettingGeneral');

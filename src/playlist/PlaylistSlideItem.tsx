@@ -4,6 +4,7 @@ import SlideItemRendererHtml
     from '../slide-presenter/items/SlideItemRendererHtml';
 import SlideListEventListener from '../event/SlideListEventListener';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function PlaylistSlideItem({ playlistItem }: Readonly<{
     playlistItem: PlaylistItem,
 }>) {

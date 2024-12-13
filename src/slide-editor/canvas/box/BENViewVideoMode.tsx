@@ -9,6 +9,7 @@ import CanvasItemVideo, {
 import img404 from '../404.png';
 import CanvasController from '../CanvasController';
 import { BENViewErrorRender } from './BENViewError';
+import { handleError } from '../../../helper/errorHelpers';
 
 export default function BENViewVideoMode({ canvasItemVideo, style }: Readonly<{
     canvasItemVideo: CanvasItemVideo,
@@ -38,6 +39,7 @@ export function BENVideoRender({ props }: Readonly<{
     try {
         CanvasItemVideo.validate(props);
     } catch (error) {
+        handleError(error);
         return (
             <BENViewErrorRender />
         );

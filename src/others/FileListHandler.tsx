@@ -95,16 +95,20 @@ export default function FileListHandler({
                     checkIsExtraFile: checkExtraFile,
                     takeDroppedFile,
                 })}>
-                {header && <div className='card-header'>{header}
-                    {onNewFile && dirSource.dirPath &&
-                        <button
-                            className='btn btn-sm btn-outline-info float-end'
-                            title='New File'
-                            onClick={() => setIsCreatingNew(true)}>
-                            <i className='bi bi-file-earmark-plus' />
-                        </button>
-                    }
-                </div>}
+                {header && (
+                    <div className='card-header'>{header}
+                        {onNewFile && dirSource.dirPath && (
+                            <button
+                                className={
+                                    'btn btn-sm btn-outline-info float-end'
+                                }
+                                title='New File'
+                                onClick={() => setIsCreatingNew(true)}>
+                                <i className='bi bi-file-earmark-plus' />
+                            </button>
+                        )}
+                    </div>
+                )}
                 <div className='card-body d-flex flex-column'
                     onContextMenu={genOnContextMenu(
                         contextMenu, fileSelectionOption,

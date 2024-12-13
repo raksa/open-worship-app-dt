@@ -319,7 +319,7 @@ export default class Slide extends ItemSource<SlideItem> {
         if (filePath === undefined || id === undefined) {
             return null;
         }
-        const slide = await Slide.readFileToData(filePath);
+        const slide = await this.readFileToData(filePath);
         if (!slide) {
             return null;
         }
@@ -328,6 +328,21 @@ export default class Slide extends ItemSource<SlideItem> {
     static slideItemDragDeserialize(data: any) {
         return this.slideItemFromKey(data);
     }
+    static async getSelectedSlide() {
+        const selectedSlideFilePath = this.getSelectedFilePath();
+        if (selectedSlideFilePath === null) {
+            return null;
+        }
+        const slide = await this.readFileToData(selectedSlideFilePath);
+        return slide || null;
+    };
+    static async getSelectedSlideItem() {
+        const slide = await Slide.getSelectedSlide();
+        if (!slide) {
+            return null;
+        }
+        return slide.items[0];
+    };
 }
 
 export const SelectedSlideContext = createContext<{

@@ -173,6 +173,7 @@ export function isValidJson(json: any, isSilent: boolean = false) {
     try {
         return JSON.parse(json);
     } catch (error) {
+        handleError(error);
         if (!isSilent && json === '') {
             trace('Invalid Json:', json);
         }

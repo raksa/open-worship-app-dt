@@ -8,6 +8,7 @@ import CanvasItemText, {
     CanvasItemTextPropsType,
 } from '../CanvasItemText';
 import { BENViewErrorRender } from './BENViewError';
+import { handleError } from '../../../helper/errorHelpers';
 
 export default function BENViewTextMode({ canvasItemText, style }: Readonly<{
     canvasItemText: CanvasItemText,
@@ -37,6 +38,7 @@ export function BENTextRender({ props }: Readonly<{
     try {
         CanvasItemText.validate(props);
     } catch (error) {
+        handleError(error);
         return (
             <BENViewErrorRender />
         );

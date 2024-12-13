@@ -363,7 +363,9 @@ export default class BibleItemViewController
             );
             parentNestedBibleItems.splice(index, 1);
             this.nestedBibleItems = nestedBibleItems;
-        } catch (error) { }
+        } catch (error) {
+            handleError(error);
+        }
     }
 
     addBibleItem(

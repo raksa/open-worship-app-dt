@@ -11,6 +11,19 @@ export function getFontListByNodeFont() {
 export function openExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
+
+export function trashFile(filePath: string) {
+    return new Promise<void>((resolve) => {
+        const replyEventName = 'app:main-' + Date.now();
+        appProvider.messageUtils.listenOnceForData(replyEventName, () => {
+            resolve();
+        });
+        appProvider.messageUtils.sendData('main:app:trash-path', {
+            path: filePath, replyEventName,
+        });
+    });
+}
+
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
     showSimpleToast('Copy', 'Text has been copied to clip');

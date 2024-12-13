@@ -229,13 +229,13 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
 }
 
 export const SelectedEditingSlideItemContext = createContext<{
-    selectedSlideItem: SlideItem,
-    setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
+    selectedSlideItem: SlideItem | null,
+    setSelectedSlideItem: (newSelectedSlideItem: SlideItem | null) => void,
 } | null>(null);
 
 function useContext() {
     const context = use(SelectedEditingSlideItemContext);
-    if (!context) {
+    if (context === null) {
         throw new Error(
             'useSelectedEditingSlideItemContext must be used within a ' +
             'SelectedEditingSlideItemContext'
@@ -254,8 +254,5 @@ export function useSelectedEditingSlideItemContext() {
 
 export function useSelectedEditingSlideItemSetterContext() {
     const context = useContext();
-    if (context.selectedSlideItem === null) {
-        throw new Error('No selected slide item');
-    }
     return context.setSelectedSlideItem;
 }

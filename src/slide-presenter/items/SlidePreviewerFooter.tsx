@@ -38,7 +38,7 @@ function HistoryPreviewerFooter() {
     );
 }
 
-function choseNewSlide(event: any) {
+function choseNewSlide(_event: any) {
     alert('choseNewSlide');
 }
 

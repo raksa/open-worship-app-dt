@@ -13,7 +13,9 @@ import AppPopupWindows from '../app-modal/AppPopupWindows';
 import AppContextMenu from '../others/AppContextMenu';
 import HandleAlert from '../alert/HandleAlert';
 import Toast from '../toast/Toast';
-import Slide, { SelectedSlideContext } from '../slide-list/Slide';
+import Slide, {
+    SelectedSlideContext,
+} from '../slide-list/Slide';
 import SlideItem, {
     SelectedEditingSlideItemContext,
 } from '../slide-list/SlideItem';
@@ -62,30 +64,23 @@ function useSlideContextValues() {
     const [selectedSlideItem, setSelectedSlideItem] = (
         useState<SlideItem | null>(null)
     );
-    const getSelectedSlide = async () => {
-        const selectedSlideFilePath = Slide.getSelectedFilePath();
-        if (selectedSlideFilePath === null) {
-            return null;
-        }
-        const slide = await Slide.readFileToData(selectedSlideFilePath);
-        return slide || null;
-    };
     useAppEffectAsync(async (methodContext) => {
-        const slide = await getSelectedSlide();
-        if (!slide) {
-            return;
-        }
+        const slide = await Slide.getSelectedSlide();
         methodContext.setSelectedSlide(slide);
-        const firstSlideItem = slide.items[0];
-        methodContext.setSelectedSlideItem(firstSlideItem);
+        const slideItem = await Slide.getSelectedSlideItem();
+        methodContext.setSelectedSlideItem(slideItem);
     }, undefined, { setSelectedSlide, setSelectedSlideItem });
     const slideContextValue = useMemo(() => {
         return {
             selectedSlide: selectedSlide,
-            setSelectedSlide: (newSelectedSlide: Slide) => {
+            setSelectedSlide: (newSelectedSlide: Slide | null) => {
                 setSelectedSlide(newSelectedSlide);
-                const firstSlideItem = newSelectedSlide.items[0];
-                setSelectedSlideItem(firstSlideItem);
+                if (newSelectedSlide === null) {
+                    setSelectedSlideItem(null);
+                } else {
+                    const firstSlideItem = newSelectedSlide.items[0];
+                    setSelectedSlideItem(firstSlideItem);
+                }
             },
         };
     }, [selectedSlide, setSelectedSlide]);

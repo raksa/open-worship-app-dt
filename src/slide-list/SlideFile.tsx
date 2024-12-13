@@ -86,7 +86,7 @@ export default function SlideFile({
             onClick={handleClicking}
             renderChild={handleChildRendering}
             contextMenuItems={contextMenuItems}
-            onDelete={handleSlideDeleting}
+            onTrashed={handleSlideDeleting}
         />
     );
 }

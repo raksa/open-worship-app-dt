@@ -14,7 +14,7 @@ import { getMimetypeExtensions } from '../server/fileHelpers';
 export type RenderChildType = (
     filePath: string,
     selectedBGSrcList: [string, BackgroundSrcType][],
-) => React.JSX.Element;
+) => React.ReactNode;
 
 const bgTypeMapper: any = {
     [DragTypeEnum.BG_IMAGE]: 'image',
@@ -118,7 +118,7 @@ function FileFullNameRenderer({ fileFullName }: Readonly<{
 }>) {
     return (
         <div className='card-footer'>
-            <p className='ellipsis-left card-text'>
+            <p className='app-ellipsis-left card-text'>
                 {fileFullName}
             </p>
         </div>

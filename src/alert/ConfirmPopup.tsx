@@ -30,10 +30,11 @@ export default function ConfirmPopup({ data }: Readonly<{
             <div id='confirm-popup'
                 className='shadow card'>
                 <HeaderAlertPopup header={(
-                    <>
+                    <div className='app-ellipsis'
+                        title={data.title}>
                         <i className='bi bi-exclamation-circle' />
                         {data.title}
-                    </>
+                    </div>
                 )}
                     onClose={handleClosing}
                 />

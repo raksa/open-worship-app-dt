@@ -7,6 +7,7 @@ import img404 from '../404.png';
 import CanvasController from '../CanvasController';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import { BENViewErrorRender } from './BENViewError';
+import { handleError } from '../../../helper/errorHelpers';
 
 export default function BENViewImageMode({
     canvasItemImage, style,
@@ -38,6 +39,7 @@ export function BENImageRender({ props }: Readonly<{
     try {
         CanvasItemImage.validate(props);
     } catch (error) {
+        handleError(error);
         return (
             <BENViewErrorRender />
         );

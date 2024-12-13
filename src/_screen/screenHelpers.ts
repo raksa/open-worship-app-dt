@@ -34,8 +34,8 @@ export type FTListType = {
     [key: string]: FTItemDataType;
 };
 
-const backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
-export type BackgroundType = typeof backgroundTypeList[number];
+const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
+export type BackgroundType = typeof _backgroundTypeList[number];
 export type BackgroundSrcType = {
     type: BackgroundType;
     src: string;
@@ -189,7 +189,7 @@ export function getScreenManagersInstanceSetting() {
     const str = getSetting(screenManagerSettingNames.MANAGERS, '');
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
-        return json.filter(({ screenId, _ }: any) => {
+        return json.filter(({ screenId }: any) => {
             return typeof screenId === 'number';
         });
     }

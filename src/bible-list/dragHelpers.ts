@@ -1,5 +1,4 @@
 import BibleItem from './BibleItem';
-import SlideItem from '../slide-list/SlideItem';
 import { colorDeserialize } from '../others/color/colorHelpers';
 import DragInf, {
     DragDataType, DragTypeEnum, DroppedDataType,

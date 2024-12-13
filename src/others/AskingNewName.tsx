@@ -6,7 +6,7 @@ export default function AskingNewName({
     defaultName, applyName, customIcon,
 }: Readonly<{
     defaultName?: string,
-    customIcon?: React.JSX.Element,
+    customIcon?: React.ReactNode,
     applyName: (newName: string | null) => void,
 }>) {
     const [creatingNewName, setCreatingNewName] = useState(defaultName || '');

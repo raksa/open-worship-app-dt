@@ -24,7 +24,7 @@ export default function SlideItemRenderer({
             width: `${width}px`,
             height: `${height}px`,
         }}>
-            {canvasItemsJson.map((canvasItemJson: any, i) => {
+            {canvasItemsJson.map((canvasItemJson: any) => {
                 return (
                     <div key={canvasItemJson.id}
                         style={CanvasItem.genBoxStyle(canvasItemJson)}>
