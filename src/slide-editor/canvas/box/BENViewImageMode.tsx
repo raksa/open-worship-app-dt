@@ -65,7 +65,8 @@ export function BENImageRender({ props }: Readonly<{
                 style={{
                     pointerEvents: 'none',
                 }}
-                src={props.srcData || img404} />
+                src={props.srcData || img404}
+            />
         </div>
     );
 }

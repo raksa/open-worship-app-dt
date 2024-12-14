@@ -29,7 +29,8 @@ export default function SlideItemRenderer({
                     <div key={canvasItemJson.id}
                         style={CanvasItem.genBoxStyle(canvasItemJson)}>
                         <CanvasItemRenderer
-                            props={canvasItemJson} />
+                            props={canvasItemJson}
+                        />
                     </div>
                 );
             })}
