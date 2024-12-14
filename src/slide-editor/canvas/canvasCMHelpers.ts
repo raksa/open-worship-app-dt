@@ -12,8 +12,9 @@ function checkClipboardIsImage(clipboardItem: ClipboardItem) {
     });
 }
 
-export async function showCanvasContextMenu(event: any) {
-    const canvasController = CanvasController.getInstance();
+export async function showCanvasContextMenu(
+    event: any, canvasController: CanvasController,
+) {
     const clipboardItems = await navigator.clipboard.read();
     const isPastingImage = clipboardItems.some((clipboardItem) => {
         return checkClipboardIsImage(clipboardItem);
@@ -84,10 +85,9 @@ export async function showCanvasContextMenu(event: any) {
     ]);
 }
 
-export function showCanvasItemContextMenu(event: any,
-    canvasItem: CanvasItem<any>,
+export function showCanvasItemContextMenu(
+    event: any, canvasController: CanvasController, canvasItem: CanvasItem<any>,
 ) {
-    const canvasController = CanvasController.getInstance();
     showAppContextMenu(event, [
         {
             menuTitle: 'Copy', onClick: () => {

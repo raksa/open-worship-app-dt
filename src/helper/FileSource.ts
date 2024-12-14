@@ -226,8 +226,8 @@ export default class FileSource extends EventHandler<FSEventType>
         }
     }
 
-    static registerFSEventListener(
-        events: FSEventType[], callback: () => void, filePath?: string,
+    static registerFSEventListener<T>(
+        events: FSEventType[], callback: (data: T) => void, filePath?: string,
     ) {
         const newEvents = events.map((event) => {
             return filePath ? `${event}:${filePath}` : event;

@@ -7,7 +7,7 @@ import CanvasItemVideo, {
     CanvasItemVideoPropsType,
 } from '../CanvasItemVideo';
 import img404 from '../404.png';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import { BENViewErrorRender } from './BENViewError';
 import { handleError } from '../../../helper/errorHelpers';
 
@@ -15,16 +15,18 @@ export default function BENViewVideoMode({ canvasItemVideo, style }: Readonly<{
     canvasItemVideo: CanvasItemVideo,
     style: CSSProperties
 }>) {
+    const canvasController = useCanvasControllerContext();
     return (
         <div className='box-editor pointer'
             style={style}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                showCanvasItemContextMenu(event, canvasItemVideo);
+                showCanvasItemContextMenu(
+                    event, canvasController, canvasItemVideo,
+                );
             }}
             onClick={async (event) => {
                 event.stopPropagation();
-                const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemVideo, true);
             }}>

@@ -10,7 +10,7 @@ import {
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { openConfirm } from '../alert/alertHelpers';
 import ItemColorNote from './ItemColorNote';
 const LazyRenderRenaming = lazy(() => {
@@ -97,7 +97,7 @@ export default function FileItemHandler({
     userClassName?: string,
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
-    useFSEvents(['select']);
+    useFileSourceEvents(['select']);
     const applyClick = () => {
         FileSource.getInstance(filePath).fireSelectEvent();
         onClick?.();

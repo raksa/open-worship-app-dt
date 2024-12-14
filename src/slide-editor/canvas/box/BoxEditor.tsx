@@ -4,13 +4,15 @@ import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import BoxEditorNormalMode from './BoxEditorNormalMode';
 import BoxEditorControllingMode from './BoxEditorControllingMode';
-import { useCIControl } from '../canvasEventHelpers';
+import { useIsControlling } from '../canvasEventHelpers';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
+import { useCanvasControllerContext } from '../CanvasController';
 
 export function BoxEditor({ canvasItem, scale }: Readonly<{
     canvasItem: CanvasItem<any>, scale: number,
 }>) {
-    const isControlling = useCIControl(canvasItem);
+    const canvasController = useCanvasControllerContext();
+    const isControlling = useIsControlling(canvasController, canvasItem);
     useAppEffect(() => {
         boxEditorController.setScaleFactor(scale);
     }, [scale]);

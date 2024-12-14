@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';
@@ -14,16 +14,18 @@ export default function BENViewTextMode({ canvasItemText, style }: Readonly<{
     canvasItemText: CanvasItemText,
     style: CSSProperties
 }>) {
+    const canvasController = useCanvasControllerContext();
     return (
         <div className='box-editor pointer'
             style={style}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                showCanvasItemContextMenu(event, canvasItemText);
+                showCanvasItemContextMenu(
+                    event, canvasController, canvasItemText,
+                );
             }}
             onClick={async (event) => {
                 event.stopPropagation();
-                const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemText, true);
             }}>

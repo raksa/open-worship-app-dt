@@ -72,7 +72,7 @@ export default abstract class EditorCacheManager<T1, T2> {
         changedObject.undoQueue.push(history);
         changedObject.redoQueue = [];
         this._changedObject = changedObject;
-        FileSource.getInstance(this.filePath).fireUpdateEvent();
+        FileSource.getInstance(this.filePath).fireHistoryUpdateEvent();
     }
     popUndo() {
         const changedObject = this._changedObject;
@@ -83,7 +83,6 @@ export default abstract class EditorCacheManager<T1, T2> {
         changedObject.redoQueue.push(history);
         this._changedObject = changedObject;
         const fileSource = FileSource.getInstance(this.filePath);
-        fileSource.fireUpdateEvent();
         fileSource.fireHistoryUpdateEvent();
     }
     popRedo() {

@@ -1,11 +1,12 @@
 import { showAppContextMenu } from '../../../others/AppContextMenu';
 import appProvider from '../../../server/appProvider';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItem from '../CanvasItem';
 
 export default function BENViewError({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
+    const canvasController = useCanvasControllerContext();
     return (
         <div className='box-editor pointer'
             style={canvasItem.getBoxStyle()}
@@ -14,7 +15,6 @@ export default function BENViewError({ canvasItem }: Readonly<{
                 showAppContextMenu(event as any, [{
                     menuTitle: 'Delete',
                     onClick: () => {
-                        const canvasController = CanvasController.getInstance();
                         canvasController.deleteItem(canvasItem);
                     },
                 }, {
@@ -27,7 +27,6 @@ export default function BENViewError({ canvasItem }: Readonly<{
             }}
             onClick={async (event) => {
                 event.stopPropagation();
-                const canvasController = CanvasController.getInstance();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItem, true);
             }}>

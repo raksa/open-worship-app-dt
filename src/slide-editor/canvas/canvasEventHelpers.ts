@@ -5,13 +5,17 @@ import CanvasController from './CanvasController';
 import { CCEventType } from './canvasHelpers';
 import CanvasItem from './CanvasItem';
 
-export function useCanvasControllerEvents(eventTypes: CCEventType[]) {
+export function useCanvasControllerEvents(
+    canvasController: CanvasController,
+    eventTypes: CCEventType[],
+    callback?: (data: { canvasItem: CanvasItem<any> }) => void,
+) {
     const [n, setN] = useState(0);
-    const canvasController = CanvasController.getInstance();
     useAppEffect(() => {
         const regEvents = canvasController.registerEventListener(
-            eventTypes, () => {
+            eventTypes, (data: { canvasItem: CanvasItem<any> }) => {
                 setN(n + 1);
+                callback?.(data);
             });
         return () => {
             canvasController.unregisterEventListener(regEvents);
@@ -19,14 +23,14 @@ export function useCanvasControllerEvents(eventTypes: CCEventType[]) {
     }, [n]);
 }
 
-export function useSlideItemCanvasScale() {
-    const canvasController = CanvasController.getInstance();
+export function useSlideItemCanvasScale(canvasController: CanvasController) {
     const [scale, setScale] = useState(canvasController.scale);
     useAppEffect(() => {
-        const regEvents = canvasController
-            .registerEventListener(['scale'], () => {
+        const regEvents = canvasController.registerEventListener(
+            ['scale'], () => {
                 setScale(canvasController.scale);
-            });
+            },
+        );
         return () => {
             canvasController.unregisterEventListener(regEvents);
         };
@@ -34,10 +38,12 @@ export function useSlideItemCanvasScale() {
     return scale;
 }
 
-export function useCIControl(canvasItem: CanvasItem<any>) {
+export function useIsControlling(
+    canvasController: CanvasController, canvasItem: CanvasItem<any>,
+) {
     const [isControlling, setIsControlling] = useState(
-        canvasItem.isControlling);
-    const canvasController = CanvasController.getInstance();
+        canvasItem.isControlling,
+    );
     useAppEffect(() => {
         const regEvents = canvasController.registerEventListener(
             ['control'], (item: CanvasItem<any>) => {

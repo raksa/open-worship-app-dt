@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemText from '../CanvasItemText';
 import BoxEditorTextArea from './BoxEditorTextArea';
 
@@ -10,10 +10,10 @@ export default function BENTextEditMode({
     canvasItemText: CanvasItemText,
     style: CSSProperties
 }>) {
-    const canvasController = CanvasController.getInstance();
+    const canvasController = useCanvasControllerContext();
     const handleTextSetting = (text: string) => {
         canvasItemText.applyProps({ text });
-        canvasController.fireUpdateEvent();
+        canvasController.fireUpdateEvent(canvasItemText);
     };
     return (
         <div className='box-editor pointer editable'

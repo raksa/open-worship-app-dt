@@ -4,7 +4,7 @@ import { Fragment, lazy } from 'react';
 
 import { useStateSettingString } from '../../../helper/settingHelpers';
 import TabRender, { genTabBody } from '../../../others/TabRender';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
 import {
     useCanvasControllerEvents, useSlideItemCanvasScale,
@@ -39,13 +39,13 @@ const tabTypeList = [
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function SlideItemEditorTools() {
-    const canvasController = CanvasController.getInstance();
+    const canvasController = useCanvasControllerContext();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
-    useCanvasControllerEvents(['select']);
+    useCanvasControllerEvents(canvasController, ['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'editor-tools-tab', 't',
     );
-    const scale = useSlideItemCanvasScale();
+    const scale = useSlideItemCanvasScale(canvasController);
     return (
         <div className='tools d-flex flex-column w-100 h-100'>
             <div className='tools-header d-flex'>

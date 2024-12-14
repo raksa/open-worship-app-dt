@@ -1,7 +1,7 @@
 import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { handleDragStart } from './dragHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import {
@@ -29,7 +29,7 @@ export default function BibleItemRender({
 }>) {
     const showBibleSearchPopup = useShowBibleSearchContext();
     const viewController = useBibleItemViewControllerContext();
-    useFSEvents(['select'], filePath);
+    useFileSourceEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
     const changeBible = async (newBibleKey: string) => {
         const bible = bibleItem.filePath ?

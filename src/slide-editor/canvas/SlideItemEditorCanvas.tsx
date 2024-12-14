@@ -6,7 +6,9 @@ import {
     showCanvasContextMenu,
 } from './canvasCMHelpers';
 import { isSupportedMimetype } from '../../server/fileHelpers';
-import CanvasController from './CanvasController';
+import CanvasController, {
+    useCanvasControllerContext,
+} from './CanvasController';
 import {
     useSlideItemCanvasScale, useCanvasControllerEvents,
 } from './canvasEventHelpers';
@@ -15,9 +17,9 @@ import Canvas from './Canvas';
 import CanvasItem from './CanvasItem';
 
 export default function SlideItemEditorCanvas() {
-    const canvasController = CanvasController.getInstance();
-    const scale = useSlideItemCanvasScale();
-    useCanvasControllerEvents(['update']);
+    const canvasController = useCanvasControllerContext();
+    const scale = useSlideItemCanvasScale(canvasController);
+    useCanvasControllerEvents(canvasController, ['update']);
     useKeyboardRegistering([{ key: 'Escape' }], () => {
         canvasController.stopAllMods();
     });
@@ -90,7 +92,7 @@ function genBody({
     };
     const handleContextMenuOpening = async (event: any) => {
         (event.target as HTMLDivElement).focus();
-        showCanvasContextMenu(event);
+        showCanvasContextMenu(event, canvasController);
     };
     return (
         <div className='editor blank-bg border-white-round'

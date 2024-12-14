@@ -6,7 +6,7 @@ import Slide, { useSelectedSlideSetterContext } from './Slide';
 import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
@@ -56,7 +56,7 @@ export default function SlideFile({
             methodContext.setData(slide);
         }
     }, [data], { setData });
-    useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
+    useFileSourceEvents(['update', 'history-update', 'edit'], filePath, () => {
         setData(null);
     });
     const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{

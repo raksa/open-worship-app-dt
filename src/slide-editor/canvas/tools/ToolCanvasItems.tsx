@@ -1,13 +1,13 @@
 import CanvasItemRenderer
     from '../../../slide-presenter/items/CanvasItemRenderer';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import { useCanvasControllerEvents } from '../canvasEventHelpers';
 
 export default function ToolCanvasItems() {
-    const canvasController = CanvasController.getInstance();
+    const canvasController = useCanvasControllerContext();
     const canvasItems = canvasController.canvas.canvasItems;
-    useCanvasControllerEvents(['update']);
+    useCanvasControllerEvents(canvasController, ['update']);
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem) => {
@@ -25,7 +25,9 @@ export default function ToolCanvasItems() {
                                 canvasItem, true);
                         }}
                         onContextMenu={(event) => {
-                            showCanvasItemContextMenu(event, canvasItem);
+                            showCanvasItemContextMenu(
+                                event, canvasController, canvasItem,
+                            );
                         }}>
                         <div className='card-header'>
                             {canvasItem.id}:
@@ -33,7 +35,8 @@ export default function ToolCanvasItems() {
                         </div>
                         <div className='card-body'>
                             <CanvasItemRenderer
-                                props={canvasItem.props} />
+                                props={canvasItem.props}
+                            />
                         </div>
                     </div>
                 );

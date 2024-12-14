@@ -9,9 +9,10 @@ import ToolsTextFontControl from './ToolsTextFontControl';
 import { CanvasItemContext } from '../CanvasItem';
 import ColorPicker from '../../../others/color/ColorPicker';
 import { AppColorType } from '../../../others/color/colorHelpers';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 
 export default function ToolsText() {
+    const canvasController = useCanvasControllerContext();
     const handleDataEvent = (newData: any) => {
         const textData: ToolingTextType = {};
         if (newData.horizontalAlignment !== undefined) {
@@ -36,7 +37,7 @@ export default function ToolsText() {
     }
     const applyTextData = (newData: ToolingTextType) => {
         canvasItem.applyTextData(newData);
-        CanvasController.getInstance().fireUpdateEvent();
+        canvasController.fireUpdateEvent();
     };
     return (
         <div className='d-flex'>

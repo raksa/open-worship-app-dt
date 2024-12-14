@@ -5,7 +5,7 @@ import FileItemHandler from '../others/FileItemHandler';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
@@ -37,7 +37,7 @@ export default function LyricFile({
             Lyric.readFileToData(filePath).then(setData);
         }
     }, [data]);
-    useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
+    useFileSourceEvents(['update', 'history-update', 'edit'], filePath, () => {
         setData(null);
     });
     return (

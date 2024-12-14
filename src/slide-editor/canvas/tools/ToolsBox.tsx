@@ -3,12 +3,13 @@ import { use } from 'react';
 import ColorPicker from '../../../others/color/ColorPicker';
 import Tool from './Tool';
 import ToolAlign from './ToolAlign';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import { ToolingBoxType } from '../canvasHelpers';
 import { CanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
 export default function ToolsBox() {
+    const canvasController = useCanvasControllerContext();
     const handleDataEvent = (newData: any) => {
         applyBoxData(newData);
     };
@@ -26,14 +27,13 @@ export default function ToolsBox() {
     if (canvasItem === null) {
         return null;
     }
-    const canvasController = CanvasController.getInstance();
     const parentDimension = {
         parentWidth: canvasController.canvas.width,
         parentHeight: canvasController.canvas.height,
     };
     const applyBoxData = (newData: ToolingBoxType) => {
         canvasItem.applyBoxData(parentDimension, newData);
-        canvasController.fireUpdateEvent();
+        canvasController.fireUpdateEvent(canvasItem);
     };
     return (
         <>

@@ -18,10 +18,10 @@ import {
 import CanvasItemVideo from './CanvasItemVideo';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
+import { createContext, use } from 'react';
 
 const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
 
-let instance: CanvasController | null = null;
 export default class CanvasController extends EventHandler<CCEventType> {
     static readonly eventNamePrefix: string = 'canvas-c';
     copiedItem: CanvasItem<any> | null = null;
@@ -58,19 +58,21 @@ export default class CanvasController extends EventHandler<CCEventType> {
         return this.canvas.canvasItems.includes(this.copiedItem);
     }
     fireSelectEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('select', canvasItem);
+        this.addPropEvent('select', { canvasItems: [canvasItem] });
     }
     fireControlEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('control', canvasItem);
+        this.addPropEvent('control', { canvasItems: [canvasItem] });
     }
     fireTextEditEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('text-edit', canvasItem);
+        this.addPropEvent('text-edit', { canvasItems: [canvasItem] });
     }
-    async fireUpdateEvent() {
+    fireUpdateEvent(canvasItem?: CanvasItem<any>) {
         if (this._slideItem !== null) {
             this._slideItem.canvas = this.canvas;
         }
-        this.addPropEvent('update');
+        this.addPropEvent('update', {
+            canvasItems: canvasItem ? [canvasItem] : this.canvas,
+        });
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
         const newCanvasItem = canvasItem.clone();
@@ -195,7 +197,7 @@ export default class CanvasController extends EventHandler<CCEventType> {
             horizontalAlignment: 'center',
             verticalAlignment: 'center',
         });
-        this.fireUpdateEvent();
+        this.fireUpdateEvent(canvasItem);
     }
     applyCanvasItemFully(canvasItem: CanvasItem<any>) {
         const props = canvasItem.props as CanvasItemPropsType;
@@ -256,10 +258,15 @@ export default class CanvasController extends EventHandler<CCEventType> {
         canvasItem.isEditing = b;
         this.fireTextEditEvent(canvasItem);
     }
-    static getInstance() {
-        if (instance === null) {
-            instance = new this();
-        }
-        return instance;
+}
+
+export const CanvasControllerContext = (
+    createContext<CanvasController | null>(null)
+);
+export function useCanvasControllerContext() {
+    const context = use(CanvasControllerContext);
+    if (context === null) {
+        throw new Error('CanvasControllerContext is null');
     }
+    return context;
 }

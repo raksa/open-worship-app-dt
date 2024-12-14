@@ -170,6 +170,9 @@ export function toMaxId(ids: number[]) {
 }
 
 export function isValidJson(json: any, isSilent: boolean = false) {
+    if (!json) {
+        return false;
+    }
     try {
         return JSON.parse(json);
     } catch (error) {

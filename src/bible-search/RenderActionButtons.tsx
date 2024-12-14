@@ -105,12 +105,11 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
             hideBibleSearchPopup : () => false
     );
     SearchBibleItemViewController.getInstance().onSearchAddBibleItem = onDone;
-    useKeyboardRegistering([addListEventMapper], () => {
-        addBibleItem(bibleItem, onDone).then((addedBibleItem) => {
-            if (addedBibleItem === null) {
-                showAddingBibleItemFail();
-            }
-        });
+    useKeyboardRegistering([addListEventMapper], async () => {
+        const addedBibleItem = await addBibleItem(bibleItem, onDone);
+        if (addedBibleItem === null) {
+            showAddingBibleItemFail();
+        }
     });
     useKeyboardRegistering([presenterEventMapper], (event) => {
         if (!appProvider.isPagePresenter) {

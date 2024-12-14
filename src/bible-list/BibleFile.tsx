@@ -9,7 +9,7 @@ import { openConfirm } from '../alert/alertHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 
 const LazyRenderBibleItems = lazy(() => {
@@ -78,7 +78,7 @@ export default function BibleFile({
     const handleReloading = () => {
         setData(null);
     };
-    useFSEvents(['update'], filePath, handleReloading);
+    useFileSourceEvents(['update'], filePath, handleReloading);
     return (
         <FileItemHandler
             index={index}

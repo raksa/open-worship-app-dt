@@ -2,8 +2,9 @@ import { SrcData } from '../../helper/FileSource';
 import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 
-export type CCEventType = 'select' | 'control' |
-    'text-edit' | 'update' | 'scale';
+export type CCEventType = (
+    'select' | 'control' | 'text-edit' | 'update' | 'scale'
+);
 
 export type CanvasItemMediaPropsType = {
     srcData: SrcData,

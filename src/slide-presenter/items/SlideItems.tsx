@@ -8,22 +8,39 @@ import {
 } from '../../event/SlideListEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
-import { useFSEvents } from '../../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import { genArrowListener, checkSlideItemToView } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
-import {
+import SlideItem, {
     useSelectedEditingSlideItemSetterContext,
 } from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
 
-export default function SlideItems() {
+function useSlideItems() {
     const selectedSlide = useSelectedSlideContext();
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
-    const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
-    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    useFSEvents(['select', 'edit'], selectedSlide.filePath);
-    const slideItems = selectedSlide.items;
+    const [slideItems, setSlideItems] = useState<SlideItem[]>(
+        selectedSlide.items,
+    );
+    useFileSourceEvents(['select', 'edit'], selectedSlide.filePath);
+    useFileSourceEvents(
+        ['update', 'edit'], selectedSlide.filePath,
+        (updatedSlideItem: SlideItem) => {
+            debugger;
+            const newSlideItems = selectedSlide.items.map((item, i) => {
+                if (item.checkIsSame(updatedSlideItem)) {
+                    return updatedSlideItem;
+                }
+                if (slideItems[i].checkIsSame(item)) {
+                    return slideItems[i];
+                } else {
+                    return item;
+                }
+            });
+            setSlideItems(newSlideItems);
+        }
+    );
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
     const arrowListener = (
         appProvider.isPageEditor ? () => { } :
@@ -32,6 +49,13 @@ export default function SlideItems() {
     useKeyboardRegistering(arrows.map((key) => {
         return { key };
     }), arrowListener);
+    return { slideItems, selectedSlide };
+}
+
+export default function SlideItems() {
+    const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+    const { slideItems, selectedSlide } = useSlideItems();
     const slideItemThumbnailSize = (
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR
     );

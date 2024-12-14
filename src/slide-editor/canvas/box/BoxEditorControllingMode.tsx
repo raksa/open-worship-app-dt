@@ -8,7 +8,7 @@ import {
 import { BENImageRender } from './BENViewImageMode';
 import { BENTextRender } from './BENViewTextMode';
 import { BENBibleRender } from './BENViewBibleMode';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 import { BENVideoRender } from './BENViewVideoMode';
 import { useCanvasControllerEvents } from '../canvasEventHelpers';
 import { BENViewErrorRender } from './BENViewError';
@@ -20,8 +20,8 @@ export default function BoxEditorControllingMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     // TODO: move box by left right up down key, shift&ctl
-    useCanvasControllerEvents(['update']);
-    const canvasController = CanvasController.getInstance();
+    const canvasController = useCanvasControllerContext();
+    useCanvasControllerEvents(canvasController, ['update']);
     useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
     });
@@ -35,7 +35,7 @@ export default function BoxEditorControllingMode({ canvasItem }: Readonly<{
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
                             canvasItem.applyProps(info);
-                            canvasController.fireUpdateEvent();
+                            canvasController.fireUpdateEvent(canvasItem);
                         }
                     };
                 }
@@ -54,7 +54,9 @@ export default function BoxEditorControllingMode({ canvasItem }: Readonly<{
                 }}
                 onContextMenu={(event) => {
                     event.stopPropagation();
-                    showCanvasItemContextMenu(event, canvasItem);
+                    showCanvasItemContextMenu(
+                        event,canvasController, canvasItem,
+                    );
                 }}
                 onDoubleClick={(event) => {
                     event.stopPropagation();

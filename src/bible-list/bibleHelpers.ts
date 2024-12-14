@@ -15,7 +15,6 @@ import {
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
-import CanvasController from '../slide-editor/canvas/CanvasController';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
@@ -110,8 +109,8 @@ export async function addBibleItem(
     bibleItem: BibleItem, onDone: () => void,
 ) {
     if (appProvider.isPageEditor) {
-        const canvasController = CanvasController.getInstance();
-        canvasController.addNewBibleItem(bibleItem);
+        // TODO: Implement this, find canvasController
+        // canvasController.addNewBibleItem(bibleItem);
         return null;
     }
     const savedBibleItem = await Bible.addBibleItemToDefault(bibleItem);

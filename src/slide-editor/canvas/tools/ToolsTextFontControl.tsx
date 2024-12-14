@@ -5,7 +5,7 @@ import CanvasItemText from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
-import CanvasController from '../CanvasController';
+import { useCanvasControllerContext } from '../CanvasController';
 
 export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
@@ -21,6 +21,7 @@ export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
 function FontSize({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
 }>) {
+    const canvasController = useCanvasControllerContext();
     const [localFontSize, setLocalFontSize] = useState(
         canvasItemText.props.fontSize);
     useAppEffect(() => {
@@ -29,7 +30,7 @@ function FontSize({ canvasItemText }: Readonly<{
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
         canvasItemText.applyTextData({ fontSize });
-        CanvasController.getInstance().fireUpdateEvent();
+        canvasController.fireUpdateEvent();
     };
     return (
         <div>
@@ -57,6 +58,7 @@ function FontSize({ canvasItemText }: Readonly<{
 function FontFamily({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
 }>) {
+    const canvasController = useCanvasControllerContext();
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(
         canvasItemText.props.fontFamily ?? '');
@@ -65,7 +67,7 @@ function FontFamily({ canvasItemText }: Readonly<{
         canvasItemText.applyTextData({
             fontFamily: fontFamily || null,
         });
-        CanvasController.getInstance().fireUpdateEvent();
+        canvasController.fireUpdateEvent();
     };
     if (fontList === null) {
         return (
@@ -108,6 +110,7 @@ function FontWeight({
     fontList: FontListType,
     canvasItemText: CanvasItemText,
 }>) {
+    const canvasController = useCanvasControllerContext();
     const [localFontWeight, setLocalFontWeight] = useState(fontWeight);
     useAppEffect(() => {
         setLocalFontWeight(fontWeight);
@@ -117,7 +120,7 @@ function FontWeight({
         canvasItemText.applyTextData({
             fontWeight: newFontWeight || null,
         });
-        CanvasController.getInstance().fireUpdateEvent();
+        canvasController.fireUpdateEvent();
     };
     return (
         <div>

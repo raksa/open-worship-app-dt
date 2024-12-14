@@ -23,14 +23,14 @@ export function useGenDirSource(settingName: string) {
     return dirSource;
 }
 
-export function useFSEvents(
-    events: FSEventType[], filePath?: string, callback?: () => void,
+export function useFileSourceEvents<T>(
+    events: FSEventType[], filePath?: string, callback?: (data: T) => void,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
-        const update = () => {
+        const update = (data: T) => {
             setN(n + 1);
-            callback?.();
+            callback?.(data);
         };
         const staticEvents = FileSource.registerFSEventListener(
             events, update, filePath,

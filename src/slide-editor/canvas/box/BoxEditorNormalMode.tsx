@@ -12,15 +12,17 @@ import BENViewError from './BENViewError';
 import BENViewVideoMode from './BENViewVideoMode';
 import CanvasItemVideo from '../CanvasItemVideo';
 import { useCanvasControllerEvents } from '../canvasEventHelpers';
+import { useCanvasControllerContext } from '../CanvasController';
 
 export default function BoxEditorNormalMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
+    const canvasController = useCanvasControllerContext();
     const style: CSSProperties = {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
     };
-    useCanvasControllerEvents(['text-edit', 'update']);
+    useCanvasControllerEvents(canvasController, ['text-edit', 'update']);
     switch (canvasItem.type) {
         case 'image':
             return (

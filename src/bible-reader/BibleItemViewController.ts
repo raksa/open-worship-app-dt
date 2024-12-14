@@ -541,8 +541,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
-            bibleItem, this.onSearchAddBibleItem,
-            isBibleItemSelected,
+            bibleItem, this.onSearchAddBibleItem, isBibleItemSelected,
         );
         const menus2 = super.genContextMenu(bibleItem);
         if (!isBibleItemSelected) {
