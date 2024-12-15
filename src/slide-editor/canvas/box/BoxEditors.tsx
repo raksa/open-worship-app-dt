@@ -4,13 +4,16 @@ import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import BoxEditorsNormalMode from './BoxEditorsNormalMode';
 import BoxEditorsControllingMode from './BoxEditorsControllingMode';
-import { useIsControlling } from '../canvasEventHelpers';
+import {
+    useIsControlling, useSlideItemCanvasScale,
+} from '../canvasEventHelpers';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 
-export function BoxEditors({ canvasItem, scale }: Readonly<{
-    canvasItem: CanvasItem<any>, scale: number,
+export function BoxEditors({ canvasItem }: Readonly<{
+    canvasItem: CanvasItem<any>,
 }>) {
+    const scale = useSlideItemCanvasScale();
     const canvasController = useCanvasControllerContext();
     const isControlling = useIsControlling(canvasController, canvasItem);
     useAppEffect(() => {

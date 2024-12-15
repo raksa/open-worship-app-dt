@@ -1,3 +1,4 @@
+import { useTransition } from 'react';
 import './ProgressBarComp.scss';
 
 export default function ProgressBarComp({ title }: Readonly<{
@@ -23,4 +24,17 @@ export default function ProgressBarComp({ title }: Readonly<{
             />
         </div>
     );
+}
+
+export function useProgressBarComp() {
+    const [isPending, startTransaction] = useTransition();
+    return {
+        isPending,
+        startTransaction,
+        progressBarChild: (
+            <div className='w-100' style={{ height: '1px' }}>
+                {isPending ? (<ProgressBarComp />) : null}
+            </div>
+        ),
+    } as const;
 }

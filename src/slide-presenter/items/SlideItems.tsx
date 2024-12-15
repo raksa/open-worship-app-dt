@@ -1,4 +1,4 @@
-import { useOptimistic, useState, useTransition } from 'react';
+import { useOptimistic, useState } from 'react';
 
 import {
     KeyboardType, useKeyboardRegistering,
@@ -17,7 +17,7 @@ import SlideItem, {
 } from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
 import { useAppEffect } from '../../helper/debuggerHelpers';
-import ProgressBarComp from '../../progress-bar/ProgressBarComp';
+import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
 
 const slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
@@ -26,7 +26,7 @@ function useSlideItems() {
     const [slideItems, setSlideItems] = useOptimistic<SlideItem[]>(
         selectedSlide.items,
     );
-    const [isPending, startTransaction] = useTransition();
+    const { startTransaction, progressBarChild } = useProgressBarComp();
     const setSlideItems1 = (newSlideItems: SlideItem[]) => {
         startTransaction(() => {
             setSlideItems(newSlideItems);
@@ -106,13 +106,13 @@ function useSlideItems() {
     useKeyboardRegistering(arrows.map((key) => {
         return { key };
     }), arrowListener);
-    return { slideItems, isPending };
+    return { slideItems, progressBarChild };
 }
 
 export default function SlideItems() {
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    const { slideItems, isPending } = useSlideItems();
+    const { slideItems, progressBarChild } = useSlideItems();
     useAppEffect(() => {
         Object.values(slideItemsToView).forEach((slideItem) => {
             slideItem.showInViewport();
@@ -126,9 +126,7 @@ export default function SlideItems() {
     );
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            <div className='w-100' style={{ height: '1px' }}>
-                {isPending ? (<ProgressBarComp />) : null}
-            </div>
+            {progressBarChild}
             {slideItems.map((slideItem, i) => {
                 return (
                     <SlideItemRenderWrapper key={slideItem.id}

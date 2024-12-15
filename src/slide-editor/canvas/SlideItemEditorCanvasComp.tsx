@@ -6,53 +6,39 @@ import {
     showCanvasContextMenu,
 } from './canvasCMHelpers';
 import { isSupportedMimetype } from '../../server/fileHelpers';
-import CanvasController, {
-    useCanvasControllerContext,
-} from './CanvasController';
+import { useCanvasControllerContext } from './CanvasController';
 import {
     useSlideItemCanvasScale,
 } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
-import Canvas from './Canvas';
-import CanvasItem from './CanvasItem';
+import { useOptimistic } from 'react';
 
-export default function SlideItemEditorCanvas() {
+export default function SlideItemEditorCanvasComp() {
     const canvasController = useCanvasControllerContext();
-    const scale = useSlideItemCanvasScale(canvasController);
+    const scale = useSlideItemCanvasScale();
     useKeyboardRegistering([{ key: 'Escape' }], () => {
         canvasController.stopAllMods();
     });
-    const canvas = canvasController.canvas;
-    const canvasItems = canvas.canvasItems;
     return (
         <div className='editor-container w-100 h-100'>
             <div className='overflow-hidden' style={{
-                width: `${canvas.width * scale + 20}px`,
-                height: `${canvas.height * scale + 20}px`,
+                width: `${canvasController.canvas.width * scale + 20}px`,
+                height: `${canvasController.canvas.height * scale + 20}px`,
             }}>
                 <div className='w-100 h-100' style={{
                     transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
                 }}>
-                    {genBody({
-                        canvas,
-                        canvasItems,
-                        canvasController,
-                        scale,
-                    })}
+                    <BodyRendererComp />
                 </div>
             </div>
         </div>
     );
 }
 
-function genBody({
-    canvas, canvasItems, canvasController, scale,
-}: {
-    canvas: Canvas,
-    canvasItems: CanvasItem<any>[],
-    canvasController: CanvasController,
-    scale: number,
-}) {
+function BodyRendererComp() {
+    const canvasController = useCanvasControllerContext();
+    const { canvas } = canvasController;
+    const [canvasItems] = useOptimistic(canvas.canvasItems);
     const isSupportType = (fileType: string) => {
         return (
             isSupportedMimetype(fileType, 'image') ||
@@ -113,7 +99,6 @@ function genBody({
             {canvasItems.map((canvasItem) => {
                 return (
                     <BoxEditors key={canvasItem.id}
-                        scale={scale}
                         canvasItem={canvasItem}
                     />
                 );

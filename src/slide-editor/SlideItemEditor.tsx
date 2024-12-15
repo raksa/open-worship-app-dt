@@ -16,7 +16,7 @@ import FileSource from '../helper/FileSource';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 const LazySlideItemEditorCanvas = lazy(() => {
-    return import('./canvas/SlideItemEditorCanvas');
+    return import('./canvas/SlideItemEditorCanvasComp');
 });
 const LazySlideItemEditorTools = lazy(() => {
     return import('./canvas/tools/SlideItemEditorTools');
@@ -43,8 +43,7 @@ export default function SlideItemEditor() {
                 return item.id === canvasController.slideItem.id;
             });
             if (currentSlideItem !== undefined && !currentSlideItem.isChanged) {
-                debugger;
-                console.log(selectedSlideItem === currentSlideItem);
+                currentSlideItem.a = 1;
                 setSelectedSlideItem(currentSlideItem);
             }
         }
