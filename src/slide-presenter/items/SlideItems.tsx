@@ -18,7 +18,7 @@ import SlideItem, {
 import appProvider from '../../server/appProvider';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 
-let slideItemsToView: { [key: string]: SlideItem } = {};
+const slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
     const selectedSlide = useSelectedSlideContext();
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
@@ -32,7 +32,6 @@ function useSlideItems() {
                 return;
             }
             // clear the slideItemsToView
-            slideItemsToView = {};
             const newSlideItems = slideItems.map((item) => {
                 if (item.checkIsSame(editingSlideItem)) {
                     slideItemsToView[editingSlideItem.id] = editingSlideItem;
@@ -65,7 +64,6 @@ function useSlideItems() {
             ) {
                 return;
             }
-            slideItemsToView = {};
             const oldIds = new Set(slideItems.map((item) => {
                 return item.id;
             }));
@@ -111,6 +109,9 @@ export default function SlideItems() {
     useAppEffect(() => {
         Object.values(slideItemsToView).forEach((slideItem) => {
             slideItem.showInViewport();
+        });
+        Object.keys(slideItemsToView).forEach((key) => {
+            delete slideItemsToView[key];
         });
     });
     const slideItemThumbnailSize = (
