@@ -30,7 +30,7 @@ export default class CanvasController extends
     static readonly eventNamePrefix: string = 'canvas-c';
     copiedItem: CanvasItem<any> | null = null;
     private readonly _canvas: Canvas;
-    readonly slideItem: SlideItem | null = null;
+    readonly slideItem: SlideItem;
     private _scale: number = 1;
     constructor(slideItem: SlideItem) {
         super();

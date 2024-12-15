@@ -8,8 +8,12 @@ import CanvasController, {
 import { handleCtrlWheel } from '../others/AppRange';
 import { defaultRangeSize } from './canvas/tools/SlideItemEditorTools';
 import { useCanvasControllerEvents } from './canvas/canvasEventHelpers';
-import { useSelectedEditingSlideItemContext } from '../slide-list/SlideItem';
+import {
+    useSelectedEditingSlideItemContext,
+    useSelectedEditingSlideItemSetterContext,
+} from '../slide-list/SlideItem';
 import FileSource from '../helper/FileSource';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvas');
@@ -19,12 +23,32 @@ const LazySlideItemEditorTools = lazy(() => {
 });
 
 export default function SlideItemEditor() {
+    const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
     const selectedSlideItem = useSelectedEditingSlideItemContext();
     const canvasController = new CanvasController(selectedSlideItem);
     useCanvasControllerEvents(canvasController, ['update'], () => {
         const fileSource = FileSource.getInstance(selectedSlideItem.filePath);
         fileSource.fireEditEvent(canvasController.slideItem);
     });
+    useFileSourceEvents(
+        ['update'], canvasController.slideItem.filePath,
+        (newSlideItems: any) => {
+            if (
+                newSlideItems === undefined ||
+                !(newSlideItems instanceof Array)
+            ) {
+                return;
+            }
+            const currentSlideItem = newSlideItems.find((item: any) => {
+                return item.id === canvasController.slideItem.id;
+            });
+            if (currentSlideItem !== undefined && !currentSlideItem.isChanged) {
+                debugger;
+                console.log(selectedSlideItem === currentSlideItem);
+                setSelectedSlideItem(currentSlideItem);
+            }
+        }
+    );
     return (
         <CanvasControllerContext value={canvasController}>
             <div className='slide-item-editor w-100 h-100 overflow-hidden'
