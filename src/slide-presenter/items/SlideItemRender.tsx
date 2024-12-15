@@ -6,7 +6,7 @@ import SlideItem, {
 } from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
-import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
+import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
 import { handleDragStart } from '../../bible-list/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
@@ -81,7 +81,7 @@ export default function SlideItemRender({
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
     const selectedSlideItem = useSelectedEditingSlideItemContext();
-    usePSlideMEvents(['update']);
+    useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,
     } = toClassNameHighlight(slideItem, selectedSlideItem);

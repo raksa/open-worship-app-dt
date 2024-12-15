@@ -3,12 +3,12 @@ import './ScreenAlert.scss';
 import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { usePMEvents } from './screenEventHelpers';
+import { useScreenManagerEvents } from './screenEventHelpers';
 import { useScreenManagerContext } from './ScreenManager';
 
 export default function ScreenAlert() {
     const screenManager = useScreenManagerContext();
-    usePMEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['resize'], screenManager, () => {
         screenManager.screenAlertManager.renderAll();
     });
     const div = useRef<HTMLDivElement>(null);

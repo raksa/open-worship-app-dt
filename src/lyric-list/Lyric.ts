@@ -1,6 +1,5 @@
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelpers';
-import FileSource from '../helper/FileSource';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import LyricEditorCacheManager from './LyricEditorCacheManager';
@@ -74,7 +73,7 @@ export default class Lyric extends ItemSource<LyricItem>{
             Lyric.setSelectedFileSource(null);
             previewingEventListener.selectLyric(null);
         }
-        FileSource.getInstance(this.filePath).fireSelectEvent();
+        this.fileSource.fireSelectEvent();
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);

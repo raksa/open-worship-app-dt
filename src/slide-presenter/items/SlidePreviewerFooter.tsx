@@ -5,7 +5,7 @@ import { useSelectedSlideContext } from '../../slide-list/Slide';
 import {
     MIN_THUMBNAIL_SCALE, MAX_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
 } from '../../slide-list/slideHelpers';
-import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
+import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
 import { getPresenterIndex } from './slideItemHelpers';
 import AppRange from '../../others/AppRange';
 import {
@@ -16,7 +16,7 @@ import {
 function HistoryPreviewerFooter() {
     const selectedSlide = useSelectedSlideContext();
     const [history, setHistory] = useState<number[]>([]);
-    usePSlideMEvents(['update'], undefined, () => {
+    useScreenSlideManagerEvents(['update'], undefined, () => {
         const index = getPresenterIndex(selectedSlide);
         if (index < 0) {
             return;

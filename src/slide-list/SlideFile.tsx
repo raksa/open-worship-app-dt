@@ -62,9 +62,8 @@ export default function SlideFile({
     const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
         menuTitle: 'Preview PDF',
         onClick: () => {
-            const fileSource = FileSource.getInstance(data.filePath);
             appProvider.messageUtils.sendData(
-                'app:preview-pdf', fileSource.src,
+                'app:preview-pdf', data.fileSource.src,
             );
         },
     }] : [{

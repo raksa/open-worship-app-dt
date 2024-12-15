@@ -2,14 +2,14 @@ import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import {
-    usePBGMEvents, usePFTMEvents, usePSlideMEvents,
+    usePBGMEvents, useScreenFTManagerEvents, useScreenSlideManagerEvents,
 } from '../screenEventHelpers';
 import { useScreenManagerContext } from '../ScreenManager';
 
 export default function MiniScreenClearControl() {
     usePBGMEvents(['update']);
-    usePSlideMEvents(['update']);
-    usePFTMEvents(['update']);
+    useScreenSlideManagerEvents(['update']);
+    useScreenFTManagerEvents(['update']);
     const screenManager = useScreenManagerContext();
     const {
         screenBGManager, screenSlideManager, screenFTManager,

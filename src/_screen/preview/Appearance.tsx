@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { AppColorType } from '../../others/color/colorHelpers';
-import { usePFTMEvents } from '../screenEventHelpers';
+import { useScreenFTManagerEvents } from '../screenEventHelpers';
 import ScreenFTManager from '../ScreenFTManager';
 import ScreenSlideManager from '../ScreenSlideManager';
 import ScreenManager from '../ScreenManager';
@@ -14,7 +14,7 @@ export default function Appearance() {
     const [fontSize, setFontSize] = useState(
         ScreenFTManager.textStyleTextFontSize,
     );
-    usePFTMEvents(['text-style'], undefined, () => {
+    useScreenFTManagerEvents(['text-style'], undefined, () => {
         setColor(ScreenFTManager.textStyleTextColor);
         setFontSize(ScreenFTManager.textStyleTextFontSize);
     });

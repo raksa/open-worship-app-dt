@@ -2,7 +2,7 @@ import './MiniScreen.scss';
 
 import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
 import {
-    initReceiveScreenMessage, usePMEvents,
+    initReceiveScreenMessage, useScreenManagerEvents,
 } from '../screenEventHelpers';
 import ScreenPreviewerItem from './ScreenPreviewerItem';
 import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
@@ -46,7 +46,7 @@ export default function MiniScreen() {
             screenManager.fireResizeEvent();
         });
     };
-    usePMEvents(['instance']);
+    useScreenManagerEvents(['instance']);
     const screenManagers = ScreenManager.getScreenManagersSetting();
     const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;
     return (

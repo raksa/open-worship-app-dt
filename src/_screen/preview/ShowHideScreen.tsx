@@ -1,7 +1,7 @@
 import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { usePMEvents } from '../screenEventHelpers';
+import { useScreenManagerEvents } from '../screenEventHelpers';
 import { useScreenManagerContext } from '../ScreenManager';
 import ShowingScreenIcon from './ShowingScreenIcon';
 
@@ -11,7 +11,7 @@ export default function ShowHideScreen() {
     useKeyboardRegistering([showingScreenEventMap], () => {
         screenManager.isShowing = !isShowing;
     });
-    usePMEvents(['visible'], screenManager);
+    useScreenManagerEvents(['visible'], screenManager);
     const isShowing = screenManager.isShowing;
     return (
         <div className={`show-hide pointer ${isShowing ? 'show' : ''}`}

@@ -9,38 +9,90 @@ import {
 import SlideItemGhost from './SlideItemGhost';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
-import { genArrowListener, checkSlideItemToView } from './slideItemHelpers';
+import { genArrowListener } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
 import SlideItem, {
     useSelectedEditingSlideItemSetterContext,
 } from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
+let slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
     const selectedSlide = useSelectedSlideContext();
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
     const [slideItems, setSlideItems] = useState<SlideItem[]>(
         selectedSlide.items,
     );
-    useFileSourceEvents(['select', 'edit'], selectedSlide.filePath);
     useFileSourceEvents(
-        ['update', 'edit'], selectedSlide.filePath,
-        (updatedSlideItem?: SlideItem) => {
-            const newSlideItems = selectedSlide.items.map((item, i) => {
-                if (
-                    updatedSlideItem !== undefined &&
-                    item.checkIsSame(updatedSlideItem)
-                ) {
-                    return updatedSlideItem;
-                }
-                if (slideItems[i].checkIsSame(item)) {
-                    return slideItems[i];
+        ['edit'], selectedSlide.filePath,
+        (editingSlideItem: any) => {
+            console.log(editingSlideItem);
+            
+            if (!(editingSlideItem instanceof SlideItem)) {
+                return;
+            }
+            // clear the slideItemsToView
+            slideItemsToView = {};
+            const newSlideItems = slideItems.map((item) => {
+                if (item.checkIsSame(editingSlideItem)) {
+                    slideItemsToView[editingSlideItem.id] = editingSlideItem;
+                    return editingSlideItem;
                 } else {
                     return item;
                 }
             });
             setSlideItems(newSlideItems);
+        }
+    );
+    useFileSourceEvents(
+        ['update'], selectedSlide.filePath,
+        (newSlideItems: any) => {
+            if (
+                newSlideItems === undefined ||
+                !(newSlideItems instanceof Array)
+            ) {
+                return;
+            }
+            setSlideItems(newSlideItems);
+        }
+    );
+    useFileSourceEvents(
+        ['new'], selectedSlide.filePath,
+        (newSlideItems: any) => {
+            if (
+                newSlideItems === undefined ||
+                !(newSlideItems instanceof Array)
+            ) {
+                return;
+            }
+            slideItemsToView = {};
+            const oldIds = new Set(slideItems.map((item) => {
+                return item.id;
+            }));
+            newSlideItems = newSlideItems.map((item) => {
+                if (oldIds.has(item.id)) {
+                    return slideItems.find((oldItem) => {
+                        return oldItem.id === item.id;
+                    });
+                } else {
+                    slideItemsToView[item.id] = item;
+                    return item;
+                }
+            });
+            setSlideItems(newSlideItems);
+        }
+    );
+    useFileSourceEvents(
+        ['delete'], selectedSlide.filePath,
+        (deletedSlideItem: any) => {
+            if (deletedSlideItem instanceof SlideItem) {
+                const newSlideItems = slideItems.filter((item) => {
+                    return !item.checkIsSame(deletedSlideItem);
+                });
+                setSlideItems(newSlideItems);
+            }
         }
     );
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
@@ -51,23 +103,23 @@ function useSlideItems() {
     useKeyboardRegistering(arrows.map((key) => {
         return { key };
     }), arrowListener);
-    return { slideItems, selectedSlide };
+    return { slideItems };
 }
 
 export default function SlideItems() {
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    const { slideItems, selectedSlide } = useSlideItems();
+    const { slideItems } = useSlideItems();
+    useAppEffect(() => {
+        Object.values(slideItemsToView).forEach((slideItem) => {
+            slideItem.showInViewport();
+        });
+    });
     const slideItemThumbnailSize = (
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR
     );
     return (
-        <div className='d-flex flex-wrap justify-content-center'
-            ref={(element) => {
-                if (element) {
-                    checkSlideItemToView(selectedSlide, element);
-                }
-            }}>
+        <div className='d-flex flex-wrap justify-content-center'>
             {slideItems.map((slideItem, i) => {
                 return (
                     <SlideItemRenderWrapper key={slideItem.id}

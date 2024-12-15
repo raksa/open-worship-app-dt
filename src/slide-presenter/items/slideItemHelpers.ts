@@ -28,19 +28,6 @@ export function handleSlideItemSelecting(
     }
 }
 
-export function checkSlideItemToView(slide: Slide, element: HTMLElement) {
-    if (slide.itemIdShouldToView < 0) {
-        return;
-    }
-    setTimeout(() => {
-        const parentElement = element.parentElement as HTMLElement;
-        parentElement.scrollTo({
-            top: parentElement.scrollHeight,
-            behavior: 'smooth',
-        });
-        slide.itemIdShouldToView = -1;
-    }, 0);
-}
 export function genArrowListener(
     selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
     slide: Slide, slideItems: SlideItem[],

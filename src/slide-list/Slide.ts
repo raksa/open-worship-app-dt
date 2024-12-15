@@ -120,6 +120,10 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         return isSuccess;
     }
+
+    fireNewItemsEvent() {
+        this.fileSource.fireNewEvent(this.items);
+    }
     duplicateItem(slideItem: SlideItem) {
         const items = this.items;
         const index = items.findIndex((item) => {
@@ -136,6 +140,7 @@ export default class Slide extends ItemSource<SlideItem> {
             this.itemIdShouldToView = newItem.id;
             this.items = items;
         }
+        this.fireNewItemsEvent();
     }
     pasteItem() {
         if (this.copiedItem === null) {
@@ -147,6 +152,7 @@ export default class Slide extends ItemSource<SlideItem> {
             const newItems: SlideItem[] = [...this.items, newItem];
             this.items = newItems;
         }
+        this.fireNewItemsEvent();
     }
     moveItem(id: number, toIndex: number, isLeft: boolean) {
         const fromIndex: number = this.items.findIndex((item) => {
@@ -159,12 +165,14 @@ export default class Slide extends ItemSource<SlideItem> {
         const target = items.splice(fromIndex, 1)[0];
         items.splice(toIndex, 0, target);
         this.items = items;
+        this.fireNewItemsEvent();
     }
     addItem(slideItem: SlideItem) {
         const items = this.items;
         slideItem.id = this.maxItemId + 1;
         items.push(slideItem);
         this.items = items;
+        this.fireNewItemsEvent();
     }
     addNewItem() {
         const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
@@ -187,13 +195,17 @@ export default class Slide extends ItemSource<SlideItem> {
             return item.id !== slideItem.id;
         });
         this.items = newItems;
+        this.fireNewItemsEvent();
     }
+
     static toWrongDimensionString({ slideItem, display }: {
         slideItem: { width: number, height: number },
         display: { width: number, height: number },
     }) {
-        return `⚠️ slide:${slideItem.width}x${slideItem.height} `
-            + `display:${display.width}x${display.height}`;
+        return (
+            `⚠️ slide:${slideItem.width}x${slideItem.height} `
+            + `display:${display.width}x${display.height}`
+        );
     }
     checkIsWrongDimension(display: DisplayType) {
         const found = this.items.find((item) => {
@@ -240,7 +252,7 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     async discardChanged() {
         this.editorCacheManager.delete();
-        FileSource.getInstance(this.filePath).fireUpdateEvent();
+        this.fileSource.fireUpdateEvent(this.items);
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
@@ -250,18 +262,18 @@ export default class Slide extends ItemSource<SlideItem> {
         const selectedFilePath = Slide.getSelectedFilePath();
         return this.filePath === selectedFilePath;
     }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
+    set isSelected(isSelected: boolean) {
+        if (this.isSelected === isSelected) {
             return;
         }
-        if (b) {
+        if (isSelected) {
             Slide.setSelectedFileSource(this.filePath);
             previewingEventListener.showSlide(this);
         } else {
             Slide.setSelectedFileSource(null);
             previewingEventListener.showSlide(null);
         }
-        FileSource.getInstance(this.filePath).fireSelectEvent();
+        this.fileSource.fireSelectEvent();
     }
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;

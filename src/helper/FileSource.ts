@@ -17,12 +17,13 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FSEventType = (
-    'select' | 'update' | 'history-update' | 'edit' | 'delete' | 'delete-cache'
+export type FileSourceEventType = (
+    'select' | 'update' | 'new' | 'history-update' | 'edit' | 'delete' |
+    'delete-cache'
 );
 
 const cache = new Map<string, FileSource>();
-export default class FileSource extends EventHandler<FSEventType>
+export default class FileSource extends EventHandler<FileSourceEventType>
     implements DragInf<string>, ColorNoteInf {
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
@@ -227,7 +228,8 @@ export default class FileSource extends EventHandler<FSEventType>
     }
 
     static registerFSEventListener<T>(
-        events: FSEventType[], callback: (data: T) => void, filePath?: string,
+        events: FileSourceEventType[], callback: (data: T) => void,
+        filePath?: string,
     ) {
         const newEvents = events.map((event) => {
             return filePath ? `${event}:${filePath}` : event;
@@ -236,9 +238,9 @@ export default class FileSource extends EventHandler<FSEventType>
     }
 
     static addFSPropEvent(
-        eventName: FSEventType, filePath: string, data?: any,
+        eventName: FileSourceEventType, filePath: string, data?: any,
     ): void {
-        const newEventName = `${eventName}:${filePath}` as FSEventType;
+        const newEventName = `${eventName}:${filePath}` as FileSourceEventType;
         super.addPropEvent(eventName, data);
         super.addPropEvent(newEventName, data);
     }
@@ -253,6 +255,14 @@ export default class FileSource extends EventHandler<FSEventType>
 
     fireUpdateEvent(data?: any) {
         FileSource.addFSPropEvent('update', this.filePath, data);
+    }
+
+    fireNewEvent(data?: any) {
+        FileSource.addFSPropEvent('new', this.filePath, data);
+    }
+
+    fireEditEvent(data?: any) {
+        FileSource.addFSPropEvent('edit', this.filePath, data);
     }
 
     fireDeleteEvent(data?: any) {

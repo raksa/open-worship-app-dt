@@ -15,7 +15,7 @@ import ScreenSlideManager, {
     ScreenSlideManagerEventType,
 } from './ScreenSlideManager';
 
-export function usePMEvents(
+export function useScreenManagerEvents(
     events: ScreenManagerEventType[], screenManager?: ScreenManager,
     callback?: () => void,
 ) {
@@ -73,7 +73,7 @@ export function usePBGMEvents(
     }, [screenBGManager, n]);
 }
 
-export function usePSlideMEvents(
+export function useScreenSlideManagerEvents(
     events: ScreenSlideManagerEventType[],
     screenSlideManager?: ScreenSlideManager,
     callback?: () => void,
@@ -104,7 +104,7 @@ export function usePSlideMEvents(
     }, [screenSlideManager, n]);
 }
 
-export function usePFTMEvents(
+export function useScreenFTManagerEvents(
     events: ScreenFTManagerEventType[], screenFTManager?: ScreenFTManager,
     callback?: (args: any) => void,
 ) {

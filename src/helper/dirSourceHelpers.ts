@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { useAppEffect, useAppEffectAsync } from './debuggerHelpers';
 import DirSource from './DirSource';
-import FileSource, { FSEventType } from './FileSource';
+import FileSource, { FileSourceEventType } from './FileSource';
 
 export function useGenDirSource(settingName: string) {
     const [dirSource, setDirSource] = useState<DirSource | null>(null);
@@ -24,7 +24,8 @@ export function useGenDirSource(settingName: string) {
 }
 
 export function useFileSourceEvents<T>(
-    events: FSEventType[], filePath?: string, callback?: (data: T) => void,
+    events: FileSourceEventType[], filePath?: string,
+    callback?: (data: T) => void,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {

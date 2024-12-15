@@ -7,14 +7,14 @@ import ScreenManager, {
 import ScreenBackgroundColor from './ScreenBackgroundColor';
 import ScreenBackgroundImage from './ScreenBackgroundImage';
 import ScreenBackgroundVideo from './ScreenBackgroundVideo';
-import { usePMEvents } from './screenEventHelpers';
+import { useScreenManagerEvents } from './screenEventHelpers';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
 
 export default function ScreenBackground() {
     const screenManager = useScreenManagerContext();
-    usePMEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['resize'], screenManager, () => {
         screenManager.screenBGManager.render();
     });
     const div = useRef<HTMLDivElement>(null);

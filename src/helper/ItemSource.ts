@@ -19,6 +19,9 @@ export default abstract class ItemSource<T extends {
     constructor(filePath: string) {
         this.filePath = filePath;
     }
+    get fileSource() {
+        return FileSource.getInstance(this.filePath);
+    }
     get isSelected() {
         const selectedFilePath = ItemSource.getSelectedFilePath(
             this.SELECT_SETTING_NAME,
@@ -32,8 +35,7 @@ export default abstract class ItemSource<T extends {
         ItemSource.setSelectedFileSource(
             b ? this.filePath : null, this.SELECT_SETTING_NAME,
         );
-        const fileSource = FileSource.getInstance(this.filePath);
-        fileSource.fireSelectEvent();
+        this.fileSource.fireSelectEvent();
     }
     abstract get maxItemId(): number;
     abstract get metadata(): AnyObjectType;
@@ -84,8 +86,7 @@ export default abstract class ItemSource<T extends {
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
-        const fileSource = FileSource.getInstance(this.filePath);
-        const isSuccess = await fileSource.saveDataFromItem(this);
+        const isSuccess = await this.fileSource.saveDataFromItem(this);
         if (isSuccess) {
             cache.set(this.filePath, this);
         }

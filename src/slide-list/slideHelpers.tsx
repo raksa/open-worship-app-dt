@@ -32,8 +32,9 @@ export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenter-item-thumbnail-size';
 
 export type SlideDynamicType = Slide | null | undefined;
 
-export function openSlideContextMenu(event: any,
-    slide: Slide, slideItem: SlideItem) {
+export function openSlideContextMenu(
+    event: any, slide: Slide, slideItem: SlideItem,
+) {
     showAppContextMenu(event, [
         {
             menuTitle: 'Copy',
@@ -47,7 +48,7 @@ export function openSlideContextMenu(event: any,
                 slide.duplicateItem(slideItem);
             },
         },
-        {
+        ...(appProvider.isPagePresenter ? [{
             menuTitle: 'Quick Edit',
             onClick: () => {
                 if (appProvider.isPageEditor) {
@@ -56,7 +57,7 @@ export function openSlideContextMenu(event: any,
                     openSlideItemQuickEdit(slideItem);
                 }
             },
-        },
+        }] : []),
         {
             menuTitle: 'Delete',
             onClick: () => {

@@ -1,7 +1,7 @@
 import './SlideItemRender.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
-import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
+import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
 import {
     RendInfo, toClassNameHighlight,
 } from './SlideItemRender';
@@ -45,7 +45,7 @@ export default function SlideItemPdfRender({
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }>) {
-    usePSlideMEvents(['update']);
+    useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,
     } = toClassNameHighlight(slideItem);

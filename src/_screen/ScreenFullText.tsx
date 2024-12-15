@@ -1,7 +1,9 @@
 import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { usePFTMEvents, usePMEvents } from './screenEventHelpers';
+import {
+    useScreenFTManagerEvents, useScreenManagerEvents,
+} from './screenEventHelpers';
 import ScreenFTManager from './ScreenFTManager';
 import { useScreenManagerContext } from './ScreenManager';
 
@@ -104,10 +106,10 @@ const styleText = `
 
 export default function ScreenFullText() {
     const screenManager = useScreenManagerContext();
-    usePMEvents(['resize'], screenManager, () => {
+    useScreenManagerEvents(['resize'], screenManager, () => {
         screenManager.screenFTManager.render();
     });
-    usePFTMEvents(['text-style']);
+    useScreenFTManagerEvents(['text-style']);
     const div = useRef<HTMLDivElement>(null);
     const { screenFTManager } = screenManager;
     useAppEffect(() => {

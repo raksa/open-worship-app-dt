@@ -226,6 +226,20 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             data: this.key,
         };
     }
+    showInViewport() {
+        setTimeout(() => {
+            const querySelector = `[data-slide-item-id="${this.id}"]`;
+            const element = document.querySelector(querySelector);
+            if (element === null) {
+                return;
+            }
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'center',
+            });
+        }, 0);
+    }
 }
 
 export const SelectedEditingSlideItemContext = createContext<{
