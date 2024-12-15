@@ -15,7 +15,7 @@ const LazyPlaylistList = lazy(() => {
 
 export default function AppPresenterLeft() {
     return (
-        <ResizeActor fSizeName={resizeSettingNames.appPresenterLeft}
+        <ResizeActor flexSizeName={resizeSettingNames.appPresenterLeft}
             isHorizontal={false}
             flexSizeDefault={{
                 'v1': ['1'],

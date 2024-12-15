@@ -30,8 +30,9 @@ export default function TabRender<T extends string>({
     );
 }
 
-export function genTabBody<T>(tabTab: T,
-    data: [T, LazyExoticComponent<() => React.ReactNode | null>]) {
+export function genTabBody<T>(
+    tabTab: T, data: [T, LazyExoticComponent<() => React.ReactNode | null>],
+) {
     const Element = data[1];
     return (
         <AppSuspense key={data[0] as any}>

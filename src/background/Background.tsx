@@ -16,6 +16,7 @@ import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import {
     BackgroundType, getBGSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
+import ResizeActor from '../resize-actor/ResizeActor';
 
 const LazyBackgroundColors = lazy(() => {
     return import('./BackgroundColors');
@@ -52,6 +53,9 @@ export default function Background() {
         });
         return isSelected ? 'nav-highlight-selected' : undefined;
     };
+    const normalBackgroundChild = tabTypeList.map(([type, _, target]) => {
+        return genTabBody<TabType>(tabType, [type, target]);
+    });
     return (
         <div className='background w-100 d-flex flex-column'>
             <div className='background-header d-flex'>
@@ -73,12 +77,28 @@ export default function Background() {
                 />
             </div>
             <div className='background-body w-100 flex-fill d-flex'>
-                {tabTypeList.map(([type, _, target]) => {
-                    return genTabBody<TabType>(tabType, [type, target]);
-                })}
-                {!isSoundActive ? null : genTabBody<TabType>(
-                    'sound', ['sound', LazyBackgroundSounds],
-                )}
+                {isSoundActive ? (<ResizeActor
+                    flexSizeName={'flex-size-background'}
+                    isHorizontal
+                    isDisableQuickResize={true}
+                    flexSizeDefault={{
+                        'h1': ['1'],
+                        'h2': ['1'],
+                    }}
+                    dataInput={[{
+                        children: {
+                            render: () => {
+                                return normalBackgroundChild;
+                            },
+                        },
+                        key: 'h1',
+                        widgetName: 'Background Sound',
+                    }, {
+                        children: LazyBackgroundSounds,
+                        key: 'h2',
+                        widgetName: 'Background Sound',
+                    }]}
+                />) : normalBackgroundChild}
             </div>
         </div>
     );

@@ -12,7 +12,7 @@ const LazyBackground = lazy(() => {
 
 export default function AppPresenterMiddle() {
     return (
-        <ResizeActor fSizeName={resizeSettingNames.appPresenterMiddle}
+        <ResizeActor flexSizeName={resizeSettingNames.appPresenterMiddle}
             isHorizontal={false}
             flexSizeDefault={{
                 'v1': ['3'],

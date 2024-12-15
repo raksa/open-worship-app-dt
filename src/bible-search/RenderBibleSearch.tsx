@@ -74,7 +74,7 @@ export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
                     'card-body d-flex w-100 h-100 overflow-hidden'
                 }>
                     {isSearchOnline ? (
-                        <ResizeActor fSizeName='bible-search-popup-body'
+                        <ResizeActor flexSizeName='bible-search-popup-body'
                             isHorizontal
                             isDisableQuickResize
                             flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}

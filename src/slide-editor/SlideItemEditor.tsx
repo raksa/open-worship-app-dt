@@ -61,7 +61,7 @@ export default function SlideItemEditor() {
                         defaultSize: defaultRangeSize,
                     });
                 }}>
-                <ResizeActor fSizeName={resizeSettingNames.slideItemEditor}
+                <ResizeActor flexSizeName={resizeSettingNames.slideItemEditor}
                     isHorizontal={false}
                     flexSizeDefault={{
                         'v1': ['3'],

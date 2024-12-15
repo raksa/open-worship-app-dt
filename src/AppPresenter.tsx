@@ -21,7 +21,7 @@ const viewController = new BibleItemViewController('presenter');
 export default function AppPresenter() {
     return (
         <BibleItemViewControllerContext value={viewController}>
-            <ResizeActor fSizeName={resizeSettingNames.appPresenter}
+            <ResizeActor flexSizeName={resizeSettingNames.appPresenter}
                 isHorizontal
                 flexSizeDefault={{
                     'h1': ['1'],
