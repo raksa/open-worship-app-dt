@@ -145,11 +145,11 @@ export default class ScreenAlertManager
 
     static getAlertDataListByType(alertType: AlertType) {
         const alertDataList = getAlertDataListOnScreenSetting();
-        return Object.entries(alertDataList).filter(([_, bgSrc]) => {
+        return Object.entries(alertDataList).filter(([_, backgroundSrc]) => {
             if (alertType === 'marquee') {
-                return bgSrc.marqueeData !== null;
+                return backgroundSrc.marqueeData !== null;
             } else {
-                return bgSrc.countdownData !== null;
+                return backgroundSrc.countdownData !== null;
             }
         });
     }

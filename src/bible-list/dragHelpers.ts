@@ -27,11 +27,11 @@ async function deserializeDragData({
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);
     } else if ([
-        DragTypeEnum.BG_VIDEO,
-        DragTypeEnum.BG_IMAGE,
+        DragTypeEnum.BACKGROUND_VIDEO,
+        DragTypeEnum.BACKGROUND_IMAGE,
     ].includes(type)) {
         item = FileSource.dragDeserialize(data);
-    } else if (type === DragTypeEnum.BG_COLOR) {
+    } else if (type === DragTypeEnum.BACKGROUND_COLOR) {
         item = colorDeserialize(data);
     }
     if (item === null) {

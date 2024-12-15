@@ -10,11 +10,11 @@ import TabRender, {
     genTabBody,
 } from '../others/TabRender';
 import {
-    usePBGMEvents,
+    useScreenBackgroundManagerEvents,
 } from '../_screen/screenEventHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import {
-    BackgroundType, getBGSrcListOnScreenSetting,
+    BackgroundType, getBackgroundSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 
@@ -45,10 +45,10 @@ export default function Background() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'background-tab', 'image',
     );
-    usePBGMEvents(['update']);
-    const bgSrcList = getBGSrcListOnScreenSetting();
+    useScreenBackgroundManagerEvents(['update']);
+    const backgroundSrcList = getBackgroundSrcListOnScreenSetting();
     const toHLS = (type: BackgroundType) => {
-        const isSelected = Object.values(bgSrcList).some((src) => {
+        const isSelected = Object.values(backgroundSrcList).some((src) => {
             return src.type === type;
         });
         return isSelected ? 'nav-highlight-selected' : undefined;
@@ -77,28 +77,30 @@ export default function Background() {
                 />
             </div>
             <div className='background-body w-100 flex-fill d-flex'>
-                {isSoundActive ? (<ResizeActor
-                    flexSizeName={'flex-size-background'}
-                    isHorizontal
-                    isDisableQuickResize={true}
-                    flexSizeDefault={{
-                        'h1': ['1'],
-                        'h2': ['1'],
-                    }}
-                    dataInput={[{
-                        children: {
-                            render: () => {
-                                return normalBackgroundChild;
+                {isSoundActive ? (
+                    <ResizeActor
+                        flexSizeName={'flex-size-background'}
+                        isHorizontal
+                        isDisableQuickResize={true}
+                        flexSizeDefault={{
+                            'h1': ['1'],
+                            'h2': ['1'],
+                        }}
+                        dataInput={[{
+                            children: {
+                                render: () => {
+                                    return normalBackgroundChild;
+                                },
                             },
-                        },
-                        key: 'h1',
-                        widgetName: 'Background Sound',
-                    }, {
-                        children: LazyBackgroundSounds,
-                        key: 'h2',
-                        widgetName: 'Background Sound',
-                    }]}
-                />) : normalBackgroundChild}
+                            key: 'h1',
+                            widgetName: 'Background Sound',
+                        }, {
+                            children: LazyBackgroundSounds,
+                            key: 'h2',
+                            widgetName: 'Background Sound',
+                        }]}
+                    />
+                ) : normalBackgroundChild}
             </div>
         </div>
     );

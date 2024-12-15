@@ -28,7 +28,7 @@ export function serializeForDragging(event: any, color: AppColorType) {
     handleDragStart(event, {
         dragSerialize: () => {
             return {
-                type: DragTypeEnum.BG_COLOR,
+                type: DragTypeEnum.BACKGROUND_COLOR,
                 data: color,
             };
         },

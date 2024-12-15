@@ -214,7 +214,7 @@ export default class ScreenFTManager
     }
     static setFTList(ftList: FTListType) {
         const str = JSON.stringify(ftList);
-        setSetting(screenManagerSettingNames.FT, str);
+        setSetting(screenManagerSettingNames.FULL_TEXT, str);
     }
     static receiveSyncSelectedIndex(message: ScreenMessageType) {
         const { data, screenId } = message;

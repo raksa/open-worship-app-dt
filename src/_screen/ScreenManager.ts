@@ -7,7 +7,7 @@ import { log } from '../helper/loggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import ScreenAlertManager from './ScreenAlertManager';
-import ScreenBGManager from './ScreenBGManager';
+import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFTManager from './ScreenFTManager';
 import {
     getAllDisplays, getAllShowingScreenIds, getScreenManagersInstanceSetting,
@@ -42,7 +42,7 @@ export default class ScreenManager
     implements ScreenManagerInf {
 
     static readonly eventNamePrefix: string = 'screen-m';
-    readonly screenBGManager: ScreenBGManager;
+    readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenSlideManager: ScreenSlideManager;
     readonly screenFTManager: ScreenFTManager;
     readonly screenAlertManager: ScreenAlertManager;
@@ -60,7 +60,7 @@ export default class ScreenManager
         this.height = dim.height;
         this.screenId = screenId;
         this.name = `screen-${screenId}`;
-        this.screenBGManager = new ScreenBGManager(screenId);
+        this.screenBackgroundManager = new ScreenBackgroundManager(screenId);
         this.screenSlideManager = new ScreenSlideManager(screenId);
         this.screenFTManager = new ScreenFTManager(screenId);
         this.screenAlertManager = new ScreenAlertManager(screenId);
@@ -137,7 +137,7 @@ export default class ScreenManager
     }
     setSyncScreen() {
         ScreenTransitionEffect.sendSyncScreen();
-        this.screenBGManager.sendSyncScreen();
+        this.screenBackgroundManager.sendSyncScreen();
         this.screenSlideManager.sendSyncScreen();
         this.screenFTManager.sendSyncScreen();
         this.screenAlertManager.sendSyncScreen();
@@ -187,7 +187,7 @@ export default class ScreenManager
         this.addPropEvent('resize');
     }
     delete() {
-        this.screenBGManager.delete();
+        this.screenBackgroundManager.delete();
         this.screenFTManager.delete();
         this.screenSlideManager.delete();
         this.screenAlertManager.delete();
@@ -205,7 +205,7 @@ export default class ScreenManager
         if (type === 'init') {
             screenManager.setSyncScreen();
         } else if (type === 'background') {
-            ScreenBGManager.receiveSyncScreen(message);
+            ScreenBackgroundManager.receiveSyncScreen(message);
         } else if (type === 'slide') {
             ScreenSlideManager.receiveSyncScreen(message);
         } else if (type === 'full-text') {
@@ -309,11 +309,11 @@ export default class ScreenManager
     }
     receiveScreenDrag(droppedData: DroppedDataType) {
         if ([
-            DragTypeEnum.BG_COLOR,
-            DragTypeEnum.BG_IMAGE,
-            DragTypeEnum.BG_VIDEO,
+            DragTypeEnum.BACKGROUND_COLOR,
+            DragTypeEnum.BACKGROUND_IMAGE,
+            DragTypeEnum.BACKGROUND_VIDEO,
         ].includes(droppedData.type)) {
-            this.screenBGManager.receiveScreenDrag(droppedData);
+            this.screenBackgroundManager.receiveScreenDrag(droppedData);
         } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
             this.screenSlideManager.receiveScreenDrag(droppedData);
         } else if ([

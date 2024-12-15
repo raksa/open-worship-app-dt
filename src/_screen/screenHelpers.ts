@@ -42,7 +42,7 @@ export type BackgroundSrcType = {
     width?: number;
     height?: number;
 };
-export type BGSrcListType = {
+export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;
 };
 
@@ -262,8 +262,8 @@ export function getAlertDataListOnScreenSetting(): AlertSrcListType {
     return {};
 }
 
-export function getBGSrcListOnScreenSetting(): BGSrcListType {
-    const str = getSetting(screenManagerSettingNames.BG, '');
+export function getBackgroundSrcListOnScreenSetting(): BackgroundSrcListType {
+    const str = getSetting(screenManagerSettingNames.BACKGROUND, '');
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
         const items = Object.values(json);
@@ -310,7 +310,7 @@ const validateLyric = ({ renderedList }: any) => {
 };
 
 export function getFTListOnScreenSetting(): FTListType {
-    const str = getSetting(screenManagerSettingNames.FT, '');
+    const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
     try {
         if (!isValidJson(str, true)) {
             return {};
@@ -331,7 +331,7 @@ export function getFTListOnScreenSetting(): FTListType {
         });
         return getValidOnScreen(json);
     } catch (error) {
-        setSetting(screenManagerSettingNames.FT, '');
+        setSetting(screenManagerSettingNames.FULL_TEXT, '');
         handleError(error);
     }
     return {};

@@ -5,7 +5,7 @@ import ScreenFullText from '../ScreenFullText';
 import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
 import { RendStyle } from '../transition-effect/RenderTransitionEffect';
 
-const IMAGE_BG = (
+const IMAGE_BACKGROUND = (
 `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(-45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%),
@@ -26,7 +26,7 @@ export default function MiniScreenApp({ id }: Readonly<{ id: number }>) {
                 position: 'absolute',
                 width: '100%',
                 height: '100%',
-                backgroundImage: IMAGE_BG,
+                backgroundImage: IMAGE_BACKGROUND,
                 backgroundSize: '20px 20px',
                 backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
             }} />

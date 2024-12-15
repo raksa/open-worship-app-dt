@@ -2,21 +2,22 @@ import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import {
-    usePBGMEvents, useScreenFTManagerEvents, useScreenSlideManagerEvents,
+    useScreenBackgroundManagerEvents, useScreenFTManagerEvents,
+    useScreenSlideManagerEvents,
 } from '../screenEventHelpers';
 import { useScreenManagerContext } from '../ScreenManager';
 
 export default function MiniScreenClearControl() {
-    usePBGMEvents(['update']);
+    useScreenBackgroundManagerEvents(['update']);
     useScreenSlideManagerEvents(['update']);
     useScreenFTManagerEvents(['update']);
     const screenManager = useScreenManagerContext();
     const {
-        screenBGManager, screenSlideManager, screenFTManager,
+        screenBackgroundManager, screenSlideManager, screenFTManager,
     } = screenManager;
 
-    const clearBG = () => {
-        screenBGManager.bgSrc = null;
+    const clearBackground = () => {
+        screenBackgroundManager.backgroundSrc = null;
     };
     const clearFG = () => {
         screenSlideManager.slideItemData = null;
@@ -25,15 +26,15 @@ export default function MiniScreenClearControl() {
         screenFTManager.ftItemData = null;
     };
     const clearAll = () => {
-        clearBG();
+        clearBackground();
         clearFG();
         clearFT();
     };
 
-    const isShowingBG = !!screenBGManager.bgSrc;
+    const isShowingBackground = !!screenBackgroundManager.backgroundSrc;
     const isShowingFG = !!screenSlideManager.slideItemData;
     const isShowingFT = !!screenFTManager.ftItemData;
-    const isShowing = isShowingBG || isShowingFG || isShowingFT;
+    const isShowing = isShowingBackground || isShowingFG || isShowingFT;
     const btnMaps = [
         {
             'text': 'All',
@@ -47,9 +48,9 @@ export default function MiniScreenClearControl() {
             'text': 'BG',
             'title': 'clear background',
             'btnType': 'secondary',
-            'isEnabled': isShowingBG,
+            'isEnabled': isShowingBackground,
             'eventMap': { key: 'F7' },
-            'onClick': clearBG,
+            'onClick': clearBackground,
         },
         {
             'text': 'FG',

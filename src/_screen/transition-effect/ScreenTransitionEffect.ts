@@ -57,11 +57,11 @@ class ScreenTransitionEffect extends EventHandler<PTFEventType> {
     static sendSyncScreen() {
         ScreenManager.getAllInstances().forEach((screenManager) => {
             const {
-                screenBGManager, screenSlideManager,
+                screenBackgroundManager, screenSlideManager,
             } = screenManager;
             const data: PTEffectDataType[] = [{
-                target: screenBGManager.ptEffectTarget,
-                effect: screenBGManager.ptEffect.effectType,
+                target: screenBackgroundManager.ptEffectTarget,
+                effect: screenBackgroundManager.ptEffect.effectType,
             }, {
                 target: screenSlideManager.ptEffectTarget,
                 effect: screenSlideManager.ptEffect.effectType,

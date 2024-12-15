@@ -15,28 +15,28 @@ import { BackgroundSrcType } from './screenHelpers';
 export default function ScreenBackground() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['resize'], screenManager, () => {
-        screenManager.screenBGManager.render();
+        screenManager.screenBackgroundManager.render();
     });
     const div = useRef<HTMLDivElement>(null);
-    const { screenBGManager } = screenManager;
+    const { screenBackgroundManager } = screenManager;
     useAppEffect(() => {
         if (div.current) {
-            screenBGManager.div = div.current;
+            screenBackgroundManager.div = div.current;
         }
     });
     return (
         <div id='background' ref={div}
-            style={screenBGManager.containerStyle}
+            style={screenBackgroundManager.containerStyle}
         />
     );
 }
 
-export function genHtmlBG(
-    bgSrc: BackgroundSrcType, screenManager: ScreenManager,
+export function genHtmlBackground(
+    backgroundSrc: BackgroundSrcType, screenManager: ScreenManager,
 ) {
     const str = ReactDOMServer.renderToStaticMarkup(
         <ScreenManagerContext value={screenManager}>
-            <RenderBG bgSrc={bgSrc} />
+            <RenderBackground backgroundSrc={backgroundSrc} />
         </ScreenManagerContext>
     );
     const div = document.createElement('div');
@@ -44,39 +44,39 @@ export function genHtmlBG(
     return div.firstChild as HTMLDivElement;
 }
 
-export function RenderBG({ bgSrc }: Readonly<{
-    bgSrc: BackgroundSrcType,
+export function RenderBackground({ backgroundSrc }: Readonly<{
+    backgroundSrc: BackgroundSrcType,
 }>) {
     const screenManager = useScreenManagerContext();
-    const { screenBGManager } = screenManager;
+    const { screenBackgroundManager } = screenManager;
     return (
         <div style={{
-            ...screenBGManager.containerStyle,
+            ...screenBackgroundManager.containerStyle,
         }}>
-            <RenderScreenBackground bgSrc={bgSrc} />
+            <RenderScreenBackground backgroundSrc={backgroundSrc} />
         </div>
     );
 }
 
-function RenderScreenBackground({ bgSrc }: Readonly<{
-    bgSrc: BackgroundSrcType,
+function RenderScreenBackground({ backgroundSrc }: Readonly<{
+    backgroundSrc: BackgroundSrcType,
 }>) {
-    if (bgSrc === null) {
+    if (backgroundSrc === null) {
         return null;
     }
-    switch (bgSrc.type) {
+    switch (backgroundSrc.type) {
         case 'image':
             return (
-                <ScreenBackgroundImage bgSrc={bgSrc} />
+                <ScreenBackgroundImage backgroundSrc={backgroundSrc} />
             );
         case 'video':
             return (
-                <ScreenBackgroundVideo bgSrc={bgSrc} />
+                <ScreenBackgroundVideo backgroundSrc={backgroundSrc} />
             );
         case 'color':
             return (
                 <ScreenBackgroundColor
-                    color={bgSrc.src as AppColorType} />
+                    color={backgroundSrc.src as AppColorType} />
             );
     }
 }

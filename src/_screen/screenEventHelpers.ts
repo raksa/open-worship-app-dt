@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import appProviderScreen from './appProviderScreen';
-import ScreenBGManager, {
-    ScreenBGManagerEventType,
-} from './ScreenBGManager';
+import ScreenBackgroundManager, {
+    ScreenBackgroundManagerEventType,
+} from './ScreenBackgroundManager';
 import { ScreenFTManagerEventType } from './screenFTHelpers';
 import ScreenFTManager from './ScreenFTManager';
 import { ScreenMessageType } from './screenHelpers';
@@ -44,8 +44,9 @@ export function useScreenManagerEvents(
     }, [screenManager, n]);
 }
 
-export function usePBGMEvents(
-    events: ScreenBGManagerEventType[], screenBGManager?: ScreenBGManager,
+export function useScreenBackgroundManagerEvents(
+    events: ScreenBackgroundManagerEventType[],
+    screenBackgroundManager?: ScreenBackgroundManager,
     callback?: () => void,
 ) {
     const [n, setN] = useState(0);
@@ -55,22 +56,26 @@ export function usePBGMEvents(
             callback?.();
         };
         let registeredEvents: any;
-        const isGlobal = screenBGManager === undefined;
+        const isGlobal = screenBackgroundManager === undefined;
         if (isGlobal) {
-            registeredEvents = ScreenBGManager.
+            registeredEvents = ScreenBackgroundManager.
                 registerEventListener(events, update);
         } else {
-            registeredEvents = screenBGManager.
+            registeredEvents = screenBackgroundManager.
                 registerEventListener(events, update);
         }
         return () => {
             if (isGlobal) {
-                ScreenBGManager.unregisterEventListener(registeredEvents);
+                ScreenBackgroundManager.unregisterEventListener(
+                    registeredEvents,
+                );
             } else {
-                screenBGManager.unregisterEventListener(registeredEvents);
+                screenBackgroundManager.unregisterEventListener(
+                    registeredEvents,
+                );
             }
         };
-    }, [screenBGManager, n]);
+    }, [screenBackgroundManager, n]);
 }
 
 export function useScreenSlideManagerEvents(

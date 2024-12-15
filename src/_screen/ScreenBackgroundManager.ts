@@ -7,11 +7,11 @@ import {
 } from '../helper/helpers';
 import { setSetting } from '../helper/settingHelpers';
 import appProviderScreen from './appProviderScreen';
-import { genHtmlBG } from './ScreenBackground';
+import { genHtmlBackground } from './ScreenBackground';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
-    BackgroundSrcType, BackgroundType, BGSrcListType,
-    getBGSrcListOnScreenSetting, ScreenMessageType,
+    BackgroundSrcType, BackgroundType, BackgroundSrcListType,
+    getBackgroundSrcListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
@@ -21,23 +21,23 @@ import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 
-export type ScreenBGManagerEventType = 'update';
+export type ScreenBackgroundManagerEventType = 'update';
 
-export default class ScreenBGManager
-    extends EventHandler<ScreenBGManagerEventType>
+export default class ScreenBackgroundManager
+    extends EventHandler<ScreenBackgroundManagerEventType>
     implements ScreenManagerInf {
 
     static readonly eventNamePrefix: string = 'screen-bg-m';
     readonly screenId: number;
-    private _bgSrc: BackgroundSrcType | null = null;
+    private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'background';
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
         if (appProviderScreen.isPagePresenter) {
-            const allBGSrcList = getBGSrcListOnScreenSetting();
-            this._bgSrc = allBGSrcList[this.key] || null;
+            const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
+            this._backgroundSrc = allBackgroundSrcList[this.key] || null;
         }
     }
     get div() {
@@ -57,19 +57,19 @@ export default class ScreenBGManager
     get key() {
         return this.screenId.toString();
     }
-    get bgSrc() {
-        return this._bgSrc;
+    get backgroundSrc() {
+        return this._backgroundSrc;
     }
-    set bgSrc(bgSrc: BackgroundSrcType | null) {
-        this._bgSrc = bgSrc;
+    set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
+        this._backgroundSrc = backgroundSrc;
         this.render();
-        const allBGSrcList = getBGSrcListOnScreenSetting();
-        if (bgSrc === null) {
-            delete allBGSrcList[this.key];
+        const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
+        if (backgroundSrc === null) {
+            delete allBackgroundSrcList[this.key];
         } else {
-            allBGSrcList[this.key] = bgSrc;
+            allBackgroundSrcList[this.key] = backgroundSrc;
         }
-        ScreenBGManager.setBGSrcList(allBGSrcList);
+        ScreenBackgroundManager.setBackgroundSrcList(allBackgroundSrcList);
         this.sendSyncScreen();
         this.fireUpdate();
     }
@@ -77,7 +77,7 @@ export default class ScreenBGManager
         sendScreenMessage({
             screenId: this.screenId,
             type: 'background',
-            data: this.bgSrc,
+            data: this.backgroundSrc,
         });
     }
     static receiveSyncScreen(message: ScreenMessageType) {
@@ -86,55 +86,66 @@ export default class ScreenBGManager
         if (screenManager === null) {
             return;
         }
-        screenManager.screenBGManager.bgSrc = data;
+        screenManager.screenBackgroundManager.backgroundSrc = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
-        ScreenBGManager.fireUpdateEvent();
+        ScreenBackgroundManager.fireUpdateEvent();
     }
     static fireUpdateEvent() {
         this.addPropEvent('update');
     }
-    static setBGSrcList(bgSrcList: BGSrcListType) {
-        const str = JSON.stringify(bgSrcList);
-        setSetting(screenManagerSettingNames.BG, str);
+    static setBackgroundSrcList(backgroundSrcList: BackgroundSrcListType) {
+        const str = JSON.stringify(backgroundSrcList);
+        setSetting(screenManagerSettingNames.BACKGROUND, str);
     }
-    static getBGSrcListByType(bgType: BackgroundType) {
-        const bgSrcList = getBGSrcListOnScreenSetting();
-        return Object.entries(bgSrcList).filter(([_, bgSrc]) => {
-            return bgSrc.type === bgType;
+    static getBackgroundSrcListByType(backgroundType: BackgroundType) {
+        const backgroundSrcList = getBackgroundSrcListOnScreenSetting();
+        return Object.entries(backgroundSrcList).filter(
+            ([_, backgroundSrc]) => {
+                return backgroundSrc.type === backgroundType;
+            },
+        );
+    }
+    static getSelectBackgroundSrcList(
+        src: string, backgroundType: BackgroundType,
+    ) {
+        const keyBackgroundSrcList = this.getBackgroundSrcListByType(
+            backgroundType,
+        );
+        return keyBackgroundSrcList.filter(([_, backgroundSrc]) => {
+            return backgroundSrc.src === src;
         });
     }
-    static getSelectBGSrcList(src: string, bgType: BackgroundType) {
-        const keyBGSrcList = this.getBGSrcListByType(bgType);
-        return keyBGSrcList.filter(([_, bgSrc]) => {
-            return bgSrc.src === src;
-        });
-    }
-    static async initBGSrcDim(src: string, bgType: BackgroundType) {
-        const bgSrc: BackgroundSrcType = {
-            type: bgType,
+    static async initBackgroundSrcDim(
+        src: string, backgroundType: BackgroundType,
+    ) {
+        const backgroundSrc: BackgroundSrcType = {
+            type: backgroundType,
             src,
         };
-        const [width, height] = await this.extractDim(bgSrc);
+        const [width, height] = await this.extractDim(backgroundSrc);
         if (width !== undefined && height !== undefined) {
-            bgSrc.width = width;
-            bgSrc.height = height;
+            backgroundSrc.width = width;
+            backgroundSrc.height = height;
         }
-        return bgSrc;
+        return backgroundSrc;
     }
-    static async bgSrcSelect(src: string | null,
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
-        bgType: BackgroundType) {
+    static async backgroundSrcSelect(
+        src: string | null, event: React.MouseEvent<HTMLElement, MouseEvent>,
+        backgroundType: BackgroundType,
+    ) {
         if (src !== null) {
-            const selectedBGSrcList = this.getSelectBGSrcList(src, bgType);
-            if (selectedBGSrcList.length > 0) {
-                selectedBGSrcList.forEach(([key]) => {
+            const selectedBackgroundSrcList = this.getSelectBackgroundSrcList(
+                src, backgroundType,
+            );
+            if (selectedBackgroundSrcList.length > 0) {
+                selectedBackgroundSrcList.forEach(([key]) => {
                     const screenManager = ScreenManager.getInstanceByKey(key);
                     if (screenManager === null) {
                         return;
                     }
-                    screenManager.screenBGManager.bgSrc = null;
+                    screenManager.screenBackgroundManager.backgroundSrc = null;
                 });
                 return;
             }
@@ -143,25 +154,28 @@ export default class ScreenBGManager
             await ScreenManager.contextChooseInstances(event)
         );
         const setSrc = async (screenManager: ScreenManager) => {
-            const bgSrc = src ? await this.initBGSrcDim(src, bgType) : null;
-            screenManager.screenBGManager.bgSrc = bgSrc;
+            const backgroundSrc = (
+                src ? await this.initBackgroundSrcDim(src, backgroundType) :
+                    null
+            );
+            screenManager.screenBackgroundManager.backgroundSrc = backgroundSrc;
         };
         chosenScreenManagers.forEach((screenManager) => {
             setSrc(screenManager);
         });
         this.fireUpdateEvent();
     }
-    static async extractDim(bgSrc: BackgroundSrcType)
+    static async extractDim(backgroundSrc: BackgroundSrcType)
         : Promise<[number | undefined, number | undefined]> {
-        if (bgSrc.type === 'image') {
+        if (backgroundSrc.type === 'image') {
             try {
-                return await getImageDim(bgSrc.src);
+                return await getImageDim(backgroundSrc.src);
             } catch (error) {
                 handleError(error);
             }
-        } else if (bgSrc.type === 'video') {
+        } else if (backgroundSrc.type === 'video') {
             try {
-                return await getVideoDim(bgSrc.src);
+                return await getVideoDim(backgroundSrc.src);
             } catch (error) {
                 handleError(error);
             }
@@ -173,8 +187,10 @@ export default class ScreenBGManager
             return;
         }
         const aminData = this.ptEffect.styleAnim;
-        if (this.screenManager !== null && this.bgSrc !== null) {
-            const newDiv = genHtmlBG(this.bgSrc, this.screenManager);
+        if (this.screenManager !== null && this.backgroundSrc !== null) {
+            const newDiv = genHtmlBackground(
+                this.backgroundSrc, this.screenManager,
+            );
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
             aminData.animIn(newDiv).then(() => {
@@ -203,22 +219,25 @@ export default class ScreenBGManager
         };
     }
     async receiveScreenDrag({ type, item }: DroppedDataType) {
-        const bgTypeMap: { [key: string]: BackgroundType } = {
-            [DragTypeEnum.BG_IMAGE]: 'image',
-            [DragTypeEnum.BG_VIDEO]: 'video',
+        const backgroundTypeMap: { [key: string]: BackgroundType } = {
+            [DragTypeEnum.BACKGROUND_IMAGE]: 'image',
+            [DragTypeEnum.BACKGROUND_VIDEO]: 'video',
         };
-        if (type in bgTypeMap) {
-            const bgSrc = await ScreenBGManager.initBGSrcDim(
-                item.src, bgTypeMap[type]);
-            this.bgSrc = bgSrc;
-        } else if (type === DragTypeEnum.BG_COLOR) {
-            this.bgSrc = {
+        if (type in backgroundTypeMap) {
+            const backgroundSrc = (
+                await ScreenBackgroundManager.initBackgroundSrcDim(
+                    item.src, backgroundTypeMap[type],
+                )
+            );
+            this.backgroundSrc = backgroundSrc;
+        } else if (type === DragTypeEnum.BACKGROUND_COLOR) {
+            this.backgroundSrc = {
                 type: 'color',
                 src: item,
             };
         }
     }
     delete() {
-        this.bgSrc = null;
+        this.backgroundSrc = null;
     }
 }

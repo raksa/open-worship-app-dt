@@ -1,22 +1,22 @@
-import { usePBGMEvents } from './screenEventHelpers';
+import { useScreenBackgroundManagerEvents } from './screenEventHelpers';
 import { BackgroundSrcType, calMediaSizes } from './screenHelpers';
 import { useScreenManagerContext } from './ScreenManager';
 
-export default function ScreenBackgroundImage({ bgSrc }: Readonly<{
-    bgSrc: BackgroundSrcType,
+export default function ScreenBackgroundImage({ backgroundSrc }: Readonly<{
+    backgroundSrc: BackgroundSrcType,
 }>) {
     const screenManager = useScreenManagerContext();
-    const { screenBGManager } = screenManager;
-    usePBGMEvents(['update'], screenBGManager);
+    const { screenBackgroundManager } = screenManager;
+    useScreenBackgroundManagerEvents(['update'], screenBackgroundManager);
     const {
         width, height,
         offsetH, offsetV,
     } = calMediaSizes({
         parentWidth: screenManager.width,
         parentHeight: screenManager.height,
-    }, bgSrc);
+    }, backgroundSrc);
     return (
-        <img src={bgSrc.src}
+        <img src={backgroundSrc.src}
             alt='background'
             style={{
                 width: `${width}px`,
