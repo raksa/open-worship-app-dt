@@ -28,8 +28,6 @@ function useSlideItems() {
     useFileSourceEvents(
         ['edit'], selectedSlide.filePath,
         (editingSlideItem: any) => {
-            console.log(editingSlideItem);
-            
             if (!(editingSlideItem instanceof SlideItem)) {
                 return;
             }

@@ -10,17 +10,15 @@ export function useCanvasControllerEvents(
     eventTypes: CanvasControllerEventType[],
     callback?: (data: CanvasItemEventDataType) => void,
 ) {
-    const [n, setN] = useState(0);
     useAppEffect(() => {
         const regEvents = canvasController.itemRegisterEventListener(
             eventTypes, (data) => {
-                setN(n + 1);
                 callback?.(data);
             });
         return () => {
             canvasController.unregisterEventListener(regEvents);
         };
-    }, [n]);
+    }, [canvasController]);
 }
 
 export function useSlideItemCanvasScale(canvasController: CanvasController) {
@@ -34,7 +32,7 @@ export function useSlideItemCanvasScale(canvasController: CanvasController) {
         return () => {
             canvasController.unregisterEventListener(regEvents);
         };
-    });
+    }, [canvasController]);
     return scale;
 }
 

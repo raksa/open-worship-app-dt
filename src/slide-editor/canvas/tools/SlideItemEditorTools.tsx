@@ -7,7 +7,7 @@ import TabRender, { genTabBody } from '../../../others/TabRender';
 import { useCanvasControllerContext } from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
 import {
-    useCanvasControllerEvents, useSlideItemCanvasScale,
+    useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
 import AppRange from '../../../others/AppRange';
 
@@ -41,7 +41,6 @@ type TabType = typeof tabTypeList[number][0];
 export default function SlideItemEditorTools() {
     const canvasController = useCanvasControllerContext();
     const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
-    useCanvasControllerEvents(canvasController, ['select']);
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'editor-tools-tab', 't',
     );

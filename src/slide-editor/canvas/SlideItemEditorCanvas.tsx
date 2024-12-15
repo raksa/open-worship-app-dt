@@ -10,7 +10,7 @@ import CanvasController, {
     useCanvasControllerContext,
 } from './CanvasController';
 import {
-    useSlideItemCanvasScale, useCanvasControllerEvents,
+    useSlideItemCanvasScale,
 } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import Canvas from './Canvas';
@@ -19,7 +19,6 @@ import CanvasItem from './CanvasItem';
 export default function SlideItemEditorCanvas() {
     const canvasController = useCanvasControllerContext();
     const scale = useSlideItemCanvasScale(canvasController);
-    useCanvasControllerEvents(canvasController, ['update']);
     useKeyboardRegistering([{ key: 'Escape' }], () => {
         canvasController.stopAllMods();
     });

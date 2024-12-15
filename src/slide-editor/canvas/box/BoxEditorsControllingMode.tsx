@@ -10,7 +10,6 @@ import { BENTextRender } from './BoxEditorNormalViewTextMode';
 import { BENBibleRender } from './BoxEditorNormalViewBibleMode';
 import { useCanvasControllerContext } from '../CanvasController';
 import { BENVideoRender } from './BoxEditorNormalViewVideoMode';
-import { useCanvasControllerEvents } from '../canvasEventHelpers';
 import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import {
     useKeyboardRegistering,
@@ -21,7 +20,6 @@ export default function BoxEditorsControllingMode({ canvasItem }: Readonly<{
 }>) {
     // TODO: move box by left right up down key, shift&ctl
     const canvasController = useCanvasControllerContext();
-    useCanvasControllerEvents(canvasController, ['update']);
     useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
     });

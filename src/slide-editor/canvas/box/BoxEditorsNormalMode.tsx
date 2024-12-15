@@ -11,18 +11,14 @@ import CanvasItemBibleItem from '../CanvasItemBibleItem';
 import BoxEditorNormalViewError from './BoxEditorNormalViewError';
 import BoxEditorNormalViewVideoMode from './BoxEditorNormalViewVideoMode';
 import CanvasItemVideo from '../CanvasItemVideo';
-import { useCanvasControllerEvents } from '../canvasEventHelpers';
-import { useCanvasControllerContext } from '../CanvasController';
 
 export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
-    const canvasController = useCanvasControllerContext();
     const style: CSSProperties = {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
     };
-    useCanvasControllerEvents(canvasController, ['text-edit', 'update']);
     switch (canvasItem.type) {
         case 'image':
             return (
