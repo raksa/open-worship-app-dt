@@ -12,10 +12,11 @@ const LazyPathEditor = lazy(() => {
 });
 
 export default function PathSelector({
-    dirSource, prefix,
+    dirSource, prefix, addItems,
 }: Readonly<{
     dirSource: DirSource,
-    prefix: string
+    prefix: string,
+    addItems?: () => void,
 }>) {
     const [showing, setShowing] = useStateSettingBoolean(
         `${prefix}-selector-opened`, false,
@@ -34,7 +35,7 @@ export default function PathSelector({
                 }
                 />
                 {!isShowingEditor && (
-                    <RenderTitle dirSource={dirSource} />
+                    <RenderTitle dirSource={dirSource} addItems={addItems} />
                 )}
             </div>
             {isShowingEditor && (
@@ -46,20 +47,32 @@ export default function PathSelector({
     );
 }
 
-function RenderTitle({ dirSource }: Readonly<{ dirSource: DirSource }>) {
+function RenderTitle({ dirSource, addItems }: Readonly<{
+    dirSource: DirSource,
+    addItems?: () => void,
+}>) {
     if (!dirSource.dirPath) {
         return null;
     }
     return (
         <>
             <PathPreviewer dirPath={dirSource.dirPath} />
-            <div className='px-2'
+            <div className='ps-2'
                 onClick={(event) => {
                     event.stopPropagation();
                     dirSource.fireReloadEvent();
                 }}>
                 <i className='bi bi-arrow-clockwise' />
             </div>
+            {addItems !== undefined ? (
+                <div className='px-1'
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        addItems();
+                    }}>
+                    <i className='bi bi-plus-lg' />
+                </div>
+            ) : null}
         </>
     );
 }

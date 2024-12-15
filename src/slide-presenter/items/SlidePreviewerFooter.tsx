@@ -11,6 +11,7 @@ import AppRange from '../../others/AppRange';
 import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
+import appProvider from '../../server/appProvider';
 
 
 function HistoryPreviewerFooter() {
@@ -70,9 +71,11 @@ export default function SlidePreviewerFooter() {
                         }}
                     />
                 </div>
-                <div className='flex-item'>
-                    <HistoryPreviewerFooter />
-                </div>
+                {appProvider.isPagePresenter ? (
+                    <div className='flex-item'>
+                        <HistoryPreviewerFooter />
+                    </div>
+                ) : null}
             </div>
         </div>
     );

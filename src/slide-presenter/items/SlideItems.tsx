@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useOptimistic, useState } from 'react';
 
 import {
     KeyboardType, useKeyboardRegistering,
@@ -22,7 +22,7 @@ const slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
     const selectedSlide = useSelectedSlideContext();
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
-    const [slideItems, setSlideItems] = useState<SlideItem[]>(
+    const [slideItems, setSlideItems] = useOptimistic<SlideItem[]>(
         selectedSlide.items,
     );
     useFileSourceEvents(

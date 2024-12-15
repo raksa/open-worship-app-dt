@@ -15,6 +15,7 @@ import DirSource from '../helper/DirSource';
 import {
     genOnDragOver, genOnDragLeave, genOnDrop, genOnContextMenu,
     DroppedFileType, FileSelectionOptionType,
+    handleFilesSelectionMenuItem,
 } from './droppingFileHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -85,6 +86,11 @@ export default function FileListHandler({
             abortController.abort();
         };
     }, [dirSource.dirPath]);
+    const handleItemsAdding = (
+        fileSelectionOption === undefined ? undefined : () => {
+            handleFilesSelectionMenuItem(fileSelectionOption);
+        }
+    );
     return (
         <DirSourceContext value={dirSource}>
             <div className={`${id} card w-100 h-100 ${userClassName ?? ''}`}
@@ -111,10 +117,11 @@ export default function FileListHandler({
                 )}
                 <div className='card-body d-flex flex-column'
                     onContextMenu={genOnContextMenu(
-                        contextMenu, fileSelectionOption,
+                        contextMenu, handleItemsAdding,
                     )}>
                     <PathSelector prefix={`path-${id}`}
                         dirSource={dirSource}
+                        addItems={handleItemsAdding}
                     />
                     {!dirSource.dirPath ?
                         <NoDirSelected dirSource={dirSource}

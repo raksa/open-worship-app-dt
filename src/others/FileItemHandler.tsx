@@ -38,7 +38,7 @@ export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
 
 function genContextMenu(
     filePath: string, setIsRenaming: (value: boolean) => void,
-    reload: () => void, onTrashed?: () => void,
+    reload: () => void,
 
 ): ContextMenuItemType[] {
     return [
@@ -57,7 +57,15 @@ function genContextMenu(
             onClick: () => {
                 reload();
             },
-        }, {
+        },
+    ];
+}
+
+export function genTrashContextMenu(
+    filePath: string, onTrashed?: () => void,
+): ContextMenuItemType[] {
+    return [
+        {
             menuTitle: 'Move to Trash',
             onClick: async () => {
                 const fileSource = FileSource.getInstance(filePath);
@@ -74,7 +82,6 @@ function genContextMenu(
         },
     ];
 }
-
 
 export default function FileItemHandler({
     data, reload, index, filePath, className,
@@ -103,8 +110,9 @@ export default function FileItemHandler({
         onClick?.();
     };
     const selfContextMenu = genContextMenu(
-        filePath, setIsRenaming, reload, onTrashed,
+        filePath, setIsRenaming, reload,
     );
+    selfContextMenu.push(...genTrashContextMenu(filePath, onTrashed));
 
     const handleContextMenuOpening = (event: any) => {
         showAppContextMenu(event, selfContextMenu);

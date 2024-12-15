@@ -126,7 +126,7 @@ export type FileSelectionOptionType = {
     takeSelectedFile?: (filePath: string) => boolean,
 };
 
-async function handleFilesSelectionMenuItem(
+export async function handleFilesSelectionMenuItem(
     fileSelectionOption: FileSelectionOptionType,
 ) {
     const {
@@ -153,22 +153,19 @@ async function handleFilesSelectionMenuItem(
 
 export function genOnContextMenu(
     contextMenu?: ContextMenuItemType[],
-    fileSelectionOption?: FileSelectionOptionType,
+    addItems?: () => void,
 ) {
     return (event: React.MouseEvent<any>) => {
         const contextMenuItems: ContextMenuItemType[] = [
             ...(contextMenu || []),
         ];
-        if (fileSelectionOption !== undefined) {
+        if (addItems !== undefined) {
             contextMenuItems.push({
                 menuTitle: 'Add Items',
-                title: fileSelectionOption.windowTitle,
-                onClick: () => {
-                    handleFilesSelectionMenuItem(fileSelectionOption);
-                },
+                onClick: addItems,
             });
         }
-        if(contextMenuItems.length === 0) {
+        if (contextMenuItems.length === 0) {
             return;
         }
         showAppContextMenu(event as any, contextMenuItems);

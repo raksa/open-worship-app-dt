@@ -1,6 +1,6 @@
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
-import { genCommonMenu } from '../others/FileItemHandler';
+import { genCommonMenu, genTrashContextMenu } from '../others/FileItemHandler';
 import ScreenBGManager from '../_screen/ScreenBGManager';
 import { usePBGMEvents } from '../_screen/screenEventHelpers';
 import FileSource from '../helper/FileSource';
@@ -91,7 +91,10 @@ function genBody(
                 handleDragStart(event, fileSource, dragType);
             }}
             onContextMenu={(event) => {
-                showAppContextMenu(event as any, genCommonMenu(filePath));
+                showAppContextMenu(event as any, [
+                    ...genCommonMenu(filePath),
+                    ...genTrashContextMenu(fileSource.filePath),
+                ]);
             }}
             onClick={noClickable ? () => { } : (event) => {
                 ScreenBGManager.bgSrcSelect(fileSource.src, event, bgType);
