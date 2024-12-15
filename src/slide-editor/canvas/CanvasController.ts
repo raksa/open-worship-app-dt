@@ -13,7 +13,7 @@ import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 import {
-    CanvasItemMediaPropsType, CCEventType,
+    CanvasItemMediaPropsType, CanvasControllerEventType,
 } from './canvasHelpers';
 import CanvasItemVideo from './CanvasItemVideo';
 import { showSimpleToast } from '../../toast/toastHelpers';
@@ -22,23 +22,25 @@ import { createContext, use } from 'react';
 
 const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
 
-export default class CanvasController extends EventHandler<CCEventType> {
+export type CanvasItemEventDataType = { canvasItems: CanvasItem<any>[] };
+
+export default class CanvasController extends
+    EventHandler<CanvasControllerEventType> {
+
     static readonly eventNamePrefix: string = 'canvas-c';
     copiedItem: CanvasItem<any> | null = null;
-    private _canvas: Canvas;
-    private _slideItem: SlideItem | null = null;
+    private readonly _canvas: Canvas;
+    readonly slideItem: SlideItem | null = null;
     private _scale: number = 1;
-    constructor() {
+    constructor(slideItem: SlideItem) {
         super();
         this._canvas = Canvas.genDefaultCanvas();
         const defaultData = parseFloat(getSetting(EDITOR_SCALE_SETTING_NAME));
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }
-    }
-    init(slideItem: SlideItem | null) {
-        this._slideItem = slideItem;
-        this._canvas = slideItem?.canvas || Canvas.genDefaultCanvas();
+        this.slideItem = slideItem;
+        this._canvas = slideItem.canvas || Canvas.genDefaultCanvas();
     }
     get canvas() {
         return this._canvas;
@@ -49,13 +51,18 @@ export default class CanvasController extends EventHandler<CCEventType> {
     set scale(n: number) {
         this._scale = n;
         setSetting(EDITOR_SCALE_SETTING_NAME, n.toString());
-        this.addPropEvent('scale');
+        this.addPropEvent('scale', { canvasItems: this.canvas.canvasItems });
     }
     get isCopied() {
         if (this.copiedItem === null) {
             return false;
         }
         return this.canvas.canvasItems.includes(this.copiedItem);
+    }
+    addPropEvent(
+        eventName: CanvasControllerEventType, data: CanvasItemEventDataType,
+    ): void {
+        super.addPropEvent(eventName, data);
     }
     fireSelectEvent(canvasItem: CanvasItem<any>) {
         this.addPropEvent('select', { canvasItems: [canvasItem] });
@@ -67,11 +74,14 @@ export default class CanvasController extends EventHandler<CCEventType> {
         this.addPropEvent('text-edit', { canvasItems: [canvasItem] });
     }
     fireUpdateEvent(canvasItem?: CanvasItem<any>) {
-        if (this._slideItem !== null) {
-            this._slideItem.canvas = this.canvas;
+        if (this.slideItem !== null) {
+            this.slideItem.canvas = this.canvas;
         }
         this.addPropEvent('update', {
-            canvasItems: canvasItem ? [canvasItem] : this.canvas,
+            canvasItems: (
+                canvasItem !== undefined ? [canvasItem] :
+                    this.canvas.canvasItems
+            ),
         });
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
@@ -245,19 +255,29 @@ export default class CanvasController extends EventHandler<CCEventType> {
         this.canvas.canvasItems = canvasItems;
         this.fireUpdateEvent();
     }
-    setItemIsSelecting(canvasItem: CanvasItem<any>, b: boolean) {
-        canvasItem.isSelected = b;
+    setItemIsSelecting(canvasItem: CanvasItem<any>, isSelected: boolean) {
+        canvasItem.isSelected = isSelected;
         this.fireSelectEvent(canvasItem);
-        this.setItemIsControlling(canvasItem, b);
+        this.setItemIsControlling(canvasItem, isSelected);
     }
-    setItemIsControlling(canvasItem: CanvasItem<any>, b: boolean) {
-        canvasItem.isControlling = b;
+    setItemIsControlling(canvasItem: CanvasItem<any>, isControlling: boolean) {
+        canvasItem.isControlling = isControlling;
         this.fireControlEvent(canvasItem);
     }
-    setItemIsEditing(canvasItem: CanvasItem<any>, b: boolean) {
-        canvasItem.isEditing = b;
+    setItemIsEditing(canvasItem: CanvasItem<any>, isEditing: boolean) {
+        canvasItem.isEditing = isEditing;
         this.fireTextEditEvent(canvasItem);
     }
+
+    itemRegisterEventListener(
+        eventNames: CanvasControllerEventType[],
+        listener: (data: CanvasItemEventDataType) => void,
+    ) {
+        return super.registerEventListener<CanvasItemEventDataType>(
+            eventNames, listener,
+        );
+    }
+
 }
 
 export const CanvasControllerContext = (

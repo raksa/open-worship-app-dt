@@ -7,10 +7,12 @@ import {
 import CanvasItemText, {
     CanvasItemTextPropsType,
 } from '../CanvasItemText';
-import { BENViewErrorRender } from './BENViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import { handleError } from '../../../helper/errorHelpers';
 
-export default function BENViewTextMode({ canvasItemText, style }: Readonly<{
+export default function BoxEditorNormalViewTextMode({
+    canvasItemText, style,
+}: Readonly<{
     canvasItemText: CanvasItemText,
     style: CSSProperties
 }>) {

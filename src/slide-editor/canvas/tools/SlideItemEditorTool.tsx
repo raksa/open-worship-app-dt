@@ -1,4 +1,4 @@
-export default function Tool({ title, children }: Readonly<{
+export default function SlideItemEditor({ title, children }: Readonly<{
     title?: string, children: any,
 }>) {
     return (

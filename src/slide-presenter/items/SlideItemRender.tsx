@@ -15,7 +15,7 @@ export function RendInfo({ index, slideItem }: Readonly<{
     index: number,
     slideItem: SlideItem,
 }>) {
-    const { selectedList } = toCNHighlight(slideItem);
+    const { selectedList } = toClassNameHighlight(slideItem);
     return (
         <>
             <div>
@@ -46,7 +46,7 @@ export function RendInfo({ index, slideItem }: Readonly<{
     );
 }
 
-export function toCNHighlight(
+export function toClassNameHighlight(
     slideItem: SlideItem, selectedSlideItem?: SlideItem,
 ) {
     const activeCN = (
@@ -84,7 +84,7 @@ export default function SlideItemRender({
     usePSlideMEvents(['update']);
     const {
         activeCN, presenterCN,
-    } = toCNHighlight(slideItem, selectedSlideItem);
+    } = toClassNameHighlight(slideItem, selectedSlideItem);
     return (
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             data-slide-item-id={slideItem.id}

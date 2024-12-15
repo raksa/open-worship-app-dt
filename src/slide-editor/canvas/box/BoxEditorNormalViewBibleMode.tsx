@@ -5,10 +5,10 @@ import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemBibleItem, {
     CanvasItemBiblePropsType,
 } from '../CanvasItemBibleItem';
-import { BENViewErrorRender } from './BENViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import { handleError } from '../../../helper/errorHelpers';
 
-export default function BENViewBibleMode({
+export default function BoxEditorNormalViewBibleMode({
     canvasItemBible, style,
 }: Readonly<{
     canvasItemBible: CanvasItemBibleItem,
@@ -28,7 +28,8 @@ export default function BENViewBibleMode({
                 event.stopPropagation();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(
-                    canvasItemBible, true);
+                    canvasItemBible, true,
+                );
             }}>
             <BENBibleRender props={canvasItemBible.props} />
         </div>

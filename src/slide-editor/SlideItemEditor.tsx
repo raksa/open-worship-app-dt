@@ -19,12 +19,11 @@ const LazySlideItemEditorTools = lazy(() => {
 });
 
 export default function SlideItemEditor() {
-    const canvasController = new CanvasController();
     const selectedSlideItem = useSelectedEditingSlideItemContext();
-    canvasController.init(selectedSlideItem);
+    const canvasController = new CanvasController(selectedSlideItem);
     useCanvasControllerEvents(canvasController, ['update'], () => {
         const fileSource = FileSource.getInstance(selectedSlideItem.filePath);
-        fileSource.fireUpdateEvent();
+        fileSource.fireUpdateEvent(canvasController.slideItem);
     });
     return (
         <CanvasControllerContext value={canvasController}>

@@ -1,22 +1,22 @@
-import './BoxEditorControllingMode.scss';
+import './BoxEditorsControllingMode.scss';
 
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';
-import { BENImageRender } from './BENViewImageMode';
-import { BENTextRender } from './BENViewTextMode';
-import { BENBibleRender } from './BENViewBibleMode';
+import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageMode';
+import { BENTextRender } from './BoxEditorNormalViewTextMode';
+import { BENBibleRender } from './BoxEditorNormalViewBibleMode';
 import { useCanvasControllerContext } from '../CanvasController';
-import { BENVideoRender } from './BENViewVideoMode';
+import { BENVideoRender } from './BoxEditorNormalViewVideoMode';
 import { useCanvasControllerEvents } from '../canvasEventHelpers';
-import { BENViewErrorRender } from './BENViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
 
-export default function BoxEditorControllingMode({ canvasItem }: Readonly<{
+export default function BoxEditorsControllingMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     // TODO: move box by left right up down key, shift&ctl
@@ -99,7 +99,7 @@ function BECRender({ canvasItem }: Readonly<{
     switch (canvasItem.type) {
         case 'image':
             return (
-                <BENImageRender props={canvasItem.props} />
+                <BoxEditorNormalImageRender props={canvasItem.props} />
             );
         case 'video':
             return (

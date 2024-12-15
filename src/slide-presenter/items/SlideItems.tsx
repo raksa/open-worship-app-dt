@@ -26,10 +26,12 @@ function useSlideItems() {
     useFileSourceEvents(['select', 'edit'], selectedSlide.filePath);
     useFileSourceEvents(
         ['update', 'edit'], selectedSlide.filePath,
-        (updatedSlideItem: SlideItem) => {
-            debugger;
+        (updatedSlideItem?: SlideItem) => {
             const newSlideItems = selectedSlide.items.map((item, i) => {
-                if (item.checkIsSame(updatedSlideItem)) {
+                if (
+                    updatedSlideItem !== undefined &&
+                    item.checkIsSame(updatedSlideItem)
+                ) {
                     return updatedSlideItem;
                 }
                 if (slideItems[i].checkIsSame(item)) {

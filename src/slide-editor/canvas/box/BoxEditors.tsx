@@ -1,14 +1,14 @@
-import './BoxEditor.scss';
+import './BoxEditors.scss';
 
 import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
-import BoxEditorNormalMode from './BoxEditorNormalMode';
-import BoxEditorControllingMode from './BoxEditorControllingMode';
+import BoxEditorsNormalMode from './BoxEditorsNormalMode';
+import BoxEditorsControllingMode from './BoxEditorsControllingMode';
 import { useIsControlling } from '../canvasEventHelpers';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 
-export function BoxEditor({ canvasItem, scale }: Readonly<{
+export function BoxEditors({ canvasItem, scale }: Readonly<{
     canvasItem: CanvasItem<any>, scale: number,
 }>) {
     const canvasController = useCanvasControllerContext();
@@ -22,12 +22,14 @@ export function BoxEditor({ canvasItem, scale }: Readonly<{
     // TODO: ctrl|alt resize => anchor center base
     if (isControlling) {
         return (
-            <BoxEditorControllingMode
-                canvasItem={canvasItem} />
+            <BoxEditorsControllingMode
+                canvasItem={canvasItem}
+            />
         );
     }
     return (
-        <BoxEditorNormalMode
-            canvasItem={canvasItem} />
+        <BoxEditorsNormalMode
+            canvasItem={canvasItem}
+        />
     );
 }

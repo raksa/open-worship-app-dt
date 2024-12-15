@@ -6,7 +6,7 @@ import CanvasItemImage, {
 import img404 from '../404.png';
 import { useCanvasControllerContext } from '../CanvasController';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
-import { BENViewErrorRender } from './BENViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import { handleError } from '../../../helper/errorHelpers';
 
 export default function BENViewImageMode({
@@ -30,12 +30,12 @@ export default function BENViewImageMode({
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItemImage, true);
             }}>
-            <BENImageRender props={canvasItemImage.props} />
+            <BoxEditorNormalImageRender props={canvasItemImage.props} />
         </div>
     );
 }
 
-export function BENImageRender({ props }: Readonly<{
+export function BoxEditorNormalImageRender({ props }: Readonly<{
     props: CanvasItemImagePropsType,
 }>) {
     try {

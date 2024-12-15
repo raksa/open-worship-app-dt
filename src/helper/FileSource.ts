@@ -243,23 +243,23 @@ export default class FileSource extends EventHandler<FSEventType>
         super.addPropEvent(newEventName, data);
     }
 
-    fireSelectEvent() {
-        FileSource.addFSPropEvent('select', this.filePath);
+    fireSelectEvent(data?: any) {
+        FileSource.addFSPropEvent('select', this.filePath, data);
     }
 
-    fireHistoryUpdateEvent() {
-        FileSource.addFSPropEvent('history-update', this.filePath);
+    fireHistoryUpdateEvent(data?: any) {
+        FileSource.addFSPropEvent('history-update', this.filePath, data);
     }
 
-    fireUpdateEvent() {
-        FileSource.addFSPropEvent('update', this.filePath);
+    fireUpdateEvent(data?: any) {
+        FileSource.addFSPropEvent('update', this.filePath, data);
     }
 
-    fireDeleteEvent() {
-        FileSource.addFSPropEvent('delete', this.filePath);
+    fireDeleteEvent(data?: any) {
+        FileSource.addFSPropEvent('delete', this.filePath, data);
     }
 
-    fireDeleteCacheEvent() {
-        FileSource.addFSPropEvent('delete-cache', this.filePath);
+    fireDeleteCacheEvent(data?: any) {
+        FileSource.addFSPropEvent('delete-cache', this.filePath, data);
     }
 }

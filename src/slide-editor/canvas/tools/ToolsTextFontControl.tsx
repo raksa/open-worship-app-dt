@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import Tool from './Tool';
+import SlideItemEditor from './SlideItemEditorTool';
 import CanvasItemText from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
@@ -11,11 +11,11 @@ export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
 }>) {
     return (
-        <Tool title='Font Size'>
+        <SlideItemEditor title='Font Size'>
             <FontSize canvasItemText={canvasItemText} />
             <hr />
             <FontFamily canvasItemText={canvasItemText} />
-        </Tool>
+        </SlideItemEditor>
     );
 }
 function FontSize({ canvasItemText }: Readonly<{

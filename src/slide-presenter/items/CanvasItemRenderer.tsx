@@ -1,8 +1,18 @@
-import { BENImageRender } from '../../slide-editor/canvas/box/BENViewImageMode';
-import { BENTextRender } from '../../slide-editor/canvas/box/BENViewTextMode';
-import { BENBibleRender } from '../../slide-editor/canvas/box/BENViewBibleMode';
-import { CanvasItemPropsType } from '../../slide-editor/canvas/CanvasItem';
-import { BENVideoRender } from '../../slide-editor/canvas/box/BENViewVideoMode';
+import {
+    BoxEditorNormalImageRender,
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewImageMode';
+import {
+    BENTextRender,
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewTextMode';
+import {
+    BENBibleRender,
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewBibleMode';
+import {
+    CanvasItemPropsType,
+} from '../../slide-editor/canvas/CanvasItem';
+import {
+    BENVideoRender,
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewVideoMode';
 
 export default function CanvasItemRenderer({ props }: Readonly<{
     props: CanvasItemPropsType,
@@ -10,7 +20,7 @@ export default function CanvasItemRenderer({ props }: Readonly<{
     switch (props.type) {
         case 'image':
             return (
-                <BENImageRender props={props as any} />
+                <BoxEditorNormalImageRender props={props as any} />
             );
         case 'video':
             return (

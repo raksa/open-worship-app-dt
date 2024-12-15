@@ -4,7 +4,8 @@ import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemText from '../CanvasItemText';
 import BoxEditorTextArea from './BoxEditorTextArea';
 
-export default function BENTextEditMode({
+
+export default function BoxEditorNormalTextEditMode({
     canvasItemText, style,
 }: Readonly<{
     canvasItemText: CanvasItemText,

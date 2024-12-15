@@ -8,10 +8,12 @@ import CanvasItemVideo, {
 } from '../CanvasItemVideo';
 import img404 from '../404.png';
 import { useCanvasControllerContext } from '../CanvasController';
-import { BENViewErrorRender } from './BENViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import { handleError } from '../../../helper/errorHelpers';
 
-export default function BENViewVideoMode({ canvasItemVideo, style }: Readonly<{
+export default function BoxEditorNormalViewVideoMode({
+    canvasItemVideo, style,
+}: Readonly<{
     canvasItemVideo: CanvasItemVideo,
     style: CSSProperties
 }>) {
@@ -80,9 +82,11 @@ function PlayIcon({ width }: Readonly<{ width: number }>) {
             filter='drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4))'
             viewBox='0 0 16 16'>
             <path d={'M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 '
-                + '8 0 0 0 0 16z'} />
+                + '8 0 0 0 0 16z'}
+            />
             <path d={'M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 '
-                + '.814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z'} />
+                + '.814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z'}
+            />
         </svg>
     );
 }

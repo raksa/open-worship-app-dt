@@ -1,14 +1,14 @@
 import { use } from 'react';
 
 import ColorPicker from '../../../others/color/ColorPicker';
-import Tool from './Tool';
-import ToolAlign from './ToolAlign';
+import SlideItemEditor from './SlideItemEditorTool';
+import ToolAlign from './SlideItemEditorToolAlign';
 import { useCanvasControllerContext } from '../CanvasController';
 import { ToolingBoxType } from '../canvasHelpers';
 import { CanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
-export default function ToolsBox() {
+export default function SlideItemEditorToolsBox() {
     const canvasController = useCanvasControllerContext();
     const handleDataEvent = (newData: any) => {
         applyBoxData(newData);
@@ -37,20 +37,21 @@ export default function ToolsBox() {
     };
     return (
         <>
-            <Tool title='Background Color'>
+            <SlideItemEditor title='Background Color'>
                 <div style={{
                     maxWidth: '300px',
                 }}>
                     <ColorPicker color={canvasItem.props.backgroundColor}
                         defaultColor='#ffffff'
                         onNoColor={handleNoColoring}
-                        onColorChange={handleColorChanging} />
+                        onColorChange={handleColorChanging}
+                    />
                 </div>
-            </Tool>
-            <Tool title='Box Alignment'>
+            </SlideItemEditor>
+            <SlideItemEditor title='Box Alignment'>
                 <ToolAlign onData={handleDataEvent} />
-            </Tool>
-            <Tool title='Box Layer'>
+            </SlideItemEditor>
+            <SlideItemEditor title='Box Layer'>
                 <button className='btn btn-info'
                     onClick={() => {
                         canvasController.applyOrderingData(
@@ -65,8 +66,8 @@ export default function ToolsBox() {
                     }}>
                     <i className='bi bi-layer-forward' />
                 </button>
-            </Tool>
-            <Tool title='Rotate'>
+            </SlideItemEditor>
+            <SlideItemEditor title='Rotate'>
                 <button className='btn btn-info'
                     onClick={() => {
                         applyBoxData({
@@ -92,7 +93,7 @@ export default function ToolsBox() {
                         Strip
                     </button>
                 ) : null}
-            </Tool>
+            </SlideItemEditor>
         </>
     );
 }

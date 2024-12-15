@@ -1,19 +1,19 @@
 import { useState } from 'react';
 
 import { useAppEffect } from '../../helper/debuggerHelpers';
-import CanvasController from './CanvasController';
-import { CCEventType } from './canvasHelpers';
+import CanvasController, { CanvasItemEventDataType } from './CanvasController';
+import { CanvasControllerEventType } from './canvasHelpers';
 import CanvasItem from './CanvasItem';
 
 export function useCanvasControllerEvents(
     canvasController: CanvasController,
-    eventTypes: CCEventType[],
-    callback?: (data: { canvasItem: CanvasItem<any> }) => void,
+    eventTypes: CanvasControllerEventType[],
+    callback?: (data: CanvasItemEventDataType) => void,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
-        const regEvents = canvasController.registerEventListener(
-            eventTypes, (data: { canvasItem: CanvasItem<any> }) => {
+        const regEvents = canvasController.itemRegisterEventListener(
+            eventTypes, (data) => {
                 setN(n + 1);
                 callback?.(data);
             });
@@ -26,7 +26,7 @@ export function useCanvasControllerEvents(
 export function useSlideItemCanvasScale(canvasController: CanvasController) {
     const [scale, setScale] = useState(canvasController.scale);
     useAppEffect(() => {
-        const regEvents = canvasController.registerEventListener(
+        const regEvents = canvasController.itemRegisterEventListener(
             ['scale'], () => {
                 setScale(canvasController.scale);
             },
@@ -45,11 +45,13 @@ export function useIsControlling(
         canvasItem.isControlling,
     );
     useAppEffect(() => {
-        const regEvents = canvasController.registerEventListener(
-            ['control'], (item: CanvasItem<any>) => {
-                if (item.id === canvasItem.id) {
-                    setIsControlling(canvasItem.isControlling);
-                }
+        const regEvents = canvasController.itemRegisterEventListener(
+            ['control'], ({ canvasItems: items }) => {
+                items.forEach((item) => {
+                    if (item.id === canvasItem.id) {
+                        setIsControlling(canvasItem.isControlling);
+                    }
+                });
             });
         return () => {
             canvasController.unregisterEventListener(regEvents);

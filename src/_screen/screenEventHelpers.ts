@@ -90,8 +90,9 @@ export function usePSlideMEvents(
             registeredEvents = ScreenSlideManager.
                 registerEventListener(events, update);
         } else {
-            registeredEvents = screenSlideManager.
-                registerEventListener(events, update);
+            registeredEvents = screenSlideManager.registerEventListener(
+                events, update,
+            );
         }
         return () => {
             if (isGlobal) {

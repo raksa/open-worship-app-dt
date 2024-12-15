@@ -3,18 +3,18 @@ import { CSSProperties } from 'react';
 import CanvasItem from '../CanvasItem';
 import CanvasItemImage from '../CanvasItemImage';
 import CanvasItemText from '../CanvasItemText';
-import BENViewImageMode from './BENViewImageMode';
-import BENTextEditMode from './BENTextEditMode';
-import BENViewTextMode from './BENViewTextMode';
-import BENViewBibleMode from './BENViewBibleMode';
+import BENViewImageMode from './BoxEditorNormalViewImageMode';
+import BoxEditorNormalTextEditMode from './BoxEditorNormalTextEditMode';
+import BoxEditorNormalViewTextMode from './BoxEditorNormalViewTextMode';
+import BoxEditorNormalViewBibleMode from './BoxEditorNormalViewBibleMode';
 import CanvasItemBibleItem from '../CanvasItemBibleItem';
-import BENViewError from './BENViewError';
-import BENViewVideoMode from './BENViewVideoMode';
+import BoxEditorNormalViewError from './BoxEditorNormalViewError';
+import BoxEditorNormalViewVideoMode from './BoxEditorNormalViewVideoMode';
 import CanvasItemVideo from '../CanvasItemVideo';
 import { useCanvasControllerEvents } from '../canvasEventHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 
-export default function BoxEditorNormalMode({ canvasItem }: Readonly<{
+export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     const canvasController = useCanvasControllerContext();
@@ -30,39 +30,45 @@ export default function BoxEditorNormalMode({ canvasItem }: Readonly<{
                     canvasItemImage={
                         canvasItem as CanvasItemImage
                     }
-                    style={style} />
+                    style={style}
+                />
             );
         case 'video':
             return (
-                <BENViewVideoMode
+                <BoxEditorNormalViewVideoMode
                     canvasItemVideo={
                         canvasItem as CanvasItemVideo
                     }
-                    style={style} />
+                    style={style}
+                />
             );
         case 'text':
             if (canvasItem.isEditing) {
                 return (
-                    <BENTextEditMode
+                    <BoxEditorNormalTextEditMode
                         canvasItemText={canvasItem as CanvasItemText}
-                        style={style} />
+                        style={style}
+                    />
                 );
             }
             return (
-                <BENViewTextMode
+                <BoxEditorNormalViewTextMode
                     canvasItemText={canvasItem as CanvasItemText}
-                    style={style} />
+                    style={style}
+                />
             );
         case 'bible':
             return (
-                <BENViewBibleMode
+                <BoxEditorNormalViewBibleMode
                     canvasItemBible={
                         canvasItem as CanvasItemBibleItem
                     }
-                    style={style} />
+                    style={style}
+                />
             );
         default:
-            return <BENViewError
-                canvasItem={canvasItem} />;
+            return (
+                <BoxEditorNormalViewError canvasItem={canvasItem} />
+            );
     }
 }

@@ -77,6 +77,7 @@ export class BasicEventHandler<T extends string> {
 
     registerEventListener<F>(eventNames: T[], listener: ListenerType<F>):
         RegisteredEventType<T, F>[] {
+
         return eventNames.map((eventName) => {
             this.addOnEventListener(eventName, listener);
             return { eventName, listener };

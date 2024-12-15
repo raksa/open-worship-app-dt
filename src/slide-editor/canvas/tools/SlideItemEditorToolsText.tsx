@@ -1,7 +1,7 @@
 import { use } from 'react';
 
-import Tool from './Tool';
-import ToolAlign from './ToolAlign';
+import SlideItemEditor from './SlideItemEditorTool';
+import ToolAlign from './SlideItemEditorToolAlign';
 import CanvasItemText, {
     ToolingTextType,
 } from '../CanvasItemText';
@@ -41,7 +41,7 @@ export default function ToolsText() {
     };
     return (
         <div className='d-flex'>
-            <Tool>
+            <SlideItemEditor>
                 <div style={{
                     maxWidth: '300px',
                 }}>
@@ -50,10 +50,10 @@ export default function ToolsText() {
                         onNoColor={handleColorChanging}
                         onColorChange={handleColorChanging} />
                 </div>
-            </Tool>
-            <Tool title='Text Alignment'>
+            </SlideItemEditor>
+            <SlideItemEditor title='Text Alignment'>
                 <ToolAlign isText onData={handleDataEvent} />
-            </Tool>
+            </SlideItemEditor>
             <ToolsTextFontControl
                 canvasItemText={canvasItem} />
         </div>

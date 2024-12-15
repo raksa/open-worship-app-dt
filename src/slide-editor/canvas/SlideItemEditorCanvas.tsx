@@ -1,4 +1,4 @@
-import { BoxEditor } from './box/BoxEditor';
+import { BoxEditors } from './box/BoxEditors';
 import {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
@@ -113,7 +113,7 @@ function genBody({
             }} >
             {canvasItems.map((canvasItem) => {
                 return (
-                    <BoxEditor key={canvasItem.id}
+                    <BoxEditors key={canvasItem.id}
                         scale={scale}
                         canvasItem={canvasItem}
                     />

@@ -3,7 +3,7 @@ import './SlideItemRender.scss';
 import SlideItem from '../../slide-list/SlideItem';
 import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
 import {
-    RendInfo, toCNHighlight,
+    RendInfo, toClassNameHighlight,
 } from './SlideItemRender';
 import ReactDOMServer from 'react-dom/server';
 
@@ -48,7 +48,7 @@ export default function SlideItemPdfRender({
     usePSlideMEvents(['update']);
     const {
         activeCN, presenterCN,
-    } = toCNHighlight(slideItem);
+    } = toClassNameHighlight(slideItem);
     return (
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             style={{

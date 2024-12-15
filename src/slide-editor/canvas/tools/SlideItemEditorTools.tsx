@@ -1,4 +1,4 @@
-import './Tools.scss';
+import './SlideItemEditorTools.scss';
 
 import { Fragment, lazy } from 'react';
 
@@ -12,10 +12,10 @@ import {
 import AppRange from '../../../others/AppRange';
 
 const LazyToolsBox = lazy(() => {
-    return import('./ToolsBox');
+    return import('./SlideItemEditorToolsBox');
 });
 const LazyToolsText = lazy(() => {
-    return import('./ToolsText');
+    return import('./SlideItemEditorToolsText');
 });
 const LazyToolCanvasItems = lazy(() => {
     return import('./ToolCanvasItems');
@@ -54,9 +54,11 @@ export default function SlideItemEditorTools() {
                         return [type, name];
                     })}
                     activeTab={tabType}
-                    setActiveTab={setTabType} />
-                <div className={'align-self-end flex-fill d-flex '
-                    + 'justify-content-end'}>
+                    setActiveTab={setTabType}
+                />
+                <div className={
+                    'align-self-end flex-fill d-flex justify-content-end'
+                }>
                     <div className='canvas-board-size-container d-flex ps-1'>
                         <span>{scale.toFixed(1)}x</span>
                         <div style={{ maxWidth: '200px' }}>
@@ -66,7 +68,8 @@ export default function SlideItemEditorTools() {
                                 setValue={(scale) => {
                                     canvasController.scale = scale;
                                 }}
-                                defaultSize={defaultRangeSize} />
+                                defaultSize={defaultRangeSize}
+                            />
                         </div>
                     </div>
                 </div>

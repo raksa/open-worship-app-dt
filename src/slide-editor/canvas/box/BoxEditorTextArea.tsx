@@ -19,6 +19,7 @@ export default function BoxEditorTextArea({ color, text, setText }: Readonly<{
                 const newText = event.target.value;
                 setLocalText(newText);
                 setText(newText);
-            }} />
+            }}
+        />
     );
 }
