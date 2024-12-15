@@ -1,12 +1,13 @@
-import './ProgressBar.scss';
+import './TopProgressBarComp.scss';
 
 import { useState } from 'react';
 
 import {
     useHideProgressBar, useShowProgressBar,
 } from '../event/ProgressBarEventListener';
+import ProgressBarComp from './ProgressBarComp';
 
-export default function ProgressBar() {
+export default function TopProgressBarComp() {
     const [progressKeys, setProgressKeys] = useState<string[]>([]);
     const addProgressKey = (progressKey: string) => {
         setProgressKeys((prev) => {
@@ -26,21 +27,8 @@ export default function ProgressBar() {
         return null;
     }
     return (
-        <div className='app-top-progress-bar progress'
-            title={`Progress: ${progressKeys.join(',')}`}
-        >
-            <div className={
-                'progress-bar progress-bar-striped ' +
-                'progress-bar-animated bg-success'
-            }
-                role='progressbar'
-                aria-valuenow={100}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                style={{
-                    width: '100%',
-                }}
-            />
+        <div className='app-top-progress-bar'>
+            <ProgressBarComp title={progressKeys.join(',')} />
         </div>
     );
 }

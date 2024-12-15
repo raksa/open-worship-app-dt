@@ -20,7 +20,7 @@ import SlideItem, {
     SelectedEditingSlideItemContext,
 } from '../slide-list/SlideItem';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import ProgressBar from '../progress-bar/ProgressBar';
+import TopProgressBarComp from '../progress-bar/TopProgressBarComp';
 
 
 const tabs: TabOptionType[] = [];
@@ -135,7 +135,7 @@ export default function AppLayout({ children }: Readonly<{
             <div id='app-body' className='border-white-round'>
                 {children}
             </div>
-            <ProgressBar />
+            <TopProgressBarComp />
             <Toast />
             <AppContextMenu />
             <HandleAlert />

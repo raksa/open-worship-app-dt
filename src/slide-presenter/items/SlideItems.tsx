@@ -1,4 +1,4 @@
-import { useOptimistic, useState } from 'react';
+import { useOptimistic, useState, useTransition } from 'react';
 
 import {
     KeyboardType, useKeyboardRegistering,
@@ -17,6 +17,7 @@ import SlideItem, {
 } from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
 import { useAppEffect } from '../../helper/debuggerHelpers';
+import ProgressBarComp from '../../progress-bar/ProgressBarComp';
 
 const slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
@@ -25,6 +26,12 @@ function useSlideItems() {
     const [slideItems, setSlideItems] = useOptimistic<SlideItem[]>(
         selectedSlide.items,
     );
+    const [isPending, startTransaction] = useTransition();
+    const setSlideItems1 = (newSlideItems: SlideItem[]) => {
+        startTransaction(() => {
+            setSlideItems(newSlideItems);
+        });
+    };
     useFileSourceEvents(
         ['edit'], selectedSlide.filePath,
         (editingSlideItem: any) => {
@@ -40,7 +47,7 @@ function useSlideItems() {
                     return item;
                 }
             });
-            setSlideItems(newSlideItems);
+            setSlideItems1(newSlideItems);
         }
     );
     useFileSourceEvents(
@@ -52,7 +59,7 @@ function useSlideItems() {
             ) {
                 return;
             }
-            setSlideItems(newSlideItems);
+            setSlideItems1(newSlideItems);
         }
     );
     useFileSourceEvents(
@@ -77,7 +84,7 @@ function useSlideItems() {
                     return item;
                 }
             });
-            setSlideItems(newSlideItems);
+            setSlideItems1(newSlideItems);
         }
     );
     useFileSourceEvents(
@@ -87,7 +94,7 @@ function useSlideItems() {
                 const newSlideItems = slideItems.filter((item) => {
                     return !item.checkIsSame(deletedSlideItem);
                 });
-                setSlideItems(newSlideItems);
+                setSlideItems1(newSlideItems);
             }
         }
     );
@@ -99,13 +106,13 @@ function useSlideItems() {
     useKeyboardRegistering(arrows.map((key) => {
         return { key };
     }), arrowListener);
-    return { slideItems };
+    return { slideItems, isPending };
 }
 
 export default function SlideItems() {
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    const { slideItems } = useSlideItems();
+    const { slideItems, isPending } = useSlideItems();
     useAppEffect(() => {
         Object.values(slideItemsToView).forEach((slideItem) => {
             slideItem.showInViewport();
@@ -119,6 +126,9 @@ export default function SlideItems() {
     );
     return (
         <div className='d-flex flex-wrap justify-content-center'>
+            <div className='w-100' style={{ height: '1px' }}>
+                {isPending ? (<ProgressBarComp />) : null}
+            </div>
             {slideItems.map((slideItem, i) => {
                 return (
                     <SlideItemRenderWrapper key={slideItem.id}
