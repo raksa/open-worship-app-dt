@@ -10,6 +10,7 @@ import {
     BibleItemRenderedType, FTBibleTable, LyricRenderedType, FTLyricItem,
     BibleRenderVerseType,
 } from './fullTextScreenComps';
+import { getDivHTMLChild } from '../helper/helpers';
 
 const fullTextScreenHelper = {
     genHtmlFromFtBibleItem(bibleRenderedList: BibleItemRenderedType[],
@@ -18,13 +19,16 @@ const fullTextScreenHelper = {
             return document.createElement('table');
         }
         const versesCount = bibleRenderedList[0].verses.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(<FTBibleTable
-            bibleRenderedList={bibleRenderedList}
-            isLineSync={isLineSync}
-            versesCount={versesCount} />);
+        const htmlString = ReactDOMServer.renderToStaticMarkup(
+            <FTBibleTable
+                bibleRenderedList={bibleRenderedList}
+                isLineSync={isLineSync}
+                versesCount={versesCount}
+            />
+        );
         const div = document.createElement('div');
         div.innerHTML = htmlString;
-        return div.firstChild as HTMLTableElement;
+        return getDivHTMLChild(div);
     },
     genHtmlFromFtLyric(lyricRenderedList: LyricRenderedType[],
         isLineSync: boolean) {
@@ -32,13 +36,16 @@ const fullTextScreenHelper = {
             return document.createElement('table');
         }
         const itemsCount = lyricRenderedList[0].items.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(<FTLyricItem
-            lyricRenderedList={lyricRenderedList}
-            isLineSync={isLineSync}
-            itemsCount={itemsCount} />);
+        const htmlString = ReactDOMServer.renderToStaticMarkup(
+            <FTLyricItem
+                lyricRenderedList={lyricRenderedList}
+                isLineSync={isLineSync}
+                itemsCount={itemsCount}
+            />
+        );
         const div = document.createElement('div');
         div.innerHTML = htmlString;
-        return div.firstChild as HTMLTableElement;
+        return getDivHTMLChild(div);
     },
     removeClassName(parent: HTMLElement, className: string) {
         const targets = parent.querySelectorAll<HTMLSpanElement>(

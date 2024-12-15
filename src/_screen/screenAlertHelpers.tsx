@@ -1,6 +1,7 @@
 import ReactDOMServer from 'react-dom/server';
 import Countdown from './Countdown';
 import ScreenManager from './ScreenManager';
+import { getDivHTMLChild } from '../helper/helpers';
 
 const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
 export type AlertType = typeof _alertTypeList[number];
@@ -19,15 +20,16 @@ export function genHtmlAlertMarquee(
     const scale = screenManager.height / 768;
     const fontSize = 75 * scale;
     const actorClass = classNameMapper.marquee;
-    const htmlString = ReactDOMServer.renderToStaticMarkup(<div
-        data-alert-cn={actorClass}
-        style={{
-            position: 'absolute',
-            width: '100%',
-            left: '0px',
-            bottom: '0px',
-        }}>
-        <style>{`
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
+        <div
+            data-alert-cn={actorClass}
+            style={{
+                position: 'absolute',
+                width: '100%',
+                left: '0px',
+                bottom: '0px',
+            }}>
+            <style>{`
                 .${actorClass} {
                     width: 100%;
                     padding: 3px 0px;
@@ -73,13 +75,14 @@ export function genHtmlAlertMarquee(
                     100% { transform: translateY(100%); }
                 }
             `}</style>
-        <p className={`marquee ${actorClass}`}>
-            <span>{text}</span>
-        </p>
-    </div>);
+            <p className={`marquee ${actorClass}`}>
+                <span>{text}</span>
+            </p>
+        </div>
+    );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    return div.firstChild as HTMLDivElement;
+    return getDivHTMLChild(div);
 }
 
 export function genHtmlAlertCountdown(
@@ -129,7 +132,7 @@ export function genHtmlAlertCountdown(
     </div>);
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    const divContainer = div.firstChild as HTMLDivElement;
+    const divContainer = getDivHTMLChild(div);
     Countdown.init(divContainer, dateTime);
     return divContainer;
 }

@@ -34,14 +34,18 @@ export default function ScreenBackground() {
 export function genHtmlBackground(
     backgroundSrc: BackgroundSrcType, screenManager: ScreenManager,
 ) {
-    const str = ReactDOMServer.renderToStaticMarkup(
+    const htmlStr = ReactDOMServer.renderToStaticMarkup(
         <ScreenManagerContext value={screenManager}>
             <RenderBackground backgroundSrc={backgroundSrc} />
         </ScreenManagerContext>
     );
     const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.firstChild as HTMLDivElement;
+    div.innerHTML = htmlStr;
+    const child = div.querySelector('div');
+    if (child === null) {
+        throw new Error('child is null');
+    }
+    return child;
 }
 
 export function RenderBackground({ backgroundSrc }: Readonly<{

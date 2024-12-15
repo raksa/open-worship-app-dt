@@ -205,3 +205,11 @@ export function freezeObject(obj: any) {
         }
     }
 }
+
+export function getDivHTMLChild(parent: HTMLElement) {
+    const child = parent.querySelector('div');
+    if (child instanceof HTMLDivElement === false) {
+        throw new Error('Invalid div child');
+    }
+    return child;
+}

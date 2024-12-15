@@ -3,14 +3,17 @@ import CanvasItemRenderer from './CanvasItemRenderer';
 import CanvasItem, {
     CanvasItemPropsType,
 } from '../../slide-editor/canvas/CanvasItem';
+import { getDivHTMLChild } from '../../helper/helpers';
 
 export function genHtmlSlideItem(canvasItemsJson: CanvasItemPropsType[]) {
-    const str = ReactDOMServer.renderToStaticMarkup(
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
         <SlideItemRenderer width={'100%'} height={'100%'}
-            canvasItemsJson={canvasItemsJson} />);
+            canvasItemsJson={canvasItemsJson}
+        />
+    );
     const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.firstChild as HTMLDivElement;
+    div.innerHTML = htmlString;
+    return getDivHTMLChild(div);
 }
 
 export default function SlideItemRenderer({

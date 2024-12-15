@@ -6,6 +6,7 @@ import {
     RendInfo, toClassNameHighlight,
 } from './SlideItemRender';
 import ReactDOMServer from 'react-dom/server';
+import { getDivHTMLChild } from '../../helper/helpers';
 
 export function SlideItemPdfRenderContent({
     pdfImageSrc, isFullWidth = false,
@@ -27,14 +28,14 @@ export function SlideItemPdfRenderContent({
 }
 
 export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
-    const str = ReactDOMServer.renderToStaticMarkup(
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
         <SlideItemPdfRenderContent pdfImageSrc={pdfImageSrc}
             isFullWidth={isFullWidth}
         />,
     );
     const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.firstChild as HTMLDivElement;
+    div.innerHTML = htmlString;
+    return getDivHTMLChild(div);
 }
 
 export default function SlideItemPdfRender({
