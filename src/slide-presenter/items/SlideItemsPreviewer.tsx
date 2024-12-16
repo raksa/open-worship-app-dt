@@ -5,6 +5,7 @@ import SlideItems from './SlideItems';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleCtrlWheel } from '../../others/AppRange';
 import { defaultRangeSize } from './SlidePreviewerFooter';
+import SlideItemsMenuComp from './SlideItemsMenuComp';
 
 export default function SlideItemsPreviewer() {
     const selectedSlide = useSelectedSlideContext();
@@ -27,6 +28,9 @@ export default function SlideItemsPreviewer() {
             onPaste={() => {
                 selectedSlide.pasteItem();
             }}>
+            {!selectedSlide.isPdf && (
+                <SlideItemsMenuComp />
+            )}
             <SlideItems />
         </div>
     );

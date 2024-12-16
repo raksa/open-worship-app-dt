@@ -19,7 +19,7 @@ export default function BoxEditorNormalViewVideoMode({
 }>) {
     const canvasController = useCanvasControllerContext();
     return (
-        <div className='box-editor pointer'
+        <div className='app-box-editor pointer'
             style={style}
             onContextMenu={async (event) => {
                 event.stopPropagation();

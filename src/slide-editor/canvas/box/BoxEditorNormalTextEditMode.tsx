@@ -17,7 +17,7 @@ export default function BoxEditorNormalTextEditMode({
         canvasController.fireUpdateEvent(canvasItemText);
     };
     return (
-        <div className='box-editor pointer editable'
+        <div className='app-box-editor pointer editable'
             style={style}
             onClick={(event) => {
                 event.stopPropagation();

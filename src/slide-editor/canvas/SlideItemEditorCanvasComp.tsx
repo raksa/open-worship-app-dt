@@ -1,4 +1,4 @@
-import { BoxEditors } from './box/BoxEditors';
+import { BoxEditorsComp } from './box/BoxEditorsComp';
 import {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
@@ -98,7 +98,7 @@ function BodyRendererComp() {
             }} >
             {canvasItems.map((canvasItem) => {
                 return (
-                    <BoxEditors key={canvasItem.id}
+                    <BoxEditorsComp key={canvasItem.id}
                         canvasItem={canvasItem}
                     />
                 );

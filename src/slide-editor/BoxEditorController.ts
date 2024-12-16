@@ -1,3 +1,4 @@
+import { createContext, use } from 'react';
 import { getRotationDeg, removePX } from '../helper/helpers';
 
 type ResizeType = {
@@ -163,8 +164,8 @@ export default class BoxEditorController {
         };
     rotatorCN = 'rotate';
     listened: ListenedEvent[] = [];
-    setScaleFactor(sf: number) {
-        this.scaleFactor = sf;
+    constructor(scaleFactor: number) {
+        this.scaleFactor = scaleFactor;
     }
     addEvent(le: ListenedEvent) {
         le.target.addEventListener(le.eventName, le.listener, false);
@@ -387,4 +388,16 @@ export default class BoxEditorController {
     }
 }
 
-export const boxEditorController = new BoxEditorController();
+export const BoxEditorControllerContext = (
+    createContext<BoxEditorController | null>(null)
+);
+export function useBoxEditorControllerContext() {
+    const context = use(BoxEditorControllerContext);
+    if (context === null) {
+        throw new Error(
+            'useBoxEditorControllerContext must be used inside a ' +
+            'BoxEditorControllerContext.Provider'
+        );
+    }
+    return context;
+}

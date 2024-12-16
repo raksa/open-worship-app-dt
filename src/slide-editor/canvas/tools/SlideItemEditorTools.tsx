@@ -44,7 +44,7 @@ export default function SlideItemEditorTools() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'editor-tools-tab', 't',
     );
-    const scale = useSlideItemCanvasScale(canvasController);
+    const scale = useSlideItemCanvasScale();
     return (
         <div className='tools d-flex flex-column w-100 h-100'>
             <div className='tools-header d-flex'>

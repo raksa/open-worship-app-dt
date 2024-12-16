@@ -1,6 +1,5 @@
 import './BoxEditorsControllingMode.scss';
 
-import { boxEditorController } from '../../BoxEditorController';
 import CanvasItem from '../CanvasItem';
 import {
     showCanvasItemContextMenu,
@@ -14,12 +13,14 @@ import { BENViewErrorRender } from './BoxEditorNormalViewError';
 import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
+import { useBoxEditorControllerContext } from '../../BoxEditorController';
 
 export default function BoxEditorsControllingMode({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     // TODO: move box by left right up down key, shift&ctl
     const canvasController = useCanvasControllerContext();
+    const boxEditorController = useBoxEditorControllerContext();
     useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
     });
@@ -46,14 +47,14 @@ export default function BoxEditorsControllingMode({ canvasItem }: Readonly<{
                 transform: `rotate(${canvasItem.props.rotate}deg)`,
                 zIndex: canvasItem.props.zIndex,
             }}>
-            <div className={'box-editor controllable'}
+            <div className={'app-box-editor controllable'}
                 onClick={(event) => {
                     event.stopPropagation();
                 }}
                 onContextMenu={(event) => {
                     event.stopPropagation();
                     showCanvasItemContextMenu(
-                        event,canvasController, canvasItem,
+                        event, canvasController, canvasItem,
                     );
                 }}
                 onDoubleClick={(event) => {

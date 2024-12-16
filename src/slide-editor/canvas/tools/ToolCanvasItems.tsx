@@ -1,3 +1,4 @@
+import { useOptimistic } from 'react';
 import CanvasItemRenderer
     from '../../../slide-presenter/items/CanvasItemRenderer';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
@@ -5,7 +6,7 @@ import { useCanvasControllerContext } from '../CanvasController';
 
 export default function ToolCanvasItems() {
     const canvasController = useCanvasControllerContext();
-    const canvasItems = canvasController.canvas.canvasItems;
+    const [canvasItems] = useOptimistic(canvasController.canvas.canvasItems);
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem) => {

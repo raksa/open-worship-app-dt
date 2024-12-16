@@ -8,7 +8,7 @@ export default function BoxEditorNormalViewError({ canvasItem }: Readonly<{
 }>) {
     const canvasController = useCanvasControllerContext();
     return (
-        <div className='box-editor pointer'
+        <div className='app-box-editor pointer'
             style={canvasItem.getBoxStyle()}
             onContextMenu={async (event) => {
                 event.stopPropagation();

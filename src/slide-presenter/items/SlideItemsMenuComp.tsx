@@ -10,7 +10,7 @@ const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],
     key: 's',
 };
-export default function SlideItemsMenu() {
+export default function SlideItemsMenuComp() {
     const selectedSlide = useSelectedSlideContext();
     const screenDisplay = ScreenManager.getDefaultScreenDisplay();
     useFileSourceEvents(['history-update'], selectedSlide.filePath);
