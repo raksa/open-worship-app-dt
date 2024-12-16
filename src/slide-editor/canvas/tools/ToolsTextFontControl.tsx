@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import SlideItemEditor from './SlideItemEditorTool';
+import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
 import CanvasItemText from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
@@ -11,11 +11,15 @@ export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
 }>) {
     return (
-        <SlideItemEditor title='Font Size'>
-            <FontSize canvasItemText={canvasItemText} />
+        <SlideItemEditorToolTitleComp title='Font Size'>
+            <div className='d-flex'>
+                <FontSize canvasItemText={canvasItemText} />
+            </div>
             <hr />
-            <FontFamily canvasItemText={canvasItemText} />
-        </SlideItemEditor>
+            <div className='d-flex'>
+                <FontFamily canvasItemText={canvasItemText} />
+            </div>
+        </SlideItemEditorToolTitleComp>
     );
 }
 function FontSize({ canvasItemText }: Readonly<{
@@ -33,7 +37,7 @@ function FontSize({ canvasItemText }: Readonly<{
         canvasController.fireUpdateEvent();
     };
     return (
-        <div>
+        <div className='d-flex'>
             <input className='form-control' type='number'
                 style={{ maxWidth: '100px' }}
                 value={localFontSize}

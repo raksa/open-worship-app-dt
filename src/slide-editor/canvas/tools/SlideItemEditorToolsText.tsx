@@ -1,17 +1,16 @@
-import { use } from 'react';
-
-import SlideItemEditor from './SlideItemEditorTool';
-import ToolAlign from './SlideItemEditorToolAlign';
+import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
+import SlideItemEditorToolAlign from './SlideItemEditorToolAlign';
 import CanvasItemText, {
     ToolingTextType,
 } from '../CanvasItemText';
 import ToolsTextFontControl from './ToolsTextFontControl';
-import { CanvasItemContext } from '../CanvasItem';
-import ColorPicker from '../../../others/color/ColorPicker';
 import { AppColorType } from '../../../others/color/colorHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
+import SlideItemEditorToolsColorComp from './SlideItemEditorToolsColorComp';
 
-export default function ToolsText() {
+export default function SlideItemEditorToolsText({ canvasItem }: Readonly<{
+    canvasItem: CanvasItemText,
+}>) {
     const canvasController = useCanvasControllerContext();
     const handleDataEvent = (newData: any) => {
         const textData: ToolingTextType = {};
@@ -28,34 +27,27 @@ export default function ToolsText() {
             color: newColor,
         });
     };
-    const canvasItem = use(CanvasItemContext);
-    if (canvasItem === null) {
-        return null;
-    }
-    if (!(canvasItem instanceof CanvasItemText)) {
-        return null;
-    }
     const applyTextData = (newData: ToolingTextType) => {
         canvasItem.applyTextData(newData);
         canvasController.fireUpdateEvent();
     };
     return (
         <div className='d-flex'>
-            <SlideItemEditor>
-                <div style={{
-                    maxWidth: '300px',
-                }}>
-                    <ColorPicker color={canvasItem.props.color}
-                        defaultColor='#ffffff'
-                        onNoColor={handleColorChanging}
-                        onColorChange={handleColorChanging} />
-                </div>
-            </SlideItemEditor>
-            <SlideItemEditor title='Text Alignment'>
-                <ToolAlign isText onData={handleDataEvent} />
-            </SlideItemEditor>
-            <ToolsTextFontControl
-                canvasItemText={canvasItem} />
+            <SlideItemEditorToolsColorComp
+                color={canvasItem.props.color}
+                handleColorChanging={handleColorChanging}
+            />
+            <div className='ps-2'>
+                <SlideItemEditorToolTitleComp title='Text Alignment'>
+                    <SlideItemEditorToolAlign isText
+                        onData={handleDataEvent}
+                    />
+                </SlideItemEditorToolTitleComp>
+                <hr />
+                <ToolsTextFontControl
+                    canvasItemText={canvasItem}
+                />
+            </div>
         </div>
     );
 }

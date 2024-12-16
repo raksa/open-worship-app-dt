@@ -1,21 +1,19 @@
 import './SlideItemEditorTools.scss';
 
-import { Fragment, lazy } from 'react';
+import { lazy, useState } from 'react';
 
 import { useStateSettingString } from '../../../helper/settingHelpers';
 import TabRender, { genTabBody } from '../../../others/TabRender';
 import { useCanvasControllerContext } from '../CanvasController';
-import { CanvasItemContext } from '../CanvasItem';
+import { CanvasItemsContext } from '../CanvasItem';
 import {
+    useCanvasControllerEvents,
     useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
 import AppRange from '../../../others/AppRange';
 
-const LazyToolsBox = lazy(() => {
-    return import('./SlideItemEditorToolsBox');
-});
-const LazyToolsText = lazy(() => {
-    return import('./SlideItemEditorToolsText');
+const LazySlideItemEditorPropertiesComp = lazy(() => {
+    return import('./SlideItemEditorPropertiesComp');
 });
 const LazyToolCanvasItems = lazy(() => {
     return import('./ToolCanvasItems');
@@ -32,21 +30,50 @@ export const defaultRangeSize = {
     step: SCALE_STEP,
 };
 
+function ScalingComp() {
+    const canvasController = useCanvasControllerContext();
+    const scale = useSlideItemCanvasScale();
+    return (
+        <div className={
+            'align-self-end flex-fill d-flex justify-content-end'
+        }>
+            <div className='canvas-board-size-container d-flex ps-1'>
+                <span>{scale.toFixed(1)}x</span>
+                <div style={{ maxWidth: '200px' }}>
+                    <AppRange
+                        value={scale}
+                        title='Canvas Scale'
+                        setValue={(scale) => {
+                            canvasController.scale = scale;
+                        }}
+                        defaultSize={defaultRangeSize}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 const tabTypeList = [
-    ['t', 'Text'],
-    ['b', 'Box'],
+    ['p', 'Properties'],
     ['c', 'Canvas Items'],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function SlideItemEditorTools() {
     const canvasController = useCanvasControllerContext();
-    const selectedCanvasItems = canvasController.canvas.selectedCanvasItems;
-    const [tabType, setTabType] = useStateSettingString<TabType>(
-        'editor-tools-tab', 't',
+    const [selectedCanvasItems, setSelectedCanvasItems] = useState(
+        canvasController.canvas.selectedCanvasItems,
     );
-    const scale = useSlideItemCanvasScale();
+    useCanvasControllerEvents(canvasController, ['select'], () => {
+        setSelectedCanvasItems(canvasController.canvas.selectedCanvasItems);
+    });
+    const [tabType, setTabType] = useStateSettingString<TabType>(
+        'editor-tools-tab', 'p',
+    );
     return (
-        <div className='tools d-flex flex-column w-100 h-100'>
+        <div className={
+            'app-tools d-flex flex-column w-100 h-100 overflow-hidden'
+        }>
             <div className='tools-header d-flex'>
                 <TabRender<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
@@ -55,40 +82,18 @@ export default function SlideItemEditorTools() {
                     activeTab={tabType}
                     setActiveTab={setTabType}
                 />
-                <div className={
-                    'align-self-end flex-fill d-flex justify-content-end'
-                }>
-                    <div className='canvas-board-size-container d-flex ps-1'>
-                        <span>{scale.toFixed(1)}x</span>
-                        <div style={{ maxWidth: '200px' }}>
-                            <AppRange
-                                value={scale}
-                                title='Canvas Scale'
-                                setValue={(scale) => {
-                                    canvasController.scale = scale;
-                                }}
-                                defaultSize={defaultRangeSize}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <ScalingComp />
             </div>
-            <div className='tools-body d-flex flex-row flex-fill'>
-                {selectedCanvasItems?.map((canvasItem) => {
-                    return (
-                        <Fragment key={canvasItem.id}>
-                            <CanvasItemContext value={canvasItem}>
-                                {genTabBody<TabType>(
-                                    tabType, ['t', LazyToolsText],
-                                )}
-                                {genTabBody<TabType>(
-                                    tabType, ['b', LazyToolsBox],
-                                )}
-                            </CanvasItemContext>
-                            <hr />
-                        </Fragment>
-                    );
-                })}
+            <div className='tools-body w-100 h-100' style={{
+                overflow: 'auto',
+            }}>
+                <CanvasItemsContext value={selectedCanvasItems}>
+                    {genTabBody<TabType>(
+                        tabType, [
+                        'p', LazySlideItemEditorPropertiesComp,
+                    ],
+                    )}
+                </CanvasItemsContext>
                 {genTabBody<TabType>(tabType, ['c', LazyToolCanvasItems])}
             </div>
         </div>

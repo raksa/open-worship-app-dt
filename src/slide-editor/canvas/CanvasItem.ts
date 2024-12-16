@@ -1,4 +1,4 @@
-import { CSSProperties, createContext } from 'react';
+import { CSSProperties, createContext, use } from 'react';
 
 import {
     AnyObjectType, cloneJson,
@@ -147,4 +147,7 @@ export class CanvasItemError extends CanvasItem<any> {
     }
 }
 
-export const CanvasItemContext = createContext<CanvasItem<any> | null>(null);
+export const CanvasItemsContext = createContext<CanvasItem<any>[]>([]);
+export function useCanvasItemsContext() {
+    return use(CanvasItemsContext);
+}
