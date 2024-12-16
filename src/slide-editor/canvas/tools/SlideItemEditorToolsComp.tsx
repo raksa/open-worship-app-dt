@@ -1,4 +1,4 @@
-import './SlideItemEditorTools.scss';
+import './SlideItemEditorToolsComp.scss';
 
 import { lazy, useState } from 'react';
 
@@ -16,7 +16,7 @@ const LazySlideItemEditorPropertiesComp = lazy(() => {
     return import('./SlideItemEditorPropertiesComp');
 });
 const LazyToolCanvasItems = lazy(() => {
-    return import('./ToolCanvasItems');
+    return import('./ToolCanvasItemsComp');
 });
 
 const MAX_SCALE = 3;
@@ -59,7 +59,7 @@ const tabTypeList = [
     ['c', 'Canvas Items'],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
-export default function SlideItemEditorTools() {
+export default function SlideItemEditorToolsComp() {
     const canvasController = useCanvasControllerContext();
     const [selectedCanvasItems, setSelectedCanvasItems] = useState(
         canvasController.canvas.selectedCanvasItems,

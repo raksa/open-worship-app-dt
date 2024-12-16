@@ -1,5 +1,5 @@
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
-import SlideItemEditorToolAlign from './SlideItemEditorToolAlign';
+import SlideItemEditorToolAlignComp from './SlideItemEditorToolAlignComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import { ToolingBoxType } from '../canvasHelpers';
 import CanvasItem from '../CanvasItem';
@@ -78,7 +78,7 @@ function LayerComp({ canvasItem }: Readonly<{
     );
 }
 
-export default function SlideItemEditorToolsBox({ canvasItem }: Readonly<{
+export default function SlideItemEditorToolsBoxComp({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     const canvasController = useCanvasControllerContext();
@@ -112,7 +112,7 @@ export default function SlideItemEditorToolsBox({ canvasItem }: Readonly<{
             />
             <div className='ps-2'>
                 <SlideItemEditorToolTitleComp title='Box Alignment'>
-                    <SlideItemEditorToolAlign onData={handleDataEvent} />
+                    <SlideItemEditorToolAlignComp onData={handleDataEvent} />
                 </SlideItemEditorToolTitleComp>
                 <LayerComp canvasItem={canvasItem} />
                 <SizingComp canvasItem={canvasItem} />

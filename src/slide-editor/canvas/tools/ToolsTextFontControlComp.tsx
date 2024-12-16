@@ -7,7 +7,7 @@ import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 
-export default function ToolsTextFontControl({ canvasItemText }: Readonly<{
+export default function ToolsTextFontControlComp({ canvasItemText }: Readonly<{
     canvasItemText: CanvasItemText,
 }>) {
     return (

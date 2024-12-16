@@ -1,7 +1,7 @@
 import './SlideItemEditorPropertiesComp.scss';
 
-import SlideItemEditorToolsText from './SlideItemEditorToolsText';
-import SlideItemEditorToolsBox from './SlideItemEditorToolsBox';
+import SlideItemEditorToolsTextComp from './SlideItemEditorToolsTextComp';
+import SlideItemEditorToolsBoxComp from './SlideItemEditorToolsBoxComp';
 import { useCanvasItemsContext } from '../CanvasItem';
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
 
@@ -23,7 +23,7 @@ export default function SlideItemEditorPropertiesComp() {
                         <div className='m-1 border-white-round'>
                             <SlideItemEditorToolTitleComp
                                 title='Box Properties'>
-                                <SlideItemEditorToolsBox
+                                <SlideItemEditorToolsBoxComp
                                     canvasItem={canvasItem}
                                 />
                             </SlideItemEditorToolTitleComp>
@@ -32,7 +32,7 @@ export default function SlideItemEditorPropertiesComp() {
                             <div className='m-1 border-white-round'>
                                 <SlideItemEditorToolTitleComp
                                     title='Text Properties'>
-                                    <SlideItemEditorToolsText
+                                    <SlideItemEditorToolsTextComp
                                         canvasItem={canvasItem as any}
                                     />
                                 </SlideItemEditorToolTitleComp>

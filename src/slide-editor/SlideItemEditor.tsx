@@ -6,7 +6,7 @@ import CanvasController, {
     CanvasControllerContext,
 } from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRange';
-import { defaultRangeSize } from './canvas/tools/SlideItemEditorTools';
+import { defaultRangeSize } from './canvas/tools/SlideItemEditorToolsComp';
 import { useCanvasControllerEvents } from './canvas/canvasEventHelpers';
 import {
     useSelectedEditingSlideItemContext,
@@ -19,7 +19,7 @@ const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvasComp');
 });
 const LazySlideItemEditorTools = lazy(() => {
-    return import('./canvas/tools/SlideItemEditorTools');
+    return import('./canvas/tools/SlideItemEditorToolsComp');
 });
 
 export default function SlideItemEditor() {

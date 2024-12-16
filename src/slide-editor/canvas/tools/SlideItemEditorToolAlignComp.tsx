@@ -1,6 +1,8 @@
 import { VAlignmentType, HAlignmentType } from '../canvasHelpers';
 
-export default function SlideItemEditorToolAlign({ onData, isText }: Readonly<{
+export default function SlideItemEditorToolAlignComp({
+    onData, isText,
+}: Readonly<{
     onData: (data: {
         verticalAlignment?: VAlignmentType,
         horizontalAlignment?: HAlignmentType,

@@ -1,14 +1,14 @@
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
-import SlideItemEditorToolAlign from './SlideItemEditorToolAlign';
+import SlideItemEditorToolAlignComp from './SlideItemEditorToolAlignComp';
 import CanvasItemText, {
     ToolingTextType,
 } from '../CanvasItemText';
-import ToolsTextFontControl from './ToolsTextFontControl';
+import ToolsTextFontControlComp from './ToolsTextFontControlComp';
 import { AppColorType } from '../../../others/color/colorHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 import SlideItemEditorToolsColorComp from './SlideItemEditorToolsColorComp';
 
-export default function SlideItemEditorToolsText({ canvasItem }: Readonly<{
+export default function SlideItemEditorToolsTextComp({ canvasItem }: Readonly<{
     canvasItem: CanvasItemText,
 }>) {
     const canvasController = useCanvasControllerContext();
@@ -39,12 +39,12 @@ export default function SlideItemEditorToolsText({ canvasItem }: Readonly<{
             />
             <div className='ps-2'>
                 <SlideItemEditorToolTitleComp title='Text Alignment'>
-                    <SlideItemEditorToolAlign isText
+                    <SlideItemEditorToolAlignComp isText
                         onData={handleDataEvent}
                     />
                 </SlideItemEditorToolTitleComp>
                 <hr />
-                <ToolsTextFontControl
+                <ToolsTextFontControlComp
                     canvasItemText={canvasItem}
                 />
             </div>

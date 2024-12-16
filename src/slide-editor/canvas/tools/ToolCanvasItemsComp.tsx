@@ -4,7 +4,7 @@ import CanvasItemRenderer
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 
-export default function ToolCanvasItems() {
+export default function ToolCanvasItemsComp() {
     const canvasController = useCanvasControllerContext();
     const [canvasItems] = useOptimistic(canvasController.canvas.canvasItems);
     return (
