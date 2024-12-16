@@ -2,14 +2,13 @@ import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
 import SlideItemEditorToolAlignComp from './SlideItemEditorToolAlignComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import { ToolingBoxType } from '../canvasHelpers';
-import CanvasItem from '../CanvasItem';
+import { useCanvasItemContext } from '../CanvasItem';
 import { AppColorType } from '../../../others/color/colorHelpers';
 import SlideItemEditorToolsColorComp from './SlideItemEditorToolsColorComp';
 
-function SizingComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
+function SizingComp() {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     return (
         <SlideItemEditorToolTitleComp title='Size'>
             <button className='btn btn-secondary'
@@ -32,10 +31,9 @@ function SizingComp({ canvasItem }: Readonly<{
     );
 }
 
-function LayerComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
+function LayerComp() {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     const parentDimension = {
         parentWidth: canvasController.canvas.width,
         parentHeight: canvasController.canvas.height,
@@ -78,10 +76,9 @@ function LayerComp({ canvasItem }: Readonly<{
     );
 }
 
-export default function SlideItemEditorToolsBoxComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
+export default function SlideItemEditorToolsBoxComp() {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     const handleDataEvent = (newData: any) => {
         applyBoxData(newData);
     };
@@ -114,8 +111,8 @@ export default function SlideItemEditorToolsBoxComp({ canvasItem }: Readonly<{
                 <SlideItemEditorToolTitleComp title='Box Alignment'>
                     <SlideItemEditorToolAlignComp onData={handleDataEvent} />
                 </SlideItemEditorToolTitleComp>
-                <LayerComp canvasItem={canvasItem} />
-                <SizingComp canvasItem={canvasItem} />
+                <LayerComp />
+                <SizingComp />
             </div>
         </div>
     );

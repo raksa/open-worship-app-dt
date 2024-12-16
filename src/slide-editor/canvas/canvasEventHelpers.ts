@@ -5,7 +5,7 @@ import CanvasController, {
     CanvasItemEventDataType, useCanvasControllerContext,
 } from './CanvasController';
 import { CanvasControllerEventType } from './canvasHelpers';
-import CanvasItem from './CanvasItem';
+import { useCanvasItemContext } from './CanvasItem';
 
 export function useCanvasControllerEvents(
     canvasController: CanvasController,
@@ -40,8 +40,9 @@ export function useSlideItemCanvasScale() {
 }
 
 export function useIsControlling(
-    canvasController: CanvasController, canvasItem: CanvasItem<any>,
+    canvasController: CanvasController,
 ) {
+    const canvasItem = useCanvasItemContext();
     const [isControlling, setIsControlling] = useState(
         canvasItem.isControlling,
     );

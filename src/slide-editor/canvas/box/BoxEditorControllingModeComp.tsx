@@ -1,25 +1,50 @@
-import './BoxEditorsControllingModeComp.scss';
+import './BoxEditorControllingModeComp.scss';
 
-import CanvasItem from '../CanvasItem';
+import { useCanvasItemContext } from '../CanvasItem';
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';
 import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
-import { BENTextRender } from './BoxEditorNormalViewTextModeComp';
+import { BoxEditorNormalTextRender } from './BoxEditorNormalViewTextModeComp';
 import { BENBibleRender } from './BoxEditorNormalViewBibleModeComp';
 import { useCanvasControllerContext } from '../CanvasController';
-import { BENVideoRender } from './BoxEditorNormalViewVideoModeComp';
+import { BoxEditorNormalVideoRender } from './BoxEditorNormalViewVideoModeComp';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
 import { useBoxEditorControllerContext } from '../../BoxEditorController';
 
-export default function BoxEditorsControllingModeComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
+function BoxEditorCanvasItemRender() {
+    const canvasItem = useCanvasItemContext();
+    switch (canvasItem.type) {
+        case 'image':
+            return (
+                <BoxEditorNormalImageRender props={canvasItem.props} />
+            );
+        case 'video':
+            return (
+                <BoxEditorNormalVideoRender props={canvasItem.props} />
+            );
+        case 'text':
+            return (
+                <BoxEditorNormalTextRender props={canvasItem.props} />
+            );
+        case 'bible':
+            return (
+                <BENBibleRender props={canvasItem.props} />
+            );
+        default:
+            return (
+                <BENViewErrorRender />
+            );
+    }
+}
+
+export default function BoxEditorControllingModeComp() {
     // TODO: move box by left right up down key, shift&ctl
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     const boxEditorController = useBoxEditorControllerContext();
     useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
@@ -72,7 +97,7 @@ export default function BoxEditorsControllingModeComp({ canvasItem }: Readonly<{
                     height: `${canvasItem.props.height}px`,
                     backgroundColor: canvasItem.props.backgroundColor,
                 }}>
-                <BECRender canvasItem={canvasItem} />
+                <BoxEditorCanvasItemRender />
                 <div className='tools'>
                     <div className={
                         `object ${boxEditorController.rotatorCN}`
@@ -92,29 +117,3 @@ export default function BoxEditorsControllingModeComp({ canvasItem }: Readonly<{
     );
 }
 
-function BECRender({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
-    switch (canvasItem.type) {
-        case 'image':
-            return (
-                <BoxEditorNormalImageRender props={canvasItem.props} />
-            );
-        case 'video':
-            return (
-                <BENVideoRender props={canvasItem.props} />
-            );
-        case 'text':
-            return (
-                <BENTextRender props={canvasItem.props} />
-            );
-        case 'bible':
-            return (
-                <BENBibleRender props={canvasItem.props} />
-            );
-        default:
-            return (
-                <BENViewErrorRender />
-            );
-    }
-}

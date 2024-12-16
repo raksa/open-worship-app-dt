@@ -1,12 +1,11 @@
 import { showAppContextMenu } from '../../../others/AppContextMenu';
 import appProvider from '../../../server/appProvider';
 import { useCanvasControllerContext } from '../CanvasController';
-import CanvasItem from '../CanvasItem';
+import { useCanvasItemContext } from '../CanvasItem';
 
-export default function BoxEditorNormalViewErrorComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
+export default function BoxEditorNormalViewErrorComp() {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     return (
         <div className='app-box-editor pointer'
             style={canvasItem.getBoxStyle()}

@@ -1,17 +1,15 @@
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
 import SlideItemEditorToolAlignComp from './SlideItemEditorToolAlignComp';
-import CanvasItemText, {
-    ToolingTextType,
-} from '../CanvasItemText';
+import CanvasItemText, { ToolingTextType } from '../CanvasItemText';
 import ToolsTextFontControlComp from './ToolsTextFontControlComp';
 import { AppColorType } from '../../../others/color/colorHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 import SlideItemEditorToolsColorComp from './SlideItemEditorToolsColorComp';
+import { useCanvasItemContext } from '../CanvasItem';
 
-export default function SlideItemEditorToolsTextComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItemText,
-}>) {
+export default function SlideItemEditorToolsTextComp() {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext() as CanvasItemText;
     const handleDataEvent = (newData: any) => {
         const textData: ToolingTextType = {};
         if (newData.horizontalAlignment !== undefined) {

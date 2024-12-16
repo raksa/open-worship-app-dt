@@ -2,7 +2,7 @@ import {
     BoxEditorNormalImageRender,
 } from '../../slide-editor/canvas/box/BoxEditorNormalViewImageModeComp';
 import {
-    BENTextRender,
+    BoxEditorNormalTextRender,
 } from '../../slide-editor/canvas/box/BoxEditorNormalViewTextModeComp';
 import {
     BENBibleRender,
@@ -11,7 +11,7 @@ import {
     CanvasItemPropsType,
 } from '../../slide-editor/canvas/CanvasItem';
 import {
-    BENVideoRender,
+    BoxEditorNormalVideoRender,
 } from '../../slide-editor/canvas/box/BoxEditorNormalViewVideoModeComp';
 
 export default function CanvasItemRenderer({ props }: Readonly<{
@@ -24,11 +24,11 @@ export default function CanvasItemRenderer({ props }: Readonly<{
             );
         case 'video':
             return (
-                <BENVideoRender props={props as any} />
+                <BoxEditorNormalVideoRender props={props as any} />
             );
         case 'text':
             return (
-                <BENTextRender props={props as any} />
+                <BoxEditorNormalTextRender props={props as any} />
             );
         case 'bible':
             return (

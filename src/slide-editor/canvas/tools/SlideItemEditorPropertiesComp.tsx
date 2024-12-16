@@ -2,7 +2,7 @@ import './SlideItemEditorPropertiesComp.scss';
 
 import SlideItemEditorToolsTextComp from './SlideItemEditorToolsTextComp';
 import SlideItemEditorToolsBoxComp from './SlideItemEditorToolsBoxComp';
-import { useCanvasItemsContext } from '../CanvasItem';
+import { CanvasItemContext, useCanvasItemsContext } from '../CanvasItem';
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
 
 export default function SlideItemEditorPropertiesComp() {
@@ -20,25 +20,23 @@ export default function SlideItemEditorPropertiesComp() {
                 return (
                     <div key={canvasItem.id}
                         className='d-flex w-100' >
-                        <div className='m-1 border-white-round'>
-                            <SlideItemEditorToolTitleComp
-                                title='Box Properties'>
-                                <SlideItemEditorToolsBoxComp
-                                    canvasItem={canvasItem}
-                                />
-                            </SlideItemEditorToolTitleComp>
-                        </div>
-                        {canvasItem.type === 'text' ? (
+                        <CanvasItemContext value={canvasItem}>
                             <div className='m-1 border-white-round'>
                                 <SlideItemEditorToolTitleComp
-                                    title='Text Properties'>
-                                    <SlideItemEditorToolsTextComp
-                                        canvasItem={canvasItem as any}
-                                    />
+                                    title='Box Properties'>
+                                    <SlideItemEditorToolsBoxComp />
                                 </SlideItemEditorToolTitleComp>
                             </div>
-                        ) : null}
-                        <div />
+                            {canvasItem.type === 'text' ? (
+                                <div className='m-1 border-white-round'>
+                                    <SlideItemEditorToolTitleComp
+                                        title='Text Properties'>
+                                        <SlideItemEditorToolsTextComp />
+                                    </SlideItemEditorToolTitleComp>
+                                </div>
+                            ) : null}
+                            <div />
+                        </CanvasItemContext>
                         <hr />
                     </div>
                 );

@@ -1,8 +1,7 @@
-import './BoxEditorsComp.scss';
+import './BoxEditorComp.scss';
 
-import CanvasItem from '../CanvasItem';
-import BoxEditorsNormalModeComp from './BoxEditorsNormalModeComp';
-import BoxEditorsControllingModeComp from './BoxEditorsControllingModeComp';
+import BoxEditorNormalModeComp from './BoxEditorNormalModeComp';
+import BoxEditorControllingModeComp from './BoxEditorControllingModeComp';
 import {
     useIsControlling, useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
@@ -11,13 +10,11 @@ import BoxEditorController, {
     BoxEditorControllerContext,
 } from '../../BoxEditorController';
 
-export function BoxEditorsComp({ canvasItem }: Readonly<{
-    canvasItem: CanvasItem<any>,
-}>) {
+export function BoxEditorComp() {
     const scale = useSlideItemCanvasScale();
     const boxEditorController = new BoxEditorController(scale);
     const canvasController = useCanvasControllerContext();
-    const isControlling = useIsControlling(canvasController, canvasItem);
+    const isControlling = useIsControlling(canvasController);
     // TODO: switch box by tab, shift
     // TODO: key => ctl+d, delete, copy&paste, paste across slideItem
     // TODO: ruler, snap
@@ -25,15 +22,11 @@ export function BoxEditorsComp({ canvasItem }: Readonly<{
     if (isControlling) {
         return (
             <BoxEditorControllerContext value={boxEditorController}>
-                <BoxEditorsControllingModeComp
-                    canvasItem={canvasItem}
-                />
+                <BoxEditorControllingModeComp />
             </BoxEditorControllerContext>
         );
     }
     return (
-        <BoxEditorsNormalModeComp
-            canvasItem={canvasItem}
-        />
+        <BoxEditorNormalModeComp />
     );
 }

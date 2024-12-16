@@ -9,13 +9,12 @@ import CanvasItemText, {
 } from '../CanvasItemText';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
+import { useCanvasItemContext } from '../CanvasItem';
 
-export default function BoxEditorNormalViewTextModeComp({
-    canvasItemText, style,
-}: Readonly<{
-    canvasItemText: CanvasItemText,
+export default function BoxEditorNormalViewTextModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
+    const canvasItem = useCanvasItemContext();
     const canvasController = useCanvasControllerContext();
     return (
         <div className='app-box-editor pointer'
@@ -23,20 +22,20 @@ export default function BoxEditorNormalViewTextModeComp({
             onContextMenu={async (event) => {
                 event.stopPropagation();
                 showCanvasItemContextMenu(
-                    event, canvasController, canvasItemText,
+                    event, canvasController, canvasItem,
                 );
             }}
             onClick={async (event) => {
                 event.stopPropagation();
                 canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(canvasItemText, true);
+                canvasController.setItemIsSelecting(canvasItem, true);
             }}>
-            <BENTextRender props={canvasItemText.props} />
+            <BoxEditorNormalTextRender props={canvasItem.props} />
         </div>
     );
 }
 
-export function BENTextRender({ props }: Readonly<{
+export function BoxEditorNormalTextRender({ props }: Readonly<{
     props: CanvasItemTextPropsType,
 }>) {
     try {
@@ -53,6 +52,7 @@ export function BENTextRender({ props }: Readonly<{
             style={CanvasItemText.genStyle(props)}
             dangerouslySetInnerHTML={{
                 __html: htmlText,
-            }} />
+            }}
+        />
     );
 }

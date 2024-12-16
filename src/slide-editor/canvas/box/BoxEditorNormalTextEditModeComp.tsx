@@ -1,20 +1,18 @@
 import { CSSProperties } from 'react';
 
 import { useCanvasControllerContext } from '../CanvasController';
-import CanvasItemText from '../CanvasItemText';
 import BoxEditorTextAreaComp from './BoxEditorTextAreaComp';
+import { useCanvasItemContext } from '../CanvasItem';
 
 
-export default function BoxEditorNormalTextEditModeComp({
-    canvasItemText, style,
-}: Readonly<{
-    canvasItemText: CanvasItemText,
+export default function BoxEditorNormalTextEditModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     const handleTextSetting = (text: string) => {
-        canvasItemText.applyProps({ text });
-        canvasController.fireUpdateEvent(canvasItemText);
+        canvasItem.applyProps({ text });
+        canvasController.fireUpdateEvent(canvasItem);
     };
     return (
         <div className='app-box-editor pointer editable'
@@ -24,19 +22,19 @@ export default function BoxEditorNormalTextEditModeComp({
             }}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                canvasController.setItemIsEditing(canvasItemText, false);
+                canvasController.setItemIsEditing(canvasItem, false);
             }}
             onKeyUp={(event) => {
                 if (
                     event.key === 'Escape' ||
                     (event.key === 'Enter' && event.ctrlKey)
                 ) {
-                    canvasController.setItemIsEditing(canvasItemText, false);
+                    canvasController.setItemIsEditing(canvasItem, false);
                 }
             }}>
             <BoxEditorTextAreaComp
-                color={canvasItemText.props.color}
-                text={canvasItemText.props.text}
+                color={canvasItem.props.color}
+                text={canvasItem.props.text}
                 setText={handleTextSetting}
             />
         </div>

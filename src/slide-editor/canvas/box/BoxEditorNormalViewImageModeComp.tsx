@@ -8,29 +8,28 @@ import { useCanvasControllerContext } from '../CanvasController';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
+import { useCanvasItemContext } from '../CanvasItem';
 
-export default function BoxEditorNormalViewImageModeComp({
-    canvasItemImage, style,
-}: Readonly<{
-    canvasItemImage: CanvasItemImage,
+export default function BoxEditorNormalViewImageModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     return (
         <div className='app-box-editor pointer'
             style={style}
             onContextMenu={async (event) => {
                 event.stopPropagation();
                 showCanvasItemContextMenu(
-                    event, canvasController, canvasItemImage,
+                    event, canvasController, canvasItem,
                 );
             }}
             onClick={async (event) => {
                 event.stopPropagation();
                 canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(canvasItemImage, true);
+                canvasController.setItemIsSelecting(canvasItem, true);
             }}>
-            <BoxEditorNormalImageRender props={canvasItemImage.props} />
+            <BoxEditorNormalImageRender props={canvasItem.props} />
         </div>
     );
 }

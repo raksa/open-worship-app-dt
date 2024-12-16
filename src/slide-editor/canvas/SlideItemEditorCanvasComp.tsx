@@ -1,4 +1,4 @@
-import { BoxEditorsComp } from './box/BoxEditorsComp';
+import { BoxEditorComp } from './box/BoxEditorComp';
 import {
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
@@ -12,6 +12,7 @@ import {
 } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { useOptimistic } from 'react';
+import { CanvasItemContext } from './CanvasItem';
 
 export default function SlideItemEditorCanvasComp() {
     const canvasController = useCanvasControllerContext();
@@ -98,9 +99,9 @@ function BodyRendererComp() {
             }} >
             {canvasItems.map((canvasItem) => {
                 return (
-                    <BoxEditorsComp key={canvasItem.id}
-                        canvasItem={canvasItem}
-                    />
+                    <CanvasItemContext key={canvasItem.id} value={canvasItem}>
+                        <BoxEditorComp />
+                    </CanvasItemContext>
                 );
             })}
         </div>

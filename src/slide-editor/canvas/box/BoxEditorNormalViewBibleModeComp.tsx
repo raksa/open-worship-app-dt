@@ -7,13 +7,12 @@ import CanvasItemBibleItem, {
 } from '../CanvasItemBibleItem';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
+import { useCanvasItemContext } from '../CanvasItem';
 
-export default function BoxEditorNormalViewBibleModeComp({
-    canvasItemBible, style,
-}: Readonly<{
-    canvasItemBible: CanvasItemBibleItem,
+export default function BoxEditorNormalViewBibleModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
+    const canvasItem = useCanvasItemContext();
     const canvasController = useCanvasControllerContext();
     return (
         <div className='app-box-editor pointer'
@@ -21,17 +20,17 @@ export default function BoxEditorNormalViewBibleModeComp({
             onContextMenu={async (event) => {
                 event.stopPropagation();
                 showCanvasItemContextMenu(
-                    event, canvasController, canvasItemBible,
+                    event, canvasController, canvasItem,
                 );
             }}
             onClick={async (event) => {
                 event.stopPropagation();
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(
-                    canvasItemBible, true,
+                    canvasItem, true,
                 );
             }}>
-            <BENBibleRender props={canvasItemBible.props} />
+            <BENBibleRender props={canvasItem.props} />
         </div>
     );
 }
