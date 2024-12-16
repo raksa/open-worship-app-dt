@@ -1,18 +1,18 @@
 import {
     BoxEditorNormalImageRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewImageMode';
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewImageModeComp';
 import {
     BENTextRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewTextMode';
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewTextModeComp';
 import {
     BENBibleRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewBibleMode';
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewBibleModeComp';
 import {
     CanvasItemPropsType,
 } from '../../slide-editor/canvas/CanvasItem';
 import {
     BENVideoRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewVideoMode';
+} from '../../slide-editor/canvas/box/BoxEditorNormalViewVideoModeComp';
 
 export default function CanvasItemRenderer({ props }: Readonly<{
     props: CanvasItemPropsType,

@@ -3,7 +3,7 @@ import appProvider from '../../../server/appProvider';
 import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItem from '../CanvasItem';
 
-export default function BoxEditorNormalViewError({ canvasItem }: Readonly<{
+export default function BoxEditorNormalViewErrorComp({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     const canvasController = useCanvasControllerContext();

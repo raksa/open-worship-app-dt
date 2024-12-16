@@ -1,8 +1,8 @@
 import './BoxEditorsComp.scss';
 
 import CanvasItem from '../CanvasItem';
-import BoxEditorsNormalMode from './BoxEditorsNormalMode';
-import BoxEditorsControllingMode from './BoxEditorsControllingMode';
+import BoxEditorsNormalModeComp from './BoxEditorsNormalModeComp';
+import BoxEditorsControllingModeComp from './BoxEditorsControllingModeComp';
 import {
     useIsControlling, useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
@@ -25,14 +25,14 @@ export function BoxEditorsComp({ canvasItem }: Readonly<{
     if (isControlling) {
         return (
             <BoxEditorControllerContext value={boxEditorController}>
-                <BoxEditorsControllingMode
+                <BoxEditorsControllingModeComp
                     canvasItem={canvasItem}
                 />
             </BoxEditorControllerContext>
         );
     }
     return (
-        <BoxEditorsNormalMode
+        <BoxEditorsNormalModeComp
             canvasItem={canvasItem}
         />
     );

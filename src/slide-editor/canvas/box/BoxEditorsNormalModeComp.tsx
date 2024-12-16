@@ -3,16 +3,19 @@ import { CSSProperties } from 'react';
 import CanvasItem from '../CanvasItem';
 import CanvasItemImage from '../CanvasItemImage';
 import CanvasItemText from '../CanvasItemText';
-import BENViewImageMode from './BoxEditorNormalViewImageMode';
-import BoxEditorNormalTextEditMode from './BoxEditorNormalTextEditMode';
-import BoxEditorNormalViewTextMode from './BoxEditorNormalViewTextMode';
-import BoxEditorNormalViewBibleMode from './BoxEditorNormalViewBibleMode';
+import BoxEditorNormalViewImageModeComp from
+    './BoxEditorNormalViewImageModeComp';
+import BoxEditorNormalTextEditModeComp from './BoxEditorNormalTextEditModeComp';
+import BoxEditorNormalViewTextModeComp from './BoxEditorNormalViewTextModeComp';
+import BoxEditorNormalViewBibleModeComp from
+    './BoxEditorNormalViewBibleModeComp';
 import CanvasItemBibleItem from '../CanvasItemBibleItem';
-import BoxEditorNormalViewError from './BoxEditorNormalViewError';
-import BoxEditorNormalViewVideoMode from './BoxEditorNormalViewVideoMode';
+import BoxEditorNormalViewErrorComp from './BoxEditorNormalViewErrorComp';
+import BoxEditorNormalViewVideoModeComp from
+    './BoxEditorNormalViewVideoModeComp';
 import CanvasItemVideo from '../CanvasItemVideo';
 
-export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
+export default function BoxEditorsNormalModeComp({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     const style: CSSProperties = {
@@ -22,7 +25,7 @@ export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
     switch (canvasItem.type) {
         case 'image':
             return (
-                <BENViewImageMode
+                <BoxEditorNormalViewImageModeComp
                     canvasItemImage={
                         canvasItem as CanvasItemImage
                     }
@@ -31,7 +34,7 @@ export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
             );
         case 'video':
             return (
-                <BoxEditorNormalViewVideoMode
+                <BoxEditorNormalViewVideoModeComp
                     canvasItemVideo={
                         canvasItem as CanvasItemVideo
                     }
@@ -41,21 +44,21 @@ export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
         case 'text':
             if (canvasItem.isEditing) {
                 return (
-                    <BoxEditorNormalTextEditMode
+                    <BoxEditorNormalTextEditModeComp
                         canvasItemText={canvasItem as CanvasItemText}
                         style={style}
                     />
                 );
             }
             return (
-                <BoxEditorNormalViewTextMode
+                <BoxEditorNormalViewTextModeComp
                     canvasItemText={canvasItem as CanvasItemText}
                     style={style}
                 />
             );
         case 'bible':
             return (
-                <BoxEditorNormalViewBibleMode
+                <BoxEditorNormalViewBibleModeComp
                     canvasItemBible={
                         canvasItem as CanvasItemBibleItem
                     }
@@ -64,7 +67,7 @@ export default function BoxEditorsNormalMode({ canvasItem }: Readonly<{
             );
         default:
             return (
-                <BoxEditorNormalViewError canvasItem={canvasItem} />
+                <BoxEditorNormalViewErrorComp canvasItem={canvasItem} />
             );
     }
 }

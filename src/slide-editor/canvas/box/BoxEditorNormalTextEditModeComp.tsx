@@ -2,10 +2,10 @@ import { CSSProperties } from 'react';
 
 import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemText from '../CanvasItemText';
-import BoxEditorTextArea from './BoxEditorTextArea';
+import BoxEditorTextAreaComp from './BoxEditorTextAreaComp';
 
 
-export default function BoxEditorNormalTextEditMode({
+export default function BoxEditorNormalTextEditModeComp({
     canvasItemText, style,
 }: Readonly<{
     canvasItemText: CanvasItemText,
@@ -34,7 +34,7 @@ export default function BoxEditorNormalTextEditMode({
                     canvasController.setItemIsEditing(canvasItemText, false);
                 }
             }}>
-            <BoxEditorTextArea
+            <BoxEditorTextAreaComp
                 color={canvasItemText.props.color}
                 text={canvasItemText.props.text}
                 setText={handleTextSetting}

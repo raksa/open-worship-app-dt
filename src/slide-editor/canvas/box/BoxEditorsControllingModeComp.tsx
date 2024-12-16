@@ -1,21 +1,21 @@
-import './BoxEditorsControllingMode.scss';
+import './BoxEditorsControllingModeComp.scss';
 
 import CanvasItem from '../CanvasItem';
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';
-import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageMode';
-import { BENTextRender } from './BoxEditorNormalViewTextMode';
-import { BENBibleRender } from './BoxEditorNormalViewBibleMode';
+import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
+import { BENTextRender } from './BoxEditorNormalViewTextModeComp';
+import { BENBibleRender } from './BoxEditorNormalViewBibleModeComp';
 import { useCanvasControllerContext } from '../CanvasController';
-import { BENVideoRender } from './BoxEditorNormalViewVideoMode';
-import { BENViewErrorRender } from './BoxEditorNormalViewError';
+import { BENVideoRender } from './BoxEditorNormalViewVideoModeComp';
+import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
 import { useBoxEditorControllerContext } from '../../BoxEditorController';
 
-export default function BoxEditorsControllingMode({ canvasItem }: Readonly<{
+export default function BoxEditorsControllingModeComp({ canvasItem }: Readonly<{
     canvasItem: CanvasItem<any>,
 }>) {
     // TODO: move box by left right up down key, shift&ctl

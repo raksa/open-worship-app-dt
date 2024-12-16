@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 import { AppColorType } from '../../../others/color/colorHelpers';
 
-export default function BoxEditorTextArea({ color, text, setText }: Readonly<{
+export default function BoxEditorTextAreaComp({
+    color, text, setText,
+}: Readonly<{
     color?: AppColorType, text: string,
     setText: (t: string) => void,
 }>) {

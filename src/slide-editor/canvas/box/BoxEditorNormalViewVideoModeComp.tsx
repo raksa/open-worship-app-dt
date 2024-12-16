@@ -8,10 +8,10 @@ import CanvasItemVideo, {
 } from '../CanvasItemVideo';
 import img404 from '../404.png';
 import { useCanvasControllerContext } from '../CanvasController';
-import { BENViewErrorRender } from './BoxEditorNormalViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
 
-export default function BoxEditorNormalViewVideoMode({
+export default function BoxEditorNormalViewVideoModeComp({
     canvasItemVideo, style,
 }: Readonly<{
     canvasItemVideo: CanvasItemVideo,

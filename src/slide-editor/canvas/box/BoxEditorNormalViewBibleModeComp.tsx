@@ -5,10 +5,10 @@ import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemBibleItem, {
     CanvasItemBiblePropsType,
 } from '../CanvasItemBibleItem';
-import { BENViewErrorRender } from './BoxEditorNormalViewError';
+import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
 
-export default function BoxEditorNormalViewBibleMode({
+export default function BoxEditorNormalViewBibleModeComp({
     canvasItemBible, style,
 }: Readonly<{
     canvasItemBible: CanvasItemBibleItem,
