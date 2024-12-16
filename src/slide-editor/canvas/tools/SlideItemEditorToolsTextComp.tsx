@@ -42,9 +42,7 @@ export default function SlideItemEditorToolsTextComp() {
                     />
                 </SlideItemEditorToolTitleComp>
                 <hr />
-                <ToolsTextFontControlComp
-                    canvasItemText={canvasItem}
-                />
+                <ToolsTextFontControlComp />
             </div>
         </div>
     );
