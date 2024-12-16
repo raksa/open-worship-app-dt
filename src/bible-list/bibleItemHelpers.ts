@@ -79,7 +79,7 @@ export async function openBibleItemContextMenu(
         {
             menuTitle: '(*T) ' + 'Delete',
             onClick: () => {
-                bible.removeItemAtIndex(index);
+                bible.deleteItemAtIndex(index);
                 bible.save();
             },
         },

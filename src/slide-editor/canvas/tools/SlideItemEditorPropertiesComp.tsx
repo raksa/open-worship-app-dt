@@ -2,11 +2,14 @@ import './SlideItemEditorPropertiesComp.scss';
 
 import SlideItemEditorToolsTextComp from './SlideItemEditorToolsTextComp';
 import SlideItemEditorToolsBoxComp from './SlideItemEditorToolsBoxComp';
-import { CanvasItemContext, useCanvasItemsContext } from '../CanvasItem';
+import CanvasItem, { CanvasItemContext } from '../CanvasItem';
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
 
-export default function SlideItemEditorPropertiesComp() {
-    const canvasItems = useCanvasItemsContext();
+export default function SlideItemEditorPropertiesComp({
+    canvasItems,
+}: Readonly<{
+    canvasItems: CanvasItem<any>[],
+}>) {
     return (
         <div className='app-tool-properties w-100 h-100'>
             {canvasItems.length === 0 ? (

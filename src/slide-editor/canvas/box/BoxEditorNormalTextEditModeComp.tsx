@@ -12,7 +12,7 @@ export default function BoxEditorNormalTextEditModeComp({ style }: Readonly<{
     const canvasItem = useCanvasItemContext();
     const handleTextSetting = (text: string) => {
         canvasItem.applyProps({ text });
-        canvasController.fireUpdateEvent(canvasItem);
+        canvasController.fireEditEvent(canvasItem);
     };
     const { props } = canvasItem;
     return (

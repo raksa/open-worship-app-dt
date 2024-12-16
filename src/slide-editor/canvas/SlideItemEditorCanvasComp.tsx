@@ -4,18 +4,21 @@ import {
 } from '../../event/KeyboardEventListener';
 import {
     showCanvasContextMenu,
-} from './canvasCMHelpers';
+} from './canvasContextMenuHelpers';
 import { isSupportedMimetype } from '../../server/fileHelpers';
 import { useCanvasControllerContext } from './CanvasController';
 import {
+    useCanvasControllerEvents,
     useSlideItemCanvasScale,
 } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
+import CanvasItem, { CanvasItemContext } from './CanvasItem';
 import { useOptimistic } from 'react';
-import { CanvasItemContext } from './CanvasItem';
+import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
 
 export default function SlideItemEditorCanvasComp() {
     const canvasController = useCanvasControllerContext();
+    const { canvas } = canvasController;
     const scale = useSlideItemCanvasScale();
     useKeyboardRegistering([{ key: 'Escape' }], () => {
         canvasController.stopAllMods();
@@ -23,8 +26,8 @@ export default function SlideItemEditorCanvasComp() {
     return (
         <div className='editor-container w-100 h-100'>
             <div className='overflow-hidden' style={{
-                width: `${canvasController.canvas.width * scale + 20}px`,
-                height: `${canvasController.canvas.height * scale + 20}px`,
+                width: `${canvas.width * scale + 20}px`,
+                height: `${canvas.height * scale + 20}px`,
             }}>
                 <div className='w-100 h-100' style={{
                     transform: `scale(${scale.toFixed(1)}) translate(50%, 50%)`,
@@ -39,7 +42,15 @@ export default function SlideItemEditorCanvasComp() {
 function BodyRendererComp() {
     const canvasController = useCanvasControllerContext();
     const { canvas } = canvasController;
-    const [canvasItems] = useOptimistic(canvas.canvasItems);
+    const { startTransaction, progressBarChild } = useProgressBarComp();
+    const [canvasItems, setCanvasItems] = (
+        useOptimistic<CanvasItem<any>[]>([...canvas.canvasItems])
+    );
+    useCanvasControllerEvents(canvasController, ['update'], () => {
+        startTransaction(() => {
+            setCanvasItems([...canvas.canvasItems]);
+        });
+    });
     const isSupportType = (fileType: string) => {
         return (
             isSupportedMimetype(fileType, 'image') ||
@@ -77,7 +88,9 @@ function BodyRendererComp() {
         });
     };
     const handleContextMenuOpening = async (event: any) => {
+        event.preventDefault();
         (event.target as HTMLDivElement).focus();
+        canvasController.stopAllMods();
         showCanvasContextMenu(event, canvasController);
     };
     return (
@@ -97,6 +110,7 @@ function BodyRendererComp() {
             onClick={() => {
                 canvasController.stopAllMods();
             }} >
+            {progressBarChild}
             {canvasItems.map((canvasItem) => {
                 return (
                     <CanvasItemContext key={canvasItem.id} value={canvasItem}>

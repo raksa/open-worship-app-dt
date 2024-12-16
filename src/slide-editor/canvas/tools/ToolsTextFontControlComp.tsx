@@ -24,7 +24,7 @@ export default function ToolsTextFontControlComp() {
 function FontSize() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext() as CanvasItemText;
-    const {props} = canvasItem;
+    const { props } = canvasItem;
     const [localFontSize, setLocalFontSize] = useState(props.fontSize);
     useAppEffect(() => {
         setLocalFontSize(props.fontSize);
@@ -32,7 +32,7 @@ function FontSize() {
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
         canvasItem.applyTextData({ fontSize });
-        canvasController.fireUpdateEvent();
+        canvasController.fireEditEvent(canvasItem);
     };
     return (
         <div className='d-flex'>
@@ -69,7 +69,7 @@ function FontFamily() {
         canvasItem.applyTextData({
             fontFamily: fontFamily || null,
         });
-        canvasController.fireUpdateEvent();
+        canvasController.fireEditEvent(canvasItem);
     };
     if (fontList === null) {
         return (
@@ -124,7 +124,7 @@ function FontWeight({
         canvasItem.applyTextData({
             fontWeight: newFontWeight || null,
         });
-        canvasController.fireUpdateEvent();
+        canvasController.fireEditEvent(canvasItem);
     };
     return (
         <div>

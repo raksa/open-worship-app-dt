@@ -1,7 +1,6 @@
 import { useOptimistic } from 'react';
 import CanvasItemRendererComp
     from '../../../slide-presenter/items/CanvasItemRendererComp';
-import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 import { CanvasItemContext } from '../CanvasItem';
 
@@ -20,16 +19,14 @@ export default function ToolCanvasItemsComp() {
                             border: canvasItem.isSelected ?
                                 '2px dashed green' : undefined,
                         }}
-                        onClick={() => {
-                            canvasController.stopAllMods();
-                            canvasController.setItemIsSelecting(
-                                canvasItem, true);
-                        }}
-                        onContextMenu={(event) => {
-                            showCanvasItemContextMenu(
-                                event, canvasController, canvasItem,
-                            );
-                        }}>
+                        onClick={
+                            canvasController.genHandleEventClicking(canvasItem)
+                        }
+                        onContextMenu={
+                            canvasController.genHandleContextMenuOpening(
+                                canvasItem,
+                            )
+                        }>
                         <div className='card-header'>
                             {canvasItem.id}:
                             {props.width}x{props.height}

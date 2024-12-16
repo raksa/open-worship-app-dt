@@ -1,6 +1,5 @@
 import { CSSProperties } from 'react';
 
-import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemBibleItem, {
     CanvasItemBiblePropsType,
@@ -17,19 +16,10 @@ export default function BoxEditorNormalViewBibleModeComp({ style }: Readonly<{
     return (
         <div className='app-box-editor pointer'
             style={style}
-            onContextMenu={async (event) => {
-                event.stopPropagation();
-                showCanvasItemContextMenu(
-                    event, canvasController, canvasItem,
-                );
-            }}
-            onClick={async (event) => {
-                event.stopPropagation();
-                canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(
-                    canvasItem, true,
-                );
-            }}>
+            onContextMenu={
+                canvasController.genHandleContextMenuOpening(canvasItem)
+            }
+            onClick={canvasController.genHandleEventClicking(canvasItem)}>
             <BoxEditorNormalBibleRender />
         </div>
     );

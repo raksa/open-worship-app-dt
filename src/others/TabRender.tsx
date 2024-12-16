@@ -31,12 +31,14 @@ export default function TabRender<T extends string>({
 }
 
 export function genTabBody<T>(
-    tabTab: T, data: [T, LazyExoticComponent<() => React.ReactNode | null>],
+    selectedTabTab: T,
+    [tabTab, Element]: [T, LazyExoticComponent<() => React.ReactNode | null>],
 ) {
-    const Element = data[1];
     return (
-        <AppSuspense key={data[0] as any}>
-            {tabTab === data[0] && <Element />}
+        <AppSuspense key={`tab-${tabTab}`}>
+            {selectedTabTab === tabTab ? (
+                <Element />
+            ) : null}
         </AppSuspense>
     );
 }

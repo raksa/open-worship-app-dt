@@ -1,9 +1,6 @@
 import { CSSProperties } from 'react';
 
 import { useCanvasControllerContext } from '../CanvasController';
-import {
-    showCanvasItemContextMenu,
-} from '../canvasCMHelpers';
 import CanvasItemText from '../CanvasItemText';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
@@ -17,17 +14,10 @@ export default function BoxEditorNormalViewTextModeComp({ style }: Readonly<{
     return (
         <div className='app-box-editor pointer'
             style={style}
-            onContextMenu={async (event) => {
-                event.stopPropagation();
-                showCanvasItemContextMenu(
-                    event, canvasController, canvasItem,
-                );
-            }}
-            onClick={async (event) => {
-                event.stopPropagation();
-                canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(canvasItem, true);
-            }}>
+            onContextMenu={
+                canvasController.genHandleContextMenuOpening(canvasItem)
+            }
+            onClick={canvasController.genHandleEventClicking(canvasItem)}>
             <BoxEditorNormalTextRender />
         </div>
     );

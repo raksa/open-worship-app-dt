@@ -5,16 +5,13 @@ import { lazy, useState } from 'react';
 import { useStateSettingString } from '../../../helper/settingHelpers';
 import TabRender, { genTabBody } from '../../../others/TabRender';
 import { useCanvasControllerContext } from '../CanvasController';
-import { CanvasItemsContext } from '../CanvasItem';
 import {
     useCanvasControllerEvents,
     useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
 import AppRange from '../../../others/AppRange';
+import SlideItemEditorPropertiesComp from './SlideItemEditorPropertiesComp';
 
-const LazySlideItemEditorPropertiesComp = lazy(() => {
-    return import('./SlideItemEditorPropertiesComp');
-});
 const LazyToolCanvasItems = lazy(() => {
     return import('./ToolCanvasItemsComp');
 });
@@ -87,13 +84,11 @@ export default function SlideItemEditorToolsComp() {
             <div className='tools-body w-100 h-100' style={{
                 overflow: 'auto',
             }}>
-                <CanvasItemsContext value={selectedCanvasItems}>
-                    {genTabBody<TabType>(
-                        tabType, [
-                        'p', LazySlideItemEditorPropertiesComp,
-                    ],
-                    )}
-                </CanvasItemsContext>
+                {tabType === 'p' ? (
+                    <SlideItemEditorPropertiesComp
+                        canvasItems={selectedCanvasItems}
+                    />
+                ) : null}
                 {genTabBody<TabType>(tabType, ['c', LazyToolCanvasItems])}
             </div>
         </div>

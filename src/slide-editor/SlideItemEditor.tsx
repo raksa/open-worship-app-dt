@@ -26,7 +26,7 @@ export default function SlideItemEditor() {
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
     const selectedSlideItem = useSelectedEditingSlideItemContext();
     const canvasController = new CanvasController(selectedSlideItem);
-    useCanvasControllerEvents(canvasController, ['update'], () => {
+    useCanvasControllerEvents(canvasController, ['edit', 'update'], () => {
         const fileSource = FileSource.getInstance(selectedSlideItem.filePath);
         fileSource.fireEditEvent(canvasController.slideItem);
     });

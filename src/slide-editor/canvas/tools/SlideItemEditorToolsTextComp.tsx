@@ -27,7 +27,7 @@ export default function SlideItemEditorToolsTextComp() {
     };
     const applyTextData = (newData: ToolingTextType) => {
         canvasItem.applyTextData(newData);
-        canvasController.fireUpdateEvent();
+        canvasController.fireEditEvent(canvasItem);
     };
     return (
         <div className='d-flex'>

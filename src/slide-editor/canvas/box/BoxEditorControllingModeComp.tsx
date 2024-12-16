@@ -1,9 +1,6 @@
 import './BoxEditorControllingModeComp.scss';
 
 import { useCanvasItemContext } from '../CanvasItem';
-import {
-    showCanvasItemContextMenu,
-} from '../canvasCMHelpers';
 import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
 import { BoxEditorNormalTextRender } from './BoxEditorNormalViewTextModeComp';
 import { BoxEditorNormalBibleRender } from './BoxEditorNormalViewBibleModeComp';
@@ -16,7 +13,7 @@ import {
 import { useBoxEditorControllerContext } from '../../BoxEditorController';
 
 function BoxEditorCanvasItemRender() {
-    const canvasItem = useCanvasItemContext();
+    const canvasItem = useCanvasItemContext();  
     switch (canvasItem.type) {
         case 'image':
             return (
@@ -60,7 +57,7 @@ export default function BoxEditorControllingModeComp() {
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
                             canvasItem.applyProps(info);
-                            canvasController.fireUpdateEvent(canvasItem);
+                            canvasController.fireEditEvent(canvasItem);
                         }
                     };
                 }
@@ -77,12 +74,9 @@ export default function BoxEditorControllingModeComp() {
                 onClick={(event) => {
                     event.stopPropagation();
                 }}
-                onContextMenu={(event) => {
-                    event.stopPropagation();
-                    showCanvasItemContextMenu(
-                        event, canvasController, canvasItem,
-                    );
-                }}
+                onContextMenu={
+                    canvasController.genHandleContextMenuOpening(canvasItem)
+                }
                 onDoubleClick={(event) => {
                     event.stopPropagation();
                     if (canvasItem.type === 'text') {

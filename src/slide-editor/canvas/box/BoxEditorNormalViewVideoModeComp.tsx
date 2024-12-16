@@ -1,8 +1,5 @@
 import { CSSProperties } from 'react';
 
-import {
-    showCanvasItemContextMenu,
-} from '../canvasCMHelpers';
 import CanvasItemVideo from '../CanvasItemVideo';
 import img404 from '../404.png';
 import { useCanvasControllerContext } from '../CanvasController';
@@ -18,17 +15,10 @@ export default function BoxEditorNormalViewVideoModeComp({ style }: Readonly<{
     return (
         <div className='app-box-editor pointer'
             style={style}
-            onContextMenu={async (event) => {
-                event.stopPropagation();
-                showCanvasItemContextMenu(
-                    event, canvasController, canvasItem,
-                );
-            }}
-            onClick={async (event) => {
-                event.stopPropagation();
-                canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(canvasItem, true);
-            }}>
+            onClick={canvasController.genHandleEventClicking(canvasItem)}
+            onContextMenu={
+                canvasController.genHandleContextMenuOpening(canvasItem)
+            }>
             <BoxEditorNormalVideoRender />
         </div>
     );

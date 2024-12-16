@@ -148,11 +148,6 @@ export class CanvasItemError extends CanvasItem<any> {
     }
 }
 
-export const CanvasItemsContext = createContext<CanvasItem<any>[]>([]);
-export function useCanvasItemsContext() {
-    return use(CanvasItemsContext);
-}
-
 export const CanvasItemContext = createContext<CanvasItem<any> | null>(null);
 export function useCanvasItemContext() {
     const context = use(CanvasItemContext);

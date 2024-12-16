@@ -167,9 +167,11 @@ export default class BoxEditorController {
     constructor(scaleFactor: number) {
         this.scaleFactor = scaleFactor;
     }
-    addEvent(le: ListenedEvent) {
-        le.target.addEventListener(le.eventName, le.listener, false);
-        this.listened.push(le);
+    addEvent(listenerEvent: ListenedEvent) {
+        listenerEvent.target.addEventListener(
+            listenerEvent.eventName, listenerEvent.listener, false,
+        );
+        this.listened.push(listenerEvent);
     }
     release() {
         while (this.listened.length) {

@@ -25,11 +25,7 @@ export default function BoxEditorNormalViewErrorComp() {
                     },
                 }]);
             }}
-            onClick={async (event) => {
-                event.stopPropagation();
-                canvasController.stopAllMods();
-                canvasController.setItemIsSelecting(canvasItem, true);
-            }}>
+            onClick={canvasController.genHandleEventClicking(canvasItem)}>
             <div style={{
                 ...canvasItem.getStyle(),
             }}>

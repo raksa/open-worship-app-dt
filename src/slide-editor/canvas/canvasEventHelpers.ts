@@ -48,7 +48,7 @@ export function useIsControlling(
     );
     useAppEffect(() => {
         const regEvents = canvasController.itemRegisterEventListener(
-            ['control'], ({ canvasItems: items }) => {
+            ['controlling'], ({ canvasItems: items }) => {
                 items.forEach((item) => {
                     if (item.id === canvasItem.id) {
                         setIsControlling(canvasItem.isControlling);

@@ -40,7 +40,7 @@ function LayerComp() {
     };
     const applyBoxData = (newData: ToolingBoxType) => {
         canvasItem.applyBoxData(parentDimension, newData);
-        canvasController.fireUpdateEvent(canvasItem);
+        canvasController.fireEditEvent(canvasItem);
     };
     return (
         <div className='ps-2'>
@@ -98,7 +98,7 @@ export default function SlideItemEditorToolsBoxComp() {
     };
     const applyBoxData = (newData: ToolingBoxType) => {
         canvasItem.applyBoxData(parentDimension, newData);
-        canvasController.fireUpdateEvent(canvasItem);
+        canvasController.fireEditEvent(canvasItem);
     };
     return (
         <div className='d-flex'>

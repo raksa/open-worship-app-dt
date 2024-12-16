@@ -19,6 +19,7 @@ import CanvasItemVideo from './CanvasItemVideo';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { createContext, use } from 'react';
+import { showCanvasItemContextMenu } from './canvasContextMenuHelpers';
 
 const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
 
@@ -67,21 +68,22 @@ export default class CanvasController extends
     fireSelectEvent(canvasItem: CanvasItem<any>) {
         this.addPropEvent('select', { canvasItems: [canvasItem] });
     }
-    fireControlEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('control', { canvasItems: [canvasItem] });
+    fireControllingEvent(canvasItem: CanvasItem<any>) {
+        this.addPropEvent('controlling', { canvasItems: [canvasItem] });
     }
-    fireTextEditEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('text-edit', { canvasItems: [canvasItem] });
+    fireTextEditingEvent(canvasItem: CanvasItem<any>) {
+        this.addPropEvent('text-editing', { canvasItems: [canvasItem] });
     }
-    fireUpdateEvent(canvasItem?: CanvasItem<any>) {
-        if (this.slideItem !== null) {
-            this.slideItem.canvas = this.canvas;
-        }
+    fireEditEvent(canvasItem: CanvasItem<any>) {
+        this.slideItem.canvas = this.canvas;
+        this.addPropEvent('edit', {
+            canvasItems: [canvasItem],
+        });
+    }
+    fireUpdateEvent() {
+        this.slideItem.canvas = this.canvas;
         this.addPropEvent('update', {
-            canvasItems: (
-                canvasItem !== undefined ? [canvasItem] :
-                    this.canvas.canvasItems
-            ),
+            canvasItems: this.canvas.canvasItems,
         });
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
@@ -207,7 +209,7 @@ export default class CanvasController extends
             horizontalAlignment: 'center',
             verticalAlignment: 'center',
         });
-        this.fireUpdateEvent(canvasItem);
+        this.fireEditEvent(canvasItem);
     }
     applyCanvasItemFully(canvasItem: CanvasItem<any>) {
         const props = canvasItem.props as CanvasItemPropsType;
@@ -255,18 +257,36 @@ export default class CanvasController extends
         this.canvas.canvasItems = canvasItems;
         this.fireUpdateEvent();
     }
+    genHandleEventClicking(canvasItem: CanvasItem<any>) {
+        return (event: any) => {
+            event.stopPropagation();
+            this.setItemIsSelecting(
+                canvasItem, true,
+            );
+        };
+    }
+    genHandleContextMenuOpening(canvasItem: CanvasItem<any>) {
+        return (event: any) => {
+            event.stopPropagation();
+            this.stopAllMods();
+            showCanvasItemContextMenu(event, this, canvasItem);
+        };
+    }
     setItemIsSelecting(canvasItem: CanvasItem<any>, isSelected: boolean) {
+        if (isSelected) {
+            this.stopAllMods();
+        }
         canvasItem.isSelected = isSelected;
         this.fireSelectEvent(canvasItem);
         this.setItemIsControlling(canvasItem, isSelected);
     }
     setItemIsControlling(canvasItem: CanvasItem<any>, isControlling: boolean) {
         canvasItem.isControlling = isControlling;
-        this.fireControlEvent(canvasItem);
+        this.fireControllingEvent(canvasItem);
     }
     setItemIsEditing(canvasItem: CanvasItem<any>, isEditing: boolean) {
         canvasItem.isEditing = isEditing;
-        this.fireTextEditEvent(canvasItem);
+        this.fireTextEditingEvent(canvasItem);
     }
 
     itemRegisterEventListener(
