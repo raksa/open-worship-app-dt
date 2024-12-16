@@ -11,7 +11,7 @@ import BoxEditorController, {
 import { useCanvasItemContext } from '../CanvasItem';
 
 export function BoxEditorComp() {
-    useCanvasControllerRefreshEvents();
+    useCanvasControllerRefreshEvents(['controlling', 'text-editing']);
     const scale = useSlideItemCanvasScale();
     const boxEditorController = new BoxEditorController(scale);
     const canvasItem = useCanvasItemContext();

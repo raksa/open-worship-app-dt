@@ -11,9 +11,10 @@ import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
 import { useBoxEditorControllerContext } from '../../BoxEditorController';
+import { useCanvasControllerRefreshEvents } from '../canvasEventHelpers';
 
 function BoxEditorCanvasItemRender() {
-    const canvasItem = useCanvasItemContext();  
+    const canvasItem = useCanvasItemContext();
     switch (canvasItem.type) {
         case 'image':
             return (
@@ -40,6 +41,7 @@ function BoxEditorCanvasItemRender() {
 
 export default function BoxEditorControllingModeComp() {
     // TODO: move box by left right up down key, shift&ctl
+    useCanvasControllerRefreshEvents(['edit']);
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     const boxEditorController = useBoxEditorControllerContext();
