@@ -5,7 +5,7 @@ import CanvasController, {
     CanvasItemEventDataType, useCanvasControllerContext,
 } from './CanvasController';
 import { CanvasControllerEventType } from './canvasHelpers';
-import { useCanvasItemContext } from './CanvasItem';
+import CanvasItem, { useCanvasItemContext } from './CanvasItem';
 
 export function useCanvasControllerEvents(
     canvasController: CanvasController,
@@ -39,19 +39,21 @@ export function useSlideItemCanvasScale() {
     return scale;
 }
 
-export function useIsControlling(
-    canvasController: CanvasController,
+export function useCanItemProperty(
+    eventTypes: CanvasControllerEventType[],
+    checkProperty: (canvasItem: CanvasItem<any>) => boolean,
 ) {
+    const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     const [isControlling, setIsControlling] = useState(
-        canvasItem.isControlling,
+        checkProperty(canvasItem),
     );
     useAppEffect(() => {
         const regEvents = canvasController.itemRegisterEventListener(
-            ['controlling'], ({ canvasItems: items }) => {
+            eventTypes, ({ canvasItems: items }) => {
                 items.forEach((item) => {
                     if (item.id === canvasItem.id) {
-                        setIsControlling(canvasItem.isControlling);
+                        setIsControlling(checkProperty(canvasItem),);
                     }
                 });
             });
@@ -60,4 +62,23 @@ export function useIsControlling(
         };
     }, [canvasItem]);
     return isControlling;
+}
+
+export function useCanvasItemIsControlling() {
+    return useCanItemProperty(
+        ['controlling'], (canvasItem) => {
+            return canvasItem.isControlling;
+        }
+    );
+}
+
+export function useCanvasItemIsEditing() {
+    return useCanItemProperty(
+        ['text-editing'], (canvasItem) => {
+            if (canvasItem.type === 'text') {
+                return canvasItem.isEditing;
+            }
+            return false;
+        }
+    );
 }

@@ -65,9 +65,6 @@ export default class CanvasController extends
     ): void {
         super.addPropEvent(eventName, data);
     }
-    fireSelectEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('select', { canvasItems: [canvasItem] });
-    }
     fireControllingEvent(canvasItem: CanvasItem<any>) {
         this.addPropEvent('controlling', { canvasItems: [canvasItem] });
     }
@@ -241,15 +238,15 @@ export default class CanvasController extends
         );
     }
     stopAllMods(isSilent?: boolean) {
-        this.canvas.canvasItems.forEach((item) => {
+        this.canvas.canvasItems.forEach((canvasItem) => {
             if (isSilent) {
-                item.isSelected = false;
-                item.isControlling = false;
-                item.isEditing = false;
+                canvasItem.isSelected = false;
+                canvasItem.isControlling = false;
+                canvasItem.isEditing = false;
             } else {
-                this.setItemIsSelecting(item, false);
-                this.setItemIsControlling(item, false);
-                this.setItemIsEditing(item, false);
+                this.setItemIsSelecting(canvasItem, false);
+                this.setItemIsControlling(canvasItem, false);
+                this.setItemIsEditing(canvasItem, false);
             }
         });
     }
@@ -277,7 +274,7 @@ export default class CanvasController extends
             this.stopAllMods();
         }
         canvasItem.isSelected = isSelected;
-        this.fireSelectEvent(canvasItem);
+        this.fireControllingEvent(canvasItem);
         this.setItemIsControlling(canvasItem, isSelected);
     }
     setItemIsControlling(canvasItem: CanvasItem<any>, isControlling: boolean) {

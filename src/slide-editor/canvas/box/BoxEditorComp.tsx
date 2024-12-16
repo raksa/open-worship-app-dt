@@ -3,9 +3,8 @@ import './BoxEditorComp.scss';
 import BoxEditorNormalModeComp from './BoxEditorNormalModeComp';
 import BoxEditorControllingModeComp from './BoxEditorControllingModeComp';
 import {
-    useIsControlling, useSlideItemCanvasScale,
+    useCanvasItemIsControlling, useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
-import { useCanvasControllerContext } from '../CanvasController';
 import BoxEditorController, {
     BoxEditorControllerContext,
 } from '../../BoxEditorController';
@@ -13,8 +12,7 @@ import BoxEditorController, {
 export function BoxEditorComp() {
     const scale = useSlideItemCanvasScale();
     const boxEditorController = new BoxEditorController(scale);
-    const canvasController = useCanvasControllerContext();
-    const isControlling = useIsControlling(canvasController);
+    const isControlling = useCanvasItemIsControlling();
     // TODO: switch box by tab, shift
     // TODO: key => ctl+d, delete, copy&paste, paste across slideItem
     // TODO: ruler, snap

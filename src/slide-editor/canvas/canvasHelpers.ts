@@ -3,7 +3,7 @@ import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 
 export type CanvasControllerEventType = (
-    'select' | 'controlling' | 'text-editing' | 'update' | 'scale' | 'edit'
+    'controlling' | 'text-editing' | 'update' | 'scale' | 'edit'
 );
 
 export type CanvasItemMediaPropsType = {

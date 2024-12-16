@@ -43,7 +43,6 @@ export default function SlideItemEditor() {
                 return item.id === canvasController.slideItem.id;
             });
             if (currentSlideItem !== undefined && !currentSlideItem.isChanged) {
-                currentSlideItem.a = 1;
                 setSelectedSlideItem(currentSlideItem);
             }
         }
