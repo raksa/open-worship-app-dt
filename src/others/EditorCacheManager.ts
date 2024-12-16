@@ -85,7 +85,9 @@ export default abstract class EditorCacheManager<T1, T2> {
         const history = changedObject.undoQueue.pop() as T1;
         changedObject.redoQueue.push(history);
         this._changedObject = changedObject;
-        this.fileSource.fireHistoryUpdateEvent();
+        const fileSource = this.fileSource;
+        fileSource.fireUpdateEvent();
+        fileSource.fireHistoryUpdateEvent();
     }
     popRedo() {
         const changedObject = this._changedObject;

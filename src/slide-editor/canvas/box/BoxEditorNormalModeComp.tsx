@@ -10,11 +10,9 @@ import BoxEditorNormalViewBibleModeComp from
 import BoxEditorNormalViewErrorComp from './BoxEditorNormalViewErrorComp';
 import BoxEditorNormalViewVideoModeComp from
     './BoxEditorNormalViewVideoModeComp';
-import { useCanvasItemIsEditing } from '../canvasEventHelpers';
 
 export default function BoxEditorNormalModeComp() {
     const canvasItem = useCanvasItemContext();
-    const isEditing = useCanvasItemIsEditing();
     const style: CSSProperties = {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
@@ -29,7 +27,7 @@ export default function BoxEditorNormalModeComp() {
                 <BoxEditorNormalViewVideoModeComp style={style} />
             );
         case 'text':
-            if (isEditing) {
+            if (canvasItem.isEditing) {
                 return (
                     <BoxEditorNormalTextEditModeComp style={style} />
                 );

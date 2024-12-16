@@ -8,16 +8,23 @@ import {
 import { isSupportedMimetype } from '../../server/fileHelpers';
 import { useCanvasControllerContext } from './CanvasController';
 import {
-    useCanvasControllerEvents,
-    useSlideItemCanvasScale,
+    useCanvasControllerEvents, useSlideItemCanvasScale,
 } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import CanvasItem, { CanvasItemContext } from './CanvasItem';
 import { useOptimistic } from 'react';
 import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
+import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
+import FileSource from '../../helper/FileSource';
 
 export default function SlideItemEditorCanvasComp() {
     const canvasController = useCanvasControllerContext();
+    useCanvasControllerEvents(['edit', 'update'], () => {
+        const fileSource = FileSource.getInstance(
+            canvasController.slideItem.filePath,
+        );
+        fileSource.fireEditEvent(canvasController.slideItem);
+    });
     const { canvas } = canvasController;
     const scale = useSlideItemCanvasScale();
     useKeyboardRegistering([{ key: 'Escape' }], () => {
@@ -46,11 +53,15 @@ function BodyRendererComp() {
     const [canvasItems, setCanvasItems] = (
         useOptimistic<CanvasItem<any>[]>([...canvas.canvasItems])
     );
-    useCanvasControllerEvents(canvasController, ['update'], () => {
+    const handleRefreshing = () => {
         startTransaction(() => {
             setCanvasItems([...canvas.canvasItems]);
         });
-    });
+    };
+    useFileSourceEvents(
+        ['update'], canvasController.slideItem.filePath, handleRefreshing,
+    );
+    useCanvasControllerEvents(['update'], handleRefreshing);
     const isSupportType = (fileType: string) => {
         return (
             isSupportedMimetype(fileType, 'image') ||

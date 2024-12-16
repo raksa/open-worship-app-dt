@@ -7,12 +7,10 @@ import CanvasController, {
 } from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRange';
 import { defaultRangeSize } from './canvas/tools/SlideItemEditorToolsComp';
-import { useCanvasControllerEvents } from './canvas/canvasEventHelpers';
 import {
     useSelectedEditingSlideItemContext,
     useSelectedEditingSlideItemSetterContext,
 } from '../slide-list/SlideItem';
-import FileSource from '../helper/FileSource';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 const LazySlideItemEditorCanvas = lazy(() => {
@@ -26,10 +24,6 @@ export default function SlideItemEditor() {
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
     const selectedSlideItem = useSelectedEditingSlideItemContext();
     const canvasController = new CanvasController(selectedSlideItem);
-    useCanvasControllerEvents(canvasController, ['edit', 'update'], () => {
-        const fileSource = FileSource.getInstance(selectedSlideItem.filePath);
-        fileSource.fireEditEvent(canvasController.slideItem);
-    });
     useFileSourceEvents(
         ['update'], canvasController.slideItem.filePath,
         (newSlideItems: any) => {

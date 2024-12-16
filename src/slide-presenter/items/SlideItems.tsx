@@ -52,14 +52,8 @@ function useSlideItems() {
     );
     useFileSourceEvents(
         ['update'], selectedSlide.filePath,
-        (newSlideItems: any) => {
-            if (
-                newSlideItems === undefined ||
-                !(newSlideItems instanceof Array)
-            ) {
-                return;
-            }
-            setSlideItems1(newSlideItems);
+        () => {
+            setSlideItems1(selectedSlide.items);
         }
     );
     useFileSourceEvents(

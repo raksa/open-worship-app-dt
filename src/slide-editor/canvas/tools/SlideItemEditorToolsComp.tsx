@@ -65,7 +65,7 @@ export default function SlideItemEditorToolsComp() {
     const [selectedCanvasItems, setSelectedCanvasItems] = useOptimistic(
         canvasController.canvas.selectedCanvasItems,
     );
-    useCanvasControllerEvents(canvasController, ['controlling'], () => {
+    useCanvasControllerEvents(['controlling'], () => {
         startTransaction(() => {
             setSelectedCanvasItems(canvasController.canvas.selectedCanvasItems);
         });

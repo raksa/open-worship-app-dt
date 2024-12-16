@@ -252,7 +252,6 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     async discardChanged() {
         this.editorCacheManager.delete();
-        this.fileSource.fireUpdateEvent(this.items);
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
