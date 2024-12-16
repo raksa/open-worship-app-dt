@@ -54,23 +54,26 @@ export default class Canvas {
         const { width, height } = display.bounds;
         return { width, height };
     }
+    static canvasItemFromJson(json: any) {
+        switch (json.type) {
+            case 'image':
+                return CanvasItemImage.fromJson(json);
+            case 'video':
+                return CanvasItemVideo.fromJson(json);
+            case 'text':
+                return CanvasItemText.fromJson(json);
+            case 'bible':
+                return CanvasItemBibleItem.fromJson(json);
+            default:
+                return CanvasItemError.fromJsonError(json);
+        }
+    }
     static fromJson({ metadata, canvasItems: canvasItemsJson }: {
         metadata: AnyObjectType,
         canvasItems: AnyObjectType[],
     }) {
         const canvasItems = canvasItemsJson.map((json: any) => {
-            switch (json.type) {
-                case 'image':
-                    return CanvasItemImage.fromJson(json);
-                case 'video':
-                    return CanvasItemVideo.fromJson(json);
-                case 'text':
-                    return CanvasItemText.fromJson(json);
-                case 'bible':
-                    return CanvasItemBibleItem.fromJson(json);
-                default:
-                    return CanvasItemError.fromJsonError(json);
-            }
+            return this.canvasItemFromJson(json);
         }).filter((item) => item !== null) as CanvasItem<any>[];
         return new Canvas({
             width: metadata.width,

@@ -4,9 +4,7 @@ import { useCanvasControllerContext } from '../CanvasController';
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';
-import CanvasItemText, {
-    CanvasItemTextPropsType,
-} from '../CanvasItemText';
+import CanvasItemText from '../CanvasItemText';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
 import { useCanvasItemContext } from '../CanvasItem';
@@ -14,8 +12,8 @@ import { useCanvasItemContext } from '../CanvasItem';
 export default function BoxEditorNormalViewTextModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
-    const canvasItem = useCanvasItemContext();
     const canvasController = useCanvasControllerContext();
+    const canvasItem = useCanvasItemContext();
     return (
         <div className='app-box-editor pointer'
             style={style}
@@ -30,14 +28,14 @@ export default function BoxEditorNormalViewTextModeComp({ style }: Readonly<{
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItem, true);
             }}>
-            <BoxEditorNormalTextRender props={canvasItem.props} />
+            <BoxEditorNormalTextRender />
         </div>
     );
 }
 
-export function BoxEditorNormalTextRender({ props }: Readonly<{
-    props: CanvasItemTextPropsType,
-}>) {
+export function BoxEditorNormalTextRender() {
+    const canvasItem = useCanvasItemContext();
+    const { props } = canvasItem;
     try {
         CanvasItemText.validate(props);
     } catch (error) {

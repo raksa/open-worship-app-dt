@@ -6,7 +6,7 @@ import {
 } from '../canvasCMHelpers';
 import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
 import { BoxEditorNormalTextRender } from './BoxEditorNormalViewTextModeComp';
-import { BENBibleRender } from './BoxEditorNormalViewBibleModeComp';
+import { BoxEditorNormalBibleRender } from './BoxEditorNormalViewBibleModeComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import { BoxEditorNormalVideoRender } from './BoxEditorNormalViewVideoModeComp';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
@@ -20,19 +20,19 @@ function BoxEditorCanvasItemRender() {
     switch (canvasItem.type) {
         case 'image':
             return (
-                <BoxEditorNormalImageRender props={canvasItem.props} />
+                <BoxEditorNormalImageRender />
             );
         case 'video':
             return (
-                <BoxEditorNormalVideoRender props={canvasItem.props} />
+                <BoxEditorNormalVideoRender />
             );
         case 'text':
             return (
-                <BoxEditorNormalTextRender props={canvasItem.props} />
+                <BoxEditorNormalTextRender />
             );
         case 'bible':
             return (
-                <BENBibleRender props={canvasItem.props} />
+                <BoxEditorNormalBibleRender />
             );
         default:
             return (
@@ -49,6 +49,7 @@ export default function BoxEditorControllingModeComp() {
     useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
     });
+    const { props } = canvasItem;
     return (
         <div className='editor-controller-box-wrapper'
             ref={(div) => {
@@ -67,10 +68,10 @@ export default function BoxEditorControllingModeComp() {
             style={{
                 width: '0',
                 height: '0',
-                top: `${canvasItem.props.top + canvasItem.props.height / 2}px`,
-                left: `${canvasItem.props.left + canvasItem.props.width / 2}px`,
-                transform: `rotate(${canvasItem.props.rotate}deg)`,
-                zIndex: canvasItem.props.zIndex,
+                top: `${props.top + props.height / 2}px`,
+                left: `${props.left + props.width / 2}px`,
+                transform: `rotate(${props.rotate}deg)`,
+                zIndex: props.zIndex,
             }}>
             <div className={'app-box-editor controllable'}
                 onClick={(event) => {
@@ -93,9 +94,9 @@ export default function BoxEditorControllingModeComp() {
                     border: canvasItem.isSelected ?
                         '2px dashed green' : undefined,
                     transform: 'translate(-50%, -50%)',
-                    width: `${canvasItem.props.width}px`,
-                    height: `${canvasItem.props.height}px`,
-                    backgroundColor: canvasItem.props.backgroundColor,
+                    width: `${props.width}px`,
+                    height: `${props.height}px`,
+                    backgroundColor: props.backgroundColor,
                 }}>
                 <BoxEditorCanvasItemRender />
                 <div className='tools'>

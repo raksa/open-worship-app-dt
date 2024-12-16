@@ -5,34 +5,33 @@ import {
     BoxEditorNormalTextRender,
 } from '../../slide-editor/canvas/box/BoxEditorNormalViewTextModeComp';
 import {
-    BENBibleRender,
+    BoxEditorNormalBibleRender,
 } from '../../slide-editor/canvas/box/BoxEditorNormalViewBibleModeComp';
 import {
-    CanvasItemPropsType,
+    useCanvasItemContext,
 } from '../../slide-editor/canvas/CanvasItem';
 import {
     BoxEditorNormalVideoRender,
 } from '../../slide-editor/canvas/box/BoxEditorNormalViewVideoModeComp';
 
-export default function CanvasItemRenderer({ props }: Readonly<{
-    props: CanvasItemPropsType,
-}>) {
-    switch (props.type) {
+export default function CanvasItemRendererComp() {
+    const canvasItem = useCanvasItemContext();
+    switch (canvasItem.type) {
         case 'image':
             return (
-                <BoxEditorNormalImageRender props={props as any} />
+                <BoxEditorNormalImageRender />
             );
         case 'video':
             return (
-                <BoxEditorNormalVideoRender props={props as any} />
+                <BoxEditorNormalVideoRender />
             );
         case 'text':
             return (
-                <BoxEditorNormalTextRender props={props as any} />
+                <BoxEditorNormalTextRender />
             );
         case 'bible':
             return (
-                <BENBibleRender props={props as any} />
+                <BoxEditorNormalBibleRender />
             );
 
     }

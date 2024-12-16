@@ -214,7 +214,7 @@ export default class CanvasController extends
         let width = props.width;
         let height = props.height;
         if (['image', 'video'].includes(canvasItem.type)) {
-            const mediaProps = canvasItem.props as CanvasItemMediaPropsType;
+            const mediaProps = props as any as CanvasItemMediaPropsType;
             width = mediaProps.mediaWidth;
             height = mediaProps.mediaHeight;
         }
@@ -231,7 +231,7 @@ export default class CanvasController extends
         const props = canvasItem.props as CanvasItemPropsType;
         const targeWidth = props.width;
         const targetHeightHeight = props.height;
-        const mediaProps = canvasItem.props as CanvasItemMediaPropsType;
+        const mediaProps = props as any as CanvasItemMediaPropsType;
         const width = mediaProps.mediaWidth;
         const height = mediaProps.mediaHeight;
         this.scaleCanvasItemToSize(

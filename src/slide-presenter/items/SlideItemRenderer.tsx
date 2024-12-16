@@ -1,9 +1,11 @@
 import ReactDOMServer from 'react-dom/server';
-import CanvasItemRenderer from './CanvasItemRenderer';
+import CanvasItemRendererComp from './CanvasItemRendererComp';
 import CanvasItem, {
+    CanvasItemContext,
     CanvasItemPropsType,
 } from '../../slide-editor/canvas/CanvasItem';
 import { getDivHTMLChild } from '../../helper/helpers';
+import Canvas from '../../slide-editor/canvas/Canvas';
 
 export function genHtmlSlideItem(canvasItemsJson: CanvasItemPropsType[]) {
     const htmlString = ReactDOMServer.renderToStaticMarkup(
@@ -28,12 +30,13 @@ export default function SlideItemRenderer({
             height: `${height}px`,
         }}>
             {canvasItemsJson.map((canvasItemJson: any) => {
+                const canvasItem = Canvas.canvasItemFromJson(canvasItemJson);
                 return (
                     <div key={canvasItemJson.id}
                         style={CanvasItem.genBoxStyle(canvasItemJson)}>
-                        <CanvasItemRenderer
-                            props={canvasItemJson}
-                        />
+                        <CanvasItemContext value={canvasItem}>
+                            <CanvasItemRendererComp />
+                        </CanvasItemContext>
                     </div>
                 );
             })}

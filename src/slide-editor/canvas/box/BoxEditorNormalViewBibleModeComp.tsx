@@ -30,14 +30,14 @@ export default function BoxEditorNormalViewBibleModeComp({ style }: Readonly<{
                     canvasItem, true,
                 );
             }}>
-            <BENBibleRender props={canvasItem.props} />
+            <BoxEditorNormalBibleRender />
         </div>
     );
 }
 
-export function BENBibleRender({ props }: Readonly<{
-    props: CanvasItemBiblePropsType,
-}>) {
+export function BoxEditorNormalBibleRender() {
+    const canvasItem = useCanvasItemContext();
+    const { props } = canvasItem;
     try {
         CanvasItemBibleItem.validate(props);
     } catch (error) {
@@ -46,7 +46,9 @@ export function BENBibleRender({ props }: Readonly<{
             <BENViewErrorRender />
         );
     }
-    const bibleRenderedList = props.bibleRenderedList;
+    const bibleRenderedList = (
+        (props as CanvasItemBiblePropsType).bibleRenderedList
+    );
     return (
         <div className='w-100 h-100'
             style={CanvasItemBibleItem.genStyle(props)}>

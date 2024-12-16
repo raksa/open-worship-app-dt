@@ -3,9 +3,7 @@ import { CSSProperties } from 'react';
 import {
     showCanvasItemContextMenu,
 } from '../canvasCMHelpers';
-import CanvasItemVideo, {
-    CanvasItemVideoPropsType,
-} from '../CanvasItemVideo';
+import CanvasItemVideo from '../CanvasItemVideo';
 import img404 from '../404.png';
 import { useCanvasControllerContext } from '../CanvasController';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
@@ -31,14 +29,14 @@ export default function BoxEditorNormalViewVideoModeComp({ style }: Readonly<{
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItem, true);
             }}>
-            <BoxEditorNormalVideoRender props={canvasItem.props} />
+            <BoxEditorNormalVideoRender />
         </div>
     );
 }
 
-export function BoxEditorNormalVideoRender({ props }: Readonly<{
-    props: CanvasItemVideoPropsType,
-}>) {
+export function BoxEditorNormalVideoRender() {
+    const canvasItem = useCanvasItemContext();
+    const { props } = canvasItem;
     try {
         CanvasItemVideo.validate(props);
     } catch (error) {

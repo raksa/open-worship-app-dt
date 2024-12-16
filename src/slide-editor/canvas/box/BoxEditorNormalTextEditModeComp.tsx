@@ -14,6 +14,7 @@ export default function BoxEditorNormalTextEditModeComp({ style }: Readonly<{
         canvasItem.applyProps({ text });
         canvasController.fireUpdateEvent(canvasItem);
     };
+    const { props } = canvasItem;
     return (
         <div className='app-box-editor pointer editable'
             style={style}
@@ -33,8 +34,8 @@ export default function BoxEditorNormalTextEditModeComp({ style }: Readonly<{
                 }
             }}>
             <BoxEditorTextAreaComp
-                color={canvasItem.props.color}
-                text={canvasItem.props.text}
+                color={props.color}
+                text={props.text}
                 setText={handleTextSetting}
             />
         </div>

@@ -1,8 +1,6 @@
 import { CSSProperties } from 'react';
 
-import CanvasItemImage, {
-    CanvasItemImagePropsType,
-} from '../CanvasItemImage';
+import CanvasItemImage from '../CanvasItemImage';
 import img404 from '../404.png';
 import { useCanvasControllerContext } from '../CanvasController';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
@@ -29,14 +27,14 @@ export default function BoxEditorNormalViewImageModeComp({ style }: Readonly<{
                 canvasController.stopAllMods();
                 canvasController.setItemIsSelecting(canvasItem, true);
             }}>
-            <BoxEditorNormalImageRender props={canvasItem.props} />
+            <BoxEditorNormalImageRender />
         </div>
     );
 }
 
-export function BoxEditorNormalImageRender({ props }: Readonly<{
-    props: CanvasItemImagePropsType,
-}>) {
+export function BoxEditorNormalImageRender() {
+    const canvasItem = useCanvasItemContext();
+    const { props } = canvasItem;
     try {
         CanvasItemImage.validate(props);
     } catch (error) {

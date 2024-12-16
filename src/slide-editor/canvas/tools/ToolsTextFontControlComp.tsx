@@ -24,10 +24,10 @@ export default function ToolsTextFontControlComp() {
 function FontSize() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext() as CanvasItemText;
-    const [localFontSize, setLocalFontSize] = useState(
-        canvasItem.props.fontSize);
+    const {props} = canvasItem;
+    const [localFontSize, setLocalFontSize] = useState(props.fontSize);
     useAppEffect(() => {
-        setLocalFontSize(canvasItem.props.fontSize);
+        setLocalFontSize(props.fontSize);
     }, [canvasItem]);
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
@@ -62,7 +62,8 @@ function FontFamily() {
     const canvasItem = useCanvasItemContext() as CanvasItemText;
     const fontList = useFontList();
     const [localFontFamily, setLocalFontFamily] = useState(
-        canvasItem.props.fontFamily ?? '');
+        canvasItem.props.fontFamily ?? '',
+    );
     const applyFontFamily = (fontFamily: string) => {
         setLocalFontFamily(fontFamily);
         canvasItem.applyTextData({

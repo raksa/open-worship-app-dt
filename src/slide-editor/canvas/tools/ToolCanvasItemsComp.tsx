@@ -1,8 +1,9 @@
 import { useOptimistic } from 'react';
-import CanvasItemRenderer
-    from '../../../slide-presenter/items/CanvasItemRenderer';
+import CanvasItemRendererComp
+    from '../../../slide-presenter/items/CanvasItemRendererComp';
 import { showCanvasItemContextMenu } from '../canvasCMHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
+import { CanvasItemContext } from '../CanvasItem';
 
 export default function ToolCanvasItemsComp() {
     const canvasController = useCanvasControllerContext();
@@ -10,6 +11,7 @@ export default function ToolCanvasItemsComp() {
     return (
         <div className='w-100 h-100 d-flex justify-content-center'>
             {canvasItems.map((canvasItem) => {
+                const { props } = canvasItem;
                 return (
                     <div key={canvasItem.id}
                         className='card pointer align-self-start m-2'
@@ -30,12 +32,12 @@ export default function ToolCanvasItemsComp() {
                         }}>
                         <div className='card-header'>
                             {canvasItem.id}:
-                            {canvasItem.props.width}x{canvasItem.props.height}
+                            {props.width}x{props.height}
                         </div>
                         <div className='card-body'>
-                            <CanvasItemRenderer
-                                props={canvasItem.props}
-                            />
+                            <CanvasItemContext value={canvasItem}>
+                                <CanvasItemRendererComp />
+                            </CanvasItemContext>
                         </div>
                     </div>
                 );

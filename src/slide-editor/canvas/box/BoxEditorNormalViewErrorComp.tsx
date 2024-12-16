@@ -20,7 +20,8 @@ export default function BoxEditorNormalViewErrorComp() {
                     menuTitle: 'Copy Error Json',
                     onClick: () => {
                         appProvider.browserUtils.copyToClipboard(
-                            JSON.stringify(canvasItem.props));
+                            JSON.stringify(canvasItem.props),
+                        );
                     },
                 }]);
             }}
