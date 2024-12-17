@@ -8,28 +8,19 @@ import {
 import { isSupportedMimetype } from '../../server/fileHelpers';
 import { useCanvasControllerContext } from './CanvasController';
 import {
-    useCanvasControllerEvents, useSlideItemCanvasScale,
+    useSlideItemCanvasScale,
 } from './canvasEventHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
-import CanvasItem, { CanvasItemContext } from './CanvasItem';
-import { useOptimistic } from 'react';
-import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
-import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
-import FileSource from '../../helper/FileSource';
+import {
+    CanvasItemContext, useCanvasItemsContext, useStopAllModes,
+} from './CanvasItem';
 
 export default function SlideItemEditorCanvasComp() {
     const canvasController = useCanvasControllerContext();
-    useCanvasControllerEvents(['edit', 'update'], () => {
-        const fileSource = FileSource.getInstance(
-            canvasController.slideItem.filePath,
-        );
-        fileSource.fireEditEvent(canvasController.slideItem);
-    });
+    const stopAllModes = useStopAllModes();
     const { canvas } = canvasController;
     const scale = useSlideItemCanvasScale();
-    useKeyboardRegistering([{ key: 'Escape' }], () => {
-        canvasController.stopAllMods();
-    });
+    useKeyboardRegistering([{ key: 'Escape' }], stopAllModes);
     return (
         <div className='editor-container w-100 h-100'>
             <div className='overflow-hidden' style={{
@@ -49,19 +40,8 @@ export default function SlideItemEditorCanvasComp() {
 function BodyRendererComp() {
     const canvasController = useCanvasControllerContext();
     const { canvas } = canvasController;
-    const { startTransaction, progressBarChild } = useProgressBarComp();
-    const [canvasItems, setCanvasItems] = (
-        useOptimistic<CanvasItem<any>[]>([...canvas.canvasItems])
-    );
-    const handleRefreshing = () => {
-        startTransaction(() => {
-            setCanvasItems([...canvas.canvasItems]);
-        });
-    };
-    useFileSourceEvents(
-        ['update'], canvasController.slideItem.filePath, handleRefreshing,
-    );
-    useCanvasControllerEvents(['update'], handleRefreshing);
+    const canvasItems = useCanvasItemsContext();
+    const stopAllModes = useStopAllModes();
     const isSupportType = (fileType: string) => {
         return (
             isSupportedMimetype(fileType, 'image') ||
@@ -101,7 +81,7 @@ function BodyRendererComp() {
     const handleContextMenuOpening = async (event: any) => {
         event.preventDefault();
         (event.target as HTMLDivElement).focus();
-        canvasController.stopAllMods();
+        stopAllModes();
         showCanvasContextMenu(event, canvasController);
     };
     return (
@@ -118,10 +98,33 @@ function BodyRendererComp() {
             }}
             onDrop={handleDropping}
             onContextMenu={handleContextMenuOpening}
-            onClick={() => {
-                canvasController.stopAllMods();
+            // import onclick by mouse down/up
+            onMouseDown={(event) => {
+                event.stopPropagation();
+                console.log('down');
+                (event.target as HTMLDivElement).dataset.mouseDown = (
+                    JSON.stringify({
+                        time: new Date().getTime(),
+                        x: event.clientX,
+                        y: event.clientY,
+                    })
+                );
+            }}
+            onMouseUp={(event) => {
+                const dataset = (event.target as HTMLDivElement).dataset;
+                if (dataset.mouseDown) {
+                    const mouseDown = JSON.parse(dataset.mouseDown);
+                    const timeDiff = new Date().getTime() - mouseDown.time;
+                    const distance = Math.sqrt(
+                        Math.pow(event.clientX - mouseDown.x, 2) +
+                        Math.pow(event.clientY - mouseDown.y, 2)
+                    );
+                    if (timeDiff < 500 && distance < 10) {
+                        stopAllModes();
+                    }
+                }
+                dataset.mouseDown = '';
             }} >
-            {progressBarChild}
             {canvasItems.map((canvasItem) => {
                 return (
                     <CanvasItemContext key={canvasItem.id} value={canvasItem}>

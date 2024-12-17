@@ -26,7 +26,7 @@ export default function LyricList() {
     }
     return (
         <FileListHandler id='lyric-list'
-            mimetype='lyric'
+            mimetypeName='lyric'
             defaultFolderName={defaultDataDirNames.LYRIC}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {

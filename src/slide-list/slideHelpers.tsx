@@ -1,11 +1,13 @@
 import ReactDOMServer from 'react-dom/server';
 
-import { openAlert, openConfirm } from '../alert/alertHelpers';
+import { openAppAlert, openAppConfirm } from '../alert/alertHelpers';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenu';
 import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import {
@@ -23,6 +25,7 @@ import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
 import { getTempPath } from '../server/appHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -107,7 +110,7 @@ function showConfirmPDFConvert(dirPath: string, file: DroppedFileType) {
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);
-    return openConfirm(WIDGET_TITLE, confirmMessage);
+    return openAppConfirm(WIDGET_TITLE, confirmMessage);
 }
 
 async function getTempFilePath() {
@@ -150,7 +153,7 @@ async function startConvertingOfficeFile(
     } catch (error: any) {
         const regex = /Could not find .+ binary/i;
         if (regex.test(error.message)) {
-            openAlert('LibreOffice is not installed', alertMessage);
+            openAppAlert('LibreOffice is not installed', alertMessage);
         } else {
             handleError(error);
             if (retryCount > 0) {
@@ -190,6 +193,31 @@ export async function readPdfToSlide(filePath: string) {
         return slide;
     } catch (error) {
         handleError(error);
+    }
+    return null;
+}
+
+export async function selectSlide(event: any, currentFilePath: string) {
+    const dirSource = await DirSource.getInstance(
+        dirSourceSettingNames.SLIDE,
+    );
+    const newFilePaths = await dirSource.getFilePaths('slide');
+    if (newFilePaths?.length) {
+        return new Promise<Slide | null>((resolve) => {
+            const menuItems = newFilePaths.filter((filePath) => {
+                return filePath !== currentFilePath;
+            }).map((filePath) => {
+                return {
+                    menuTitle: appProvider.pathUtils.basename(filePath),
+                    title: filePath,
+                    onClick: async () => {
+                        const slide = await Slide.readFileToData(filePath);
+                        resolve(slide || null);
+                    },
+                } as ContextMenuItemType;
+            });
+            showAppContextMenu(event, menuItems);
+        });
     }
     return null;
 }

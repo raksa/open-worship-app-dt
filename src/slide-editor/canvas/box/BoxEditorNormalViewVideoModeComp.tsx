@@ -1,32 +1,24 @@
 import { CSSProperties } from 'react';
 
-import CanvasItemVideo from '../CanvasItemVideo';
+import CanvasItemVideo, { CanvasItemVideoPropsType } from '../CanvasItemVideo';
 import img404 from '../404.png';
-import { useCanvasControllerContext } from '../CanvasController';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
-import { useCanvasItemContext } from '../CanvasItem';
+import { useCanvasItemPropsContext } from '../CanvasItem';
+import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
 
 export default function BoxEditorNormalViewVideoModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
-    const canvasController = useCanvasControllerContext();
-    const canvasItem = useCanvasItemContext();
     return (
-        <div className='app-box-editor pointer'
-            style={style}
-            onClick={canvasController.genHandleEventClicking(canvasItem)}
-            onContextMenu={
-                canvasController.genHandleContextMenuOpening(canvasItem)
-            }>
+        <BoxEditorNormalWrapperComp style={style}>
             <BoxEditorNormalVideoRender />
-        </div>
+        </BoxEditorNormalWrapperComp>
     );
 }
 
 export function BoxEditorNormalVideoRender() {
-    const canvasItem = useCanvasItemContext();
-    const { props } = canvasItem;
+    const props = useCanvasItemPropsContext<CanvasItemVideoPropsType>();
     try {
         CanvasItemVideo.validate(props);
     } catch (error) {

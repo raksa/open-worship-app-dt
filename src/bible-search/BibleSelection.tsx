@@ -9,7 +9,7 @@ import {
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { openAlert } from '../alert/alertHelpers';
+import { openAppAlert } from '../alert/alertHelpers';
 
 export async function showBibleOption(
     event: any, excludeBibleKey: string[],
@@ -17,7 +17,7 @@ export async function showBibleOption(
 ) {
     const bibleInfoList = await getDownloadedBibleInfoList();
     if (bibleInfoList === null) {
-        openAlert(
+        openAppAlert(
             'Unable to get bible info list',
             'We were sorry, but we are unable to get bible list at the moment' +
             ' please try again later'

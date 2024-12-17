@@ -14,7 +14,7 @@ export default abstract class ItemSource<T extends {
 }> {
     protected static SELECT_SETTING_NAME = 'selected';
     SELECT_SETTING_NAME: string = '';
-    protected static mimetype: MimetypeNameType = 'other';
+    protected static mimetypeName: MimetypeNameType = 'other';
     filePath: string;
     constructor(filePath: string) {
         this.filePath = filePath;
@@ -102,7 +102,7 @@ export default abstract class ItemSource<T extends {
             items,
         });
         const filePath = await createNewFileDetail(dir, name, data,
-            this.mimetype,
+            this.mimetypeName,
         );
         if (filePath !== null) {
             return FileSource.getInstance(filePath);

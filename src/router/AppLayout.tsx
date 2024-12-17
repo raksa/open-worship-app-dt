@@ -21,6 +21,7 @@ import SlideItem, {
 } from '../slide-list/SlideItem';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import TopProgressBarComp from '../progress-bar/TopProgressBarComp';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 
 const tabs: TabOptionType[] = [];
@@ -92,6 +93,24 @@ function useSlideContextValues() {
             },
         };
     }, [selectedSlideItem, setSelectedSlideItem]);
+    useFileSourceEvents(['delete'], (deletedSlideItem: SlideItem) => {
+        setSelectedSlideItem((slideItem) => {
+            if (slideItem?.checkIsSame(deletedSlideItem)) {
+                return null;
+            }
+            return slideItem;
+        });
+    }, [selectedSlide], selectedSlide?.filePath);
+    useFileSourceEvents(['update'], () => {
+        setSelectedSlideItem((oldSlideItem) => {
+            const newSlideItem = (
+                oldSlideItem ? selectedSlide?.items.find((item) => {
+                    return item.checkIsSame(oldSlideItem);
+                }) : null
+            );
+            return newSlideItem || oldSlideItem;
+        });
+    }, [selectedSlide], selectedSlide?.filePath);
     return {
         slideContextValue,
         editingSlideItemContextValue,

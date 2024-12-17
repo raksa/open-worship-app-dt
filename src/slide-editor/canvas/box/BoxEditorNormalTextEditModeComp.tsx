@@ -2,19 +2,29 @@ import { CSSProperties } from 'react';
 
 import { useCanvasControllerContext } from '../CanvasController';
 import BoxEditorTextAreaComp from './BoxEditorTextAreaComp';
-import { useCanvasItemContext } from '../CanvasItem';
+import {
+    useCanvasItemContext, useCanvasItemPropsContext, useSetEditingCanvasItem,
+} from '../CanvasItem';
+import { CanvasItemTextPropsType } from '../CanvasItemText';
 
-
+let timeoutId: any = null;
 export default function BoxEditorNormalTextEditModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     const handleTextSetting = (text: string) => {
-        canvasItem.applyProps({ text });
-        canvasController.fireEditEvent(canvasItem);
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            timeoutId = null;
+            canvasItem.applyProps({ text });
+            canvasController.fireEditEvent(canvasItem);
+        }, 1e3);
     };
-    const { props } = canvasItem;
+    const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();
+    const handleCanvasItemEditing = useSetEditingCanvasItem();
     return (
         <div className='app-box-editor pointer editable'
             style={style}
@@ -23,19 +33,18 @@ export default function BoxEditorNormalTextEditModeComp({ style }: Readonly<{
             }}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                canvasController.setItemIsEditing(canvasItem, false);
+                handleCanvasItemEditing(canvasItem, false);
             }}
             onKeyUp={(event) => {
                 if (
                     event.key === 'Escape' ||
                     (event.key === 'Enter' && event.ctrlKey)
                 ) {
-                    canvasController.setItemIsEditing(canvasItem, false);
+                    handleCanvasItemEditing(canvasItem, false);
                 }
             }}>
             <BoxEditorTextAreaComp
-                color={props.color}
-                text={props.text}
+                props={props}
                 setText={handleTextSetting}
             />
         </div>

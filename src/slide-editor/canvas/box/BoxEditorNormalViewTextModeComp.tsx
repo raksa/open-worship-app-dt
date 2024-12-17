@@ -1,31 +1,23 @@
 import { CSSProperties } from 'react';
 
-import { useCanvasControllerContext } from '../CanvasController';
-import CanvasItemText from '../CanvasItemText';
+import CanvasItemText, { CanvasItemTextPropsType } from '../CanvasItemText';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
-import { useCanvasItemContext } from '../CanvasItem';
+import { useCanvasItemPropsContext } from '../CanvasItem';
+import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
 
 export default function BoxEditorNormalViewTextModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
-    const canvasController = useCanvasControllerContext();
-    const canvasItem = useCanvasItemContext();
     return (
-        <div className='app-box-editor pointer'
-            style={style}
-            onContextMenu={
-                canvasController.genHandleContextMenuOpening(canvasItem)
-            }
-            onClick={canvasController.genHandleEventClicking(canvasItem)}>
+        <BoxEditorNormalWrapperComp style={style}>
             <BoxEditorNormalTextRender />
-        </div>
+        </BoxEditorNormalWrapperComp>
     );
 }
 
 export function BoxEditorNormalTextRender() {
-    const canvasItem = useCanvasItemContext();
-    const { props } = canvasItem;
+    const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();
     try {
         CanvasItemText.validate(props);
     } catch (error) {

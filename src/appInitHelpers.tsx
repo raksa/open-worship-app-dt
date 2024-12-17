@@ -5,7 +5,7 @@ import './appInit.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
-import { openConfirm } from './alert/alertHelpers';
+import { openAppConfirm } from './alert/alertHelpers';
 import { useKeyboardRegistering } from './event/KeyboardEventListener';
 import {
     getDownloadedBibleInfoList,
@@ -23,7 +23,7 @@ import { StrictMode } from 'react';
 export async function initApp() {
 
     const confirmEraseLocalStorage = () => {
-        openConfirm('Reload is needed',
+        openAppConfirm('Reload is needed',
             'We were sorry, Internal process error, you to refresh the app'
         ).then((isOk) => {
             if (isOk) {
@@ -72,7 +72,7 @@ export function useQuickExitBlock() {
         mControlKey: ['Meta'],
     }], async (event) => {
         event.preventDefault();
-        await openConfirm('Quick Exit',
+        await openAppConfirm('Quick Exit',
             'Are you sure you want to quit the app?'
         ).then((isOk) => {
             if (isOk) {

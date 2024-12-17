@@ -1,8 +1,8 @@
-import './SlideItemRender.scss';
+import './SlideItemRenderComp.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenu';
 import SlideItem, {
-    useSelectedEditingSlideItemContext,
+    SelectedEditingSlideItemContext,
 } from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
@@ -10,6 +10,7 @@ import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
 import { handleDragStart } from '../../bible-list/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
+import { use } from 'react';
 
 export function RendInfo({ index, slideItem }: Readonly<{
     index: number,
@@ -47,11 +48,11 @@ export function RendInfo({ index, slideItem }: Readonly<{
 }
 
 export function toClassNameHighlight(
-    slideItem: SlideItem, selectedSlideItem?: SlideItem,
+    slideItem: SlideItem, selectedSlideItem?: SlideItem | null,
 ) {
     const activeCN = (
         (
-            appProvider.isPageEditor && selectedSlideItem !== undefined &&
+            appProvider.isPageEditor && selectedSlideItem &&
             slideItem.checkIsSame(selectedSlideItem)
         ) ? 'active' : ''
     );
@@ -67,7 +68,7 @@ export function toClassNameHighlight(
     };
 }
 
-export default function SlideItemRender({
+export default function SlideItemRenderComp({
     slideItem, width, index, onClick, onContextMenu, onCopy, onDragStart,
     onDragEnd,
 }: Readonly<{
@@ -80,7 +81,9 @@ export default function SlideItemRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
-    const selectedSlideItem = useSelectedEditingSlideItemContext();
+    const selectedSlideItem = (
+        use(SelectedEditingSlideItemContext)?.selectedSlideItem || null
+    );
     useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,

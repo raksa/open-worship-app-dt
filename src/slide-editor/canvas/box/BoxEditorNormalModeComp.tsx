@@ -1,6 +1,8 @@
 import { CSSProperties } from 'react';
 
-import { useCanvasItemContext } from '../CanvasItem';
+import {
+    useCanvasItemContext, useEditingCanvasItemAndSetterContext,
+} from '../CanvasItem';
 import BoxEditorNormalViewImageModeComp from
     './BoxEditorNormalViewImageModeComp';
 import BoxEditorNormalTextEditModeComp from './BoxEditorNormalTextEditModeComp';
@@ -13,6 +15,9 @@ import BoxEditorNormalViewVideoModeComp from
 
 export default function BoxEditorNormalModeComp() {
     const canvasItem = useCanvasItemContext();
+    const {
+        canvasItem: editingCanvasItem,
+    } = useEditingCanvasItemAndSetterContext();
     const style: CSSProperties = {
         ...canvasItem.getStyle(),
         ...canvasItem.getBoxStyle(),
@@ -27,7 +32,7 @@ export default function BoxEditorNormalModeComp() {
                 <BoxEditorNormalViewVideoModeComp style={style} />
             );
         case 'text':
-            if (canvasItem.isEditing) {
+            if (canvasItem === editingCanvasItem) {
                 return (
                     <BoxEditorNormalTextEditModeComp style={style} />
                 );

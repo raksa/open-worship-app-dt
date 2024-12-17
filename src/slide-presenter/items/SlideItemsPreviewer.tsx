@@ -1,10 +1,10 @@
 import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
-import SlideItems from './SlideItems';
+import SlideItemsComp from './SlideItemsComp';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleCtrlWheel } from '../../others/AppRange';
-import { defaultRangeSize } from './SlidePreviewerFooter';
+import { defaultRangeSize } from './SlidePreviewerFooterComp';
 import SlideItemsMenuComp from './SlideItemsMenuComp';
 
 export default function SlideItemsPreviewer() {
@@ -31,7 +31,7 @@ export default function SlideItemsPreviewer() {
             {!selectedSlide.isPdf && (
                 <SlideItemsMenuComp />
             )}
-            <SlideItems />
+            <SlideItemsComp />
         </div>
     );
 }

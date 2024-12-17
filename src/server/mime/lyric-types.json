@@ -2,7 +2,7 @@
     {
         "type": "OpenWorship Lyric",
         "title": "Json file for OpenWorship lyric",
-        "mimetype": "application/json",
+        "mimetypeSignature": "application/json",
         "extensions": [
             ".owl"
         ]

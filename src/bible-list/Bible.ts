@@ -167,7 +167,7 @@ export default class Bible extends ItemSource<BibleItem> {
             showSimpleToast('Moving Bible Item', error.message);
         }
     }
-    static readonly mimetype: MimetypeNameType = 'bible';
+    static readonly mimetypeName: MimetypeNameType = 'bible';
     static async readFileToDataNoCache(filePath: string | null) {
         return super.readFileToDataNoCache(
             filePath,

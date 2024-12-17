@@ -2,13 +2,13 @@ import { showAppContextMenu } from '../../../others/AppContextMenu';
 import appProvider from '../../../server/appProvider';
 import { useCanvasControllerContext } from '../CanvasController';
 import { useCanvasItemContext } from '../CanvasItem';
+import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
 
 export default function BoxEditorNormalViewErrorComp() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     return (
-        <div className='app-box-editor pointer'
-            style={canvasItem.getBoxStyle()}
+        <BoxEditorNormalWrapperComp style={canvasItem.getBoxStyle()}
             onContextMenu={async (event) => {
                 event.stopPropagation();
                 showAppContextMenu(event as any, [{
@@ -24,14 +24,9 @@ export default function BoxEditorNormalViewErrorComp() {
                         );
                     },
                 }]);
-            }}
-            onClick={canvasController.genHandleEventClicking(canvasItem)}>
-            <div style={{
-                ...canvasItem.getStyle(),
             }}>
-                Error
-            </div>
-        </div>
+            Error
+        </BoxEditorNormalWrapperComp>
     );
 }
 

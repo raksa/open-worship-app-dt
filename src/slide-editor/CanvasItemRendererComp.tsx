@@ -1,18 +1,18 @@
 import {
     BoxEditorNormalImageRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewImageModeComp';
+} from './canvas/box/BoxEditorNormalViewImageModeComp';
 import {
     BoxEditorNormalTextRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewTextModeComp';
+} from './canvas/box/BoxEditorNormalViewTextModeComp';
 import {
     BoxEditorNormalBibleRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewBibleModeComp';
+} from './canvas/box/BoxEditorNormalViewBibleModeComp';
 import {
     useCanvasItemContext,
-} from '../../slide-editor/canvas/CanvasItem';
+} from './canvas/CanvasItem';
 import {
     BoxEditorNormalVideoRender,
-} from '../../slide-editor/canvas/box/BoxEditorNormalViewVideoModeComp';
+} from './canvas/box/BoxEditorNormalViewVideoModeComp';
 
 export default function CanvasItemRendererComp() {
     const canvasItem = useCanvasItemContext();

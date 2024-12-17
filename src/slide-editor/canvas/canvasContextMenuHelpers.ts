@@ -87,6 +87,7 @@ export async function showCanvasContextMenu(
 
 export function showCanvasItemContextMenu(
     event: any, canvasController: CanvasController, canvasItem: CanvasItem<any>,
+    handleCanvasItemEditing: () => void,
 ) {
     showAppContextMenu(event, [
         {
@@ -101,8 +102,7 @@ export function showCanvasItemContextMenu(
         },
         {
             menuTitle: 'Edit', onClick: () => {
-                canvasController.stopAllMods();
-                canvasController.setItemIsEditing(canvasItem, true);
+                handleCanvasItemEditing();
             },
         },
         {

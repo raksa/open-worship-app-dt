@@ -8,17 +8,17 @@ import { MimetypeNameType } from '../server/fileHelpers';
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
 export default function RenderList({
-    dirSource, mimetype, bodyHandler,
+    dirSource, mimetypeName, bodyHandler,
 }: Readonly<{
     dirSource: DirSource,
-    mimetype: MimetypeNameType,
+    mimetypeName: MimetypeNameType,
     bodyHandler: (_: string[]) => any,
 }>) {
     const [filePaths, setFilePaths] = (
         useState<string[] | null | undefined>(null)
     );
     const refresh = async () => {
-        const newFilePaths = await dirSource.getFilePaths(mimetype);
+        const newFilePaths = await dirSource.getFilePaths(mimetypeName);
         if (newFilePaths !== undefined) {
             const promises = newFilePaths.map(async (filePath) => {
                 const fileSource = FileSource.getInstance(filePath);

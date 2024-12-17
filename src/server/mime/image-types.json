@@ -2,7 +2,7 @@
     {
         "type": "APNG",
         "title": "Animated Portable Network Graphics",
-        "mimetype": "image/apng",
+        "mimetypeSignature": "image/apng",
         "extensions": [
             ".apng"
         ]
@@ -10,7 +10,7 @@
     {
         "type": "AVIF",
         "title": "AV1 Image File Format",
-        "mimetype": "image/avif",
+        "mimetypeSignature": "image/avif",
         "extensions": [
             ".avif"
         ]
@@ -18,7 +18,7 @@
     {
         "type": "GIF",
         "title": "Graphics Interchange Format",
-        "mimetype": "image/gif",
+        "mimetypeSignature": "image/gif",
         "extensions": [
             ".gif"
         ]
@@ -26,7 +26,7 @@
     {
         "type": "JPEG",
         "title": "Joint Photographic Expert Group image",
-        "mimetype": "image/jpeg",
+        "mimetypeSignature": "image/jpeg",
         "extensions": [
             ".jpg",
             ".jpeg",
@@ -38,7 +38,7 @@
     {
         "type": "PNG",
         "title": "Portable Network Graphics",
-        "mimetype": "image/png",
+        "mimetypeSignature": "image/png",
         "extensions": [
             ".png"
         ]
@@ -46,7 +46,7 @@
     {
         "type": "SVG",
         "title": "Scalable Vector Graphics",
-        "mimetype": "image/svg+xml",
+        "mimetypeSignature": "image/svg+xml",
         "extensions": [
             ".svg"
         ]
@@ -54,7 +54,7 @@
     {
         "type": "WebP",
         "title": "Web Picture format",
-        "mimetype": "image/webp",
+        "mimetypeSignature": "image/webp",
         "extensions": [
             ".webp"
         ]

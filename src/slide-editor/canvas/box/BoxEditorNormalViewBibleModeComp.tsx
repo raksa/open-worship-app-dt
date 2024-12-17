@@ -1,33 +1,26 @@
 import { CSSProperties } from 'react';
 
-import { useCanvasControllerContext } from '../CanvasController';
 import CanvasItemBibleItem, {
     CanvasItemBiblePropsType,
 } from '../CanvasItemBibleItem';
 import { BENViewErrorRender } from './BoxEditorNormalViewErrorComp';
 import { handleError } from '../../../helper/errorHelpers';
-import { useCanvasItemContext } from '../CanvasItem';
+import { useCanvasItemPropsContext } from '../CanvasItem';
+import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
+import { CanvasItemTextPropsType } from '../CanvasItemText';
 
 export default function BoxEditorNormalViewBibleModeComp({ style }: Readonly<{
     style: CSSProperties
 }>) {
-    const canvasItem = useCanvasItemContext();
-    const canvasController = useCanvasControllerContext();
     return (
-        <div className='app-box-editor pointer'
-            style={style}
-            onContextMenu={
-                canvasController.genHandleContextMenuOpening(canvasItem)
-            }
-            onClick={canvasController.genHandleEventClicking(canvasItem)}>
+        <BoxEditorNormalWrapperComp style={style}>
             <BoxEditorNormalBibleRender />
-        </div>
+        </BoxEditorNormalWrapperComp>
     );
 }
 
 export function BoxEditorNormalBibleRender() {
-    const canvasItem = useCanvasItemContext();
-    const { props } = canvasItem;
+    const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();
     try {
         CanvasItemBibleItem.validate(props);
     } catch (error) {

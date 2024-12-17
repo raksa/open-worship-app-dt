@@ -70,7 +70,7 @@ export default function SlideList() {
     }
     return (
         <FileListHandler id='slide-list'
-            mimetype='slide'
+            mimetypeName='slide'
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
             checkExtraFile={handleExtraFileChecking}

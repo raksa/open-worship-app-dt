@@ -2,9 +2,7 @@ import { SrcData } from '../../helper/FileSource';
 import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 
-export type CanvasControllerEventType = (
-    'controlling' | 'text-editing' | 'update' | 'scale' | 'edit'
-);
+export type CanvasControllerEventType = 'update' | 'scale';
 
 export type CanvasItemMediaPropsType = {
     srcData: SrcData,

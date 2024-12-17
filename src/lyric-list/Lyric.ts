@@ -16,7 +16,7 @@ export type LyricType = {
     metadata: AnyObjectType,
 }
 export default class Lyric extends ItemSource<LyricItem>{
-    static readonly mimetype: MimetypeNameType = 'lyric';
+    static readonly mimetypeName: MimetypeNameType = 'lyric';
     static readonly SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
     editorCacheManager: LyricEditorCacheManager;

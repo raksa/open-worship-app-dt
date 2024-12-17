@@ -7,7 +7,7 @@ import SlideItemEditorPopupHeader from './SlideItemEditorPopupHeader';
 import SlideItem, {
     SelectedEditingSlideItemContext,
 } from '../slide-list/SlideItem';
-import SlideItemEditor from './SlideItemEditor';
+import SlideItemEditorComp from './SlideItemEditorComp';
 import {
     closeSlideItemQuickEdit,
 } from '../slide-presenter/HandleItemSlideEdit';
@@ -27,7 +27,7 @@ export default function SlideItemEditorPopup({ slideItem }: Readonly<{
                         selectedSlideItem: slideItem,
                         setSelectedSlideItem: () => { },
                     }}>
-                        <SlideItemEditor />
+                        <SlideItemEditorComp />
                     </SelectedEditingSlideItemContext>
                 </div>
             </div>

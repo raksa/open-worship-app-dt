@@ -26,7 +26,7 @@ export type SlideType = {
 };
 
 export default class Slide extends ItemSource<SlideItem> {
-    static readonly mimetype: MimetypeNameType = 'slide';
+    static readonly mimetypeName: MimetypeNameType = 'slide';
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editorCacheManager: SlideEditorCacheManager;
@@ -121,13 +121,10 @@ export default class Slide extends ItemSource<SlideItem> {
         return isSuccess;
     }
 
-    fireNewItemsEvent() {
-        this.fileSource.fireNewEvent(this.items);
-    }
     duplicateItem(slideItem: SlideItem) {
         const items = this.items;
         const index = items.findIndex((item) => {
-            return item.id === slideItem.id;
+            return item.checkIsSame(slideItem);
         });
         if (index === -1) {
             showSimpleToast('Duplicate Item', 'Unable to find item');
@@ -139,8 +136,8 @@ export default class Slide extends ItemSource<SlideItem> {
             items.splice(index + 1, 0, newItem);
             this.itemIdShouldToView = newItem.id;
             this.items = items;
+            this.fileSource.fireNewEvent(newItem);
         }
-        this.fireNewItemsEvent();
     }
     pasteItem() {
         if (this.copiedItem === null) {
@@ -151,8 +148,8 @@ export default class Slide extends ItemSource<SlideItem> {
             newItem.id = this.maxItemId + 1;
             const newItems: SlideItem[] = [...this.items, newItem];
             this.items = newItems;
+            this.fileSource.fireNewEvent(newItem);
         }
-        this.fireNewItemsEvent();
     }
     moveItem(id: number, toIndex: number, isLeft: boolean) {
         const fromIndex: number = this.items.findIndex((item) => {
@@ -165,14 +162,14 @@ export default class Slide extends ItemSource<SlideItem> {
         const target = items.splice(fromIndex, 1)[0];
         items.splice(toIndex, 0, target);
         this.items = items;
-        this.fireNewItemsEvent();
+        this.fileSource.fireUpdateEvent(this.items);
     }
     addItem(slideItem: SlideItem) {
         const items = this.items;
         slideItem.id = this.maxItemId + 1;
         items.push(slideItem);
         this.items = items;
-        this.fireNewItemsEvent();
+        this.fileSource.fireNewEvent(slideItem);
     }
     addNewItem() {
         const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
@@ -195,7 +192,7 @@ export default class Slide extends ItemSource<SlideItem> {
             return item.id !== slideItem.id;
         });
         this.items = newItems;
-        this.fireNewItemsEvent();
+        this.fileSource.fireDeleteEvent(slideItem);
     }
 
     static toWrongDimensionString({ slideItem, display }: {
@@ -272,7 +269,7 @@ export default class Slide extends ItemSource<SlideItem> {
             Slide.setSelectedFileSource(null);
             previewingEventListener.showSlide(null);
         }
-        this.fileSource.fireSelectEvent();
+        this.fileSource.fireSelectEvent(this);
     }
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;

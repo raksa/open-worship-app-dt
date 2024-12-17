@@ -351,7 +351,7 @@ export default class BibleItemViewController
         }
     }
 
-    removeBibleItem(bibleItem: BibleItem) {
+    deleteBibleItem(bibleItem: BibleItem) {
         try {
             if (this.isAlone) {
                 return;
@@ -582,7 +582,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
                     if (bibleItem === this.selectedBibleItem) {
                         closeCurrentEditingBibleItem();
                     } else {
-                        this.removeBibleItem(bibleItem);
+                        this.deleteBibleItem(bibleItem);
                     }
                 },
             },
@@ -610,8 +610,8 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         newBibleItem.target = this.selectedBibleItem.clone().target;
         this.changeBibleItem(bibleItem, newBibleItem);
     }
-    removeBibleItem(bibleItem: BibleItem) {
-        super.removeBibleItem(bibleItem);
+    deleteBibleItem(bibleItem: BibleItem) {
+        super.deleteBibleItem(bibleItem);
         const straightBibleItems = this.straightBibleItems;
         if (!straightBibleItems.includes(this.selectedBibleItem)) {
             const lastBibleItem = straightBibleItems[

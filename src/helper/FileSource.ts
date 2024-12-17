@@ -60,8 +60,8 @@ export default class FileSource extends EventHandler<FileSourceEventType>
                     reject(new Error('metadata not found'));
                     return;
                 }
-                const mimeType = metadata.appMimetype.mimetype;
-                resolve(`data:${mimeType};base64,${data}`);
+                const { mimetypeSignature } = metadata.appMimetype;
+                resolve(`data:${mimetypeSignature};base64,${data}`);
             });
         });
     }

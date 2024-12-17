@@ -78,6 +78,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             return item;
         });
         this.editorCacheManager.pushSlideItems(newItems);
+        this.fileSource?.fireEditEvent(this);
     }
 
     get metadata() {
@@ -91,7 +92,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     get pdfImageSrc() {
-        return this.pdfImageData?.src || '';
+        return this.pdfImageData?.src ?? '';
     }
 
     get canvas() {
@@ -119,7 +120,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
 
     get width() {
         if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.width || 0);
+            return Math.floor(this.pdfImageData?.width ?? 0);
         }
         return this.metadata.width;
     }
@@ -132,7 +133,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
 
     get height() {
         if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.height || 0);
+            return Math.floor(this.pdfImageData?.height ?? 0);
         }
         return this.metadata.height;
     }

@@ -54,7 +54,7 @@ export default function BackgroundMedia({
     }
     return (
         <FileListHandler id={`app-background-${backgroundType}`}
-            mimetype={backgroundType}
+            mimetypeName={backgroundType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
             bodyHandler={handleBodyRendering}

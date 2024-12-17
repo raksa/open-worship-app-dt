@@ -1,4 +1,4 @@
-import { openConfirm } from '../alert/alertHelpers';
+import { openAppConfirm } from '../alert/alertHelpers';
 import { getDesktopPath } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { fsCheckDirExist, fsCreateDir } from '../server/fileHelpers';
@@ -17,7 +17,7 @@ function getDefaultDataDir() {
 
 async function selectDefaultData() {
     const defaultDataDir = getDefaultDataDir();
-    const isOk = await openConfirm(
+    const isOk = await openAppConfirm(
         'Select Default Data Folder', `This will select "${defaultDataDir}"`,
     );
     if (!isOk) {
@@ -33,7 +33,7 @@ async function selectDefaultData() {
             if (isSuccess) {
                 setSetting(settingName, dirPath);
             } else {
-                await openConfirm(
+                await openAppConfirm(
                     'Creating Default Folder',
                     `Fail to create folder "${dirPath}"`,
                 );
@@ -70,7 +70,7 @@ export async function selectDefaultDataDirName(
 ) {
     const defaultDataDir = getDefaultDataDir();
     const dirPath = appProvider.pathUtils.join(defaultDataDir, dirName);
-    const isOk = await openConfirm(
+    const isOk = await openAppConfirm(
         'Select Default Folder',
         `This will select "${dirPath}" (will create if not exist)`,
     );

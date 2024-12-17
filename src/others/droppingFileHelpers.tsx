@@ -82,17 +82,17 @@ function checkAndCopyFiles({ checkIsValidFile, takeFile }: {
 }
 
 export function genOnDrop({
-    dirSource, mimetype, checkIsExtraFile, takeDroppedFile,
+    dirSource, mimetypeName, checkIsExtraFile, takeDroppedFile,
 }: {
     dirSource: DirSource,
-    mimetype: MimetypeNameType,
+    mimetypeName: MimetypeNameType,
     checkIsExtraFile?: (fileFullName: string) => boolean,
     takeDroppedFile?: (file: DroppedFileType) => boolean,
 }) {
     const checkIsValidFile = (fileFullName: string) => {
         return (
             checkIsExtraFile?.(fileFullName) ||
-            isSupportedExt(fileFullName, mimetype)
+            isSupportedExt(fileFullName, mimetypeName)
         );
     };
     return async (event: React.DragEvent<HTMLDivElement>) => {

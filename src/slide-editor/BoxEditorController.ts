@@ -123,8 +123,8 @@ function calcBoxProps(options: CalcBoxPropsType) {
 }
 
 export default class BoxEditorController {
-    onDone: () => void = () => false;
-    onClick: (event: any) => void = () => false;
+    onDone: () => (void | Promise<void>) = () => { };
+    onClick: (event: any) => (void | Promise<void>) = () => { };
     editor: HTMLDivElement | null = null;
     target: HTMLDivElement | null = null;
     minWidth = 40;
@@ -221,7 +221,7 @@ export default class BoxEditorController {
         if (this.editor === null || this.target === null) {
             return;
         }
-        event.stopPropagation();
+        this.blockMouseEvent(event);
         let isMoving = false;
         const target = event.currentTarget as HTMLDivElement;
         if (target.className.includes('dot')) {
@@ -233,7 +233,7 @@ export default class BoxEditorController {
         this.mousePressY = event.clientY;
 
         const eventMouseMoveHandler = (event: MouseEvent) => {
-            event.stopPropagation();
+            this.blockMouseEvent(event);
             isMoving = true;
             const {
                 scaleFactor, initX, initY, mousePressX, mousePressY,
@@ -243,28 +243,28 @@ export default class BoxEditorController {
                 initY + (event.clientY - mousePressY) / scaleFactor,
             );
         };
-        const eventMouseUpHandler = (endingEvent: MouseEvent) => {
+        const eventMouseUpHandler = (event: MouseEvent) => {
             if (this.editor === null || this.target === null) {
                 return;
             }
-            endingEvent.stopPropagation();
-            if (isMoving) {
-                this.onDone();
-            } else {
-                this.onClick(endingEvent);
-            }
+            this.blockMouseEvent(event);
             window.removeEventListener(
                 'mousemove', eventMouseMoveHandler, false,
             );
-            window.removeEventListener('mouseup', eventMouseUpHandler);
+            window.removeEventListener('mouseup', eventMouseUpHandler, false);
+            if (isMoving) {
+                this.onDone();
+            } else {
+                this.onClick(event);
+            }
         };
         window.addEventListener('mousemove', eventMouseMoveHandler, false);
         window.addEventListener('mouseup', eventMouseUpHandler, false);
     }
-    rotationFromStyle(st: CSSStyleDeclaration) {
-        const tm = st.getPropertyValue('transform');
-        if (tm !== 'none') {
-            const values = tm.split('(')[1].split(')')[0].split(',');
+    rotationFromStyle(style: CSSStyleDeclaration) {
+        const transform = style.getPropertyValue('transform');
+        if (transform !== 'none') {
+            const values = transform.split('(')[1].split(')')[0].split(',');
             const angle = Math.round(
                 Math.atan2(
                     parseInt(values[1], 10),
@@ -275,9 +275,9 @@ export default class BoxEditorController {
         }
         return 0;
     }
-    getCurrentRotation(el: HTMLDivElement) {
-        const st = window.getComputedStyle(el, null);
-        return this.rotationFromStyle(st);
+    getCurrentRotation(element: HTMLDivElement) {
+        const style = window.getComputedStyle(element, null);
+        return this.rotationFromStyle(style);
     }
     repositionElement(x: number, y: number) {
         if (this.editor === null) {
@@ -286,18 +286,18 @@ export default class BoxEditorController {
         this.editor.style.left = `${x}px`;
         this.editor.style.top = `${y}px`;
     }
-    resizeBox(w: number, h: number) {
+    resizeBox(width: number, height: number) {
         if (this.target === null) {
             return;
         }
-        this.target.style.width = `${w}px`;
-        this.target.style.height = `${h}px`;
+        this.target.style.width = `${width}px`;
+        this.target.style.height = `${height}px`;
     }
-    rotateBox(deg: number) {
+    rotateBox(rotationDegrees: number) {
         if (this.editor === null) {
             return;
         }
-        this.editor.style.transform = `rotate(${deg}deg)`;
+        this.editor.style.transform = `rotate(${rotationDegrees}deg)`;
     }
     unRotateBox() {
         if (this.editor === null) {
@@ -305,31 +305,32 @@ export default class BoxEditorController {
         }
         this.editor.style.transform = 'rotate(0deg)';
     }
+    blockMouseEvent(event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     rotateHandler(event: MouseEvent) {
         if (this.target === null) {
             return;
         }
-        event.stopPropagation();
+        this.blockMouseEvent(event);
         const arrowRects = this.target.getBoundingClientRect();
         const arrowX = arrowRects.left + arrowRects.width / 2;
         const arrowY = arrowRects.top + arrowRects.height / 2;
 
-        const eventMoveHandler = (movingEvent: MouseEvent) => {
-            movingEvent.stopPropagation();
-            const angle =
-                Math.atan2(
-                    movingEvent.clientY - arrowY,
-                    movingEvent.clientX - arrowX,
-                ) + Math.PI / 2;
-            this.rotateBox((angle * 180) / Math.PI);
+        const eventMoveHandler = (event: MouseEvent) => {
+            this.blockMouseEvent(event);
+            const angle = Math.atan2(
+                event.clientY - arrowY, event.clientX - arrowX,
+            ) + Math.PI / 2;
+            const rotationDegrees = (angle * 180) / Math.PI;
+            this.rotateBox(rotationDegrees);
         };
-        const eventEndHandler = (endingEvent: MouseEvent) => {
-            endingEvent.stopPropagation();
-            if (this.onDone !== null) {
-                this.onDone();
-            }
+        const eventEndHandler = (event: MouseEvent) => {
+            this.blockMouseEvent(event);
             window.removeEventListener('mousemove', eventMoveHandler, false);
-            window.removeEventListener('mouseup', eventEndHandler);
+            window.removeEventListener('mouseup', eventEndHandler, false);
+            this.onDone();
         };
         window.addEventListener('mousemove', eventMoveHandler, false);
         window.addEventListener('mouseup', eventEndHandler, false);
@@ -338,7 +339,7 @@ export default class BoxEditorController {
         if (this.editor === null || this.target === null) {
             return;
         }
-        event.stopPropagation();
+        this.blockMouseEvent(event);
         const { left, top, xResize, yResize } = options;
         this.initX = this.editor.offsetLeft;
         this.initY = this.editor.offsetTop;
@@ -352,23 +353,21 @@ export default class BoxEditorController {
         const initRadians = (initRotate * Math.PI) / 180;
         const cosFraction = Math.cos(initRadians);
         const sinFraction = Math.sin(initRadians);
-        const mMoveHandler = (movingEvent: MouseEvent) => {
-            movingEvent.stopPropagation();
+        const mMoveHandler = (event: MouseEvent) => {
+            this.blockMouseEvent(event);
             const { newW, newH, newX, newY } = calcBoxProps({
                 left, top, xResize, yResize, cosFraction, sinFraction,
-                initW, initH, boxProps: this, mEvent: movingEvent,
+                initW, initH, boxProps: this, mEvent: event,
             });
             this.resizeBox(newW, newH);
             this.repositionElement(newX, newY);
         };
 
-        const eventMouseUpHandler = (endingEvent: MouseEvent) => {
-            if (this.onDone !== null) {
-                this.onDone();
-            }
-            endingEvent.stopPropagation();
+        const eventMouseUpHandler = (event: MouseEvent) => {
+            this.blockMouseEvent(event);
             window.removeEventListener('mousemove', mMoveHandler, false);
-            window.removeEventListener('mouseup', eventMouseUpHandler);
+            window.removeEventListener('mouseup', eventMouseUpHandler, false);
+            this.onDone();
         };
         window.addEventListener('mousemove', mMoveHandler, false);
         window.addEventListener('mouseup', eventMouseUpHandler, false);

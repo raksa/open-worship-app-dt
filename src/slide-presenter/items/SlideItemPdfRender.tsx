@@ -1,10 +1,10 @@
-import './SlideItemRender.scss';
+import './SlideItemRenderComp.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
 import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
 import {
     RendInfo, toClassNameHighlight,
-} from './SlideItemRender';
+} from './SlideItemRenderComp';
 import ReactDOMServer from 'react-dom/server';
 import { getDivHTMLChild } from '../../helper/helpers';
 

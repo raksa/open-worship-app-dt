@@ -5,7 +5,7 @@ import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import AppSuspense from '../others/AppSuspense';
 import ItemSource from '../helper/ItemSource';
-import { openConfirm } from '../alert/alertHelpers';
+import { openAppConfirm } from '../alert/alertHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';
@@ -25,7 +25,7 @@ function genContextMenu(
     return [{
         menuTitle: '(*T) ' + 'Empty',
         onClick: () => {
-            openConfirm(
+            openAppConfirm(
                 'Empty Bible List',
                 'Are you sure to empty this bible list?'
             ).then((isOk) => {
@@ -78,7 +78,7 @@ export default function BibleFile({
     const handleReloading = () => {
         setData(null);
     };
-    useFileSourceEvents(['update'], filePath, handleReloading);
+    useFileSourceEvents(['update'], handleReloading, [data], filePath);
     return (
         <FileItemHandler
             index={index}

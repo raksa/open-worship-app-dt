@@ -37,7 +37,9 @@ export class BasicEventHandler<T extends string> {
             eventName,
             data,
         });
-        this.checkPropEvent();
+        setTimeout(() => {
+            this.checkPropEvent();
+        }, 0);
     }
 
     addOnEventListener(eventName: T, listener: ListenerType<any>) {

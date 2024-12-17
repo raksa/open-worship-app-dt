@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
-import CanvasItemText from '../CanvasItemText';
+import CanvasItemText, { CanvasItemTextPropsType } from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
 import { useAppEffect } from '../../../helper/debuggerHelpers';
 import { useCanvasControllerContext } from '../CanvasController';
-import { useCanvasItemContext } from '../CanvasItem';
+import { useCanvasItemContext, useCanvasItemPropsContext } from '../CanvasItem';
 
 export default function ToolsTextFontControlComp() {
     return (
@@ -24,7 +24,7 @@ export default function ToolsTextFontControlComp() {
 function FontSize() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext() as CanvasItemText;
-    const { props } = canvasItem;
+    const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();
     const [localFontSize, setLocalFontSize] = useState(props.fontSize);
     useAppEffect(() => {
         setLocalFontSize(props.fontSize);

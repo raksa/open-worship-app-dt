@@ -49,7 +49,8 @@ function LayerComp() {
                     <button className='btn btn-info'
                         onClick={() => {
                             canvasController.applyOrderingData(
-                                canvasItem, true);
+                                canvasItem, true,
+                            );
                         }}>
                         <i className='bi bi-layer-backward' />
                     </button>

@@ -54,7 +54,7 @@ export default function BibleView({ bibleItem }: Readonly<{
                         );
                     }}
                     onClose={() => {
-                        viewController.removeBibleItem(bibleItem);
+                        viewController.deleteBibleItem(bibleItem);
                     }}
                 />
                 <div className='card-body p-3'>

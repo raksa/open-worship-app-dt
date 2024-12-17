@@ -64,12 +64,12 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         const fileSource = this.getFileSourceInstance(fileFullName);
         fileSource.fireUpdateEvent();
     }
-    async getFilePaths(mimetype: MimetypeNameType) {
+    async getFilePaths(mimetypeName: MimetypeNameType) {
         if (!this.dirPath) {
             return [];
         }
         try {
-            const mimetypeList = getAppMimetype(mimetype);
+            const mimetypeList = getAppMimetype(mimetypeName);
             const files = await fsListFiles(this.dirPath);
             const matchedFiles = files.map((fileFullName) => {
                 const fileMetadata = getFileMetaData(

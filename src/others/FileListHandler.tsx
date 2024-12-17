@@ -52,11 +52,12 @@ export const DirSourceContext = createContext<DirSource | null>(null);
 export type FileListType = FileSource[] | null | undefined
 
 export default function FileListHandler({
-    id, mimetype, dirSource, header, bodyHandler, contextMenu, onNewFile,
+    id, mimetypeName, dirSource, header, bodyHandler, contextMenu, onNewFile,
     checkExtraFile, takeDroppedFile, userClassName, defaultFolderName,
     fileSelectionOption,
 }: Readonly<{
-    id: string, mimetype: MimetypeNameType,
+    id: string, 
+    mimetypeName: MimetypeNameType,
     dirSource: DirSource,
     header?: any,
     bodyHandler: (filePaths: string[]) => any,
@@ -97,7 +98,7 @@ export default function FileListHandler({
                 onDragOver={genOnDragOver(dirSource)}
                 onDragLeave={genOnDragLeave()}
                 onDrop={genOnDrop({
-                    dirSource, mimetype,
+                    dirSource, mimetypeName: mimetypeName,
                     checkIsExtraFile: checkExtraFile,
                     takeDroppedFile,
                 })}>
@@ -136,7 +137,7 @@ export default function FileListHandler({
                                 )}
                                 <RenderList dirSource={dirSource}
                                     bodyHandler={bodyHandler}
-                                    mimetype={mimetype}
+                                    mimetypeName={mimetypeName}
                                 />
                             </ul>
                         )}

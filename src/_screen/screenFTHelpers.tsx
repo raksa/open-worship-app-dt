@@ -8,7 +8,7 @@ import {
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFTManager from './ScreenFTManager';
 import ScreenManager from './ScreenManager';
-import { openAlert } from '../alert/alertHelpers';
+import { openAppAlert } from '../alert/alertHelpers';
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
@@ -36,7 +36,7 @@ async function onBibleSelect(
     });
     const bibleInfoList = await getDownloadedBibleInfoList();
     if (bibleInfoList === null) {
-        openAlert(
+        openAppAlert(
             'Unable to get bible info list',
             'We were sorry, but we are unable to get bible list at the moment' +
             ' please try again later'
@@ -49,7 +49,7 @@ async function onBibleSelect(
     const applyBibleItems = async (newBibleKeys: string[]) => {
         const bibleItemJson = ftItemData.bibleItemData?.bibleItem;
         if (bibleItemJson === undefined) {
-            openAlert(
+            openAppAlert(
                 'Fail to get bible item data',
                 'We were sorry, but we are unable to get bible item data at ' +
                 'the moment please try again later',

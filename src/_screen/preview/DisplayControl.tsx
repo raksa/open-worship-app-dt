@@ -1,5 +1,7 @@
 import { useScreenManagerContext } from '../ScreenManager';
-import { showAppContextMenu } from '../../others/AppContextMenu';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../../others/AppContextMenu';
 import { useScreenManagerEvents } from '../screenEventHelpers';
 import { getAllDisplays } from '../screenHelpers';
 
@@ -23,24 +25,27 @@ export default function DisplayControl() {
                     const {
                         primaryDisplay, displays,
                     } = getAllDisplays();
-                    showAppContextMenu(event as any, displays.map((display) => {
-                        const label = (display as any).label ?? 'Unknown';
-                        const bounds = display.bounds;
-                        const isPrimary = display.id === primaryDisplay.id;
-                        const isSelected = display.id === displayId;
-                        const title = (
-                            (isSelected ? '*' : '') +
-                            `${label}(${display.id}): ` +
-                            `${bounds.width}x${bounds.height}` +
-                            (isPrimary ? ' (primary)' : '')
-                        );
-                        return {
-                            title,
-                            onClick: () => {
-                                screenManager.displayId = display.id;
-                            },
-                        };
-                    }));
+                    const contextMenuItems = (
+                        displays.map((display) => {
+                            const label = (display as any).label ?? 'Unknown';
+                            const bounds = display.bounds;
+                            const isPrimary = display.id === primaryDisplay.id;
+                            const isSelected = display.id === displayId;
+                            const menuTitle = (
+                                (isSelected ? '*' : '') +
+                                `${label}(${display.id}): ` +
+                                `${bounds.width}x${bounds.height}` +
+                                (isPrimary ? ' (primary)' : '')
+                            );
+                            return {
+                                menuTitle,
+                                onClick: () => {
+                                    screenManager.displayId = display.id;
+                                },
+                            } as ContextMenuItemType;
+                        })
+                    );
+                    showAppContextMenu(event as any, contextMenuItems);
                 }}>
                 <i className='bi bi-display' />
                 {screenManager.name}({screenManager.screenId}):{displayId}

@@ -52,7 +52,7 @@ export default class CanvasController extends
     set scale(n: number) {
         this._scale = n;
         setSetting(EDITOR_SCALE_SETTING_NAME, n.toString());
-        this.addPropEvent('scale', { canvasItems: this.canvas.canvasItems });
+        this.addPropEvent('scale', { canvasItems: this.canvas.newCanvasItems });
     }
     get isCopied() {
         if (this.copiedItem === null) {
@@ -65,22 +65,14 @@ export default class CanvasController extends
     ): void {
         super.addPropEvent(eventName, data);
     }
-    fireControllingEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('controlling', { canvasItems: [canvasItem] });
-    }
-    fireTextEditingEvent(canvasItem: CanvasItem<any>) {
-        this.addPropEvent('text-editing', { canvasItems: [canvasItem] });
-    }
     fireEditEvent(canvasItem: CanvasItem<any>) {
         this.slideItem.canvas = this.canvas;
-        this.addPropEvent('edit', {
-            canvasItems: [canvasItem],
-        });
+        canvasItem.fireEditEvent();
     }
     fireUpdateEvent() {
         this.slideItem.canvas = this.canvas;
         this.addPropEvent('update', {
-            canvasItems: this.canvas.canvasItems,
+            canvasItems: this.canvas.newCanvasItems,
         });
     }
     async cloneItem(canvasItem: CanvasItem<any>) {
@@ -142,7 +134,7 @@ export default class CanvasController extends
         try {
             const fileSource = FileSource.getInstance(filePath);
             const mediaType = (
-                fileSource.metadata?.appMimetype.mimetypeName || ''
+                fileSource.metadata?.appMimetype.mimetypeName ?? ''
             );
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast(
@@ -178,14 +170,25 @@ export default class CanvasController extends
         this.addNewItem(newItem);
     }
     applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {
-        const newCanvasItems = this.canvas.canvasItems.map((item) => {
-            if (item === canvasItem) {
-                item.props.zIndex = isBack ? 1 : 2;
-            } else {
-                item.props.zIndex = isBack ? 2 : 1;
+        // move canvasItem to next if isBack is false else move to previous
+        const newCanvasItems = this.canvas.newCanvasItems;
+        const index = newCanvasItems.indexOf(canvasItem);
+        if (index === -1) {
+            return;
+        }
+        if (isBack) {
+            if (index === 0) {
+                return;
             }
-            return item;
-        });
+            newCanvasItems.splice(index, 1);
+            newCanvasItems.splice(index - 1, 0, canvasItem);
+        } else {
+            if (index === newCanvasItems.length - 1) {
+                return;
+            }
+            newCanvasItems.splice(index, 1);
+            newCanvasItems.splice(index + 1, 0, canvasItem);
+        }
         this.setCanvasItems(newCanvasItems);
     }
     scaleCanvasItemToSize(
@@ -237,53 +240,19 @@ export default class CanvasController extends
             canvasItem, targeWidth, targetHeightHeight, width, height,
         );
     }
-    stopAllMods(isSilent?: boolean) {
-        this.canvas.canvasItems.forEach((canvasItem) => {
-            if (isSilent) {
-                canvasItem.isSelected = false;
-                canvasItem.isControlling = false;
-                canvasItem.isEditing = false;
-            } else {
-                this.setItemIsSelecting(canvasItem, false);
-                this.setItemIsControlling(canvasItem, false);
-                this.setItemIsEditing(canvasItem, false);
-            }
-        });
-    }
     setCanvasItems(canvasItems: CanvasItem<any>[]) {
         this.canvas.canvasItems = canvasItems;
         this.fireUpdateEvent();
     }
-    genHandleEventClicking(canvasItem: CanvasItem<any>) {
+    genHandleContextMenuOpening(
+        canvasItem: CanvasItem<any>, handleCanvasItemEditing: () => void,
+    ) {
         return (event: any) => {
             event.stopPropagation();
-            this.setItemIsSelecting(
-                canvasItem, true,
+            showCanvasItemContextMenu(
+                event, this, canvasItem, handleCanvasItemEditing,
             );
         };
-    }
-    genHandleContextMenuOpening(canvasItem: CanvasItem<any>) {
-        return (event: any) => {
-            event.stopPropagation();
-            this.stopAllMods();
-            showCanvasItemContextMenu(event, this, canvasItem);
-        };
-    }
-    setItemIsSelecting(canvasItem: CanvasItem<any>, isSelected: boolean) {
-        if (isSelected) {
-            this.stopAllMods();
-        }
-        canvasItem.isSelected = isSelected;
-        this.fireControllingEvent(canvasItem);
-        this.setItemIsControlling(canvasItem, isSelected);
-    }
-    setItemIsControlling(canvasItem: CanvasItem<any>, isControlling: boolean) {
-        canvasItem.isControlling = isControlling;
-        this.fireControllingEvent(canvasItem);
-    }
-    setItemIsEditing(canvasItem: CanvasItem<any>, isEditing: boolean) {
-        canvasItem.isEditing = isEditing;
-        this.fireTextEditingEvent(canvasItem);
     }
 
     itemRegisterEventListener(

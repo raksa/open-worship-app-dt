@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 
-import SlideItemRender from './SlideItemRender';
+import SlideItemRenderComp from './SlideItemRenderComp';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import SlideItem, {
@@ -64,7 +64,7 @@ export default function SlideItemRenderWrapper({
                     onDrop={handleDropping}
                 />
             )}
-            <SlideItemRender index={index}
+            <SlideItemRenderComp index={index}
                 slideItem={slideItem}
                 width={thumbSize}
                 onClick={handleClicking}

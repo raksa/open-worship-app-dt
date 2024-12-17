@@ -1,4 +1,4 @@
-import { openAlert } from '../alert/alertHelpers';
+import { openAppAlert } from '../alert/alertHelpers';
 import appProvider from '../server/appProvider';
 import Slide from '../slide-list/Slide';
 
@@ -22,7 +22,7 @@ export const editorTab: TabOptionType = {
         if (slide && !slide.isPdf) {
             return true;
         }
-        openAlert(
+        openAppAlert(
             'No slide selected', 
             'Please select an Open Worship slide first',
         );

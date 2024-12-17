@@ -60,11 +60,11 @@ export async function fromLocaleNumBB(bibleKey: string, localeNum: string) {
     return fromLocaleNum(info.locale, localeNum);
 }
 export function useFromLocaleNumBB(bibleKey: string, localeNum: string) {
-    const [n, setN] = useState<number | null>(null);
+    const [newLocaleNum, setNewLocaleNum] = useState<number | null>(null);
     useAppEffect(() => {
-        fromLocaleNumBB(bibleKey, localeNum).then(setN);
+        fromLocaleNumBB(bibleKey, localeNum).then(setNewLocaleNum);
     }, [bibleKey, localeNum]);
-    return n;
+    return newLocaleNum;
 }
 
 

@@ -1,6 +1,8 @@
 import './BoxEditorControllingModeComp.scss';
 
-import { useCanvasItemContext } from '../CanvasItem';
+import {
+    useCanvasItemContext, useCanvasItemPropsContext, useSetEditingCanvasItem,
+} from '../CanvasItem';
 import { BoxEditorNormalImageRender } from './BoxEditorNormalViewImageModeComp';
 import { BoxEditorNormalTextRender } from './BoxEditorNormalViewTextModeComp';
 import { BoxEditorNormalBibleRender } from './BoxEditorNormalViewBibleModeComp';
@@ -11,7 +13,6 @@ import {
     useKeyboardRegistering,
 } from '../../../event/KeyboardEventListener';
 import { useBoxEditorControllerContext } from '../../BoxEditorController';
-import { useCanvasControllerRefreshEvents } from '../canvasEventHelpers';
 
 function BoxEditorCanvasItemRender() {
     const canvasItem = useCanvasItemContext();
@@ -41,21 +42,21 @@ function BoxEditorCanvasItemRender() {
 
 export default function BoxEditorControllingModeComp() {
     // TODO: move box by left right up down key, shift&ctl
-    useCanvasControllerRefreshEvents(['edit']);
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     const boxEditorController = useBoxEditorControllerContext();
+    const handleCanvasItemEditing = useSetEditingCanvasItem();
     useKeyboardRegistering([{ key: 'Delete' }], () => {
         canvasController.deleteItem(canvasItem);
     });
-    const { props } = canvasItem;
+    const props = useCanvasItemPropsContext();
     return (
         <div className='editor-controller-box-wrapper'
             ref={(div) => {
                 if (div !== null) {
                     boxEditorController.release();
                     boxEditorController.initEvent(div);
-                    boxEditorController.onDone = () => {
+                    boxEditorController.onDone = async () => {
                         const info = boxEditorController.getInfo();
                         if (info !== null) {
                             canvasItem.applyProps(info);
@@ -70,29 +71,27 @@ export default function BoxEditorControllingModeComp() {
                 top: `${props.top + props.height / 2}px`,
                 left: `${props.left + props.width / 2}px`,
                 transform: `rotate(${props.rotate}deg)`,
-                zIndex: props.zIndex,
             }}>
             <div className={'app-box-editor controllable'}
                 onClick={(event) => {
                     event.stopPropagation();
                 }}
                 onContextMenu={
-                    canvasController.genHandleContextMenuOpening(canvasItem)
+                    canvasController.genHandleContextMenuOpening(
+                        canvasItem,
+                        handleCanvasItemEditing.bind(null, canvasItem),
+                    )
                 }
                 onDoubleClick={(event) => {
                     event.stopPropagation();
-                    if (canvasItem.type === 'text') {
-                        canvasController.stopAllMods();
-                        canvasController.setItemIsEditing(canvasItem, true);
-                    }
+                    handleCanvasItemEditing(canvasItem);
                 }}
                 style={{
-                    border: canvasItem.isSelected ?
-                        '2px dashed green' : undefined,
+                    border: '2px dashed green',
                     transform: 'translate(-50%, -50%)',
                     width: `${props.width}px`,
                     height: `${props.height}px`,
-                    backgroundColor: props.backgroundColor,
+                    backgroundColor: props.backgroundColor ?? 'transparent',
                 }}>
                 <BoxEditorCanvasItemRender />
                 <div className='tools'>

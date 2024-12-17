@@ -35,7 +35,7 @@ export default function BibleList() {
     );
     return (
         <FileListHandler id={`${settingPrefix}bible-list`}
-            mimetype='bible'
+            mimetypeName='bible'
             defaultFolderName={defaultDataDirName}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {

@@ -1,17 +1,16 @@
 import './SlideItemEditorToolsComp.scss';
 
-import { lazy, useOptimistic } from 'react';
+import { lazy } from 'react';
 
 import { useStateSettingString } from '../../../helper/settingHelpers';
 import TabRender, { genTabBody } from '../../../others/TabRender';
 import { useCanvasControllerContext } from '../CanvasController';
 import {
-    useCanvasControllerEvents,
     useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
 import AppRange from '../../../others/AppRange';
 import SlideItemEditorPropertiesComp from './SlideItemEditorPropertiesComp';
-import { useProgressBarComp } from '../../../progress-bar/ProgressBarComp';
+import { useSelectedCanvasItemsAndSetterContext } from '../CanvasItem';
 
 const LazyToolCanvasItems = lazy(() => {
     return import('./ToolCanvasItemsComp');
@@ -58,18 +57,9 @@ const tabTypeList = [
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function SlideItemEditorToolsComp() {
-    const canvasController = useCanvasControllerContext();
     const {
-        startTransaction, progressBarChild,
-    } = useProgressBarComp();
-    const [selectedCanvasItems, setSelectedCanvasItems] = useOptimistic(
-        canvasController.canvas.selectedCanvasItems,
-    );
-    useCanvasControllerEvents(['controlling'], () => {
-        startTransaction(() => {
-            setSelectedCanvasItems(canvasController.canvas.selectedCanvasItems);
-        });
-    });
+        canvasItems: selectedCanvasItems,
+    } = useSelectedCanvasItemsAndSetterContext();
 
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'editor-tools-tab', 'p',
@@ -91,7 +81,6 @@ export default function SlideItemEditorToolsComp() {
             <div className='tools-body w-100 h-100' style={{
                 overflow: 'auto',
             }}>
-                {progressBarChild}
                 {tabType === 'p' ? (
                     <SlideItemEditorPropertiesComp
                         canvasItems={selectedCanvasItems}

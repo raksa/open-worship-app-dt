@@ -24,9 +24,6 @@ export default class Canvas {
         }
         return 0;
     }
-    get selectedCanvasItems() {
-        return this.canvasItems.filter((item) => item.isSelected);
-    }
     get newCanvasItems() {
         return [...this.canvasItems];
     }

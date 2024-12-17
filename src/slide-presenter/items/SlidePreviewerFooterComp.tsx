@@ -1,9 +1,12 @@
 import { useState } from 'react';
 
 import { PathPreviewer } from '../../others/PathPreviewer';
-import { useSelectedSlideContext } from '../../slide-list/Slide';
+import {
+    useSelectedSlideContext, useSelectedSlideSetterContext,
+} from '../../slide-list/Slide';
 import {
     MIN_THUMBNAIL_SCALE, MAX_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
+    selectSlide,
 } from '../../slide-list/slideHelpers';
 import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
 import { getPresenterIndex } from './slideItemHelpers';
@@ -12,7 +15,7 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import appProvider from '../../server/appProvider';
-
+import { openAppAlert } from '../../alert/alertHelpers';
 
 function HistoryPreviewerFooter() {
     const selectedSlide = useSelectedSlideContext();
@@ -39,21 +42,32 @@ function HistoryPreviewerFooter() {
     );
 }
 
-function choseNewSlide(_event: any) {
-    alert('choseNewSlide');
-}
-
 export const defaultRangeSize = {
     size: MIN_THUMBNAIL_SCALE,
     min: MIN_THUMBNAIL_SCALE,
     max: MAX_THUMBNAIL_SCALE,
     step: THUMBNAIL_SCALE_STEP,
 };
-export default function SlidePreviewerFooter() {
+export default function SlidePreviewerFooterComp() {
     const selectedSlide = useSelectedSlideContext();
+    const setSelectedSlide = useSelectedSlideSetterContext();
     const [
         thumbnailSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();
+    const handleSlideChoosing = async (event: any) => {
+        const slide = await selectSlide(
+            event, selectedSlide.filePath,
+        );
+        if (slide === null) {
+            openAppAlert(
+                'No Slide Available',
+                'No other slide found in the slide directory'
+            );
+        } else {
+            slide.isSelected = true;
+            setSelectedSlide(slide);
+        }
+    };
     return (
         <div className='card-footer w-100'>
             <div className='d-flex w-100 h-100'>
@@ -66,9 +80,7 @@ export default function SlidePreviewerFooter() {
                     <PathPreviewer
                         dirPath={selectedSlide.filePath}
                         isShowingNameOnly
-                        onClick={(event) => {
-                            choseNewSlide(event);
-                        }}
+                        onClick={handleSlideChoosing}
                     />
                 </div>
                 {appProvider.isPagePresenter ? (

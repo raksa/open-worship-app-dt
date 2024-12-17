@@ -10,8 +10,8 @@ import {
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
-import { useFileSourceEvents } from '../helper/dirSourceHelpers';
-import { openConfirm } from '../alert/alertHelpers';
+import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
+import { openAppConfirm } from '../alert/alertHelpers';
 import ItemColorNote from './ItemColorNote';
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenaming');
@@ -69,7 +69,7 @@ export function genTrashContextMenu(
             menuTitle: 'Move to Trash',
             onClick: async () => {
                 const fileSource = FileSource.getInstance(filePath);
-                const isOk = await openConfirm(
+                const isOk = await openAppConfirm(
                     'Moving File to Trash',
                     'Are you sure you want to move ' +
                     `"${fileSource.fileFullName}" to trash?`,
@@ -104,7 +104,7 @@ export default function FileItemHandler({
     userClassName?: string,
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
-    useFileSourceEvents(['select']);
+    useFileSourceRefreshEvents(['select']);
     const applyClick = () => {
         FileSource.getInstance(filePath).fireSelectEvent();
         onClick?.();

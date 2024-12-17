@@ -10,8 +10,8 @@ import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { editorTab, goToPath } from '../router/routeHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
+import { editorTab, goToPath } from '../router/routeHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -56,9 +56,9 @@ export default function SlideFile({
             methodContext.setData(slide);
         }
     }, [data], { setData });
-    useFileSourceEvents(['update', 'history-update', 'edit'], filePath, () => {
+    useFileSourceEvents(['update', 'history-update', 'edit'], () => {
         setData(null);
-    });
+    }, [data], filePath);
     const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
         menuTitle: 'Preview PDF',
         onClick: () => {

@@ -37,9 +37,9 @@ export default function LyricFile({
             Lyric.readFileToData(filePath).then(setData);
         }
     }, [data]);
-    useFileSourceEvents(['update', 'history-update', 'edit'], filePath, () => {
+    useFileSourceEvents(['update', 'history-update', 'edit'], () => {
         setData(null);
-    });
+    }, [data], filePath);
     return (
         <FileItemHandler
             index={index}

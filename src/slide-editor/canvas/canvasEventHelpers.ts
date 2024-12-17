@@ -42,9 +42,7 @@ export function useCanvasControllerRefreshEvents(
     eventTypes?: CanvasControllerEventType[],
 ) {
     if (eventTypes === undefined) {
-        eventTypes = [
-            'controlling', 'text-editing', 'update', 'scale', 'edit',
-        ];
+        eventTypes = ['update', 'scale'];
     }
     const [n, setN] = useState(0);
     useCanvasControllerEvents(eventTypes, () => {

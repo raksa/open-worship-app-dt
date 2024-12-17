@@ -1,5 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
-import CanvasItemRendererComp from './CanvasItemRendererComp';
+import CanvasItemRendererComp from '../../slide-editor/CanvasItemRendererComp';
 import CanvasItem, {
     CanvasItemContext,
     CanvasItemPropsType,
