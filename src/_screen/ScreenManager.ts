@@ -8,7 +8,7 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
-import ScreenFTManager from './ScreenFTManager';
+import ScreenFullTextManager from './ScreenFullTextManager';
 import {
     getAllDisplays, getAllShowingScreenIds, getScreenManagersInstanceSetting,
     hideScreen, ScreenMessageType, setDisplay, showScreen,
@@ -44,7 +44,7 @@ export default class ScreenManager
     static readonly eventNamePrefix: string = 'screen-m';
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenSlideManager: ScreenSlideManager;
-    readonly screenFTManager: ScreenFTManager;
+    readonly screenFTManager: ScreenFullTextManager;
     readonly screenAlertManager: ScreenAlertManager;
     readonly screenId: number;
     width: number;
@@ -62,7 +62,7 @@ export default class ScreenManager
         this.name = `screen-${screenId}`;
         this.screenBackgroundManager = new ScreenBackgroundManager(screenId);
         this.screenSlideManager = new ScreenSlideManager(screenId);
-        this.screenFTManager = new ScreenFTManager(screenId);
+        this.screenFTManager = new ScreenFullTextManager(screenId);
         this.screenAlertManager = new ScreenAlertManager(screenId);
         const ids = getAllShowingScreenIds();
         this._isShowing = ids.some((id) => id === screenId);
@@ -141,7 +141,7 @@ export default class ScreenManager
         this.screenSlideManager.sendSyncScreen();
         this.screenFTManager.sendSyncScreen();
         this.screenAlertManager.sendSyncScreen();
-        ScreenFTManager.sendSynTextStyle();
+        ScreenFullTextManager.sendSynTextStyle();
     }
     show() {
         return showScreen({
@@ -209,13 +209,13 @@ export default class ScreenManager
         } else if (type === 'slide') {
             ScreenSlideManager.receiveSyncScreen(message);
         } else if (type === 'full-text') {
-            ScreenFTManager.receiveSyncData(message);
+            ScreenFullTextManager.receiveSyncData(message);
         } else if (type === 'full-text-scroll') {
-            ScreenFTManager.receiveSyncScroll(message);
+            ScreenFullTextManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {
-            ScreenFTManager.receiveSyncSelectedIndex(message);
+            ScreenFullTextManager.receiveSyncSelectedIndex(message);
         } else if (type === 'full-text-text-style') {
-            ScreenFTManager.receiveSyncTextStyle(message);
+            ScreenFullTextManager.receiveSyncTextStyle(message);
         } else if (type === 'alert') {
             ScreenAlertManager.receiveSyncScreen(message);
         } else if (type === 'effect') {

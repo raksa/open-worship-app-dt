@@ -4,7 +4,7 @@ import CanvasItem, {
     CanvasItemContext,
     CanvasItemPropsType,
 } from '../../slide-editor/canvas/CanvasItem';
-import { getDivHTMLChild } from '../../helper/helpers';
+import { getHTMLChild } from '../../helper/helpers';
 import Canvas from '../../slide-editor/canvas/Canvas';
 
 export function genHtmlSlideItem(canvasItemsJson: CanvasItemPropsType[]) {
@@ -15,7 +15,7 @@ export function genHtmlSlideItem(canvasItemsJson: CanvasItemPropsType[]) {
     );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    return getDivHTMLChild(div);
+    return getHTMLChild<HTMLDivElement>(div, 'div');
 }
 
 export default function SlideItemRenderer({

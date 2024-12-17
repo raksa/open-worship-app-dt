@@ -353,9 +353,6 @@ export default class BibleItemViewController
 
     deleteBibleItem(bibleItem: BibleItem) {
         try {
-            if (this.isAlone) {
-                return;
-            }
             const {
                 nestedBibleItems, parentNestedBibleItems, index,
             } = this.seek(
@@ -611,6 +608,9 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         this.changeBibleItem(bibleItem, newBibleItem);
     }
     deleteBibleItem(bibleItem: BibleItem) {
+        if (this.isAlone) {
+            return;
+        }
         super.deleteBibleItem(bibleItem);
         const straightBibleItems = this.straightBibleItems;
         if (!straightBibleItems.includes(this.selectedBibleItem)) {

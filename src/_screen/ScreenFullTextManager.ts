@@ -14,9 +14,9 @@ import appProviderScreen from './appProviderScreen';
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
-    ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX, renderPFTManager,
-    bibleItemToFtData,
-} from './screenFTHelpers';
+    ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX,
+    renderScreenFullTextManager, bibleItemToFtData,
+} from './screenFullTextHelpers';
 import {
     FTItemDataType,
     FTListType,
@@ -29,7 +29,7 @@ import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 
 let textStyle: AnyObjectType = {};
-export default class ScreenFTManager
+export default class ScreenFullTextManager
     extends EventHandler<ScreenFTManagerEventType>
     implements ScreenManagerInf {
 
@@ -91,7 +91,7 @@ export default class ScreenFTManager
             if (event.ctrlKey) {
                 event.preventDefault();
                 const isUp = event.deltaY < 0;
-                ScreenFTManager.changeTextStyleTextFontSize(isUp);
+                ScreenFullTextManager.changeTextStyleTextFontSize(isUp);
             }
         });
         this.registerScrollListener();
@@ -103,10 +103,10 @@ export default class ScreenFTManager
     get key() {
         return this.screenId.toString();
     }
-    get ftItemData() {
+    get fullTextItemData() {
         return this._ftItemData;
     }
-    set ftItemData(ftItemData: FTItemDataType | null) {
+    set fullTextItemData(ftItemData: FTItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
         const allFTList = getFTListOnScreenSetting();
@@ -115,7 +115,7 @@ export default class ScreenFTManager
         } else {
             allFTList[this.key] = ftItemData;
         }
-        ScreenFTManager.setFTList(allFTList);
+        ScreenFullTextManager.setFTList(allFTList);
         this.sendSyncData();
         this.fireUpdate();
     }
@@ -125,7 +125,7 @@ export default class ScreenFTManager
             if (!appProviderScreen.isScreen) {
                 const allFTList = getFTListOnScreenSetting();
                 allFTList[this.key] = this._ftItemData;
-                ScreenFTManager.setFTList(allFTList);
+                ScreenFullTextManager.setFTList(allFTList);
             }
         }
     }
@@ -152,7 +152,7 @@ export default class ScreenFTManager
         this.renderSelectedIndex();
     }
     get scroll() {
-        return this.ftItemData?.scroll || 0;
+        return this.fullTextItemData?.scroll || 0;
     }
     set scroll(scroll: number) {
         this._setMetadata('scroll', scroll);
@@ -228,7 +228,7 @@ export default class ScreenFTManager
         sendScreenMessage({
             screenId: this.screenId,
             type: 'full-text',
-            data: this.ftItemData,
+            data: this.fullTextItemData,
         });
     }
     static receiveSyncData(message: ScreenMessageType) {
@@ -237,11 +237,11 @@ export default class ScreenFTManager
         if (screenFTManager === null) {
             return;
         }
-        screenFTManager.ftItemData = data;
+        screenFTManager.fullTextItemData = data;
     }
     fireUpdate() {
         this.addPropEvent('update');
-        ScreenFTManager.fireUpdateEvent();
+        ScreenFullTextManager.fireUpdateEvent();
     }
     static fireUpdateEvent() {
         this.addPropEvent('update');
@@ -318,7 +318,8 @@ export default class ScreenFTManager
         const ftItemData = await bibleItemToFtData(bibleItems);
         chosenScreenManagers.forEach((screenManager) => {
             const { screenFTManager } = screenManager;
-            screenFTManager.ftItemData = ftItemData;
+            screenFTManager.fullTextItemData = ftItemData;
+            screenManager.screenSlideManager.delete();
         });
     }
     static async ftLyricSelect(event: React.MouseEvent | null, lyric: Lyric) {
@@ -338,11 +339,11 @@ export default class ScreenFTManager
         };
         chosenScreenManagers.forEach((screenManager) => {
             const { screenFTManager } = screenManager;
-            screenFTManager.ftItemData = ftItemData;
+            screenFTManager.fullTextItemData = ftItemData;
         });
     }
     render() {
-        renderPFTManager(this);
+        renderScreenFullTextManager(this);
     }
     renderScroll(isQuick?: boolean) {
         if (this.div === null) {
@@ -370,7 +371,7 @@ export default class ScreenFTManager
     async receiveScreenDrag(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.BIBLE_ITEM) {
             const newFtItemData = await bibleItemToFtData([droppedData.item]);
-            this.ftItemData = newFtItemData;
+            this.fullTextItemData = newFtItemData;
         } else {
             loggerHelpers.log(droppedData);
         }
@@ -386,6 +387,6 @@ export default class ScreenFTManager
         this.sendSyncData();
     }
     delete() {
-        this.ftItemData = null;
+        this.fullTextItemData = null;
     }
 }

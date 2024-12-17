@@ -1,7 +1,7 @@
 import ReactDOMServer from 'react-dom/server';
 import Countdown from './Countdown';
 import ScreenManager from './ScreenManager';
-import { getDivHTMLChild } from '../helper/helpers';
+import { getHTMLChild } from '../helper/helpers';
 
 const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
 export type AlertType = typeof _alertTypeList[number];
@@ -82,7 +82,7 @@ export function genHtmlAlertMarquee(
     );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    return getDivHTMLChild(div);
+    return getHTMLChild<HTMLDivElement>(div, 'div');
 }
 
 export function genHtmlAlertCountdown(
@@ -132,7 +132,7 @@ export function genHtmlAlertCountdown(
     </div>);
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    const divContainer = getDivHTMLChild(div);
+    const divContainer = getHTMLChild<HTMLDivElement>(div, 'div');
     Countdown.init(divContainer, dateTime);
     return divContainer;
 }

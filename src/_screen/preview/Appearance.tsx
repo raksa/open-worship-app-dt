@@ -2,29 +2,29 @@ import { useState } from 'react';
 
 import { AppColorType } from '../../others/color/colorHelpers';
 import { useScreenFTManagerEvents } from '../screenEventHelpers';
-import ScreenFTManager from '../ScreenFTManager';
+import ScreenFullTextManager from '../ScreenFullTextManager';
 import ScreenSlideManager from '../ScreenSlideManager';
 import ScreenManager from '../ScreenManager';
 import AppRange from '../../others/AppRange';
 
 export default function Appearance() {
     const [color, setColor] = useState(
-        ScreenFTManager.textStyleTextColor,
+        ScreenFullTextManager.textStyleTextColor,
     );
     const [fontSize, setFontSize] = useState(
-        ScreenFTManager.textStyleTextFontSize,
+        ScreenFullTextManager.textStyleTextFontSize,
     );
     useScreenFTManagerEvents(['text-style'], undefined, () => {
-        setColor(ScreenFTManager.textStyleTextColor);
-        setFontSize(ScreenFTManager.textStyleTextFontSize);
+        setColor(ScreenFullTextManager.textStyleTextColor);
+        setFontSize(ScreenFullTextManager.textStyleTextFontSize);
     });
     const setColorToStyle = (newColor: AppColorType) => {
-        ScreenFTManager.applyTextStyle({
+        ScreenFullTextManager.applyTextStyle({
             color: newColor,
         });
     };
     const setFontSizeToStyle = (newFontSize: number) => {
-        ScreenFTManager.applyTextStyle({
+        ScreenFullTextManager.applyTextStyle({
             fontSize: newFontSize,
         });
     };
@@ -64,7 +64,7 @@ export default function Appearance() {
                     defaultSize={{
                         size: fontSize,
                         min: 1,
-                        max: ScreenFTManager.maxTextStyleTextFontSize,
+                        max: ScreenFullTextManager.maxTextStyleTextFontSize,
                         step: 1,
                     }}
                 />

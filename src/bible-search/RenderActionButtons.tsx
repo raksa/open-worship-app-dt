@@ -4,7 +4,7 @@ import {
 import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
-import ScreenFTManager from '../_screen/ScreenFTManager';
+import ScreenFullTextManager from '../_screen/ScreenFullTextManager';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
@@ -60,7 +60,7 @@ export default function RenderActionButtons() {
                             bibleItem, data,
                         );
                         if (updatedBibleItem !== null) {
-                            ScreenFTManager.ftBibleItemSelect(
+                            ScreenFullTextManager.ftBibleItemSelect(
                                 event, [bibleItem],
                             );
                         } else {
@@ -89,7 +89,7 @@ async function addBibleItemAndPresent(
 ) {
     const addedBibleItem = await addBibleItem(bibleItem, onDone);
     if (addedBibleItem !== null) {
-        ScreenFTManager.ftBibleItemSelect(
+        ScreenFullTextManager.ftBibleItemSelect(
             event, [addedBibleItem],
         );
     } else {
@@ -143,7 +143,7 @@ export function genFoundBibleItemContextMenu(
             {
                 menuTitle: 'Show bible item',
                 onClick: (event: any) => {
-                    ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
+                    ScreenFullTextManager.ftBibleItemSelect(event, [bibleItem]);
                 },
             },
             {

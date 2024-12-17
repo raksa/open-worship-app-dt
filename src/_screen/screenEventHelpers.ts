@@ -5,8 +5,8 @@ import appProviderScreen from './appProviderScreen';
 import ScreenBackgroundManager, {
     ScreenBackgroundManagerEventType,
 } from './ScreenBackgroundManager';
-import { ScreenFTManagerEventType } from './screenFTHelpers';
-import ScreenFTManager from './ScreenFTManager';
+import { ScreenFTManagerEventType } from './screenFullTextHelpers';
+import ScreenFullTextManager from './ScreenFullTextManager';
 import { ScreenMessageType } from './screenHelpers';
 import ScreenManager, {
     ScreenManagerEventType,
@@ -110,7 +110,7 @@ export function useScreenSlideManagerEvents(
 }
 
 export function useScreenFTManagerEvents(
-    events: ScreenFTManagerEventType[], screenFTManager?: ScreenFTManager,
+    events: ScreenFTManagerEventType[], screenFTManager?: ScreenFullTextManager,
     callback?: (args: any) => void,
 ) {
     const [n, setN] = useState(0);
@@ -122,7 +122,7 @@ export function useScreenFTManagerEvents(
         let registeredEvents: any;
         const isGlobal = screenFTManager === undefined;
         if (isGlobal) {
-            registeredEvents = ScreenFTManager.
+            registeredEvents = ScreenFullTextManager.
                 registerEventListener(events, update);
         } else {
             registeredEvents = screenFTManager.
@@ -130,7 +130,7 @@ export function useScreenFTManagerEvents(
         }
         return () => {
             if (isGlobal) {
-                ScreenFTManager.unregisterEventListener(registeredEvents);
+                ScreenFullTextManager.unregisterEventListener(registeredEvents);
             } else {
                 screenFTManager.unregisterEventListener(registeredEvents);
             }

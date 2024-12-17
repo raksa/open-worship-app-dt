@@ -206,10 +206,12 @@ export function freezeObject(obj: any) {
     }
 }
 
-export function getDivHTMLChild(parent: HTMLElement) {
-    const child = parent.querySelector('div');
-    if (child instanceof HTMLDivElement === false) {
-        throw new Error('Invalid div child');
+export function getHTMLChild<T extends HTMLElement>(
+    parent: HTMLElement, tag: string,
+) {
+    const child = parent.querySelector(tag);
+    if (!child) {
+        throw new Error('Invalid child');
     }
-    return child;
+    return child as T;
 }

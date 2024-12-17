@@ -150,6 +150,7 @@ export default class ScreenSlideManager extends
                     slideFilePath,
                     slideItemJson,
                 };
+                screenManager.screenFTManager.delete();
             } else {
                 screenSlideManager.slideItemData = null;
             }

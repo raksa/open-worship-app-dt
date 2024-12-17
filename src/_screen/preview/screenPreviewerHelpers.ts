@@ -4,7 +4,7 @@ import { showAppContextMenu } from '../../others/AppContextMenu';
 export function openContextMenu(event: any, screenManager: ScreenManager) {
     const isOne = ScreenManager.getAllInstances().length === 1;
     const { screenFTManager } = screenManager;
-    const isShowingFT = !!screenFTManager.ftItemData;
+    const isShowingFT = !!screenFTManager.fullTextItemData;
     const isLineSync = screenFTManager.isLineSync;
     const extraMenuItems = isShowingFT ? [{
         menuTitle: `${isLineSync ? 'Un' : ''}Set Line Sync`,

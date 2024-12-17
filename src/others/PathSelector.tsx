@@ -65,7 +65,7 @@ function RenderTitle({ dirSource, addItems }: Readonly<{
                 <i className='bi bi-arrow-clockwise' />
             </div>
             {addItems !== undefined ? (
-                <div className='px-1'
+                <div className='app-add-items-button px-1'
                     onClick={(event) => {
                         event.stopPropagation();
                         addItems();

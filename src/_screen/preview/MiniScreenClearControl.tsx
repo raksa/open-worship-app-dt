@@ -19,21 +19,21 @@ export default function MiniScreenClearControl() {
     const clearBackground = () => {
         screenBackgroundManager.backgroundSrc = null;
     };
-    const clearFG = () => {
+    const clearForeGround = () => {
         screenSlideManager.slideItemData = null;
     };
-    const clearFT = () => {
-        screenFTManager.ftItemData = null;
+    const clearFullText = () => {
+        screenFTManager.fullTextItemData = null;
     };
     const clearAll = () => {
         clearBackground();
-        clearFG();
-        clearFT();
+        clearForeGround();
+        clearFullText();
     };
 
     const isShowingBackground = !!screenBackgroundManager.backgroundSrc;
     const isShowingFG = !!screenSlideManager.slideItemData;
-    const isShowingFT = !!screenFTManager.ftItemData;
+    const isShowingFT = !!screenFTManager.fullTextItemData;
     const isShowing = isShowingBackground || isShowingFG || isShowingFT;
     const btnMaps = [
         {
@@ -58,7 +58,7 @@ export default function MiniScreenClearControl() {
             'btnType': 'info',
             'isEnabled': isShowingFG,
             'eventMap': { key: 'F8' },
-            'onClick': clearFG,
+            'onClick': clearForeGround,
         },
         {
             'text': 'FT',
@@ -66,7 +66,7 @@ export default function MiniScreenClearControl() {
             'btnType': 'primary',
             'isEnabled': isShowingFT,
             'eventMap': { key: 'F9' },
-            'onClick': clearFT,
+            'onClick': clearFullText,
         },
     ];
 

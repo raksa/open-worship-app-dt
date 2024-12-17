@@ -6,7 +6,7 @@ import {
     BibleItemRenderedType,
 } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
-import ScreenFTManager from './ScreenFTManager';
+import ScreenFullTextManager from './ScreenFullTextManager';
 import ScreenManager from './ScreenManager';
 import { openAppAlert } from '../alert/alertHelpers';
 import {
@@ -19,13 +19,13 @@ export type ScreenFTManagerEventType = 'update' | 'text-style';
 export const SCREEN_FT_SETTING_PREFIX = 'screen-ft-';
 
 function onSelectIndex(
-    screenFTManager: ScreenFTManager, selectedIndex: number | null,
+    screenFTManager: ScreenFullTextManager, selectedIndex: number | null,
 ) {
     screenFTManager.selectedIndex = selectedIndex;
     screenFTManager.sendSyncSelectedIndex();
 }
 async function onBibleSelect(
-    screenFTManager: ScreenFTManager, event: any, index: number,
+    screenFTManager: ScreenFullTextManager, event: any, index: number,
     ftItemData: FTItemDataType,
 ) {
     const bibleRenderedList = (
@@ -62,7 +62,7 @@ async function onBibleSelect(
             return bibleItem;
         });
         const newFtItemData = await bibleItemToFtData(newBibleItems);
-        screenFTManager.ftItemData = newFtItemData;
+        screenFTManager.fullTextItemData = newFtItemData;
     };
     const menuItems: ContextMenuItemType[] = [
         ...bibleRenderedList.length > 1 ? [{
@@ -96,11 +96,13 @@ async function onBibleSelect(
     showAppContextMenu(event, menuItems);
 }
 
-export function renderPFTManager(screenFTManager: ScreenFTManager) {
+export function renderScreenFullTextManager(
+    screenFTManager: ScreenFullTextManager,
+) {
     if (screenFTManager.div === null) {
         return;
     }
-    const ftItemData = screenFTManager.ftItemData;
+    const ftItemData = screenFTManager.fullTextItemData;
     if (ftItemData === null) {
         if (screenFTManager.div.lastChild !== null) {
             const targetDiv = screenFTManager.div.lastChild as HTMLDivElement;
@@ -110,24 +112,24 @@ export function renderPFTManager(screenFTManager: ScreenFTManager) {
         return;
     }
     screenFTManager.div.style.pointerEvents = 'auto';
-    let newTable: HTMLTableElement | null = null;
+    let newDiv: HTMLDivElement | null = null;
     if (
         ftItemData.type === 'bible-item' &&
         ftItemData.bibleItemData !== undefined
     ) {
-        newTable = fullTextScreenHelper.genHtmlFromFtBibleItem(
+        newDiv = fullTextScreenHelper.genHtmlFromFtBibleItem(
             ftItemData.bibleItemData.renderedList, screenFTManager.isLineSync,
         );
     } else if (ftItemData.type === 'lyric' &&
         ftItemData.lyricData !== undefined) {
-        newTable = fullTextScreenHelper.genHtmlFromFtLyric(
+        newDiv = fullTextScreenHelper.genHtmlFromFtLyric(
             ftItemData.lyricData.renderedList, screenFTManager.isLineSync,
         );
     }
-    if (newTable === null) {
+    if (newDiv === null) {
         return;
     }
-    fullTextScreenHelper.registerHighlight(newTable, {
+    fullTextScreenHelper.registerHighlight(newDiv, {
         onSelectIndex: (selectedIndex) => {
             onSelectIndex(screenFTManager, selectedIndex);
         },
@@ -136,7 +138,7 @@ export function renderPFTManager(screenFTManager: ScreenFTManager) {
         },
     });
     const divHaftScale = document.createElement('div');
-    divHaftScale.appendChild(newTable);
+    divHaftScale.appendChild(newDiv);
     const screenManager = screenFTManager.screenManager;
     if (screenManager === null) {
         return;

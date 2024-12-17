@@ -4,7 +4,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     useScreenFTManagerEvents, useScreenManagerEvents,
 } from './screenEventHelpers';
-import ScreenFTManager from './ScreenFTManager';
+import ScreenFullTextManager from './ScreenFullTextManager';
 import { useScreenManagerContext } from './ScreenManager';
 
 const styleText = `
@@ -122,7 +122,7 @@ export default function ScreenFullText() {
             <style>{styleText}</style>
             <style>
                 {`#full-text th, #full-text td {
-                    ${ScreenFTManager.textStyleText}
+                    ${ScreenFullTextManager.textStyleText}
                 }`}
             </style>
             <div id='full-text' ref={div}

@@ -10,7 +10,7 @@ import {
 import {
     SearchBibleItemViewController, useBibleItemViewControllerContext,
 } from '../bible-reader/BibleItemViewController';
-import ScreenFTManager from '../_screen/ScreenFTManager';
+import ScreenFullTextManager from '../_screen/ScreenFullTextManager';
 import {
     openBibleItemContextMenu, useBibleItemRenderTitle,
 } from './bibleItemHelpers';
@@ -45,9 +45,9 @@ export default function BibleItemRender({
             event, bibleItem, index, showBibleSearchPopup,
         );
     };
-    const handleDBClicking = (event: any) => {
+    const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
-            ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
+            ScreenFullTextManager.ftBibleItemSelect(event, [bibleItem]);
         } else if (appProvider.isPageReader) {
             const searchViewController = (
                 SearchBibleItemViewController.getInstance()
@@ -82,7 +82,7 @@ export default function BibleItemRender({
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
-            onDoubleClick={handleDBClicking}
+            onDoubleClick={handleDoubleClicking}
             onContextMenu={openContextMenu}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />
