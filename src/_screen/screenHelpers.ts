@@ -309,7 +309,7 @@ const validateLyric = ({ renderedList }: any) => {
     );
 };
 
-export function getFTListOnScreenSetting(): FTListType {
+export function getFullTextListOnScreenSetting(): FTListType {
     const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
     try {
         if (!isValidJson(str, true)) {

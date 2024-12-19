@@ -18,8 +18,8 @@ import {
     renderScreenFullTextManager, bibleItemToFtData,
 } from './screenFullTextHelpers';
 import {
-    FTItemDataType, FTListType, genScreenMouseEvent, getFTListOnScreenSetting,
-    ScreenMessageType,
+    FTItemDataType, FTListType, genScreenMouseEvent,
+    getFullTextListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
@@ -44,7 +44,7 @@ export default class ScreenFullTextManager
         super();
         this.screenId = screenId;
         if (appProviderScreen.isPagePresenter) {
-            const allFTList = getFTListOnScreenSetting();
+            const allFTList = getFullTextListOnScreenSetting();
             this._ftItemData = allFTList[this.key] || null;
 
             const str = getSetting(
@@ -122,7 +122,7 @@ export default class ScreenFullTextManager
     set fullTextItemData(ftItemData: FTItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
-        const allFTList = getFTListOnScreenSetting();
+        const allFTList = getFullTextListOnScreenSetting();
         if (ftItemData === null) {
             delete allFTList[this.key];
         } else {
@@ -138,7 +138,7 @@ export default class ScreenFullTextManager
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
             if (!appProviderScreen.isScreen) {
-                const allFTList = getFTListOnScreenSetting();
+                const allFTList = getFullTextListOnScreenSetting();
                 allFTList[this.key] = this._ftItemData;
                 ScreenFullTextManager.setFTList(allFTList);
             }

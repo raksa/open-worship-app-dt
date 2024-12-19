@@ -1,37 +1,21 @@
 import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/ScreenAlertManager';
-import ScreenManager from '../_screen/ScreenManager';
 import { useScreenAlertManagerEvents } from '../_screen/screenEventHelpers';
-import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
-import { getAlertDataListOnScreenSetting } from '../_screen/screenHelpers';
-import { showSimpleToast } from '../toast/toastHelpers';
+import { getShowingScreenIds, hideAlert } from './alertHelpers';
+import ScreensRendererComp from './ScreensRendererComp';
 
 export default function MarqueeComp() {
-    useScreenAlertManagerEvents(['update'], undefined, () => {
-        console.log('ScreenAlertManager updated');
-
-    });
+    useScreenAlertManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
         'marquee-setting', ''
     );
-    const allAlertDataList = getAlertDataListOnScreenSetting();
-    const showingScreenIds = (
-        Object.entries(allAlertDataList).filter(([_, data]) => {
-            return data.marqueeData !== null;
-        }).map(([key]) => {
-            return parseInt(key, 10);
-        })
-    );
+    const showingScreenIds = getShowingScreenIds((data) => {
+        return data.marqueeData !== null;
+    });
     const handleMarqueeHiding = (screenId: number) => {
-        const screenManager = ScreenManager.getInstanceByKey(
-            screenId.toString(),
-        );
-        if (screenManager === null) {
-            showSimpleToast('ScreenManager not found', 'error');
-            return;
-        }
-        const { screenAlertManager } = screenManager;
-        screenAlertManager.setMarqueeData(null);
+        hideAlert(screenId, (screenAlertManager) => {
+            screenAlertManager.setMarqueeData(null);
+        });
     };
     return (
         <div>
@@ -52,21 +36,10 @@ export default function MarqueeComp() {
                     Show Marquee
                 </button>
             </div>
-            <div className='d-flex mt-2'>
-                {showingScreenIds.map((screenId) => {
-                    return (
-                        <div className='d-flex' key={screenId}>
-                            <ShowingScreenIcon screenId={screenId} />
-                            <button className='btn btn-secondary'
-                                onClick={
-                                    handleMarqueeHiding.bind(null, screenId)
-                                }>
-                                Hide Marquee
-                            </button>
-                        </div>
-                    );
-                })}
-            </div>
+            <ScreensRendererComp showingScreenIds={showingScreenIds}
+                buttonTitle='Hide Marquee'
+                handleMarqueeHiding={handleMarqueeHiding}
+            />
         </div>
     );
 }

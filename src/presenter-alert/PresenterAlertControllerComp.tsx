@@ -1,4 +1,4 @@
-import DateTimePickerComp from './DateTimePickerComp';
+import DateTimerComp from './DateTimerComp';
 import MarqueeComp from './MarqueeComp';
 
 export default function PresenterAlertControllerComp() {
@@ -9,7 +9,7 @@ export default function PresenterAlertControllerComp() {
             </div>
             <hr />
             <div>
-                <DateTimePickerComp />
+                <DateTimerComp />
             </div>
         </div>
     );

@@ -1,23 +1,44 @@
 import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/ScreenAlertManager';
+import { getShowingScreenIds, hideAlert } from './alertHelpers';
+import ScreensRendererComp from './ScreensRendererComp';
+import { useScreenAlertManagerEvents } from '../_screen/screenEventHelpers';
 
-export default function DateTimePickerComp() {
-    const nowArr = () => {
+function useTiming() {
+    const nowArray = () => {
         return new Date().toISOString().split('T');
     };
-    const todayStr = () => nowArr()[0];
-    const nowStr = () => {
-        const timeStr = nowArr()[1];
+    const todayString = () => {
+        return nowArray()[0];
+    };
+    const nowString = () => {
+        const timeStr = nowArray()[1];
         return timeStr.substring(0, timeStr.lastIndexOf(':'));
     };
     const [date, setDate] = useStateSettingString<string>(
-        'alert-date-setting', todayStr(),
+        'alert-date-setting', todayString(),
     );
     const [time, setTime] = useStateSettingString<string>(
-        'alert-time-setting', nowStr(),
+        'alert-time-setting', nowString(),
     );
+    return { date, setDate, time, setTime, nowString, todayString };
+}
+
+export default function DateTimerComp() {
+    useScreenAlertManagerEvents(['update']);
+    const {
+        date, setDate, time, setTime, nowString, todayString,
+    } = useTiming();
+    const showingScreenIds = getShowingScreenIds((data) => {
+        return data.countdownData !== null;
+    });
+    const handleMarqueeHiding = (screenId: number) => {
+        hideAlert(screenId, (screenAlertManager) => {
+            screenAlertManager.setCountdownData(null);
+        });
+    };
     return (
-        <>
+        <div>
             <div className='d-flex'>
                 <div>
                     <label className='form-label'
@@ -27,7 +48,7 @@ export default function DateTimePickerComp() {
                         value={date} onChange={(event) => {
                             setDate(event.target.value);
                         }}
-                        min={todayStr()}
+                        min={todayString()}
                     />
                 </div>
                 <div>
@@ -38,7 +59,7 @@ export default function DateTimePickerComp() {
                         value={time} onChange={(event) => {
                             setTime(event.target.value);
                         }}
-                        min={nowStr()}
+                        min={nowString()}
                     />
                 </div>
                 <br />
@@ -52,6 +73,10 @@ export default function DateTimePickerComp() {
                     Show Time
                 </button>
             </div>
-        </>
+            <ScreensRendererComp showingScreenIds={showingScreenIds}
+                buttonTitle='Hide Timer'
+                handleMarqueeHiding={handleMarqueeHiding}
+            />
+        </div>
     );
 }
