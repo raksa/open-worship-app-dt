@@ -3,20 +3,20 @@ import { showAppContextMenu } from '../../others/AppContextMenu';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
     const isOne = ScreenManager.getAllInstances().length === 1;
-    const { screenFTManager } = screenManager;
-    const isShowingFT = !!screenFTManager.fullTextItemData;
-    const isLineSync = screenFTManager.isLineSync;
+    const { screenFullTextManager } = screenManager;
+    const isShowingFT = !!screenFullTextManager.fullTextItemData;
+    const isLineSync = screenFullTextManager.isLineSync;
     const extraMenuItems = isShowingFT ? [{
         menuTitle: `${isLineSync ? 'Un' : ''}Set Line Sync`,
         onClick() {
-            screenFTManager.isLineSync = !isLineSync;
+            screenFullTextManager.isLineSync = !isLineSync;
         },
     }] : [];
     showAppContextMenu(event, [
         ...isOne ? [] : [{
             menuTitle: 'Solo',
             onClick() {
-                ScreenManager.getSelectedInstances()
+                ScreenManager.getSelectedScreenManagerInstances()
                     .forEach((screenManager1) => {
                         screenManager1.isSelected = false;
                     });
@@ -32,7 +32,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         ...isOne ? [] : [{
             menuTitle: 'Delete',
             onClick() {
-                screenManager.delete();
+                screenManager.clear();
             },
         }],
         ...extraMenuItems,

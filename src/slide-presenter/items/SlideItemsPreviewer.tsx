@@ -2,7 +2,7 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import SlideItemsComp from './SlideItemsComp';
-import { useSelectedSlideContext } from '../../slide-list/Slide';
+import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleCtrlWheel } from '../../others/AppRange';
 import { defaultRangeSize } from './SlidePreviewerFooterComp';
 import SlideItemsMenuComp from './SlideItemsMenuComp';
@@ -25,8 +25,13 @@ export default function SlideItemsPreviewer() {
             onContextMenu={(event) => {
                 selectedSlide.showSlideItemContextMenu(event);
             }}
-            onPaste={() => {
-                selectedSlide.pasteItem();
+            onPaste={async () => {
+                debugger;
+                const copiedSlideItems = await Slide.getCopiedSlideItems();
+                for (const copiedSlideItem of copiedSlideItems) {
+                    selectedSlide.addItem(copiedSlideItem);
+                }
+
             }}>
             {!selectedSlide.isPdf && (
                 <SlideItemsMenuComp />

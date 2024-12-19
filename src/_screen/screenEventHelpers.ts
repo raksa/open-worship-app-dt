@@ -14,34 +14,30 @@ import ScreenManager, {
 import ScreenSlideManager, {
     ScreenSlideManagerEventType,
 } from './ScreenSlideManager';
+import EventHandler from '../event/EventHandler';
+import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
 
-export function useScreenManagerEvents(
-    events: ScreenManagerEventType[], screenManager?: ScreenManager,
-    callback?: () => void,
+function useScreenEvents<T extends string>(
+    events: T[], Class: EventHandler<T>,
+    eventHandler?: EventHandler<T>, callback?: (data: any) => void,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
-        const update = () => {
+        const update = (data: any) => {
             setN(n + 1);
-            callback?.();
+            callback?.(data);
         };
-        let registeredEvents: any;
-        const isGlobal = screenManager === undefined;
-        if (isGlobal) {
-            registeredEvents = ScreenManager.
-                registerEventListener(events, update);
-        } else {
-            registeredEvents = screenManager.
-                registerEventListener(events, update);
-        }
+        const registeredEvents = (
+            eventHandler?.registerEventListener(events, update) ||
+            Class.registerEventListener(events, update)
+        );
         return () => {
-            if (isGlobal) {
-                ScreenManager.unregisterEventListener(registeredEvents);
-            } else {
-                screenManager.unregisterEventListener(registeredEvents);
-            }
+            (
+                eventHandler?.unregisterEventListener(registeredEvents) ??
+                Class.unregisterEventListener(registeredEvents)
+            );
         };
-    }, [screenManager, n]);
+    }, [eventHandler, n]);
 }
 
 export function useScreenBackgroundManagerEvents(
@@ -49,33 +45,10 @@ export function useScreenBackgroundManagerEvents(
     screenBackgroundManager?: ScreenBackgroundManager,
     callback?: () => void,
 ) {
-    const [n, setN] = useState(0);
-    useAppEffect(() => {
-        const update = () => {
-            setN(n + 1);
-            callback?.();
-        };
-        let registeredEvents: any;
-        const isGlobal = screenBackgroundManager === undefined;
-        if (isGlobal) {
-            registeredEvents = ScreenBackgroundManager.
-                registerEventListener(events, update);
-        } else {
-            registeredEvents = screenBackgroundManager.
-                registerEventListener(events, update);
-        }
-        return () => {
-            if (isGlobal) {
-                ScreenBackgroundManager.unregisterEventListener(
-                    registeredEvents,
-                );
-            } else {
-                screenBackgroundManager.unregisterEventListener(
-                    registeredEvents,
-                );
-            }
-        };
-    }, [screenBackgroundManager, n]);
+    useScreenEvents(
+        events, ScreenBackgroundManager as any, screenBackgroundManager,
+        callback,
+    );
 }
 
 export function useScreenSlideManagerEvents(
@@ -83,59 +56,39 @@ export function useScreenSlideManagerEvents(
     screenSlideManager?: ScreenSlideManager,
     callback?: () => void,
 ) {
-    const [n, setN] = useState(0);
-    useAppEffect(() => {
-        const update = () => {
-            setN(n + 1);
-            callback?.();
-        };
-        let registeredEvents: any;
-        const isGlobal = screenSlideManager === undefined;
-        if (isGlobal) {
-            registeredEvents = ScreenSlideManager.
-                registerEventListener(events, update);
-        } else {
-            registeredEvents = screenSlideManager.registerEventListener(
-                events, update,
-            );
-        }
-        return () => {
-            if (isGlobal) {
-                ScreenSlideManager.unregisterEventListener(registeredEvents);
-            } else {
-                screenSlideManager.unregisterEventListener(registeredEvents);
-            }
-        };
-    }, [screenSlideManager, n]);
+    useScreenEvents(
+        events, ScreenSlideManager as any, screenSlideManager, callback,
+    );
 }
 
-export function useScreenFTManagerEvents(
-    events: ScreenFTManagerEventType[], screenFTManager?: ScreenFullTextManager,
+export function useScreenFullTextManagerEvents(
+    events: ScreenFTManagerEventType[],
+    screenFulTextManager?: ScreenFullTextManager,
     callback?: (args: any) => void,
 ) {
-    const [n, setN] = useState(0);
-    useAppEffect(() => {
-        const update = (args: any) => {
-            setN(n + 1);
-            callback?.(args);
-        };
-        let registeredEvents: any;
-        const isGlobal = screenFTManager === undefined;
-        if (isGlobal) {
-            registeredEvents = ScreenFullTextManager.
-                registerEventListener(events, update);
-        } else {
-            registeredEvents = screenFTManager.
-                registerEventListener(events, update);
-        }
-        return () => {
-            if (isGlobal) {
-                ScreenFullTextManager.unregisterEventListener(registeredEvents);
-            } else {
-                screenFTManager.unregisterEventListener(registeredEvents);
-            }
-        };
-    }, [screenFTManager, n]);
+    useScreenEvents(
+        events, ScreenFullTextManager as any, screenFulTextManager, callback,
+    );
+}
+
+export function useScreenAlertManagerEvents(
+    events: ScreenAlertEventType[], screenAlertManager?: ScreenAlertManager,
+    callback?: () => void,
+) {
+    useScreenEvents(
+        events, ScreenAlertManager as any, screenAlertManager, callback,
+    );
+}
+
+export function useScreenManagerEvents(
+    events: ScreenManagerEventType[], screenManager?: ScreenManager,
+    callback?: () => void,
+) {
+    useScreenEvents(events, ScreenManager as any, screenManager, callback);
+    useScreenBackgroundManagerEvents(['update']);
+    useScreenSlideManagerEvents(['update']);
+    useScreenFullTextManagerEvents(['update']);
+    useScreenAlertManagerEvents(['update']);
 }
 
 const messageUtils = appProviderScreen.messageUtils;

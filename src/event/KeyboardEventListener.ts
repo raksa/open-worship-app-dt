@@ -100,7 +100,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
     }
     static toEventMapperKey(eventMapper: EventMapper) {
         const key = toShortcutKey(eventMapper);
-        return `${this.getLastLayer()}:${key}`;
+        return `${this.getLastLayer()}>${key}`;
     }
 }
 

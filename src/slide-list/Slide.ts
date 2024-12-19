@@ -47,19 +47,6 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         return this.editorCacheManager.isChanged;
     }
-    get copiedItem() {
-        return this.items.find((item) => {
-            return item.isCopied;
-        }) || null;
-    }
-    set copiedItem(newItem: SlideItem | null) {
-        this.items.forEach((item) => {
-            item.isCopied = false;
-        });
-        if (newItem !== null) {
-            newItem.isCopied = true;
-        }
-    }
     get metadata() {
         if (this.isPdf) {
             return {};
@@ -139,18 +126,6 @@ export default class Slide extends ItemSource<SlideItem> {
             this.fileSource.fireNewEvent(newItem);
         }
     }
-    pasteItem() {
-        if (this.copiedItem === null) {
-            return;
-        }
-        const newItem = this.copiedItem.clone();
-        if (newItem !== null) {
-            newItem.id = this.maxItemId + 1;
-            const newItems: SlideItem[] = [...this.items, newItem];
-            this.items = newItems;
-            this.fileSource.fireNewEvent(newItem);
-        }
-    }
     moveItem(id: number, toIndex: number, isLeft: boolean) {
         const fromIndex: number = this.items.findIndex((item) => {
             return item.id === id;
@@ -167,6 +142,7 @@ export default class Slide extends ItemSource<SlideItem> {
     addItem(slideItem: SlideItem) {
         const items = this.items;
         slideItem.id = this.maxItemId + 1;
+        slideItem.filePath = this.filePath;
         items.push(slideItem);
         this.items = items;
         this.fileSource.fireNewEvent(slideItem);
@@ -230,22 +206,24 @@ export default class Slide extends ItemSource<SlideItem> {
         });
         this.editorCacheManager.pushSlideItems(newItemsJson);
     }
-    showSlideItemContextMenu(event: any) {
+    async showSlideItemContextMenu(event: any) {
+        if (this.isPdf) {
+            return;
+        }
+        const copiedSlideItems = await Slide.getCopiedSlideItems();
         showAppContextMenu(event, [{
-            menuTitle: 'Deselect',
-            onClick: () => {
-                this.isSelected = false;
-            },
-        }, {
             menuTitle: 'New Slide Item',
             onClick: () => {
                 this.addNewItem();
             },
-        }, {
+        }, ...(copiedSlideItems.length > 0 ? [{
             menuTitle: 'Paste',
-            disabled: SlideItem.copiedItem === null,
-            onClick: () => this.pasteItem(),
-        }]);
+            onClick: () => {
+                for (const copiedSlideItem of copiedSlideItems) {
+                    this.addItem(copiedSlideItem);
+                }
+            },
+        }] : [])]);
     }
     async discardChanged() {
         this.editorCacheManager.delete();
@@ -309,7 +287,7 @@ export default class Slide extends ItemSource<SlideItem> {
         return Slide.fromJson(this.filePath, this.toJson());
     }
     static slideItemExtractKey(key: string) {
-        const [filePath, id] = key.split(':');
+        const [filePath, id] = key.split(SlideItem.KEY_SEPARATOR);
         if (filePath === undefined || id === undefined) {
             return null;
         }
@@ -344,6 +322,7 @@ export default class Slide extends ItemSource<SlideItem> {
         const slide = await this.readFileToData(selectedSlideFilePath);
         return slide || null;
     };
+
     static async getSelectedSlideItem() {
         const slide = await Slide.getSelectedSlide();
         if (!slide) {
@@ -351,6 +330,25 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         return slide.items[0];
     };
+
+    static async getCopiedSlideItems() {
+        const clipboardItems = await navigator.clipboard.read();
+        const copiedSlideItems: SlideItem[] = [];
+        const textPlainType = 'text/plain';
+        for (const clipboardItem of clipboardItems) {
+            if (clipboardItem.types.some((type) => {
+                return type === textPlainType;
+            })) {
+                const blob = await clipboardItem.getType(textPlainType);
+                const json = await blob.text();
+                const copiedSlideItem = SlideItem.clipboardDeserialize(json);
+                if (copiedSlideItem !== null) {
+                    copiedSlideItems.push(copiedSlideItem);
+                }
+            }
+        }
+        return copiedSlideItems;
+    }
 }
 
 export const SelectedSlideContext = createContext<{

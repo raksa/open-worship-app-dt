@@ -18,15 +18,15 @@ import {
     renderScreenFullTextManager, bibleItemToFtData,
 } from './screenFullTextHelpers';
 import {
-    FTItemDataType,
-    FTListType,
-    genScreenMouseEvent, getFTListOnScreenSetting, ScreenMessageType,
+    FTItemDataType, FTListType, genScreenMouseEvent, getFTListOnScreenSetting,
+    ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
 import * as loggerHelpers from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
+import { chooseScreenManagerInstances } from './screenManagerHelpers';
 
 let textStyle: AnyObjectType = {};
 export default class ScreenFullTextManager
@@ -64,6 +64,11 @@ export default class ScreenFullTextManager
             }
         }
     }
+
+    get isShowing() {
+        return this.fullTextItemData !== null;
+    }
+
     private _divScrollListener() {
         if (this.div === null) {
             return;
@@ -71,20 +76,24 @@ export default class ScreenFullTextManager
         this.scroll = this.div.scrollTop / this.div.scrollHeight;
         this.sendSyncScroll();
     };
+
     get isLineSync() {
         const screenId = this.screenId;
         const settingKey = `${SCREEN_FT_SETTING_PREFIX}-line-sync-${screenId}`;
         return getSetting(settingKey) === 'true';
     }
+
     set isLineSync(isLineSync: boolean) {
         setSetting(
             `${SCREEN_FT_SETTING_PREFIX}-line-sync-${this.screenId}`,
             `${isLineSync}`,
         );
     }
+
     get div() {
         return this._div || null;
     }
+
     set div(div: HTMLDivElement | null) {
         this._div = div;
         this._div?.addEventListener('wheel', (event) => {
@@ -97,15 +106,19 @@ export default class ScreenFullTextManager
         this.registerScrollListener();
         this.render();
     }
+
     get screenManager() {
         return ScreenManager.getInstance(this.screenId);
     }
+
     get key() {
         return this.screenId.toString();
     }
+
     get fullTextItemData() {
         return this._ftItemData;
     }
+
     set fullTextItemData(ftItemData: FTItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
@@ -114,11 +127,13 @@ export default class ScreenFullTextManager
             delete allFTList[this.key];
         } else {
             allFTList[this.key] = ftItemData;
+            this.screenManager?.screenSlideManager.clear();
         }
         ScreenFullTextManager.setFTList(allFTList);
         this.sendSyncData();
         this.fireUpdate();
     }
+
     private _setMetadata(key: string, value: any) {
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
@@ -129,6 +144,7 @@ export default class ScreenFullTextManager
             }
         }
     }
+
     get containerStyle(): CSSProperties {
         const { screenManager } = this;
         if (screenManager === null) {
@@ -142,18 +158,22 @@ export default class ScreenFullTextManager
             overflowY: 'auto',
         };
     }
+
     get selectedIndex() {
         return (
             this._ftItemData === null ? null : this._ftItemData.selectedIndex
         );
     }
+
     set selectedIndex(selectedIndex: number | null) {
         this._setMetadata('selectedIndex', selectedIndex);
         this.renderSelectedIndex();
     }
+
     get scroll() {
-        return this.fullTextItemData?.scroll || 0;
+        return this.fullTextItemData?.scroll ?? 0;
     }
+
     set scroll(scroll: number) {
         this._setMetadata('scroll', scroll);
     }
@@ -310,23 +330,18 @@ export default class ScreenFullTextManager
     static async ftBibleItemSelect(
         event: React.MouseEvent | null, bibleItems: BibleItem[],
     ) {
-        const chosenScreenManagers = (
-            await ScreenManager.contextChooseInstances(
-                genScreenMouseEvent(event) as any,
-            )
+        const chosenScreenManagers = await chooseScreenManagerInstances(
+            genScreenMouseEvent(event) as any,
         );
         const ftItemData = await bibleItemToFtData(bibleItems);
         chosenScreenManagers.forEach((screenManager) => {
-            const { screenFTManager } = screenManager;
-            screenFTManager.fullTextItemData = ftItemData;
-            screenManager.screenSlideManager.delete();
+            const { screenFullTextManager } = screenManager;
+            screenFullTextManager.fullTextItemData = ftItemData;
         });
     }
     static async ftLyricSelect(event: React.MouseEvent | null, lyric: Lyric) {
-        const chosenScreenManagers = (
-            await ScreenManager.contextChooseInstances(
-                genScreenMouseEvent(event) as any,
-            )
+        const chosenScreenManagers = await chooseScreenManagerInstances(
+            genScreenMouseEvent(event) as any,
         );
         const renderedList = fullTextScreenHelper.genLyricRenderList(lyric);
         const ftItemData: FTItemDataType = {
@@ -338,8 +353,8 @@ export default class ScreenFullTextManager
             selectedIndex: null,
         };
         chosenScreenManagers.forEach((screenManager) => {
-            const { screenFTManager } = screenManager;
-            screenFTManager.fullTextItemData = ftItemData;
+            const { screenFullTextManager } = screenManager;
+            screenFullTextManager.fullTextItemData = ftItemData;
         });
     }
     render() {
@@ -359,6 +374,7 @@ export default class ScreenFullTextManager
             behavior: 'smooth',
         });
     }
+
     renderSelectedIndex() {
         if (this.div === null) {
             return;
@@ -368,6 +384,7 @@ export default class ScreenFullTextManager
             this.div, 'selected', true, `${this.selectedIndex}`,
         );
     }
+
     async receiveScreenDrag(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.BIBLE_ITEM) {
             const newFtItemData = await bibleItemToFtData([droppedData.item]);
@@ -376,17 +393,20 @@ export default class ScreenFullTextManager
             loggerHelpers.log(droppedData);
         }
     }
+
     static getInstanceByScreenId(screenId: number) {
         const screenManager = ScreenManager.getInstance(screenId);
         if (screenManager === null) {
             return null;
         }
-        return screenManager.screenFTManager;
+        return screenManager.screenFullTextManager;
     }
+
     sendSyncScreen() {
         this.sendSyncData();
     }
-    delete() {
+
+    clear() {
         this.fullTextItemData = null;
     }
 }

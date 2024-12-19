@@ -78,12 +78,11 @@ function genBody(
             fileSource.src, backgroundType,
         )
     );
-    const selectedCN = (
-        selectedBackgroundSrcList.length ? 'highlight-selected' : ''
-    );
+    const isInScreen = selectedBackgroundSrcList.length > 0;
+    const selectedCN = isInScreen ? 'highlight-selected' : '';
     const screenKeys = selectedBackgroundSrcList.map(([key]) => key);
     const title = (
-        `${filePath}` + (selectedBackgroundSrcList.length ?
+        `${filePath}` + (isInScreen ?
             ` \nShow in presents:${screenKeys.join(',')}` : ''
         )
     );
@@ -99,7 +98,11 @@ function genBody(
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     ...genCommonMenu(filePath),
-                    ...genTrashContextMenu(fileSource.filePath),
+
+                    ...(
+                        isInScreen ? [] :
+                            genTrashContextMenu(fileSource.filePath)
+                    ),
                 ]);
             }}
             onClick={noClickable ? () => { } : (event) => {
@@ -129,7 +132,9 @@ function FileFullNameRenderer({ fileFullName }: Readonly<{
 }>) {
     return (
         <div className='card-footer'>
-            <p className='app-ellipsis-left card-text'>
+            <p className='app-ellipsis-left card-text' style={{
+                fontSize: '14px',
+            }}>
                 {fileFullName}
             </p>
         </div>

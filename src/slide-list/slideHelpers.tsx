@@ -42,7 +42,8 @@ export function openSlideContextMenu(
         {
             menuTitle: 'Copy',
             onClick: () => {
-                SlideItem.copiedItem = slideItem;
+                navigator.clipboard.writeText(slideItem.clipboardSerialize());
+                showSimpleToast('Copied', 'SlideItem is copied');
             },
         },
         {

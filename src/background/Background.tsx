@@ -17,6 +17,7 @@ import {
     BackgroundType, getBackgroundSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
+import { tran } from '../lang';
 
 const LazyBackgroundColors = lazy(() => {
     return import('./BackgroundColors');
@@ -66,15 +67,21 @@ export default function Background() {
                     activeTab={tabType}
                     setActiveTab={setTabType}
                 />
-                <TabRender<'sound' | ''>
-                    tabs={[[
-                        'sound', '♫Sound♫', undefined,
-                    ]]}
-                    activeTab={isSoundActive ? 'sound' : ''}
-                    setActiveTab={() => {
-                        setIsSoundActive(!isSoundActive);
-                    }}
-                />
+                <ul className={
+                    'nav nav-tabs flex-fill d-flex justify-content-end'
+                }>
+                    <li className={'nav-item '}>
+                        <button className={
+                            'btn btn-link nav-link' +
+                            ` ${isSoundActive ? 'active' : ''}`
+                        }
+                            onClick={() => {
+                                setIsSoundActive(!isSoundActive);
+                            }}>
+                            ♫{tran('Sound')}♫
+                        </button>
+                    </li>
+                </ul>
             </div>
             <div className='background-body w-100 flex-fill d-flex'>
                 {isSoundActive ? (

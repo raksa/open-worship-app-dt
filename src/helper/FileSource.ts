@@ -178,7 +178,7 @@ export default class FileSource extends EventHandler<FileSourceEventType>
 
     dragSerialize(type?: DragTypeEnum) {
         return {
-            type: type || DragTypeEnum.UNKNOWN,
+            type: type ?? DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
     }
@@ -227,49 +227,51 @@ export default class FileSource extends EventHandler<FileSourceEventType>
         }
     }
 
-    static registerFSEventListener<T>(
+    static registerFileSourceEventListener<T>(
         events: FileSourceEventType[], callback: (data: T) => void,
         filePath?: string,
     ) {
         const newEvents = events.map((event) => {
-            return filePath ? `${event}:${filePath}` : event;
+            return filePath ? `${event}@${filePath}` : event;
         });
         return super.registerEventListener(newEvents, callback);
     }
 
-    static addFSPropEvent(
+    static addFileSourcePropEvent(
         eventName: FileSourceEventType, filePath: string, data?: any,
     ): void {
-        const newEventName = `${eventName}:${filePath}` as FileSourceEventType;
+        const newEventName = `${eventName}@${filePath}` as FileSourceEventType;
         super.addPropEvent(eventName, data);
         super.addPropEvent(newEventName, data);
     }
 
     fireSelectEvent(data?: any) {
-        FileSource.addFSPropEvent('select', this.filePath, data);
+        FileSource.addFileSourcePropEvent('select', this.filePath, data);
     }
 
     fireHistoryUpdateEvent(data?: any) {
-        FileSource.addFSPropEvent('history-update', this.filePath, data);
+        FileSource.addFileSourcePropEvent(
+            'history-update', this.filePath, data,
+        );
     }
 
     fireUpdateEvent(data?: any) {
-        FileSource.addFSPropEvent('update', this.filePath, data);
+        FileSource.addFileSourcePropEvent('update', this.filePath, data);
     }
 
     fireNewEvent(data?: any) {
-        FileSource.addFSPropEvent('new', this.filePath, data);
+        FileSource.addFileSourcePropEvent('new', this.filePath, data);
     }
 
     fireEditEvent(data?: any) {
-        FileSource.addFSPropEvent('edit', this.filePath, data);
+        FileSource.addFileSourcePropEvent('edit', this.filePath, data);
     }
 
     fireDeleteEvent(data?: any) {
-        FileSource.addFSPropEvent('delete', this.filePath, data);
+        FileSource.addFileSourcePropEvent('delete', this.filePath, data);
     }
 
     fireDeleteCacheEvent(data?: any) {
-        FileSource.addFSPropEvent('delete-cache', this.filePath, data);
+        FileSource.addFileSourcePropEvent('delete-cache', this.filePath, data);
     }
 }

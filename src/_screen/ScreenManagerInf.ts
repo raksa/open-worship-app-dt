@@ -1,5 +1,6 @@
 interface ScreenManagerInf {
-    delete(): void;
+    clear(): void;
+    isShowing: boolean;
 }
 
 export default ScreenManagerInf;

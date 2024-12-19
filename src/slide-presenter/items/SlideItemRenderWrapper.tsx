@@ -31,7 +31,7 @@ export default function SlideItemRenderWrapper({
         selectedSlide.openContextMenu(event, slideItem);
     };
     const handleCopying = () => {
-        selectedSlide.copiedItem = slideItem;
+        navigator.clipboard.writeText(slideItem.clipboardSerialize());
     };
     const handleDragStarting = () => {
         setDraggingIndex(index);

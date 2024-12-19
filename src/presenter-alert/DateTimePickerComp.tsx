@@ -1,42 +1,7 @@
 import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/ScreenAlertManager';
 
-export default function PresenterAlertController() {
-    return (
-        <div className='w-100 h-100 border-white-round'>
-            <div>
-                <Marquee />
-            </div>
-            <hr />
-            <div>
-                <DateTimePicker />
-            </div>
-        </div>
-    );
-}
-
-function Marquee() {
-    const [text, setText] = useStateSettingString<string>(
-        'marquee-setting', '');
-    return (
-        <div className='form-floating'>
-            <textarea id='marquee-textarea'
-                className='form-control'
-                cols={30} rows={20} value={text}
-                onChange={(event) => {
-                    setText(event.target.value);
-                }}
-                placeholder='Leave a marquee text here' />
-            <label htmlFor='marquee-textarea'>Marquee</label>
-            <button className='btn btn-secondary'
-                onClick={(event) => {
-                    ScreenAlertManager.setMarquee(text, event);
-                }}>Show Marquee</button>
-        </div>
-    );
-}
-
-function DateTimePicker() {
+export default function DateTimePickerComp() {
     const nowArr = () => {
         return new Date().toISOString().split('T');
     };
@@ -46,9 +11,11 @@ function DateTimePicker() {
         return timeStr.substring(0, timeStr.lastIndexOf(':'));
     };
     const [date, setDate] = useStateSettingString<string>(
-        'alert-date-setting', todayStr());
+        'alert-date-setting', todayStr(),
+    );
     const [time, setTime] = useStateSettingString<string>(
-        'alert-time-setting', nowStr());
+        'alert-time-setting', nowStr(),
+    );
     return (
         <>
             <div className='d-flex'>
@@ -60,7 +27,8 @@ function DateTimePicker() {
                         value={date} onChange={(event) => {
                             setDate(event.target.value);
                         }}
-                        min={todayStr()} />
+                        min={todayStr()}
+                    />
                 </div>
                 <div>
                     <label className='form-label'
@@ -70,7 +38,8 @@ function DateTimePicker() {
                         value={time} onChange={(event) => {
                             setTime(event.target.value);
                         }}
-                        min={nowStr()} />
+                        min={nowStr()}
+                    />
                 </div>
                 <br />
             </div>
@@ -78,8 +47,10 @@ function DateTimePicker() {
                 <button className='btn btn-secondary'
                     onClick={(event) => {
                         ScreenAlertManager.setCountdown(
-                            new Date(date + ' ' + time), event);
-                    }}>Show Time</button>
+                            event, new Date(date + ' ' + time));
+                    }}>
+                    Show Time
+                </button>
             </div>
         </>
     );

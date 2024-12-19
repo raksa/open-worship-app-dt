@@ -335,4 +335,5 @@ export function getFTListOnScreenSetting(): FTListType {
         handleError(error);
     }
     return {};
-}   
+}
+

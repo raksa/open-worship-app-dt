@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    useScreenFTManagerEvents, useScreenManagerEvents,
+    useScreenFullTextManagerEvents, useScreenManagerEvents,
 } from './screenEventHelpers';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import { useScreenManagerContext } from './ScreenManager';
@@ -107,14 +107,14 @@ const styleText = `
 export default function ScreenFullText() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['resize'], screenManager, () => {
-        screenManager.screenFTManager.render();
+        screenManager.screenFullTextManager.render();
     });
-    useScreenFTManagerEvents(['text-style']);
+    useScreenFullTextManagerEvents(['text-style']);
     const div = useRef<HTMLDivElement>(null);
-    const { screenFTManager } = screenManager;
+    const { screenFullTextManager } = screenManager;
     useAppEffect(() => {
         if (div.current) {
-            screenFTManager.div = div.current;
+            screenFullTextManager.div = div.current;
         }
     });
     return (
@@ -126,7 +126,7 @@ export default function ScreenFullText() {
                 }`}
             </style>
             <div id='full-text' ref={div}
-                style={screenFTManager.containerStyle}
+                style={screenFullTextManager.containerStyle}
             />
         </>
     );

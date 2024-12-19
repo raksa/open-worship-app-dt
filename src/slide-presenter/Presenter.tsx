@@ -23,7 +23,7 @@ const LazyLyricPreviewer = lazy(() => {
     return import('../full-text-presenter/LyricPreviewer');
 });
 const LazyPresenterAlertController = lazy(() => {
-    return import('../presenter-alert/PresenterAlertController');
+    return import('../presenter-alert/PresenterAlertControllerComp');
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';

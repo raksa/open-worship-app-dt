@@ -20,6 +20,7 @@ import ScreenTransitionEffect
     from './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
+import { chooseScreenManagerInstances } from './screenManagerHelpers';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -42,6 +43,7 @@ export default class ScreenSlideManager extends
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'slide';
+
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
@@ -50,6 +52,11 @@ export default class ScreenSlideManager extends
             this._slideItemData = allSlideList[this.key] || null;
         }
     }
+
+    get isShowing() {
+        return this.slideItemData !== null;
+    }
+
     get div() {
         return this._div;
     }
@@ -84,6 +91,7 @@ export default class ScreenSlideManager extends
             delete allSlideList[this.key];
         } else {
             allSlideList[this.key] = slideItemData;
+            this.screenManager?.screenFullTextManager.clear();
         }
         ScreenSlideManager.setSlideList(allSlideList);
         this.sendSyncScreen();
@@ -136,21 +144,23 @@ export default class ScreenSlideManager extends
     static async slideSelect(slideFilePath: string,
         slideItemJson: SlideItemType,
         event: React.MouseEvent<HTMLElement, MouseEvent>) {
-        const chosenScreenManagers = (
-            await ScreenManager.contextChooseInstances(event)
-        );
+        const chosenScreenManagers = await chooseScreenManagerInstances(event);
         chosenScreenManagers.forEach((screenManager) => {
             const { screenSlideManager } = screenManager;
             const { slideItemData } = screenSlideManager;
-            const willSelected = `${slideFilePath}:${slideItemJson.id}`;
+            const willSelected = (
+                `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`
+            );
             const slideItemId = slideItemData?.slideItemJson.id;
-            const selected = `${slideItemData?.slideFilePath}:${slideItemId}`;
+            const selected = (
+                `${slideItemData?.slideFilePath}${SlideItem.KEY_SEPARATOR}` +
+                `${slideItemId}`
+            );
             if (selected !== willSelected) {
                 screenSlideManager.slideItemData = {
                     slideFilePath,
                     slideItemJson,
                 };
-                screenManager.screenFTManager.delete();
             } else {
                 screenSlideManager.slideItemData = null;
             }
@@ -256,7 +266,7 @@ export default class ScreenSlideManager extends
             };
         }
     }
-    delete() {
+    clear() {
         this.slideItemData = null;
     }
 }

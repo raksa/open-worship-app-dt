@@ -45,8 +45,9 @@ export default function SlideFile({
     };
     const handleSlideDeleting = () => {
         const selectedFilePath = Slide.getSelectedFilePath();
-        if (selectedFilePath === filePath) {
+        if (selectedFilePath === null || selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
+            setSelectedSlide(null);
         }
         data?.editorCacheManager.delete();
     };

@@ -5,7 +5,6 @@ import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { getWindowDim } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
-import { showAppContextMenu } from '../others/AppContextMenu';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
@@ -44,7 +43,7 @@ export default class ScreenManager
     static readonly eventNamePrefix: string = 'screen-m';
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenSlideManager: ScreenSlideManager;
-    readonly screenFTManager: ScreenFullTextManager;
+    readonly screenFullTextManager: ScreenFullTextManager;
     readonly screenAlertManager: ScreenAlertManager;
     readonly screenId: number;
     width: number;
@@ -62,39 +61,13 @@ export default class ScreenManager
         this.name = `screen-${screenId}`;
         this.screenBackgroundManager = new ScreenBackgroundManager(screenId);
         this.screenSlideManager = new ScreenSlideManager(screenId);
-        this.screenFTManager = new ScreenFullTextManager(screenId);
+        this.screenFullTextManager = new ScreenFullTextManager(screenId);
         this.screenAlertManager = new ScreenAlertManager(screenId);
         const ids = getAllShowingScreenIds();
         this._isShowing = ids.some((id) => id === screenId);
     }
     get key() {
         return this.screenId.toString();
-    }
-    static getDisplayById(displayId: number) {
-        const { displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id === displayId;
-        })?.id || 0;
-    }
-    static getDisplayByScreenId(screenId: number) {
-        const displayId = this.getDisplayIdByScreenId(screenId);
-        const { displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id === displayId;
-        }) || this.getDefaultScreenDisplay();
-    }
-    static getDisplayIdByScreenId(screenId: number) {
-        const defaultDisplay = ScreenManager.getDefaultScreenDisplay();
-        const str = getSetting(`${settingName}-pid-${screenId}`,
-            defaultDisplay.id.toString());
-        if (isNaN(parseInt(str, 10))) {
-            return defaultDisplay.id;
-        }
-        const id = parseInt(str, 10);
-        const { displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id === id;
-        })?.id || defaultDisplay.id;
     }
     // TODO: implement multiple display support
     get displayId() {
@@ -139,7 +112,7 @@ export default class ScreenManager
         ScreenTransitionEffect.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
         this.screenSlideManager.sendSyncScreen();
-        this.screenFTManager.sendSyncScreen();
+        this.screenFullTextManager.sendSyncScreen();
         this.screenAlertManager.sendSyncScreen();
         ScreenFullTextManager.sendSynTextStyle();
     }
@@ -152,12 +125,7 @@ export default class ScreenManager
     hide() {
         hideScreen(this.screenId);
     }
-    static getDefaultScreenDisplay() {
-        const { primaryDisplay, displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id !== primaryDisplay.id;
-        }) || primaryDisplay;
-    }
+
     fireUpdateEvent() {
         this.addPropEvent('update');
         ScreenManager.fireUpdateEvent();
@@ -186,16 +154,76 @@ export default class ScreenManager
     static fireResizeEvent() {
         this.addPropEvent('resize');
     }
+    clear() {
+        this.screenBackgroundManager.clear();
+        this.screenFullTextManager.clear();
+        this.screenSlideManager.clear();
+        this.screenAlertManager.clear();
+        this.fireUpdateEvent();
+    }
     delete() {
-        this.screenBackgroundManager.delete();
-        this.screenFTManager.delete();
-        this.screenSlideManager.delete();
-        this.screenAlertManager.delete();
+        this.clear();
         this.hide();
         cache.delete(this.key);
         ScreenManager.saveScreenManagersSetting();
         this.fireInstanceEvent();
     }
+
+    receiveScreenDrag(droppedData: DroppedDataType) {
+        if ([
+            DragTypeEnum.BACKGROUND_COLOR,
+            DragTypeEnum.BACKGROUND_IMAGE,
+            DragTypeEnum.BACKGROUND_VIDEO,
+        ].includes(droppedData.type)) {
+            this.screenBackgroundManager.receiveScreenDrag(droppedData);
+        } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
+            this.screenSlideManager.receiveScreenDrag(droppedData);
+        } else if ([
+            DragTypeEnum.BIBLE_ITEM,
+            DragTypeEnum.LYRIC_ITEM,
+        ].includes(droppedData.type)) {
+            this.screenFullTextManager.receiveScreenDrag(droppedData);
+        } else {
+            log(droppedData);
+        }
+    }
+
+    static getDefaultScreenDisplay() {
+        const { primaryDisplay, displays } = getAllDisplays();
+        return displays.find((display) => {
+            return display.id !== primaryDisplay.id;
+        }) || primaryDisplay;
+    }
+
+    static getDisplayById(displayId: number) {
+        const { displays } = getAllDisplays();
+        return displays.find((display) => {
+            return display.id === displayId;
+        })?.id ?? 0;
+    }
+
+    static getDisplayByScreenId(screenId: number) {
+        const displayId = this.getDisplayIdByScreenId(screenId);
+        const { displays } = getAllDisplays();
+        return displays.find((display) => {
+            return display.id === displayId;
+        }) || this.getDefaultScreenDisplay();
+    }
+
+    static getDisplayIdByScreenId(screenId: number) {
+        const defaultDisplay = ScreenManager.getDefaultScreenDisplay();
+        const str = getSetting(`${settingName}-pid-${screenId}`,
+            defaultDisplay.id.toString());
+        if (isNaN(parseInt(str, 10))) {
+            return defaultDisplay.id;
+        }
+        const id = parseInt(str, 10);
+        const { displays } = getAllDisplays();
+        return displays.find((display) => {
+            return display.id === id;
+        })?.id ?? defaultDisplay.id;
+    }
+
     static receiveSyncScreen(message: ScreenMessageType) {
         const { type, data, screenId } = message;
         const screenManager = ScreenManager.getInstance(screenId);
@@ -226,59 +254,13 @@ export default class ScreenManager
             log(message);
         }
     }
-    static getInstanceByKey(key: string) {
-        const screenId = parseInt(key, 10);
-        return this.getInstance(screenId);
-    }
-    static getAllInstances(): ScreenManager[] {
-        const cachedInstances = Array.from(cache.values());
-        if (cachedInstances.length > 0) {
-            return cachedInstances;
-        }
-        return getAllShowingScreenIds().map((screenId) => {
-            return this.createInstance(screenId);
-        });
-    }
-    static createInstance(screenId: number) {
-        const key = screenId.toString();
-        if (!cache.has(key)) {
-            const screenManager = new ScreenManager(screenId);
-            cache.set(key, screenManager);
-            ScreenManager.saveScreenManagersSetting();
-        }
-        return cache.get(key) as ScreenManager;
-    }
-    static getInstance(screenId: number) {
-        const key = screenId.toString();
-        if (cache.has(key)) {
-            return cache.get(key) as ScreenManager;
-        }
-        return null;
-    }
-    static getSelectedInstances() {
+
+    static getSelectedScreenManagerInstances() {
         return Array.from(cache.values()).filter((screenManager) => {
             return screenManager.isSelected;
         });
     }
-    static contextChooseInstances(event: React.MouseEvent) {
-        return new Promise<ScreenManager[]>((resolve) => {
-            const selectedScreenManagers = this.getSelectedInstances();
-            if (selectedScreenManagers.length > 0) {
-                return resolve(selectedScreenManagers);
-            }
-            const allScreenManagers = ScreenManager.getAllInstances();
-            showAppContextMenu(
-                event as any, allScreenManagers.map((screenManager,
-                ) => {
-                    return {
-                        menuTitle: screenManager.name,
-                        onClick: () => {
-                            resolve([screenManager]);
-                        },
-                    };
-                })).then(() => resolve([]));
-        });
-    }
+
     static getScreenManagersSetting() {
         const instanceSetting = getScreenManagersInstanceSetting();
         if (instanceSetting.length > 0) {
@@ -307,22 +289,46 @@ export default class ScreenManager
         });
         setSetting(screenManagerSettingNames.MANAGERS, JSON.stringify(json));
     }
-    receiveScreenDrag(droppedData: DroppedDataType) {
-        if ([
-            DragTypeEnum.BACKGROUND_COLOR,
-            DragTypeEnum.BACKGROUND_IMAGE,
-            DragTypeEnum.BACKGROUND_VIDEO,
-        ].includes(droppedData.type)) {
-            this.screenBackgroundManager.receiveScreenDrag(droppedData);
-        } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
-            this.screenSlideManager.receiveScreenDrag(droppedData);
-        } else if ([
-            DragTypeEnum.BIBLE_ITEM,
-            DragTypeEnum.LYRIC_ITEM,
-        ].includes(droppedData.type)) {
-            this.screenFTManager.receiveScreenDrag(droppedData);
-        } else {
-            log(droppedData);
+
+    static getInstanceByKey(key: string) {
+        const screenId = parseInt(key, 10);
+        return this.getInstance(screenId);
+    }
+
+    static getAllInstances(): ScreenManager[] {
+        const cachedInstances = Array.from(cache.values());
+        if (cachedInstances.length > 0) {
+            return cachedInstances;
         }
+        return getAllShowingScreenIds().map((screenId) => {
+            return this.createInstance(screenId);
+        });
+    }
+
+    static createInstance(screenId: number) {
+        const key = screenId.toString();
+        if (!cache.has(key)) {
+            const screenManager = new ScreenManager(screenId);
+            cache.set(key, screenManager);
+            ScreenManager.saveScreenManagersSetting();
+            screenManager.fireUpdateEvent();
+            const {
+                screenBackgroundManager, screenSlideManager,
+                screenFullTextManager, screenAlertManager,
+            } = screenManager;
+            screenBackgroundManager.fireUpdate();
+            screenSlideManager.fireUpdate();
+            screenFullTextManager.fireUpdate();
+            screenAlertManager.fireUpdate();
+        }
+        return cache.get(key) as ScreenManager;
+    }
+
+    static getInstance(screenId: number) {
+        const key = screenId.toString();
+        if (cache.has(key)) {
+            return cache.get(key) as ScreenManager;
+        }
+        return null;
     }
 }

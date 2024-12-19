@@ -5,6 +5,8 @@ import {
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
+import { showSimpleToast } from '../../toast/toastHelpers';
+import Canvas from './Canvas';
 
 function checkClipboardIsImage(clipboardItem: ClipboardItem) {
     return clipboardItem.types.every((type) => {
@@ -19,6 +21,7 @@ export async function showCanvasContextMenu(
     const isPastingImage = clipboardItems.some((clipboardItem) => {
         return checkClipboardIsImage(clipboardItem);
     });
+    const copiedCanvasItems = await Canvas.getCopiedCanvasItems();
     showAppContextMenu(event, [
         {
             menuTitle: 'New',
@@ -26,13 +29,14 @@ export async function showCanvasContextMenu(
                 canvasController.addNewTextItem();
             },
         },
-        {
+        ...(copiedCanvasItems.length > 0 ? [{
             menuTitle: 'Paste',
-            disabled: canvasController.isCopied === null,
             onClick: () => {
-                canvasController.paste();
+                for (const copiedCanvasItem of copiedCanvasItems) {
+                    canvasController.addNewItem(copiedCanvasItem);
+                }
             },
-        },
+        }] : []),
         {
             menuTitle: 'Insert Medias',
             onClick: () => {
@@ -92,7 +96,8 @@ export function showCanvasItemContextMenu(
     showAppContextMenu(event, [
         {
             menuTitle: 'Copy', onClick: () => {
-                canvasController.copiedItem = canvasItem;
+                navigator.clipboard.writeText(canvasItem.clipboardSerialize());
+                showSimpleToast('Copied', 'Canvas item copied');
             },
         },
         {

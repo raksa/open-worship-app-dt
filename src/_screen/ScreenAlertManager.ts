@@ -2,7 +2,6 @@ import { CSSProperties } from 'react';
 
 import EventHandler from '../event/EventHandler';
 import { setSetting } from '../helper/settingHelpers';
-import appProviderScreen from './appProviderScreen';
 import {
     AlertType, checkIsCountdownDatesEq, genHtmlAlertCountdown,
     genHtmlAlertMarquee, removeAlert,
@@ -18,13 +17,10 @@ import ScreenTransitionEffect from
     './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
+import { chooseScreenManagerInstances } from './screenManagerHelpers';
 
 export type ScreenAlertEventType = 'update';
 
-const alertData: AlertDataType = {
-    marqueeData: null,
-    countdownData: null,
-};
 export default class ScreenAlertManager
     extends EventHandler<ScreenAlertEventType>
     implements ScreenManagerInf {
@@ -33,21 +29,16 @@ export default class ScreenAlertManager
     readonly screenId: number;
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'slide';
+    alertData: AlertDataType;
 
     constructor(screenId: number) {
         super();
         this.screenId = screenId;
-        if (appProviderScreen.isPagePresenter) {
-            const allAlertDataList = getAlertDataListOnScreenSetting();
-            if (allAlertDataList[this.key] !== undefined) {
-                const {
-                    marqueeData,
-                    countdownData,
-                } = allAlertDataList[this.key];
-                alertData.marqueeData = marqueeData;
-                alertData.countdownData = countdownData;
-            }
-        }
+        const allAlertDataList = getAlertDataListOnScreenSetting();
+        this.alertData = allAlertDataList[this.key] ?? {
+            marqueeData: null,
+            countdownData: null,
+        };
     }
 
     getDivChild(divId: string) {
@@ -55,6 +46,18 @@ export default class ScreenAlertManager
             return document.createElement('div');
         }
         return this._div.querySelector(`#${divId}`) as HTMLDivElement;
+    }
+
+    get isMarqueeShowing() {
+        return this.alertData.marqueeData !== null;
+    }
+
+    get isCountdownShowing() {
+        return this.alertData.countdownData !== null;
+    }
+
+    get isShowing() {
+        return this.isMarqueeShowing || this.isCountdownShowing;
     }
 
     get divCountdown() {
@@ -86,7 +89,7 @@ export default class ScreenAlertManager
 
     saveAlertData() {
         const allAlertDataList = getAlertDataListOnScreenSetting();
-        allAlertDataList[this.key] = alertData;
+        allAlertDataList[this.key] = this.alertData;
         ScreenAlertManager.setAlertDataList(allAlertDataList);
         this.sendSyncScreen();
         this.fireUpdate();
@@ -96,24 +99,30 @@ export default class ScreenAlertManager
         sendScreenMessage({
             screenId: this.screenId,
             type: 'alert',
-            data: alertData,
+            data: this.alertData,
         });
     }
 
     setMarqueeData(marqueeData: { text: string } | null) {
-        if (marqueeData?.text !== alertData.marqueeData?.text) {
+        if (marqueeData?.text !== this.alertData.marqueeData?.text) {
             this.cleanRender(this.divMarquee);
-            alertData.marqueeData = marqueeData;
+            this.alertData.marqueeData = marqueeData;
             this.renderMarquee();
+            this.saveAlertData();
         }
     }
 
     setCountdownData(countdownData: { dateTime: Date } | null) {
-        if (!checkIsCountdownDatesEq(countdownData?.dateTime || null,
-            alertData.countdownData?.dateTime || null)) {
+        if (
+            !checkIsCountdownDatesEq(
+                countdownData?.dateTime || null,
+                this.alertData.countdownData?.dateTime || null,
+            )
+        ) {
             this.cleanRender(this.divCountdown);
-            alertData.countdownData = countdownData;
+            this.alertData.countdownData = countdownData;
             this.renderCountdown();
+            this.saveAlertData();
         }
     }
 
@@ -154,13 +163,13 @@ export default class ScreenAlertManager
         });
     }
 
-    static async setData(event: React.MouseEvent<HTMLElement, MouseEvent>,
-        callback: (screenManager: ScreenAlertManager) => void) {
-        const chosenScreenManagers = (
-            await ScreenManager.contextChooseInstances(event)
-        );
+    static async setData(
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        callback: (screenManager: ScreenManager) => void,
+    ) {
+        const chosenScreenManagers = await chooseScreenManagerInstances(event);
         const callbackSave = async (screenManager: ScreenManager) => {
-            callback(screenManager.screenAlertManager);
+            callback(screenManager);
             screenManager.screenAlertManager.saveAlertData();
         };
         chosenScreenManagers.forEach((screenManager) => {
@@ -169,36 +178,29 @@ export default class ScreenAlertManager
     }
 
     static async setMarquee(
-        text: string, event: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: React.MouseEvent<HTMLElement, MouseEvent>, text: string | null,
     ) {
-        this.setData(event, (screenAlertManager) => {
-            const { text: dataText } = alertData.marqueeData || {};
-            const marqueeData = dataText === text ? null : { text };
+        this.setData(event, ({ screenAlertManager }) => {
+            const marqueeData = text !== null ? { text } : null;
             screenAlertManager.setMarqueeData(marqueeData);
         });
     }
 
     static async setCountdown(
-        dateTime: Date, event: React.MouseEvent<HTMLElement, MouseEvent>,
+        event: React.MouseEvent<HTMLElement, MouseEvent>, dateTime: Date | null,
     ) {
-        this.setData(event, (screenAlertManager) => {
-            const { dateTime: dateTimeData } = alertData.countdownData || {};
-            const countdownData = (
-                (
-                    dateTimeData !== undefined &&
-                    checkIsCountdownDatesEq(dateTimeData, dateTime)
-                ) ? null : { dateTime }
-            );
+        this.setData(event, ({ screenAlertManager }) => {
+            const countdownData = dateTime !== null ? { dateTime } : null;
             screenAlertManager.setCountdownData(countdownData);
         });
     }
 
     renderMarquee() {
         if (
-            this.screenManager !== null && alertData.marqueeData !== null
+            this.screenManager !== null && this.alertData.marqueeData !== null
         ) {
             const newDiv = genHtmlAlertMarquee(
-                alertData.marqueeData, this.screenManager,
+                this.alertData.marqueeData, this.screenManager,
             );
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
@@ -212,10 +214,10 @@ export default class ScreenAlertManager
     renderCountdown() {
         if (
             this.screenManager !== null &&
-            alertData.countdownData !== null
+            this.alertData.countdownData !== null
         ) {
             const newDiv = genHtmlAlertCountdown(
-                alertData.countdownData, this.screenManager,
+                this.alertData.countdownData, this.screenManager,
             );
             this.divCountdown.appendChild(newDiv);
         }
@@ -247,9 +249,9 @@ export default class ScreenAlertManager
         };
     }
 
-    delete() {
-        alertData.marqueeData = null;
-        alertData.countdownData = null;
+    clear() {
+        this.setCountdownData(null);
+        this.setMarqueeData(null);
         this.saveAlertData();
     }
 }

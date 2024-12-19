@@ -2,39 +2,26 @@ import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import {
-    useScreenBackgroundManagerEvents, useScreenFTManagerEvents,
-    useScreenSlideManagerEvents,
+    useScreenManagerEvents,
 } from '../screenEventHelpers';
 import { useScreenManagerContext } from '../ScreenManager';
 
 export default function MiniScreenClearControl() {
-    useScreenBackgroundManagerEvents(['update']);
-    useScreenSlideManagerEvents(['update']);
-    useScreenFTManagerEvents(['update']);
+    useScreenManagerEvents(['update']);
     const screenManager = useScreenManagerContext();
     const {
-        screenBackgroundManager, screenSlideManager, screenFTManager,
+        screenBackgroundManager, screenSlideManager, screenFullTextManager,
+        screenAlertManager,
     } = screenManager;
 
-    const clearBackground = () => {
-        screenBackgroundManager.backgroundSrc = null;
-    };
-    const clearForeGround = () => {
-        screenSlideManager.slideItemData = null;
-    };
-    const clearFullText = () => {
-        screenFTManager.fullTextItemData = null;
-    };
-    const clearAll = () => {
-        clearBackground();
-        clearForeGround();
-        clearFullText();
-    };
-
-    const isShowingBackground = !!screenBackgroundManager.backgroundSrc;
-    const isShowingFG = !!screenSlideManager.slideItemData;
-    const isShowingFT = !!screenFTManager.fullTextItemData;
-    const isShowing = isShowingBackground || isShowingFG || isShowingFT;
+    const isShowingBackground = screenBackgroundManager.isShowing;
+    const isShowingFG = screenSlideManager.isShowing;
+    const isShowingFullText = screenFullTextManager.isShowing;
+    const isShowingAlert = screenAlertManager.isShowing;
+    const isShowing = (
+        isShowingBackground || isShowingFG || isShowingFullText ||
+        isShowingAlert
+    );
     const btnMaps = [
         {
             'text': 'All',
@@ -42,7 +29,9 @@ export default function MiniScreenClearControl() {
             'btnType': 'danger',
             'isEnabled': isShowing,
             'eventMap': { key: 'F6' },
-            'onClick': clearAll,
+            'onClick': () => {
+                screenManager.clear();
+            },
         },
         {
             'text': 'BG',
@@ -50,7 +39,9 @@ export default function MiniScreenClearControl() {
             'btnType': 'secondary',
             'isEnabled': isShowingBackground,
             'eventMap': { key: 'F7' },
-            'onClick': clearBackground,
+            'onClick': () => {
+                screenBackgroundManager.clear();
+            },
         },
         {
             'text': 'FG',
@@ -58,15 +49,19 @@ export default function MiniScreenClearControl() {
             'btnType': 'info',
             'isEnabled': isShowingFG,
             'eventMap': { key: 'F8' },
-            'onClick': clearForeGround,
+            'onClick': () => {
+                screenSlideManager.clear();
+            },
         },
         {
             'text': 'FT',
             'title': 'clear full text',
             'btnType': 'primary',
-            'isEnabled': isShowingFT,
+            'isEnabled': isShowingFullText,
             'eventMap': { key: 'F9' },
-            'onClick': clearFullText,
+            'onClick': () => {
+                screenFullTextManager.clear();
+            },
         },
     ];
 

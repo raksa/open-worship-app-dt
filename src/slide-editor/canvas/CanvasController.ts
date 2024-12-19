@@ -29,7 +29,6 @@ export default class CanvasController extends
     EventHandler<CanvasControllerEventType> {
 
     static readonly eventNamePrefix: string = 'canvas-c';
-    copiedItem: CanvasItem<any> | null = null;
     private readonly _canvas: Canvas;
     readonly slideItem: SlideItem;
     private _scale: number = 1;
@@ -53,12 +52,6 @@ export default class CanvasController extends
         this._scale = n;
         setSetting(EDITOR_SCALE_SETTING_NAME, n.toString());
         this.addPropEvent('scale', { canvasItems: this.canvas.newCanvasItems });
-    }
-    get isCopied() {
-        if (this.copiedItem === null) {
-            return false;
-        }
-        return this.canvas.canvasItems.includes(this.copiedItem);
     }
     addPropEvent(
         eventName: CanvasControllerEventType, data: CanvasItemEventDataType,
@@ -93,24 +86,10 @@ export default class CanvasController extends
         this.setCanvasItems(newCanvasItems);
     }
     deleteItem(canvasItem: CanvasItem<any>) {
-        if (this.copiedItem === canvasItem) {
-            this.copiedItem = null;
-        }
         const newCanvasItems = this.canvas.canvasItems.filter((item) => {
             return item !== canvasItem;
         });
         this.setCanvasItems(newCanvasItems);
-    }
-    async paste() {
-        const newCanvasItems = this.canvas.newCanvasItems;
-        if (this.copiedItem !== null) {
-            const newCanvasItem = await this.cloneItem(this.copiedItem);
-            if (newCanvasItem === null) {
-                return;
-            }
-            newCanvasItems.push(newCanvasItem);
-            this.setCanvasItems(newCanvasItems);
-        }
     }
     addNewItem(canvasItem: CanvasItem<any>) {
         const newCanvasItems = this.canvas.newCanvasItems;

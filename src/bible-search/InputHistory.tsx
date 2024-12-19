@@ -71,7 +71,7 @@ export default function InputHistory({
         });
         setHistoryTextList(newHistoryTextList);
     };
-    const handleDBClicking = async (historyText: string) => {
+    const handleDoubleClicking = async (historyText: string) => {
         const [
             bibleKey, bibleTitle,
         ] = historyText.split('>');
@@ -98,7 +98,7 @@ export default function InputHistory({
                         className='btn btn-sm d-flex border-white-round'
                         style={{ height: '25px' }}
                         onDoubleClick={() => {
-                            handleDBClicking(historyText);
+                            handleDoubleClicking(historyText);
                         }}>
                         <small className='flex-fill'>{historyText}</small>
                         <small title='Remove'

@@ -20,6 +20,7 @@ import ScreenTransitionEffect
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
+import { chooseScreenManagerInstances } from './screenManagerHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -39,6 +40,9 @@ export default class ScreenBackgroundManager
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] || null;
         }
+    }
+    get isShowing() {
+        return this.backgroundSrc !== null;
     }
     get div() {
         return this._div;
@@ -150,9 +154,7 @@ export default class ScreenBackgroundManager
                 return;
             }
         }
-        const chosenScreenManagers = (
-            await ScreenManager.contextChooseInstances(event)
-        );
+        const chosenScreenManagers = await chooseScreenManagerInstances(event);
         const setSrc = async (screenManager: ScreenManager) => {
             const backgroundSrc = (
                 src ? await this.initBackgroundSrcDim(src, backgroundType) :
@@ -237,7 +239,7 @@ export default class ScreenBackgroundManager
             };
         }
     }
-    delete() {
+    clear() {
         this.backgroundSrc = null;
     }
 }

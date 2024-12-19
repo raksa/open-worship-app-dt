@@ -119,8 +119,13 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
             throw new Error('Invalid canvas item data');
         }
     }
+
     fireEditEvent() {
         this.addPropEvent('edit');
+    }
+
+    clipboardSerialize() {
+        return JSON.stringify(this.toJson());
     }
 }
 
@@ -145,9 +150,6 @@ export class CanvasItemError extends CanvasItem<any> {
         const item = new CanvasItemError(props);
         item.jsonError = json;
         return item;
-    }
-    toJson() {
-        return this.jsonError as any;
     }
 }
 

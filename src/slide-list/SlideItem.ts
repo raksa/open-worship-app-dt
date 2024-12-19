@@ -9,6 +9,7 @@ import { DisplayType } from '../_screen/screenHelpers';
 import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export type SlideItemType = {
     id: number,
@@ -22,11 +23,10 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     static readonly SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     filePath: string;
-    isCopied: boolean;
     showingType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     // TODO: implement copying elements
-    static copiedItem: SlideItem | null = null;
     editorCacheManager: SlideEditorCacheManager;
+    static readonly KEY_SEPARATOR = '<siid>';
     constructor(
         id: number, filePath: string, json: SlideItemType,
         editorCacheManager?: SlideEditorCacheManager,
@@ -45,7 +45,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             });
             this.editorCacheManager.isUsingHistory = false;
         }
-        this.isCopied = false;
     }
 
     get key() {
@@ -213,7 +212,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     static genKeyByFileSource(filePath: string, id: number) {
-        return `${filePath}:${id}`;
+        return `${filePath}${this.KEY_SEPARATOR}${id}`;
     }
 
     checkIsWrongDimension({ bounds }: DisplayType) {
@@ -240,6 +239,26 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
                 inline: 'center',
             });
         }, 0);
+    }
+    clipboardSerialize() {
+        const json = this.toJson();
+        return JSON.stringify({
+            filePath: this.filePath,
+            data: json,
+        });
+    }
+    static clipboardDeserialize(json: string) {
+        if (!json) {
+            return null;
+        }
+        try {
+            const { filePath, data } = JSON.parse(json);
+            SlideItem.validate(data);
+            return SlideItem.fromJson(data, filePath);
+        } catch (error) {
+            handleError(error);
+        }
+        return null;
     }
 }
 

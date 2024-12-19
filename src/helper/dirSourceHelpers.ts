@@ -31,7 +31,7 @@ export function useFileSourceRefreshEvents(
         const update = () => {
             setN(n + 1);
         };
-        const staticEvents = FileSource.registerFSEventListener(
+        const staticEvents = FileSource.registerFileSourceEventListener(
             events, update, filePath,
         );
         return () => {
@@ -45,7 +45,7 @@ export function useFileSourceEvents<T>(
     deps: DependencyList, filePath?: string,
 ) {
     useAppEffect(() => {
-        const staticEvents = FileSource.registerFSEventListener(
+        const staticEvents = FileSource.registerFileSourceEventListener(
             events, callback, filePath,
         );
         return () => {

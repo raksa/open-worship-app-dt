@@ -164,8 +164,7 @@ export function checkIsCountdownDatesEq(
     const toString = (date: Date) => {
         const dateStr = toDateArr(date)[0];
         const timeStrFull = toDateArr(date)[1];
-        const timeStr = timeStrFull.substring(0,
-            timeStrFull.lastIndexOf(':'));
+        const timeStr = timeStrFull.substring(0, timeStrFull.lastIndexOf(':'));
         return `${dateStr} ${timeStr}`;
     };
     return toString(date1) === toString(date2);
