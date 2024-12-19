@@ -8,8 +8,7 @@ import {
 } from './screenAlertHelpers';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
-    AlertDataType, AlertSrcListType, getAlertDataListOnScreenSetting,
-    ScreenMessageType,
+    AlertDataType, getAlertDataListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
@@ -18,6 +17,7 @@ import ScreenTransitionEffect from
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
+import { unlocking } from '../server/appHelpers';
 
 export type ScreenAlertEventType = 'update';
 
@@ -88,9 +88,12 @@ export default class ScreenAlertManager
     }
 
     saveAlertData() {
-        const allAlertDataList = getAlertDataListOnScreenSetting();
-        allAlertDataList[this.key] = this.alertData;
-        ScreenAlertManager.setAlertDataList(allAlertDataList);
+        unlocking(screenManagerSettingNames.ALERT, () => {
+            const allAlertDataList = getAlertDataListOnScreenSetting();
+            allAlertDataList[this.key] = this.alertData;
+            const string = JSON.stringify(allAlertDataList);
+            setSetting(screenManagerSettingNames.ALERT, string);
+        });
         this.sendSyncScreen();
         this.fireUpdate();
     }
@@ -145,11 +148,6 @@ export default class ScreenAlertManager
 
     static fireUpdateEvent() {
         this.addPropEvent('update');
-    }
-
-    static setAlertDataList(alertDataList: AlertSrcListType) {
-        const str = JSON.stringify(alertDataList);
-        setSetting(screenManagerSettingNames.ALERT, str);
     }
 
     static getAlertDataListByType(alertType: AlertType) {

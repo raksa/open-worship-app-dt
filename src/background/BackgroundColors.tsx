@@ -56,7 +56,7 @@ export default function BackgroundColors() {
                 const screenId = parseInt(key, 10);
                 return (
                     <div key={backgroundSrc.src}
-                        className='p-1 m-1 border-white-round'>
+                        className='p-1 m-1 app-border-white-round'>
                         <ShowingScreenIcon screenId={screenId} />
                         <ColorPicker
                             color={backgroundSrc.src as AppColorType}

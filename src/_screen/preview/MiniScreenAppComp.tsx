@@ -12,7 +12,7 @@ linear-gradient(45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%),
 linear-gradient(-45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%)`
 );
 
-export default function MiniScreenApp({ id }: Readonly<{ id: number }>) {
+export default function MiniScreenAppComp({ id }: Readonly<{ id: number }>) {
     const screenManager = ScreenManager.getInstance(id);
     if (screenManager === null) {
         return null;

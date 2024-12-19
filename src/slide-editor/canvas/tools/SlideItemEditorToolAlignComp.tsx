@@ -11,7 +11,7 @@ export default function SlideItemEditorToolAlignComp({
 }>) {
     return (
         <div className='d-flex'>
-            <div className='border-white-round'>
+            <div className='app-border-white-round'>
                 <button className='btn btn-info'
                     onClick={() => {
                         onData({ verticalAlignment: 'start' });
@@ -32,7 +32,7 @@ export default function SlideItemEditorToolAlignComp({
                 </button>
             </div>
             {isText ? (
-                <div className='border-white-round'>
+                <div className='app-border-white-round'>
                     <button className='btn btn-info'
                         onClick={() => {
                             onData({ horizontalAlignment: 'left' });
@@ -53,7 +53,7 @@ export default function SlideItemEditorToolAlignComp({
                     </button>
                 </div>
             ) : (
-                <div className='border-white-round'>
+                <div className='app-border-white-round'>
                     <button className='btn btn-info'
                         onClick={() => {
                             onData({ horizontalAlignment: 'left' });

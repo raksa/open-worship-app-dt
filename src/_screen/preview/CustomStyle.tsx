@@ -14,7 +14,7 @@ const LazyTextShadow = lazy(() => {
 
 export default function CustomStyle() {
     return (
-        <div className='custom-style card pointer border-white-round mt-1'>
+        <div className='custom-style card pointer app-border-white-round mt-1'>
             <Body />
         </div>
     );

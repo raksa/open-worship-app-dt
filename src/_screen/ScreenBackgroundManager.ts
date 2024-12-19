@@ -10,8 +10,8 @@ import appProviderScreen from './appProviderScreen';
 import { genHtmlBackground } from './ScreenBackground';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
-    BackgroundSrcType, BackgroundType, BackgroundSrcListType,
-    getBackgroundSrcListOnScreenSetting, ScreenMessageType,
+    BackgroundSrcType, BackgroundType, getBackgroundSrcListOnScreenSetting,
+    ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
@@ -21,6 +21,7 @@ import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
+import { unlocking } from '../server/appHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -67,13 +68,16 @@ export default class ScreenBackgroundManager
     set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
         this._backgroundSrc = backgroundSrc;
         this.render();
-        const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
-        if (backgroundSrc === null) {
-            delete allBackgroundSrcList[this.key];
-        } else {
-            allBackgroundSrcList[this.key] = backgroundSrc;
-        }
-        ScreenBackgroundManager.setBackgroundSrcList(allBackgroundSrcList);
+        unlocking(screenManagerSettingNames.BACKGROUND, () => {
+            const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
+            if (backgroundSrc === null) {
+                delete allBackgroundSrcList[this.key];
+            } else {
+                allBackgroundSrcList[this.key] = backgroundSrc;
+            }
+            const str = JSON.stringify(allBackgroundSrcList);
+            setSetting(screenManagerSettingNames.BACKGROUND, str);
+        });
         this.sendSyncScreen();
         this.fireUpdate();
     }
@@ -92,17 +96,16 @@ export default class ScreenBackgroundManager
         }
         screenManager.screenBackgroundManager.backgroundSrc = data;
     }
+
     fireUpdate() {
         this.addPropEvent('update');
         ScreenBackgroundManager.fireUpdateEvent();
     }
+
     static fireUpdateEvent() {
         this.addPropEvent('update');
     }
-    static setBackgroundSrcList(backgroundSrcList: BackgroundSrcListType) {
-        const str = JSON.stringify(backgroundSrcList);
-        setSetting(screenManagerSettingNames.BACKGROUND, str);
-    }
+
     static getBackgroundSrcListByType(backgroundType: BackgroundType) {
         const backgroundSrcList = getBackgroundSrcListOnScreenSetting();
         return Object.entries(backgroundSrcList).filter(
@@ -111,6 +114,7 @@ export default class ScreenBackgroundManager
             },
         );
     }
+
     static getSelectBackgroundSrcList(
         src: string, backgroundType: BackgroundType,
     ) {

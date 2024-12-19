@@ -49,7 +49,7 @@ export function PathPreviewer({
     }
     return (
         <div className={
-            'app-ellipsis-left border-white-round px-1 flex-fill' +
+            'app-ellipsis-left app-border-white-round px-1 flex-fill' +
             ` ${onClick ? 'pointer' : ''}`
         }
             onContextMenu={openContextMenu.bind(null, cleanedPath)}

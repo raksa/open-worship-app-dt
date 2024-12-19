@@ -2,7 +2,7 @@ import { DOMAttributes } from 'react';
 
 import { createRoot } from 'react-dom/client';
 import ScreenManager from '../ScreenManager';
-import MiniScreenApp from './MiniScreenApp';
+import MiniScreenAppComp from './MiniScreenAppComp';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 
@@ -69,7 +69,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.resize();
         });
         this.resize();
-        root.render(<MiniScreenApp id={this.screenId} />);
+        root.render(<MiniScreenAppComp id={this.screenId} />);
     }
 }
 

@@ -78,3 +78,18 @@ export function getDesktopPath() {
 export function getTempPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
 }
+
+const lockSet = new Set<string>();
+export async function unlocking(
+    key: string, callback: () => (Promise<void> | void)
+) {
+    if (lockSet.has(key)) {
+        await new Promise((resolve) => {
+            setTimeout(resolve, 100);
+        });
+        return unlocking(key, callback);
+    }
+    lockSet.add(key);
+    await callback();
+    lockSet.delete(key);
+}

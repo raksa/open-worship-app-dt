@@ -18,8 +18,8 @@ import {
     renderScreenFullTextManager, bibleItemToFtData,
 } from './screenFullTextHelpers';
 import {
-    FTItemDataType, FTListType, genScreenMouseEvent,
-    getFullTextListOnScreenSetting, ScreenMessageType,
+    FTItemDataType, genScreenMouseEvent, getFullTextListOnScreenSetting,
+    ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerInf from './ScreenManagerInf';
@@ -27,6 +27,7 @@ import * as loggerHelpers from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
+import { unlocking } from '../server/appHelpers';
 
 let textStyle: AnyObjectType = {};
 export default class ScreenFullTextManager
@@ -122,14 +123,17 @@ export default class ScreenFullTextManager
     set fullTextItemData(ftItemData: FTItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
-        const allFTList = getFullTextListOnScreenSetting();
-        if (ftItemData === null) {
-            delete allFTList[this.key];
-        } else {
-            allFTList[this.key] = ftItemData;
-            this.screenManager?.screenSlideManager.clear();
-        }
-        ScreenFullTextManager.setFTList(allFTList);
+        unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+            const allFTList = getFullTextListOnScreenSetting();
+            if (ftItemData === null) {
+                delete allFTList[this.key];
+            } else {
+                allFTList[this.key] = ftItemData;
+                this.screenManager?.screenSlideManager.clear();
+            }
+            const string = JSON.stringify(allFTList);
+            setSetting(screenManagerSettingNames.FULL_TEXT, string);
+        });
         this.sendSyncData();
         this.fireUpdate();
     }
@@ -138,9 +142,12 @@ export default class ScreenFullTextManager
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
             if (!appProviderScreen.isScreen) {
-                const allFTList = getFullTextListOnScreenSetting();
-                allFTList[this.key] = this._ftItemData;
-                ScreenFullTextManager.setFTList(allFTList);
+                unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+                    const allFTList = getFullTextListOnScreenSetting();
+                    allFTList[this.key] = this._ftItemData as any;
+                    const string = JSON.stringify(allFTList);
+                    setSetting(screenManagerSettingNames.FULL_TEXT, string);
+                });
             }
         }
     }
@@ -232,10 +239,7 @@ export default class ScreenFullTextManager
             },
         }, true);
     }
-    static setFTList(ftList: FTListType) {
-        const str = JSON.stringify(ftList);
-        setSetting(screenManagerSettingNames.FULL_TEXT, str);
-    }
+
     static receiveSyncSelectedIndex(message: ScreenMessageType) {
         const { data, screenId } = message;
         const screenFTManager = this.getInstanceByScreenId(screenId);
@@ -244,6 +248,7 @@ export default class ScreenFullTextManager
         }
         screenFTManager.selectedIndex = data.selectedIndex;
     }
+
     sendSyncData() {
         sendScreenMessage({
             screenId: this.screenId,
@@ -251,6 +256,7 @@ export default class ScreenFullTextManager
             data: this.fullTextItemData,
         });
     }
+
     static receiveSyncData(message: ScreenMessageType) {
         const { data, screenId } = message;
         const screenFTManager = this.getInstanceByScreenId(screenId);
@@ -259,13 +265,16 @@ export default class ScreenFullTextManager
         }
         screenFTManager.fullTextItemData = data;
     }
+
     fireUpdate() {
         this.addPropEvent('update');
         ScreenFullTextManager.fireUpdateEvent();
     }
+
     static fireUpdateEvent() {
         this.addPropEvent('update');
     }
+
     static readonly maxTextStyleTextFontSize = 200;
     static get textStyleTextFontSize() {
         const textStyle = this.textStyle;

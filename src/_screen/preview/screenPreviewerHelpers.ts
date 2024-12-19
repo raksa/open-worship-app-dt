@@ -1,5 +1,7 @@
 import ScreenManager from '../ScreenManager';
-import { showAppContextMenu } from '../../others/AppContextMenu';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../../others/AppContextMenu';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
     const isOne = ScreenManager.getAllInstances().length === 1;
@@ -12,7 +14,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             screenFullTextManager.isLineSync = !isLineSync;
         },
     }] : [];
-    showAppContextMenu(event, [
+    const contextMenuItems: ContextMenuItemType[] = [
         ...isOne ? [] : [{
             menuTitle: 'Solo',
             onClick() {
@@ -23,18 +25,21 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
                 screenManager.isSelected = true;
             },
         }],
-        ...[{
+        ...isOne ? [] : [{
             menuTitle: screenManager.isSelected ? 'Unselect' : 'Select',
             onClick() {
                 screenManager.isSelected = !screenManager.isSelected;
             },
-        }],
-        ...isOne ? [] : [{
+        }, {
             menuTitle: 'Delete',
             onClick() {
                 screenManager.clear();
             },
         }],
         ...extraMenuItems,
-    ]);
+    ];
+    if (contextMenuItems.length === 0) {
+        return;
+    }
+    showAppContextMenu(event, contextMenuItems);
 }

@@ -95,7 +95,7 @@ export default function InputHistory({
                             'Double click to put back, shift double click to ' +
                             'put back split'
                         }
-                        className='btn btn-sm d-flex border-white-round'
+                        className='btn btn-sm d-flex app-border-white-round'
                         style={{ height: '25px' }}
                         onDoubleClick={() => {
                             handleDoubleClicking(historyText);

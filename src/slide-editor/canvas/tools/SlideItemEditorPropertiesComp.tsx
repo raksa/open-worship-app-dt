@@ -24,14 +24,14 @@ export default function SlideItemEditorPropertiesComp({
                     <div key={canvasItem.id}
                         className='d-flex w-100' >
                         <CanvasItemContext value={canvasItem}>
-                            <div className='m-1 border-white-round'>
+                            <div className='m-1 app-border-white-round'>
                                 <SlideItemEditorToolTitleComp
                                     title='Box Properties'>
                                     <SlideItemEditorToolsBoxComp />
                                 </SlideItemEditorToolTitleComp>
                             </div>
                             {canvasItem.type === 'text' ? (
-                                <div className='m-1 border-white-round'>
+                                <div className='m-1 app-border-white-round'>
                                     <SlideItemEditorToolTitleComp
                                         title='Text Properties'>
                                         <SlideItemEditorToolsTextComp />

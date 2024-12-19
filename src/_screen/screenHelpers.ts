@@ -15,6 +15,7 @@ import {
 import {
     ScreenTransitionEffectType, TargetType,
 } from './transition-effect/transitionEffectHelpers';
+import { unlocking } from '../server/appHelpers';
 
 export const ftDataTypeList = ['bible-item', 'lyric'] as const;
 export type FfDataType = typeof ftDataTypeList[number];
@@ -331,7 +332,9 @@ export function getFullTextListOnScreenSetting(): FTListType {
         });
         return getValidOnScreen(json);
     } catch (error) {
-        setSetting(screenManagerSettingNames.FULL_TEXT, '');
+        unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+            setSetting(screenManagerSettingNames.FULL_TEXT, '');
+        });
         handleError(error);
     }
     return {};

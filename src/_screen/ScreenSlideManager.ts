@@ -11,7 +11,6 @@ import appProviderScreen from './appProviderScreen';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
     getSlideListOnScreenSetting, ScreenMessageType, SlideItemDataType,
-    SlideListType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
 // TODO: cyclic dependency ScreenManager<->ScreenSlideManager
@@ -21,6 +20,7 @@ import ScreenTransitionEffect
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
+import { unlocking } from '../server/appHelpers';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -30,8 +30,8 @@ export function checkIsPDFFullWidth() {
     const originalSettingName = getSetting(PDF_FULL_WIDTH_SETTING_NAME);
     return originalSettingName === 'true';
 }
-export function setIsPDFFullWidth(b: boolean) {
-    setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${b}`);
+export function setIsPDFFullWidth(isPDFFullWidth: boolean) {
+    setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${isPDFFullWidth}`);
 }
 
 export default class ScreenSlideManager extends
@@ -86,14 +86,15 @@ export default class ScreenSlideManager extends
     set slideItemData(slideItemData: SlideItemDataType | null) {
         this._slideItemData = slideItemData;
         this.render();
-        const allSlideList = getSlideListOnScreenSetting();
-        if (slideItemData === null) {
-            delete allSlideList[this.key];
-        } else {
-            allSlideList[this.key] = slideItemData;
-            this.screenManager?.screenFullTextManager.clear();
-        }
-        ScreenSlideManager.setSlideList(allSlideList);
+        unlocking(screenManagerSettingNames.SLIDE, () => {
+            const allSlideList = getSlideListOnScreenSetting();
+            if (slideItemData === null) {
+                delete allSlideList[this.key];
+            } else {
+                allSlideList[this.key] = slideItemData;
+                this.screenManager?.screenFullTextManager.clear();
+            }
+        });
         this.sendSyncScreen();
         this.fireUpdate();
     }
@@ -118,10 +119,6 @@ export default class ScreenSlideManager extends
     }
     static fireUpdate() {
         this.addPropEvent('update');
-    }
-    static setSlideList(slideList: SlideListType) {
-        const str = JSON.stringify(slideList);
-        setSetting(screenManagerSettingNames.SLIDE, str);
     }
     static getDataList(slideFilePath?: string, slideItemId?: number) {
         const dataList = getSlideListOnScreenSetting();

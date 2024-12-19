@@ -9,7 +9,7 @@ export default function SlideItemEditorToolsColorComp({
     handleColorChanging: (newColor: AppColorType) => void,
 }>) {
     return (
-        <div className='border-white-round' style={{
+        <div className='app-border-white-round' style={{
             maxWidth: '200px',
         }}>
             <ColorPicker color={color}

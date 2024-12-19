@@ -17,6 +17,7 @@ import ScreenSlideManager from './ScreenSlideManager';
 import ScreenTransitionEffect from
     './transition-effect/ScreenTransitionEffect';
 import { screenManagerSettingNames } from '../helper/constants';
+import { unlocking } from '../server/appHelpers';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'
@@ -69,7 +70,6 @@ export default class ScreenManager
     get key() {
         return this.screenId.toString();
     }
-    // TODO: implement multiple display support
     get displayId() {
         return ScreenManager.getDisplayIdByScreenId(this.screenId);
     }
@@ -280,14 +280,18 @@ export default class ScreenManager
         return screenManagers;
     }
     static saveScreenManagersSetting() {
-        const screenManagers = this.getAllInstances();
-        const json = screenManagers.map((screenManager) => {
-            return {
-                screenId: screenManager.screenId,
-                isSelected: screenManager.isSelected,
-            };
+        unlocking(screenManagerSettingNames.MANAGERS, () => {
+            const screenManagers = this.getAllInstances();
+            const json = screenManagers.map((screenManager) => {
+                return {
+                    screenId: screenManager.screenId,
+                    isSelected: screenManager.isSelected,
+                };
+            });
+            setSetting(
+                screenManagerSettingNames.MANAGERS, JSON.stringify(json),
+            );
         });
-        setSetting(screenManagerSettingNames.MANAGERS, JSON.stringify(json));
     }
 
     static getInstanceByKey(key: string) {

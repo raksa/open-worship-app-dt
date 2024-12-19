@@ -85,7 +85,7 @@ function BodyRendererComp() {
         showCanvasContextMenu(event, canvasController);
     };
     return (
-        <div className='editor blank-bg border-white-round'
+        <div className='editor blank-bg app-border-white-round'
             style={{
                 width: `${canvas.width}px`,
                 height: `${canvas.height}px`,

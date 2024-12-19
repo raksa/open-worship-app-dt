@@ -151,7 +151,7 @@ export default function AppLayout({ children }: Readonly<{
                     <SettingButton />
                 </div>
             </div >
-            <div id='app-body' className='border-white-round'>
+            <div id='app-body' className='app-border-white-round'>
                 {children}
             </div>
             <TopProgressBarComp />

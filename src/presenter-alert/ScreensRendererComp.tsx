@@ -7,8 +7,11 @@ export default function ScreensRendererComp({
     showingScreenIds: number[],
     handleMarqueeHiding: (screenId: number) => void,
 }>) {
+    if (showingScreenIds.length === 0) {
+        return null;
+    }
     return (
-        <div className='d-flex mt-2'>
+        <div className='d-flex mt-2 p-1 app-border-white-round'>
             {showingScreenIds.map((screenId) => {
                 return (
                     <div className='d-flex' key={screenId}>
