@@ -139,6 +139,13 @@ export default class ScreenBackgroundManager
         }
         return backgroundSrc;
     }
+    applyBackgroundSrcWithSyncGroup(backGroundSrc: BackgroundSrcType | null) {
+        const screenManager = this.screenManager;
+        if (screenManager !== null) {
+            screenManager.isNoSyncGroup = false;
+        }
+        this.backgroundSrc = backGroundSrc;
+    }
     static async backgroundSrcSelect(
         src: string | null, event: React.MouseEvent<HTMLElement, MouseEvent>,
         backgroundType: BackgroundType,
@@ -153,7 +160,10 @@ export default class ScreenBackgroundManager
                     if (screenManager === null) {
                         return;
                     }
-                    screenManager.screenBackgroundManager.backgroundSrc = null;
+                    const { screenBackgroundManager } = screenManager;
+                    screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
+                        null,
+                    );
                 });
                 return;
             }
@@ -164,7 +174,10 @@ export default class ScreenBackgroundManager
                 src ? await this.initBackgroundSrcDim(src, backgroundType) :
                     null
             );
-            screenManager.screenBackgroundManager.backgroundSrc = backgroundSrc;
+            const { screenBackgroundManager } = screenManager;
+            screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
+                backgroundSrc,
+            );
         };
         chosenScreenManagers.forEach((screenManager) => {
             setSrc(screenManager);

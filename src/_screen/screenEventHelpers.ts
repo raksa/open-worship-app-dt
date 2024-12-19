@@ -104,6 +104,7 @@ export function sendScreenMessage(
         isScreen: appProviderScreen.isScreen,
     });
     console.assert(isSent, JSON.stringify({ channel, message }));
+    ScreenManager.syncGroup(message);
 }
 export function initReceiveScreenMessage() {
     const channel = messageUtils.channels.screenMessageChannel;

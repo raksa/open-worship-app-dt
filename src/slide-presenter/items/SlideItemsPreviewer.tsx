@@ -26,7 +26,6 @@ export default function SlideItemsPreviewer() {
                 selectedSlide.showSlideItemContextMenu(event);
             }}
             onPaste={async () => {
-                debugger;
                 const copiedSlideItems = await Slide.getCopiedSlideItems();
                 for (const copiedSlideItem of copiedSlideItems) {
                     selectedSlide.addItem(copiedSlideItem);

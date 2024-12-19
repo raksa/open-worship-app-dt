@@ -4,7 +4,17 @@ import {
 } from '../../others/AppContextMenu';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
-    const isOne = ScreenManager.getAllInstances().length === 1;
+    const screenManagers = ScreenManager.getAllInstances();
+    const selectedScreenIds = screenManagers.filter((screenManager1) => {
+        return screenManager1.isSelected;
+    }).map((screenManager1) => {
+        return screenManager1.screenId;
+    });
+    const isSolo = (
+        selectedScreenIds.length === 1 &&
+        selectedScreenIds.includes(screenManager.screenId)
+    );
+    const isOne = screenManagers.length === 1;
     const { screenFullTextManager } = screenManager;
     const isShowingFT = !!screenFullTextManager.fullTextItemData;
     const isLineSync = screenFullTextManager.isLineSync;
@@ -15,7 +25,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         },
     }] : [];
     const contextMenuItems: ContextMenuItemType[] = [
-        ...isOne ? [] : [{
+        ...isOne || isSolo ? [] : [{
             menuTitle: 'Solo',
             onClick() {
                 ScreenManager.getSelectedScreenManagerInstances()
@@ -33,7 +43,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         }, {
             menuTitle: 'Delete',
             onClick() {
-                screenManager.clear();
+                screenManager.delete();
             },
         }],
         ...extraMenuItems,

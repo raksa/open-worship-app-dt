@@ -4,7 +4,7 @@ import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
 import {
     initReceiveScreenMessage, useScreenManagerEvents,
 } from '../screenEventHelpers';
-import ScreenPreviewerItem from './ScreenPreviewerItem';
+import ScreenPreviewerItemComp from './ScreenPreviewerItemComp';
 import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
@@ -74,7 +74,7 @@ export default function MiniScreen() {
                             <ScreenManagerContext
                                 key={screenManager.key}
                                 value={screenManager}>
-                                <ScreenPreviewerItem
+                                <ScreenPreviewerItemComp
                                     width={previewWidth}
                                 />
                             </ScreenManagerContext>

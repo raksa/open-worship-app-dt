@@ -101,7 +101,6 @@ function BodyRendererComp() {
             // import onclick by mouse down/up
             onMouseDown={(event) => {
                 event.stopPropagation();
-                console.log('down');
                 (event.target as HTMLDivElement).dataset.mouseDown = (
                     JSON.stringify({
                         time: new Date().getTime(),

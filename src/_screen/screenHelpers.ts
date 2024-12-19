@@ -127,6 +127,12 @@ export function calMediaSizes({
     };
 }
 
+export type TypeScreenManagerSettingType = {
+    screenId: number,
+    isSelected: boolean,
+    colorNote: string | null,
+};
+
 type SetDisplayType = {
     screenId: number,
     displayId: number,
@@ -186,20 +192,34 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
     return createMouseEvent(0, 0);
 }
 
-export function getScreenManagersInstanceSetting() {
+export function getScreenManagersInstanceSetting(): {
+    screenId: number,
+    isSelected: boolean,
+    colorNote: string | null,
+}[] {
     const str = getSetting(screenManagerSettingNames.MANAGERS, '');
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
-        return json.filter(({ screenId }: any) => {
+        let instanceSettingList = json.filter(({ screenId }: any) => {
             return typeof screenId === 'number';
         });
+        instanceSettingList = instanceSettingList.filter(
+            (value: any, index: number, self: any) => {
+                return self.findIndex(
+                    (t: any) => {
+                        return t.screenId === value.screenId;
+                    },
+                ) === index;
+            },
+        );
+        return instanceSettingList;
     }
     return [];
 }
 
 function getValidOnScreen(data: { [key: string]: any }) {
     const instanceSetting = getScreenManagersInstanceSetting();
-    if (instanceSetting.size === 0) {
+    if (instanceSetting.length === 0) {
         return {};
     }
     const screenIdList = instanceSetting.map(({ screenId }: any) => {
@@ -232,12 +252,12 @@ export function getSlideListOnScreenSetting(): SlideListType {
 }
 
 export function getAlertDataListOnScreenSetting(): AlertSrcListType {
-    const str = getSetting(screenManagerSettingNames.ALERT, '');
+    const string = getSetting(screenManagerSettingNames.ALERT, '');
     try {
-        if (!isValidJson(str, true)) {
+        if (!isValidJson(string, true)) {
             return {};
         }
-        const json = JSON.parse(str);
+        const json = JSON.parse(string);
         Object.values(json).forEach((item: any) => {
             const { countdownData } = item;
             if (

@@ -1,14 +1,41 @@
 import './CustomHTMLScreenPreviewer';
 
 import ShowHideScreen from './ShowHideScreen';
-import MiniScreenClearControl from './MiniScreenClearControl';
+import MiniScreenClearControlComp from './MiniScreenClearControlComp';
 import { useScreenManagerContext } from '../ScreenManager';
 import DisplayControl from './DisplayControl';
 import PTEffectControl from './PTEffectControl';
 import { handleDrop } from '../../bible-list/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
+import ItemColorNote from '../../others/ItemColorNote';
 
-export default function ScreenPreviewerItem({ width }: Readonly<{
+function ScreenPreviewerHeaderComp() {
+    const screenManager = useScreenManagerContext();
+    return (
+        <div className='card-header w-100 pb-2'
+            style={{
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                height: '35px',
+            }}>
+            <div className={'d-flex'}>
+                <div className='d-flex justify-content-start'>
+                    <ShowHideScreen />
+                    <MiniScreenClearControlComp />
+                    <div className='ms-2'>
+                        <ItemColorNote item={screenManager} />
+                    </div>
+                </div>
+                <div className='flex-fill d-flex justify-content-end'>
+                    <DisplayControl />
+                    <PTEffectControl />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function ScreenPreviewerItemComp({ width }: Readonly<{
     width: number,
 }>) {
     const screenManager = useScreenManagerContext();
@@ -43,23 +70,7 @@ export default function ScreenPreviewerItem({ width }: Readonly<{
                 }
                 screenManager.receiveScreenDrag(droppedData);
             }}>
-            <div className='card-header w-100 pb-2'
-                style={{
-                    overflowX: 'auto',
-                    overflowY: 'hidden',
-                    height: '35px',
-                }}>
-                <div className={'d-flex'}>
-                    <div className='d-flex justify-content-start'>
-                        <ShowHideScreen />
-                        <MiniScreenClearControl />
-                    </div>
-                    <div className='flex-fill d-flex justify-content-end'>
-                        <DisplayControl />
-                        <PTEffectControl />
-                    </div>
-                </div>
-            </div>
+            <ScreenPreviewerHeaderComp />
             <div className='w-100'>
                 <mini-screen-previewer-custom-html
                     screenId={screenManager.screenId}

@@ -6,14 +6,16 @@ import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
 import { RendStyle } from '../transition-effect/RenderTransitionEffect';
 
 const IMAGE_BACKGROUND = (
-`linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
+    `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(-45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%),
 linear-gradient(-45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%)`
 );
 
-export default function MiniScreenAppComp({ id }: Readonly<{ id: number }>) {
-    const screenManager = ScreenManager.getInstance(id);
+export default function MiniScreenAppComp({ screenId }: Readonly<{
+    screenId: number,
+}>) {
+    const screenManager = ScreenManager.getInstance(screenId);
     if (screenManager === null) {
         return null;
     }

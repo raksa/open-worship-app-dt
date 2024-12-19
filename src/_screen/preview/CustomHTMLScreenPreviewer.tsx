@@ -69,7 +69,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.resize();
         });
         this.resize();
-        root.render(<MiniScreenAppComp id={this.screenId} />);
+        root.render(<MiniScreenAppComp screenId={this.screenId} />);
     }
 }
 
