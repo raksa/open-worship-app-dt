@@ -45,6 +45,7 @@ export default function SlideItemRenderWrapper({
                 onClick={handleClicking}
                 slideItem={slideItem}
                 width={thumbSize} index={index}
+                onContextMenu={handleContextMenuOpening}
             />
         );
     }

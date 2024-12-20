@@ -14,6 +14,9 @@ export function handleDragStart(event: any, item: DragInf<any>,
 export function handleDrop(event: any) {
     event.preventDefault();
     const data = event.dataTransfer.getData('text');
+    if (!data) {
+        return null;
+    }
     const dragData = JSON.parse(data);
     return deserializeDragData(dragData);
 }

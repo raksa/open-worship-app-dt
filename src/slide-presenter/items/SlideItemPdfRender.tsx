@@ -39,12 +39,13 @@ export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
 }
 
 export default function SlideItemPdfRender({
-    slideItem, width, index, onClick,
+    slideItem, width, index, onClick, onContextMenu,
 }: Readonly<{
     slideItem: SlideItem;
     width: number,
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+    onContextMenu: (event: any) => void,
 }>) {
     useScreenSlideManagerEvents(['update']);
     const {
@@ -55,7 +56,8 @@ export default function SlideItemPdfRender({
             style={{
                 width: `${width}px`,
             }}
-            onClick={onClick}>
+            onClick={onClick}
+            onContextMenu={onContextMenu}>
             <div className='card-header d-flex'>
                 <i className='bi bi-filetype-pdf' />
                 <RendInfo index={index}

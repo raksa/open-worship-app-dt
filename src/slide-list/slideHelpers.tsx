@@ -40,6 +40,16 @@ export type SlideDynamicType = Slide | null | undefined;
 export function openSlideContextMenu(
     event: any, slide: Slide, slideItem: SlideItem,
 ) {
+    const menuItemOnScreens = genShowOnScreensContextMenu(
+        (event) => {
+            ScreenSlideManager.handleSlideSelecting(
+                event, slideItem.filePath, slideItem.toJson(), true,
+            );
+        }
+    );
+    if (slideItem.isPdf) {
+        return showAppContextMenu(event, menuItemOnScreens);
+    }
     const menuItems: ContextMenuItemType[] = [
         {
             menuTitle: 'Copy',
@@ -64,13 +74,7 @@ export function openSlideContextMenu(
                 }
             },
         }] : []),
-        ...genShowOnScreensContextMenu(
-            (event) => {
-                ScreenSlideManager.handleSlideSelecting(
-                    event, slideItem.filePath, slideItem.toJson(), true,
-                );
-            }
-        ),
+        ...menuItemOnScreens,
         {
             menuTitle: 'Delete',
             onClick: () => {

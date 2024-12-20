@@ -277,10 +277,6 @@ export default class Slide extends ItemSource<SlideItem> {
             [SlideItem.defaultSlideItemData(0)]);
     }
     openContextMenu(event: any, slideItem: SlideItem) {
-        if (this.isPdf) {
-            event.stopPropagation();
-            return;
-        }
         openSlideContextMenu(event, this, slideItem);
     }
     clone() {
