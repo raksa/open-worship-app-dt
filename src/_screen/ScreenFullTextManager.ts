@@ -330,7 +330,7 @@ export default class ScreenFullTextManager
         this.textStyle = data.textStyle;
     }
 
-    static async fullTextBibleItemSelect(
+    static async handleBibleItemSelecting(
         event: React.MouseEvent | null, bibleItems: BibleItem[],
         isForceChoosing = false,
     ) {

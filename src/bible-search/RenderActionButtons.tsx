@@ -60,7 +60,7 @@ export default function RenderActionButtons() {
                             bibleItem, data,
                         );
                         if (updatedBibleItem !== null) {
-                            ScreenFullTextManager.fullTextBibleItemSelect(
+                            ScreenFullTextManager.handleBibleItemSelecting(
                                 event, [bibleItem],
                             );
                         } else {
@@ -89,7 +89,7 @@ async function addBibleItemAndPresent(
 ) {
     const addedBibleItem = await addBibleItem(bibleItem, onDone);
     if (addedBibleItem !== null) {
-        ScreenFullTextManager.fullTextBibleItemSelect(
+        ScreenFullTextManager.handleBibleItemSelecting(
             event, [addedBibleItem],
         );
     } else {
@@ -143,7 +143,9 @@ export function genFoundBibleItemContextMenu(
             {
                 menuTitle: 'Show bible item',
                 onClick: (event: any) => {
-                    ScreenFullTextManager.fullTextBibleItemSelect(event, [bibleItem]);
+                    ScreenFullTextManager.handleBibleItemSelecting(
+                        event, [bibleItem],
+                    );
                 },
             },
             {

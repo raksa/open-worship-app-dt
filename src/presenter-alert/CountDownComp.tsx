@@ -28,6 +28,14 @@ function CountDownOnDatetimeComp() {
     const {
         date, setDate, time, setTime, nowString, todayString,
     } = useTiming();
+    const handleDateTimeShowing = (event: any, isForceChoosing = false) => {
+        ScreenAlertManager.setCountdown(
+            event, new Date(date + ' ' + time), isForceChoosing,
+        );
+    };
+    const handleContextMenuOpening = (event: any) => {
+        handleDateTimeShowing(event, true);
+    };
     return (
         <div className='d-flex'>
             <div>
@@ -50,10 +58,8 @@ function CountDownOnDatetimeComp() {
             </div>
             <div>
                 <button className='btn btn-secondary'
-                    onClick={(event) => {
-                        ScreenAlertManager.setCountdown(
-                            event, new Date(date + ' ' + time));
-                    }}>
+                    onClick={handleDateTimeShowing}
+                    onContextMenu={handleContextMenuOpening}>
                     Show On DateTime
                 </button>
             </div>
@@ -68,15 +74,18 @@ function CountDownTimerComp() {
     const [minutes, setMinutes] = useStateSettingString<string>(
         'alert-minutes-setting', '0',
     );
-    const handleTimerShowing = (event: any) => {
+    const handleTimerShowing = (event: any, isForceChoosing = false) => {
         const targetDatetime = new Date();
         targetDatetime.setSeconds(
             targetDatetime.getSeconds() + 60 * parseInt(minutes, 10) +
             3600 * parseInt(hours, 10) + 1,
         );
         ScreenAlertManager.setCountdown(
-            event, targetDatetime,
+            event, targetDatetime, isForceChoosing,
         );
+    };
+    const handleContextMenuOpening = (event: any) => {
+        handleTimerShowing(event, true);
     };
     return (
         <div className='d-flex'>
@@ -100,7 +109,8 @@ function CountDownTimerComp() {
             </div>
             <div>
                 <button className='btn btn-secondary'
-                    onClick={handleTimerShowing}>
+                    onClick={handleTimerShowing}
+                    onContextMenu={handleContextMenuOpening}>
                     Show Timer
                 </button>
             </div>

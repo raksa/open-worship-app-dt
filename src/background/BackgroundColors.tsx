@@ -36,7 +36,8 @@ export default function BackgroundColors() {
     }, [selectedBackgroundSrcList]);
     useScreenBackgroundManagerEvents(['update'], undefined, () => {
         setSelectedBackgroundSrcList(
-            ScreenBackgroundManager.getBackgroundSrcListByType('color',));
+            ScreenBackgroundManager.getBackgroundSrcListByType('color',),
+        );
     });
     if (selectedBackgroundSrcList === null) {
         return null;

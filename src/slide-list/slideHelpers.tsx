@@ -64,13 +64,13 @@ export function openSlideContextMenu(
                 }
             },
         }] : []),
-        ...(appProvider.isPageEditor ? [] : genShowOnScreensContextMenu(
+        ...genShowOnScreensContextMenu(
             (event) => {
                 ScreenSlideManager.handleSlideSelecting(
                     event, slideItem.filePath, slideItem.toJson(), true,
                 );
             }
-        )),
+        ),
         {
             menuTitle: 'Delete',
             onClick: () => {

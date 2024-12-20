@@ -86,6 +86,9 @@ export function genTrashContextMenu(
 export function genShowOnScreensContextMenu(
     onClick: (event: any) => void,
 ): ContextMenuItemType[] {
+    if (!appProvider.isPagePresenter) {
+        return [];
+    }
     return [
         {
             menuTitle: 'Show on Screens',

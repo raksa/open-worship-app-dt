@@ -159,7 +159,7 @@ export default class ScreenAlertManager
     static async setData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         callback: (screenManager: ScreenManager) => void,
-        isForceChoosing = false,
+        isForceChoosing: boolean,
     ) {
         const callbackSave = async (screenManager: ScreenManager) => {
             callback(screenManager);
@@ -175,20 +175,22 @@ export default class ScreenAlertManager
 
     static async setMarquee(
         event: React.MouseEvent<HTMLElement, MouseEvent>, text: string | null,
+        isForceChoosing = false,
     ) {
         this.setData(event, ({ screenAlertManager }) => {
             const marqueeData = text !== null ? { text } : null;
             screenAlertManager.setMarqueeData(marqueeData);
-        });
+        }, isForceChoosing);
     }
 
     static async setCountdown(
         event: React.MouseEvent<HTMLElement, MouseEvent>, dateTime: Date | null,
+        isForceChoosing = false,
     ) {
         this.setData(event, ({ screenAlertManager }) => {
             const countdownData = dateTime !== null ? { dateTime } : null;
             screenAlertManager.setCountdownData(countdownData);
-        });
+        }, isForceChoosing);
     }
 
     renderMarquee() {

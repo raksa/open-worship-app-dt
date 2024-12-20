@@ -17,6 +17,14 @@ export default function MarqueeComp() {
             screenAlertManager.setMarqueeData(null);
         });
     };
+    const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
+        ScreenAlertManager.setMarquee(
+            event, text, isForceChoosing,
+        );
+    };
+    const handleContextMenuOpening = (event: any) => {
+        handleMarqueeShowing(event, true);
+    };
     return (
         <div>
             <div className='form-floating'>
@@ -30,9 +38,8 @@ export default function MarqueeComp() {
                 />
                 <label htmlFor='marquee-textarea'>Marquee</label>
                 <button className='btn btn-secondary'
-                    onClick={(event) => {
-                        ScreenAlertManager.setMarquee(event, text);
-                    }}>
+                    onClick={handleMarqueeShowing}
+                    onContextMenu={handleContextMenuOpening}>
                     Show Marquee
                 </button>
             </div>

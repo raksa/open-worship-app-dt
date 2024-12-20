@@ -1,11 +1,15 @@
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
+import appProvider from '../server/appProvider';
 import ScreenManager from './ScreenManager';
 
 export async function chooseScreenManagerInstances(
-    event: React.MouseEvent, isForceChoosing:boolean,
+    event: React.MouseEvent, isForceChoosing: boolean,
 ) {
+    if (!appProvider.isPagePresenter) {
+        return [];
+    }
     const selectedScreenManagers = isForceChoosing ? [] : (
         ScreenManager.getSelectedScreenManagerInstances()
     );

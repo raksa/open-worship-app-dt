@@ -40,14 +40,14 @@ export default function BibleItemRender({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
-    const openContextMenu = (event: React.MouseEvent<any>) => {
+    const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
         openBibleItemContextMenu(
             event, bibleItem, index, showBibleSearchPopup,
         );
     };
     const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
-            ScreenFullTextManager.fullTextBibleItemSelect(event, [bibleItem]);
+            ScreenFullTextManager.handleBibleItemSelecting(event, [bibleItem]);
         } else if (appProvider.isPageReader) {
             const searchViewController = (
                 SearchBibleItemViewController.getInstance()
@@ -69,7 +69,7 @@ export default function BibleItemRender({
     if (bibleItem.isError) {
         return (
             <ItemReadError
-                onContextMenu={openContextMenu}
+                onContextMenu={handleContextMenuOpening}
             />
         );
     }
@@ -83,7 +83,7 @@ export default function BibleItemRender({
                 handleDragStart(event, bibleItem);
             }}
             onDoubleClick={handleDoubleClicking}
-            onContextMenu={openContextMenu}>
+            onContextMenu={handleContextMenuOpening}>
             <div className='d-flex'>
                 <ItemColorNote item={bibleItem} />
                 <div className='px-1'>

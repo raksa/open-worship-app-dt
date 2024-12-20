@@ -11,6 +11,8 @@ import { AnyObjectType } from '../helper/helpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
+import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
+import ScreenFullTextManager from '../_screen/ScreenFullTextManager';
 
 export type BibleItemType = {
     id: number,
@@ -70,6 +72,13 @@ export async function openBibleItemContextMenu(
                 bible.save();
             },
         },
+        ...genShowOnScreensContextMenu(
+            (event) => {
+                ScreenFullTextManager.handleBibleItemSelecting(
+                    event, [bibleItem], true,
+                );
+            }
+        ),
         {
             menuTitle: '(*T) ' + 'Move To',
             onClick: (event1: any) => {
