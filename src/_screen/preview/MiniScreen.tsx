@@ -9,7 +9,6 @@ import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
 } from '../../helper/settingHelpers';
-import { toMaxId } from '../../helper/helpers';
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
 import { handleCtrlWheel } from '../../others/AppRange';
@@ -19,13 +18,7 @@ function openContextMenu(event: any) {
         {
             menuTitle: 'Add New Screen',
             onClick() {
-                const instances = ScreenManager.getAllInstances();
-                const ids = instances.map((screenManager) => {
-                    return screenManager.screenId;
-                });
-                const maxId = toMaxId(ids);
-                ScreenManager.createInstance(maxId + 1);
-                ScreenManager.fireInstanceEvent();
+                ScreenManager.genNewInstance();
             },
         },
     ]);

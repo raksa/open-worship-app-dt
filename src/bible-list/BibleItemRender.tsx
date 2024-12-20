@@ -47,7 +47,7 @@ export default function BibleItemRender({
     };
     const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
-            ScreenFullTextManager.ftBibleItemSelect(event, [bibleItem]);
+            ScreenFullTextManager.fullTextBibleItemSelect(event, [bibleItem]);
         } else if (appProvider.isPageReader) {
             const searchViewController = (
                 SearchBibleItemViewController.getInstance()

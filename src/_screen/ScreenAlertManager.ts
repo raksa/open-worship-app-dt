@@ -1,39 +1,35 @@
 import { CSSProperties } from 'react';
 
-import EventHandler from '../event/EventHandler';
 import { setSetting } from '../helper/settingHelpers';
 import {
     AlertType, checkIsCountdownDatesEq, genHtmlAlertCountdown,
     genHtmlAlertMarquee, removeAlert,
 } from './screenAlertHelpers';
-import { sendScreenMessage } from './screenEventHelpers';
 import {
-    AlertDataType, getAlertDataListOnScreenSetting, ScreenMessageType,
+    AlertDataType, BasicScreenMessageType, getAlertDataListOnScreenSetting,
+    ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
-import ScreenManagerInf from './ScreenManagerInf';
 import ScreenTransitionEffect from
     './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
 import { unlocking } from '../server/appHelpers';
+import ScreenEventHandler from './ScreenEventHandler';
 
 export type ScreenAlertEventType = 'update';
 
 export default class ScreenAlertManager
-    extends EventHandler<ScreenAlertEventType>
-    implements ScreenManagerInf {
+    extends ScreenEventHandler<ScreenAlertEventType> {
 
     static readonly eventNamePrefix: string = 'screen-alert-m';
-    readonly screenId: number;
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'slide';
     alertData: AlertDataType;
 
     constructor(screenId: number) {
-        super();
-        this.screenId = screenId;
+        super(screenId);
         const allAlertDataList = getAlertDataListOnScreenSetting();
         this.alertData = allAlertDataList[this.key] ?? {
             marqueeData: null,
@@ -79,12 +75,13 @@ export default class ScreenAlertManager
         );
     }
 
-    get screenManager() {
-        return ScreenManager.getInstance(this.screenId);
-    }
-
-    get key() {
-        return this.screenId.toString();
+    applyAlertDataWithSyncGroup(
+        alertData: AlertDataType, isNoSyncGroup = false,
+    ) {
+        if (!isNoSyncGroup) {
+            ScreenAlertManager.enableSyncGroup(this.screenId);
+        }
+        Object.assign(this.alertData, alertData);
     }
 
     saveAlertData() {
@@ -95,27 +92,32 @@ export default class ScreenAlertManager
             setSetting(screenManagerSettingNames.ALERT, string);
         });
         this.sendSyncScreen();
-        this.fireUpdate();
+        this.fireUpdateEvent();
     }
 
-    sendSyncScreen() {
-        sendScreenMessage({
-            screenId: this.screenId,
+    toSyncMessage(): BasicScreenMessageType {
+        return {
             type: 'alert',
             data: this.alertData,
-        });
+        };
     }
 
-    setMarqueeData(marqueeData: { text: string } | null) {
+    setMarqueeData(
+        marqueeData: { text: string } | null, isNoSyncGroup = false,
+    ) {
         if (marqueeData?.text !== this.alertData.marqueeData?.text) {
             this.cleanRender(this.divMarquee);
-            this.alertData.marqueeData = marqueeData;
+            this.applyAlertDataWithSyncGroup({
+                ...this.alertData, marqueeData,
+            }, isNoSyncGroup);
             this.renderMarquee();
             this.saveAlertData();
         }
     }
 
-    setCountdownData(countdownData: { dateTime: Date } | null) {
+    setCountdownData(
+        countdownData: { dateTime: Date } | null, isNoSyncGroup = false,
+    ) {
         if (
             !checkIsCountdownDatesEq(
                 countdownData?.dateTime || null,
@@ -123,31 +125,24 @@ export default class ScreenAlertManager
             )
         ) {
             this.cleanRender(this.divCountdown);
-            this.alertData.countdownData = countdownData;
+            this.applyAlertDataWithSyncGroup({
+                ...this.alertData, countdownData,
+            }, isNoSyncGroup);
             this.renderCountdown();
             this.saveAlertData();
         }
     }
 
-    static receiveSyncScreen(message: ScreenMessageType) {
-        const screenManager = ScreenManager.getInstance(message.screenId);
-        if (screenManager === null) {
-            return;
-        }
-        const { screenAlertManager } = screenManager;
+    receiveSyncScreen(message: ScreenMessageType) {
         const data: AlertDataType = message.data;
-        screenAlertManager.setMarqueeData(data.marqueeData);
-        screenAlertManager.setCountdownData(data.countdownData);
-        screenAlertManager.fireUpdate();
+        this.setMarqueeData(data.marqueeData, true);
+        this.setCountdownData(data.countdownData, true);
+        this.fireUpdateEvent();
     }
 
-    fireUpdate() {
-        this.addPropEvent('update');
+    fireUpdateEvent() {
+        super.fireUpdateEvent();
         ScreenAlertManager.fireUpdateEvent();
-    }
-
-    static fireUpdateEvent() {
-        this.addPropEvent('update');
     }
 
     static getAlertDataListByType(alertType: AlertType) {
@@ -165,11 +160,11 @@ export default class ScreenAlertManager
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         callback: (screenManager: ScreenManager) => void,
     ) {
-        const chosenScreenManagers = await chooseScreenManagerInstances(event);
         const callbackSave = async (screenManager: ScreenManager) => {
             callback(screenManager);
             screenManager.screenAlertManager.saveAlertData();
         };
+        const chosenScreenManagers = await chooseScreenManagerInstances(event);
         chosenScreenManagers.forEach((screenManager) => {
             callbackSave(screenManager);
         });
@@ -194,9 +189,7 @@ export default class ScreenAlertManager
     }
 
     renderMarquee() {
-        if (
-            this.screenManager !== null && this.alertData.marqueeData !== null
-        ) {
+        if (this.alertData.marqueeData !== null) {
             const newDiv = genHtmlAlertMarquee(
                 this.alertData.marqueeData, this.screenManager,
             );
@@ -210,10 +203,7 @@ export default class ScreenAlertManager
     }
 
     renderCountdown() {
-        if (
-            this.screenManager !== null &&
-            this.alertData.countdownData !== null
-        ) {
+        if (this.alertData.countdownData !== null) {
             const newDiv = genHtmlAlertCountdown(
                 this.alertData.countdownData, this.screenManager,
             );
@@ -234,17 +224,23 @@ export default class ScreenAlertManager
     }
 
     get containerStyle(): CSSProperties {
-        const { screenManager } = this;
-        if (screenManager === null) {
-            return {};
-        }
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${screenManager.width}px`,
-            height: `${screenManager.height}px`,
+            width: `${this.screenManager.width}px`,
+            height: `${this.screenManager.height}px`,
             overflow: 'hidden',
         };
+    }
+
+    static receiveSyncScreen(message: ScreenMessageType) {
+        const { screenId } = message;
+        const { screenAlertManager } = this.getScreenManager(screenId);
+        screenAlertManager.receiveSyncScreen(message);
+    }
+
+    render() {
+        console.log('render');
     }
 
     clear() {

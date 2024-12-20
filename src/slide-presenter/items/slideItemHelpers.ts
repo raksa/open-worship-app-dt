@@ -22,8 +22,8 @@ export function handleSlideItemSelecting(
     if (appProvider.isPageEditor) {
         selectSelectedSlideItem(slideItem);
     } else {
-        ScreenSlideManager.slideSelect(
-            slideItem.filePath, slideItem.toJson(), event,
+        ScreenSlideManager.handleSlideSelecting(
+            event, slideItem.filePath, slideItem.toJson(),
         );
     }
 }

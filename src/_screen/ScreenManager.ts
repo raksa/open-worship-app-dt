@@ -49,21 +49,23 @@ export default class ScreenManager
     readonly screenFullTextManager: ScreenFullTextManager;
     readonly screenAlertManager: ScreenAlertManager;
     readonly screenId: number;
+    isDeleted: boolean;
     width: number;
     height: number;
     name: string;
     private _isSelected: boolean = false;
     private _isShowing: boolean;
     private _colorNote: string | null = null;
-    isNoSyncGroup: boolean;
+    noSyncGroupMap: Map<string, boolean>;
 
     constructor(screenId: number) {
         super();
+        this.isDeleted = false;
         const dim = getWindowDim();
         this.width = dim.width;
         this.height = dim.height;
         this.screenId = screenId;
-        this.isNoSyncGroup = true;
+        this.noSyncGroupMap = new Map();
         this.name = `screen-${screenId}`;
         this.screenBackgroundManager = new ScreenBackgroundManager(screenId);
         this.screenSlideManager = new ScreenSlideManager(screenId);
@@ -89,7 +91,17 @@ export default class ScreenManager
 
     async setColorNote(color: string | null) {
         this._colorNote = color;
-        return ScreenManager.saveScreenManagersSetting();
+        await ScreenManager.saveScreenManagersSetting();
+        ScreenBackgroundManager.enableSyncGroup(this.screenId);
+        ScreenSlideManager.enableSyncGroup(this.screenId);
+        ScreenFullTextManager.enableSyncGroup(this.screenId);
+        ScreenAlertManager.enableSyncGroup(this.screenId);
+        this.sendSyncScreen();
+    }
+
+    checkIsSyncGroupEnabled(Class: { eventNamePrefix: string }) {
+        const key = Class.eventNamePrefix;
+        return !this.noSyncGroupMap.get(key);
     }
 
     get key() {
@@ -188,13 +200,13 @@ export default class ScreenManager
         this.screenAlertManager.clear();
         this.fireUpdateEvent();
     }
-    delete() {
+    async delete() {
+        this.isDeleted = true;
         this.clear();
         this.hide();
         cache.delete(this.key);
-        ScreenManager.saveScreenManagersSetting(this.screenId).then(() => {
-            this.fireInstanceEvent();
-        });
+        await ScreenManager.saveScreenManagersSetting(this.screenId);
+        this.fireInstanceEvent();
     }
 
     receiveScreenDrag(droppedData: DroppedDataType) {
@@ -252,9 +264,27 @@ export default class ScreenManager
         })?.id ?? defaultDisplay.id;
     }
 
+    static getSyncGroupScreenEventHandler(message: ScreenMessageType) {
+        const { type } = message;
+        if (type === 'background') {
+            return ScreenBackgroundManager;
+        } else if (type === 'slide') {
+            return ScreenSlideManager;
+        } else if (type === 'full-text') {
+            return ScreenFullTextManager;
+        } else if (type === 'alert') {
+            return ScreenAlertManager;
+        }
+        return null;
+    }
+
     static receiveSyncScreen(message: ScreenMessageType) {
+        const ScreenHandler = this.getSyncGroupScreenEventHandler(message);
+        if (ScreenHandler !== null) {
+            return ScreenHandler.receiveSyncScreen(message);
+        }
         const { type, data, screenId } = message;
-        const screenManager = ScreenManager.getInstance(screenId);
+        const screenManager = this.getInstance(screenId);
         if (screenManager === null) {
             return;
         }
@@ -262,22 +292,12 @@ export default class ScreenManager
             screenManager.sendSyncScreen();
         } else if (type === 'visible') {
             screenManager.isShowing = data?.isShowing;
-        } else if (type === 'background') {
-            ScreenBackgroundManager.receiveSyncScreen(message);
-        } else if (type === 'slide') {
-            ScreenSlideManager.receiveSyncScreen(message);
-        } else if (type === 'full-text') {
-            ScreenFullTextManager.receiveSyncData(message);
         } else if (type === 'full-text-scroll') {
             ScreenFullTextManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {
             ScreenFullTextManager.receiveSyncSelectedIndex(message);
         } else if (type === 'full-text-text-style') {
             ScreenFullTextManager.receiveSyncTextStyle(message);
-        } else if (type === 'alert') {
-            ScreenAlertManager.receiveSyncScreen(message);
-        } else if (type === 'effect') {
-            ScreenTransitionEffect.receiveSyncScreen(message);
         } else {
             log(message);
         }
@@ -308,39 +328,41 @@ export default class ScreenManager
         return screenManagers;
     }
     static saveScreenManagersSetting(deletedScreenId?: number) {
-        return unlocking(screenManagerSettingNames.MANAGERS, async () => {
-            const newInstanceSetting: TypeScreenManagerSettingType[] = [];
-            for (const screenManager of this.getAllInstances()) {
-                const colorNote = await screenManager.getColorNote();
-                newInstanceSetting.push({
-                    screenId: screenManager.screenId,
-                    isSelected: screenManager.isSelected,
-                    colorNote,
-                });
-            }
-            let instanceSetting = getScreenManagersInstanceSetting();
-            instanceSetting = instanceSetting.map((item) => {
-                return newInstanceSetting.find((newItem) => {
-                    return newItem.screenId === item.screenId;
-                }) || item;
-            });
-            for (const newItem of newInstanceSetting) {
-                if (!instanceSetting.some((item) => {
-                    return item.screenId === newItem.screenId;
-                })) {
-                    instanceSetting.push(newItem);
+        return unlocking(
+            screenManagerSettingNames.MANAGERS, async () => {
+                const newInstanceSetting: TypeScreenManagerSettingType[] = [];
+                for (const screenManager of this.getAllInstances()) {
+                    const colorNote = await screenManager.getColorNote();
+                    newInstanceSetting.push({
+                        screenId: screenManager.screenId,
+                        isSelected: screenManager.isSelected,
+                        colorNote,
+                    });
                 }
-            }
-            if (deletedScreenId) {
-                instanceSetting = instanceSetting.filter((item) => {
-                    return item.screenId !== deletedScreenId;
+                let instanceSetting = getScreenManagersInstanceSetting();
+                instanceSetting = instanceSetting.map((item) => {
+                    return newInstanceSetting.find((newItem) => {
+                        return newItem.screenId === item.screenId;
+                    }) || item;
                 });
-            }
-            setSetting(
-                screenManagerSettingNames.MANAGERS,
-                JSON.stringify(instanceSetting),
-            );
-        });
+                for (const newItem of newInstanceSetting) {
+                    if (!instanceSetting.some((item) => {
+                        return item.screenId === newItem.screenId;
+                    })) {
+                        instanceSetting.push(newItem);
+                    }
+                }
+                if (deletedScreenId !== undefined) {
+                    instanceSetting = instanceSetting.filter((item) => {
+                        return item.screenId !== deletedScreenId;
+                    });
+                }
+                setSetting(
+                    screenManagerSettingNames.MANAGERS,
+                    JSON.stringify(instanceSetting),
+                );
+            },
+        );
     }
 
     static getInstanceByKey(key: string) {
@@ -349,12 +371,14 @@ export default class ScreenManager
     }
 
     static getAllInstances(): ScreenManager[] {
-        const cachedInstances = Array.from(cache.values());
-        if (cachedInstances.length > 0) {
-            return cachedInstances;
+        let cachedInstances = Array.from(cache.values());
+        if (cachedInstances.length === 0) {
+            cachedInstances = getAllShowingScreenIds().map((screenId) => {
+                return this.createInstance(screenId);
+            });
         }
-        return getAllShowingScreenIds().map((screenId) => {
-            return this.createInstance(screenId);
+        return cachedInstances.filter((screenManager) => {
+            return !screenManager.isDeleted;
         });
     }
 
@@ -389,10 +413,10 @@ export default class ScreenManager
                 screenBackgroundManager, screenSlideManager,
                 screenFullTextManager, screenAlertManager,
             } = screenManager;
-            screenBackgroundManager.fireUpdate();
-            screenSlideManager.fireUpdate();
-            screenFullTextManager.fireUpdate();
-            screenAlertManager.fireUpdate();
+            screenBackgroundManager.fireUpdateEvent();
+            screenSlideManager.fireUpdateEvent();
+            screenFullTextManager.fireUpdateEvent();
+            screenAlertManager.fireUpdateEvent();
         }
         return cache.get(key) as ScreenManager;
     }
@@ -405,19 +429,26 @@ export default class ScreenManager
         return null;
     }
 
-    static async syncGroup(message: ScreenMessageType) {
-        console.log('syncGroup', message);
+    static genNewInstance() {
+        const screenManagers = ScreenManager.getAllInstances();
+        const screenIds = screenManagers.map((screenManager) => {
+            return screenManager.screenId;
+        });
+        let newScreenId = 0;
+        while (screenIds.includes(newScreenId)) {
+            newScreenId++;
+        }
+        this.createInstance(newScreenId);
+        this.fireInstanceEvent();
+    }
 
-        const currentScreenManager = ScreenManager.getInstance(
+    static async syncGroup(message: ScreenMessageType) {
+        const currentScreenManager = this.getInstance(
             message.screenId,
         );
-        if (currentScreenManager === null) {
+        if (currentScreenManager === null || currentScreenManager.isDeleted) {
             return;
         }
-        if (currentScreenManager.isNoSyncGroup) {
-            return;
-        }
-        currentScreenManager.isNoSyncGroup = true;
         const colorNote = await currentScreenManager.getColorNote();
         const screenManagers = await ScreenManager.getAllInstancesByColorNote(
             colorNote, [currentScreenManager.screenId],
@@ -427,7 +458,18 @@ export default class ScreenManager
                 ...message,
                 screenId: screenManager.screenId,
             };
-            ScreenManager.receiveSyncScreen(newMessage);
+            const ScreenHandler = this.getSyncGroupScreenEventHandler(
+                newMessage,
+            );
+            if (ScreenHandler !== null) {
+                if (!currentScreenManager.checkIsSyncGroupEnabled(
+                    ScreenHandler,
+                )) {
+                    return;
+                }
+                ScreenHandler.disableSyncGroup(currentScreenManager.screenId);
+                ScreenHandler.receiveSyncScreen(newMessage);
+            }
         });
     }
 }

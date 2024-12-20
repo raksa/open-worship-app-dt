@@ -106,7 +106,7 @@ function genBody(
                 ]);
             }}
             onClick={noClickable ? () => { } : (event) => {
-                ScreenBackgroundManager.backgroundSrcSelect(
+                ScreenBackgroundManager.handleBackgroundSelecting(
                     fileSource.src, event, backgroundType,
                 );
             }}>

@@ -36,7 +36,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             },
         }],
         ...isOne ? [] : [{
-            menuTitle: screenManager.isSelected ? 'Unselect' : 'Select',
+            menuTitle: screenManager.isSelected ? 'Deselect' : 'Select',
             onClick() {
                 screenManager.isSelected = !screenManager.isSelected;
             },

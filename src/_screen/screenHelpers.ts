@@ -17,10 +17,10 @@ import {
 } from './transition-effect/transitionEffectHelpers';
 import { unlocking } from '../server/appHelpers';
 
-export const ftDataTypeList = ['bible-item', 'lyric'] as const;
-export type FfDataType = typeof ftDataTypeList[number];
-export type FTItemDataType = {
-    type: FfDataType,
+export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
+export type FullTextDataType = typeof fullTextDataTypeList[number];
+export type FullTextItemDataType = {
+    type: FullTextDataType,
     bibleItemData?: {
         renderedList: BibleItemRenderedType[],
         bibleItem: BibleItemType,
@@ -31,8 +31,8 @@ export type FTItemDataType = {
     scroll: number,
     selectedIndex: number | null,
 };
-export type FTListType = {
-    [key: string]: FTItemDataType;
+export type FullTextListType = {
+    [key: string]: FullTextItemDataType;
 };
 
 const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
@@ -89,10 +89,12 @@ export const screenTypeList = [
     'init', 'effect',
 ] as const;
 export type ScreenType = typeof screenTypeList[number];
-export type ScreenMessageType = {
-    screenId: number,
+export type BasicScreenMessageType = {
     type: ScreenType,
     data: any,
+};
+export type ScreenMessageType = BasicScreenMessageType & {
+    screenId: number,
 };
 
 const messageUtils = appProviderScreen.messageUtils;
@@ -330,7 +332,7 @@ const validateLyric = ({ renderedList }: any) => {
     );
 };
 
-export function getFullTextListOnScreenSetting(): FTListType {
+export function getFullTextListOnScreenSetting(): FullTextListType {
     const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
     try {
         if (!isValidJson(str, true)) {
@@ -339,7 +341,7 @@ export function getFullTextListOnScreenSetting(): FTListType {
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
             if (
-                !ftDataTypeList.includes(item.type) ||
+                !fullTextDataTypeList.includes(item.type) ||
                 (
                     item.type === 'bible-item' &&
                     validateBible(item.bibleItemData)

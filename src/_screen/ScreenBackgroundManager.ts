@@ -1,6 +1,5 @@
 import { CSSProperties } from 'react';
 
-import EventHandler from '../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import {
     getImageDim, getVideoDim,
@@ -8,13 +7,11 @@ import {
 import { setSetting } from '../helper/settingHelpers';
 import appProviderScreen from './appProviderScreen';
 import { genHtmlBackground } from './ScreenBackground';
-import { sendScreenMessage } from './screenEventHelpers';
 import {
-    BackgroundSrcType, BackgroundType, getBackgroundSrcListOnScreenSetting,
-    ScreenMessageType,
+    BackgroundSrcType, BackgroundType, BasicScreenMessageType,
+    getBackgroundSrcListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
-import ScreenManagerInf from './ScreenManagerInf';
 import ScreenTransitionEffect
     from './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
@@ -22,49 +19,48 @@ import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
 import { unlocking } from '../server/appHelpers';
+import ScreenEventHandler from './ScreenEventHandler';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
 export default class ScreenBackgroundManager
-    extends EventHandler<ScreenBackgroundManagerEventType>
-    implements ScreenManagerInf {
+    extends ScreenEventHandler<ScreenBackgroundManagerEventType> {
 
     static readonly eventNamePrefix: string = 'screen-bg-m';
-    readonly screenId: number;
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
     ptEffectTarget: TargetType = 'background';
+
     constructor(screenId: number) {
-        super();
-        this.screenId = screenId;
+        super(screenId);
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] || null;
         }
     }
+
     get isShowing() {
         return this.backgroundSrc !== null;
     }
+
     get div() {
         return this._div;
     }
+
     set div(div: HTMLDivElement | null) {
         this._div = div;
         this.render();
     }
+
     get ptEffect() {
         return ScreenTransitionEffect.getInstance(
             this.screenId, this.ptEffectTarget);
     }
-    get screenManager() {
-        return ScreenManager.getInstance(this.screenId);
-    }
-    get key() {
-        return this.screenId.toString();
-    }
+
     get backgroundSrc() {
         return this._backgroundSrc;
     }
+
     set backgroundSrc(backgroundSrc: BackgroundSrcType | null) {
         this._backgroundSrc = backgroundSrc;
         this.render();
@@ -79,31 +75,23 @@ export default class ScreenBackgroundManager
             setSetting(screenManagerSettingNames.BACKGROUND, str);
         });
         this.sendSyncScreen();
-        this.fireUpdate();
+        this.fireUpdateEvent();
     }
-    sendSyncScreen() {
-        sendScreenMessage({
-            screenId: this.screenId,
+
+    toSyncMessage() {
+        return {
             type: 'background',
             data: this.backgroundSrc,
-        });
-    }
-    static receiveSyncScreen(message: ScreenMessageType) {
-        const { data, screenId } = message;
-        const screenManager = ScreenManager.getInstance(screenId);
-        if (screenManager === null) {
-            return;
-        }
-        screenManager.screenBackgroundManager.backgroundSrc = data;
+        } as BasicScreenMessageType;
     }
 
-    fireUpdate() {
-        this.addPropEvent('update');
+    receiveSyncScreen(message: ScreenMessageType) {
+        this.backgroundSrc = message.data;
+    }
+
+    fireUpdateEvent() {
+        super.fireUpdateEvent();
         ScreenBackgroundManager.fireUpdateEvent();
-    }
-
-    static fireUpdateEvent() {
-        this.addPropEvent('update');
     }
 
     static getBackgroundSrcListByType(backgroundType: BackgroundType) {
@@ -125,6 +113,7 @@ export default class ScreenBackgroundManager
             return backgroundSrc.src === src;
         });
     }
+
     static async initBackgroundSrcDim(
         src: string, backgroundType: BackgroundType,
     ) {
@@ -139,14 +128,13 @@ export default class ScreenBackgroundManager
         }
         return backgroundSrc;
     }
+
     applyBackgroundSrcWithSyncGroup(backGroundSrc: BackgroundSrcType | null) {
-        const screenManager = this.screenManager;
-        if (screenManager !== null) {
-            screenManager.isNoSyncGroup = false;
-        }
+        ScreenBackgroundManager.enableSyncGroup(this.screenId);
         this.backgroundSrc = backGroundSrc;
     }
-    static async backgroundSrcSelect(
+
+    static async handleBackgroundSelecting(
         src: string | null, event: React.MouseEvent<HTMLElement, MouseEvent>,
         backgroundType: BackgroundType,
     ) {
@@ -170,13 +158,10 @@ export default class ScreenBackgroundManager
         }
         const chosenScreenManagers = await chooseScreenManagerInstances(event);
         const setSrc = async (screenManager: ScreenManager) => {
-            const backgroundSrc = (
-                src ? await this.initBackgroundSrcDim(src, backgroundType) :
-                    null
-            );
             const { screenBackgroundManager } = screenManager;
             screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
-                backgroundSrc,
+                src ? await this.initBackgroundSrcDim(src, backgroundType) :
+                    null,
             );
         };
         chosenScreenManagers.forEach((screenManager) => {
@@ -184,6 +169,7 @@ export default class ScreenBackgroundManager
         });
         this.fireUpdateEvent();
     }
+
     static async extractDim(backgroundSrc: BackgroundSrcType)
         : Promise<[number | undefined, number | undefined]> {
         if (backgroundSrc.type === 'image') {
@@ -201,12 +187,13 @@ export default class ScreenBackgroundManager
         }
         return [undefined, undefined];
     }
+
     render() {
         if (this.div === null) {
             return;
         }
         const aminData = this.ptEffect.styleAnim;
-        if (this.screenManager !== null && this.backgroundSrc !== null) {
+        if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(
                 this.backgroundSrc, this.screenManager,
             );
@@ -224,19 +211,17 @@ export default class ScreenBackgroundManager
             });
         }
     }
+
     get containerStyle(): CSSProperties {
-        const { screenManager } = this;
-        if (screenManager === null) {
-            return {};
-        }
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${screenManager.width}px`,
-            height: `${screenManager.height}px`,
+            width: `${this.screenManager.width}px`,
+            height: `${this.screenManager.height}px`,
             overflow: 'hidden',
         };
     }
+
     async receiveScreenDrag({ type, item }: DroppedDataType) {
         const backgroundTypeMap: { [key: string]: BackgroundType } = {
             [DragTypeEnum.BACKGROUND_IMAGE]: 'image',
@@ -248,15 +233,22 @@ export default class ScreenBackgroundManager
                     item.src, backgroundTypeMap[type],
                 )
             );
-            this.backgroundSrc = backgroundSrc;
+            this.applyBackgroundSrcWithSyncGroup(backgroundSrc);
         } else if (type === DragTypeEnum.BACKGROUND_COLOR) {
-            this.backgroundSrc = {
+            this.applyBackgroundSrcWithSyncGroup({
                 type: 'color',
                 src: item,
-            };
+            });
         }
     }
+
+    static receiveSyncScreen(message: ScreenMessageType) {
+        const { screenId } = message;
+        const { screenBackgroundManager } = this.getScreenManager(screenId);
+        screenBackgroundManager.receiveSyncScreen(message);
+    }
+
     clear() {
-        this.backgroundSrc = null;
+        this.applyBackgroundSrcWithSyncGroup(null);
     }
 }

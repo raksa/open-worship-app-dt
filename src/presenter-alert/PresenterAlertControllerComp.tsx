@@ -11,6 +11,14 @@ export default function PresenterAlertControllerComp() {
             <div>
                 <CountDownComp />
             </div>
+            <hr />
+            <div>
+                TODO: Camera Show
+            </div>
+            <hr />
+            <div>
+                TODO: Javascript Show
+            </div>
         </div>
     );
 }

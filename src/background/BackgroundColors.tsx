@@ -18,12 +18,14 @@ export default function BackgroundColors() {
         _newColor: AppColorType, event: any,
     ) => {
         setSelectedBackgroundSrcList(null);
-        ScreenBackgroundManager.backgroundSrcSelect(null, event, 'color');
+        ScreenBackgroundManager.handleBackgroundSelecting(null, event, 'color');
     };
     const handleColorChanging = async (
         newColor: AppColorType, event: any) => {
         setSelectedBackgroundSrcList(null);
-        ScreenBackgroundManager.backgroundSrcSelect(newColor, event, 'color');
+        ScreenBackgroundManager.handleBackgroundSelecting(
+            newColor, event, 'color',
+        );
     };
     useAppEffect(() => {
         if (selectedBackgroundSrcList === null) {
@@ -52,10 +54,10 @@ export default function BackgroundColors() {
         <div className={
             'd-flex align-content-start flex-wrap w-100 overflow-hidden'
         }>
-            {selectedBackgroundSrcList.map(([key, backgroundSrc]) => {
+            {selectedBackgroundSrcList.map(([key, backgroundSrc], i) => {
                 const screenId = parseInt(key, 10);
                 return (
-                    <div key={backgroundSrc.src}
+                    <div key={backgroundSrc.src + i}
                         className='p-1 m-1 app-border-white-round'>
                         <ShowingScreenIcon screenId={screenId} />
                         <ColorPicker

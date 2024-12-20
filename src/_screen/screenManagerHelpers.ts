@@ -10,9 +10,9 @@ export async function chooseScreenManagerInstances(event: React.MouseEvent) {
     if (selectedScreenManagers.length > 0) {
         return selectedScreenManagers;
     }
-    const allScreenManagers = ScreenManager.getAllInstances();
+    const screenManagers = ScreenManager.getAllInstances();
     return new Promise<ScreenManager[]>((resolve) => {
-        const menuItems: ContextMenuItemType[] = allScreenManagers.map(
+        const menuItems: ContextMenuItemType[] = screenManagers.map(
             (screenManager) => {
                 return {
                     menuTitle: screenManager.name,
