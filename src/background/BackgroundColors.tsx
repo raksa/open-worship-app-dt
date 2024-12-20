@@ -18,13 +18,13 @@ export default function BackgroundColors() {
         _newColor: AppColorType, event: any,
     ) => {
         setSelectedBackgroundSrcList(null);
-        ScreenBackgroundManager.handleBackgroundSelecting(null, event, 'color');
+        ScreenBackgroundManager.handleBackgroundSelecting(event, 'color', null);
     };
     const handleColorChanging = async (
         newColor: AppColorType, event: any) => {
         setSelectedBackgroundSrcList(null);
         ScreenBackgroundManager.handleBackgroundSelecting(
-            newColor, event, 'color',
+            event, 'color', newColor,
         );
     };
     useAppEffect(() => {

@@ -24,7 +24,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             screenFullTextManager.isLineSync = !isLineSync;
         },
     }] : [];
-    const contextMenuItems: ContextMenuItemType[] = [
+    const menuItems: ContextMenuItemType[] = [
         ...isOne || isSolo ? [] : [{
             menuTitle: 'Solo',
             onClick() {
@@ -48,8 +48,8 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         }],
         ...extraMenuItems,
     ];
-    if (contextMenuItems.length === 0) {
+    if (menuItems.length === 0) {
         return;
     }
-    showAppContextMenu(event, contextMenuItems);
+    showAppContextMenu(event, menuItems);
 }

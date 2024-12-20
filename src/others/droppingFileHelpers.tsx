@@ -156,18 +156,18 @@ export function genOnContextMenu(
     addItems?: () => void,
 ) {
     return (event: React.MouseEvent<any>) => {
-        const contextMenuItems: ContextMenuItemType[] = [
+        const menuItems: ContextMenuItemType[] = [
             ...(contextMenu || []),
         ];
         if (addItems !== undefined) {
-            contextMenuItems.push({
+            menuItems.push({
                 menuTitle: 'Add Items',
                 onClick: addItems,
             });
         }
-        if (contextMenuItems.length === 0) {
+        if (menuItems.length === 0) {
             return;
         }
-        showAppContextMenu(event as any, contextMenuItems);
+        showAppContextMenu(event as any, menuItems);
     };
 }

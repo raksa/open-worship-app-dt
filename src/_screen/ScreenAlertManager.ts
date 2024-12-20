@@ -159,12 +159,15 @@ export default class ScreenAlertManager
     static async setData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         callback: (screenManager: ScreenManager) => void,
+        isForceChoosing = false,
     ) {
         const callbackSave = async (screenManager: ScreenManager) => {
             callback(screenManager);
             screenManager.screenAlertManager.saveAlertData();
         };
-        const chosenScreenManagers = await chooseScreenManagerInstances(event);
+        const chosenScreenManagers = await chooseScreenManagerInstances(
+            event, isForceChoosing,
+        );
         chosenScreenManagers.forEach((screenManager) => {
             callbackSave(screenManager);
         });

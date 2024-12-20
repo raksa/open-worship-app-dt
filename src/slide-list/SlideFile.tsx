@@ -60,7 +60,7 @@ export default function SlideFile({
     useFileSourceEvents(['update', 'history-update', 'edit'], () => {
         setData(null);
     }, [data], filePath);
-    const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
+    const menuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
         menuTitle: 'Preview PDF',
         onClick: () => {
             appProvider.messageUtils.sendData(
@@ -85,7 +85,7 @@ export default function SlideFile({
             isPointer
             onClick={handleClicking}
             renderChild={handleChildRendering}
-            contextMenuItems={contextMenuItems}
+            contextMenuItems={menuItems}
             onTrashed={handleSlideDeleting}
         />
     );

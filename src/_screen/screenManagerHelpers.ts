@@ -3,8 +3,10 @@ import {
 } from '../others/AppContextMenu';
 import ScreenManager from './ScreenManager';
 
-export async function chooseScreenManagerInstances(event: React.MouseEvent) {
-    const selectedScreenManagers = (
+export async function chooseScreenManagerInstances(
+    event: React.MouseEvent, isForceChoosing:boolean,
+) {
+    const selectedScreenManagers = isForceChoosing ? [] : (
         ScreenManager.getSelectedScreenManagerInstances()
     );
     if (selectedScreenManagers.length > 0) {

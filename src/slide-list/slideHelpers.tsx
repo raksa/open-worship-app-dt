@@ -26,6 +26,8 @@ import {
 } from '../progress-bar/progressBarHelpers';
 import { getTempPath } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
+import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
+import ScreenSlideManager from '../_screen/ScreenSlideManager';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -38,7 +40,7 @@ export type SlideDynamicType = Slide | null | undefined;
 export function openSlideContextMenu(
     event: any, slide: Slide, slideItem: SlideItem,
 ) {
-    showAppContextMenu(event, [
+    const menuItems: ContextMenuItemType[] = [
         {
             menuTitle: 'Copy',
             onClick: () => {
@@ -62,13 +64,21 @@ export function openSlideContextMenu(
                 }
             },
         }] : []),
+        ...(appProvider.isPageEditor ? [] : genShowOnScreensContextMenu(
+            (event) => {
+                ScreenSlideManager.handleSlideSelecting(
+                    event, slideItem.filePath, slideItem.toJson(), true,
+                );
+            }
+        )),
         {
             menuTitle: 'Delete',
             onClick: () => {
                 slide.deleteItem(slideItem);
             },
         },
-    ]);
+    ];
+    showAppContextMenu(event, menuItems);
 }
 
 export function checkIsPdf(ext: string) {

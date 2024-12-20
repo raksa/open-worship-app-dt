@@ -24,7 +24,7 @@ export async function showBibleOption(
         );
         return;
     }
-    const contextMenuItems: ContextMenuItemType[] = (
+    const menuItems: ContextMenuItemType[] = (
         bibleInfoList.filter((bibleInfo) => {
             return !excludeBibleKey.includes(bibleInfo.key);
         }).map((bibleInfo) => {
@@ -40,7 +40,7 @@ export async function showBibleOption(
             };
         })
     );
-    showAppContextMenu(event, contextMenuItems);
+    showAppContextMenu(event, menuItems);
 }
 
 function handleClickEvent(

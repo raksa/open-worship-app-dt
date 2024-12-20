@@ -332,10 +332,11 @@ export default class ScreenFullTextManager
 
     static async fullTextBibleItemSelect(
         event: React.MouseEvent | null, bibleItems: BibleItem[],
+        isForceChoosing = false,
     ) {
         const ftItemData = await bibleItemToFtData(bibleItems);
         const chosenScreenManagers = await chooseScreenManagerInstances(
-            genScreenMouseEvent(event) as any,
+            genScreenMouseEvent(event) as any, isForceChoosing,
         );
         chosenScreenManagers.forEach((screenManager) => {
             const { screenFullTextManager } = screenManager;

@@ -83,6 +83,17 @@ export function genTrashContextMenu(
     ];
 }
 
+export function genShowOnScreensContextMenu(
+    onClick: (event: any) => void,
+): ContextMenuItemType[] {
+    return [
+        {
+            menuTitle: 'Show on Screens',
+            onClick,
+        },
+    ];
+}
+
 export default function FileItemHandler({
     data, reload, index, filePath, className,
     contextMenuItems, onDrop, onClick, renderChild,

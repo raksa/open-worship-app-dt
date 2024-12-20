@@ -1,6 +1,8 @@
 import { showAppContextMenu } from '../others/AppContextMenu';
 import FileListHandler from '../others/FileListHandler';
-import { genCommonMenu, genTrashContextMenu } from '../others/FileItemHandler';
+import {
+    genCommonMenu, genShowOnScreensContextMenu, genTrashContextMenu,
+} from '../others/FileItemHandler';
 import ScreenBackgroundManager from '../_screen/ScreenBackgroundManager';
 import {
     useScreenBackgroundManagerEvents,
@@ -86,7 +88,11 @@ function genBody(
             ` \nShow in presents:${screenKeys.join(',')}` : ''
         )
     );
-
+    const handleSelecting = (event: any, isForceChoosing = false) => {
+        ScreenBackgroundManager.handleBackgroundSelecting(
+            event, backgroundType, fileSource.src, isForceChoosing,
+        );
+    };
     return (
         <div key={fileSource.name}
             className={`${backgroundType}-thumbnail card ${selectedCN}`}
@@ -98,7 +104,9 @@ function genBody(
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     ...genCommonMenu(filePath),
-
+                    ...genShowOnScreensContextMenu((event) => {
+                        handleSelecting(event, true);
+                    }),
                     ...(
                         isInScreen ? [] :
                             genTrashContextMenu(fileSource.filePath)
@@ -106,9 +114,7 @@ function genBody(
                 ]);
             }}
             onClick={noClickable ? () => { } : (event) => {
-                ScreenBackgroundManager.handleBackgroundSelecting(
-                    fileSource.src, event, backgroundType,
-                );
+                handleSelecting(event);
             }}>
             {!isNameOnTop ? null : (
                 <FileFullNameRenderer fileFullName={fileSource.fileFullName} />

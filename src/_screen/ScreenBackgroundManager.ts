@@ -11,7 +11,6 @@ import {
     BackgroundSrcType, BackgroundType, BasicScreenMessageType,
     getBackgroundSrcListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
-import ScreenManager from './ScreenManager';
 import ScreenTransitionEffect
     from './transition-effect/ScreenTransitionEffect';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
@@ -135,38 +134,29 @@ export default class ScreenBackgroundManager
     }
 
     static async handleBackgroundSelecting(
-        src: string | null, event: React.MouseEvent<HTMLElement, MouseEvent>,
-        backgroundType: BackgroundType,
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        backgroundType: BackgroundType, src: string | null,
+        isForceChoosing = false,
     ) {
-        if (src !== null) {
-            const selectedBackgroundSrcList = this.getSelectBackgroundSrcList(
-                src, backgroundType,
-            );
-            if (selectedBackgroundSrcList.length > 0) {
-                selectedBackgroundSrcList.forEach(([key]) => {
-                    const screenManager = ScreenManager.getInstanceByKey(key);
-                    if (screenManager === null) {
-                        return;
-                    }
-                    const { screenBackgroundManager } = screenManager;
-                    screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
-                        null,
-                    );
-                });
-                return;
+        const chosenScreenManagers = await chooseScreenManagerInstances(
+            event, isForceChoosing,
+        );
+        for (const screenManager of chosenScreenManagers) {
+            const { screenBackgroundManager } = screenManager;
+            if (
+                src === null ||
+                screenBackgroundManager.backgroundSrc?.src === src
+            ) {
+                screenBackgroundManager.applyBackgroundSrcWithSyncGroup(null);
+            } else {
+                const backgroundSrc = await this.initBackgroundSrcDim(
+                    src, backgroundType,
+                );
+                screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
+                    backgroundSrc,
+                );
             }
         }
-        const chosenScreenManagers = await chooseScreenManagerInstances(event);
-        const setSrc = async (screenManager: ScreenManager) => {
-            const { screenBackgroundManager } = screenManager;
-            screenBackgroundManager.applyBackgroundSrcWithSyncGroup(
-                src ? await this.initBackgroundSrcDim(src, backgroundType) :
-                    null,
-            );
-        };
-        chosenScreenManagers.forEach((screenManager) => {
-            setSrc(screenManager);
-        });
         this.fireUpdateEvent();
     }
 

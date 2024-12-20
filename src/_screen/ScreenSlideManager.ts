@@ -153,8 +153,11 @@ export default class ScreenSlideManager extends
     static async handleSlideSelecting(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
         slideFilePath: string, slideItemJson: SlideItemType,
+        isForceChoosing = false,
     ) {
-        const chosenScreenManagers = await chooseScreenManagerInstances(event);
+        const chosenScreenManagers = await chooseScreenManagerInstances(
+            event, isForceChoosing,
+        );
         chosenScreenManagers.forEach((screenManager) => {
             const { screenSlideManager } = screenManager;
             screenSlideManager.handleSlideSelecting(
