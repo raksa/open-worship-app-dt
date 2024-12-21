@@ -1,5 +1,5 @@
 import ElectronAppController from './ElectronAppController';
-import electron from 'electron';
+import { app, Menu, shell } from 'electron';
 
 export function initMenu(appController: ElectronAppController) {
     const isMac = process.platform === 'darwin';
@@ -7,7 +7,7 @@ export function initMenu(appController: ElectronAppController) {
     const template: any[] = [
         // { role: 'appMenu' }
         ...(isMac ? [{
-            label: electron.app.name,
+            label: app.name,
             submenu: [
                 { role: 'about' },
                 { type: 'separator' },
@@ -111,7 +111,7 @@ export function initMenu(appController: ElectronAppController) {
                 {
                     label: 'Learn More',
                     click: () => {
-                        electron.shell.openExternal(
+                        shell.openExternal(
                             'https://www.openworship.app/',
                         );
                     },
@@ -120,6 +120,6 @@ export function initMenu(appController: ElectronAppController) {
         },
     ];
 
-    const menu = electron.Menu.buildFromTemplate(template);
-    electron.Menu.setApplicationMenu(menu);
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
 }

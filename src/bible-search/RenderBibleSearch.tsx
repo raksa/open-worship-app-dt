@@ -28,6 +28,9 @@ export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
     const [inputText, setInputText] = useState<string>(editorInputText);
     const [bibleKey, setBibleKey] = useSelectedBibleKey();
     const viewController = SearchBibleItemViewController.getInstance();
+    if (bibleKey !== null) {
+        viewController.selectedBibleItem.bibleKey = bibleKey;
+    }
     viewController.setBibleKey = setBibleKey;
     const inputTextContextValue = useMemo(() => ({
         inputText, setInputText,

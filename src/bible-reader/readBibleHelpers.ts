@@ -158,8 +158,8 @@ export function closeCurrentEditingBibleItem() {
 }
 
 export function useCloseBibleItemRenderer() {
-    useKeyboardRegistering([closeEventMapper], (e) => {
-        e.preventDefault();
+    useKeyboardRegistering([closeEventMapper], (event) => {
+        event.preventDefault();
         closeCurrentEditingBibleItem();
     });
 }

@@ -71,15 +71,20 @@ export default function InputHistory({
         });
         setHistoryTextList(newHistoryTextList);
     };
-    const handleDoubleClicking = async (historyText: string) => {
-        const [
-            bibleKey, bibleTitle,
-        ] = historyText.split('>');
+    const handleDoubleClicking = async (event: any, historyText: string) => {
+        event.preventDefault();
+        const [bibleKey, bibleTitle] = historyText.split('>');
         const { result } = await extractBibleTitle(bibleKey, bibleTitle);
         if (result.bibleItem === null) {
             return;
         }
         const viewController = SearchBibleItemViewController.getInstance();
+        if (event.shiftKey) {
+            viewController.addBibleItemLeft(
+                viewController.selectedBibleItem,
+                viewController.selectedBibleItem,
+            );
+        }
         viewController.setSearchingContentFromBibleItem(result.bibleItem);
     };
     return (
@@ -97,12 +102,13 @@ export default function InputHistory({
                         }
                         className='btn btn-sm d-flex app-border-white-round'
                         style={{ height: '25px' }}
-                        onDoubleClick={() => {
-                            handleDoubleClicking(historyText);
+                        onDoubleClick={(event) => {
+                            handleDoubleClicking(event, historyText);
                         }}>
                         <small className='flex-fill'>{historyText}</small>
                         <small title='Remove'
-                            style={{ color: 'red' }} onClick={() => {
+                            style={{ color: 'red' }}
+                            onClick={() => {
                                 handleHistoryRemoving(historyText);
                             }}>
                             <i className='bi bi-x' />

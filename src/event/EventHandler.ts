@@ -33,13 +33,8 @@ export class BasicEventHandler<T extends string> {
     }
 
     addPropEvent(eventName: T, data?: any) {
-        this.propEvent.push({
-            eventName,
-            data,
-        });
-        setTimeout(() => {
-            this.checkPropEvent();
-        }, 0);
+        this.propEvent.push({ eventName, data });
+        this.checkPropEvent();
     }
 
     addOnEventListener(eventName: T, listener: ListenerType<any>) {
@@ -106,7 +101,8 @@ export default class EventHandler<T extends string> extends
         RegisteredEventType<T, F>[] {
         return eventNames.map((eventName) => {
             eventHandler.addOnEventListener(
-                this.prefixEventName(eventName), listener);
+                this.prefixEventName(eventName), listener,
+            );
             return { eventName, listener };
         });
     }

@@ -122,5 +122,8 @@ export function useKeyboardRegistering(
 
 
 document.onkeydown = function (event) {
+    if (['Meta', 'Alt', 'Control', 'Shift'].includes(event.key)) {
+        return;
+    }
     KeyboardEventListener.fireEvent(event);
 };
