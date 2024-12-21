@@ -6,7 +6,7 @@ import ScreenManager from './ScreenManager';
 
 export async function chooseScreenManagerInstances(
     event: React.MouseEvent, isForceChoosing: boolean,
-) {
+): Promise<ScreenManager[]> {
     if (!appProvider.isPagePresenter) {
         return [];
     }

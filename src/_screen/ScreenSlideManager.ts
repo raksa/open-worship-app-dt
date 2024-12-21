@@ -63,7 +63,8 @@ export default class ScreenSlideManager extends
 
     get ptEffect() {
         return ScreenTransitionEffect.getInstance(
-            this.screenId, this.ptEffectTarget);
+            this.screenId, this.ptEffectTarget,
+        );
     }
 
     get slideItemData() {
@@ -143,11 +144,13 @@ export default class ScreenSlideManager extends
         const willSelected = (
             `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`
         );
-        this.applySlideItemSrcWithSyncGroup(
-            selected !== willSelected ? {
-                slideFilePath, slideItemJson,
-            } : null
-        );
+        const newSlideSrc = selected !== willSelected ? {
+            slideFilePath, slideItemJson,
+        } : null;
+        this.applySlideItemSrcWithSyncGroup(newSlideSrc);
+        if (newSlideSrc !== null) {
+            this.screenManager.screenFullTextManager.clear();
+        }
     }
 
     static async handleSlideSelecting(
@@ -183,7 +186,7 @@ export default class ScreenSlideManager extends
         div.appendChild(divContainer);
     }
 
-    renderHtml(div: HTMLDivElement, slideItemJson: SlideItemType) {
+    async renderHtml(div: HTMLDivElement, slideItemJson: SlideItemType) {
         const content = genHtmlSlideItem(slideItemJson.canvasItems);
         const divHaftScale = document.createElement('div');
         divHaftScale.appendChild(content);
@@ -205,25 +208,40 @@ export default class ScreenSlideManager extends
             height: `${parentHeight}px`,
             transform: `scale(${scale},${scale}) translate(50%, 50%)`,
         });
-        const childList = Array.from(div.children);
-        div.appendChild(divContainer);
-        this.ptEffect.styleAnim.animIn(divContainer).then(() => {
-            childList.forEach((child) => {
-                child.remove();
-            });
-            if (appProviderScreen.isScreen) {
-                Array.from(content.children).forEach((child) => {
-                    child.querySelectorAll('svg').forEach((svg) => {
-                        svg.style.display = 'none';
-                    });
-                    child.querySelectorAll('video').forEach((video) => {
-                        video.loop = false;
-                        video.muted = false;
-                        video.play();
-                    });
-                });
-            }
+        Array.from(div.children).forEach(async (child) => {
+            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
+            child.remove();
         });
+        div.appendChild(divContainer);
+        // TODO: fix fade in not working
+        this.ptEffect.styleAnim.animIn(divContainer);
+        this.cleanup(content);
+    }
+
+    cleanup(content: HTMLDivElement) {
+        if (!appProviderScreen.isScreen) {
+            return;
+        }
+        Array.from(content.children).forEach((child) => {
+            child.querySelectorAll('svg').forEach((svg) => {
+                svg.style.display = 'none';
+            });
+            child.querySelectorAll('video').forEach((video) => {
+                video.loop = false;
+                video.muted = false;
+                video.play();
+            });
+        });
+    }
+
+    async clearJung(div: HTMLDivElement) {
+        if (div.lastChild === null) {
+            return;
+        }
+        const targetDiv = div.lastChild as HTMLDivElement;
+        debugger;
+        await this.ptEffect.styleAnim.animOut(targetDiv);
+        targetDiv.remove();
     }
 
     render() {
@@ -231,12 +249,7 @@ export default class ScreenSlideManager extends
             return;
         }
         if (this.slideItemData === null) {
-            if (this.div.lastChild !== null) {
-                const targetDiv = this.div.lastChild as HTMLDivElement;
-                this.ptEffect.styleAnim.animOut(targetDiv).then(() => {
-                    targetDiv.remove();
-                });
-            }
+            this.clearJung(this.div);
             return;
         }
         const { slideItemJson } = this.slideItemData;
