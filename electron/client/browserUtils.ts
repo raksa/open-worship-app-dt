@@ -1,7 +1,7 @@
 import { clipboard } from 'electron';
 import url from 'node:url';
-import { rootUrlAccess } from '../fsServe';
-import { isSecured } from '../electronHelpers';
+import { rootUrlAccess } from '../fsServe.js';
+import { isSecured } from '../electronHelpers.js';
 
 const browserUtils = {
     copyToClipboard(str: string) {

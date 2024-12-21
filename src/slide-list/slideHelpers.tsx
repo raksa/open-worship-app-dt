@@ -24,7 +24,7 @@ import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
-import { getTempPath } from '../server/appHelpers';
+import { convertToPdf, getTempPath } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
 import ScreenSlideManager from '../_screen/ScreenSlideManager';
@@ -159,9 +159,7 @@ async function startConvertingOfficeFile(
         showSimpleToast(
             WIDGET_TITLE, 'Do not close application',
         );
-        await appProvider.pdfUtils.officeFileToPdf(
-            tempFilePath, dirSource.dirPath, fileFullName,
-        );
+        await convertToPdf(tempFilePath, dirSource.dirPath, fileFullName);
         showSimpleToast(
             WIDGET_TITLE, `${toHtmlBold(fileFullName)} is converted to PDF`,
         );

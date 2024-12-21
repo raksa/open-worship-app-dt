@@ -12,6 +12,7 @@ import {
     bibleDataReader, getBibleInfo,
 } from './bibleInfoHelpers';
 import { appApiFetch } from '../networkHelpers';
+import { tarExtract } from '../../server/appHelpers';
 
 const TOAST_TITLE = 'Bible Download';
 
@@ -151,10 +152,7 @@ export async function extractDownloadedBible(filePath: string) {
             TOAST_TITLE, `Start extracting bible from file "${filePath}"`,
         );
         const downloadPath = await bibleDataReader.getWritableBiblePath();
-        await appProvider.fileUtils.tarExtract({
-            file: filePath,
-            cwd: downloadPath,
-        });
+        await tarExtract(filePath, downloadPath);
         isExtracted = true;
     } catch (error: any) {
         handleError(error);

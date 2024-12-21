@@ -8,10 +8,10 @@ import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
-import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { editorTab, goToPath } from '../router/routeHelpers';
+import { previewPdf } from '../server/appHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -63,9 +63,7 @@ export default function SlideFile({
     const menuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
         menuTitle: 'Preview PDF',
         onClick: () => {
-            appProvider.messageUtils.sendData(
-                'main:app:preview-pdf', data.fileSource.src,
-            );
+            previewPdf(data.fileSource.src);
         },
     }] : [{
         menuTitle: 'Edit',

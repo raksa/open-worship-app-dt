@@ -2,25 +2,8 @@ import './FinderApp.scss';
 
 import { useState } from 'react';
 
-import appProvider from '../server/appProvider';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-
-type SearchingOptions = {
-    forward?: boolean;
-    findNext?: boolean;
-    matchCase?: boolean;
-};
-function findString(text: string, options: SearchingOptions = {}) {
-    if (!text) {
-        appProvider.messageUtils.sendData(
-            'finder:app:stop-search-in-page', 'clearSelection',
-        );
-        return;
-    }
-    appProvider.messageUtils.sendDataSync(
-        'finder:app:search-in-page', text, options,
-    );
-}
+import { SearchingOptions, findString } from './finderHelpers';
 
 export default function FinderApp({ onClose }: Readonly<{
     onClose: () => void;
@@ -79,7 +62,8 @@ export default function FinderApp({ onClose }: Readonly<{
                         onChange={(event) => {
                             const text = event.target.value;
                             setSearchingText1(text);
-                        }} />
+                        }}
+                    />
                     <div className='input-group-text'>
                         Aa <input className='form-check-input mt-0'
                             type='checkbox'
@@ -90,7 +74,8 @@ export default function FinderApp({ onClose }: Readonly<{
                                 setSearchingText1(searchingText, {
                                     matchCase: checked,
                                 });
-                            }} />
+                            }}
+                        />
                     </div>
                 </div>
             </div>

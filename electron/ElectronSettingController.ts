@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import electron, { BrowserWindow } from 'electron';
-import { htmlFiles } from './fsServe';
+
+import { htmlFiles } from './fsServe.js';
 
 const settingObject: {
     mainWinBounds: Electron.Rectangle | null,

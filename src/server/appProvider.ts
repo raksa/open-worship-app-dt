@@ -1,7 +1,6 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { x } from 'tar';
 
 export type MessageEventType = {
     returnValue: any,
@@ -36,7 +35,6 @@ export type FileUtilsType = {
     copyBlobFile: (
         blobUrl: string, dest: fs.PathLike, callback: fs.NoParamCallback,
     ) => void,
-    tarExtract: typeof x,
     watch: typeof fs.watch,
 };
 
@@ -69,11 +67,6 @@ export type AppUtilsType = {
     base64Encode: (str: string) => string,
     base64Decode: (str: string) => string,
 };
-export type PdfUtilsType = {
-    officeFileToPdf: (
-        filePath: string, outputDir: string, fileFullName: string,
-    ) => Promise<void>,
-}
 
 export enum AppTypeEnum {
     Desktop = 'desktop',
@@ -120,7 +113,6 @@ const appProvider = (window as any).provider as Readonly<PagePropsType & {
     appInfo: AppInfoType,
     reload: () => void,
     appUtils: AppUtilsType,
-    pdfUtils: PdfUtilsType,
     presenterHomePage: string,
     readerHomePage: string,
     currentHomePage: string,

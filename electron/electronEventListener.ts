@@ -1,10 +1,14 @@
-import ElectronAppController from './ElectronAppController';
-import {
-    getPdfInfo, getPdfPageImage, PdfImageOptionsType,
-} from './electronHelpers';
-import ElectronScreenController from './ElectronScreenController';
 import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
+
+import ElectronAppController from './ElectronAppController.js';
+import {
+    tarExtract,
+} from './electronHelpers.js';
+import {
+    getPdfInfo, getPdfPageImage, officeFileToPdf, PdfImageOptionsType,
+} from './pdfHelpers.js';
+import ElectronScreenController from './ElectronScreenController.js';
 
 const { dialog, ipcMain, app } = electron;
 const cache: { [key: string]: any } = {
@@ -154,11 +158,11 @@ export function initEventScreen(appController: ElectronAppController) {
 }
 
 export function initEventFinder(appController: ElectronAppController) {
-    ipcMain.on('main:app:open-search', () => {
+    ipcMain.on('main:app:open-finder', () => {
         appController.finderController.open(appController.mainWin);
     });
 
-    ipcMain.on('finder:app:close-search', () => {
+    ipcMain.on('finder:app:close-finder', () => {
         appController.finderController.close();
     });
 
@@ -182,8 +186,23 @@ export function initEventFinder(appController: ElectronAppController) {
 }
 
 export function initEventOther(appController: ElectronAppController) {
+    ipcMain.on('main:app:tar-extract', (_, { filePath, outputDir }: {
+        filePath: string, outputDir: string,
+    }) => {
+        tarExtract(filePath, outputDir);
+    });
+
     ipcMain.on('main:app:preview-pdf', (_, pdfFilePath: string) => {
         appController.mainController.previewPdf(pdfFilePath);
+    });
+    ipcMain.on('main:app:convert-to-pdf', async (event, {
+        replyEventName, filePath, outputDir, fileFullName,
+    }: {
+        replyEventName: string, filePath: string, outputDir: string,
+        fileFullName: string,
+    }) => {
+        await officeFileToPdf(filePath, outputDir, fileFullName);
+        appController.mainController.sendData(replyEventName);
     });
 
     ipcMain.on('main:app:get-font-list', async (event) => {
@@ -216,15 +235,20 @@ export function initEventOther(appController: ElectronAppController) {
         });
     });
 
-    ipcMain.on('main:app:pdf-info', (_, filePath: string) => {
-        return getPdfInfo(filePath);
+    ipcMain.on('main:app:pdf-info', async (_, { replyEventName, filePath }: {
+        replyEventName: string, filePath: string,
+    }) => {
+        await getPdfInfo(filePath);
+        appController.mainController.sendData(replyEventName);
     });
 
-    ipcMain.on('main:app:pdf-page-image', (
-        _, { filePath, pageIndex, options }: {
+    ipcMain.on('main:app:pdf-page-image', async (
+        _, { replyEventName, filePath, pageIndex, options }: {
+            replyEventName: string,
             filePath: string, pageIndex: number, options: PdfImageOptionsType,
         },
     ) => {
-        return getPdfPageImage(filePath, pageIndex, options);
+        await getPdfPageImage(filePath, pageIndex, options);
+        appController.mainController.sendData(replyEventName);
     });
 }

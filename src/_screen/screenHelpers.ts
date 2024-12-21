@@ -15,7 +15,7 @@ import {
 import {
     ScreenTransitionEffectType, TargetType,
 } from './transition-effect/transitionEffectHelpers';
-import { unlocking } from '../server/appHelpers';
+import { genReturningEventName, unlocking } from '../server/appHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = typeof fullTextDataTypeList[number];
@@ -159,7 +159,8 @@ type ShowScreenDataType = {
 };
 export function showScreen({ screenId, displayId }: SetDisplayType) {
     return new Promise<void>((resolve) => {
-        const replyEventName = 'app:main-' + Date.now();
+        const eventName = 'main:app:show-screen';
+        const replyEventName = genReturningEventName(eventName);
         messageUtils.listenOnceForData(replyEventName, () => {
             resolve();
         });
@@ -168,7 +169,7 @@ export function showScreen({ screenId, displayId }: SetDisplayType) {
             displayId,
             replyEventName,
         };
-        messageUtils.sendData('main:app:show-screen', data);
+        messageUtils.sendData(eventName, data);
     });
 }
 export function hideScreen(screenId: number) {

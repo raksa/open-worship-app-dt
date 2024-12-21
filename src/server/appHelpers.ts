@@ -8,19 +8,54 @@ export function getFontListByNodeFont() {
     ) as FontListType | null;
 }
 
+export function genReturningEventName(eventName: string) {
+    const newDate = (new Date()).getTime();
+    return `${eventName}-return-${newDate}`;
+}
+
 export function showExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
 
 export function trashFile(filePath: string) {
     return new Promise<void>((resolve) => {
-        const replyEventName = 'app:main-' + Date.now();
+        const eventName = 'main:app:trash-path';
+        const replyEventName = genReturningEventName(eventName);
         appProvider.messageUtils.listenOnceForData(replyEventName, () => {
             resolve();
         });
-        appProvider.messageUtils.sendData('main:app:trash-path', {
+        appProvider.messageUtils.sendData(eventName, {
             path: filePath, replyEventName,
         });
+    });
+}
+
+export function previewPdf(src: string) {
+    appProvider.messageUtils.sendData(
+        'main:app:preview-pdf', src,
+    );
+}
+
+export function convertToPdf(
+    filePath: string, outputDir: string, fileFullName: string,
+) {
+    return new Promise<RenderedType>((resolve) => {
+        const eventName = 'main:app:convert-to-pdf';
+        const replyEventName = genReturningEventName(eventName);
+        appProvider.messageUtils.listenOnceForData(
+            replyEventName, (_event, data: RenderedType) => {
+                resolve(data);
+            },
+        );
+        appProvider.messageUtils.sendData(eventName, {
+            replyEventName, filePath, outputDir, fileFullName,
+        });
+    });
+}
+
+export function tarExtract(filePath: string, outputDir: string) {
+    appProvider.messageUtils.sendData('main:app:tar-extract', {
+        filePath, outputDir,
     });
 }
 
@@ -57,24 +92,27 @@ export type RenderedType = {
 };
 export function getScreenRendered() {
     return new Promise<RenderedType>((resolve) => {
-        const newDate = (new Date()).getTime();
-        const returningEvent = `main:app:is-rendered-return-${newDate}`;
+        const eventName = 'main:app:is-rendered';
+        const replyEventName = genReturningEventName(eventName);
         appProvider.messageUtils.listenOnceForData(
-            returningEvent, (_event, data: RenderedType) => {
+            replyEventName, (_event, data: RenderedType) => {
                 resolve(data);
             },
         );
         appProvider.messageUtils.sendData(
-            'main:app:is-rendered', returningEvent,
+            'main:app:is-rendered', replyEventName,
         );
     });
 }
+
 export function getUserWritablePath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
 }
+
 export function getDesktopPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
 }
+
 export function getTempPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
 }

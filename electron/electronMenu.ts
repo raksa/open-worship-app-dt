@@ -1,5 +1,6 @@
-import ElectronAppController from './ElectronAppController';
 import { app, Menu, shell } from 'electron';
+
+import ElectronAppController from './ElectronAppController.js';
 
 export function initMenu(appController: ElectronAppController) {
     const isMac = process.platform === 'darwin';
