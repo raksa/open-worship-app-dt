@@ -3,8 +3,11 @@ import fontList from 'font-list';
 
 import ElectronAppController from './ElectronAppController.js';
 import { tarExtract } from './electronHelpers.js';
-import { officeFileToPdf } from './pdfHelpers.js';
+import {
+    getPdfInfo, getPdfPageImage, PdfImageOptionsType,
+} from './electronPdfHelpers.js';
 import ElectronScreenController from './ElectronScreenController.js';
+import { officeFileToPdf } from './electronOfficeHelpers.js';
 
 const { dialog, ipcMain, app } = electron;
 const cache: { [key: string]: any } = {
@@ -191,19 +194,6 @@ export function initEventOther(appController: ElectronAppController) {
         appController.mainController.sendData(replyEventName);
     });
 
-    ipcMain.on('main:app:preview-pdf', (_, pdfFilePath: string) => {
-        appController.mainController.previewPdf(pdfFilePath);
-    });
-    ipcMain.on('main:app:convert-to-pdf', async (event, {
-        replyEventName, filePath, outputDir, fileFullName,
-    }: {
-        replyEventName: string, filePath: string, outputDir: string,
-        fileFullName: string,
-    }) => {
-        await officeFileToPdf(filePath, outputDir, fileFullName);
-        appController.mainController.sendData(replyEventName);
-    });
-
     ipcMain.on('main:app:get-font-list', async (event) => {
         if (cache.fontsMap !== null) {
             event.returnValue = cache.fontsMap;
@@ -231,5 +221,35 @@ export function initEventOther(appController: ElectronAppController) {
     }) => {
         await shell.trashItem(data.path);
         appController.mainController.sendData(data.replyEventName);
+    });
+
+    ipcMain.on('main:app:preview-pdf', (_, pdfFilePath: string) => {
+        appController.mainController.previewPdf(pdfFilePath);
+    });
+    ipcMain.on('main:app:convert-to-pdf', async (event, {
+        replyEventName, filePath, outputDir, fileFullName,
+    }: {
+        replyEventName: string, filePath: string, outputDir: string,
+        fileFullName: string,
+    }) => {
+        await officeFileToPdf(filePath, outputDir, fileFullName);
+        appController.mainController.sendData(replyEventName);
+    });
+
+    ipcMain.on('main:app:pdf-info', async (_, { replyEventName, filePath }: {
+        replyEventName: string, filePath: string,
+    }) => {
+        const pdfInfo = await getPdfInfo(filePath);
+        appController.mainController.sendData(replyEventName, pdfInfo);
+    });
+
+    ipcMain.on('main:app:pdf-page-image', async (
+        _, { replyEventName, filePath, pageIndex, options }: {
+            replyEventName: string,
+            filePath: string, pageIndex: number, options: PdfImageOptionsType,
+        },
+    ) => {
+        const imageData = await getPdfPageImage(filePath, pageIndex, options);
+        appController.mainController.sendData(replyEventName, imageData);
     });
 }

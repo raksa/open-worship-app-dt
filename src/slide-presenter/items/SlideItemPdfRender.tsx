@@ -8,6 +8,7 @@ import {
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
+import { useSlideItemPdfImage } from '../../helper/pdfHelpers';
 
 export function SlideItemPdfRenderContent({
     pdfImageSrc, isFullWidth = false,
@@ -51,6 +52,7 @@ export default function SlideItemPdfRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
+    const imageData = useSlideItemPdfImage(slideItem);
     useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,
@@ -76,12 +78,16 @@ export default function SlideItemPdfRender({
                     slideItem={slideItem}
                 />
             </div>
-            <div className='card-body overflow-hidden'
-                style={{ padding: '0px' }} >
-                <SlideItemPdfRenderContent
-                    pdfImageSrc={slideItem.pdfImageSrc}
-                />
-            </div>
+            {imageData === null ? (
+                <div>Loading...</div>
+            ) : (
+                <div className='card-body overflow-hidden'
+                    style={{ padding: '0px' }} >
+                    <SlideItemPdfRenderContent
+                        pdfImageSrc={imageData}
+                    />
+                </div>
+            )}
         </div>
     );
 }

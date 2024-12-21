@@ -116,6 +116,7 @@
         "libreoffice-convert": "^1.6.0",
         "mupdf": "^1.0.0",
         "pdfjs-dist": "^4.9.155",
-        "tar": "^7.4.3"
+        "tar": "^7.4.3",
+        "tsimportlib": "^0.0.5"
     }
 }

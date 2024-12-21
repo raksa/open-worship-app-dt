@@ -90,10 +90,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         this.originalJson = json;
     }
 
-    get pdfImageSrc() {
-        return this.pdfImageData?.src ?? '';
-    }
-
     get canvas() {
         return Canvas.fromJson({
             metadata: this.metadata,
