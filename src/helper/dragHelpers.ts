@@ -1,13 +1,14 @@
-import BibleItem from './BibleItem';
+import BibleItem from '../bible-list/BibleItem';
 import { colorDeserialize } from '../others/color/colorHelpers';
 import DragInf, {
     DragDataType, DragTypeEnum, DroppedDataType,
-} from '../helper/DragInf';
-import FileSource from '../helper/FileSource';
+} from './DragInf';
+import FileSource from './FileSource';
 import Slide from '../slide-list/Slide';
 
-export function handleDragStart(event: any, item: DragInf<any>,
-    type?: DragTypeEnum) {
+export function handleDragStart(
+    event: any, item: DragInf<any>, type?: DragTypeEnum
+) {
     const data = item.dragSerialize(type);
     event.dataTransfer.setData('text', JSON.stringify(data));
 }

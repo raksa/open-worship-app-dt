@@ -5,7 +5,7 @@ import {
 } from './bibleInfoHelpers';
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
-import { useAppEffect } from '../debuggerHelpers';
+import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
 import { toLocaleNumBB } from './serverBibleHelpers2';
 import { genVerseList } from '../../bible-list/bibleHelpers';
 import BibleItem from '../../bible-list/BibleItem';
@@ -51,7 +51,7 @@ export async function genChapterMatches(
     if (guessingChapter === null) {
         return newFilteredList;
     }
-    return newFilteredList.filter(([chapter, chapterNumStr]) => {
+    const filteredList = newFilteredList.filter(([chapter, chapterNumStr]) => {
         const chapterStr = `${chapter}`;
         return (
             chapterStr.includes(guessingChapter) ||
@@ -60,17 +60,27 @@ export async function genChapterMatches(
             guessingChapter.includes(chapterNumStr)
         );
     });
+    filteredList.sort(([chapter, chapterNumStr]) => {
+        const chapterStr = `${chapter}`;
+        if (
+            chapterNumStr === guessingChapter ||
+            chapterStr === guessingChapter
+        ) {
+            return -1;
+        }
+        return 1;
+    });
+    return filteredList;
 }
 export function useChapterMatch(
     bibleKey: string, bookKey: string, guessingChapter: string | null,
 ) {
     const [matches, setMatches] = useState<[number, string][] | null>(null);
-    useAppEffect(() => {
-        genChapterMatches(bibleKey, bookKey, guessingChapter).then(
-            (chapterNumStrList) => {
-                setMatches(chapterNumStrList);
-            },
+    useAppEffectAsync(async () => {
+        const chapterNumStrList = await genChapterMatches(
+            bibleKey, bookKey, guessingChapter,
         );
+        setMatches(chapterNumStrList);
     }, [bookKey, guessingChapter]);
     return matches;
 }

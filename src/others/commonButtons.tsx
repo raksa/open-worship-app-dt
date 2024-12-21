@@ -17,7 +17,10 @@ export function QuickOrBackButton({
         <button className='btn btn-sm btn-outline-warning'
             title={title}
             onClick={() => {
-                if (document.referrer) {
+                if (
+                    document.referrer &&
+                    !document.referrer.includes(appProvider.currentHomePage)
+                ) {
                     window.history.back();
                 } else {
                     goToPath(defaultPage);

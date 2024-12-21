@@ -10,7 +10,7 @@ import {
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';
-import { handleDragStart } from '../bible-list/dragHelpers';
+import { handleDragStart } from '../helper/dragHelpers';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 import { getMimetypeExtensions } from '../server/fileHelpers';

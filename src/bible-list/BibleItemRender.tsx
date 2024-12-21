@@ -2,7 +2,7 @@ import Bible from './Bible';
 import BibleItem from './BibleItem';
 import ItemReadError from '../others/ItemReadError';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
-import { handleDragStart } from './dragHelpers';
+import { handleDragStart } from '../helper/dragHelpers';
 import ItemColorNote from '../others/ItemColorNote';
 import {
     BibleSelectionMini,

@@ -5,7 +5,7 @@ import MiniScreenClearControlComp from './MiniScreenClearControlComp';
 import { useScreenManagerContext } from '../ScreenManager';
 import DisplayControl from './DisplayControl';
 import PTEffectControl from './PTEffectControl';
-import { handleDrop } from '../../bible-list/dragHelpers';
+import { handleDrop } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import ItemColorNote from '../../others/ItemColorNote';
 

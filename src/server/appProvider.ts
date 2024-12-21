@@ -125,6 +125,7 @@ const appProvider = (window as any).provider as Readonly<PagePropsType & {
     pdfUtils: PdfUtilsType,
     presenterHomePage: string,
     readerHomePage: string,
+    currentHomePage: string,
 }>;
 
 export default appProvider;

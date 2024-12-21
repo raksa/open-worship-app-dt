@@ -7,6 +7,7 @@ import {
 } from './SlideItemRenderComp';
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
+import { handleDragStart } from '../../helper/dragHelpers';
 
 export function SlideItemPdfRenderContent({
     pdfImageSrc, isFullWidth = false,
@@ -39,13 +40,16 @@ export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
 }
 
 export default function SlideItemPdfRender({
-    slideItem, width, index, onClick, onContextMenu,
+    slideItem, width, index, onClick, onContextMenu, onDragStart,
+    onDragEnd,
 }: Readonly<{
     slideItem: SlideItem;
     width: number,
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     onContextMenu: (event: any) => void,
+    onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
+    onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
     useScreenSlideManagerEvents(['update']);
     const {
@@ -55,6 +59,14 @@ export default function SlideItemPdfRender({
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             style={{
                 width: `${width}px`,
+            }}
+            draggable
+            onDragStart={(event) => {
+                handleDragStart(event, slideItem);
+                onDragStart(event);
+            }}
+            onDragEnd={(event) => {
+                onDragEnd(event);
             }}
             onClick={onClick}
             onContextMenu={onContextMenu}>

@@ -7,7 +7,7 @@ import SlideItem, {
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
 import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
-import { handleDragStart } from '../../bible-list/dragHelpers';
+import { handleDragStart } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
 import { use } from 'react';

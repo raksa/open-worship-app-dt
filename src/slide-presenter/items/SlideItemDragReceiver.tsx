@@ -3,7 +3,7 @@ import './SlideItemDragReceiver.scss';
 import { CSSProperties, useState } from 'react';
 
 import SlideItem from '../../slide-list/SlideItem';
-import { handleDrop } from '../../bible-list/dragHelpers';
+import { handleDrop } from '../../helper/dragHelpers';
 import { DragTypeEnum } from '../../helper/DragInf';
 
 export default function SlideItemDragReceiver({
