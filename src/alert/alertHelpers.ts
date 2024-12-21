@@ -23,7 +23,7 @@ export const alertManager: {
     openAlert: null,
 };
 
-export function openAppConfirm(title: string, message: string) {
+export function showAppConfirm(title: string, message: string) {
     if (alertManager.openConfirm === null) {
         return Promise.resolve(false);
     }
@@ -40,7 +40,7 @@ export function openAppConfirm(title: string, message: string) {
     });
 }
 
-export function openAppAlert(title: string, message: string) {
+export function showAppAlert(title: string, message: string) {
     if (alertManager.openAlert === null) {
         return Promise.resolve();
     }

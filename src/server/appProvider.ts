@@ -8,9 +8,7 @@ export type MessageEventType = {
 };
 
 export type MessageUtilsType = {
-    channels: {
-        screenMessageChannel: string,
-    },
+    channels: { screenMessageChannel: string },
     sendData: (channel: string, ...args: any[]) => void,
     sendDataSync: (channel: string, ...args: any[]) => any,
     listenForData: (

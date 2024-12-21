@@ -5,13 +5,13 @@ import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
 import {
-    copyToClipboard, openExplorer, trashFile,
+    copyToClipboard, showExplorer, trashFile,
 } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
-import { openAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../alert/alertHelpers';
 import ItemColorNote from './ItemColorNote';
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenaming');
@@ -30,7 +30,7 @@ export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
                     'Finder' : 'File Explorer'}`
             ),
             onClick: () => {
-                openExplorer(filePath);
+                showExplorer(filePath);
             },
         },
     ];
@@ -69,7 +69,7 @@ export function genTrashContextMenu(
             menuTitle: 'Move to Trash',
             onClick: async () => {
                 const fileSource = FileSource.getInstance(filePath);
-                const isOk = await openAppConfirm(
+                const isOk = await showAppConfirm(
                     'Moving File to Trash',
                     'Are you sure you want to move ' +
                     `"${fileSource.fileFullName}" to trash?`,

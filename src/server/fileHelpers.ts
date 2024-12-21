@@ -12,7 +12,7 @@ import mimeImageList from './mime/image-types.json';
 import mimePlaylistList from './mime/playlist-types.json';
 import mimeVideoList from './mime/video-types.json';
 import mimeSoundList from './mime/sound-types.json';
-import { openAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../alert/alertHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
@@ -423,7 +423,7 @@ export async function fsCopyFilePathToPath(
     try {
         const isFileExist = await fsCheckFileExist(targetPath);
         if (isFileExist) {
-            const isConfirm = await openAppConfirm(
+            const isConfirm = await showAppConfirm(
                 'Copy File',
                 `File path "${targetPath}" exist, do you want to override it?`,
             );

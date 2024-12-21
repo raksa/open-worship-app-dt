@@ -64,7 +64,7 @@ export default function SlideFile({
         menuTitle: 'Preview PDF',
         onClick: () => {
             appProvider.messageUtils.sendData(
-                'app:preview-pdf', data.fileSource.src,
+                'main:app:preview-pdf', data.fileSource.src,
             );
         },
     }] : [{

@@ -1,6 +1,6 @@
 import ReactDOMServer from 'react-dom/server';
 
-import { openAppAlert, openAppConfirm } from '../alert/alertHelpers';
+import { showAppAlert, showAppConfirm } from '../alert/alertHelpers';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
@@ -125,7 +125,7 @@ function showConfirmPDFConvert(dirPath: string, file: DroppedFileType) {
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);
-    return openAppConfirm(WIDGET_TITLE, confirmMessage);
+    return showAppConfirm(WIDGET_TITLE, confirmMessage);
 }
 
 async function getTempFilePath() {
@@ -168,7 +168,7 @@ async function startConvertingOfficeFile(
     } catch (error: any) {
         const regex = /Could not find .+ binary/i;
         if (regex.test(error.message)) {
-            openAppAlert('LibreOffice is not installed', alertMessage);
+            showAppAlert('LibreOffice is not installed', alertMessage);
         } else {
             handleError(error);
             if (retryCount > 0) {

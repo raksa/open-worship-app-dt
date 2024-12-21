@@ -4,6 +4,7 @@
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
     "version": "0.0.9",
+    "type": "module",
     "main": "./electron-build/electron/index.js",
     "scripts": {
         "dev": "concurrently -k \"npm run vite:dev\" \"npm run electron:build && npm run electron\"",
@@ -113,6 +114,7 @@
     "dependencies": {
         "font-list": "^1.5.1",
         "libreoffice-convert": "^1.6.0",
+        "mupdf": "^1.0.0",
         "pdfjs-dist": "^4.9.155",
         "tar": "^7.4.3"
     }

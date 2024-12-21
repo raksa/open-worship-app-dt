@@ -8,7 +8,7 @@ export function getFontListByNodeFont() {
     ) as FontListType | null;
 }
 
-export function openExplorer(dir: string) {
+export function showExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
 

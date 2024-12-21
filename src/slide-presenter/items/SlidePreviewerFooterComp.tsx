@@ -15,7 +15,7 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import appProvider from '../../server/appProvider';
-import { openAppAlert } from '../../alert/alertHelpers';
+import { showAppAlert } from '../../alert/alertHelpers';
 
 function HistoryPreviewerFooter() {
     const selectedSlide = useSelectedSlideContext();
@@ -59,7 +59,7 @@ export default function SlidePreviewerFooterComp() {
             event, selectedSlide.filePath,
         );
         if (slide === null) {
-            openAppAlert(
+            showAppAlert(
                 'No Slide Available',
                 'No other slide found in the slide directory'
             );

@@ -1,5 +1,5 @@
 import {
-    copyToClipboard, openExplorer,
+    copyToClipboard, showExplorer,
 } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { showAppContextMenu } from './AppContextMenu';
@@ -25,7 +25,7 @@ function openContextMenu(dirPath: string, event: any) {
                     'Finder' : 'File Explorer'}`
             ),
             onClick: () => {
-                openExplorer(dirPath);
+                showExplorer(dirPath);
             },
         },
     ]);
