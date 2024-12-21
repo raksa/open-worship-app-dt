@@ -1,6 +1,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { x } from 'tar';
 
 export type MessageEventType = {
     returnValue: any,
@@ -35,6 +36,7 @@ export type FileUtilsType = {
     copyBlobFile: (
         blobUrl: string, dest: fs.PathLike, callback: fs.NoParamCallback,
     ) => void,
+    tarExtract: typeof x,
     watch: typeof fs.watch,
 };
 

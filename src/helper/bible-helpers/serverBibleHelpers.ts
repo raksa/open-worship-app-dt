@@ -76,12 +76,12 @@ export function useChapterMatch(
     bibleKey: string, bookKey: string, guessingChapter: string | null,
 ) {
     const [matches, setMatches] = useState<[number, string][] | null>(null);
-    useAppEffectAsync(async () => {
+    useAppEffectAsync(async (methodContext) => {
         const chapterNumStrList = await genChapterMatches(
             bibleKey, bookKey, guessingChapter,
         );
-        setMatches(chapterNumStrList);
-    }, [bookKey, guessingChapter]);
+        methodContext.setMatches(chapterNumStrList);
+    }, [bookKey, guessingChapter], { setMatches });
     return matches;
 }
 

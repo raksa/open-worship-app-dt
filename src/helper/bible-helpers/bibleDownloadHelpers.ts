@@ -7,6 +7,7 @@ import {
 import appProvider from '../../server/appProvider';
 import {
     fsCheckFileExist, fsDeleteFile, fsCreateWriteStream, fsListDirectories,
+    fsCheckDirExist,
 } from '../../server/fileHelpers';
 import {
     bibleDataReader, getBibleInfo,
@@ -153,7 +154,13 @@ export async function extractDownloadedBible(filePath: string) {
         );
         const downloadPath = await bibleDataReader.getWritableBiblePath();
         await tarExtract(filePath, downloadPath);
-        isExtracted = true;
+        const fileFullName = appProvider.pathUtils.basename(filePath);
+        const fileName = fileFullName.substring(
+            0, fileFullName.lastIndexOf('.'),
+        );
+        isExtracted = await fsCheckDirExist(
+            appProvider.pathUtils.join(downloadPath, fileName),
+        );
     } catch (error: any) {
         handleError(error);
         showSimpleToast(TOAST_TITLE, 'Fail to extract bible');

@@ -27,7 +27,7 @@ export default function Setting() {
         'popup-setting-tab', 'b',
     );
     return (
-        <div id='app-setting-popup'
+        <div id='app-setting'
             className='shadow card w-100 h-100 overflow-hidden'>
             <div className='card-body d-flex flex-column'>
                 <div className='setting-header d-flex'>

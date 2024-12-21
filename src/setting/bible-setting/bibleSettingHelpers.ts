@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
 import {
     BibleMinimalInfoType, getDownloadedBibleInfoList, getOnlineBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
@@ -9,14 +9,13 @@ export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 
 export function useDownloadedBibleInfoList() {
     const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (bibleInfoList !== null) {
             return;
         }
-        getDownloadedBibleInfoList().then((bibleInfoList) => {
-            setBibleInfoList(bibleInfoList || undefined);
-        });
-    }, [bibleInfoList]);
+        const newBibleInfoList = await getDownloadedBibleInfoList();
+        methodContext.setBibleInfoList(newBibleInfoList || undefined);
+    }, [bibleInfoList], { setBibleInfoList });
     return [bibleInfoList, setBibleInfoList] as const;
 }
 

@@ -8,5 +8,5 @@ export const isLinux = process.platform === 'linux';
 export const isSecured = false; // TODO: make it secure
 
 export function tarExtract(filePath: string, outputDir: string) {
-    return (tarX as any)(filePath, outputDir);
+    return (tarX as any)({ file: filePath, cwd: outputDir });
 }

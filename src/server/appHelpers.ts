@@ -39,12 +39,12 @@ export function previewPdf(src: string) {
 export function convertToPdf(
     filePath: string, outputDir: string, fileFullName: string,
 ) {
-    return new Promise<RenderedType>((resolve) => {
+    return new Promise<void>((resolve) => {
         const eventName = 'main:app:convert-to-pdf';
         const replyEventName = genReturningEventName(eventName);
         appProvider.messageUtils.listenOnceForData(
-            replyEventName, (_event, data: RenderedType) => {
-                resolve(data);
+            replyEventName, () => {
+                resolve();
             },
         );
         appProvider.messageUtils.sendData(eventName, {
@@ -54,8 +54,17 @@ export function convertToPdf(
 }
 
 export function tarExtract(filePath: string, outputDir: string) {
-    appProvider.messageUtils.sendData('main:app:tar-extract', {
-        filePath, outputDir,
+    return new Promise<void>((resolve) => {
+        const eventName = 'main:app:tar-extract';
+        const replyEventName = genReturningEventName(eventName);
+        appProvider.messageUtils.listenOnceForData(
+            replyEventName, () => {
+                resolve();
+            },
+        );
+        appProvider.messageUtils.sendData(eventName, {
+            replyEventName, filePath, outputDir,
+        });
     });
 }
 

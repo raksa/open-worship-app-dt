@@ -25,15 +25,22 @@ import appProvider from '../server/appProvider';
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
 async function getSelectedEditorBibleItem() {
+    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
-        const downloadedBibleInfoList = await getDownloadedBibleInfoList();
         if (!downloadedBibleInfoList?.length) {
             showSimpleToast('Getting Selected Bible',
                 'Unable to get selected bible');
             return null;
         }
         bibleKey = downloadedBibleInfoList[0].key;
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
+    } else if (
+        downloadedBibleInfoList?.find((bibleInfo) => {
+            return bibleInfo.key === bibleKey;
+        }) === undefined
+    ) {
+        bibleKey = 'KJV';
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
     }
     return bibleKey;

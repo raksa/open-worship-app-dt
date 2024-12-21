@@ -2,12 +2,8 @@ import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
 
 import ElectronAppController from './ElectronAppController.js';
-import {
-    tarExtract,
-} from './electronHelpers.js';
-import {
-    getPdfInfo, getPdfPageImage, officeFileToPdf, PdfImageOptionsType,
-} from './pdfHelpers.js';
+import { tarExtract } from './electronHelpers.js';
+import { officeFileToPdf } from './pdfHelpers.js';
 import ElectronScreenController from './ElectronScreenController.js';
 
 const { dialog, ipcMain, app } = electron;
@@ -186,10 +182,13 @@ export function initEventFinder(appController: ElectronAppController) {
 }
 
 export function initEventOther(appController: ElectronAppController) {
-    ipcMain.on('main:app:tar-extract', (_, { filePath, outputDir }: {
-        filePath: string, outputDir: string,
+    ipcMain.on('main:app:tar-extract', async (_, {
+        replyEventName, filePath, outputDir,
+    }: {
+        replyEventName: string, filePath: string, outputDir: string,
     }) => {
-        tarExtract(filePath, outputDir);
+        await tarExtract(filePath, outputDir);
+        appController.mainController.sendData(replyEventName);
     });
 
     ipcMain.on('main:app:preview-pdf', (_, pdfFilePath: string) => {
@@ -226,29 +225,11 @@ export function initEventOther(appController: ElectronAppController) {
         shell.showItemInFolder(path);
     });
 
-    ipcMain.on('main:app:trash-path', (_, data: {
+    ipcMain.on('main:app:trash-path', async (_, data: {
         path: string,
         replyEventName: string
     }) => {
-        shell.trashItem(data.path).then(() => {
-            appController.mainController.sendData(data.replyEventName);
-        });
-    });
-
-    ipcMain.on('main:app:pdf-info', async (_, { replyEventName, filePath }: {
-        replyEventName: string, filePath: string,
-    }) => {
-        await getPdfInfo(filePath);
-        appController.mainController.sendData(replyEventName);
-    });
-
-    ipcMain.on('main:app:pdf-page-image', async (
-        _, { replyEventName, filePath, pageIndex, options }: {
-            replyEventName: string,
-            filePath: string, pageIndex: number, options: PdfImageOptionsType,
-        },
-    ) => {
-        await getPdfPageImage(filePath, pageIndex, options);
-        appController.mainController.sendData(replyEventName);
+        await shell.trashItem(data.path);
+        appController.mainController.sendData(data.replyEventName);
     });
 }

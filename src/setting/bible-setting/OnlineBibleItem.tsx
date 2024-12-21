@@ -8,10 +8,13 @@ import {
     bibleDataReader, getBibleInfo,
 } from '../../helper/bible-helpers/bibleInfoHelpers';
 import { getLangAsync } from '../../lang';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 async function syncBibleLanguage(bibleKey: string) {
     const bibleInfo = await getBibleInfo(bibleKey);
     if (bibleInfo === null) {
+        const message = 'Cannot get bible info';
+        showSimpleToast('Getting Bible Info', message);
         throw new Error('Cannot get bible info');
     }
     await getLangAsync(bibleInfo.locale);
@@ -23,6 +26,20 @@ function useDownloadBible(
     const [
         downloadingProgress, setDownloadingProgress,
     ] = useState<number | null>(null);
+    const handleDoneDownloading = async (error: any, filePath?: string) => {
+        if (error) {
+            handleError(error);
+        } else {
+            const isSuccess = await extractDownloadedBible(filePath as string);
+            if (isSuccess) {
+                await syncBibleLanguage(bibleInfo.key);
+            } else {
+                showSimpleToast('Extracting Bible', 'Fail to extract bible');
+            }
+            onDownloaded();
+        }
+        setDownloadingProgress(null);
+    };
     const startDownloadBible = () => {
         bibleDataReader.clearBibleDBData(bibleInfo.key);
         setDownloadingProgress(0);
@@ -34,20 +51,7 @@ function useDownloadBible(
                     setDownloadingProgress(percentage);
                 },
                 onDone: (error, filePath) => {
-                    (async () => {
-                        if (error) {
-                            handleError(error);
-                        } else {
-                            const isSuccess = await extractDownloadedBible(
-                                filePath as string,
-                            );
-                            if (isSuccess) {
-                                await syncBibleLanguage(bibleInfo.key);
-                            }
-                            onDownloaded();
-                        }
-                        setDownloadingProgress(null);
-                    })();
+                    handleDoneDownloading(error, filePath);
                 },
             },
         });
