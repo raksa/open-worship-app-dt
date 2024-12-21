@@ -6,7 +6,6 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
-import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
@@ -14,8 +13,10 @@ import { handleError } from '../helper/errorHelpers';
 export type SlideItemType = {
     id: number,
     canvasItems: CanvasItemPropsType[],
-    pdfImageData?: PdfImageDataType,
     metadata: AnyObjectType,
+    isPdf?: boolean,
+    filePath?: string,
+    pdfPageNumber?: number,
 };
 
 export default class SlideItem extends ItemBase implements DragInf<string> {
@@ -47,16 +48,12 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         }
     }
 
+    get isPdf() {
+        return this.originalJson.isPdf;
+    }
+
     get key() {
         return SlideItem.genKeyByFileSource(this.filePath, this.id);
-    }
-
-    get pdfImageData() {
-        return this.originalJson.pdfImageData || null;
-    }
-
-    get isPdf() {
-        return this.pdfImageData !== null;
     }
 
     get originalJson() {
@@ -114,9 +111,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     get width() {
-        if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.width ?? 0);
-        }
         return this.metadata.width;
     }
 
@@ -127,9 +121,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     get height() {
-        if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.height ?? 0);
-        }
         return this.metadata.height;
     }
 
@@ -180,11 +171,16 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         if (this.isError) {
             return this.jsonError;
         }
+        const { isPdf } = this.originalJson;
+        const filePath = isPdf ? this.filePath : undefined;
+        const pdfPageNumber = (
+            isPdf ? this.originalJson.pdfPageNumber : undefined
+        );
         return {
             id: this.id,
             canvasItems: this.canvasItemsJson,
-            pdfImageData: this.pdfImageData || undefined,
             metadata: this.metadata,
+            isPdf, filePath, pdfPageNumber,
         };
     }
 

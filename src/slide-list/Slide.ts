@@ -3,7 +3,7 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenu';
 import {
-    checkIsPdf, openSlideContextMenu, readPdfToSlide, SlideDynamicType,
+    checkIsPdf, openSlideContextMenu, SlideDynamicType,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
@@ -11,7 +11,6 @@ import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
-import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { createContext, use } from 'react';
 
@@ -30,16 +29,13 @@ export default class Slide extends ItemSource<SlideItem> {
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editorCacheManager: SlideEditorCacheManager;
-    pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
+    isPdf = false;
     constructor(filePath: string, json: SlideType) {
         super(filePath);
         this.editorCacheManager = new SlideEditorCacheManager(
             this.filePath, json,
         );
-    }
-    get isPdf() {
-        return this.pdfImageDataList !== null;
     }
     get isChanged() {
         if (this.isPdf) {
@@ -58,18 +54,7 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     get items() {
         if (this.isPdf) {
-            return (this.pdfImageDataList || []).map((pdfImageData, i) => {
-                const slideItem = new SlideItem(i, this.filePath, {
-                    id: i,
-                    canvasItems: [],
-                    pdfImageData,
-                    metadata: {
-                        width: pdfImageData.width,
-                        height: pdfImageData.height,
-                    },
-                });
-                return slideItem;
-            });
+            return [];
         }
         const latestHistory = this.editorCacheManager.presenterJson;
         return latestHistory.items.map((json) => {
@@ -257,7 +242,9 @@ export default class Slide extends ItemSource<SlideItem> {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
             if (fileSource.src && checkIsPdf(fileSource.extension)) {
-                return readPdfToSlide(filePath);
+                const slide = new Slide(filePath, { items: [], metadata: {} });
+                slide.isPdf = true;
+                return slide;
             }
         }
         const data = await super.readFileToDataNoCache(filePath);

@@ -16,12 +16,14 @@ export function getPdfInfo(filePath: string) {
                 resolve(data);
             },
         );
-        appProvider.messageUtils.sendData(eventName, filePath);
+        appProvider.messageUtils.sendData(eventName, {
+            replyEventName, filePath,
+        });
     });
 }
 
 export type PdfImageOptionsType = {
-    width: number, alpha?: boolean, quality?: number,
+    width?: number, alpha?: boolean, quality?: number,
     type?: 'png' | 'jpeg',
 };
 export function getPdfPageImage(
@@ -53,7 +55,7 @@ export function useSlideItemPdfImage(slideItem: SlideItem, width?: number) {
         } else {
             imageData = await getPdfPageImage(
                 slideItem.filePath, slideItem.id, {
-                width, type: 'jpeg', quality: 70,
+                width, type: 'jpeg', quality: 50,
             });
         }
         contextMethod.setImageData(imageData);

@@ -2,7 +2,6 @@ import { CSSProperties } from 'react';
 
 import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
 import { getSetting, setSetting } from '../helper/settingHelpers';
-import { PdfImageDataType } from '../pdf/PdfController';
 import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
 import { genPdfSlideItem } from '../slide-presenter/items/SlideItemPdfRender';
 import { genHtmlSlideItem } from '../slide-presenter/items/SlideItemRenderer';
@@ -19,6 +18,7 @@ import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
 import { unlocking } from '../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
+import { getPdfPageImage } from '../helper/pdfHelpers';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -169,13 +169,25 @@ export default class ScreenSlideManager extends
         });
     }
 
-    renderPdf(div: HTMLDivElement, pdfImageData: PdfImageDataType) {
-        Array.from(div.children).forEach((child) => {
+    async renderPdf(div: HTMLDivElement, pdfImageData: SlideItemType) {
+        Array.from(div.children).forEach(async (child) => {
+            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
             child.remove();
         });
+        if (
+            !pdfImageData.filePath || pdfImageData.pdfPageNumber === undefined
+        ) {
+            return;
+        }
+        const imageData = await getPdfPageImage(
+            pdfImageData.filePath ?? '', pdfImageData.pdfPageNumber,
+            { type: 'png' },
+        );
+        if (imageData === null) {
+            return;
+        }
         const isFullWidth = checkIsPDFFullWidth();
-        const { src: pdfImageSrc } = pdfImageData;
-        const content = genPdfSlideItem(pdfImageSrc, isFullWidth);
+        const content = genPdfSlideItem(imageData, isFullWidth);
         const divContainer = document.createElement('div');
         Object.assign(divContainer.style, {
             width: '100%',
@@ -239,7 +251,6 @@ export default class ScreenSlideManager extends
             return;
         }
         const targetDiv = div.lastChild as HTMLDivElement;
-        debugger;
         await this.ptEffect.styleAnim.animOut(targetDiv);
         targetDiv.remove();
     }
@@ -253,8 +264,8 @@ export default class ScreenSlideManager extends
             return;
         }
         const { slideItemJson } = this.slideItemData;
-        if (slideItemJson.pdfImageData) {
-            this.renderPdf(this.div, slideItemJson.pdfImageData);
+        if (slideItemJson.isPdf) {
+            this.renderPdf(this.div, slideItemJson);
         } else {
             this.renderHtml(this.div, slideItemJson);
         }

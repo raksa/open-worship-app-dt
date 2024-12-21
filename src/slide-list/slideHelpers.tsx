@@ -4,11 +4,9 @@ import { showAppAlert, showAppConfirm } from '../alert/alertHelpers';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
-import FileSource from '../helper/FileSource';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../others/AppContextMenu';
-import PdfController from '../pdf/PdfController';
 import appProvider from '../server/appProvider';
 import {
     fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
@@ -191,23 +189,6 @@ export async function convertOfficeFile(
         return;
     }
     await startConvertingOfficeFile(file, dirSource);
-}
-
-export async function readPdfToSlide(filePath: string) {
-    const pdfManager = PdfController.getInstance();
-    try {
-        const fileSource = FileSource.getInstance(filePath);
-        const imageDataList = await pdfManager.genPdfImages(fileSource.src);
-        const slide = new Slide(filePath, {
-            items: [],
-            metadata: {},
-        });
-        slide.pdfImageDataList = imageDataList;
-        return slide;
-    } catch (error) {
-        handleError(error);
-    }
-    return null;
 }
 
 export async function selectSlide(event: any, currentFilePath: string) {

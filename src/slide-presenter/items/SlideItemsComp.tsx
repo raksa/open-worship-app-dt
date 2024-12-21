@@ -1,4 +1,4 @@
-import { useOptimistic, useState } from 'react';
+import { useState } from 'react';
 
 import {
     KeyboardType, useKeyboardRegistering,
@@ -7,7 +7,7 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import SlideItemGhost from './SlideItemGhost';
-import { useSelectedSlideContext } from '../../slide-list/Slide';
+import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import { genArrowListener } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
@@ -15,23 +15,42 @@ import SlideItem, {
     useSelectedEditingSlideItemSetterContext,
 } from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
-import { useAppEffect } from '../../helper/debuggerHelpers';
-import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
+import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
+import { getPdfInfo } from '../../helper/pdfHelpers';
+
+async function getSlideItems(slide: Slide) {
+    if (!slide.isPdf) {
+        return slide.items;
+    }
+    const pdfInfo = await getPdfInfo(slide.filePath);
+    if (pdfInfo === null) {
+        return [];
+    }
+    const { page } = pdfInfo;
+    return Array.from({ length: page.count }).fill(0).map((_, i) => {
+        const slideItem = new SlideItem(i, slide.filePath, {
+            id: i, canvasItems: [],
+            isPdf: true,
+            filePath: slide.filePath,
+            pdfPageNumber: i,
+            metadata: {
+                width: page.width, height: page.height,
+            },
+        });
+        return slideItem;
+    });
+}
 
 const slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
     const selectedSlide = useSelectedSlideContext();
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
-    const [slideItems, setSlideItems] = useOptimistic<SlideItem[]>(
-        selectedSlide.items,
-    );
-    const { startTransaction, progressBarChild } = useProgressBarComp();
-    const setSlideItems1 = (newSlideItems: SlideItem[]) => {
-        startTransaction(() => {
-            setSlideItems(newSlideItems);
-        });
-    };
+    const [slideItems, setSlideItems] = useState<SlideItem[]>([]);
+    useAppEffectAsync(async (methodContext) => {
+        const newSlideItems = await getSlideItems(selectedSlide);
+        methodContext.setSlideItems(newSlideItems);
+    }, [selectedSlide], { setSlideItems });
     useFileSourceEvents(
         ['edit'], (editingSlideItem: any) => {
             if (!(editingSlideItem instanceof SlideItem)) {
@@ -45,14 +64,16 @@ function useSlideItems() {
                     return item;
                 }
             });
-            setSlideItems1(newSlideItems);
+            setSlideItems(newSlideItems);
         }, [slideItems], selectedSlide.filePath
     );
-    useFileSourceEvents(['update'], () => {
-        setSlideItems1(selectedSlide.items);
+    useFileSourceEvents(['update'], async () => {
+        const newSlideItems = await getSlideItems(selectedSlide);
+        setSlideItems(newSlideItems);
     }, [selectedSlide], selectedSlide.filePath);
-    useFileSourceEvents(['delete'], () => {
-        setSlideItems1(selectedSlide.items);
+    useFileSourceEvents(['delete'], async () => {
+        const newSlideItems = await getSlideItems(selectedSlide);
+        setSlideItems(newSlideItems);
     }, [selectedSlide], selectedSlide.filePath);
     useFileSourceEvents(['edit'], (newSlideItem: SlideItem) => {
         const newSlideItems = slideItems.map((slideItem) => {
@@ -61,10 +82,11 @@ function useSlideItems() {
             }
             return slideItem;
         });
-        setSlideItems1(newSlideItems);
+        setSlideItems(newSlideItems);
     }, [slideItems], selectedSlide.filePath);
-    useFileSourceEvents(['new'], (newSlideItem: SlideItem) => {
-        const newSlideItems = selectedSlide.items.map((slideItem) => {
+    useFileSourceEvents(['new'], async (newSlideItem: SlideItem) => {
+        let newSlideItems = await getSlideItems(selectedSlide);
+        newSlideItems = newSlideItems.map((slideItem) => {
             if (slideItem.checkIsSame(newSlideItem)) {
                 slideItemsToView[newSlideItem.id] = newSlideItem;
                 return newSlideItem;
@@ -72,7 +94,7 @@ function useSlideItems() {
                 return slideItem;
             }
         });
-        setSlideItems1(newSlideItems);
+        setSlideItems(newSlideItems);
     }, [selectedSlide], selectedSlide.filePath);
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
     const arrowListener = (
@@ -94,19 +116,18 @@ function useSlideItems() {
             delete slideItemsToView[key];
         });
     });
-    return { slideItems, progressBarChild };
+    return { slideItems };
 }
 
 export default function SlideItemsComp() {
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    const { slideItems, progressBarChild } = useSlideItems();
+    const { slideItems } = useSlideItems();
     const slideItemThumbnailSize = (
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR
     );
     return (
         <div className='d-flex flex-wrap justify-content-center'>
-            {progressBarChild}
             {slideItems.map((slideItem, i) => {
                 return (
                     <SlideItemRenderWrapper key={slideItem.id}

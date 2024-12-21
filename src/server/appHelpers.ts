@@ -127,8 +127,8 @@ export function getTempPath() {
 }
 
 const lockSet = new Set<string>();
-export async function unlocking(
-    key: string, callback: () => (Promise<void> | void)
+export async function unlocking<T>(
+    key: string, callback: () => (Promise<T> | T)
 ) {
     if (lockSet.has(key)) {
         await new Promise((resolve) => {
@@ -137,6 +137,7 @@ export async function unlocking(
         return unlocking(key, callback);
     }
     lockSet.add(key);
-    await callback();
+    const data = await callback();
     lockSet.delete(key);
+    return data;
 }

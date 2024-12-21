@@ -20,6 +20,9 @@ export type PdfMiniInfoType = {
 };
 export async function getPdfInfo(filePath: string) {
     const { ColorSpace, Matrix } = await loadMupdfJs();
+    if (!filePath) {
+        return null;
+    }
     try {
         const doc = await getPdfDoc(filePath);
         const count = await doc.countPages();
@@ -77,7 +80,7 @@ async function genPdfPageJpeg(
 }
 
 export type PdfImageOptionsType = {
-    width: number, alpha?: boolean, quality?: number,
+    width?: number, alpha?: boolean, quality?: number,
     type?: 'png' | 'jpeg',
 };
 export async function getPdfPageImage(
@@ -92,9 +95,9 @@ export async function getPdfPageImage(
             );
         }
         const {
-            width, alpha = false, quality: imageQuality = 100, type = 'jpeg',
+            alpha = false, quality: imageQuality = 100, type = 'jpeg',
         } = options;
-        if (width < 0) {
+        if (options.width !== undefined && options.width < 0) {
             throw new Error(
                 `Invalid width, arguments: ${JSON.stringify(arguments)}`,
             );
@@ -103,6 +106,8 @@ export async function getPdfPageImage(
         const pixmap = page.toPixmap(
             Matrix.identity, ColorSpace.DeviceRGB, false, true,
         );
+        const actualWidth = pixmap.getWidth();
+        const width = Math.min(options.width ?? actualWidth, actualWidth);
         const scale = width / pixmap.getWidth();
         const matrixScale: MatrixScaleType = [scale, 0, 0, scale, 0, 0];
         return (

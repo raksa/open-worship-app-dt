@@ -52,7 +52,7 @@ export default function SlideItemPdfRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
-    const imageData = useSlideItemPdfImage(slideItem);
+    const imageData = useSlideItemPdfImage(slideItem, width);
     useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,
