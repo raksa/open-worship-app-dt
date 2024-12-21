@@ -68,7 +68,7 @@ export function initScreen(appController: ElectronAppController) {
             ElectronScreenController.createInstance(data.screenId)
         );
         const display = (
-            appController.settingController.getDisplayById(data.screenId)
+            appController.settingController.getDisplayById(data.displayId)
         );
         if (display !== undefined) {
             screenController.listenLoading().then(() => {
@@ -151,6 +151,7 @@ export function initScreen(appController: ElectronAppController) {
             event.returnValue = fontsMap;
             cache.fontsMap = fontsMap;
         } catch (error) {
+            console.log(error);
             event.returnValue = null;
         }
     });

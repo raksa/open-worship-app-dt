@@ -74,8 +74,7 @@ export default class ElectronScreenController {
         this.win.webContents.send(
             channels.screenMessageChannel, {
             screenId: this.screenId,
-            type,
-            data,
+            type, data,
         });
     }
 

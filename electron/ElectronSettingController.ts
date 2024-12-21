@@ -58,8 +58,10 @@ export default class ElectronSettingController {
         return electron.screen.getPrimaryDisplay();
     }
 
-    getDisplayById(id: number) {
-        return this.allDisplays.find((newDisplay) => newDisplay.id == id);
+    getDisplayById(displayId: number) {
+        return this.allDisplays.find((display) => {
+            return display.id == displayId;
+        });
     }
 
     save() {
