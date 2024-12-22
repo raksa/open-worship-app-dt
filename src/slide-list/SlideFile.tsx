@@ -12,6 +12,9 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenu';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
+import {
+    genPdfImagesPreview, removePdfImagesPreview,
+} from '../helper/pdfHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -20,20 +23,20 @@ export default function SlideFile({
     filePath: string,
 }>) {
     const setSelectedSlide = useSelectedSlideSetterContext();
-    const [data, setData] = useState<SlideDynamicType>(null);
+    const [slide, setSlide] = useState<SlideDynamicType>(null);
     const handleReloading = () => {
-        setData(null);
+        setSlide(null);
     };
     const handleClicking = () => {
-        if (!data) {
+        if (!slide) {
             return;
         }
-        if (data.isSelected && !getIsShowingSlidePreviewer()) {
-            previewingEventListener.showSlide(data);
+        if (slide.isSelected && !getIsShowingSlidePreviewer()) {
+            previewingEventListener.showSlide(slide);
             return;
         }
-        data.isSelected = true;
-        setSelectedSlide(data);
+        slide.isSelected = true;
+        setSelectedSlide(slide);
     };
     const handleChildRendering = (slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
@@ -49,27 +52,36 @@ export default function SlideFile({
             Slide.setSelectedFileSource(null);
             setSelectedSlide(null);
         }
-        data?.editorCacheManager.delete();
+        slide?.editorCacheManager.delete();
+        if (slide?.isPdf) {
+            removePdfImagesPreview(filePath);
+        }
     };
     useAppEffectAsync(async (methodContext) => {
-        if (data === null) {
+        if (slide === null) {
             const slide = await Slide.readFileToData(filePath);
             methodContext.setData(slide);
         }
-    }, [data], { setData });
+    }, [slide], { setData: setSlide });
     useFileSourceEvents(['update', 'history-update', 'edit'], () => {
-        setData(null);
-    }, [data], filePath);
-    const menuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
+        setSlide(null);
+    }, [slide], filePath);
+    const menuItems: ContextMenuItemType[] | undefined = slide?.isPdf ? [{
         menuTitle: 'Preview PDF',
         onClick: () => {
-            previewPdf(data.fileSource.src);
+            previewPdf(slide.fileSource.src);
+        },
+    }, {
+        menuTitle: 'Refresh PDF Images',
+        onClick: async () => {
+            await genPdfImagesPreview(slide.fileSource.filePath, true);
+            slide.fileSource.fireUpdateEvent();
         },
     }] : [{
         menuTitle: 'Edit',
         onClick: () => {
-            if (data) {
-                data.isSelected = true;
+            if (slide) {
+                slide.isSelected = true;
                 goToPath(editorTab.routePath);
             }
         },
@@ -77,7 +89,7 @@ export default function SlideFile({
     return (
         <FileItemHandler
             index={index}
-            data={data}
+            data={slide}
             reload={handleReloading}
             filePath={filePath}
             isPointer

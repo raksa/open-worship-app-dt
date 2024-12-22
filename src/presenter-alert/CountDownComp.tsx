@@ -77,8 +77,8 @@ function CountDownTimerComp() {
     const handleTimerShowing = (event: any, isForceChoosing = false) => {
         const targetDatetime = new Date();
         targetDatetime.setSeconds(
-            targetDatetime.getSeconds() + 60 * parseInt(minutes, 10) +
-            3600 * parseInt(hours, 10) + 1,
+            targetDatetime.getSeconds() + 60 * parseInt(minutes) +
+            3600 * parseInt(hours) + 1,
         );
         ScreenAlertManager.setCountdown(
             event, targetDatetime, isForceChoosing,

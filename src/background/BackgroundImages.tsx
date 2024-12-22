@@ -17,7 +17,7 @@ function rendChild(
         <div className='card-body'>
             <RenderScreenIds
                 screenIds={selectedBackgroundSrcList.map(([key]) => {
-                    return parseInt(key, 10);
+                    return parseInt(key);
                 })}
             />
             <img src={fileSource.src}

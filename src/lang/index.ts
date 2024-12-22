@@ -78,7 +78,7 @@ export const toLocaleNum = (locale: LocaleType, n: number): string => {
     }
     const numList = langData.numList;
     return `${n}`.split('').map((n1) => {
-        return numList[parseInt(n1, 10)];
+        return numList[parseInt(n1)];
     }).join('');
 };
 
@@ -95,7 +95,7 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
         }
         return n;
     }).join('');
-    if (isNaN(parseInt(nString, 10))) {
+    if (isNaN(parseInt(nString))) {
         return null;
     }
     return Number(nString);

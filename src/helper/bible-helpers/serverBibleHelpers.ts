@@ -28,7 +28,7 @@ export const toLocaleNum = (n: number, numList: string[]) => {
         return n;
     }
     return `${n}`.split('').map((n1) => {
-        return numList[parseInt(n1, 10)];
+        return numList[parseInt(n1)];
     }).join('');
 };
 

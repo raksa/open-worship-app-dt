@@ -68,7 +68,7 @@ export default function AppRange({
                     }));
                 }}
                 onChange={(event) => {
-                    setValue(parseInt(event.target.value, 10));
+                    setValue(parseInt(event.target.value));
                 }}
             />
             <div className='pointer' onClick={() => {

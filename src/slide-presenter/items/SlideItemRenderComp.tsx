@@ -25,7 +25,7 @@ export function RendInfo({ index, slideItem }: Readonly<{
                     {index + 1}
                 </span>
                 {selectedList.map(([key]) => {
-                    const screenId = parseInt(key, 10);
+                    const screenId = parseInt(key);
                     return (
                         <ShowingScreenIcon key={key} screenId={screenId} />
                     );

@@ -113,9 +113,9 @@ const fullTextScreenHelper = {
                 const arrChildren = this.removeClassName(div, 'selected');
                 if (
                     !arrChildren.includes(span) && span.dataset.highlight
-                    && !isNaN(parseInt(span.dataset.highlight, 10))
+                    && !isNaN(parseInt(span.dataset.highlight))
                 ) {
-                    onSelectIndex(parseInt(span.dataset.highlight, 10));
+                    onSelectIndex(parseInt(span.dataset.highlight));
                 } else {
                     onSelectIndex(null);
                 }

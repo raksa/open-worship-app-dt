@@ -116,7 +116,7 @@ const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
 
 const WIDGET_TITLE = 'Converting to PDF';
 
-function showConfirmPDFConvert(dirPath: string, file: DroppedFileType) {
+function showConfirmPdfConvert(dirPath: string, file: DroppedFileType) {
     const fileFullName = getFileFullName(file);
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
         <b>"{fileFullName}"</b>
@@ -184,7 +184,7 @@ async function startConvertingOfficeFile(
 export async function convertOfficeFile(
     file: DroppedFileType, dirSource: DirSource,
 ) {
-    const isConfirm = await showConfirmPDFConvert(dirSource.dirPath, file);
+    const isConfirm = await showConfirmPdfConvert(dirSource.dirPath, file);
     if (!isConfirm) {
         return;
     }

@@ -43,6 +43,8 @@ export type FileUtilsType = {
 export type PathUtilsType = {
     sep: typeof path.sep,
     basename: typeof path.basename,
+    dirname: typeof path.dirname,
+    resolve: typeof path.resolve,
     join: typeof path.join,
 };
 

@@ -254,10 +254,10 @@ export default class ScreenManager
         const defaultDisplay = ScreenManager.getDefaultScreenDisplay();
         const str = getSetting(`${settingName}-pid-${screenId}`,
             defaultDisplay.id.toString());
-        if (isNaN(parseInt(str, 10))) {
+        if (isNaN(parseInt(str))) {
             return defaultDisplay.id;
         }
-        const id = parseInt(str, 10);
+        const id = parseInt(str);
         const { displays } = getAllDisplays();
         return displays.find((display) => {
             return display.id === id;
@@ -366,7 +366,7 @@ export default class ScreenManager
     }
 
     static getInstanceByKey(key: string) {
-        const screenId = parseInt(key, 10);
+        const screenId = parseInt(key);
         return this.getInstance(screenId);
     }
 

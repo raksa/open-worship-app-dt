@@ -267,8 +267,8 @@ export default class BoxEditorController {
             const values = transform.split('(')[1].split(')')[0].split(',');
             const angle = Math.round(
                 Math.atan2(
-                    parseInt(values[1], 10),
-                    parseInt(values[0], 10)) * (180 / Math.PI
+                    parseInt(values[1]),
+                    parseInt(values[0])) * (180 / Math.PI
                 ),
             );
             return angle < 0 ? angle + 360 : angle;

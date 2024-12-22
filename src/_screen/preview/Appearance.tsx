@@ -77,10 +77,10 @@ export default function Appearance() {
 
 function PDFAppearanceSetting() {
     const [isFullWidth, setIsFullWidth] = useState(
-        ScreenSlideManager.isPDFFullWidth,
+        ScreenSlideManager.isPdfFullWidth,
     );
     const setIsFullWidth1 = (b: boolean) => {
-        ScreenSlideManager.isPDFFullWidth = b;
+        ScreenSlideManager.isPdfFullWidth = b;
         for (const { screenSlideManager } of ScreenManager.getAllInstances()) {
             screenSlideManager.render();
             screenSlideManager.sendSyncScreen();

@@ -40,12 +40,12 @@ function FontSize() {
                 style={{ maxWidth: '100px' }}
                 value={localFontSize}
                 onChange={(event) => {
-                    applyFontSize(parseInt(event.target.value, 10));
+                    applyFontSize(parseInt(event.target.value));
                 }} />
             <select className='form-select form-select-sm'
                 value={localFontSize}
                 onChange={(event) => {
-                    applyFontSize(parseInt(event.target.value, 10));
+                    applyFontSize(parseInt(event.target.value));
                 }} >
                 <option>--</option>
                 {Array.from({ length: 20 }, (_, i) => (i + 1) * 15)

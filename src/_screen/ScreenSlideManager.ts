@@ -18,18 +18,17 @@ import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
 import { unlocking } from '../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
-import { getPdfPageImage } from '../helper/pdfHelpers';
 
 export type ScreenSlideManagerEventType = 'update';
 
 const PDF_FULL_WIDTH_SETTING_NAME = 'pdf-full-width';
 
-export function checkIsPDFFullWidth() {
+export function checkIsPdfFullWidth() {
     const originalSettingName = getSetting(PDF_FULL_WIDTH_SETTING_NAME);
     return originalSettingName === 'true';
 }
-export function setIsPDFFullWidth(isPDFFullWidth: boolean) {
-    setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${isPDFFullWidth}`);
+export function setIsPdfFullWidth(isPdfFullWidth: boolean) {
+    setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${isPdfFullWidth}`);
 }
 
 export default class ScreenSlideManager extends
@@ -70,11 +69,11 @@ export default class ScreenSlideManager extends
     get slideItemData() {
         return this._slideItemData;
     }
-    static get isPDFFullWidth() {
-        return checkIsPDFFullWidth();
+    static get isPdfFullWidth() {
+        return checkIsPdfFullWidth();
     }
-    static set isPDFFullWidth(isFullWidth: boolean) {
-        setIsPDFFullWidth(isFullWidth);
+    static set isPdfFullWidth(isFullWidth: boolean) {
+        setIsPdfFullWidth(isFullWidth);
     }
     set slideItemData(slideItemData: SlideItemDataType | null) {
         this._slideItemData = slideItemData;
@@ -169,25 +168,18 @@ export default class ScreenSlideManager extends
         });
     }
 
-    async renderPdf(div: HTMLDivElement, pdfImageData: SlideItemType) {
+    renderPdf(div: HTMLDivElement, pdfImageData: SlideItemType) {
         Array.from(div.children).forEach(async (child) => {
             await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
             child.remove();
         });
-        if (
-            !pdfImageData.filePath || pdfImageData.pdfPageNumber === undefined
-        ) {
+        if (!pdfImageData.imagePreviewSrc) {
             return;
         }
-        const imageData = await getPdfPageImage(
-            pdfImageData.filePath ?? '', pdfImageData.pdfPageNumber,
-            { type: 'png' },
+        const isFullWidth = checkIsPdfFullWidth();
+        const content = genPdfSlideItem(
+            pdfImageData.imagePreviewSrc, isFullWidth,
         );
-        if (imageData === null) {
-            return;
-        }
-        const isFullWidth = checkIsPDFFullWidth();
-        const content = genPdfSlideItem(imageData, isFullWidth);
         const divContainer = document.createElement('div');
         Object.assign(divContainer.style, {
             width: '100%',

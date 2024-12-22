@@ -42,7 +42,7 @@ function RendBody({
             }}>
             <RenderScreenIds
                 screenIds={selectedBackgroundSrcList.map(([key]) => {
-                    return parseInt(key, 10);
+                    return parseInt(key);
                 })}
             />
             <video ref={vRef}

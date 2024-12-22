@@ -102,7 +102,7 @@ function TestInfinite() {
         }
         setTimeout(() => {
             setCount(count + 1);
-        }, 10);
+        }, 20);
     }, [count], 'test');
     return (
         <h2>

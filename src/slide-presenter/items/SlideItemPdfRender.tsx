@@ -8,7 +8,6 @@ import {
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
-import { useSlideItemPdfImage } from '../../helper/pdfHelpers';
 
 export function SlideItemPdfRenderContent({
     pdfImageSrc, isFullWidth = false,
@@ -52,20 +51,14 @@ export default function SlideItemPdfRender({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
-    const imageData = useSlideItemPdfImage(slideItem, width);
     useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,
     } = toClassNameHighlight(slideItem);
+    const pdfPreviewSrc = slideItem.pdfPreviewSrc;
     return (
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
-            style={{
-                width: `${width}px`,
-                ...(imageData === null ? {
-                    minHeight: `${width * 0.65}px`,
-                } : {}),
-                transition: 'height 1s',
-            }}
+            style={{ width: `${width}px` }}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, slideItem);
@@ -82,13 +75,15 @@ export default function SlideItemPdfRender({
                     slideItem={slideItem}
                 />
             </div>
-            {imageData === null ? (
-                <div>Loading...</div>
+            {pdfPreviewSrc === null ? (
+                <div className='alert alert-danger'>
+                    Unable to preview right now
+                </div>
             ) : (
                 <div className='card-body overflow-hidden'
                     style={{ padding: '0px' }} >
                     <SlideItemPdfRenderContent
-                        pdfImageSrc={imageData}
+                        pdfImageSrc={pdfPreviewSrc}
                     />
                 </div>
             )}

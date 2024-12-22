@@ -8,6 +8,7 @@ import {
 } from './electronPdfHelpers.js';
 import ElectronScreenController from './ElectronScreenController.js';
 import { officeFileToPdf } from './electronOfficeHelpers.js';
+import { pdfToImages } from './pdfToImagesHelpers.js';
 
 const { dialog, ipcMain, app } = electron;
 const cache: { [key: string]: any } = {
@@ -251,5 +252,14 @@ export function initEventOther(appController: ElectronAppController) {
     ) => {
         const imageData = await getPdfPageImage(filePath, pageIndex, options);
         appController.mainController.sendData(replyEventName, imageData);
+    });
+
+    ipcMain.on('main:app:pdf-to-images', async (
+        _, { replyEventName, filePath, outDir }: {
+            replyEventName: string, filePath: string, outDir: string,
+        },
+    ) => {
+        const data = await pdfToImages(filePath, outDir);
+        appController.mainController.sendData(replyEventName, data);
     });
 }

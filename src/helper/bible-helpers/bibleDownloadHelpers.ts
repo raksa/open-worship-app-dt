@@ -61,16 +61,16 @@ const getDownloadHandler = (
                 options.onDone(new Error('Error during download'));
                 return;
             }
-            const len = parseInt(response.headers['content-length'], 10);
+            const len = parseInt(response.headers['content-length']);
             let cur = 0;
             const mb = 1048576;//1048576 - bytes in  1Megabyte
             const total = len / mb;
-            const fileSize = parseInt(total.toFixed(2), 10);
+            const fileSize = parseInt(total.toFixed(2));
             showSimpleToast(
                 TOAST_TITLE,
                 `Start downloading "${fileFullName}". File size ${fileSize}mb`,
             );
-            options.onStart(parseInt(total.toFixed(2), 10));
+            options.onStart(parseInt(total.toFixed(2)));
             response.on('data', (chunk: Buffer) => {
                 if (writeStream.writable) {
                     writeStream.write(chunk, (error1) => {

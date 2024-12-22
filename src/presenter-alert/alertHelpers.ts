@@ -14,7 +14,7 @@ export function getShowingScreenIds(
         Object.entries(allAlertDataList).filter(([_, data]) => {
             return filterFunc(data);
         }).map(([key]) => {
-            return parseInt(key, 10);
+            return parseInt(key);
         })
     );
     return showingScreenIds;

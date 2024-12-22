@@ -56,7 +56,7 @@ export default function BackgroundColors() {
             'd-flex align-content-start flex-wrap w-100 overflow-hidden'
         }>
             {selectedBackgroundSrcList.map(([key, backgroundSrc], i) => {
-                const screenId = parseInt(key, 10);
+                const screenId = parseInt(key);
                 return (
                     <div key={backgroundSrc.src + i}
                         className='p-1 m-1 app-border-white-round'>

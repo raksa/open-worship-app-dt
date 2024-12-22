@@ -13,21 +13,26 @@ export function genReturningEventName(eventName: string) {
     return `${eventName}-return-${newDate}`;
 }
 
+export function electronSendAsync<T>(eventName: string, data: any = {}) {
+    return new Promise<T>((resolve) => {
+        const replyEventName = genReturningEventName(eventName);
+        appProvider.messageUtils.listenOnceForData(
+            replyEventName, (_event, data: T) => {
+                resolve(data);
+            },
+        );
+        appProvider.messageUtils.sendData(eventName, {
+            ...data, replyEventName,
+        });
+    });
+}
+
 export function showExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
 
 export function trashFile(filePath: string) {
-    return new Promise<void>((resolve) => {
-        const eventName = 'main:app:trash-path';
-        const replyEventName = genReturningEventName(eventName);
-        appProvider.messageUtils.listenOnceForData(replyEventName, () => {
-            resolve();
-        });
-        appProvider.messageUtils.sendData(eventName, {
-            path: filePath, replyEventName,
-        });
-    });
+    return electronSendAsync<void>('main:app:trash-path', { path: filePath });
 }
 
 export function previewPdf(src: string) {
@@ -39,32 +44,14 @@ export function previewPdf(src: string) {
 export function convertToPdf(
     filePath: string, outputDir: string, fileFullName: string,
 ) {
-    return new Promise<void>((resolve) => {
-        const eventName = 'main:app:convert-to-pdf';
-        const replyEventName = genReturningEventName(eventName);
-        appProvider.messageUtils.listenOnceForData(
-            replyEventName, () => {
-                resolve();
-            },
-        );
-        appProvider.messageUtils.sendData(eventName, {
-            replyEventName, filePath, outputDir, fileFullName,
-        });
+    return electronSendAsync<void>('main:app:convert-to-pdf', {
+        filePath, outputDir, fileFullName,
     });
 }
 
 export function tarExtract(filePath: string, outputDir: string) {
-    return new Promise<void>((resolve) => {
-        const eventName = 'main:app:tar-extract';
-        const replyEventName = genReturningEventName(eventName);
-        appProvider.messageUtils.listenOnceForData(
-            replyEventName, () => {
-                resolve();
-            },
-        );
-        appProvider.messageUtils.sendData(eventName, {
-            replyEventName, filePath, outputDir,
-        });
+    return electronSendAsync<void>('main:app:tar-extract', {
+        filePath, outputDir,
     });
 }
 
@@ -90,28 +77,6 @@ export function selectFiles(filters: {
             'main:app:select-files', filters,
         ) as string[]
     );
-}
-
-export type RenderedType = {
-    background?: boolean,
-    foreground?: boolean,
-    fullText?: boolean,
-    alert?: boolean,
-    show?: boolean,
-};
-export function getScreenRendered() {
-    return new Promise<RenderedType>((resolve) => {
-        const eventName = 'main:app:is-rendered';
-        const replyEventName = genReturningEventName(eventName);
-        appProvider.messageUtils.listenOnceForData(
-            replyEventName, (_event, data: RenderedType) => {
-                resolve(data);
-            },
-        );
-        appProvider.messageUtils.sendData(
-            'main:app:is-rendered', replyEventName,
-        );
-    });
 }
 
 export function getUserWritablePath() {

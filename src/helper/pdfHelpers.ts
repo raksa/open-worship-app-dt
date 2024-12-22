@@ -1,25 +1,17 @@
-import SlideItem from '../slide-list/SlideItem';
-import { useAppEffectAsync } from './debuggerHelpers';
-import { useState } from 'react';
+import { electronSendAsync } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
-import { genReturningEventName } from '../server/appHelpers';
+import {
+    fsCheckDirExist, fsCreateDir, fsDeleteDir, fsListFiles,
+} from '../server/fileHelpers';
+import FileSource from './FileSource';
 
 export type PdfMiniInfoType = {
     width: number, height: number, count: number,
 };
 export function getPdfInfo(filePath: string) {
-    return new Promise<{ page: PdfMiniInfoType } | null>((resolve) => {
-        const eventName = 'main:app:pdf-info';
-        const replyEventName = genReturningEventName(eventName);
-        appProvider.messageUtils.listenOnceForData(
-            replyEventName, (_, data: any) => {
-                resolve(data);
-            },
-        );
-        appProvider.messageUtils.sendData(eventName, {
-            replyEventName, filePath,
-        });
-    });
+    return electronSendAsync<{ page: PdfMiniInfoType } | null>(
+        'main:app:pdf-info', { filePath },
+    );
 }
 
 export type PdfImageOptionsType = {
@@ -29,36 +21,56 @@ export type PdfImageOptionsType = {
 export function getPdfPageImage(
     filePath: string, pageIndex: number, options: PdfImageOptionsType,
 ) {
-    return new Promise<string | null>((resolve) => {
-        const eventName = 'main:app:pdf-page-image';
-        const replyEventName = genReturningEventName(eventName);
-        appProvider.messageUtils.listenOnceForData(
-            replyEventName, (_, data: any) => {
-                resolve(data);
-            },
-        );
-        appProvider.messageUtils.sendData(eventName, {
-            replyEventName, filePath, pageIndex, options,
-        });
+    return electronSendAsync<string | null>('main:app:pdf-page-image', {
+        filePath, pageIndex, options,
     });
 }
 
-export function useSlideItemPdfImage(slideItem: SlideItem, width?: number) {
-    const [imageData, setImageData] = useState<string | null>(null);
-    useAppEffectAsync(async (contextMethod) => {
-        let imageData: string | null = null;
-        if (width === undefined) {
-            imageData = await getPdfPageImage(
-                slideItem.filePath, slideItem.id, {
-                width: slideItem.width, type: 'png',
-            });
-        } else {
-            imageData = await getPdfPageImage(
-                slideItem.filePath, slideItem.id, {
-                width, type: 'jpeg', quality: 50,
-            });
-        }
-        contextMethod.setImageData(imageData);
-    }, [slideItem], { setImageData });
-    return imageData;
+function toPdfImagesPreviewDirPath(filePath: string) {
+    const fileSource = FileSource.getInstance(filePath);
+    return appProvider.pathUtils.resolve(
+        fileSource.basePath, `.${fileSource.fileFullName}-images`,
+    );
 }
+
+export function removePdfImagesPreview(filePath: string) {
+    const outDir = toPdfImagesPreviewDirPath(filePath);
+    return fsDeleteDir(outDir);
+}
+
+function genPdfImagePreviewInfo(filePath: string) {
+    const fileSource = FileSource.getInstance(filePath);
+    const pageNumber = parseInt(fileSource.name.split('-')[1]);
+    return { src: fileSource.src, pageNumber, width: 0, height: 0 };
+}
+
+export async function genPdfImagesPreview(filePath: string, isForce = false) {
+    const outDir = toPdfImagesPreviewDirPath(filePath);
+    if (!isForce && await fsCheckDirExist(outDir)) {
+        let fileList = await fsListFiles(outDir);
+        fileList = fileList.filter((fileFullName) => {
+            return fileFullName.toLowerCase().endsWith('.png');
+        }).map((fileFullName) => {
+            return appProvider.pathUtils.resolve(outDir, fileFullName);
+        });
+        if (fileList.length > 0) {
+            return fileList.map(genPdfImagePreviewInfo);
+        }
+    }
+    await fsDeleteDir(outDir);
+    await fsCreateDir(outDir);
+    const previewData: {
+        isSuccessful: boolean, message?: string,
+        filePaths?: string[],
+    } = await electronSendAsync(
+        'main:app:pdf-to-images', { filePath, outDir },
+    );
+    if (!previewData.isSuccessful || !previewData.filePaths) {
+        return null;
+    }
+    const imageFileInfoList = previewData.filePaths.map(genPdfImagePreviewInfo);
+    if (imageFileInfoList.some((imageFileInfo) => imageFileInfo === null)) {
+        return null;
+    }
+    return imageFileInfoList;
+};

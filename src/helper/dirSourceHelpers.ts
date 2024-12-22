@@ -42,7 +42,7 @@ export function useFileSourceRefreshEvents(
 
 export function useFileSourceEvents<T>(
     events: FileSourceEventType[], callback: (data: T) => void,
-    deps: DependencyList, filePath?: string,
+    deps?: DependencyList, filePath?: string,
 ) {
     useAppEffect(() => {
         const staticEvents = FileSource.registerFileSourceEventListener(
@@ -51,5 +51,5 @@ export function useFileSourceEvents<T>(
         return () => {
             FileSource.unregisterEventListener(staticEvents);
         };
-    }, [filePath, ...deps]);
+    }, [filePath, ...deps ?? []]);
 }
