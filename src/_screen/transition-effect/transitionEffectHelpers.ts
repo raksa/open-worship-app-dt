@@ -84,7 +84,7 @@ function fade(target: TargetType): StyleAnimType {
                     ...cssProps,
                     animationName: animationNameIn,
                 });
-                setTimeout(resolve, duration);
+                setTimeout(resolve, duration + 100);
             });
         },
         animOut: (targetElement: HTMLElement) => {
@@ -93,7 +93,7 @@ function fade(target: TargetType): StyleAnimType {
                     ...cssProps,
                     animationName: animationNameOut,
                 });
-                setTimeout(resolve, duration);
+                setTimeout(resolve, duration + 100);
             });
         },
         duration,

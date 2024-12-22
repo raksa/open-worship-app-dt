@@ -61,6 +61,10 @@ export default function SlideItemPdfRender({
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             style={{
                 width: `${width}px`,
+                ...(imageData === null ? {
+                    minHeight: `${width * 0.65}px`,
+                } : {}),
+                transition: 'height 1s',
             }}
             draggable
             onDragStart={(event) => {

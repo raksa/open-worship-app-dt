@@ -116,7 +116,7 @@ export default function ScreenFullText() {
         if (div.current) {
             screenFullTextManager.div = div.current;
         }
-    });
+    }, [div.current]);
     return (
         <>
             <style>{styleText}</style>

@@ -4,15 +4,57 @@ import { dynamicImport } from 'tsimportlib';
 import type { PDFPage } from 'mupdf';
 import type mupdfjs from 'mupdf/mupdfjs';
 
+const lockSet = new Set<string>();
+async function unlocking<T>(
+    key: string, callback: () => (Promise<T> | T)
+) {
+    if (lockSet.has(key)) {
+        await new Promise((resolve) => {
+            setTimeout(resolve, 100);
+        });
+        return unlocking(key, callback);
+    }
+    lockSet.add(key);
+    const data = await callback();
+    lockSet.delete(key);
+    return data;
+}
+
 async function loadMupdfJs(): Promise<typeof mupdfjs> {
     return dynamicImport('mupdf/mupdfjs', module);
 }
 
-async function getPdfDoc(filePath: string) {
-    const { PDFDocument } = await loadMupdfJs();
-    return PDFDocument.openDocument(
-        readFileSync(filePath), 'application/pdf',
-    );
+const cache: Map<string, { doc: any, time: number }> = new Map();
+const expireTime = 1000 * 60 * 5; // 5 minutes
+const recheckingTime = 1000 * 60 * 1; // 5 minutes
+function clearCache() {
+    for (const [key, { doc, time }] of cache) {
+        if (doc.countPages() === 0 || ((Date.now() - time) > expireTime)) {
+            cache.delete(key);
+        }
+    }
+    if (cache.size > 0) {
+        setTimeout(clearCache, recheckingTime);
+    }
+}
+async function getPdfDoc(filePath: string, isForce: boolean) {
+    return await unlocking(filePath, async () => {
+        if (
+            !isForce && cache.has(filePath) &&
+            cache.get(filePath)?.doc.countPages() > 0
+        ) {
+            const { doc } = cache.get(filePath);
+            cache.set(filePath, { doc, time: Date.now() });
+            return doc;
+        }
+        const { PDFDocument } = await loadMupdfJs();
+        const doc = PDFDocument.openDocument(
+            readFileSync(filePath), 'application/pdf',
+        );
+        cache.set(filePath, { doc, time: Date.now() });
+        clearCache();
+        return doc;
+    });
 }
 
 export type PdfMiniInfoType = {
@@ -85,11 +127,17 @@ export type PdfImageOptionsType = {
 };
 export async function getPdfPageImage(
     filePath: string, pageIndex: number, options: PdfImageOptionsType,
+    isNoCache = false,
 ) {
-    const { ColorSpace, Matrix } = await loadMupdfJs();
+    const { ColorSpace, Matrix } = await loadMupdfJs(isNoCache);
     try {
         const doc = await getPdfDoc(filePath);
         if (pageIndex < 0 || pageIndex > doc.countPages() - 1) {
+            if (doc.countPages() === 0) {
+                return await getPdfPageImage(
+                    filePath, pageIndex, options, true,
+                );
+            }
             throw new Error(
                 `Invalid page index, arguments: ${JSON.stringify(arguments)}`,
             );

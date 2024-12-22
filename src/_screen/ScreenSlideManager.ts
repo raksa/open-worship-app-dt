@@ -211,6 +211,10 @@ export default class ScreenSlideManager extends
             height: `${height}px`,
             transform: 'translate(-50%, -50%)',
         });
+        Array.from(div.children).forEach(async (child) => {
+            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
+            child.remove();
+        });
         const scale = parentWidth / width;
         const divContainer = document.createElement('div');
         divContainer.appendChild(divHaftScale);
@@ -220,12 +224,7 @@ export default class ScreenSlideManager extends
             height: `${parentHeight}px`,
             transform: `scale(${scale},${scale}) translate(50%, 50%)`,
         });
-        Array.from(div.children).forEach(async (child) => {
-            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
-            child.remove();
-        });
         div.appendChild(divContainer);
-        // TODO: fix fade in not working
         this.ptEffect.styleAnim.animIn(divContainer);
         this.cleanup(content);
     }

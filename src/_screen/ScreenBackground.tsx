@@ -23,7 +23,7 @@ export default function ScreenBackground() {
         if (div.current) {
             screenBackgroundManager.div = div.current;
         }
-    });
+    }, [div.current]);
     return (
         <div id='background' ref={div}
             style={screenBackgroundManager.containerStyle}

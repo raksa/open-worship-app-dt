@@ -44,7 +44,8 @@ export default function SlideItemRenderWrapper({
             <SlideItemPdfRender key={slideItem.id}
                 onClick={handleClicking}
                 slideItem={slideItem}
-                width={thumbSize} index={index}
+                width={thumbSize} 
+                index={index}
                 onContextMenu={handleContextMenuOpening}
                 onDragStart={handleDragStarting}
                 onDragEnd={handleDragEnding}

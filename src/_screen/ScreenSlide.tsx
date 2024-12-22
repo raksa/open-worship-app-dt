@@ -15,7 +15,7 @@ export default function ScreenSlide() {
         if (div.current) {
             screenSlideManager.div = div.current;
         }
-    });
+    }, [div.current]);
     return (
         <div id='slide' ref={div}
             style={screenSlideManager.containerStyle}

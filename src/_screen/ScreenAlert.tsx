@@ -17,7 +17,7 @@ export default function ScreenAlert() {
         if (div.current) {
             screenAlertManager.div = div.current;
         }
-    });
+    }, [div.current]);
     return (
         <div id='alert' ref={div}
             style={screenAlertManager.containerStyle} >
