@@ -47,7 +47,7 @@ export async function genPdfImagesPreview(filePath: string, isForce = false) {
         isSuccessful: boolean, message?: string,
         filePaths?: string[],
     } = await electronSendAsync(
-        'main:app:pdf-to-images', { filePath, outDir },
+        'main:app:pdf-to-images', { filePath, outDir, isForce: true },
     );
     if (!previewData.isSuccessful || !previewData.filePaths) {
         return null;

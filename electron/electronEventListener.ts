@@ -235,11 +235,12 @@ export function initEventOther(appController: ElectronAppController) {
     });
 
     ipcMain.on('main:app:pdf-to-images', async (
-        _, { replyEventName, filePath, outDir }: {
+        _, { replyEventName, filePath, outDir, isForce }: {
             replyEventName: string, filePath: string, outDir: string,
+            isForce: boolean,
         },
     ) => {
-        const data = await pdfToImages(filePath, outDir);
+        const data = await pdfToImages(filePath, outDir, isForce);
         appController.mainController.sendData(replyEventName, data);
     });
 }
