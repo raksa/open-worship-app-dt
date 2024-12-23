@@ -3,6 +3,7 @@ import appProvider from '../server/appProvider';
 import {
     fsCheckDirExist, fsCreateDir, fsDeleteDir, fsListFiles,
 } from '../server/fileHelpers';
+import { showSimpleToast } from '../toast/toastHelpers';
 import FileSource from './FileSource';
 
 function toPdfImagesPreviewDirPath(filePath: string) {
@@ -36,6 +37,10 @@ export async function genPdfImagesPreview(filePath: string, isForce = false) {
             return fileList.map(genPdfImagePreviewInfo);
         }
     }
+    showSimpleToast(
+        'Generating PDF preview images',
+        'Please do not close the application during this process.',
+    );
     await fsDeleteDir(outDir);
     await fsCreateDir(outDir);
     const previewData: {
