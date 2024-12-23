@@ -168,60 +168,26 @@ export default class ScreenSlideManager extends
         });
     }
 
-    renderPdf(div: HTMLDivElement, pdfImageData: SlideItemType) {
-        Array.from(div.children).forEach(async (child) => {
-            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
-            child.remove();
-        });
+    renderPdf(divHaftScale: HTMLDivElement, pdfImageData: SlideItemType) {
         if (!pdfImageData.imagePreviewSrc) {
-            return;
+            return null;
         }
         const isFullWidth = checkIsPdfFullWidth();
         const content = genPdfSlideItem(
             pdfImageData.imagePreviewSrc, isFullWidth,
         );
-        const divContainer = document.createElement('div');
-        Object.assign(divContainer.style, {
-            width: '100%',
-            height: '100%',
-            overflow: isFullWidth ? 'auto' : 'hidden',
-        });
-        divContainer.appendChild(content);
-        div.appendChild(divContainer);
-    }
-
-    async renderHtml(div: HTMLDivElement, slideItemJson: SlideItemType) {
-        const content = genHtmlSlideItem(slideItemJson.canvasItems);
-        const divHaftScale = document.createElement('div');
-        divHaftScale.appendChild(content);
         const parentWidth = this.screenManager.width;
-        const parentHeight = this.screenManager.height;
-        const width = slideItemJson.metadata.width;
-        const height = slideItemJson.metadata.height;
+        const width = parentWidth;
         Object.assign(divHaftScale.style, {
-            width: `${width}px`,
-            height: `${height}px`,
+            width: '100%', height: '100%',
+            overflow: isFullWidth ? 'auto' : 'hidden',
             transform: 'translate(-50%, -50%)',
         });
-        Array.from(div.children).forEach(async (child) => {
-            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
-            child.remove();
-        });
         const scale = parentWidth / width;
-        const divContainer = document.createElement('div');
-        divContainer.appendChild(divHaftScale);
-        Object.assign(divContainer.style, {
-            position: 'absolute',
-            width: `${parentWidth}px`,
-            height: `${parentHeight}px`,
-            transform: `scale(${scale},${scale}) translate(50%, 50%)`,
-        });
-        div.appendChild(divContainer);
-        this.ptEffect.styleAnim.animIn(divContainer);
-        this.cleanup(content);
+        return { content, scale };
     }
 
-    cleanup(content: HTMLDivElement) {
+    cleanupSlideContent(content: HTMLDivElement) {
         if (!appProviderScreen.isScreen) {
             return;
         }
@@ -237,6 +203,18 @@ export default class ScreenSlideManager extends
         });
     }
 
+    renderHtml(divHaftScale: HTMLDivElement, slideItemJson: SlideItemType) {
+        const content = genHtmlSlideItem(slideItemJson.canvasItems);
+        this.cleanupSlideContent(content);
+        const { width, height } = slideItemJson.metadata;
+        Object.assign(divHaftScale.style, {
+            width: `${width}px`, height: `${height}px`,
+            transform: 'translate(-50%, -50%)',
+        });
+        const scale = this.screenManager.width / width;
+        return { content, scale };
+    }
+
     async clearJung(div: HTMLDivElement) {
         if (div.lastChild === null) {
             return;
@@ -250,16 +228,39 @@ export default class ScreenSlideManager extends
         if (this.div === null) {
             return;
         }
+        const div = this.div;
         if (this.slideItemData === null) {
-            this.clearJung(this.div);
+            this.clearJung(div);
             return;
         }
+        const divContainer = document.createElement('div');
+        const divHaftScale = document.createElement('div');
+        divContainer.appendChild(divHaftScale);
         const { slideItemJson } = this.slideItemData;
-        if (slideItemJson.isPdf) {
-            this.renderPdf(this.div, slideItemJson);
-        } else {
-            this.renderHtml(this.div, slideItemJson);
+
+        const target = (
+            slideItemJson.isPdf ? this.renderPdf(
+                divHaftScale, slideItemJson,
+            ) : this.renderHtml(divHaftScale, slideItemJson)
+        );
+        if (target === null) {
+            return;
         }
+        Array.from(div.children).forEach(async (child) => {
+            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
+            child.remove();
+        });
+        div.appendChild(divContainer);
+        divHaftScale.appendChild(target.content);
+        Object.assign(divContainer.style, {
+            position: 'absolute',
+            width: `${this.screenManager.width}px`,
+            height: `${this.screenManager.height}px`,
+            transform: (
+                `scale(${target.scale},${target.scale}) translate(50%, 50%)`
+            ),
+        });
+        this.ptEffect.styleAnim.animIn(divContainer);
     }
 
     get containerStyle(): CSSProperties {
