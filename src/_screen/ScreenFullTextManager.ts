@@ -373,7 +373,7 @@ export default class ScreenFullTextManager
         );
     }
 
-    async receiveScreenDrag(droppedData: DroppedDataType) {
+    async receiveScreenDropped(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.BIBLE_ITEM) {
             const newFullTextItemData = await bibleItemToFtData(
                 [droppedData.item],

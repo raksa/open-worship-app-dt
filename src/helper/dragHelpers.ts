@@ -5,6 +5,7 @@ import DragInf, {
 } from './DragInf';
 import FileSource from './FileSource';
 import Slide from '../slide-list/Slide';
+import SlideItem from '../slide-list/SlideItem';
 
 export function handleDragStart(
     event: any, item: DragInf<any>, type?: DragTypeEnum
@@ -27,7 +28,20 @@ async function deserializeDragData({
 }: DragDataType<any>): Promise<DroppedDataType | null> {
     let item: any = null;
     if (type === DragTypeEnum.SLIDE_ITEM) {
-        item = await Slide.slideItemDragDeserialize(data);
+        const droppedData = JSON.parse(data);
+        if (droppedData.isPdf) {
+            const extracted = Slide.slideItemExtractKey(droppedData.key);
+            if (extracted === null) {
+                return null;
+            }
+            const { pdfData } = droppedData;
+            item = SlideItem.fromPdfJson({
+                filePath: extracted.filePath, pageNumber: extracted.id,
+                src: pdfData.src, width: pdfData.width, height: pdfData.height,
+            });
+        } else {
+            item = await Slide.slideItemDragDeserialize(droppedData.key);
+        }
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);
     } else if ([

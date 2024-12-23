@@ -68,7 +68,7 @@ export default function ScreenPreviewerItemComp({ width }: Readonly<{
                 if (droppedData === null) {
                     return;
                 }
-                screenManager.receiveScreenDrag(droppedData);
+                screenManager.receiveScreenDropped(droppedData);
             }}>
             <ScreenPreviewerHeaderComp />
             <div className='w-100'>

@@ -212,7 +212,7 @@ export default class ScreenBackgroundManager
         };
     }
 
-    async receiveScreenDrag({ type, item }: DroppedDataType) {
+    async receiveScreenDropped({ type, item }: DroppedDataType) {
         const backgroundTypeMap: { [key: string]: BackgroundType } = {
             [DragTypeEnum.BACKGROUND_IMAGE]: 'image',
             [DragTypeEnum.BACKGROUND_VIDEO]: 'video',

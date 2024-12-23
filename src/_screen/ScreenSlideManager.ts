@@ -272,7 +272,7 @@ export default class ScreenSlideManager extends
         };
     }
 
-    async receiveScreenDrag(droppedData: DroppedDataType) {
+    async receiveScreenDropped(droppedData: DroppedDataType) {
         if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
             const slideItem = droppedData.item as SlideItem;
             this.slideItemData = {

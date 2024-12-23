@@ -209,20 +209,20 @@ export default class ScreenManager
         this.fireInstanceEvent();
     }
 
-    receiveScreenDrag(droppedData: DroppedDataType) {
+    receiveScreenDropped(droppedData: DroppedDataType) {
         if ([
             DragTypeEnum.BACKGROUND_COLOR,
             DragTypeEnum.BACKGROUND_IMAGE,
             DragTypeEnum.BACKGROUND_VIDEO,
         ].includes(droppedData.type)) {
-            this.screenBackgroundManager.receiveScreenDrag(droppedData);
+            this.screenBackgroundManager.receiveScreenDropped(droppedData);
         } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
-            this.screenSlideManager.receiveScreenDrag(droppedData);
+            this.screenSlideManager.receiveScreenDropped(droppedData);
         } else if ([
             DragTypeEnum.BIBLE_ITEM,
             DragTypeEnum.LYRIC_ITEM,
         ].includes(droppedData.type)) {
-            this.screenFullTextManager.receiveScreenDrag(droppedData);
+            this.screenFullTextManager.receiveScreenDropped(droppedData);
         } else {
             log(droppedData);
         }

@@ -221,11 +221,21 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     dragSerialize() {
+        const dragging: any = {
+            key: this.key, isPdf: this.isPdf,
+        };
+        if (this.isPdf) {
+            dragging['pdfData'] = {
+                src: this.pdfPreviewSrc,
+                width: this.width,
+                height: this.height,
+            };
+        }
         return {
-            type: DragTypeEnum.SLIDE_ITEM,
-            data: this.key,
+            type: DragTypeEnum.SLIDE_ITEM, data: JSON.stringify(dragging),
         };
     }
+
     showInViewport() {
         setTimeout(() => {
             const querySelector = `[data-slide-item-id="${this.id}"]`;
@@ -240,6 +250,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             });
         }, 0);
     }
+
     clipboardSerialize() {
         const json = this.toJson();
         return JSON.stringify({
@@ -247,6 +258,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             data: json,
         });
     }
+
     static clipboardDeserialize(json: string) {
         if (!json) {
             return null;
@@ -259,6 +271,19 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             handleError(error);
         }
         return null;
+    }
+
+    static fromPdfJson({ filePath, pageNumber, src, width = 0, height = 0 }: {
+        filePath: string, pageNumber: number, src: string,
+        width?: number, height?: number
+    }) {
+        return new SlideItem(pageNumber, filePath, {
+            id: pageNumber, canvasItems: [], isPdf: true,
+            imagePreviewSrc: src,
+            filePath: filePath,
+            pdfPageNumber: pageNumber,
+            metadata: { width, height },
+        });
     }
 }
 

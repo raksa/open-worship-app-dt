@@ -29,14 +29,9 @@ async function getSlideItems(slide: Slide) {
         return null;
     }
     return imageFileInfoList.map(({ src, pageNumber, width, height }) => {
-        const slideItem = new SlideItem(pageNumber, slide.filePath, {
-            id: pageNumber, canvasItems: [], isPdf: true,
-            imagePreviewSrc: src,
-            filePath: slide.filePath,
-            pdfPageNumber: pageNumber,
-            metadata: { width, height },
+        return SlideItem.fromPdfJson({
+            filePath: slide.filePath, pageNumber, src, width, height,
         });
-        return slideItem;
     });
 }
 
