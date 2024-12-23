@@ -42,21 +42,16 @@ export default function DisplayControl() {
         currentDisplay ? (currentDisplay as any).label : 'Unknown'
     );
     return (
-        <div className={
-            'display-control d-flex justify-content-center ' +
-            'align-items-center'
-        }
+        <button className='btn btn-sm btn-outline-secondary app-ellipsis'
             title={
                 `Display:${currentDisplayLabel}, ` +
                 `screen id:${screenManager.screenId}` +
                 `, display id:${displayId}`
-            }>
-            <button className='btn btn-sm btn-outline-secondary app-ellipsis'
-                onClick={handleDisplayChoosing}
-                style={{ maxWidth: '80px' }}>
-                <i className='bi bi-display' />
-                {currentDisplayLabel}({screenManager.screenId}):{displayId}
-            </button>
-        </div >
+            }
+            onClick={handleDisplayChoosing}
+            style={{ maxWidth: '80px' }}>
+            <i className='bi bi-display' />
+            {currentDisplayLabel}({screenManager.screenId}):{displayId}
+        </button>
     );
 }

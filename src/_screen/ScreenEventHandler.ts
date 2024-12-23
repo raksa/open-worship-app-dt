@@ -40,7 +40,7 @@ export default abstract class
         if (screenManager === null) {
             const ghostScreenManager = new ScreenManager(new Date().getTime());
             ghostScreenManager.isDeleted = true;
-            return ghostScreenManager;
+            return ScreenManager.createGhostInstance();
         }
         return screenManager;
     }

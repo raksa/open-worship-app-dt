@@ -2,15 +2,11 @@ import EventHandler from '../../event/EventHandler';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import { sendScreenMessage } from '../screenEventHelpers';
 import {
-    ScreenMessageType,
-    PTEffectDataType,
+    ScreenMessageType, PTEffectDataType,
 } from '../screenHelpers';
 import ScreenManager from '../ScreenManager';
 import {
-    ScreenTransitionEffectType,
-    PTFEventType,
-    styleAnimList,
-    TargetType,
+    ScreenTransitionEffectType, PTFEventType, styleAnimList, TargetType,
     transitionEffect,
 } from './transitionEffectHelpers';
 
@@ -24,19 +20,29 @@ class ScreenTransitionEffect extends EventHandler<PTFEventType> {
         this.screenId = screenId;
         this.target = target;
         const effectType = getSetting(this.settingName, '');
-        this._effectType = Object.keys(transitionEffect).includes(effectType)
-            ? effectType as ScreenTransitionEffectType : 'none';
+        this._effectType = (
+            Object.keys(transitionEffect).includes(effectType)
+                ? effectType as ScreenTransitionEffectType : 'none'
+        );
+    }
+    get screenManager() {
+        const screenManager = ScreenManager.getInstance(this.screenId);
+        if (screenManager !== null) {
+            return screenManager;
+        }
+        return ScreenManager.createGhostInstance();
     }
     get settingName() {
         return `pt-effect-${this.screenId}-${this.target}`;
     }
+
     get effectType(): ScreenTransitionEffectType {
         return this._effectType;
     }
     set effectType(value: ScreenTransitionEffectType) {
         this._effectType = value;
         setSetting(this.settingName, value);
-        ScreenTransitionEffect.sendSyncScreen();
+        this.sendSyncScreen();
         this.addPropEvent('update');
     }
     get styleAnim() {
@@ -54,25 +60,34 @@ class ScreenTransitionEffect extends EventHandler<PTFEventType> {
     get duration() {
         return this.styleAnim.duration;
     }
+
+    sendSyncScreen() {
+        const {
+            screenBackgroundManager, screenSlideManager,
+        } = this.screenManager;
+        const data: PTEffectDataType[] = [{
+            target: screenBackgroundManager.ptEffectTarget,
+            effect: screenBackgroundManager.ptEffect.effectType,
+        }, {
+            target: screenSlideManager.ptEffectTarget,
+            effect: screenSlideManager.ptEffect.effectType,
+        }];
+        sendScreenMessage({
+            screenId: this.screenId, type: 'effect', data,
+        });
+    }
+
     static sendSyncScreen() {
-        ScreenManager.getAllInstances().forEach((screenManager) => {
+        const screenManagers = ScreenManager.getAllInstances();
+        for (const screenManager of screenManagers) {
             const {
                 screenBackgroundManager, screenSlideManager,
             } = screenManager;
-            const data: PTEffectDataType[] = [{
-                target: screenBackgroundManager.ptEffectTarget,
-                effect: screenBackgroundManager.ptEffect.effectType,
-            }, {
-                target: screenSlideManager.ptEffectTarget,
-                effect: screenSlideManager.ptEffect.effectType,
-            }];
-            sendScreenMessage({
-                screenId: screenManager.screenId,
-                type: 'effect',
-                data,
-            });
-        });
+            screenBackgroundManager.ptEffect.sendSyncScreen();
+            screenSlideManager.ptEffect.sendSyncScreen();
+        }
     }
+
     static receiveSyncScreen(message: ScreenMessageType) {
         const { data, screenId } = message;
         data.forEach(({ target, effect }: PTEffectDataType) => {

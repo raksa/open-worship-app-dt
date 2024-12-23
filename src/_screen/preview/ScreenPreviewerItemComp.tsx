@@ -18,7 +18,7 @@ function ScreenPreviewerHeaderComp() {
                 overflowY: 'hidden',
                 height: '35px',
             }}>
-            <div className={'d-flex'}>
+            <div className='d-flex w-100 h-100'>
                 <div className='d-flex justify-content-start'>
                     <ShowHideScreen />
                     <MiniScreenClearControlComp />
@@ -26,7 +26,7 @@ function ScreenPreviewerHeaderComp() {
                         <ItemColorNote item={screenManager} />
                     </div>
                 </div>
-                <div className='flex-fill d-flex justify-content-end'>
+                <div className='flex-fill d-flex justify-content-end ms-2'>
                     <DisplayControl />
                     <PTEffectControl />
                 </div>

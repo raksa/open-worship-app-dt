@@ -14,7 +14,7 @@ export default function ShowHideScreen() {
     useScreenManagerEvents(['visible'], screenManager);
     const isShowing = screenManager.isShowing;
     return (
-        <div className={`show-hide pointer ${isShowing ? 'show' : ''}`}
+        <div className={`d-flex show-hide pointer ${isShowing ? 'show' : ''}`}
             title={
                 'Toggle showing screen ' +
                 `[${toShortcutKey(showingScreenEventMap)}]`

@@ -5,10 +5,11 @@ import {
     ScreenTransitionEffectType, TargetType, transitionEffect, usePTEEvents,
 } from './transitionEffectHelpers';
 
-function openContextMenu(event: any,
-    ptEffect: ScreenTransitionEffect) {
-    const ptEffectList = Object.entries(transitionEffect);
-    showAppContextMenu(event, ptEffectList.map(([effect, [icon]]) => {
+function openContextMenu(
+    event: any, ptEffect: ScreenTransitionEffect,
+) {
+    const transitionEffectList = Object.entries(transitionEffect);
+    showAppContextMenu(event, transitionEffectList.map(([effect, [icon]]) => {
         const isSelected = effect === ptEffect.effectType;
         return {
             menuTitle: effect,

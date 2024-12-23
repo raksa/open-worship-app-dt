@@ -472,4 +472,10 @@ export default class ScreenManager
             }
         });
     }
+
+    static createGhostInstance() {
+        const ghostScreenManager = new ScreenManager(new Date().getTime());
+        ghostScreenManager.isDeleted = true;
+        return ghostScreenManager;
+    }
 }
