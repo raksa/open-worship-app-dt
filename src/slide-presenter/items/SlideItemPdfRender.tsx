@@ -59,6 +59,7 @@ export default function SlideItemPdfRender({
     return (
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             style={{ width: `${width}px` }}
+            data-slide-item-id={slideItem.id}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, slideItem);

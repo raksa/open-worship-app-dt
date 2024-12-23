@@ -292,6 +292,8 @@ export default class ScreenManager
             screenManager.sendSyncScreen();
         } else if (type === 'visible') {
             screenManager.isShowing = data?.isShowing;
+        } else if (type === 'effect') {
+            ScreenTransitionEffect.receiveSyncScreen(message);
         } else if (type === 'full-text-scroll') {
             ScreenFullTextManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {
