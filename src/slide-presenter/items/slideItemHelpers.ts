@@ -1,4 +1,3 @@
-import Slide from '../../slide-list/Slide';
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
 import { genScreenMouseEvent } from '../../_screen/screenHelpers';
 import SlideItem from '../../slide-list/SlideItem';
@@ -37,60 +36,60 @@ export function genSlideItemIds(slideItems: SlideItem[]) {
     });
 }
 
-function checkIsSameSlideItemIds(
-    slideItemIds1: number[], slideItemIds2: number[],
-) {
-    slideItemIds1.sort((a, b) => {
-        return a - b;
-    });
-    slideItemIds2.sort((a, b) => {
-        return a - b;
-    });
-    return slideItemIds1.join(',') === slideItemIds2.join(',');
-}
-
 export const DIV_CLASS_NAME = 'app-slide-items-comp';
 
+function getSelectedSlideItemIndex(slideItems: SlideItem[]) {
+    if (!document.activeElement?.classList.contains(DIV_CLASS_NAME)) {
+        return -1;
+    }
+    const divSelected = document.activeElement.querySelector(
+        '[data-slide-item-id].highlight-selected');
+    const selectedSlideItemId = parseInt(
+        divSelected?.getAttribute('data-slide-item-id') ?? '',
+    );
+    if (isNaN(selectedSlideItemId)) {
+        return -1;
+    }
+    return slideItems.findIndex((slideItem) => {
+        return slideItem.id === selectedSlideItemId;
+    });
+}
 export function genArrowListener(
     selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
-    slide: Slide, slideItems: SlideItem[],
+    slideItems: SlideItem[],
 ) {
     return (event: KeyboardEvent) => {
-        const container = document.querySelector(`.${DIV_CLASS_NAME}`);
-        if (
-            !(container instanceof HTMLDivElement) ||
-            document.activeElement !== container
-        ) {
+        if (!document.activeElement?.classList.contains(DIV_CLASS_NAME)) {
             return;
         }
-        const divSlideItemIds = Array.from(
-            container.querySelectorAll('[data-slide-item-id]'),
-        ).map((el) => {
-            return parseInt(el.getAttribute('data-slide-item-id') || '', 10);
-        }).filter((id) => {
-            return !isNaN(id);
-        });
-        const slideItemIds = genSlideItemIds(slideItems);
-        if (!checkIsSameSlideItemIds(divSlideItemIds, slideItemIds)) {
-            return;
-        }
-        event.preventDefault();
-        const presenterIndex = getPresenterIndex(
-            slide.filePath, divSlideItemIds,
+        const divSelected = document.activeElement.querySelector(
+            '[data-slide-item-id].highlight-selected',
         );
+        const selectedSlideItemId = parseInt(
+            divSelected?.getAttribute('data-slide-item-id') ?? '',
+        );
+        if (isNaN(selectedSlideItemId)) {
+            return;
+        }
+        let presenterIndex = getSelectedSlideItemIndex(slideItems);
         if (presenterIndex === -1) {
             return;
         }
-        let ind = event.key === 'ArrowLeft' ?
-            presenterIndex - 1 : presenterIndex + 1;
-        if (ind >= slideItems.length) {
-            ind = 0;
-        } else if (ind < 0) {
-            ind = slideItems.length - 1;
-        }
-        handleSlideItemSelecting(
-            selectSelectedSlideItem,
-            slideItems[ind], genScreenMouseEvent() as any,
+        event.preventDefault();
+        presenterIndex += (event.key === 'ArrowLeft' ? -1 : 1);
+        presenterIndex = Math.max(
+            0, Math.min(slideItems.length - 1, presenterIndex),
         );
+        const targetSlideItem = slideItems[presenterIndex];
+        handleSlideItemSelecting(
+            selectSelectedSlideItem, targetSlideItem,
+            genScreenMouseEvent() as any,
+        );
+        document.activeElement.querySelector(
+            `[data-slide-item-id="${targetSlideItem.id}"]`,
+        )?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+        });
     };
 }

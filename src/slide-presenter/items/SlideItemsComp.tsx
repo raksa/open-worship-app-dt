@@ -90,7 +90,7 @@ function useSlideItems() {
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
     const arrowListener = (
         appProvider.isPageEditor ? () => { } : genArrowListener(
-            setSelectedSlideItem, selectedSlide, slideItems || [],
+            setSelectedSlideItem, slideItems || [],
         )
     );
     useKeyboardRegistering(arrows.map((key) => {
