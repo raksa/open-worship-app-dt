@@ -18,20 +18,28 @@ export function RendInfo({ index, slideItem }: Readonly<{
 }>) {
     const { selectedList } = toClassNameHighlight(slideItem);
     return (
-        <>
-            <div>
-                <span className='badge rounded-pill text-bg-info'
-                    title={`Index: ${index + 1}`}>
-                    {index + 1}
-                </span>
-                {selectedList.map(([key]) => {
-                    const screenId = parseInt(key);
-                    return (
-                        <ShowingScreenIcon key={key} screenId={screenId} />
-                    );
-                })}
+        <div className='d-flex w-100'>
+            <div className='flex-fill d-flex'>
+                <div>
+                    <span className='badge rounded-pill text-bg-info'
+                        title={`Index: ${index + 1}`}>
+                        {index + 1}
+                    </span>
+                </div>
             </div>
             <div className='flex-fill d-flex justify-content-end'>
+                {selectedList.length > 0 ? (
+                    <div className='d-flex app-border-white-round px-1'>
+                        {selectedList.map(([key]) => {
+                            const screenId = parseInt(key);
+                            return (
+                                <ShowingScreenIcon key={key}
+                                    screenId={screenId}
+                                />
+                            );
+                        })}
+                    </div>
+                ) : null}
                 <span title={
                     `width:${slideItem.width}, height:${slideItem.height}`
                 }>
@@ -43,7 +51,7 @@ export function RendInfo({ index, slideItem }: Readonly<{
                     <span style={{ color: 'red' }}>*</span>
                 )}
             </div>
-        </>
+        </div>
     );
 }
 
@@ -107,7 +115,7 @@ export default function SlideItemRenderComp({
                 onContextMenu(event as any);
             }}
             onCopy={onCopy}>
-            <div className='card-header d-flex'>
+            <div className='card-header d-flex' style={{ height: '35px' }}>
                 <RendInfo index={index}
                     slideItem={slideItem}
                 />

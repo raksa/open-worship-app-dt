@@ -70,7 +70,7 @@ export default function SlideItemPdfRender({
             }}
             onClick={onClick}
             onContextMenu={onContextMenu}>
-            <div className='card-header d-flex'>
+            <div className='card-header d-flex' style={{ height: '35px' }}>
                 <i className='bi bi-filetype-pdf' />
                 <RendInfo index={index}
                     slideItem={slideItem}
