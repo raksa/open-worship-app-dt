@@ -9,7 +9,7 @@ import {
     selectSlide,
 } from '../../slide-list/slideHelpers';
 import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
-import { getPresenterIndex } from './slideItemHelpers';
+import { genSlideItemIds, getPresenterIndex } from './slideItemHelpers';
 import AppRange from '../../others/AppRange';
 import {
     useSlideItemThumbnailSizeScale,
@@ -21,7 +21,9 @@ function HistoryPreviewerFooter() {
     const selectedSlide = useSelectedSlideContext();
     const [history, setHistory] = useState<number[]>([]);
     useScreenSlideManagerEvents(['update'], undefined, () => {
-        const index = getPresenterIndex(selectedSlide);
+        const index = getPresenterIndex(
+            selectedSlide.filePath, genSlideItemIds(selectedSlide.items),
+        );
         if (index < 0) {
             return;
         }

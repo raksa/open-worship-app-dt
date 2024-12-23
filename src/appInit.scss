@@ -282,4 +282,10 @@
       width: 100%;
     }
   }
+
+  .app-focusable {
+    &:focus {
+      border: 1px solid var(--bs-primary);
+    }
+  }
 }
