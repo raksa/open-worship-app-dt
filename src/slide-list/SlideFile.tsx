@@ -13,7 +13,7 @@ import { ContextMenuItemType } from '../others/AppContextMenu';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import {
-    genPdfImagesPreview, removePdfImagesPreview,
+    removePdfImagesPreview,
 } from '../helper/pdfHelpers';
 
 export default function SlideFile({
@@ -74,7 +74,7 @@ export default function SlideFile({
     }, {
         menuTitle: 'Refresh PDF Images',
         onClick: async () => {
-            await genPdfImagesPreview(slide.fileSource.filePath, true);
+            await removePdfImagesPreview(slide.filePath);
             slide.fileSource.fireUpdateEvent();
         },
     }] : [{

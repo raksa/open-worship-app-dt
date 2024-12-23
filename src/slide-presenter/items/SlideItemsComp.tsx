@@ -18,7 +18,7 @@ import appProvider from '../../server/appProvider';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import { genPdfImagesPreview } from '../../helper/pdfHelpers';
-import ProgressBarComp from '../../progress-bar/ProgressBarComp';
+import LoadingComp from '../../others/LoadingComp';
 
 async function getSlideItems(slide: Slide) {
     if (!slide.isPdf) {
@@ -122,9 +122,7 @@ export default function SlideItemsComp() {
     );
     if (isPending) {
         return (
-            <div className='d-flex flex-wrap justify-content-center'>
-                <ProgressBarComp />
-            </div>
+            <LoadingComp />
         );
     }
     if (slideItems === null) {
