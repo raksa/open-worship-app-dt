@@ -1,3 +1,5 @@
+import loading from '../assets/loading.gif';
+
 export default function LoadingComp() {
     return (
         <div
@@ -5,7 +7,7 @@ export default function LoadingComp() {
             <div style={{ margin: 'auto' }}>
                 <img style={{
                     maxWidth: '70px',
-                }} src='/public/loading.gif' alt='Loading...' />
+                }} src={loading} alt='Loading...' />
             </div>
         </div>
     );
