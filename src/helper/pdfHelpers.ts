@@ -5,27 +5,6 @@ import {
 } from '../server/fileHelpers';
 import FileSource from './FileSource';
 
-export type PdfMiniInfoType = {
-    width: number, height: number, count: number,
-};
-export function getPdfInfo(filePath: string) {
-    return electronSendAsync<{ page: PdfMiniInfoType } | null>(
-        'main:app:pdf-info', { filePath },
-    );
-}
-
-export type PdfImageOptionsType = {
-    width?: number, alpha?: boolean, quality?: number,
-    type?: 'png' | 'jpeg',
-};
-export function getPdfPageImage(
-    filePath: string, pageIndex: number, options: PdfImageOptionsType,
-) {
-    return electronSendAsync<string | null>('main:app:pdf-page-image', {
-        filePath, pageIndex, options,
-    });
-}
-
 function toPdfImagesPreviewDirPath(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
     return appProvider.pathUtils.resolve(

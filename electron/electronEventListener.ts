@@ -3,9 +3,6 @@ import fontList from 'font-list';
 
 import ElectronAppController from './ElectronAppController.js';
 import { tarExtract } from './electronHelpers.js';
-import {
-    getPdfInfo, getPdfPageImage, PdfImageOptionsType,
-} from './electronPdfHelpers.js';
 import ElectronScreenController from './ElectronScreenController.js';
 import { officeFileToPdf } from './electronOfficeHelpers.js';
 import { pdfToImages } from './pdfToImagesHelpers.js';
@@ -235,23 +232,6 @@ export function initEventOther(appController: ElectronAppController) {
     }) => {
         await officeFileToPdf(filePath, outputDir, fileFullName);
         appController.mainController.sendData(replyEventName);
-    });
-
-    ipcMain.on('main:app:pdf-info', async (_, { replyEventName, filePath }: {
-        replyEventName: string, filePath: string,
-    }) => {
-        const pdfInfo = await getPdfInfo(filePath);
-        appController.mainController.sendData(replyEventName, pdfInfo);
-    });
-
-    ipcMain.on('main:app:pdf-page-image', async (
-        _, { replyEventName, filePath, pageIndex, options }: {
-            replyEventName: string,
-            filePath: string, pageIndex: number, options: PdfImageOptionsType,
-        },
-    ) => {
-        const imageData = await getPdfPageImage(filePath, pageIndex, options);
-        appController.mainController.sendData(replyEventName, imageData);
     });
 
     ipcMain.on('main:app:pdf-to-images', async (
