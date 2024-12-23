@@ -19,7 +19,8 @@ export default function ShowingScreenIcon({ screenId }: Readonly<{
 }>) {
     const color = genColorFromScreenId(screenId);
     return (
-        <span className='d-flex' title={`Screen: ${screenId}`}>
+        <span className='d-flex' title={`Screen: ${screenId}`}
+            data-screen-id={screenId}>
             <i className='bi bi-collection' style={{ color }} />
             {screenId}
         </span>
