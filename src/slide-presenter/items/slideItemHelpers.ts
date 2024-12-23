@@ -101,6 +101,7 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
         return;
     }
     event.preventDefault();
+    // FIXME: monitor group not working
     for (let i = 0; i < foundList.length; i++) {
         const { slideItem, targetDiv, screenId } = foundList[i];
         const screenManager = ScreenManager.getInstance(screenId);
