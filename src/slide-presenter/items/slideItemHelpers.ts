@@ -77,10 +77,8 @@ export function genArrowListener(
         }
         event.preventDefault();
         presenterIndex += (event.key === 'ArrowLeft' ? -1 : 1);
-        presenterIndex = Math.max(
-            0, Math.min(slideItems.length - 1, presenterIndex),
-        );
-        const targetSlideItem = slideItems[presenterIndex];
+        presenterIndex += slideItems.length;
+        const targetSlideItem = slideItems[presenterIndex % slideItems.length];
         handleSlideItemSelecting(
             selectSelectedSlideItem, targetSlideItem,
             genScreenMouseEvent() as any,
