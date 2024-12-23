@@ -8,9 +8,7 @@ import {
 } from '../../event/SlideListEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
-import {
-    DIV_CLASS_NAME, genArrowListener, genSlideItemIds,
-} from './slideItemHelpers';
+import { genArrowListener } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
 import SlideItem, {
@@ -145,13 +143,7 @@ export default function SlideItemsComp() {
         );
     }
     return (
-        <div className={
-            `${DIV_CLASS_NAME} app-focusable d-flex flex-wrap ` +
-            'justify-content-center'
-        }
-            tabIndex={0} data-slide-item-ids={
-                genSlideItemIds(slideItems).join(',')
-            }>
+        <div className='d-flex flex-wrap justify-content-center'>
             {slideItems.map((slideItem, i) => {
                 return (
                     <SlideItemRenderWrapper key={slideItem.id}

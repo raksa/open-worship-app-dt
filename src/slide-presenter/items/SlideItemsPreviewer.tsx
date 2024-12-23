@@ -6,6 +6,7 @@ import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleCtrlWheel } from '../../others/AppRange';
 import { defaultRangeSize } from './SlidePreviewerFooterComp';
 import SlideItemsMenuComp from './SlideItemsMenuComp';
+import { DIV_CLASS_NAME } from './slideItemHelpers';
 
 export default function SlideItemsPreviewer() {
     const selectedSlide = useSelectedSlideContext();
@@ -13,7 +14,8 @@ export default function SlideItemsPreviewer() {
         thumbSizeScale, setThumbnailSizeScale,
     ] = useSlideItemThumbnailSizeScale();
     return (
-        <div className='w-100 h-100 pb-5'
+        <div className={`${DIV_CLASS_NAME} app-focusable w-100 h-100 pb-5`}
+            tabIndex={0}
             style={{ overflow: 'auto' }}
             onWheel={(event) => {
                 handleCtrlWheel({

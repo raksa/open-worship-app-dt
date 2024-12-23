@@ -59,22 +59,25 @@ export function genArrowListener(
         const container = document.querySelector(`.${DIV_CLASS_NAME}`);
         if (
             !(container instanceof HTMLDivElement) ||
-            document.activeElement !== container ||
-            container.getAttribute('data-slide-item-ids') === null
+            document.activeElement !== container
         ) {
             return;
         }
-        const ids = container.getAttribute('data-slide-item-ids') as string;
-        const slideItemIds = ids.split(',').map((id) => {
-            return parseInt(id, 10);
+        const divSlideItemIds = Array.from(
+            container.querySelectorAll('[data-slide-item-id]'),
+        ).map((el) => {
+            return parseInt(el.getAttribute('data-slide-item-id') || '', 10);
+        }).filter((id) => {
+            return !isNaN(id);
         });
-        if (!checkIsSameSlideItemIds(
-            slideItemIds, genSlideItemIds(slideItems),
-        )) {
+        const slideItemIds = genSlideItemIds(slideItems);
+        if (!checkIsSameSlideItemIds(divSlideItemIds, slideItemIds)) {
             return;
         }
         event.preventDefault();
-        const presenterIndex = getPresenterIndex(slide.filePath, slideItemIds);
+        const presenterIndex = getPresenterIndex(
+            slide.filePath, divSlideItemIds,
+        );
         if (presenterIndex === -1) {
             return;
         }
