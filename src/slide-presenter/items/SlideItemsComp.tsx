@@ -8,13 +8,10 @@ import {
 } from '../../event/SlideListEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
-import { genArrowListener } from './slideItemHelpers';
+import { handleArrowing } from './slideItemHelpers';
 import SlideItemRenderWrapper from './SlideItemRenderWrapper';
 import { DEFAULT_THUMBNAIL_SIZE_FACTOR } from '../../slide-list/slideHelpers';
-import SlideItem, {
-    useSelectedEditingSlideItemSetterContext,
-} from '../../slide-list/SlideItem';
-import appProvider from '../../server/appProvider';
+import SlideItem from '../../slide-list/SlideItem';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import { genPdfImagesPreview } from '../../helper/pdfHelpers';
@@ -38,8 +35,6 @@ async function getSlideItems(slide: Slide) {
 const slideItemsToView: { [key: string]: SlideItem } = {};
 function useSlideItems() {
     const selectedSlide = useSelectedSlideContext();
-    const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
-
     const [slideItems, setSlideItems] = useState<SlideItem[] | null>(null);
     const [isPending, startTransition] = useTransition();
     const startLoading = () => {
@@ -88,14 +83,11 @@ function useSlideItems() {
     );
 
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
-    const arrowListener = (
-        appProvider.isPageEditor ? () => { } : genArrowListener(
-            setSelectedSlideItem, slideItems || [],
-        )
-    );
     useKeyboardRegistering(arrows.map((key) => {
         return { key };
-    }), arrowListener);
+    }), (event) => {
+        handleArrowing(event, slideItems || []);
+    }, [slideItems]);
 
     useAppEffect(() => {
         const slideItems = Object.values(slideItemsToView);

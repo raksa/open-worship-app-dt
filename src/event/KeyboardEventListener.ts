@@ -1,3 +1,4 @@
+import { DependencyList } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getLastItem } from '../helper/helpers';
 import appProvider from '../server/appProvider';
@@ -106,6 +107,7 @@ export default class KeyboardEventListener extends EventHandler<string> {
 
 export function useKeyboardRegistering(
     eventMappers: EventMapper[], listener: ListenerType,
+    deps?: DependencyList
 ) {
     useAppEffect(() => {
         const eventNames = eventMappers.map((eventMapper) => {
@@ -117,7 +119,7 @@ export function useKeyboardRegistering(
         return () => {
             KeyboardEventListener.unregisterEventListener(registeredEvents);
         };
-    });
+    }, deps);
 }
 
 

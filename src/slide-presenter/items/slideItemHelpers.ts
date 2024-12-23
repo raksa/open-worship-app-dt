@@ -1,5 +1,4 @@
 import ScreenSlideManager from '../../_screen/ScreenSlideManager';
-import { genScreenMouseEvent } from '../../_screen/screenHelpers';
 import SlideItem from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
 import ScreenManager from '../../_screen/ScreenManager';
@@ -20,17 +19,10 @@ export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
 }
 export function handleSlideItemSelecting(
     selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
-    slideItem: SlideItem, event: any, screenId?: number,
+    slideItem: SlideItem, event: any,
 ) {
     if (appProvider.isPageEditor) {
         selectSelectedSlideItem(slideItem);
-    } else if (screenId !== undefined) {
-        (
-            ScreenManager.getInstance(screenId)?.screenSlideManager
-                .handleSlideSelecting(
-                    slideItem.filePath, slideItem.toJson(),
-                )
-        );
     } else {
         ScreenSlideManager.handleSlideSelecting(
             event, slideItem.filePath, slideItem.toJson(),
@@ -46,70 +38,82 @@ export function genSlideItemIds(slideItems: SlideItem[]) {
 
 export const DIV_CLASS_NAME = 'app-slide-items-comp';
 
-function handleSlideItemArrowKey(
-    event: KeyboardEvent,
-    selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
-    slideItems: SlideItem[], divContainer: HTMLDivElement,
-    slideItemId: number, screenId: number,
+function findNextSlideItem(
+    isLeft: boolean, slideItems: SlideItem[], slideItemId: number,
+    divContainer: HTMLDivElement,
 ) {
     let index = slideItems.findIndex((slideItem) => {
         return slideItem.id === slideItemId;
     });
     if (index === -1) {
+        return { targetSlideItem: null, targetDiv: null };
+    }
+    index += isLeft ? -1 : 1;
+    index += slideItems.length;
+
+    const targetSlideItem = slideItems[index % slideItems.length] ?? null;
+    return {
+        targetSlideItem,
+        targetDiv: targetSlideItem === null ? null : divContainer.querySelector(
+            `[data-slide-item-id="${targetSlideItem.id}"]`,
+        ) as HTMLDivElement,
+    };
+}
+export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
+    if (
+        !appProvider.presenterHomePage ||
+        !document.activeElement?.classList.contains(DIV_CLASS_NAME)
+    ) {
+        return;
+    }
+    const isLeft = event.key === 'ArrowLeft';
+    const divSelectedList = document.activeElement.querySelectorAll(
+        '[data-slide-item-id].highlight-selected',
+    );
+    const foundList = Array.from(divSelectedList).reduce(
+        (r: {
+            slideItem: SlideItem, targetDiv: HTMLDivElement,
+            screenId: number,
+        }[], divSelected) => {
+            const slideItemId = parseInt(
+                divSelected?.getAttribute('data-slide-item-id') ?? '',
+            );
+            const screenIds = Array.from(
+                divSelected.querySelectorAll('[data-screen-id]')
+            ).map((element) => {
+                return parseInt(
+                    element.getAttribute('data-screen-id') ?? '',
+                );
+            });
+            const { targetSlideItem, targetDiv } = findNextSlideItem(
+                isLeft, slideItems, slideItemId,
+                document.activeElement as HTMLDivElement,
+            );
+            if (targetSlideItem === null || targetDiv === null) {
+                return r;
+            }
+            return r.concat(screenIds.map((screenId) => {
+                return { slideItem: targetSlideItem, targetDiv, screenId };
+            }));
+        }, [],
+    );
+    if (foundList.length === 0) {
         return;
     }
     event.preventDefault();
-    index += (event.key === 'ArrowLeft' ? -1 : 1);
-    index += slideItems.length;
-    const targetSlideItem = slideItems[index % slideItems.length];
-    handleSlideItemSelecting(
-        selectSelectedSlideItem, targetSlideItem,
-        genScreenMouseEvent() as any, screenId,
-    );
-    divContainer.querySelector(
-        `[data-slide-item-id="${targetSlideItem.id}"]`,
-    )?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-export function genArrowListener(
-    selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
-    slideItems: SlideItem[],
-) {
-    return (event: KeyboardEvent) => {
-        if (!document.activeElement?.classList.contains(DIV_CLASS_NAME)) {
-            return;
+    for (let i = 0; i < foundList.length; i++) {
+        const { slideItem, targetDiv, screenId } = foundList[i];
+        const screenManager = ScreenManager.getInstance(screenId);
+        if (screenManager === null) {
+            continue;
         }
-        const divSelectedList = document.activeElement.querySelectorAll(
-            '[data-slide-item-id].highlight-selected',
-        );
-        const foundList = Array.from(divSelectedList).reduce(
-            (r: {
-                slideItemId: number, screenId: number,
-            }[], divSelected) => {
-                const slideItemId = parseInt(
-                    divSelected?.getAttribute('data-slide-item-id') ?? '',
-                );
-                const screenIds = Array.from(
-                    divSelected.querySelectorAll('[data-screen-id]')
-                ).map((element) => {
-                    return parseInt(
-                        element.getAttribute('data-screen-id') ?? '',
-                    );
-                });
-                return r.concat(screenIds.map((screenId) => {
-                    return { slideItemId, screenId };
-                }));
-            }, [],
-        );
-        for (let i = 0; i < foundList.length; i++) {
-            const { slideItemId, screenId } = foundList[i];
-            setTimeout(() => {
-
-                handleSlideItemArrowKey(
-                    event, selectSelectedSlideItem, slideItems,
-                    document.activeElement as HTMLDivElement,
-                    slideItemId, screenId
-                );
-            }, i * 10);
-        }
-    };
+        setTimeout(() => {
+            screenManager.screenSlideManager.handleSlideSelecting(
+                slideItem.filePath, slideItem.toJson(),
+            );
+            targetDiv.scrollIntoView({
+                behavior: 'smooth', block: 'center',
+            });
+        }, i * 100);
+    }
 }
