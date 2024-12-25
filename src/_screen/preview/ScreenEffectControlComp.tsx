@@ -1,4 +1,4 @@
-import { useScreenManagerContext } from '../managers/ScreenManager';
+import { useScreenManagerContext } from '../managers/screenManagerHelpers';
 import RenderTransitionEffectComp
     from '../RenderTransitionEffectComp';
 

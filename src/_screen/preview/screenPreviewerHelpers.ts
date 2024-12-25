@@ -2,9 +2,13 @@ import ScreenManager from '../managers/ScreenManager';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenu';
+import {
+    getAllScreenManagerInstances,
+    getSelectedScreenManagerInstances,
+} from '../managers/screenManagerHelpers';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
-    const screenManagers = ScreenManager.getAllInstances();
+    const screenManagers = getAllScreenManagerInstances();
     const selectedScreenIds = screenManagers.filter((screenManager1) => {
         return screenManager1.isSelected;
     }).map((screenManager1) => {
@@ -28,7 +32,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
         ...isOne || isSolo ? [] : [{
             menuTitle: 'Solo',
             onClick() {
-                ScreenManager.getSelectedScreenManagerInstances()
+                getSelectedScreenManagerInstances()
                     .forEach((screenManager1) => {
                         screenManager1.isSelected = false;
                     });

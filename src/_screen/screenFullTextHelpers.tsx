@@ -7,12 +7,12 @@ import {
 } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
-import ScreenManager from './managers/ScreenManager';
 import { showAppAlert } from '../alert/alertHelpers';
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { FullTextItemDataType } from './screenHelpers';
+import { getDisplayByScreenId } from './managers/screenManagerHelpers';
 
 export type ScreenFTManagerEventType = 'update' | 'text-style';
 
@@ -145,9 +145,7 @@ export function renderScreenFullTextManager(
     const { screenManager } = screenFullTextManager;
     const parentWidth = screenManager.width;
     const parentHeight = screenManager.height;
-    const { bounds } = ScreenManager.getDisplayByScreenId(
-        screenFullTextManager.screenId,
-    );
+    const { bounds } = getDisplayByScreenId(screenFullTextManager.screenId);
     const width = bounds.width;
     const height = bounds.height;
     Object.assign(divHaftScale.style, {

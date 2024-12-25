@@ -17,7 +17,7 @@ import {
 // TODO: cyclic dependency ScreenManager<->ScreenSlideManager
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
-    chooseScreenManagerInstances, getScreenManagerInstance,
+    chooseScreenManagerInstances, getScreenManagerInstanceForce,
 } from './screenManagerHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
@@ -285,7 +285,7 @@ export default class ScreenSlideManager extends
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenSlideManager } = getScreenManagerInstance(screenId);
+        const { screenSlideManager } = getScreenManagerInstanceForce(screenId);
         screenSlideManager.receiveSyncScreen(message);
     }
 

@@ -1,7 +1,7 @@
 import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
 import SlideItem from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
-import ScreenManager from '../../_screen/managers/ScreenManager';
+import { getScreenManagerInstance } from '../../_screen/managers/screenManagerHelpers';
 
 export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
     if (slideItemIds.length === 0) {
@@ -104,7 +104,7 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
     // FIXME: monitor group not working
     for (let i = 0; i < foundList.length; i++) {
         const { slideItem, targetDiv, screenId } = foundList[i];
-        const screenManager = ScreenManager.getInstance(screenId);
+        const screenManager = getScreenManagerInstance(screenId);
         if (screenManager === null) {
             continue;
         }

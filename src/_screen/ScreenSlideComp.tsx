@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useScreenManagerEvents } from './managers/screenEventHelpers';
-import { useScreenManagerContext } from './managers/ScreenManager';
+import { useScreenManagerContext } from './managers/screenManagerHelpers';
 
 export default function ScreenSlideComp() {
     const screenManager = useScreenManagerContext();

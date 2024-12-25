@@ -1,8 +1,8 @@
-import { useScreenManagerContext } from '../managers/ScreenManager';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenu';
 import { useScreenManagerEvents } from '../managers/screenEventHelpers';
+import { useScreenManagerContext } from '../managers/screenManagerHelpers';
 import { getAllDisplays } from '../screenHelpers';
 
 export default function DisplayControl() {

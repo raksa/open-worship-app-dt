@@ -1,12 +1,14 @@
 import { AnyObjectType, toMaxId } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
-import ScreenManager from '../../_screen/managers/ScreenManager';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemVideo from './CanvasItemVideo';
 import { handleError } from '../../helper/errorHelpers';
+import {
+    getDefaultScreenDisplay,
+} from '../../_screen/managers/screenManagerHelpers';
 
 type CanvasPropsType = {
     width: number,
@@ -48,7 +50,7 @@ export default class Canvas {
         });
     }
     static getDefaultDim() {
-        const display = ScreenManager.getDefaultScreenDisplay();
+        const display = getDefaultScreenDisplay();
         const { width, height } = display.bounds;
         return { width, height };
     }

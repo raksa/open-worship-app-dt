@@ -3,12 +3,14 @@ import ScreenBackgroundComp from './ScreenBackgroundComp';
 import ScreenSlideComp from './ScreenSlideComp';
 import ScreenAlertComp from './ScreenAlertComp';
 import ScreenFullTextComp from './ScreenFullTextComp';
-import ScreenManager, { ScreenManagerContext } from './managers/ScreenManager';
 import { RendStyle } from './RenderTransitionEffectComp';
 import appProviderScreen from './appProviderScreen';
 import {
     initReceiveScreenMessage, sendScreenMessage,
 } from './managers/screenEventHelpers';
+import {
+    createScreenManagerInstance, ScreenManagerContext,
+} from './managers/screenManagerHelpers';
 
 initReceiveScreenMessage();
 export default function ScreenAppComp() {
@@ -17,7 +19,7 @@ export default function ScreenAppComp() {
     if (isNaN(screenId)) {
         return null;
     }
-    const screenManager = ScreenManager.createInstance(screenId);
+    const screenManager = createScreenManagerInstance(screenId);
     if (screenManager === null) {
         return null;
     }

@@ -2,12 +2,12 @@ import './CustomHTMLScreenPreviewer';
 
 import ShowHideScreen from './ShowHideScreen';
 import MiniScreenClearControlComp from './MiniScreenClearControlComp';
-import { useScreenManagerContext } from '../managers/ScreenManager';
 import DisplayControl from './DisplayControl';
 import ScreenEffectControlComp from './ScreenEffectControlComp';
 import { handleDrop } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import ItemColorNote from '../../others/ItemColorNote';
+import { useScreenManagerContext } from '../managers/screenManagerHelpers';
 
 function ScreenPreviewerHeaderComp() {
     const screenManager = useScreenManagerContext();

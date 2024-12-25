@@ -3,8 +3,8 @@ import {
     AlertDataType,
     getAlertDataListOnScreenSetting,
 } from '../_screen/screenHelpers';
-import ScreenManager from '../_screen/managers/ScreenManager';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { getScreenManagerInstanceByKey } from '../_screen/managers/screenManagerHelpers';
 
 export function getShowingScreenIds(
     filterFunc: (data: AlertDataType) => boolean,
@@ -25,9 +25,7 @@ export function hideAlert(
     screenId: number,
     hidingFunc: (screenAlertManager: ScreenAlertManager) => void,
 ) {
-    const screenManager = ScreenManager.getInstanceByKey(
-        screenId.toString(),
-    );
+    const screenManager = getScreenManagerInstanceByKey(screenId.toString());
     if (screenManager === null) {
         showSimpleToast('ScreenManager not found', 'error');
         return;

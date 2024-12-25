@@ -2,8 +2,10 @@ import ScreenAlertComp from '../ScreenAlertComp';
 import ScreenBackgroundComp from '../ScreenBackgroundComp';
 import ScreenSlideComp from '../ScreenSlideComp';
 import ScreenFullTextComp from '../ScreenFullTextComp';
-import ScreenManager, { ScreenManagerContext } from '../managers/ScreenManager';
 import { RendStyle } from '../RenderTransitionEffectComp';
+import {
+    getScreenManagerInstance, ScreenManagerContext,
+} from '../managers/screenManagerHelpers';
 
 const IMAGE_BACKGROUND = (
     `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
@@ -15,7 +17,7 @@ linear-gradient(-45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%)`
 export default function MiniScreenAppComp({ screenId }: Readonly<{
     screenId: number,
 }>) {
-    const screenManager = ScreenManager.getInstance(screenId);
+    const screenManager = getScreenManagerInstance(screenId);
     if (screenManager === null) {
         return null;
     }

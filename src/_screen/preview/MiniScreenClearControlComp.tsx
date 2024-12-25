@@ -4,7 +4,8 @@ import {
 import {
     useScreenManagerEvents,
 } from '../managers/screenEventHelpers';
-import ScreenManager, { useScreenManagerContext } from '../managers/ScreenManager';
+import ScreenManager from '../managers/ScreenManager';
+import { useScreenManagerContext } from '../managers/screenManagerHelpers';
 
 function RenderButtonComp({ btnMaps }: Readonly<{
     btnMaps: {

@@ -25,7 +25,7 @@ import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
     chooseScreenManagerInstances, getAllScreenManagerInstances,
-    getScreenManagerInstance,
+    getScreenManagerInstanceForce,
 } from './screenManagerHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
@@ -388,12 +388,12 @@ export default class ScreenFullTextManager
     }
 
     static getInstance(screenId: number) {
-        return getScreenManagerInstance(screenId).screenFullTextManager;
+        return getScreenManagerInstanceForce(screenId).screenFullTextManager;
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenFullTextManager } = getScreenManagerInstance(screenId);
+        const { screenFullTextManager } = getScreenManagerInstanceForce(screenId);
         screenFullTextManager.receiveSyncScreen(message);
     }
 

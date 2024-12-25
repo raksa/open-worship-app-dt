@@ -5,7 +5,7 @@ import {
     useScreenFullTextManagerEvents, useScreenManagerEvents,
 } from './managers/screenEventHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
-import { useScreenManagerContext } from './managers/ScreenManager';
+import { useScreenManagerContext } from './managers/screenManagerHelpers';
 
 const styleText = `
 #full-text {

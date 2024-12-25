@@ -3,8 +3,10 @@ import {
 } from '../../event/KeyboardEventListener';
 import { useFileSourceRefreshEvents } from '../../helper/dirSourceHelpers';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
-import ScreenManager from '../../_screen/managers/ScreenManager';
 import MenuIsModifying from './MenuIsModifying';
+import {
+    getDefaultScreenDisplay,
+} from '../../_screen/managers/screenManagerHelpers';
 
 const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],
@@ -12,7 +14,7 @@ const savingEventMapper: KBEventMapper = {
 };
 export default function SlideItemsMenuComp() {
     const selectedSlide = useSelectedSlideContext();
-    const screenDisplay = ScreenManager.getDefaultScreenDisplay();
+    const screenDisplay = getDefaultScreenDisplay();
     useFileSourceRefreshEvents(['history-update'], selectedSlide.filePath);
     useKeyboardRegistering([savingEventMapper], () => {
         selectedSlide.save();

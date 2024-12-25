@@ -1,6 +1,5 @@
 import './MiniScreen.scss';
 
-import ScreenManager, { ScreenManagerContext } from '../managers/ScreenManager';
 import {
     initReceiveScreenMessage, useScreenManagerEvents,
 } from '../managers/screenEventHelpers';
@@ -12,13 +11,17 @@ import {
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
 import { handleCtrlWheel } from '../../others/AppRange';
+import {
+    genNewScreenManagerInstance, getAllScreenManagerInstances, getScreenManagersSetting,
+    ScreenManagerContext,
+} from '../managers/screenManagerHelpers';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
         {
             menuTitle: 'Add New Screen',
             onClick() {
-                ScreenManager.genNewInstance();
+                genNewScreenManagerInstance();
             },
         },
     ]);
@@ -35,12 +38,12 @@ export default function MiniScreen() {
     );
     const setPreviewScale1 = (size: number) => {
         setPreviewScale(size);
-        ScreenManager.getAllInstances().forEach((screenManager) => {
+        getAllScreenManagerInstances().forEach((screenManager) => {
             screenManager.fireResizeEvent();
         });
     };
     useScreenManagerEvents(['instance']);
-    const screenManagers = ScreenManager.getScreenManagersSetting();
+    const screenManagers = getScreenManagersSetting();
     const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;
     return (
         <div className='card w-100 h-100'>

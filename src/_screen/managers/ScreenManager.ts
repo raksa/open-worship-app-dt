@@ -1,31 +1,28 @@
-import { createContext, use } from 'react';
-
 import EventHandler from '../../event/EventHandler';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { getWindowDim } from '../../helper/helpers';
 import { log } from '../../helper/loggerHelpers';
-import { getSetting, setSetting } from '../../helper/settingHelpers';
+import { setSetting } from '../../helper/settingHelpers';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import {
-    getAllDisplays, getAllShowingScreenIds, getScreenManagersInstanceSetting,
-    hideScreen, ScreenMessageType, setDisplay, showScreen,
-    TypeScreenManagerSettingType,
+    getAllShowingScreenIds, getScreenManagersInstanceSetting,
+    hideScreen, setDisplay, showScreen,
 } from '../screenHelpers';
 import ScreenManagerInf from '../preview/ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
 import ScreenEffectManager from './ScreenEffectManager';
-import { screenManagerSettingNames } from '../../helper/constants';
-import { unlocking } from '../../server/appHelpers';
 import ColorNoteInf from '../../helper/ColorNoteInf';
+import {
+    deleteScreenManagerCache, getDisplayIdByScreenId, saveScreenManagersSetting,
+    SCREEN_MANAGER_SETTING_NAME,
+} from './screenManagerHelpers';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'
 );
-const settingName = 'screen-display-';
 
-const cache = new Map<string, any>();
 export default class ScreenManager
     extends EventHandler<ScreenManagerEventType>
     implements ScreenManagerInf, ColorNoteInf {
@@ -42,7 +39,7 @@ export default class ScreenManager
     width: number;
     height: number;
     name: string;
-    private _isSelected: boolean = false;
+    _isSelected: boolean = false;
     private _isShowing: boolean;
     private _colorNote: string | null = null;
     noSyncGroupMap: Map<string, boolean>;
@@ -84,7 +81,7 @@ export default class ScreenManager
 
     async setColorNote(color: string | null) {
         this._colorNote = color;
-        await ScreenManager.saveScreenManagersSetting();
+        await saveScreenManagersSetting();
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
         ScreenSlideManager.enableSyncGroup(this.screenId);
         ScreenFullTextManager.enableSyncGroup(this.screenId);
@@ -102,11 +99,14 @@ export default class ScreenManager
     }
 
     get displayId() {
-        return ScreenManager.getDisplayIdByScreenId(this.screenId);
+        return getDisplayIdByScreenId(this.screenId);
     }
 
     set displayId(id: number) {
-        setSetting(`${settingName}-pid-${this.screenId}`, id.toString());
+        setSetting(
+            `${SCREEN_MANAGER_SETTING_NAME}-pid-${this.screenId}`,
+            id.toString(),
+        );
         if (this.isShowing) {
             setDisplay({
                 screenId: this.screenId,
@@ -125,7 +125,7 @@ export default class ScreenManager
     }
     set isSelected(isSelected: boolean) {
         this._isSelected = isSelected;
-        ScreenManager.saveScreenManagersSetting();
+        saveScreenManagersSetting();
         this.fireInstanceEvent();
     }
     get isShowing() {
@@ -163,29 +163,18 @@ export default class ScreenManager
         this.addPropEvent('update');
         ScreenManager.fireUpdateEvent();
     }
-    static fireUpdateEvent() {
-        this.addPropEvent('update');
-    }
     fireInstanceEvent() {
         this.addPropEvent('instance');
         ScreenManager.fireInstanceEvent();
-    }
-    static fireInstanceEvent() {
-        this.addPropEvent('instance');
     }
     fireVisibleEvent() {
         this.addPropEvent('visible');
         ScreenManager.fireVisibleEvent();
     }
-    static fireVisibleEvent() {
-        this.addPropEvent('visible');
-    }
+
     fireResizeEvent() {
         this.addPropEvent('resize');
         ScreenManager.fireVisibleEvent();
-    }
-    static fireResizeEvent() {
-        this.addPropEvent('resize');
     }
     clear() {
         this.screenBackgroundManager.clear();
@@ -204,9 +193,22 @@ export default class ScreenManager
         this.screenSlideManager.delete();
         this.screenFullTextManager.delete();
         this.screenAlertManager.delete();
-        cache.delete(this.key);
-        await ScreenManager.saveScreenManagersSetting(this.screenId);
+        deleteScreenManagerCache(this.key);
+        await saveScreenManagersSetting(this.screenId);
         this.fireInstanceEvent();
+    }
+
+    static fireUpdateEvent() {
+        this.addPropEvent('update');
+    }
+    static fireInstanceEvent() {
+        this.addPropEvent('instance');
+    }
+    static fireVisibleEvent() {
+        this.addPropEvent('visible');
+    }
+    static fireResizeEvent() {
+        this.addPropEvent('resize');
     }
 
     receiveScreenDropped(droppedData: DroppedDataType) {
@@ -227,264 +229,4 @@ export default class ScreenManager
             log(droppedData);
         }
     }
-
-    static getDefaultScreenDisplay() {
-        const { primaryDisplay, displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id !== primaryDisplay.id;
-        }) || primaryDisplay;
-    }
-
-    static getDisplayById(displayId: number) {
-        const { displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id === displayId;
-        })?.id ?? 0;
-    }
-
-    static getDisplayByScreenId(screenId: number) {
-        const displayId = this.getDisplayIdByScreenId(screenId);
-        const { displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id === displayId;
-        }) || this.getDefaultScreenDisplay();
-    }
-
-    static getDisplayIdByScreenId(screenId: number) {
-        const defaultDisplay = this.getDefaultScreenDisplay();
-        const str = getSetting(`${settingName}-pid-${screenId}`,
-            defaultDisplay.id.toString());
-        if (isNaN(parseInt(str))) {
-            return defaultDisplay.id;
-        }
-        const id = parseInt(str);
-        const { displays } = getAllDisplays();
-        return displays.find((display) => {
-            return display.id === id;
-        })?.id ?? defaultDisplay.id;
-    }
-
-    static getSyncGroupScreenEventHandler(message: ScreenMessageType) {
-        const { type } = message;
-        if (type === 'background') {
-            return ScreenBackgroundManager;
-        } else if (type === 'slide') {
-            return ScreenSlideManager;
-        } else if (type === 'full-text') {
-            return ScreenFullTextManager;
-        } else if (type === 'alert') {
-            return ScreenAlertManager;
-        }
-        return null;
-    }
-
-    static receiveSyncScreen(message: ScreenMessageType) {
-        const ScreenHandler = this.getSyncGroupScreenEventHandler(message);
-        if (ScreenHandler !== null) {
-            return ScreenHandler.receiveSyncScreen(message);
-        }
-        const { type, data, screenId } = message;
-        const screenManager = this.getInstance(screenId);
-        if (screenManager === null) {
-            return;
-        }
-        if (type === 'init') {
-            screenManager.sendSyncScreen();
-        } else if (type === 'visible') {
-            screenManager.isShowing = data?.isShowing;
-        } else if (type === 'effect') {
-            ScreenEffectManager.receiveSyncScreen(message);
-        } else if (type === 'full-text-scroll') {
-            ScreenFullTextManager.receiveSyncScroll(message);
-        } else if (type === 'full-text-selected-index') {
-            ScreenFullTextManager.receiveSyncSelectedIndex(message);
-        } else if (type === 'full-text-text-style') {
-            ScreenFullTextManager.receiveSyncTextStyle(message);
-        } else {
-            log(message);
-        }
-    }
-
-    static getSelectedScreenManagerInstances() {
-        return Array.from(cache.values()).filter((screenManager) => {
-            return screenManager.isSelected;
-        });
-    }
-
-    static getScreenManagersSetting() {
-        const instanceSetting = getScreenManagersInstanceSetting();
-        if (instanceSetting.length > 0) {
-            instanceSetting.forEach(({ screenId, isSelected }: any) => {
-                if (typeof screenId === 'number') {
-                    const screenManager = this.createInstance(screenId);
-                    screenManager._isSelected = !!isSelected;
-                }
-            });
-        } else {
-            this.createInstance(0);
-        }
-        const screenManagers = this.getAllInstances();
-        if (screenManagers.length === 1) {
-            screenManagers[0]._isSelected = true;
-        }
-        return screenManagers;
-    }
-    static saveScreenManagersSetting(deletedScreenId?: number) {
-        return unlocking(
-            screenManagerSettingNames.MANAGERS, async () => {
-                const newInstanceSetting: TypeScreenManagerSettingType[] = [];
-                for (const screenManager of this.getAllInstances()) {
-                    const colorNote = await screenManager.getColorNote();
-                    newInstanceSetting.push({
-                        screenId: screenManager.screenId,
-                        isSelected: screenManager.isSelected,
-                        colorNote,
-                    });
-                }
-                let instanceSetting = getScreenManagersInstanceSetting();
-                instanceSetting = instanceSetting.map((item) => {
-                    return newInstanceSetting.find((newItem) => {
-                        return newItem.screenId === item.screenId;
-                    }) || item;
-                });
-                for (const newItem of newInstanceSetting) {
-                    if (!instanceSetting.some((item) => {
-                        return item.screenId === newItem.screenId;
-                    })) {
-                        instanceSetting.push(newItem);
-                    }
-                }
-                if (deletedScreenId !== undefined) {
-                    instanceSetting = instanceSetting.filter((item) => {
-                        return item.screenId !== deletedScreenId;
-                    });
-                }
-                setSetting(
-                    screenManagerSettingNames.MANAGERS,
-                    JSON.stringify(instanceSetting),
-                );
-            },
-        );
-    }
-
-    static getInstanceByKey(key: string) {
-        const screenId = parseInt(key);
-        return this.getInstance(screenId);
-    }
-
-    static getAllInstances(): ScreenManager[] {
-        let cachedInstances = Array.from(cache.values());
-        if (cachedInstances.length === 0) {
-            cachedInstances = getAllShowingScreenIds().map((screenId) => {
-                return this.createInstance(screenId);
-            });
-        }
-        return cachedInstances.filter((screenManager) => {
-            return !screenManager.isDeleted;
-        });
-    }
-
-    static async getAllInstancesByColorNote(
-        colorNote: string | null, excludeScreenIds: number[] = [],
-    ): Promise<ScreenManager[]> {
-        if (colorNote === null) {
-            return [];
-        }
-        const allInstances = this.getAllInstances();
-        const instances: ScreenManager[] = [];
-        for (const screenManager of allInstances) {
-            if (excludeScreenIds.includes(screenManager.screenId)) {
-                continue;
-            }
-            const note = await screenManager.getColorNote();
-            if (note === colorNote) {
-                instances.push(screenManager);
-            }
-        }
-        return instances;
-    }
-
-    static createInstance(screenId: number) {
-        const key = screenId.toString();
-        if (!cache.has(key)) {
-            const screenManager = new this(screenId);
-            cache.set(key, screenManager);
-            this.saveScreenManagersSetting();
-            screenManager.fireUpdateEvent();
-            const {
-                screenBackgroundManager, screenSlideManager,
-                screenFullTextManager, screenAlertManager,
-            } = screenManager;
-            screenBackgroundManager.fireUpdateEvent();
-            screenSlideManager.fireUpdateEvent();
-            screenFullTextManager.fireUpdateEvent();
-            screenAlertManager.fireUpdateEvent();
-        }
-        return cache.get(key) as ScreenManager;
-    }
-
-    static getInstance(screenId: number) {
-        const key = screenId.toString();
-        if (cache.has(key)) {
-            return cache.get(key) as ScreenManager;
-        }
-        return null;
-    }
-
-    static genNewInstance() {
-        const screenManagers = this.getAllInstances();
-        const screenIds = screenManagers.map((screenManager) => {
-            return screenManager.screenId;
-        });
-        let newScreenId = 0;
-        while (screenIds.includes(newScreenId)) {
-            newScreenId++;
-        }
-        this.createInstance(newScreenId);
-        this.fireInstanceEvent();
-    }
-
-    static async syncGroup(message: ScreenMessageType) {
-        const currentScreenManager = this.getInstance(
-            message.screenId,
-        );
-        if (currentScreenManager === null || currentScreenManager.isDeleted) {
-            return;
-        }
-        const colorNote = await currentScreenManager.getColorNote();
-        const screenManagers = await this.getAllInstancesByColorNote(
-            colorNote, [currentScreenManager.screenId],
-        );
-        screenManagers.forEach((screenManager) => {
-            const newMessage: ScreenMessageType = {
-                ...message,
-                screenId: screenManager.screenId,
-            };
-            const ScreenHandler = this.getSyncGroupScreenEventHandler(
-                newMessage,
-            );
-            if (ScreenHandler !== null) {
-                if (!currentScreenManager.checkIsSyncGroupEnabled(
-                    ScreenHandler,
-                )) {
-                    return;
-                }
-                ScreenHandler.disableSyncGroup(currentScreenManager.screenId);
-                ScreenHandler.receiveSyncScreen(newMessage);
-            }
-        });
-    }
-
-}
-
-export const ScreenManagerContext = createContext<ScreenManager | null>(null);
-export function useScreenManagerContext(): ScreenManager {
-    const screenManager = use(ScreenManagerContext);
-    if (screenManager === null) {
-        throw new Error(
-            'useScreenManager must be used within a ScreenManager ' +
-            'Context Provider',
-        );
-    }
-    return screenManager;
 }

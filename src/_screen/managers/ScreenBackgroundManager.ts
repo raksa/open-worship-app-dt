@@ -14,7 +14,7 @@ import {
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
-    chooseScreenManagerInstances, getScreenManagerInstance,
+    chooseScreenManagerInstances, getScreenManagerInstanceForce,
 } from './screenManagerHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
@@ -232,7 +232,7 @@ export default class ScreenBackgroundManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenBackgroundManager } = getScreenManagerInstance(screenId);
+        const { screenBackgroundManager } = getScreenManagerInstanceForce(screenId);
         screenBackgroundManager.receiveSyncScreen(message);
     }
 

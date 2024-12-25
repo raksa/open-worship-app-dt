@@ -3,7 +3,7 @@ import { sendScreenMessage } from './screenEventHelpers';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
 import ScreenManager from './ScreenManager';
 import {
-    createScreenManagerGhostInstance, getScreenManagerInstance,
+    createScreenManagerGhostInstance, getScreenManagerInstanceForce,
 } from './screenManagerHelpers';
 
 export default abstract class
@@ -55,12 +55,12 @@ export default abstract class
     abstract clear(): void;
 
     static disableSyncGroup(screenId: number) {
-        const screenManager = getScreenManagerInstance(screenId);
+        const screenManager = getScreenManagerInstanceForce(screenId);
         screenManager.noSyncGroupMap.set(this.eventNamePrefix, true);
     }
 
     static enableSyncGroup(screenId: number) {
-        const screenManager = getScreenManagerInstance(screenId);
+        const screenManager = getScreenManagerInstanceForce(screenId);
         screenManager.noSyncGroupMap.set(this.eventNamePrefix, false);
     }
 

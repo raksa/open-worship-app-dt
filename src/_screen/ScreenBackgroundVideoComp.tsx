@@ -1,6 +1,8 @@
-import { useScreenBackgroundManagerEvents } from './managers/screenEventHelpers';
+import {
+    useScreenBackgroundManagerEvents,
+} from './managers/screenEventHelpers';
+import { useScreenManagerContext } from './managers/screenManagerHelpers';
 import { BackgroundSrcType, calMediaSizes } from './screenHelpers';
-import { useScreenManagerContext } from './managers/ScreenManager';
 
 export default function ScreenBackgroundVideoComp({ backgroundSrc }: Readonly<{
     backgroundSrc: BackgroundSrcType,

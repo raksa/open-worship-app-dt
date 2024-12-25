@@ -1,6 +1,8 @@
 import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
-import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelpers';
+import {
+    useScreenAlertManagerEvents,
+} from '../_screen/managers/screenEventHelpers';
 import { getShowingScreenIds, hideAlert } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 

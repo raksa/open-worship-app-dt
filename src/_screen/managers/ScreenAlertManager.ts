@@ -12,7 +12,7 @@ import {
 import ScreenManager from './ScreenManager';
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
-    chooseScreenManagerInstances, getScreenManagerInstance,
+    chooseScreenManagerInstances, getScreenManagerInstanceForce,
 } from './screenManagerHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
@@ -232,7 +232,7 @@ export default class ScreenAlertManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenAlertManager } = getScreenManagerInstance(screenId);
+        const { screenAlertManager } = getScreenManagerInstanceForce(screenId);
         screenAlertManager.receiveSyncScreen(message);
     }
 

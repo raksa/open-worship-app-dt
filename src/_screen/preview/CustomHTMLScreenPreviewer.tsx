@@ -3,6 +3,9 @@ import { DOMAttributes } from 'react';
 import { createRoot } from 'react-dom/client';
 import ScreenManager from '../managers/ScreenManager';
 import MiniScreenAppComp from './MiniScreenAppComp';
+import {
+    getDefaultScreenDisplay, getScreenManagerInstance,
+} from '../managers/screenManagerHelpers';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 
@@ -36,7 +39,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
     }
     resize() {
         if (this.parentElement) {
-            const display = ScreenManager.getDefaultScreenDisplay();
+            const display = getDefaultScreenDisplay();
             const bounds = display.bounds;
             const scale = this.parentElement.clientWidth / bounds.width;
             const width = scale * bounds.width;
@@ -44,7 +47,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.screenId > -1) {
-                const screenManager = ScreenManager.getInstance(
+                const screenManager = getScreenManagerInstance(
                     this.screenId,
                 );
                 if (screenManager === null) {
@@ -61,7 +64,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             mode: 'open',
         }).appendChild(this.mountPoint);
         const root = createRoot(this.mountPoint);
-        const screenManager = ScreenManager.getInstance(this.screenId);
+        const screenManager = getScreenManagerInstance(this.screenId);
         if (screenManager === null) {
             return;
         }

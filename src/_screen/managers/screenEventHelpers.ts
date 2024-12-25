@@ -18,6 +18,9 @@ import EventHandler from '../../event/EventHandler';
 import ScreenAlertManager, {
     ScreenAlertEventType,
 } from './ScreenAlertManager';
+import {
+    applyScreenManagerSyncScreen, syncScreenManagerGroup,
+} from './screenManagerHelpers';
 
 function useScreenEvents<T extends string>(
     events: T[], Class: EventHandler<T>,
@@ -109,11 +112,11 @@ export function sendScreenMessage(
         isScreen: appProviderScreen.isScreen,
     });
     console.assert(isSent, JSON.stringify({ channel, message }));
-    ScreenManager.syncGroup(message);
+    syncScreenManagerGroup(message);
 }
 export function initReceiveScreenMessage() {
     const channel = messageUtils.channels.screenMessageChannel;
     messageUtils.listenForData(channel, (_, message: ScreenMessageType) => {
-        ScreenManager.receiveSyncScreen(message);
+        applyScreenManagerSyncScreen(message);
     });
 }
