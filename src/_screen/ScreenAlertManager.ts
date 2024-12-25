@@ -10,9 +10,6 @@ import {
     ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
-import ScreenTransitionEffectManager from
-    './transition-effect/ScreenTransitionEffectManager';
-import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
 import { unlocking } from '../server/appHelpers';
@@ -25,7 +22,6 @@ export default class ScreenAlertManager
 
     static readonly eventNamePrefix: string = 'screen-alert-m';
     private _div: HTMLDivElement | null = null;
-    ptEffectTarget: TargetType = 'slide';
     alertData: AlertDataType;
 
     constructor(screenId: number) {
@@ -67,12 +63,6 @@ export default class ScreenAlertManager
     set div(div: HTMLDivElement | null) {
         this._div = div;
         this.renderAll();
-    }
-
-    get ptEffect() {
-        return ScreenTransitionEffectManager.getInstance(
-            this.screenId, this.ptEffectTarget,
-        );
     }
 
     applyAlertDataWithSyncGroup(
