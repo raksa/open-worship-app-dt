@@ -6,7 +6,7 @@ import ScreenFullTextManager from '../managers/ScreenFullTextManager';
 import ScreenSlideManager from '../managers/ScreenSlideManager';
 import ScreenManager from '../managers/ScreenManager';
 import AppRange from '../../others/AppRange';
-import { getAllScreenManagerInstances } from '../managers/screenManagerHelpers';
+import { getAllScreenManagerInstances } from '../managers/screenManagerBaseHelpers';
 
 export default function Appearance() {
     const [color, setColor] = useState(

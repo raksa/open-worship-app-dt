@@ -9,8 +9,9 @@ import {
     initReceiveScreenMessage, sendScreenMessage,
 } from './managers/screenEventHelpers';
 import {
-    createScreenManagerInstance, ScreenManagerContext,
-} from './managers/screenManagerHelpers';
+    createScreenManagerInstance,
+    ScreenManagerBaseContext,
+} from './managers/screenManagerBaseHelpers';
 
 initReceiveScreenMessage();
 export default function ScreenAppComp() {
@@ -29,8 +30,10 @@ export default function ScreenAppComp() {
         }, true);
     }
     return (
-        <ScreenManagerContext value={screenManager}>
-            <RendStyle screenEffectManager={screenManager.slideEffectManager} />
+        <ScreenManagerBaseContext value={screenManager}>
+            <RendStyle screenEffectManager={
+                screenManager.slideEffectManager
+            } />
             <RendStyle
                 screenEffectManager={screenManager.backgroundEffectManager}
             />
@@ -39,6 +42,6 @@ export default function ScreenAppComp() {
             <ScreenFullTextComp />
             <ScreenAlertComp />
             <CloseButton />
-        </ScreenManagerContext>
+        </ScreenManagerBaseContext>
     );
 }

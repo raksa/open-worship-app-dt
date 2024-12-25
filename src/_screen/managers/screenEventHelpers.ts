@@ -20,7 +20,7 @@ import ScreenAlertManager, {
 } from './ScreenAlertManager';
 import {
     applyScreenManagerSyncScreen, syncScreenManagerGroup,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
 
 function useScreenEvents<T extends string>(
     events: T[], Class: EventHandler<T>,
@@ -89,10 +89,10 @@ export function useScreenAlertManagerEvents(
 }
 
 export function useScreenManagerEvents(
-    events: ScreenManagerEventType[], screenManager?: ScreenManager,
+    events: ScreenManagerEventType[], screenManagerBase?: ScreenManagerBase,
     callback?: () => void,
 ) {
-    useScreenEvents(events, ScreenManager as any, screenManager, callback);
+    useScreenEvents(events, ScreenManager as any, screenManagerBase, callback);
     useScreenBackgroundManagerEvents(['update']);
     useScreenSlideManagerEvents(['update']);
     useScreenFullTextManagerEvents(['update']);

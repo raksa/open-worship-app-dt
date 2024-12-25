@@ -15,10 +15,10 @@ import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
     chooseScreenManagerInstances, getScreenManagerInstanceForce,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
-import ScreenManager from './ScreenManager';
+import ScreenManagerBase from './ScreenManagerBase';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -29,8 +29,8 @@ export default class ScreenBackgroundManager
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
 
-    constructor(screenManager: ScreenManager) {
-        super(screenManager);
+    constructor(screenManagerBase: ScreenManagerBase) {
+        super(screenManagerBase);
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] || null;
@@ -139,8 +139,8 @@ export default class ScreenBackgroundManager
         const chosenScreenManagers = await chooseScreenManagerInstances(
             event, isForceChoosing,
         );
-        for (const screenManager of chosenScreenManagers) {
-            const { screenBackgroundManager } = screenManager;
+        for (const screenManagerBase of chosenScreenManagers) {
+            const { screenBackgroundManager } = screenManagerBase;
             if (
                 src === null ||
                 screenBackgroundManager.backgroundSrc?.src === src
@@ -183,7 +183,7 @@ export default class ScreenBackgroundManager
         const aminData = this.effectManager.styleAnim;
         if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(
-                this.backgroundSrc, this.screenManager,
+                this.backgroundSrc, this.screenId,
             );
             const childList = Array.from(this.div.children);
             this.div.appendChild(newDiv);
@@ -204,8 +204,8 @@ export default class ScreenBackgroundManager
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${this.screenManager.width}px`,
-            height: `${this.screenManager.height}px`,
+            width: `${this.screenManagerBase.width}px`,
+            height: `${this.screenManagerBase.height}px`,
             overflow: 'hidden',
         };
     }
@@ -232,7 +232,9 @@ export default class ScreenBackgroundManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenBackgroundManager } = getScreenManagerInstanceForce(screenId);
+        const { screenBackgroundManager } = getScreenManagerInstanceForce(
+            screenId,
+        );
         screenBackgroundManager.receiveSyncScreen(message);
     }
 

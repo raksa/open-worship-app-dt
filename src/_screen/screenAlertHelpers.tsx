@@ -1,7 +1,7 @@
 import ReactDOMServer from 'react-dom/server';
 import CountdownController from './managers/CountdownController';
-import ScreenManager from './managers/ScreenManager';
 import { getHTMLChild } from '../helper/helpers';
+import ScreenManagerBase from './managers/ScreenManagerBase';
 
 const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
 export type AlertType = typeof _alertTypeList[number];
@@ -13,11 +13,11 @@ const classNameMapper = {
 };
 
 export function genHtmlAlertMarquee(
-    marqueeData: { text: string }, screenManager: ScreenManager,
+    marqueeData: { text: string }, screenManagerBase: ScreenManagerBase,
 ) {
     const { text } = marqueeData;
     const duration = (text.length || 0) / 6;
-    const scale = screenManager.height / 768;
+    const scale = screenManagerBase.height / 768;
     const fontSize = 75 * scale;
     const actorClass = classNameMapper.marquee;
     const htmlString = ReactDOMServer.renderToStaticMarkup(
@@ -86,10 +86,10 @@ export function genHtmlAlertMarquee(
 }
 
 export function genHtmlAlertCountdown(
-    countdownData: { dateTime: Date }, screenManager: ScreenManager,
+    countdownData: { dateTime: Date }, screenManagerBase: ScreenManagerBase,
 ) {
     const { dateTime } = countdownData;
-    const scale = screenManager.height / 768;
+    const scale = screenManagerBase.height / 768;
     const fontSize = 100 * scale;
     const chunkSize = Math.floor(fontSize / 10);
     const actorClass = classNameMapper.countdown;

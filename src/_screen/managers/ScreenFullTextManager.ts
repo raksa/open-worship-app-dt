@@ -26,7 +26,7 @@ import { screenManagerSettingNames } from '../../helper/constants';
 import {
     chooseScreenManagerInstances, getAllScreenManagerInstances,
     getScreenManagerInstanceForce,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 
@@ -40,8 +40,8 @@ export default class ScreenFullTextManager
     private _syncScrollTimeout: any = null;
     private _divScrollListenerBind: (() => void) | null = null;
 
-    constructor(screenManager: ScreenManager) {
-        super(screenManager);
+    constructor(screenManagerBase: ScreenManagerBase) {
+        super(screenManagerBase);
         if (appProviderScreen.isPagePresenter) {
             const allFTList = getFullTextListOnScreenSetting();
             this._ftItemData = allFTList[this.key] || null;
@@ -119,7 +119,7 @@ export default class ScreenFullTextManager
                 delete allFTList[this.key];
             } else {
                 allFTList[this.key] = ftItemData;
-                this.screenManager.screenSlideManager.clear();
+                this.screenManagerBase.screenSlideManager.clear();
             }
             const string = JSON.stringify(allFTList);
             setSetting(screenManagerSettingNames.FULL_TEXT, string);
@@ -145,8 +145,8 @@ export default class ScreenFullTextManager
     get containerStyle(): CSSProperties {
         return {
             position: 'absolute',
-            width: `${this.screenManager.width}px`,
-            height: `${this.screenManager.height}px`,
+            width: `${this.screenManagerBase.width}px`,
+            height: `${this.screenManagerBase.height}px`,
             overflowX: 'hidden',
             overflowY: 'auto',
         };
@@ -317,9 +317,9 @@ export default class ScreenFullTextManager
     }
 
     static sendSynTextStyle() {
-        getAllScreenManagerInstances().forEach((screenManager) => {
+        getAllScreenManagerInstances().forEach((screenManagerBase) => {
             sendScreenMessage({
-                screenId: screenManager.screenId,
+                screenId: screenManagerBase.screenId,
                 type: 'full-text-text-style',
                 data: {
                     textStyle: this.textStyle,
@@ -341,8 +341,8 @@ export default class ScreenFullTextManager
         const chosenScreenManagers = await chooseScreenManagerInstances(
             genScreenMouseEvent(event) as any, isForceChoosing,
         );
-        chosenScreenManagers.forEach((screenManager) => {
-            const { screenFullTextManager } = screenManager;
+        chosenScreenManagers.forEach((screenManagerBase) => {
+            const { screenFullTextManager } = screenManagerBase;
             screenFullTextManager.applyFullDataSrcWithSyncGroup(ftItemData);
         });
     }

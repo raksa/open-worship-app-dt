@@ -8,7 +8,7 @@ import CanvasItemVideo from './CanvasItemVideo';
 import { handleError } from '../../helper/errorHelpers';
 import {
     getDefaultScreenDisplay,
-} from '../../_screen/managers/screenManagerHelpers';
+} from '../../_screen/managers/screenManagerBaseHelpers';
 
 type CanvasPropsType = {
     width: number,

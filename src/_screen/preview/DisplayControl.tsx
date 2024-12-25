@@ -2,13 +2,15 @@ import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenu';
 import { useScreenManagerEvents } from '../managers/screenEventHelpers';
-import { useScreenManagerContext } from '../managers/screenManagerHelpers';
+import {
+    useScreenManagerBaseContext,
+} from '../managers/screenManagerBaseHelpers';
 import { getAllDisplays } from '../screenHelpers';
 
 export default function DisplayControl() {
 
-    const screenManager = useScreenManagerContext();
-    useScreenManagerEvents(['display-id'], screenManager);
+    const screenManagerBase = useScreenManagerBaseContext();
+    useScreenManagerEvents(['display-id'], screenManagerBase);
     const handleDisplayChoosing = (event: any) => {
         const { primaryDisplay, displays } = getAllDisplays();
         const contextMenuItems = (
@@ -26,14 +28,14 @@ export default function DisplayControl() {
                 return {
                     menuTitle,
                     onClick: () => {
-                        screenManager.displayId = display.id;
+                        screenManagerBase.displayId = display.id;
                     },
                 } as ContextMenuItemType;
             })
         );
         showAppContextMenu(event, contextMenuItems);
     };
-    const { displayId } = screenManager;
+    const { displayId } = screenManagerBase;
     const { displays } = getAllDisplays();
     const currentDisplay = displays.find((display) => {
         return display.id === displayId;
@@ -45,13 +47,13 @@ export default function DisplayControl() {
         <button className='btn btn-sm btn-outline-secondary app-ellipsis'
             title={
                 `Display:${currentDisplayLabel}, ` +
-                `screen id:${screenManager.screenId}` +
+                `screen id:${screenManagerBase.screenId}` +
                 `, display id:${displayId}`
             }
             onClick={handleDisplayChoosing}
             style={{ maxWidth: '80px' }}>
             <i className='bi bi-display' />
-            {currentDisplayLabel}({screenManager.screenId}):{displayId}
+            {currentDisplayLabel}({screenManagerBase.screenId}):{displayId}
         </button>
     );
 }

@@ -4,22 +4,22 @@ import { sendScreenMessage } from '../managers/screenEventHelpers';
 import {
     ScreenMessageType, PTEffectDataType,
 } from '../screenHelpers';
-import ScreenManager from '../managers/ScreenManager';
 import {
     ScreenTransitionEffectType, PTFEventType, styleAnimList, TargetType,
     transitionEffect,
 } from '../transitionEffectHelpers';
 import {
     createScreenManagerGhostInstance, getScreenManagerInstanceForce,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
+import ScreenManagerBase from './ScreenManagerBase';
 
 class ScreenEffectManager extends EventHandler<PTFEventType> {
-    screenManager: ScreenManager;
+    screenManagerBase: ScreenManagerBase;
     readonly target: TargetType;
     private _effectType: ScreenTransitionEffectType;
-    constructor(screenManager: ScreenManager, target: TargetType) {
+    constructor(screenManagerBase: ScreenManagerBase, target: TargetType) {
         super();
-        this.screenManager = screenManager;
+        this.screenManagerBase = screenManagerBase;
         this.target = target;
         const effectType = getSetting(this.settingName, '');
         this._effectType = (
@@ -28,7 +28,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         );
     }
     get screenId() {
-        return this.screenManager.screenId;
+        return this.screenManagerBase.screenId;
     }
 
     get settingName() {
@@ -64,20 +64,24 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
-        const screenManager = getScreenManagerInstanceForce(message.screenId);
-        if (screenManager === null) {
+        const screenManagerBase = getScreenManagerInstanceForce(
+            message.screenId,
+        );
+        if (screenManagerBase === null) {
             return;
         }
         const data = message.data as PTEffectDataType;
         if (data.target === 'background') {
-            screenManager.backgroundEffectManager.effectType = data.effect;
+            screenManagerBase.backgroundEffectManager.effectType = data.effect;
         } else if (data.target === 'slide') {
-            screenManager.slideEffectManager.effectType = data.effect;
+            screenManagerBase.slideEffectManager.effectType = data.effect;
         }
     }
 
     delete() {
-        this.screenManager = createScreenManagerGhostInstance(this.screenId);
+        this.screenManagerBase = createScreenManagerGhostInstance(
+            this.screenId,
+        );
     }
 
 }

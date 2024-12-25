@@ -6,7 +6,7 @@ import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import MenuIsModifying from './MenuIsModifying';
 import {
     getDefaultScreenDisplay,
-} from '../../_screen/managers/screenManagerHelpers';
+} from '../../_screen/managers/screenManagerBaseHelpers';
 
 const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],

@@ -5,9 +5,9 @@ import {
 import {
     getAllScreenManagerInstances,
     getSelectedScreenManagerInstances,
-} from '../managers/screenManagerHelpers';
+} from '../managers/screenManagerBaseHelpers';
 
-export function openContextMenu(event: any, screenManager: ScreenManager) {
+export function openContextMenu(event: any, screenManagerBase: ScreenManagerBase) {
     const screenManagers = getAllScreenManagerInstances();
     const selectedScreenIds = screenManagers.filter((screenManager1) => {
         return screenManager1.isSelected;
@@ -16,10 +16,10 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
     });
     const isSolo = (
         selectedScreenIds.length === 1 &&
-        selectedScreenIds.includes(screenManager.screenId)
+        selectedScreenIds.includes(screenManagerBase.screenId)
     );
     const isOne = screenManagers.length === 1;
-    const { screenFullTextManager } = screenManager;
+    const { screenFullTextManager } = screenManagerBase;
     const isShowingFT = !!screenFullTextManager.fullTextItemData;
     const isLineSync = screenFullTextManager.isLineSync;
     const extraMenuItems = isShowingFT ? [{
@@ -36,18 +36,18 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
                     .forEach((screenManager1) => {
                         screenManager1.isSelected = false;
                     });
-                screenManager.isSelected = true;
+                screenManagerBase.isSelected = true;
             },
         }],
         ...isOne ? [] : [{
-            menuTitle: screenManager.isSelected ? 'Deselect' : 'Select',
+            menuTitle: screenManagerBase.isSelected ? 'Deselect' : 'Select',
             onClick() {
-                screenManager.isSelected = !screenManager.isSelected;
+                screenManagerBase.isSelected = !screenManagerBase.isSelected;
             },
         }, {
             menuTitle: 'Delete',
             onClick() {
-                screenManager.delete();
+                screenManagerBase.delete();
             },
         }],
         ...extraMenuItems,

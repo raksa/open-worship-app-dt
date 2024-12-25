@@ -9,13 +9,13 @@ import {
     AlertDataType, BasicScreenMessageType, getAlertDataListOnScreenSetting,
     ScreenMessageType,
 } from '../screenHelpers';
-import ScreenManager from './ScreenManager';
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
     chooseScreenManagerInstances, getScreenManagerInstanceForce,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
+import ScreenManagerBase from './ScreenManagerBase';
 
 export type ScreenAlertEventType = 'update';
 
@@ -26,8 +26,8 @@ export default class ScreenAlertManager
     private _div: HTMLDivElement | null = null;
     alertData: AlertDataType;
 
-    constructor(screenManager: ScreenManager) {
-        super(screenManager);
+    constructor(screenManagerBase: ScreenManagerBase) {
+        super(screenManagerBase);
         const allAlertDataList = getAlertDataListOnScreenSetting();
         this.alertData = allAlertDataList[this.key] ?? {
             marqueeData: null,
@@ -150,18 +150,18 @@ export default class ScreenAlertManager
 
     static async setData(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        callback: (screenManager: ScreenManager) => void,
+        callback: (screenAlertManager: ScreenAlertManager) => void,
         isForceChoosing: boolean,
     ) {
-        const callbackSave = async (screenManager: ScreenManager) => {
-            callback(screenManager);
-            screenManager.screenAlertManager.saveAlertData();
+        const callbackSave = async (screenAlertManager: ScreenAlertManager) => {
+            callback(screenAlertManager);
+            screenAlertManager.saveAlertData();
         };
         const chosenScreenManagers = await chooseScreenManagerInstances(
             event, isForceChoosing,
         );
-        chosenScreenManagers.forEach((screenManager) => {
-            callbackSave(screenManager);
+        chosenScreenManagers.forEach((screenManagerBase) => {
+            callbackSave(screenManagerBase.screenAlertManager);
         });
     }
 
@@ -169,7 +169,7 @@ export default class ScreenAlertManager
         event: React.MouseEvent<HTMLElement, MouseEvent>, text: string | null,
         isForceChoosing = false,
     ) {
-        this.setData(event, ({ screenAlertManager }) => {
+        this.setData(event, (screenAlertManager) => {
             const marqueeData = text !== null ? { text } : null;
             screenAlertManager.setMarqueeData(marqueeData);
         }, isForceChoosing);
@@ -179,7 +179,7 @@ export default class ScreenAlertManager
         event: React.MouseEvent<HTMLElement, MouseEvent>, dateTime: Date | null,
         isForceChoosing = false,
     ) {
-        this.setData(event, ({ screenAlertManager }) => {
+        this.setData(event, (screenAlertManager) => {
             const countdownData = dateTime !== null ? { dateTime } : null;
             screenAlertManager.setCountdownData(countdownData);
         }, isForceChoosing);
@@ -188,7 +188,7 @@ export default class ScreenAlertManager
     renderMarquee() {
         if (this.alertData.marqueeData !== null) {
             const newDiv = genHtmlAlertMarquee(
-                this.alertData.marqueeData, this.screenManager,
+                this.alertData.marqueeData, this.screenManagerBase,
             );
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
@@ -202,7 +202,7 @@ export default class ScreenAlertManager
     renderCountdown() {
         if (this.alertData.countdownData !== null) {
             const newDiv = genHtmlAlertCountdown(
-                this.alertData.countdownData, this.screenManager,
+                this.alertData.countdownData, this.screenManagerBase,
             );
             this.divCountdown.appendChild(newDiv);
         }
@@ -224,8 +224,8 @@ export default class ScreenAlertManager
         return {
             pointerEvents: 'none',
             position: 'absolute',
-            width: `${this.screenManager.width}px`,
-            height: `${this.screenManager.height}px`,
+            width: `${this.screenManagerBase.width}px`,
+            height: `${this.screenManagerBase.height}px`,
             overflow: 'hidden',
         };
     }

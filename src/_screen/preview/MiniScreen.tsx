@@ -13,8 +13,8 @@ import ScreenPreviewerTools from './ScreenPreviewerTools';
 import { handleCtrlWheel } from '../../others/AppRange';
 import {
     genNewScreenManagerInstance, getAllScreenManagerInstances, getScreenManagersSetting,
-    ScreenManagerContext,
-} from '../managers/screenManagerHelpers';
+    ScreenManagerBaseContext,
+} from '../managers/screenManagerBaseHelpers';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
@@ -38,8 +38,8 @@ export default function MiniScreen() {
     );
     const setPreviewScale1 = (size: number) => {
         setPreviewScale(size);
-        getAllScreenManagerInstances().forEach((screenManager) => {
-            screenManager.fireResizeEvent();
+        getAllScreenManagerInstances().forEach((screenManagerBase) => {
+            screenManagerBase.fireResizeEvent();
         });
     };
     useScreenManagerEvents(['instance']);
@@ -65,15 +65,15 @@ export default function MiniScreen() {
                     <ScreenPreviewerTools />
                 )}
                 <div className='w-100'>
-                    {screenManagers.map((screenManager) => {
+                    {screenManagers.map((screenManagerBase) => {
                         return (
-                            <ScreenManagerContext
-                                key={screenManager.key}
-                                value={screenManager}>
+                            <ScreenManagerBaseContext
+                                key={screenManagerBase.key}
+                                value={screenManagerBase}>
                                 <ScreenPreviewerItemComp
                                     width={previewWidth}
                                 />
-                            </ScreenManagerContext>
+                            </ScreenManagerBaseContext>
                         );
                     })}
                 </div>

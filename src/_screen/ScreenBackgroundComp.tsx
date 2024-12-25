@@ -9,17 +9,20 @@ import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
 import {
-    ScreenManagerContext, useScreenManagerContext,
+    useScreenManagerContext,
 } from './managers/screenManagerHelpers';
-import ScreenManager from './managers/ScreenManager';
+import {
+    getScreenManagerInstanceForce,
+    ScreenManagerBaseContext,
+} from './managers/screenManagerBaseHelpers';
 
 export default function ScreenBackgroundComp() {
     const screenManager = useScreenManagerContext();
+    const { screenBackgroundManager } = screenManager;
     useScreenManagerEvents(['resize'], screenManager, () => {
-        screenManager.screenBackgroundManager.render();
+        screenBackgroundManager.render();
     });
     const div = useRef<HTMLDivElement>(null);
-    const { screenBackgroundManager } = screenManager;
     useAppEffect(() => {
         if (div.current) {
             screenBackgroundManager.div = div.current;
@@ -33,12 +36,13 @@ export default function ScreenBackgroundComp() {
 }
 
 export function genHtmlBackground(
-    backgroundSrc: BackgroundSrcType, screenManager: ScreenManager,
+    backgroundSrc: BackgroundSrcType, screenId: number,
 ) {
+    const screenManagerBase = getScreenManagerInstanceForce(screenId);
     const htmlStr = ReactDOMServer.renderToStaticMarkup(
-        <ScreenManagerContext value={screenManager}>
+        <ScreenManagerBaseContext value={screenManagerBase}>
             <RenderBackground backgroundSrc={backgroundSrc} />
-        </ScreenManagerContext>
+        </ScreenManagerBaseContext>,
     );
     const div = document.createElement('div');
     div.innerHTML = htmlStr;
@@ -81,7 +85,8 @@ function RenderScreenBackground({ backgroundSrc }: Readonly<{
         case 'color':
             return (
                 <ScreenBackgroundColorComp
-                    color={backgroundSrc.src as AppColorType} />
+                    color={backgroundSrc.src as AppColorType}
+                />
             );
     }
 }

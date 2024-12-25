@@ -1,11 +1,11 @@
 import { DOMAttributes } from 'react';
 
 import { createRoot } from 'react-dom/client';
-import ScreenManager from '../managers/ScreenManager';
 import MiniScreenAppComp from './MiniScreenAppComp';
 import {
     getDefaultScreenDisplay, getScreenManagerInstance,
-} from '../managers/screenManagerHelpers';
+} from '../managers/screenManagerBaseHelpers';
+import ScreenManagerBase from '../managers/ScreenManagerBase';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 
@@ -47,16 +47,16 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.screenId > -1) {
-                const screenManager = getScreenManagerInstance(
+                const screenManagerBase = getScreenManagerInstance(
                     this.screenId,
                 );
-                if (screenManager === null) {
+                if (screenManagerBase === null) {
                     return;
                 }
-                screenManager.width = width;
-                screenManager.height = height;
+                screenManagerBase.width = width;
+                screenManagerBase.height = height;
             }
-            ScreenManager.fireResizeEvent();
+            ScreenManagerBase.fireResizeEvent();
         }
     }
     connectedCallback() {
@@ -64,11 +64,11 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             mode: 'open',
         }).appendChild(this.mountPoint);
         const root = createRoot(this.mountPoint);
-        const screenManager = getScreenManagerInstance(this.screenId);
-        if (screenManager === null) {
+        const screenManagerBase = getScreenManagerInstance(this.screenId);
+        if (screenManagerBase === null) {
             return;
         }
-        screenManager.registerEventListener(['resize'], () => {
+        screenManagerBase.registerEventListener(['resize'], () => {
             this.resize();
         });
         this.resize();

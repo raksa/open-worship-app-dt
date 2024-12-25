@@ -12,7 +12,7 @@ import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { FullTextItemDataType } from './screenHelpers';
-import { getDisplayByScreenId } from './managers/screenManagerHelpers';
+import { getDisplayByScreenId } from './managers/screenManagerBaseHelpers';
 
 export type ScreenFTManagerEventType = 'update' | 'text-style';
 
@@ -142,9 +142,9 @@ export function renderScreenFullTextManager(
     });
     const divHaftScale = document.createElement('div');
     divHaftScale.appendChild(newDiv);
-    const { screenManager } = screenFullTextManager;
-    const parentWidth = screenManager.width;
-    const parentHeight = screenManager.height;
+    const { screenManagerBase } = screenFullTextManager;
+    const parentWidth = screenManagerBase.width;
+    const parentHeight = screenManagerBase.height;
     const { bounds } = getDisplayByScreenId(screenFullTextManager.screenId);
     const width = bounds.width;
     const height = bounds.height;

@@ -18,10 +18,10 @@ import {
 import { screenManagerSettingNames } from '../../helper/constants';
 import {
     chooseScreenManagerInstances, getScreenManagerInstanceForce,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
-import ScreenManager from './ScreenManager';
+import ScreenManagerBase from './ScreenManagerBase';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -42,8 +42,8 @@ export default class ScreenSlideManager extends
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
 
-    constructor(screenManager: ScreenManager) {
-        super(screenManager);
+    constructor(screenManagerBase: ScreenManagerBase) {
+        super(screenManagerBase);
         if (appProviderScreen.isPagePresenter) {
             const allSlideList = getSlideListOnScreenSetting();
             this._slideItemData = allSlideList[this.key] || null;
@@ -161,8 +161,8 @@ export default class ScreenSlideManager extends
         const choseScreenManagers = await chooseScreenManagerInstances(
             event, isForceChoosing,
         );
-        choseScreenManagers.forEach((screenManager) => {
-            const { screenSlideManager } = screenManager;
+        choseScreenManagers.forEach((screenManagerBase) => {
+            const { screenSlideManager } = screenManagerBase;
             screenSlideManager.handleSlideSelecting(
                 slideFilePath, slideItemJson,
             );
@@ -177,7 +177,7 @@ export default class ScreenSlideManager extends
         const content = genPdfSlideItem(
             pdfImageData.imagePreviewSrc, isFullWidth,
         );
-        const parentWidth = this.screenManager.width;
+        const parentWidth = this.screenManagerBase.width;
         const width = parentWidth;
         Object.assign(divHaftScale.style, {
             width: '100%', height: '100%',
@@ -212,7 +212,7 @@ export default class ScreenSlideManager extends
             width: `${width}px`, height: `${height}px`,
             transform: 'translate(-50%, -50%)',
         });
-        const scale = this.screenManager.width / width;
+        const scale = this.screenManagerBase.width / width;
         return { content, scale };
     }
 
@@ -255,8 +255,8 @@ export default class ScreenSlideManager extends
         divHaftScale.appendChild(target.content);
         Object.assign(divContainer.style, {
             position: 'absolute',
-            width: `${this.screenManager.width}px`,
-            height: `${this.screenManager.height}px`,
+            width: `${this.screenManagerBase.width}px`,
+            height: `${this.screenManagerBase.height}px`,
             transform: (
                 `scale(${target.scale},${target.scale}) translate(50%, 50%)`
             ),
@@ -267,8 +267,8 @@ export default class ScreenSlideManager extends
     get containerStyle(): CSSProperties {
         return {
             position: 'absolute',
-            width: `${this.screenManager.width}px`,
-            height: `${this.screenManager.height}px`,
+            width: `${this.screenManagerBase.width}px`,
+            height: `${this.screenManagerBase.height}px`,
             overflow: 'hidden',
         };
     }

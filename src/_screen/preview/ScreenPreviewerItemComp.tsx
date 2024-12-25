@@ -7,10 +7,12 @@ import ScreenEffectControlComp from './ScreenEffectControlComp';
 import { handleDrop } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import ItemColorNote from '../../others/ItemColorNote';
-import { useScreenManagerContext } from '../managers/screenManagerHelpers';
+import {
+    useScreenManagerBaseContext,
+} from '../managers/screenManagerBaseHelpers';
 
 function ScreenPreviewerHeaderComp() {
-    const screenManager = useScreenManagerContext();
+    const screenManagerBase = useScreenManagerBaseContext();
     return (
         <div className='card-header w-100 pb-2'
             style={{
@@ -23,7 +25,7 @@ function ScreenPreviewerHeaderComp() {
                     <ShowHideScreen />
                     <MiniScreenClearControlComp />
                     <div className='ms-2'>
-                        <ItemColorNote item={screenManager} />
+                        <ItemColorNote item={screenManagerBase} />
                     </div>
                 </div>
                 <div className='flex-fill d-flex justify-content-end ms-2'>
@@ -38,11 +40,11 @@ function ScreenPreviewerHeaderComp() {
 export default function ScreenPreviewerItemComp({ width }: Readonly<{
     width: number,
 }>) {
-    const screenManager = useScreenManagerContext();
-    const selectedCN = screenManager.isSelected ? 'highlight-selected' : '';
+    const screenManagerBase = useScreenManagerBaseContext();
+    const selectedCN = screenManagerBase.isSelected ? 'highlight-selected' : '';
     return (
-        <div key={screenManager.key}
-            title={`Screen: ${screenManager.screenId}`}
+        <div key={screenManagerBase.key}
+            title={`Screen: ${screenManagerBase.screenId}`}
             className={`mini-screen card m-1 ${selectedCN}`}
             style={{
                 overflow: 'hidden',
@@ -50,7 +52,7 @@ export default function ScreenPreviewerItemComp({ width }: Readonly<{
                 display: 'inline-block',
             }}
             onContextMenu={(event) => {
-                openContextMenu(event, screenManager);
+                openContextMenu(event, screenManagerBase);
             }}
             onDragOver={(event) => {
                 event.preventDefault();
@@ -68,12 +70,12 @@ export default function ScreenPreviewerItemComp({ width }: Readonly<{
                 if (droppedData === null) {
                     return;
                 }
-                screenManager.receiveScreenDropped(droppedData);
+                screenManagerBase.receiveScreenDropped(droppedData);
             }}>
             <ScreenPreviewerHeaderComp />
             <div className='w-100'>
                 <mini-screen-previewer-custom-html
-                    screenId={screenManager.screenId}
+                    screenId={screenManagerBase.screenId}
                 />
             </div>
             <div></div>

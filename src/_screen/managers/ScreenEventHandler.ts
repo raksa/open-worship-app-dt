@@ -1,26 +1,30 @@
 import EventHandler from '../../event/EventHandler';
 import { sendScreenMessage } from './screenEventHelpers';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
-import ScreenManager from './ScreenManager';
 import {
     createScreenManagerGhostInstance, getScreenManagerInstanceForce,
-} from './screenManagerHelpers';
+} from './screenManagerBaseHelpers';
+import ScreenManagerBase from './ScreenManagerBase';
 
 export default abstract class
     ScreenEventHandler<T extends string>
     extends EventHandler<T> {
 
     static readonly eventNamePrefix: string = 'screen-em';
-    screenManager: ScreenManager;
-    constructor(screenManager: ScreenManager) {
+    screenManagerBase: ScreenManagerBase;
+    constructor(screenManagerBase: ScreenManagerBase) {
         super();
-        this.screenManager = screenManager;
+        this.screenManagerBase = screenManagerBase;
+    }
+
+    get screenManager() {
+        return getScreenManagerInstanceForce(this.screenId);
     }
 
     abstract get isShowing(): boolean;
 
     get screenId() {
-        return this.screenManager.screenId;
+        return this.screenManagerBase.screenId;
     }
 
     get key() {
@@ -55,17 +59,19 @@ export default abstract class
     abstract clear(): void;
 
     static disableSyncGroup(screenId: number) {
-        const screenManager = getScreenManagerInstanceForce(screenId);
-        screenManager.noSyncGroupMap.set(this.eventNamePrefix, true);
+        const screenManagerBase = getScreenManagerInstanceForce(screenId);
+        screenManagerBase.noSyncGroupMap.set(this.eventNamePrefix, true);
     }
 
     static enableSyncGroup(screenId: number) {
-        const screenManager = getScreenManagerInstanceForce(screenId);
-        screenManager.noSyncGroupMap.set(this.eventNamePrefix, false);
+        const screenManagerBase = getScreenManagerInstanceForce(screenId);
+        screenManagerBase.noSyncGroupMap.set(this.eventNamePrefix, false);
     }
 
     delete() {
-        this.screenManager = createScreenManagerGhostInstance(this.screenId);
+        this.screenManagerBase = createScreenManagerGhostInstance(
+            this.screenId,
+        );
     }
 
 }
