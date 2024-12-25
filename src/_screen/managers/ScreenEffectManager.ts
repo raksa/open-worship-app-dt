@@ -8,10 +8,10 @@ import {
     ScreenTransitionEffectType, PTFEventType, styleAnimList, TargetType,
     transitionEffect,
 } from '../transitionEffectHelpers';
-import {
-    createScreenManagerGhostInstance, getScreenManagerInstanceForce,
-} from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
+import {
+    createScreenManagerGhost, getScreenManagerForce,
+} from './screenManagerHelpers';
 
 class ScreenEffectManager extends EventHandler<PTFEventType> {
     screenManagerBase: ScreenManagerBase;
@@ -64,7 +64,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
-        const screenManagerBase = getScreenManagerInstanceForce(
+        const screenManagerBase = getScreenManagerForce(
             message.screenId,
         );
         if (screenManagerBase === null) {
@@ -79,7 +79,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     }
 
     delete() {
-        this.screenManagerBase = createScreenManagerGhostInstance(
+        this.screenManagerBase = createScreenManagerGhost(
             this.screenId,
         );
     }

@@ -19,16 +19,15 @@ import {
     BasicScreenMessageType, FullTextItemDataType, genScreenMouseEvent,
     getFullTextListOnScreenSetting, ScreenMessageType,
 } from '../screenHelpers';
-import ScreenManager from './ScreenManager';
 import * as loggerHelpers from '../../helper/loggerHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import {
-    chooseScreenManagerInstances, getAllScreenManagerInstances,
-    getScreenManagerInstanceForce,
-} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
+import ScreenManagerBase from './ScreenManagerBase';
+import {
+    chooseScreenManagers, getAllScreenManagers, getScreenManagerForce,
+} from './screenManagerHelpers';
 
 let textStyle: AnyObjectType = {};
 export default class ScreenFullTextManager
@@ -119,7 +118,6 @@ export default class ScreenFullTextManager
                 delete allFTList[this.key];
             } else {
                 allFTList[this.key] = ftItemData;
-                this.screenManagerBase.screenSlideManager.clear();
             }
             const string = JSON.stringify(allFTList);
             setSetting(screenManagerSettingNames.FULL_TEXT, string);
@@ -317,7 +315,7 @@ export default class ScreenFullTextManager
     }
 
     static sendSynTextStyle() {
-        getAllScreenManagerInstances().forEach((screenManagerBase) => {
+        getAllScreenManagers().forEach((screenManagerBase) => {
             sendScreenMessage({
                 screenId: screenManagerBase.screenId,
                 type: 'full-text-text-style',
@@ -338,7 +336,7 @@ export default class ScreenFullTextManager
         isForceChoosing = false,
     ) {
         const ftItemData = await bibleItemToFtData(bibleItems);
-        const chosenScreenManagers = await chooseScreenManagerInstances(
+        const chosenScreenManagers = await chooseScreenManagers(
             genScreenMouseEvent(event) as any, isForceChoosing,
         );
         chosenScreenManagers.forEach((screenManagerBase) => {
@@ -388,12 +386,14 @@ export default class ScreenFullTextManager
     }
 
     static getInstance(screenId: number) {
-        return getScreenManagerInstanceForce(screenId).screenFullTextManager;
+        return getScreenManagerForce(screenId).screenFullTextManager;
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenFullTextManager } = getScreenManagerInstanceForce(screenId);
+        const {
+            screenFullTextManager,
+        } = getScreenManagerForce(screenId);
         screenFullTextManager.receiveSyncScreen(message);
     }
 

@@ -10,6 +10,7 @@ import ItemColorNote from '../../others/ItemColorNote';
 import {
     useScreenManagerBaseContext,
 } from '../managers/screenManagerBaseHelpers';
+import { useScreenManagerContext } from '../managers/screenManagerHelpers';
 
 function ScreenPreviewerHeaderComp() {
     const screenManagerBase = useScreenManagerBaseContext();
@@ -40,11 +41,11 @@ function ScreenPreviewerHeaderComp() {
 export default function ScreenPreviewerItemComp({ width }: Readonly<{
     width: number,
 }>) {
-    const screenManagerBase = useScreenManagerBaseContext();
-    const selectedCN = screenManagerBase.isSelected ? 'highlight-selected' : '';
+    const screenManager = useScreenManagerContext();
+    const selectedCN = screenManager.isSelected ? 'highlight-selected' : '';
     return (
-        <div key={screenManagerBase.key}
-            title={`Screen: ${screenManagerBase.screenId}`}
+        <div key={screenManager.key}
+            title={`Screen: ${screenManager.screenId}`}
             className={`mini-screen card m-1 ${selectedCN}`}
             style={{
                 overflow: 'hidden',
@@ -52,7 +53,7 @@ export default function ScreenPreviewerItemComp({ width }: Readonly<{
                 display: 'inline-block',
             }}
             onContextMenu={(event) => {
-                openContextMenu(event, screenManagerBase);
+                openContextMenu(event, screenManager);
             }}
             onDragOver={(event) => {
                 event.preventDefault();
@@ -70,12 +71,12 @@ export default function ScreenPreviewerItemComp({ width }: Readonly<{
                 if (droppedData === null) {
                     return;
                 }
-                screenManagerBase.receiveScreenDropped(droppedData);
+                screenManager.receiveScreenDropped(droppedData);
             }}>
             <ScreenPreviewerHeaderComp />
             <div className='w-100'>
                 <mini-screen-previewer-custom-html
-                    screenId={screenManagerBase.screenId}
+                    screenId={screenManager.screenId}
                 />
             </div>
             <div></div>

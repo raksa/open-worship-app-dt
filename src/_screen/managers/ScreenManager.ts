@@ -5,10 +5,10 @@ import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import ScreenSlideManager from './ScreenSlideManager';
 import ScreenEffectManager from './ScreenEffectManager';
-import {
-    deleteScreenManagerCache, saveScreenManagersSetting,
-} from './screenManagerBaseHelpers';
+import { deleteScreenManagerBaseCache } from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
+import { RegisteredEventType } from '../../event/EventHandler';
+import { saveScreenManagersSetting } from './screenManagerHelpers';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'
@@ -22,39 +22,63 @@ export default class ScreenManager extends ScreenManagerBase {
     readonly screenAlertManager: ScreenAlertManager;
     readonly slideEffectManager: ScreenEffectManager;
     readonly backgroundEffectManager: ScreenEffectManager;
+    private readonly registeredEventListeners: RegisteredEventType<any, any>[];
+
 
     constructor(screenId: number) {
         super(screenId);
-        this.screenBackgroundManager = new ScreenBackgroundManager(this);
-        this.screenSlideManager = new ScreenSlideManager(this);
-        this.screenFullTextManager = new ScreenFullTextManager(this);
-        this.screenAlertManager = new ScreenAlertManager(this);
         this.slideEffectManager = new ScreenEffectManager(this, 'slide');
         this.backgroundEffectManager = new ScreenEffectManager(
             this, 'background',
         );
+        this.screenBackgroundManager = new ScreenBackgroundManager(
+            this, this.backgroundEffectManager,
+        );
+        this.screenSlideManager = new ScreenSlideManager(
+            this, this.slideEffectManager,
+        );
+        this.screenFullTextManager = new ScreenFullTextManager(this);
+        this.screenAlertManager = new ScreenAlertManager(this);
+        this.registeredEventListeners = [];
+        this.registeredEventListeners.push(
+            ...this.screenSlideManager.registerEventListener(['update'], () => {
+                if (this.screenSlideManager.isShowing) {
+                    this.screenFullTextManager.clear();
+                }
+            }),
+            ...this.screenBackgroundManager.registerEventListener(
+                ['update'], () => {
+                    if (this.screenBackgroundManager.isShowing) {
+                        this.screenSlideManager.clear();
+                    }
+                },
+            ),
+        );
     }
 
     sendSyncScreen() {
-        this.slideEffectManager.sendSyncScreen();
+        ScreenFullTextManager.sendSynTextStyle();
         this.backgroundEffectManager.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
-        this.screenSlideManager.sendSyncScreen();
-        this.screenFullTextManager.sendSyncScreen();
         this.screenAlertManager.sendSyncScreen();
-        ScreenFullTextManager.sendSynTextStyle();
+        this.screenSlideManager.sendSyncScreen();
+        this.slideEffectManager.sendSyncScreen();
+        this.screenFullTextManager.sendSyncScreen();
     }
 
     clear() {
-        this.screenBackgroundManager.clear();
         this.screenFullTextManager.clear();
         this.screenSlideManager.clear();
         this.screenAlertManager.clear();
+        this.screenBackgroundManager.clear();
         this.fireUpdateEvent();
     }
 
     async delete() {
         this.isDeleted = true;
+        this.registeredEventListeners.forEach(({ eventName, listener }) => {
+            this.removeOnEventListener(eventName, listener);
+        });
         this.clear();
         this.hide();
         this.slideEffectManager.delete();
@@ -63,7 +87,7 @@ export default class ScreenManager extends ScreenManagerBase {
         this.screenSlideManager.delete();
         this.screenFullTextManager.delete();
         this.screenAlertManager.delete();
-        deleteScreenManagerCache(this.key);
+        deleteScreenManagerBaseCache(this.key);
         await saveScreenManagersSetting(this.screenId);
         this.fireInstanceEvent();
     }

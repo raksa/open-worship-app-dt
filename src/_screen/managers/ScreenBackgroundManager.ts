@@ -13,12 +13,13 @@ import {
 } from '../screenHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import {
-    chooseScreenManagerInstances, getScreenManagerInstanceForce,
-} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
+import ScreenEffectManager from './ScreenEffectManager';
+import {
+    chooseScreenManagers, getScreenManagerForce,
+} from './screenManagerHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -28,9 +29,14 @@ export default class ScreenBackgroundManager
     static readonly eventNamePrefix: string = 'screen-bg-m';
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
+    backgroundEffectManager: ScreenEffectManager;
 
-    constructor(screenManagerBase: ScreenManagerBase) {
+    constructor(
+        screenManagerBase: ScreenManagerBase,
+        backgroundEffectManager: ScreenEffectManager,
+    ) {
         super(screenManagerBase);
+        this.backgroundEffectManager = backgroundEffectManager;
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] || null;
@@ -48,10 +54,6 @@ export default class ScreenBackgroundManager
     set div(div: HTMLDivElement | null) {
         this._div = div;
         this.render();
-    }
-
-    get effectManager() {
-        return this.screenManager.backgroundEffectManager;
     }
 
     get backgroundSrc() {
@@ -136,7 +138,7 @@ export default class ScreenBackgroundManager
         backgroundType: BackgroundType, src: string | null,
         isForceChoosing = false,
     ) {
-        const chosenScreenManagers = await chooseScreenManagerInstances(
+        const chosenScreenManagers = await chooseScreenManagers(
             event, isForceChoosing,
         );
         for (const screenManagerBase of chosenScreenManagers) {
@@ -180,7 +182,7 @@ export default class ScreenBackgroundManager
         if (this.div === null) {
             return;
         }
-        const aminData = this.effectManager.styleAnim;
+        const aminData = this.backgroundEffectManager.styleAnim;
         if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(
                 this.backgroundSrc, this.screenId,
@@ -232,7 +234,7 @@ export default class ScreenBackgroundManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenBackgroundManager } = getScreenManagerInstanceForce(
+        const { screenBackgroundManager } = getScreenManagerForce(
             screenId,
         );
         screenBackgroundManager.receiveSyncScreen(message);

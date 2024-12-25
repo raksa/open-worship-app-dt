@@ -1,14 +1,16 @@
-import ScreenManager from '../managers/ScreenManager';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenu';
+import ScreenManager from '../managers/ScreenManager';
 import {
-    getAllScreenManagerInstances,
-    getSelectedScreenManagerInstances,
+    getSelectedScreenManagerBases,
 } from '../managers/screenManagerBaseHelpers';
+import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
-export function openContextMenu(event: any, screenManagerBase: ScreenManagerBase) {
-    const screenManagers = getAllScreenManagerInstances();
+export function openContextMenu(
+    event: any, screenManager: ScreenManager,
+) {
+    const screenManagers = getAllScreenManagers();
     const selectedScreenIds = screenManagers.filter((screenManager1) => {
         return screenManager1.isSelected;
     }).map((screenManager1) => {
@@ -16,10 +18,10 @@ export function openContextMenu(event: any, screenManagerBase: ScreenManagerBase
     });
     const isSolo = (
         selectedScreenIds.length === 1 &&
-        selectedScreenIds.includes(screenManagerBase.screenId)
+        selectedScreenIds.includes(screenManager.screenId)
     );
     const isOne = screenManagers.length === 1;
-    const { screenFullTextManager } = screenManagerBase;
+    const { screenFullTextManager } = screenManager;
     const isShowingFT = !!screenFullTextManager.fullTextItemData;
     const isLineSync = screenFullTextManager.isLineSync;
     const extraMenuItems = isShowingFT ? [{
@@ -32,22 +34,22 @@ export function openContextMenu(event: any, screenManagerBase: ScreenManagerBase
         ...isOne || isSolo ? [] : [{
             menuTitle: 'Solo',
             onClick() {
-                getSelectedScreenManagerInstances()
+                getSelectedScreenManagerBases()
                     .forEach((screenManager1) => {
                         screenManager1.isSelected = false;
                     });
-                screenManagerBase.isSelected = true;
+                screenManager.isSelected = true;
             },
         }],
         ...isOne ? [] : [{
-            menuTitle: screenManagerBase.isSelected ? 'Deselect' : 'Select',
+            menuTitle: screenManager.isSelected ? 'Deselect' : 'Select',
             onClick() {
-                screenManagerBase.isSelected = !screenManagerBase.isSelected;
+                screenManager.isSelected = !screenManager.isSelected;
             },
         }, {
             menuTitle: 'Delete',
             onClick() {
-                screenManagerBase.delete();
+                screenManager.delete();
             },
         }],
         ...extraMenuItems,

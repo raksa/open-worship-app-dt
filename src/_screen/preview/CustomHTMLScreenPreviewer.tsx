@@ -3,7 +3,7 @@ import { DOMAttributes } from 'react';
 import { createRoot } from 'react-dom/client';
 import MiniScreenAppComp from './MiniScreenAppComp';
 import {
-    getDefaultScreenDisplay, getScreenManagerInstance,
+    getDefaultScreenDisplay, getScreenManagerBase,
 } from '../managers/screenManagerBaseHelpers';
 import ScreenManagerBase from '../managers/ScreenManagerBase';
 
@@ -47,7 +47,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.screenId > -1) {
-                const screenManagerBase = getScreenManagerInstance(
+                const screenManagerBase = getScreenManagerBase(
                     this.screenId,
                 );
                 if (screenManagerBase === null) {
@@ -64,7 +64,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             mode: 'open',
         }).appendChild(this.mountPoint);
         const root = createRoot(this.mountPoint);
-        const screenManagerBase = getScreenManagerInstance(this.screenId);
+        const screenManagerBase = getScreenManagerBase(this.screenId);
         if (screenManagerBase === null) {
             return;
         }

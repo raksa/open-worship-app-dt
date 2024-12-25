@@ -14,14 +14,14 @@ import {
     BasicScreenMessageType, getSlideListOnScreenSetting, ScreenMessageType,
     SlideItemDataType,
 } from '../screenHelpers';
-// TODO: cyclic dependency ScreenManager<->ScreenSlideManager
 import { screenManagerSettingNames } from '../../helper/constants';
-import {
-    chooseScreenManagerInstances, getScreenManagerInstanceForce,
-} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
+import ScreenEffectManager from './ScreenEffectManager';
+import {
+    chooseScreenManagers, getScreenManagerForce,
+} from './screenManagerHelpers';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -41,9 +41,14 @@ export default class ScreenSlideManager extends
     static readonly eventNamePrefix: string = 'screen-slide-m';
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
+    slideEffectManager: ScreenEffectManager;
 
-    constructor(screenManagerBase: ScreenManagerBase) {
+    constructor(
+        screenManagerBase: ScreenManagerBase,
+        slideEffectManager: ScreenEffectManager,
+    ) {
         super(screenManagerBase);
+        this.slideEffectManager = slideEffectManager;
         if (appProviderScreen.isPagePresenter) {
             const allSlideList = getSlideListOnScreenSetting();
             this._slideItemData = allSlideList[this.key] || null;
@@ -61,10 +66,6 @@ export default class ScreenSlideManager extends
     set div(div: HTMLDivElement | null) {
         this._div = div;
         this.render();
-    }
-
-    get effectManager() {
-        return this.screenManager.slideEffectManager;
     }
 
     get slideItemData() {
@@ -148,9 +149,6 @@ export default class ScreenSlideManager extends
             slideFilePath, slideItemJson,
         } : null;
         this.applySlideItemSrcWithSyncGroup(newSlideSrc);
-        if (newSlideSrc !== null) {
-            this.screenManager.screenFullTextManager.clear();
-        }
     }
 
     static async handleSlideSelecting(
@@ -158,7 +156,7 @@ export default class ScreenSlideManager extends
         slideFilePath: string, slideItemJson: SlideItemType,
         isForceChoosing = false,
     ) {
-        const choseScreenManagers = await chooseScreenManagerInstances(
+        const choseScreenManagers = await chooseScreenManagers(
             event, isForceChoosing,
         );
         choseScreenManagers.forEach((screenManagerBase) => {
@@ -221,7 +219,7 @@ export default class ScreenSlideManager extends
             return;
         }
         const targetDiv = div.lastChild as HTMLDivElement;
-        await this.effectManager.styleAnim.animOut(targetDiv);
+        await this.slideEffectManager.styleAnim.animOut(targetDiv);
         targetDiv.remove();
     }
 
@@ -248,7 +246,9 @@ export default class ScreenSlideManager extends
             return;
         }
         Array.from(div.children).forEach(async (child) => {
-            await this.effectManager.styleAnim.animOut(child as HTMLDivElement);
+            await this.slideEffectManager.styleAnim.animOut(
+                child as HTMLDivElement,
+            );
             child.remove();
         });
         div.appendChild(divContainer);
@@ -261,7 +261,7 @@ export default class ScreenSlideManager extends
                 `scale(${target.scale},${target.scale}) translate(50%, 50%)`
             ),
         });
-        this.effectManager.styleAnim.animIn(divContainer);
+        this.slideEffectManager.styleAnim.animIn(divContainer);
     }
 
     get containerStyle(): CSSProperties {
@@ -285,7 +285,7 @@ export default class ScreenSlideManager extends
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenSlideManager } = getScreenManagerInstanceForce(screenId);
+        const { screenSlideManager } = getScreenManagerForce(screenId);
         screenSlideManager.receiveSyncScreen(message);
     }
 

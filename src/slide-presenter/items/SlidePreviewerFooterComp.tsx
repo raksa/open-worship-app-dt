@@ -8,7 +8,9 @@ import {
     MIN_THUMBNAIL_SCALE, MAX_THUMBNAIL_SCALE, THUMBNAIL_SCALE_STEP,
     selectSlide,
 } from '../../slide-list/slideHelpers';
-import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
+import {
+    useScreenSlideManagerEvents,
+} from '../../_screen/managers/screenEventHelpers';
 import { genSlideItemIds, getPresenterIndex } from './slideItemHelpers';
 import AppRange from '../../others/AppRange';
 import {

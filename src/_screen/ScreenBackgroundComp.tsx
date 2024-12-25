@@ -9,12 +9,10 @@ import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
 import {
+    getScreenManagerForce,
     useScreenManagerContext,
 } from './managers/screenManagerHelpers';
-import {
-    getScreenManagerInstanceForce,
-    ScreenManagerBaseContext,
-} from './managers/screenManagerBaseHelpers';
+import { ScreenManagerBaseContext } from './managers/screenManagerBaseHelpers';
 
 export default function ScreenBackgroundComp() {
     const screenManager = useScreenManagerContext();
@@ -38,7 +36,7 @@ export default function ScreenBackgroundComp() {
 export function genHtmlBackground(
     backgroundSrc: BackgroundSrcType, screenId: number,
 ) {
-    const screenManagerBase = getScreenManagerInstanceForce(screenId);
+    const screenManagerBase = getScreenManagerForce(screenId);
     const htmlStr = ReactDOMServer.renderToStaticMarkup(
         <ScreenManagerBaseContext value={screenManagerBase}>
             <RenderBackground backgroundSrc={backgroundSrc} />

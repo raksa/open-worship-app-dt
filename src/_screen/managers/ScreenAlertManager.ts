@@ -10,12 +10,12 @@ import {
     ScreenMessageType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
-import {
-    chooseScreenManagerInstances, getScreenManagerInstanceForce,
-} from './screenManagerBaseHelpers';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
+import {
+    chooseScreenManagers, getScreenManagerForce,
+} from './screenManagerHelpers';
 
 export type ScreenAlertEventType = 'update';
 
@@ -157,7 +157,7 @@ export default class ScreenAlertManager
             callback(screenAlertManager);
             screenAlertManager.saveAlertData();
         };
-        const chosenScreenManagers = await chooseScreenManagerInstances(
+        const chosenScreenManagers = await chooseScreenManagers(
             event, isForceChoosing,
         );
         chosenScreenManagers.forEach((screenManagerBase) => {
@@ -232,7 +232,7 @@ export default class ScreenAlertManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenAlertManager } = getScreenManagerInstanceForce(screenId);
+        const { screenAlertManager } = getScreenManagerForce(screenId);
         screenAlertManager.receiveSyncScreen(message);
     }
 

@@ -4,8 +4,9 @@ import ScreenSlideComp from '../ScreenSlideComp';
 import ScreenFullTextComp from '../ScreenFullTextComp';
 import { RendStyle } from '../RenderTransitionEffectComp';
 import {
-    getScreenManagerInstance, ScreenManagerBaseContext,
+    getScreenManagerBase, ScreenManagerBaseContext,
 } from '../managers/screenManagerBaseHelpers';
+import { screenManagerFromBase } from '../managers/screenManagerHelpers';
 
 const IMAGE_BACKGROUND = (
     `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
@@ -17,13 +18,15 @@ linear-gradient(-45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%)`
 export default function MiniScreenAppComp({ screenId }: Readonly<{
     screenId: number,
 }>) {
-    const screenManagerBase = getScreenManagerInstance(screenId);
-    if (screenManagerBase === null) {
+    const screenManager = screenManagerFromBase(
+        getScreenManagerBase(screenId),
+    );
+    if (screenManager === null) {
         return null;
     }
-    const { slideEffectManager, backgroundEffectManager } = screenManagerBase;
+    const { slideEffectManager, backgroundEffectManager } = screenManager;
     return (
-        <ScreenManagerBaseContext value={screenManagerBase}>
+        <ScreenManagerBaseContext value={screenManager}>
             <RendStyle screenEffectManager={slideEffectManager} />
             <RendStyle screenEffectManager={backgroundEffectManager} />
             <div style={{

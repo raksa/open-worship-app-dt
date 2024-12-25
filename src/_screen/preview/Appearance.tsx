@@ -4,9 +4,8 @@ import { AppColorType } from '../../others/color/colorHelpers';
 import { useScreenFullTextManagerEvents } from '../managers/screenEventHelpers';
 import ScreenFullTextManager from '../managers/ScreenFullTextManager';
 import ScreenSlideManager from '../managers/ScreenSlideManager';
-import ScreenManager from '../managers/ScreenManager';
 import AppRange from '../../others/AppRange';
-import { getAllScreenManagerInstances } from '../managers/screenManagerBaseHelpers';
+import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
 export default function Appearance() {
     const [color, setColor] = useState(
@@ -82,7 +81,7 @@ function PDFAppearanceSetting() {
     );
     const setIsFullWidth1 = (b: boolean) => {
         ScreenSlideManager.isPdfFullWidth = b;
-        for (const { screenSlideManager } of getAllScreenManagerInstances()) {
+        for (const { screenSlideManager } of getAllScreenManagers()) {
             screenSlideManager.render();
             screenSlideManager.sendSyncScreen();
         }

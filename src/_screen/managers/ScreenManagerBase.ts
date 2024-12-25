@@ -6,16 +6,16 @@ import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import {
-    getAllShowingScreenIds, getScreenManagersInstanceSetting,
-    hideScreen, setDisplay, showScreen,
+    getAllShowingScreenIds, hideScreen, setDisplay, showScreen,
 } from '../screenHelpers';
 import ScreenManagerInf from '../preview/ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
 import ColorNoteInf from '../../helper/ColorNoteInf';
 import {
-    getDisplayIdByScreenId, saveScreenManagersSetting,
+    getDisplayIdByScreenId, getScreenManagersInstanceSetting,
     SCREEN_MANAGER_SETTING_NAME,
 } from './screenManagerBaseHelpers';
+import { saveScreenManagersSetting } from './screenManagerHelpers';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'

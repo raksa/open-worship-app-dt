@@ -8,9 +8,7 @@ import ScreenBackgroundManager, {
 import { ScreenFTManagerEventType } from '../screenFullTextHelpers';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import { ScreenMessageType } from '../screenHelpers';
-import ScreenManager, {
-    ScreenManagerEventType,
-} from './ScreenManager';
+import ScreenManager, { ScreenManagerEventType } from './ScreenManager';
 import ScreenSlideManager, {
     ScreenSlideManagerEventType,
 } from './ScreenSlideManager';
@@ -18,9 +16,10 @@ import EventHandler from '../../event/EventHandler';
 import ScreenAlertManager, {
     ScreenAlertEventType,
 } from './ScreenAlertManager';
+import ScreenManagerBase from './ScreenManagerBase';
 import {
     applyScreenManagerSyncScreen, syncScreenManagerGroup,
-} from './screenManagerBaseHelpers';
+} from './screenManagerHelpers';
 
 function useScreenEvents<T extends string>(
     events: T[], Class: EventHandler<T>,

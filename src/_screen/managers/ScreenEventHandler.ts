@@ -1,10 +1,10 @@
 import EventHandler from '../../event/EventHandler';
 import { sendScreenMessage } from './screenEventHelpers';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
-import {
-    createScreenManagerGhostInstance, getScreenManagerInstanceForce,
-} from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
+import {
+    getScreenManagerForce, createScreenManagerGhost,
+} from './screenManagerHelpers';
 
 export default abstract class
     ScreenEventHandler<T extends string>
@@ -15,10 +15,6 @@ export default abstract class
     constructor(screenManagerBase: ScreenManagerBase) {
         super();
         this.screenManagerBase = screenManagerBase;
-    }
-
-    get screenManager() {
-        return getScreenManagerInstanceForce(this.screenId);
     }
 
     abstract get isShowing(): boolean;
@@ -59,17 +55,17 @@ export default abstract class
     abstract clear(): void;
 
     static disableSyncGroup(screenId: number) {
-        const screenManagerBase = getScreenManagerInstanceForce(screenId);
+        const screenManagerBase = getScreenManagerForce(screenId);
         screenManagerBase.noSyncGroupMap.set(this.eventNamePrefix, true);
     }
 
     static enableSyncGroup(screenId: number) {
-        const screenManagerBase = getScreenManagerInstanceForce(screenId);
+        const screenManagerBase = getScreenManagerForce(screenId);
         screenManagerBase.noSyncGroupMap.set(this.eventNamePrefix, false);
     }
 
     delete() {
-        this.screenManagerBase = createScreenManagerGhostInstance(
+        this.screenManagerBase = createScreenManagerGhost(
             this.screenId,
         );
     }

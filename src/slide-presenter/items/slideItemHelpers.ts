@@ -1,7 +1,12 @@
 import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
 import SlideItem from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
-import { getScreenManagerInstance } from '../../_screen/managers/screenManagerBaseHelpers';
+import {
+    getScreenManagerBase,
+} from '../../_screen/managers/screenManagerBaseHelpers';
+import {
+    screenManagerFromBase,
+} from '../../_screen/managers/screenManagerHelpers';
 
 export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
     if (slideItemIds.length === 0) {
@@ -104,12 +109,14 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
     // FIXME: monitor group not working
     for (let i = 0; i < foundList.length; i++) {
         const { slideItem, targetDiv, screenId } = foundList[i];
-        const screenManagerBase = getScreenManagerInstance(screenId);
-        if (screenManagerBase === null) {
+        const screenManager = screenManagerFromBase(
+            getScreenManagerBase(screenId),
+        );
+        if (screenManager === null) {
             continue;
         }
         setTimeout(() => {
-            screenManagerBase.screenSlideManager.handleSlideSelecting(
+            screenManager.screenSlideManager.handleSlideSelecting(
                 slideItem.filePath, slideItem.toJson(),
             );
             targetDiv.scrollIntoView({

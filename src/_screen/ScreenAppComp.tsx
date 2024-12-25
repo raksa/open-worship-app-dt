@@ -8,10 +8,8 @@ import appProviderScreen from './appProviderScreen';
 import {
     initReceiveScreenMessage, sendScreenMessage,
 } from './managers/screenEventHelpers';
-import {
-    createScreenManagerInstance,
-    ScreenManagerBaseContext,
-} from './managers/screenManagerBaseHelpers';
+import { ScreenManagerBaseContext } from './managers/screenManagerBaseHelpers';
+import { createScreenManager } from './managers/screenManagerHelpers';
 
 initReceiveScreenMessage();
 export default function ScreenAppComp() {
@@ -20,7 +18,7 @@ export default function ScreenAppComp() {
     if (isNaN(screenId)) {
         return null;
     }
-    const screenManager = createScreenManagerInstance(screenId);
+    const screenManager = createScreenManager(screenId);
     if (screenManager === null) {
         return null;
     }

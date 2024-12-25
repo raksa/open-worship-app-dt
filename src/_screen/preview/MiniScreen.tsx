@@ -11,17 +11,17 @@ import {
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
 import { handleCtrlWheel } from '../../others/AppRange';
+import { ScreenManagerBaseContext } from '../managers/screenManagerBaseHelpers';
 import {
-    genNewScreenManagerInstance, getAllScreenManagerInstances, getScreenManagersSetting,
-    ScreenManagerBaseContext,
-} from '../managers/screenManagerBaseHelpers';
+    genNewScreenManagerBase, getAllScreenManagers, getScreenManagersSetting,
+} from '../managers/screenManagerHelpers';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
         {
             menuTitle: 'Add New Screen',
             onClick() {
-                genNewScreenManagerInstance();
+                genNewScreenManagerBase();
             },
         },
     ]);
@@ -38,8 +38,8 @@ export default function MiniScreen() {
     );
     const setPreviewScale1 = (size: number) => {
         setPreviewScale(size);
-        getAllScreenManagerInstances().forEach((screenManagerBase) => {
-            screenManagerBase.fireResizeEvent();
+        getAllScreenManagers().forEach((screenManager) => {
+            screenManager.fireResizeEvent();
         });
     };
     useScreenManagerEvents(['instance']);

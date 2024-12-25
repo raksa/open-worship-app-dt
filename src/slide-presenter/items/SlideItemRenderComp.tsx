@@ -6,7 +6,9 @@ import SlideItem, {
 } from '../../slide-list/SlideItem';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
-import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
+import {
+    useScreenSlideManagerEvents,
+} from '../../_screen/managers/screenEventHelpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';

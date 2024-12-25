@@ -16,6 +16,9 @@ import {
     ScreenTransitionEffectType, TargetType,
 } from './transitionEffectHelpers';
 import { electronSendAsync, unlocking } from '../server/appHelpers';
+import {
+    getScreenManagersInstanceSetting,
+} from './managers/screenManagerBaseHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = typeof fullTextDataTypeList[number];
@@ -183,31 +186,6 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
         return createMouseEvent(rect.x, rect.y);
     }
     return createMouseEvent(0, 0);
-}
-
-export function getScreenManagersInstanceSetting(): {
-    screenId: number,
-    isSelected: boolean,
-    colorNote: string | null,
-}[] {
-    const str = getSetting(screenManagerSettingNames.MANAGERS, '');
-    if (isValidJson(str, true)) {
-        const json = JSON.parse(str);
-        let instanceSettingList = json.filter(({ screenId }: any) => {
-            return typeof screenId === 'number';
-        });
-        instanceSettingList = instanceSettingList.filter(
-            (value: any, index: number, self: any) => {
-                return self.findIndex(
-                    (t: any) => {
-                        return t.screenId === value.screenId;
-                    },
-                ) === index;
-            },
-        );
-        return instanceSettingList;
-    }
-    return [];
 }
 
 function getValidOnScreen(data: { [key: string]: any }) {
