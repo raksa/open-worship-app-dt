@@ -11,9 +11,6 @@ import {
     SlideItemDataType,
 } from './screenHelpers';
 // TODO: cyclic dependency ScreenManager<->ScreenSlideManager
-import ScreenTransitionEffectManager
-    from './transition-effect/ScreenTransitionEffectManager';
-import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
 import { unlocking } from '../server/appHelpers';
@@ -37,7 +34,6 @@ export default class ScreenSlideManager extends
     static readonly eventNamePrefix: string = 'screen-slide-m';
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
-    ptEffectTarget: TargetType = 'slide';
 
     constructor(screenId: number) {
         super(screenId);
@@ -60,10 +56,8 @@ export default class ScreenSlideManager extends
         this.render();
     }
 
-    get ptEffect() {
-        return ScreenTransitionEffectManager.getInstance(
-            this.screenId, this.ptEffectTarget,
-        );
+    get effectManager() {
+        return this.screenManager.slideEffectManager;
     }
 
     get slideItemData() {
@@ -220,7 +214,7 @@ export default class ScreenSlideManager extends
             return;
         }
         const targetDiv = div.lastChild as HTMLDivElement;
-        await this.ptEffect.styleAnim.animOut(targetDiv);
+        await this.effectManager.styleAnim.animOut(targetDiv);
         targetDiv.remove();
     }
 
@@ -247,7 +241,7 @@ export default class ScreenSlideManager extends
             return;
         }
         Array.from(div.children).forEach(async (child) => {
-            await this.ptEffect.styleAnim.animOut(child as HTMLDivElement);
+            await this.effectManager.styleAnim.animOut(child as HTMLDivElement);
             child.remove();
         });
         div.appendChild(divContainer);
@@ -260,7 +254,7 @@ export default class ScreenSlideManager extends
                 `scale(${target.scale},${target.scale}) translate(50%, 50%)`
             ),
         });
-        this.ptEffect.styleAnim.animIn(divContainer);
+        this.effectManager.styleAnim.animIn(divContainer);
     }
 
     get containerStyle(): CSSProperties {

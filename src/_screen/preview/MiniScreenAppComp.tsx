@@ -21,8 +21,10 @@ export default function MiniScreenAppComp({ screenId }: Readonly<{
     }
     return (
         <ScreenManagerContext value={screenManager}>
-            <RendStyle ptEffectTarget='background' />
-            <RendStyle ptEffectTarget='slide' />
+            <RendStyle screenEffectManager={screenManager.slideEffectManager} />
+            <RendStyle
+                screenEffectManager={screenManager.backgroundEffectManager}
+            />
             <div style={{
                 pointerEvents: 'none',
                 position: 'absolute',

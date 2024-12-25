@@ -11,9 +11,6 @@ import {
     BackgroundSrcType, BackgroundType, BasicScreenMessageType,
     getBackgroundSrcListOnScreenSetting, ScreenMessageType,
 } from './screenHelpers';
-import ScreenTransitionEffectManager
-    from './transition-effect/ScreenTransitionEffectManager';
-import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
@@ -28,7 +25,6 @@ export default class ScreenBackgroundManager
     static readonly eventNamePrefix: string = 'screen-bg-m';
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
-    ptEffectTarget: TargetType = 'background';
 
     constructor(screenId: number) {
         super(screenId);
@@ -51,9 +47,8 @@ export default class ScreenBackgroundManager
         this.render();
     }
 
-    get ptEffect() {
-        return ScreenTransitionEffectManager.getInstance(
-            this.screenId, this.ptEffectTarget);
+    get effectManager() {
+        return this.screenManager.backgroundEffectManager;
     }
 
     get backgroundSrc() {
@@ -182,7 +177,7 @@ export default class ScreenBackgroundManager
         if (this.div === null) {
             return;
         }
-        const aminData = this.ptEffect.styleAnim;
+        const aminData = this.effectManager.styleAnim;
         if (this.backgroundSrc !== null) {
             const newDiv = genHtmlBackground(
                 this.backgroundSrc, this.screenManager,

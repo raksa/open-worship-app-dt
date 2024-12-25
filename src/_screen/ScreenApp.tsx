@@ -23,15 +23,15 @@ export default function ScreenApp() {
     }
     if (appProviderScreen.isScreen) {
         sendScreenMessage({
-            screenId,
-            type: 'init',
-            data: null,
+            screenId, type: 'init', data: null,
         }, true);
     }
     return (
         <ScreenManagerContext value={screenManager}>
-            <RendStyle ptEffectTarget='background' />
-            <RendStyle ptEffectTarget='slide' />
+            <RendStyle screenEffectManager={screenManager.slideEffectManager} />
+            <RendStyle
+                screenEffectManager={screenManager.backgroundEffectManager}
+            />
             <ScreenBackground />
             <ScreenSlide />
             <ScreenFullText />

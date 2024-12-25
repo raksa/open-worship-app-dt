@@ -15,8 +15,8 @@ import {
 } from './screenHelpers';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
-import ScreenTransitionEffectManager from
-    './transition-effect/ScreenTransitionEffectManager';
+import ScreenEffectManager from
+    './transition-effect/ScreenEffectManager';
 import { screenManagerSettingNames } from '../helper/constants';
 import { unlocking } from '../server/appHelpers';
 import ColorNoteInf from '../helper/ColorNoteInf';
@@ -48,6 +48,8 @@ export default class ScreenManager
     readonly screenSlideManager: ScreenSlideManager;
     readonly screenFullTextManager: ScreenFullTextManager;
     readonly screenAlertManager: ScreenAlertManager;
+    readonly slideEffectManager: ScreenEffectManager;
+    readonly backgroundEffectManager: ScreenEffectManager;
     readonly screenId: number;
     isDeleted: boolean;
     width: number;
@@ -71,6 +73,10 @@ export default class ScreenManager
         this.screenSlideManager = new ScreenSlideManager(screenId);
         this.screenFullTextManager = new ScreenFullTextManager(screenId);
         this.screenAlertManager = new ScreenAlertManager(screenId);
+        this.slideEffectManager = new ScreenEffectManager(screenId, 'slide');
+        this.backgroundEffectManager = new ScreenEffectManager(
+            screenId, 'background',
+        );
         const ids = getAllShowingScreenIds();
         this._isShowing = ids.some((id) => {
             return id === screenId;
@@ -148,7 +154,8 @@ export default class ScreenManager
         this.fireVisibleEvent();
     }
     sendSyncScreen() {
-        ScreenTransitionEffectManager.sendSyncScreen();
+        this.slideEffectManager.sendSyncScreen();
+        this.backgroundEffectManager.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
         this.screenSlideManager.sendSyncScreen();
         this.screenFullTextManager.sendSyncScreen();
@@ -293,7 +300,7 @@ export default class ScreenManager
         } else if (type === 'visible') {
             screenManager.isShowing = data?.isShowing;
         } else if (type === 'effect') {
-            ScreenTransitionEffectManager.receiveSyncScreen(message);
+            ScreenEffectManager.receiveSyncScreen(message);
         } else if (type === 'full-text-scroll') {
             ScreenFullTextManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {

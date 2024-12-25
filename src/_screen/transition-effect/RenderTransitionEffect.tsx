@@ -1,20 +1,21 @@
 import { showAppContextMenu } from '../../others/AppContextMenu';
-import { useScreenManagerContext } from '../ScreenManager';
-import ScreenTransitionEffectManager from './ScreenTransitionEffectManager';
+import ScreenEffectManager from './ScreenEffectManager';
 import {
-    ScreenTransitionEffectType, TargetType, transitionEffect, usePTEEvents,
+    ScreenTransitionEffectType, transitionEffect, usePTEEvents,
 } from './transitionEffectHelpers';
 
 function openContextMenu(
-    event: any, ptEffect: ScreenTransitionEffectManager,
+    event: any, screenEffectManager: ScreenEffectManager,
 ) {
     const transitionEffectList = Object.entries(transitionEffect);
     showAppContextMenu(event, transitionEffectList.map(([effect, [icon]]) => {
-        const isSelected = effect === ptEffect.effectType;
+        const isSelected = effect === screenEffectManager.effectType;
         return {
             menuTitle: effect,
             onClick: () => {
-                ptEffect.effectType = effect as ScreenTransitionEffectType;
+                screenEffectManager.effectType = (
+                    effect as ScreenTransitionEffectType
+                );
             },
             otherChild: (
                 <i className={
@@ -26,19 +27,17 @@ function openContextMenu(
 }
 
 export default function RenderTransitionEffect({
-    title, screenId, target,
+    title, screenEffectManager,
 }: Readonly<{
     title: string,
-    screenId: number,
-    target: TargetType,
+    screenEffectManager: ScreenEffectManager,
 }>) {
-    const ptEffect = ScreenTransitionEffectManager.getInstance(screenId, target);
-    usePTEEvents(['update'], ptEffect);
-    const selected = transitionEffect[ptEffect.effectType];
+    usePTEEvents(['update'], screenEffectManager);
+    const selected = transitionEffect[screenEffectManager.effectType];
     return (
         <button type='button' className='btn btn-outline-secondary'
             onClick={(event) => {
-                openContextMenu(event, ptEffect);
+                openContextMenu(event, screenEffectManager);
             }}>
             {title}
             <i className={`${selected[0]} ps-1 'highlight-selected`} />
@@ -46,17 +45,13 @@ export default function RenderTransitionEffect({
     );
 }
 
-export function RendStyle({ ptEffectTarget }: Readonly<{
-    ptEffectTarget: TargetType,
+export function RendStyle({ screenEffectManager }: Readonly<{
+    screenEffectManager: ScreenEffectManager,
 }>) {
-    const screenManager = useScreenManagerContext();
-    const ptEffect = ScreenTransitionEffectManager.getInstance(
-        screenManager.screenId, ptEffectTarget,
-    );
-    usePTEEvents(['update'], ptEffect);
+    usePTEEvents(['update'], screenEffectManager);
     return (
         <style>
-            {ptEffect.style}
+            {screenEffectManager.style}
         </style>
     );
 }

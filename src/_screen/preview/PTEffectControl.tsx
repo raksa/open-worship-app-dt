@@ -4,16 +4,13 @@ import RenderTransitionEffect
 
 export default function PTEffectControl() {
     const screenManager = useScreenManagerContext();
-    const screenId = screenManager.screenId;
     return (
         <>
-            <RenderTransitionEffect title='bg:'
-                target={'background'}
-                screenId={screenId}
-            />
             <RenderTransitionEffect title='slide:'
-                target={'slide'}
-                screenId={screenId}
+                screenEffectManager={screenManager.slideEffectManager}
+            />
+            <RenderTransitionEffect title='bg:'
+                screenEffectManager={screenManager.backgroundEffectManager}
             />
         </>
     );
