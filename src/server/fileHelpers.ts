@@ -65,7 +65,7 @@ export type FileMetadataType = {
 };
 
 export function checkIsAppFile(fileFullName: string) {
-    const ext = extractExtension(fileFullName);
+    const ext = getFileExtension(fileFullName);
     const isAppFile = appExtensions.includes(ext);
     return isAppFile;
 }
@@ -77,6 +77,19 @@ export function pathJoin(filePath: string, fileFullName: string) {
 export function pathBasename(filePath: string) {
     return appProvider.pathUtils.basename(filePath);
 }
+
+export function getFileName(fileFullName: string) {
+    return fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+}
+
+export function getFileExtension(fileFullName: string) {
+    return fileFullName.substring(fileFullName.lastIndexOf('.'));
+}
+
+export function addExtension(name: string, extension: string) {
+    return `${name}${extension}`;
+}
+
 
 export const createNewFileDetail = async (dir: string, name: string,
     content: string, mimetypeName: MimetypeNameType) => {
@@ -102,7 +115,7 @@ export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 export function getFileMetaData(fileFullName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
     mimetypeList = mimetypeList || getAllAppMimetype();
-    const ext = extractExtension(fileFullName);
+    const ext = getFileExtension(fileFullName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);
     });
@@ -150,18 +163,11 @@ export function isSupportedMimetype(fileMimetype: string,
     });
 }
 
-export function extractExtension(fileFullName: string) {
-    return fileFullName.substring(fileFullName.lastIndexOf('.'));
-}
-export function addExtension(name: string, extension: string) {
-    return `${name}${extension}`;
-}
-
 export function isSupportedExt(
     fileFullName: string, mimetypeName: MimetypeNameType,
 ) {
     const mimetypeList = getAppMimetype(mimetypeName);
-    const ext = extractExtension(fileFullName);
+    const ext = getFileExtension(fileFullName);
     return mimetypeList.map((newMimetype) => {
         return newMimetype.extensions;
     }).some((extensions) => {

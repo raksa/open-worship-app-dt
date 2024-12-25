@@ -15,8 +15,8 @@ import {
 } from './screenHelpers';
 import ScreenManagerInf from './ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
-import ScreenTransitionEffect from
-    './transition-effect/ScreenTransitionEffect';
+import ScreenTransitionEffectManager from
+    './transition-effect/ScreenTransitionEffectManager';
 import { screenManagerSettingNames } from '../helper/constants';
 import { unlocking } from '../server/appHelpers';
 import ColorNoteInf from '../helper/ColorNoteInf';
@@ -148,7 +148,7 @@ export default class ScreenManager
         this.fireVisibleEvent();
     }
     sendSyncScreen() {
-        ScreenTransitionEffect.sendSyncScreen();
+        ScreenTransitionEffectManager.sendSyncScreen();
         this.screenBackgroundManager.sendSyncScreen();
         this.screenSlideManager.sendSyncScreen();
         this.screenFullTextManager.sendSyncScreen();
@@ -293,7 +293,7 @@ export default class ScreenManager
         } else if (type === 'visible') {
             screenManager.isShowing = data?.isShowing;
         } else if (type === 'effect') {
-            ScreenTransitionEffect.receiveSyncScreen(message);
+            ScreenTransitionEffectManager.receiveSyncScreen(message);
         } else if (type === 'full-text-scroll') {
             ScreenFullTextManager.receiveSyncScroll(message);
         } else if (type === 'full-text-selected-index') {

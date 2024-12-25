@@ -10,8 +10,8 @@ import {
     transitionEffect,
 } from './transitionEffectHelpers';
 
-const cache = new Map<string, ScreenTransitionEffect>();
-class ScreenTransitionEffect extends EventHandler<PTFEventType> {
+const cache = new Map<string, ScreenTransitionEffectManager>();
+class ScreenTransitionEffectManager extends EventHandler<PTFEventType> {
     readonly screenId: number;
     readonly target: TargetType;
     private _effectType: ScreenTransitionEffectType;
@@ -97,11 +97,13 @@ class ScreenTransitionEffect extends EventHandler<PTFEventType> {
     static getInstance(screenId: number, target: TargetType) {
         const key = `${screenId}-${target}`;
         if (!cache.has(key)) {
-            const screenManager = new ScreenTransitionEffect(screenId, target);
+            const screenManager = new ScreenTransitionEffectManager(
+                screenId, target,
+            );
             cache.set(key, screenManager);
         }
-        return cache.get(key) as ScreenTransitionEffect;
+        return cache.get(key) as ScreenTransitionEffectManager;
     }
 }
 
-export default ScreenTransitionEffect;
+export default ScreenTransitionEffectManager;

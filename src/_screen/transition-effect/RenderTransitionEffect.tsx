@@ -1,12 +1,12 @@
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import { useScreenManagerContext } from '../ScreenManager';
-import ScreenTransitionEffect from './ScreenTransitionEffect';
+import ScreenTransitionEffectManager from './ScreenTransitionEffectManager';
 import {
     ScreenTransitionEffectType, TargetType, transitionEffect, usePTEEvents,
 } from './transitionEffectHelpers';
 
 function openContextMenu(
-    event: any, ptEffect: ScreenTransitionEffect,
+    event: any, ptEffect: ScreenTransitionEffectManager,
 ) {
     const transitionEffectList = Object.entries(transitionEffect);
     showAppContextMenu(event, transitionEffectList.map(([effect, [icon]]) => {
@@ -32,7 +32,7 @@ export default function RenderTransitionEffect({
     screenId: number,
     target: TargetType,
 }>) {
-    const ptEffect = ScreenTransitionEffect.getInstance(screenId, target);
+    const ptEffect = ScreenTransitionEffectManager.getInstance(screenId, target);
     usePTEEvents(['update'], ptEffect);
     const selected = transitionEffect[ptEffect.effectType];
     return (
@@ -50,7 +50,7 @@ export function RendStyle({ ptEffectTarget }: Readonly<{
     ptEffectTarget: TargetType,
 }>) {
     const screenManager = useScreenManagerContext();
-    const ptEffect = ScreenTransitionEffect.getInstance(
+    const ptEffect = ScreenTransitionEffectManager.getInstance(
         screenManager.screenId, ptEffectTarget,
     );
     usePTEEvents(['update'], ptEffect);

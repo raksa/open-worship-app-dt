@@ -10,8 +10,8 @@ import {
     ScreenMessageType,
 } from './screenHelpers';
 import ScreenManager from './ScreenManager';
-import ScreenTransitionEffect from
-    './transition-effect/ScreenTransitionEffect';
+import ScreenTransitionEffectManager from
+    './transition-effect/ScreenTransitionEffectManager';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
@@ -70,7 +70,7 @@ export default class ScreenAlertManager
     }
 
     get ptEffect() {
-        return ScreenTransitionEffect.getInstance(
+        return ScreenTransitionEffectManager.getInstance(
             this.screenId, this.ptEffectTarget,
         );
     }

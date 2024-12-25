@@ -9,7 +9,7 @@ import {
     checkIsPdf, convertOfficeFile, supportOfficeFileExtensions,
 } from './slideHelpers';
 import {
-    extractExtension, getFileFullName, getMimetypeExtensions,
+    getFileExtension, getFileFullName, getMimetypeExtensions,
     mimetypePdf,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
@@ -29,7 +29,7 @@ export default function SlideList() {
             }
         });
         dirSource.checkExtraFile = (fileFullName: string) => {
-            if (checkIsPdf(extractExtension(fileFullName))) {
+            if (checkIsPdf(getFileExtension(fileFullName))) {
                 return {
                     fileFullName: fileFullName,
                     appMimetype: mimetypePdf,
@@ -50,7 +50,7 @@ export default function SlideList() {
             return false;
         }
         const fileFullName = getFileFullName(file);
-        const ext = extractExtension(fileFullName).toLocaleLowerCase();
+        const ext = getFileExtension(fileFullName).toLocaleLowerCase();
         if (supportOfficeFileExtensions.includes(ext)) {
             convertOfficeFile(file, dirSource);
             return true;

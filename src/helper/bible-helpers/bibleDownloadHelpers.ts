@@ -7,7 +7,8 @@ import {
 import appProvider from '../../server/appProvider';
 import {
     fsCheckFileExist, fsDeleteFile, fsCreateWriteStream, fsListDirectories,
-    fsCheckDirExist,
+    fsCheckDirExist, pathBasename,
+    getFileName,
 } from '../../server/fileHelpers';
 import {
     bibleDataReader, getBibleInfo,
@@ -154,10 +155,8 @@ export async function extractDownloadedBible(filePath: string) {
         );
         const downloadPath = await bibleDataReader.getWritableBiblePath();
         await tarExtract(filePath, downloadPath);
-        const fileFullName = appProvider.pathUtils.basename(filePath);
-        const fileName = fileFullName.substring(
-            0, fileFullName.lastIndexOf('.'),
-        );
+        const fileFullName = pathBasename(filePath);
+        const fileName = getFileName(fileFullName);
         isExtracted = await fsCheckDirExist(
             appProvider.pathUtils.join(downloadPath, fileName),
         );

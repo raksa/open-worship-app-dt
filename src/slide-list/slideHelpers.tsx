@@ -10,7 +10,7 @@ import {
 import appProvider from '../server/appProvider';
 import {
     fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
-    mimetypePdf,
+    getFileName, mimetypePdf, pathBasename,
 } from '../server/fileHelpers';
 import {
     openSlideItemQuickEdit,
@@ -143,12 +143,28 @@ function toHtmlBold(text: string) {
     return `<b>${text}</b>`;
 };
 
+async function getPdfFilePath(dirPath: string, fileName: string) {
+    let i = 0;
+    while (true) {
+        const targetPDFFilePath = appProvider.pathUtils.join(
+            dirPath, `${fileName}${i === 0 ? '' : ('-' + i)}.pdf`,
+        );
+        if (!await fsCheckFileExist(targetPDFFilePath)) {
+            return targetPDFFilePath;
+        }
+        i++;
+    }
+}
+
 async function startConvertingOfficeFile(
     file: DroppedFileType, dirSource: DirSource,
     retryCount = 5,
 ) {
-    const fileFullName = getFileFullName(file);
     const tempFilePath = await getTempFilePath();
+    const fileFullName = getFileFullName(file);
+    const targetPDFFilePath = await getPdfFilePath(
+        dirSource.dirPath, getFileName(fileFullName)
+    );
     try {
         showProgressBard(WIDGET_TITLE);
         if (!await fsCopyFilePathToPath(file, tempFilePath, '')) {
@@ -157,9 +173,12 @@ async function startConvertingOfficeFile(
         showSimpleToast(
             WIDGET_TITLE, 'Do not close application',
         );
-        await convertToPdf(tempFilePath, dirSource.dirPath, fileFullName);
+        await convertToPdf(tempFilePath, targetPDFFilePath);
         showSimpleToast(
-            WIDGET_TITLE, `${toHtmlBold(fileFullName)} is converted to PDF`,
+            WIDGET_TITLE, (
+            `${toHtmlBold(fileFullName)} is converted to PDF ` +
+            `"${targetPDFFilePath}"`
+        ),
         );
     } catch (error: any) {
         const regex = /Could not find .+ binary/i;
@@ -202,7 +221,7 @@ export async function selectSlide(event: any, currentFilePath: string) {
                 return filePath !== currentFilePath;
             }).map((filePath) => {
                 return {
-                    menuTitle: appProvider.pathUtils.basename(filePath),
+                    menuTitle: pathBasename(filePath),
                     title: filePath,
                     onClick: async () => {
                         const slide = await Slide.readFileToData(filePath);

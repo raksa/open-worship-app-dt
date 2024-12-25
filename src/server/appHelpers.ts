@@ -42,10 +42,10 @@ export function previewPdf(src: string) {
 }
 
 export function convertToPdf(
-    filePath: string, outputDir: string, fileFullName: string,
+    officeFilePath: string, pdfFilePath: string,
 ) {
     return electronSendAsync<void>('main:app:convert-to-pdf', {
-        filePath, outputDir, fileFullName,
+        officeFilePath, pdfFilePath,
     });
 }
 

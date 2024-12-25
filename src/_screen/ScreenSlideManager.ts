@@ -11,8 +11,8 @@ import {
     SlideItemDataType,
 } from './screenHelpers';
 // TODO: cyclic dependency ScreenManager<->ScreenSlideManager
-import ScreenTransitionEffect
-    from './transition-effect/ScreenTransitionEffect';
+import ScreenTransitionEffectManager
+    from './transition-effect/ScreenTransitionEffectManager';
 import { TargetType } from './transition-effect/transitionEffectHelpers';
 import { screenManagerSettingNames } from '../helper/constants';
 import { chooseScreenManagerInstances } from './screenManagerHelpers';
@@ -61,7 +61,7 @@ export default class ScreenSlideManager extends
     }
 
     get ptEffect() {
-        return ScreenTransitionEffect.getInstance(
+        return ScreenTransitionEffectManager.getInstance(
             this.screenId, this.ptEffectTarget,
         );
     }

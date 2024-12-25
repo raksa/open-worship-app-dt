@@ -2,6 +2,7 @@ import {
     copyToClipboard, showExplorer,
 } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
+import { pathBasename } from '../server/fileHelpers';
 import { showAppContextMenu } from './AppContextMenu';
 
 // TODO: check direction rtl error with /*
@@ -41,7 +42,7 @@ export function PathPreviewer({
     const cleanedPath = cleanPath(dirPath);
     let path = cleanedPath;
     if (isShowingNameOnly) {
-        path = appProvider.pathUtils.basename(cleanedPath);
+        path = pathBasename(cleanedPath);
         const index = path.indexOf('.');
         if (index > 0) {
             path = path.substring(0, index);

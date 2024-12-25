@@ -225,12 +225,11 @@ export function initEventOther(appController: ElectronAppController) {
         appController.mainController.previewPdf(pdfFilePath);
     });
     ipcMain.on('main:app:convert-to-pdf', async (event, {
-        replyEventName, filePath, outputDir, fileFullName,
+        replyEventName, officeFilePath, pdfFilePath,
     }: {
-        replyEventName: string, filePath: string, outputDir: string,
-        fileFullName: string,
+        replyEventName: string, officeFilePath: string, pdfFilePath: string,
     }) => {
-        await officeFileToPdf(filePath, outputDir, fileFullName);
+        await officeFileToPdf(officeFilePath, pdfFilePath);
         appController.mainController.sendData(replyEventName);
     });
 

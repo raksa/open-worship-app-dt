@@ -1,8 +1,9 @@
 import DirSource from './DirSource';
 import {
-    checkIsAppFile, extractExtension, fsCheckFileExist, fsCreateFile,
+    checkIsAppFile, getFileExtension, fsCheckFileExist, fsCreateFile,
     fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
     pathBasename, pathJoin, pathSeparator,
+    getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
@@ -80,13 +81,11 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     }
 
     get name() {
-        return this.fileFullName.substring(
-            0, this.fileFullName.lastIndexOf('.'),
-        );
+        return getFileName(this.fileFullName);
     }
 
     get extension() {
-        return extractExtension(this.fileFullName);
+        return getFileExtension(this.fileFullName);
     }
 
     get dirSource() {

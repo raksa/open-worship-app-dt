@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useAppEffect } from '../../helper/debuggerHelpers';
-import ScreenTransitionEffect from './ScreenTransitionEffect';
+import ScreenTransitionEffectManager from './ScreenTransitionEffectManager';
 
 export type StyleAnimType = {
     style: string,
@@ -194,7 +194,7 @@ export const styleAnimList: {
 };
 
 export function usePTEEvents(events: PTFEventType[],
-    ptEffect: ScreenTransitionEffect,
+    ptEffect: ScreenTransitionEffectManager,
     callback?: () => void) {
     const [n, setN] = useState(0);
     useAppEffect(() => {

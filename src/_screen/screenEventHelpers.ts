@@ -24,7 +24,9 @@ function useScreenEvents<T extends string>(
     const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = (data: any) => {
-            setN(n + 1);
+            setN((n) => {
+                return n + 1;
+            });
             callback?.(data);
         };
         const registeredEvents = (
@@ -37,7 +39,8 @@ function useScreenEvents<T extends string>(
                 Class.unregisterEventListener(registeredEvents)
             );
         };
-    }, [eventHandler, n]);
+    }, [eventHandler]);
+    return n;
 }
 
 export function useScreenBackgroundManagerEvents(
