@@ -1,8 +1,8 @@
 import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { useScreenManagerEvents } from '../screenEventHelpers';
-import { useScreenManagerContext } from '../ScreenManager';
+import { useScreenManagerEvents } from '../managers/screenEventHelpers';
+import { useScreenManagerContext } from '../managers/ScreenManager';
 import ShowingScreenIcon from './ShowingScreenIcon';
 
 const showingScreenEventMap = { key: 'F5' };

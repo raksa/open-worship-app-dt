@@ -4,7 +4,7 @@ import {
 import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
-import ScreenFullTextManager from '../_screen/ScreenFullTextManager';
+import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import {

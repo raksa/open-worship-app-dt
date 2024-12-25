@@ -11,7 +11,7 @@ import TabRender, {
 } from '../others/TabRender';
 import {
     useScreenBackgroundManagerEvents,
-} from '../_screen/screenEventHelpers';
+} from '../_screen/managers/screenEventHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import {
     BackgroundType, getBackgroundSrcListOnScreenSetting,

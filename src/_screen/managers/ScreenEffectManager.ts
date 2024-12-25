@@ -1,22 +1,25 @@
 import EventHandler from '../../event/EventHandler';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import { sendScreenMessage } from '../screenEventHelpers';
+import { sendScreenMessage } from '../managers/screenEventHelpers';
 import {
     ScreenMessageType, PTEffectDataType,
 } from '../screenHelpers';
-import ScreenManager from '../ScreenManager';
+import ScreenManager from '../managers/ScreenManager';
 import {
     ScreenTransitionEffectType, PTFEventType, styleAnimList, TargetType,
     transitionEffect,
-} from './transitionEffectHelpers';
+} from '../transitionEffectHelpers';
+import {
+    createScreenManagerGhostInstance, getScreenManagerInstance,
+} from './screenManagerHelpers';
 
 class ScreenEffectManager extends EventHandler<PTFEventType> {
-    readonly screenId: number;
+    screenManager: ScreenManager;
     readonly target: TargetType;
     private _effectType: ScreenTransitionEffectType;
-    constructor(screenId: number, target: TargetType) {
+    constructor(screenManager: ScreenManager, target: TargetType) {
         super();
-        this.screenId = screenId;
+        this.screenManager = screenManager;
         this.target = target;
         const effectType = getSetting(this.settingName, '');
         this._effectType = (
@@ -24,6 +27,10 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
                 ? effectType as ScreenTransitionEffectType : 'none'
         );
     }
+    get screenId() {
+        return this.screenManager.screenId;
+    }
+
     get settingName() {
         return `pt-effect-${this.screenId}-${this.target}`;
     }
@@ -57,7 +64,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
-        const screenManager = ScreenManager.getInstance(message.screenId);
+        const screenManager = getScreenManagerInstance(message.screenId);
         if (screenManager === null) {
             return;
         }
@@ -67,6 +74,10 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         } else if (data.target === 'slide') {
             screenManager.slideEffectManager.effectType = data.effect;
         }
+    }
+
+    delete() {
+        this.screenManager = createScreenManagerGhostInstance(this.screenId);
     }
 
 }

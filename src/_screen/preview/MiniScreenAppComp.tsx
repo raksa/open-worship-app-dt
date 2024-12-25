@@ -1,9 +1,9 @@
-import ScreenAlert from '../ScreenAlert';
-import ScreenBackground from '../ScreenBackground';
-import ScreenSlide from '../ScreenSlide';
-import ScreenFullText from '../ScreenFullText';
-import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
-import { RendStyle } from '../transition-effect/RenderTransitionEffect';
+import ScreenAlertComp from '../ScreenAlertComp';
+import ScreenBackgroundComp from '../ScreenBackgroundComp';
+import ScreenSlideComp from '../ScreenSlideComp';
+import ScreenFullTextComp from '../ScreenFullTextComp';
+import ScreenManager, { ScreenManagerContext } from '../managers/ScreenManager';
+import { RendStyle } from '../RenderTransitionEffectComp';
 
 const IMAGE_BACKGROUND = (
     `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
@@ -34,10 +34,10 @@ export default function MiniScreenAppComp({ screenId }: Readonly<{
                 backgroundSize: '20px 20px',
                 backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
             }} />
-            <ScreenBackground />
-            <ScreenSlide />
-            <ScreenFullText />
-            <ScreenAlert />
+            <ScreenBackgroundComp />
+            <ScreenSlideComp />
+            <ScreenFullTextComp />
+            <ScreenAlertComp />
         </ScreenManagerContext>
     );
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { useAppEffect } from '../../helper/debuggerHelpers';
-import ScreenEffectManager from './ScreenEffectManager';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import ScreenEffectManager from './managers/ScreenEffectManager';
 
 export type StyleAnimType = {
     style: string,

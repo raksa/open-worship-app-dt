@@ -1,10 +1,10 @@
 import { createContext, use } from 'react';
 
-import EventHandler from '../event/EventHandler';
-import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { getWindowDim } from '../helper/helpers';
-import { log } from '../helper/loggerHelpers';
-import { getSetting, setSetting } from '../helper/settingHelpers';
+import EventHandler from '../../event/EventHandler';
+import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
+import { getWindowDim } from '../../helper/helpers';
+import { log } from '../../helper/loggerHelpers';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
 import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
@@ -12,31 +12,18 @@ import {
     getAllDisplays, getAllShowingScreenIds, getScreenManagersInstanceSetting,
     hideScreen, ScreenMessageType, setDisplay, showScreen,
     TypeScreenManagerSettingType,
-} from './screenHelpers';
-import ScreenManagerInf from './ScreenManagerInf';
+} from '../screenHelpers';
+import ScreenManagerInf from '../preview/ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
-import ScreenEffectManager from
-    './transition-effect/ScreenEffectManager';
-import { screenManagerSettingNames } from '../helper/constants';
-import { unlocking } from '../server/appHelpers';
-import ColorNoteInf from '../helper/ColorNoteInf';
+import ScreenEffectManager from './ScreenEffectManager';
+import { screenManagerSettingNames } from '../../helper/constants';
+import { unlocking } from '../../server/appHelpers';
+import ColorNoteInf from '../../helper/ColorNoteInf';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'
 );
 const settingName = 'screen-display-';
-
-export const ScreenManagerContext = createContext<ScreenManager | null>(null);
-export function useScreenManagerContext(): ScreenManager {
-    const screenManager = use(ScreenManagerContext);
-    if (screenManager === null) {
-        throw new Error(
-            'useScreenManager must be used within a ScreenManager ' +
-            'Context Provider',
-        );
-    }
-    return screenManager;
-}
 
 const cache = new Map<string, any>();
 export default class ScreenManager
@@ -69,13 +56,13 @@ export default class ScreenManager
         this.screenId = screenId;
         this.noSyncGroupMap = new Map();
         this.name = `screen-${screenId}`;
-        this.screenBackgroundManager = new ScreenBackgroundManager(screenId);
-        this.screenSlideManager = new ScreenSlideManager(screenId);
-        this.screenFullTextManager = new ScreenFullTextManager(screenId);
-        this.screenAlertManager = new ScreenAlertManager(screenId);
-        this.slideEffectManager = new ScreenEffectManager(screenId, 'slide');
+        this.screenBackgroundManager = new ScreenBackgroundManager(this);
+        this.screenSlideManager = new ScreenSlideManager(this);
+        this.screenFullTextManager = new ScreenFullTextManager(this);
+        this.screenAlertManager = new ScreenAlertManager(this);
+        this.slideEffectManager = new ScreenEffectManager(this, 'slide');
         this.backgroundEffectManager = new ScreenEffectManager(
-            screenId, 'background',
+            this, 'background',
         );
         const ids = getAllShowingScreenIds();
         this._isShowing = ids.some((id) => {
@@ -211,6 +198,12 @@ export default class ScreenManager
         this.isDeleted = true;
         this.clear();
         this.hide();
+        this.slideEffectManager.delete();
+        this.backgroundEffectManager.delete();
+        this.screenBackgroundManager.delete();
+        this.screenSlideManager.delete();
+        this.screenFullTextManager.delete();
+        this.screenAlertManager.delete();
         cache.delete(this.key);
         await ScreenManager.saveScreenManagersSetting(this.screenId);
         this.fireInstanceEvent();
@@ -258,7 +251,7 @@ export default class ScreenManager
     }
 
     static getDisplayIdByScreenId(screenId: number) {
-        const defaultDisplay = ScreenManager.getDefaultScreenDisplay();
+        const defaultDisplay = this.getDefaultScreenDisplay();
         const str = getSetting(`${settingName}-pid-${screenId}`,
             defaultDisplay.id.toString());
         if (isNaN(parseInt(str))) {
@@ -414,9 +407,9 @@ export default class ScreenManager
     static createInstance(screenId: number) {
         const key = screenId.toString();
         if (!cache.has(key)) {
-            const screenManager = new ScreenManager(screenId);
+            const screenManager = new this(screenId);
             cache.set(key, screenManager);
-            ScreenManager.saveScreenManagersSetting();
+            this.saveScreenManagersSetting();
             screenManager.fireUpdateEvent();
             const {
                 screenBackgroundManager, screenSlideManager,
@@ -439,7 +432,7 @@ export default class ScreenManager
     }
 
     static genNewInstance() {
-        const screenManagers = ScreenManager.getAllInstances();
+        const screenManagers = this.getAllInstances();
         const screenIds = screenManagers.map((screenManager) => {
             return screenManager.screenId;
         });
@@ -459,7 +452,7 @@ export default class ScreenManager
             return;
         }
         const colorNote = await currentScreenManager.getColorNote();
-        const screenManagers = await ScreenManager.getAllInstancesByColorNote(
+        const screenManagers = await this.getAllInstancesByColorNote(
             colorNote, [currentScreenManager.screenId],
         );
         screenManagers.forEach((screenManager) => {
@@ -482,9 +475,16 @@ export default class ScreenManager
         });
     }
 
-    static createGhostInstance() {
-        const ghostScreenManager = new ScreenManager(new Date().getTime());
-        ghostScreenManager.isDeleted = true;
-        return ghostScreenManager;
+}
+
+export const ScreenManagerContext = createContext<ScreenManager | null>(null);
+export function useScreenManagerContext(): ScreenManager {
+    const screenManager = use(ScreenManagerContext);
+    if (screenManager === null) {
+        throw new Error(
+            'useScreenManager must be used within a ScreenManager ' +
+            'Context Provider',
+        );
     }
+    return screenManager;
 }

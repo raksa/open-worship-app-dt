@@ -1,7 +1,7 @@
 import './SlideItemRenderComp.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
-import { useScreenSlideManagerEvents } from '../../_screen/screenEventHelpers';
+import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
 import {
     RendInfo, toClassNameHighlight,
 } from './SlideItemRenderComp';

@@ -1,9 +1,9 @@
 import './MiniScreen.scss';
 
-import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
+import ScreenManager, { ScreenManagerContext } from '../managers/ScreenManager';
 import {
     initReceiveScreenMessage, useScreenManagerEvents,
-} from '../screenEventHelpers';
+} from '../managers/screenEventHelpers';
 import ScreenPreviewerItemComp from './ScreenPreviewerItemComp';
 import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {

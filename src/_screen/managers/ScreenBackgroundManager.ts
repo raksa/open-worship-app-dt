@@ -1,21 +1,24 @@
 import { CSSProperties } from 'react';
 
-import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
+import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import {
     getImageDim, getVideoDim,
-} from '../helper/helpers';
-import { setSetting } from '../helper/settingHelpers';
-import appProviderScreen from './appProviderScreen';
-import { genHtmlBackground } from './ScreenBackground';
+} from '../../helper/helpers';
+import { setSetting } from '../../helper/settingHelpers';
+import appProviderScreen from '../appProviderScreen';
+import { genHtmlBackground } from '../ScreenBackgroundComp';
 import {
     BackgroundSrcType, BackgroundType, BasicScreenMessageType,
     getBackgroundSrcListOnScreenSetting, ScreenMessageType,
-} from './screenHelpers';
-import { handleError } from '../helper/errorHelpers';
-import { screenManagerSettingNames } from '../helper/constants';
-import { chooseScreenManagerInstances } from './screenManagerHelpers';
-import { unlocking } from '../server/appHelpers';
+} from '../screenHelpers';
+import { handleError } from '../../helper/errorHelpers';
+import { screenManagerSettingNames } from '../../helper/constants';
+import {
+    chooseScreenManagerInstances, getScreenManagerInstance,
+} from './screenManagerHelpers';
+import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
+import ScreenManager from './ScreenManager';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -26,8 +29,8 @@ export default class ScreenBackgroundManager
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
 
-    constructor(screenId: number) {
-        super(screenId);
+    constructor(screenManager: ScreenManager) {
+        super(screenManager);
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
             this._backgroundSrc = allBackgroundSrcList[this.key] || null;
@@ -229,7 +232,7 @@ export default class ScreenBackgroundManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenBackgroundManager } = this.getScreenManager(screenId);
+        const { screenBackgroundManager } = getScreenManagerInstance(screenId);
         screenBackgroundManager.receiveSyncScreen(message);
     }
 

@@ -1,7 +1,7 @@
 import { DOMAttributes } from 'react';
 
 import { createRoot } from 'react-dom/client';
-import ScreenManager from '../ScreenManager';
+import ScreenManager from '../managers/ScreenManager';
 import MiniScreenAppComp from './MiniScreenAppComp';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';

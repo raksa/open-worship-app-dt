@@ -1,4 +1,4 @@
-import ScreenManager from '../ScreenManager';
+import ScreenManager from '../managers/ScreenManager';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenu';

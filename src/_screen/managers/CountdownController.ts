@@ -1,4 +1,4 @@
-export default class Countdown {
+export default class CountdownController {
     countdownInterval: any = null;
     readonly divContainer: HTMLDivElement;
     readonly targetDateTime: Date;
@@ -86,6 +86,6 @@ export default class Countdown {
     }
 
     static init(divContainer: HTMLDivElement, targetDate: Date) {
-        return new Countdown(divContainer, targetDate);
+        return new CountdownController(divContainer, targetDate);
     }
 }

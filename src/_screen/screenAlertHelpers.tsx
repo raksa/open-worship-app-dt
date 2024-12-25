@@ -1,6 +1,6 @@
 import ReactDOMServer from 'react-dom/server';
-import Countdown from './Countdown';
-import ScreenManager from './ScreenManager';
+import CountdownController from './managers/CountdownController';
+import ScreenManager from './managers/ScreenManager';
 import { getHTMLChild } from '../helper/helpers';
 
 const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
@@ -133,7 +133,7 @@ export function genHtmlAlertCountdown(
     const div = document.createElement('div');
     div.innerHTML = htmlString;
     const divContainer = getHTMLChild<HTMLDivElement>(div, 'div');
-    Countdown.init(divContainer, dateTime);
+    CountdownController.init(divContainer, dateTime);
     return divContainer;
 }
 

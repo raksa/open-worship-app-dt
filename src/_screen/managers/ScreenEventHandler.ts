@@ -1,23 +1,26 @@
-import EventHandler from '../event/EventHandler';
+import EventHandler from '../../event/EventHandler';
 import { sendScreenMessage } from './screenEventHelpers';
-import { BasicScreenMessageType, ScreenMessageType } from './screenHelpers';
+import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
 import ScreenManager from './ScreenManager';
+import {
+    createScreenManagerGhostInstance, getScreenManagerInstance,
+} from './screenManagerHelpers';
 
 export default abstract class
     ScreenEventHandler<T extends string>
     extends EventHandler<T> {
 
     static readonly eventNamePrefix: string = 'screen-em';
-    readonly screenId: number;
-    constructor(screenId: number) {
+    screenManager: ScreenManager;
+    constructor(screenManager: ScreenManager) {
         super();
-        this.screenId = screenId;
+        this.screenManager = screenManager;
     }
 
     abstract get isShowing(): boolean;
 
-    get screenManager() {
-        return ScreenEventHandler.getScreenManager(this.screenId);
+    get screenId() {
+        return this.screenManager.screenId;
     }
 
     get key() {
@@ -34,16 +37,6 @@ export default abstract class
     }
 
     abstract receiveSyncScreen(message: ScreenMessageType): void;
-
-    static getScreenManager(screenId: number) {
-        const screenManager = ScreenManager.getInstance(screenId);
-        if (screenManager === null) {
-            const ghostScreenManager = new ScreenManager(new Date().getTime());
-            ghostScreenManager.isDeleted = true;
-            return ScreenManager.createGhostInstance();
-        }
-        return screenManager;
-    }
 
     static receiveSyncScreen(_message: ScreenMessageType) {
         throw new Error('receiveSyncScreen is not implemented.');
@@ -62,13 +55,17 @@ export default abstract class
     abstract clear(): void;
 
     static disableSyncGroup(screenId: number) {
-        const screenManager = this.getScreenManager(screenId);
+        const screenManager = getScreenManagerInstance(screenId);
         screenManager.noSyncGroupMap.set(this.eventNamePrefix, true);
     }
 
     static enableSyncGroup(screenId: number) {
-        const screenManager = this.getScreenManager(screenId);
+        const screenManager = getScreenManagerInstance(screenId);
         screenManager.noSyncGroupMap.set(this.eventNamePrefix, false);
+    }
+
+    delete() {
+        this.screenManager = createScreenManagerGhostInstance(this.screenId);
     }
 
 }

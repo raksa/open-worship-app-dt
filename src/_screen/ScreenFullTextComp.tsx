@@ -3,9 +3,9 @@ import { useRef } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     useScreenFullTextManagerEvents, useScreenManagerEvents,
-} from './screenEventHelpers';
-import ScreenFullTextManager from './ScreenFullTextManager';
-import { useScreenManagerContext } from './ScreenManager';
+} from './managers/screenEventHelpers';
+import ScreenFullTextManager from './managers/ScreenFullTextManager';
+import { useScreenManagerContext } from './managers/ScreenManager';
 
 const styleText = `
 #full-text {
@@ -104,7 +104,7 @@ const styleText = `
     + 'rgba(255, 0, 157, 0.6), transparent);'}
 }`;
 
-export default function ScreenFullText() {
+export default function ScreenFullTextComp() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['resize'], screenManager, () => {
         screenManager.screenFullTextManager.render();

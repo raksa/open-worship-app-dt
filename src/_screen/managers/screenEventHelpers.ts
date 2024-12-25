@@ -1,21 +1,23 @@
 import { useState } from 'react';
 
-import { useAppEffect } from '../helper/debuggerHelpers';
-import appProviderScreen from './appProviderScreen';
+import { useAppEffect } from '../../helper/debuggerHelpers';
+import appProviderScreen from '../appProviderScreen';
 import ScreenBackgroundManager, {
     ScreenBackgroundManagerEventType,
 } from './ScreenBackgroundManager';
-import { ScreenFTManagerEventType } from './screenFullTextHelpers';
+import { ScreenFTManagerEventType } from '../screenFullTextHelpers';
 import ScreenFullTextManager from './ScreenFullTextManager';
-import { ScreenMessageType } from './screenHelpers';
+import { ScreenMessageType } from '../screenHelpers';
 import ScreenManager, {
     ScreenManagerEventType,
 } from './ScreenManager';
 import ScreenSlideManager, {
     ScreenSlideManagerEventType,
 } from './ScreenSlideManager';
-import EventHandler from '../event/EventHandler';
-import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
+import EventHandler from '../../event/EventHandler';
+import ScreenAlertManager, {
+    ScreenAlertEventType,
+} from './ScreenAlertManager';
 
 function useScreenEvents<T extends string>(
     events: T[], Class: EventHandler<T>,

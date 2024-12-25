@@ -6,8 +6,8 @@ import {
     BibleItemRenderedType,
 } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
-import ScreenFullTextManager from './ScreenFullTextManager';
-import ScreenManager from './ScreenManager';
+import ScreenFullTextManager from './managers/ScreenFullTextManager';
+import ScreenManager from './managers/ScreenManager';
 import { showAppAlert } from '../alert/alertHelpers';
 import {
     getDownloadedBibleInfoList,

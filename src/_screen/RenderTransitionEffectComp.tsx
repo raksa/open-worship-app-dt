@@ -1,5 +1,5 @@
-import { showAppContextMenu } from '../../others/AppContextMenu';
-import ScreenEffectManager from './ScreenEffectManager';
+import { showAppContextMenu } from '../others/AppContextMenu';
+import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType, transitionEffect, usePTEEvents,
 } from './transitionEffectHelpers';
@@ -26,7 +26,7 @@ function openContextMenu(
     }));
 }
 
-export default function RenderTransitionEffect({
+export default function RenderTransitionEffectComp({
     title, screenEffectManager,
 }: Readonly<{
     title: string,

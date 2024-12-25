@@ -1,27 +1,28 @@
-import { useScreenBackgroundManagerEvents } from './screenEventHelpers';
+import { useScreenBackgroundManagerEvents } from './managers/screenEventHelpers';
 import { BackgroundSrcType, calMediaSizes } from './screenHelpers';
-import { useScreenManagerContext } from './ScreenManager';
+import { useScreenManagerContext } from './managers/ScreenManager';
 
-export default function ScreenBackgroundVideo({ backgroundSrc }: Readonly<{
+export default function ScreenBackgroundImageComp({ backgroundSrc }: Readonly<{
     backgroundSrc: BackgroundSrcType,
 }>) {
     const screenManager = useScreenManagerContext();
     const { screenBackgroundManager } = screenManager;
     useScreenBackgroundManagerEvents(['update'], screenBackgroundManager);
     const {
-        width, height, offsetH, offsetV,
+        width, height,
+        offsetH, offsetV,
     } = calMediaSizes({
         parentWidth: screenManager.width,
         parentHeight: screenManager.height,
     }, backgroundSrc);
     return (
-        <video src={backgroundSrc.src}
+        <img src={backgroundSrc.src}
+            alt='background'
             style={{
                 width: `${width}px`,
                 height: `${height}px`,
                 transform: `translate(-${offsetH}px, -${offsetV}px)`,
             }}
-            autoPlay loop muted playsInline
         />
     );
 }

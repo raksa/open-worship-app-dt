@@ -1,8 +1,8 @@
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
-import appProvider from '../server/appProvider';
-import ScreenManager from './ScreenManager';
+} from '../../others/AppContextMenu';
+import appProvider from '../../server/appProvider';
+import ScreenManager from '../managers/ScreenManager';
 
 export async function chooseScreenManagerInstances(
     event: React.MouseEvent, isForceChoosing: boolean,
@@ -32,4 +32,24 @@ export async function chooseScreenManagerInstances(
             resolve([]);
         });
     });
+}
+
+export function getScreenManagerInstance(screenId: number) {
+    const screenManager = ScreenManager.getInstance(screenId);
+    if (screenManager === null) {
+        const ghostScreenManager = new ScreenManager(new Date().getTime());
+        ghostScreenManager.isDeleted = true;
+        return createScreenManagerGhostInstance(screenId);
+    }
+    return screenManager;
+}
+
+export function createScreenManagerGhostInstance(screenId: number) {
+    const ghostScreenManager = new ScreenManager(screenId);
+    ghostScreenManager.isDeleted = true;
+    return ghostScreenManager;
+}
+
+export function getAllScreenManagerInstances() {
+    return [];
 }

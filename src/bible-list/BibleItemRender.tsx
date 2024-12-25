@@ -10,7 +10,7 @@ import {
 import {
     SearchBibleItemViewController, useBibleItemViewControllerContext,
 } from '../bible-reader/BibleItemViewController';
-import ScreenFullTextManager from '../_screen/ScreenFullTextManager';
+import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import {
     openBibleItemContextMenu, useBibleItemRenderTitle,
 } from './bibleItemHelpers';

@@ -1,30 +1,33 @@
 import { CSSProperties } from 'react';
 
-import BibleItem from '../bible-list/BibleItem';
+import BibleItem from '../../bible-list/BibleItem';
 import {
     DroppedDataType, DragTypeEnum,
-} from '../helper/DragInf';
+} from '../../helper/DragInf';
 import {
     AnyObjectType, isValidJson,
-} from '../helper/helpers';
-import { getSetting, setSetting } from '../helper/settingHelpers';
-import appProviderScreen from './appProviderScreen';
-import fullTextScreenHelper from './fullTextScreenHelpers';
+} from '../../helper/helpers';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
+import appProviderScreen from '../appProviderScreen';
+import fullTextScreenHelper from '../fullTextScreenHelpers';
 import { sendScreenMessage } from './screenEventHelpers';
 import {
     ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX,
     renderScreenFullTextManager, bibleItemToFtData,
-} from './screenFullTextHelpers';
+} from '../screenFullTextHelpers';
 import {
     BasicScreenMessageType, FullTextItemDataType, genScreenMouseEvent,
     getFullTextListOnScreenSetting, ScreenMessageType,
-} from './screenHelpers';
+} from '../screenHelpers';
 import ScreenManager from './ScreenManager';
-import * as loggerHelpers from '../helper/loggerHelpers';
-import { handleError } from '../helper/errorHelpers';
-import { screenManagerSettingNames } from '../helper/constants';
-import { chooseScreenManagerInstances } from './screenManagerHelpers';
-import { unlocking } from '../server/appHelpers';
+import * as loggerHelpers from '../../helper/loggerHelpers';
+import { handleError } from '../../helper/errorHelpers';
+import { screenManagerSettingNames } from '../../helper/constants';
+import {
+    chooseScreenManagerInstances, getAllScreenManagerInstances,
+    getScreenManagerInstance,
+} from './screenManagerHelpers';
+import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 
 let textStyle: AnyObjectType = {};
@@ -37,8 +40,8 @@ export default class ScreenFullTextManager
     private _syncScrollTimeout: any = null;
     private _divScrollListenerBind: (() => void) | null = null;
 
-    constructor(screenId: number) {
-        super(screenId);
+    constructor(screenManager: ScreenManager) {
+        super(screenManager);
         if (appProviderScreen.isPagePresenter) {
             const allFTList = getFullTextListOnScreenSetting();
             this._ftItemData = allFTList[this.key] || null;
@@ -196,7 +199,7 @@ export default class ScreenFullTextManager
 
     static receiveSyncScroll(message: ScreenMessageType) {
         const { data, screenId } = message;
-        const screenFTManager = this.getInstanceByScreenId(screenId);
+        const screenFTManager = this.getInstance(screenId);
         if (screenFTManager === null) {
             return;
         }
@@ -230,7 +233,7 @@ export default class ScreenFullTextManager
 
     static receiveSyncSelectedIndex(message: ScreenMessageType) {
         const { data, screenId } = message;
-        const screenFTManager = this.getInstanceByScreenId(screenId);
+        const screenFTManager = this.getInstance(screenId);
         if (screenFTManager === null) {
             return;
         }
@@ -314,7 +317,7 @@ export default class ScreenFullTextManager
     }
 
     static sendSynTextStyle() {
-        ScreenManager.getAllInstances().forEach((screenManager) => {
+        getAllScreenManagerInstances().forEach((screenManager) => {
             sendScreenMessage({
                 screenId: screenManager.screenId,
                 type: 'full-text-text-style',
@@ -384,13 +387,13 @@ export default class ScreenFullTextManager
         }
     }
 
-    static getInstanceByScreenId(screenId: number) {
-        return this.getScreenManager(screenId).screenFullTextManager;
+    static getInstance(screenId: number) {
+        return getScreenManagerInstance(screenId).screenFullTextManager;
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenFullTextManager } = this.getScreenManager(screenId);
+        const { screenFullTextManager } = getScreenManagerInstance(screenId);
         screenFullTextManager.receiveSyncScreen(message);
     }
 

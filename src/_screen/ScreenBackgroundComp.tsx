@@ -3,16 +3,16 @@ import { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import ScreenManager, {
     ScreenManagerContext, useScreenManagerContext,
-} from './ScreenManager';
-import ScreenBackgroundColor from './ScreenBackgroundColor';
-import ScreenBackgroundImage from './ScreenBackgroundImage';
-import ScreenBackgroundVideo from './ScreenBackgroundVideo';
-import { useScreenManagerEvents } from './screenEventHelpers';
+} from './managers/ScreenManager';
+import ScreenBackgroundColorComp from './ScreenBackgroundColorComp';
+import ScreenBackgroundImageComp from './ScreenBackgroundImageComp';
+import ScreenBackgroundVideoComp from './ScreenBackgroundVideoComp';
+import { useScreenManagerEvents } from './managers/screenEventHelpers';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
 
-export default function ScreenBackground() {
+export default function ScreenBackgroundComp() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['resize'], screenManager, () => {
         screenManager.screenBackgroundManager.render();
@@ -71,15 +71,15 @@ function RenderScreenBackground({ backgroundSrc }: Readonly<{
     switch (backgroundSrc.type) {
         case 'image':
             return (
-                <ScreenBackgroundImage backgroundSrc={backgroundSrc} />
+                <ScreenBackgroundImageComp backgroundSrc={backgroundSrc} />
             );
         case 'video':
             return (
-                <ScreenBackgroundVideo backgroundSrc={backgroundSrc} />
+                <ScreenBackgroundVideoComp backgroundSrc={backgroundSrc} />
             );
         case 'color':
             return (
-                <ScreenBackgroundColor
+                <ScreenBackgroundColorComp
                     color={backgroundSrc.src as AppColorType} />
             );
     }

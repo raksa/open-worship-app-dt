@@ -14,7 +14,7 @@ import {
 } from './fullTextScreenComps';
 import {
     ScreenTransitionEffectType, TargetType,
-} from './transition-effect/transitionEffectHelpers';
+} from './transitionEffectHelpers';
 import { electronSendAsync, unlocking } from '../server/appHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;

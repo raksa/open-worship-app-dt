@@ -4,7 +4,7 @@ import {
     AppColorType, serializeForDragging,
 } from './colorHelpers';
 import { genShowOnScreensContextMenu } from '../FileItemHandler';
-import ScreenBackgroundManager from '../../_screen/ScreenBackgroundManager';
+import ScreenBackgroundManager from '../../_screen/managers/ScreenBackgroundManager';
 
 function showContextMenu(event: any, color: AppColorType) {
     const menuItems: ContextMenuItemType[] = [

@@ -3,7 +3,7 @@ import {
 } from '../../event/KeyboardEventListener';
 import { useFileSourceRefreshEvents } from '../../helper/dirSourceHelpers';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
-import ScreenManager from '../../_screen/ScreenManager';
+import ScreenManager from '../../_screen/managers/ScreenManager';
 import MenuIsModifying from './MenuIsModifying';
 
 const savingEventMapper: KBEventMapper = {

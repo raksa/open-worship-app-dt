@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
 import { AppColorType } from '../../others/color/colorHelpers';
-import { useScreenFullTextManagerEvents } from '../screenEventHelpers';
-import ScreenFullTextManager from '../ScreenFullTextManager';
-import ScreenSlideManager from '../ScreenSlideManager';
-import ScreenManager from '../ScreenManager';
+import { useScreenFullTextManagerEvents } from '../managers/screenEventHelpers';
+import ScreenFullTextManager from '../managers/ScreenFullTextManager';
+import ScreenSlideManager from '../managers/ScreenSlideManager';
+import ScreenManager from '../managers/ScreenManager';
 import AppRange from '../../others/AppRange';
 
 export default function Appearance() {

@@ -1,7 +1,7 @@
-import ScreenSlideManager from '../../_screen/ScreenSlideManager';
+import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
 import SlideItem from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
-import ScreenManager from '../../_screen/ScreenManager';
+import ScreenManager from '../../_screen/managers/ScreenManager';
 
 export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
     if (slideItemIds.length === 0) {

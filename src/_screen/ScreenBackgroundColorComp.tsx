@@ -1,6 +1,6 @@
 import { AppColorType } from '../others/color/colorHelpers';
 
-export default function ScreenBackgroundColor({ color }: Readonly<{
+export default function ScreenBackgroundColorComp({ color }: Readonly<{
     color: AppColorType,
 }>) {
     return (

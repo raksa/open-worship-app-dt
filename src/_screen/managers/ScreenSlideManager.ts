@@ -1,20 +1,27 @@
 import { CSSProperties } from 'react';
 
-import { DragTypeEnum, DroppedDataType } from '../helper/DragInf';
-import { getSetting, setSetting } from '../helper/settingHelpers';
-import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
-import { genPdfSlideItem } from '../slide-presenter/items/SlideItemPdfRender';
-import { genHtmlSlideItem } from '../slide-presenter/items/SlideItemRenderer';
-import appProviderScreen from './appProviderScreen';
+import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
+import SlideItem, { SlideItemType } from '../../slide-list/SlideItem';
+import {
+    genPdfSlideItem,
+} from '../../slide-presenter/items/SlideItemPdfRender';
+import {
+    genHtmlSlideItem,
+} from '../../slide-presenter/items/SlideItemRenderer';
+import appProviderScreen from '../appProviderScreen';
 import {
     BasicScreenMessageType, getSlideListOnScreenSetting, ScreenMessageType,
     SlideItemDataType,
-} from './screenHelpers';
+} from '../screenHelpers';
 // TODO: cyclic dependency ScreenManager<->ScreenSlideManager
-import { screenManagerSettingNames } from '../helper/constants';
-import { chooseScreenManagerInstances } from './screenManagerHelpers';
-import { unlocking } from '../server/appHelpers';
+import { screenManagerSettingNames } from '../../helper/constants';
+import {
+    chooseScreenManagerInstances, getScreenManagerInstance,
+} from './screenManagerHelpers';
+import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
+import ScreenManager from './ScreenManager';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -35,8 +42,8 @@ export default class ScreenSlideManager extends
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
 
-    constructor(screenId: number) {
-        super(screenId);
+    constructor(screenManager: ScreenManager) {
+        super(screenManager);
         if (appProviderScreen.isPagePresenter) {
             const allSlideList = getSlideListOnScreenSetting();
             this._slideItemData = allSlideList[this.key] || null;
@@ -151,10 +158,10 @@ export default class ScreenSlideManager extends
         slideFilePath: string, slideItemJson: SlideItemType,
         isForceChoosing = false,
     ) {
-        const chosenScreenManagers = await chooseScreenManagerInstances(
+        const choseScreenManagers = await chooseScreenManagerInstances(
             event, isForceChoosing,
         );
-        chosenScreenManagers.forEach((screenManager) => {
+        choseScreenManagers.forEach((screenManager) => {
             const { screenSlideManager } = screenManager;
             screenSlideManager.handleSlideSelecting(
                 slideFilePath, slideItemJson,
@@ -278,7 +285,7 @@ export default class ScreenSlideManager extends
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenSlideManager } = this.getScreenManager(screenId);
+        const { screenSlideManager } = getScreenManagerInstance(screenId);
         screenSlideManager.receiveSyncScreen(message);
     }
 

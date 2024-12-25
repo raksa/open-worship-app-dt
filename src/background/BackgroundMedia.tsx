@@ -3,10 +3,11 @@ import FileListHandler from '../others/FileListHandler';
 import {
     genCommonMenu, genShowOnScreensContextMenu, genTrashContextMenu,
 } from '../others/FileItemHandler';
-import ScreenBackgroundManager from '../_screen/ScreenBackgroundManager';
+import ScreenBackgroundManager from
+    '../_screen/managers/ScreenBackgroundManager';
 import {
     useScreenBackgroundManagerEvents,
-} from '../_screen/screenEventHelpers';
+} from '../_screen/managers/screenEventHelpers';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
 import ItemColorNote from '../others/ItemColorNote';

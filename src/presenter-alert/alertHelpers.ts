@@ -1,9 +1,9 @@
-import ScreenAlertManager from '../_screen/ScreenAlertManager';
+import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
 import {
     AlertDataType,
     getAlertDataListOnScreenSetting,
 } from '../_screen/screenHelpers';
-import ScreenManager from '../_screen/ScreenManager';
+import ScreenManager from '../_screen/managers/ScreenManager';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export function getShowingScreenIds(

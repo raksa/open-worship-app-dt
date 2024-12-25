@@ -3,8 +3,8 @@ import {
 } from '../../event/KeyboardEventListener';
 import {
     useScreenManagerEvents,
-} from '../screenEventHelpers';
-import ScreenManager, { useScreenManagerContext } from '../ScreenManager';
+} from '../managers/screenEventHelpers';
+import ScreenManager, { useScreenManagerContext } from '../managers/ScreenManager';
 
 function RenderButtonComp({ btnMaps }: Readonly<{
     btnMaps: {

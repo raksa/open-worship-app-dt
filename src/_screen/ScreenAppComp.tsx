@@ -1,17 +1,17 @@
-import CloseButton from './ScreenCloseButton';
-import ScreenBackground from './ScreenBackground';
-import ScreenSlide from './ScreenSlide';
-import ScreenAlert from './ScreenAlert';
-import ScreenFullText from './ScreenFullText';
-import ScreenManager, { ScreenManagerContext } from './ScreenManager';
-import { RendStyle } from './transition-effect/RenderTransitionEffect';
+import CloseButton from './ScreenCloseButtonComp';
+import ScreenBackgroundComp from './ScreenBackgroundComp';
+import ScreenSlideComp from './ScreenSlideComp';
+import ScreenAlertComp from './ScreenAlertComp';
+import ScreenFullTextComp from './ScreenFullTextComp';
+import ScreenManager, { ScreenManagerContext } from './managers/ScreenManager';
+import { RendStyle } from './RenderTransitionEffectComp';
 import appProviderScreen from './appProviderScreen';
 import {
     initReceiveScreenMessage, sendScreenMessage,
-} from './screenEventHelpers';
+} from './managers/screenEventHelpers';
 
 initReceiveScreenMessage();
-export default function ScreenApp() {
+export default function ScreenAppComp() {
     const urlParams = new URLSearchParams(window.location.search);
     const screenId = parseInt(urlParams.get('screenId') ?? '');
     if (isNaN(screenId)) {
@@ -32,10 +32,10 @@ export default function ScreenApp() {
             <RendStyle
                 screenEffectManager={screenManager.backgroundEffectManager}
             />
-            <ScreenBackground />
-            <ScreenSlide />
-            <ScreenFullText />
-            <ScreenAlert />
+            <ScreenBackgroundComp />
+            <ScreenSlideComp />
+            <ScreenFullTextComp />
+            <ScreenAlertComp />
             <CloseButton />
         </ScreenManagerContext>
     );

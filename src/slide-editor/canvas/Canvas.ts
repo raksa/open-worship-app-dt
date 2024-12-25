@@ -1,6 +1,6 @@
 import { AnyObjectType, toMaxId } from '../../helper/helpers';
 import SlideItem from '../../slide-list/SlideItem';
-import ScreenManager from '../../_screen/ScreenManager';
+import ScreenManager from '../../_screen/managers/ScreenManager';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';

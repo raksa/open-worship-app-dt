@@ -1,8 +1,8 @@
-import './ScreenCloseButton.scss';
+import './ScreenCloseButtonComp.scss';
 
-import { useScreenManagerContext } from './ScreenManager';
+import { useScreenManagerContext } from './managers/ScreenManager';
 
-export default function ScreenCloseButton() {
+export default function ScreenCloseButtonComp() {
     const screenManager = useScreenManagerContext();
     return (
         <button id="close" onClick={() => {

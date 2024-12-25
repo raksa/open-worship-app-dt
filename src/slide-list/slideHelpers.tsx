@@ -25,7 +25,7 @@ import {
 import { convertToPdf, getTempPath } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
-import ScreenSlideManager from '../_screen/ScreenSlideManager';
+import ScreenSlideManager from '../_screen/managers/ScreenSlideManager';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;

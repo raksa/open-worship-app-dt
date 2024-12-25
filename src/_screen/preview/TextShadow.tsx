@@ -1,6 +1,6 @@
 import './TextShadow.scss';
 
-import ScreenFullTextManager from '../ScreenFullTextManager';
+import ScreenFullTextManager from '../managers/ScreenFullTextManager';
 import { AppColorType } from '../../others/color/colorHelpers';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 

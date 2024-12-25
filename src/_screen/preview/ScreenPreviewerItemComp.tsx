@@ -2,9 +2,9 @@ import './CustomHTMLScreenPreviewer';
 
 import ShowHideScreen from './ShowHideScreen';
 import MiniScreenClearControlComp from './MiniScreenClearControlComp';
-import { useScreenManagerContext } from '../ScreenManager';
+import { useScreenManagerContext } from '../managers/ScreenManager';
 import DisplayControl from './DisplayControl';
-import PTEffectControl from './PTEffectControl';
+import ScreenEffectControlComp from './ScreenEffectControlComp';
 import { handleDrop } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import ItemColorNote from '../../others/ItemColorNote';
@@ -28,7 +28,7 @@ function ScreenPreviewerHeaderComp() {
                 </div>
                 <div className='flex-fill d-flex justify-content-end ms-2'>
                     <DisplayControl />
-                    <PTEffectControl />
+                    <ScreenEffectControlComp />
                 </div>
             </div>
         </div>

@@ -1,18 +1,20 @@
 import { CSSProperties } from 'react';
 
-import { setSetting } from '../helper/settingHelpers';
+import { setSetting } from '../../helper/settingHelpers';
 import {
     AlertType, checkIsCountdownDatesEq, genHtmlAlertCountdown,
     genHtmlAlertMarquee, removeAlert,
-} from './screenAlertHelpers';
+} from '../screenAlertHelpers';
 import {
     AlertDataType, BasicScreenMessageType, getAlertDataListOnScreenSetting,
     ScreenMessageType,
-} from './screenHelpers';
+} from '../screenHelpers';
 import ScreenManager from './ScreenManager';
-import { screenManagerSettingNames } from '../helper/constants';
-import { chooseScreenManagerInstances } from './screenManagerHelpers';
-import { unlocking } from '../server/appHelpers';
+import { screenManagerSettingNames } from '../../helper/constants';
+import {
+    chooseScreenManagerInstances, getScreenManagerInstance,
+} from './screenManagerHelpers';
+import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 
 export type ScreenAlertEventType = 'update';
@@ -24,8 +26,8 @@ export default class ScreenAlertManager
     private _div: HTMLDivElement | null = null;
     alertData: AlertDataType;
 
-    constructor(screenId: number) {
-        super(screenId);
+    constructor(screenManager: ScreenManager) {
+        super(screenManager);
         const allAlertDataList = getAlertDataListOnScreenSetting();
         this.alertData = allAlertDataList[this.key] ?? {
             marqueeData: null,
@@ -230,7 +232,7 @@ export default class ScreenAlertManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenAlertManager } = this.getScreenManager(screenId);
+        const { screenAlertManager } = getScreenManagerInstance(screenId);
         screenAlertManager.receiveSyncScreen(message);
     }
 

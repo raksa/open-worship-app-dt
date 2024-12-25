@@ -12,7 +12,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
-import ScreenFullTextManager from '../_screen/ScreenFullTextManager';
+import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 
 export type BibleItemType = {
     id: number,
