@@ -59,8 +59,11 @@ export function getScreenManagerInstanceForce(screenId: number) {
     return screenManager;
 }
 
+function initNewScreenManagerInstance(screenId: number) {
+    return new ScreenManager(screenId);
+}
 export function createScreenManagerGhostInstance(screenId: number) {
-    const ghostScreenManager = new ScreenManager(screenId);
+    const ghostScreenManager = initNewScreenManagerInstance(screenId);
     ghostScreenManager.isDeleted = true;
     return ghostScreenManager;
 }
@@ -245,7 +248,7 @@ async function getAllScreenManagerInstancesByColorNote(
 export function createScreenManagerInstance(screenId: number) {
     const key = screenId.toString();
     if (!cache.has(key)) {
-        const screenManager = new ScreenManager(screenId);
+        const screenManager = initNewScreenManagerInstance(screenId);
         cache.set(key, screenManager);
         saveScreenManagersSetting();
         screenManager.fireUpdateEvent();
