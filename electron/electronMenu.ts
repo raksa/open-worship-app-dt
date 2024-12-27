@@ -117,6 +117,9 @@ export function initMenu(appController: ElectronAppController) {
                         );
                     },
                 },
+                ...(isMac ? [] : [
+                    { role: 'about' },
+                ]),
             ],
         },
     ];
