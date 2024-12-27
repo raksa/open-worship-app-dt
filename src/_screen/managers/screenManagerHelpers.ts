@@ -3,22 +3,9 @@ import ScreenManager from './ScreenManager';
 import ScreenManagerBase from './ScreenManagerBase';
 import {
     getAllScreenManagerBases, getScreenManagersInstanceSetting,
-    saveScreenManagersSetting,
-    screenManagerBaseCache, setScreenManagerBaseCache,
+    saveScreenManagersSetting, screenManagerBaseCache,
+    setScreenManagerBaseCache,
 } from './screenManagerBaseHelpers';
-
-export function initNewScreenManager(screenId: number) {
-    const screenManager = new ScreenManager(screenId);
-    const screenManagersSetting = getScreenManagersInstanceSetting();
-    const instanceSetting = screenManagersSetting.find((item) => {
-        return item.screenId === screenId;
-    });
-    if (instanceSetting) {
-        screenManager._isSelected = instanceSetting.isSelected;
-        screenManager._colorNote = instanceSetting.colorNote;
-    }
-    return screenManager;
-}
 
 export function screenManagerFromBase(
     screenManagerBase: ScreenManagerBase | null,
@@ -36,6 +23,29 @@ function screenManagersFromBases(screenManagerBases: ScreenManagerBase[]) {
     return screenManagerBases.filter((screenManagerBase) => {
         return screenManagerBase instanceof ScreenManager;
     }) as any as ScreenManager[];
+}
+
+export function initNewScreenManager(screenId: number) {
+    const screenManager = new ScreenManager(screenId);
+    const screenManagersSetting = getScreenManagersInstanceSetting();
+    const instanceSetting = screenManagersSetting.find((item) => {
+        return item.screenId === screenId;
+    });
+    if (instanceSetting) {
+        screenManager._isSelected = instanceSetting.isSelected;
+        screenManager.colorNote = instanceSetting.colorNote;
+    }
+    return screenManager;
+}
+
+export function createScreenManager(screenId: number) {
+    const key = screenId.toString();
+    if (!screenManagerBaseCache.has(key)) {
+        const screenManager = initNewScreenManager(screenId);
+        setScreenManagerBaseCache(screenManager);
+        saveScreenManagersSetting();
+    }
+    return screenManagerBaseCache.get(key) as ScreenManager;
 }
 
 export function genNewScreenManagerBase() {
@@ -80,21 +90,3 @@ export function getAllScreenManagers(): ScreenManager[] {
     });
     return screenManagersFromBases(cachedInstances);
 }
-
-export function createScreenManager(screenId: number) {
-    const key = screenId.toString();
-    if (!screenManagerBaseCache.has(key)) {
-        const screenManager = initNewScreenManager(screenId);
-        setScreenManagerBaseCache(screenManager);
-        const screenManagers = getAllScreenManagers();
-        saveScreenManagersSetting(screenManagers);
-    }
-    return screenManagerBaseCache.get(key) as ScreenManager;
-}
-
-ScreenManagerBase.registerEventListener(
-    ['update', 'instance'], () => {
-        const screenManagers = getAllScreenManagers();
-        saveScreenManagersSetting(screenManagers);
-    },
-);

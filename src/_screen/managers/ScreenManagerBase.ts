@@ -29,9 +29,8 @@ export default class ScreenManagerBase
     isDeleted: boolean;
     width: number;
     height: number;
-    name: string;
     _isSelected: boolean = false;
-    _colorNote: string | null = null;
+    colorNote: string | null = null;
     private _isShowing: boolean;
     noSyncGroupMap: Map<string, boolean>;
 
@@ -43,7 +42,6 @@ export default class ScreenManagerBase
         this.width = dim.width;
         this.height = dim.height;
         this.noSyncGroupMap = new Map();
-        this.name = `screen-${screenId}`;
         const ids = getAllShowingScreenIds();
         this._isShowing = ids.some((id) => {
             return id === screenId;
@@ -66,17 +64,16 @@ export default class ScreenManagerBase
     }
 
     async getColorNote() {
-        return this._colorNote;
+        return this.colorNote;
     }
 
     async setColorNote(color: string | null) {
-        this._colorNote = color;
+        this.colorNote = color;
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
         ScreenSlideManager.enableSyncGroup(this.screenId);
         ScreenFullTextManager.enableSyncGroup(this.screenId);
         ScreenAlertManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();
-        ScreenManagerBase.fireUpdateEvent();
     }
 
     checkIsSyncGroupEnabled(Class: { eventNamePrefix: string }) {

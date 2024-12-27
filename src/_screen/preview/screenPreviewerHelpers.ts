@@ -8,7 +8,7 @@ import {
 import SlideItem from '../../slide-list/SlideItem';
 import ScreenManager from '../managers/ScreenManager';
 import {
-    getSelectedScreenManagerBases, getValidOnScreen, saveScreenManagersSetting,
+    getSelectedScreenManagerBases, getValidOnScreen,
 } from '../managers/screenManagerBaseHelpers';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 import { SlideListType } from '../screenHelpers';
@@ -54,12 +54,8 @@ export function openContextMenu(
             },
         }, {
             menuTitle: 'Delete',
-            onClick: async () => {
+            onClick: () => {
                 screenManager.delete();
-                await saveScreenManagersSetting(
-                    screenManagers, screenManager.screenId,
-                );
-                screenManager.fireInstanceEvent();
             },
         }],
         ...extraMenuItems,

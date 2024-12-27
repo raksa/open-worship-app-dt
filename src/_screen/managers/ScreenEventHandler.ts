@@ -114,7 +114,7 @@ export default abstract class
             const menuItems: ContextMenuItemType[] = screenManagerBases.map(
                 (screenManagerBase) => {
                     return {
-                        menuTitle: screenManagerBase.name,
+                        menuTitle: `Screen id: ${screenManagerBase.screenId}`,
                         onClick: () => {
                             resolve([screenManagerBase.screenId]);
                         },

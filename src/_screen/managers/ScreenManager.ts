@@ -8,6 +8,7 @@ import ScreenEffectManager from './ScreenEffectManager';
 import {
     deleteScreenManagerBaseCache, getAllScreenManagerBases,
     getScreenManagerBase,
+    saveScreenManagersSetting,
 } from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import { RegisteredEventType } from '../../event/EventHandler';
@@ -56,6 +57,12 @@ export default class ScreenManager extends ScreenManagerBase {
         );
     }
 
+    async setColorNote(color: string | null) {
+        await super.setColorNote(color);
+        await saveScreenManagersSetting();
+        this.fireUpdateEvent();
+    }
+
     sendSyncScreen() {
         ScreenFullTextManager.sendSynTextStyle();
         this.backgroundEffectManager.sendSyncScreen();
@@ -76,11 +83,11 @@ export default class ScreenManager extends ScreenManagerBase {
 
     async delete() {
         this.isDeleted = true;
+        this.hide();
         this.registeredEventListeners.forEach(({ eventName, listener }) => {
             this.removeOnEventListener(eventName, listener);
         });
         this.clear();
-        this.hide();
         this.slideEffectManager.delete();
         this.backgroundEffectManager.delete();
         this.screenBackgroundManager.delete();
@@ -88,6 +95,8 @@ export default class ScreenManager extends ScreenManagerBase {
         this.screenFullTextManager.delete();
         this.screenAlertManager.delete();
         deleteScreenManagerBaseCache(this.key);
+        await saveScreenManagersSetting(this.screenId);
+        this.fireInstanceEvent();
     }
 
     receiveScreenDropped(droppedData: DroppedDataType) {

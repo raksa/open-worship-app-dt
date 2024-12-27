@@ -57,11 +57,10 @@ export function getValidOnScreen(data: { [key: string]: any }) {
     return Object.fromEntries(validEntry);
 }
 
-export function saveScreenManagersSetting(
-    allScreenManagerBases: ScreenManagerBase[], deletedScreenId?: number,
-) {
+export function saveScreenManagersSetting(deletedScreenId?: number) {
     return unlocking(
         screenManagerSettingNames.MANAGERS, async () => {
+            const allScreenManagerBases = getAllScreenManagerBases();
             const newInstanceSetting: TypeScreenManagerSettingType[] = [];
             for (const screenManagerBase of allScreenManagerBases) {
                 const colorNote = await screenManagerBase.getColorNote();
