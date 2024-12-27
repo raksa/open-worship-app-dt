@@ -131,6 +131,13 @@ export default class ScreenSlideManager extends
         this.slideItemData = slideItemData;
     }
 
+    toSlideItemData(slideItemJson: SlideItemType): SlideItemDataType {
+        return {
+            slideFilePath: slideItemJson.filePath ?? '',
+            slideItemJson,
+        };
+    }
+
     handleSlideSelecting(slideFilePath: string, slideItemJson: SlideItemType) {
         const { slideItemData } = this;
         const selectedSlideFilePath = slideItemData?.slideFilePath ?? '';
@@ -142,9 +149,9 @@ export default class ScreenSlideManager extends
         const willSelected = (
             `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`
         );
-        const newSlideSrc = selected !== willSelected ? {
-            slideFilePath, slideItemJson,
-        } : null;
+        const newSlideSrc = selected !== willSelected ? this.toSlideItemData(
+            slideItemJson,
+        ) : null;
         this.applySlideItemSrcWithSyncGroup(newSlideSrc);
     }
 
