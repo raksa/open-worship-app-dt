@@ -107,21 +107,17 @@ export function initEventScreen(appController: ElectronAppController) {
         screenController.destroyInstance();
     });
 
-    ipcMain.on('main:app:set-screen-display', (event, data: {
-        screenId: number,
-        displayId: number,
+    ipcMain.on('main:app:set-screen-display', (event, { screenId, displayId }: {
+        screenId: number, displayId: number,
     }) => {
         const display = (
-            appController.settingController.getDisplayById(data.displayId)
+            appController.settingController.getDisplayById(displayId)
         );
         const screenController = (
-            ElectronScreenController.getInstance(data.screenId)
+            ElectronScreenController.getInstance(screenId)
         );
         if (display !== undefined && screenController !== null) {
             screenController.setDisplay(display);
-            event.returnValue = display;
-        } else {
-            event.returnValue = null;
         }
     });
 

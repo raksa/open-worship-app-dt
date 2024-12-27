@@ -88,8 +88,7 @@ export default class ScreenManagerBase
         );
         if (this.isShowing) {
             setDisplay({
-                screenId: this.screenId,
-                displayId: id,
+                screenId: this.screenId, displayId: id,
             });
         }
         const data = {
