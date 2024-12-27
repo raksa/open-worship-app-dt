@@ -10,6 +10,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
 import BibleSelection from './BibleSelection';
+import LoadingComp from '../others/LoadingComp';
 
 async function loadApiData() {
     try {
@@ -37,7 +38,7 @@ export default function BibleOnlineSearchBodyPreviewer() {
     }, [apiData], { setApiData });
     if (apiData === undefined) {
         return (
-            <div>Loading...</div>
+            <LoadingComp />
         );
     }
     if (apiData === null) {

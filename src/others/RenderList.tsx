@@ -4,6 +4,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelpers';
+import LoadingComp from './LoadingComp';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
@@ -46,9 +47,7 @@ export default function RenderList({
     }
     if (filePaths === null) {
         return (
-            <div className='alert alert-info'>
-                Getting File List
-            </div>
+            <LoadingComp />
         );
 
     }

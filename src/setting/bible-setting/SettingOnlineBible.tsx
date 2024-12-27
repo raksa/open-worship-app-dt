@@ -1,3 +1,4 @@
+import LoadingComp from '../../others/LoadingComp';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
 
@@ -14,7 +15,9 @@ export default function SettingOnlineBible({
         setDownloadedBibleInfoList(null);
     };
     if (onlineBibleInfoList === null) {
-        return <div>Loading...</div>;
+        return (
+            <LoadingComp />
+        );
     }
     const getRefresher = () => {
         return (

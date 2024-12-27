@@ -11,6 +11,7 @@ import {
 } from '../bible-list/bibleHelpers';
 import { setSetting } from '../helper/settingHelpers';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
+import LoadingComp from '../others/LoadingComp';
 
 export default function BibleSearchPopup() {
     const { data } = getPopupWindowTypeData();
@@ -29,9 +30,7 @@ export default function BibleSearchPopup() {
     return (
         <Modal>
             {inputText === null ? (
-                <div>
-                    <span title='Need translation'>(*T)</span> Loading...
-                </div>
+                <LoadingComp />
             ) : (
                 <RenderBibleSearch editorInputText={inputText} />
             )}
