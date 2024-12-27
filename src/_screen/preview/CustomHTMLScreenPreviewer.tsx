@@ -2,10 +2,9 @@ import { DOMAttributes } from 'react';
 
 import { createRoot } from 'react-dom/client';
 import MiniScreenAppComp from './MiniScreenAppComp';
-import {
-    getDefaultScreenDisplay, getScreenManagerBase,
-} from '../managers/screenManagerBaseHelpers';
+import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
 import ScreenManagerBase from '../managers/ScreenManagerBase';
+import { getDefaultScreenDisplay } from '../managers/screenHelpers';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 

@@ -4,15 +4,14 @@ import ReactDOMServer from 'react-dom/server';
 import ScreenBackgroundColorComp from './ScreenBackgroundColorComp';
 import ScreenBackgroundImageComp from './ScreenBackgroundImageComp';
 import ScreenBackgroundVideoComp from './ScreenBackgroundVideoComp';
-import { useScreenManagerEvents } from './managers/screenEventHelpers';
 import { AppColorType } from '../others/color/colorHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { BackgroundSrcType } from './screenHelpers';
+import { getScreenManagerBase } from './managers/screenManagerBaseHelpers';
 import {
-    getScreenManagerForce,
-    useScreenManagerContext,
-} from './managers/screenManagerHelpers';
-import { ScreenManagerBaseContext } from './managers/screenManagerBaseHelpers';
+    useScreenManagerContext, ScreenManagerBaseContext,
+    useScreenManagerEvents,
+} from './managers/screenManagerHooks';
 
 export default function ScreenBackgroundComp() {
     const screenManager = useScreenManagerContext();
@@ -36,7 +35,7 @@ export default function ScreenBackgroundComp() {
 export function genHtmlBackground(
     backgroundSrc: BackgroundSrcType, screenId: number,
 ) {
-    const screenManagerBase = getScreenManagerForce(screenId);
+    const screenManagerBase = getScreenManagerBase(screenId);
     const htmlStr = ReactDOMServer.renderToStaticMarkup(
         <ScreenManagerBaseContext value={screenManagerBase}>
             <RenderBackground backgroundSrc={backgroundSrc} />

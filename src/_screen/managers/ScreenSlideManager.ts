@@ -11,17 +11,14 @@ import {
 } from '../../slide-presenter/items/SlideItemRenderer';
 import appProviderScreen from '../appProviderScreen';
 import {
-    BasicScreenMessageType, getSlideListOnScreenSetting, ScreenMessageType,
-    SlideItemDataType,
+    BasicScreenMessageType, ScreenMessageType, SlideItemDataType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
-import {
-    chooseScreenManagers, getScreenManagerForce,
-} from './screenManagerHelpers';
+import { getSlideListOnScreenSetting } from '../preview/screenPreviewerHelpers';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -156,11 +153,9 @@ export default class ScreenSlideManager extends
         slideFilePath: string, slideItemJson: SlideItemType,
         isForceChoosing = false,
     ) {
-        const choseScreenManagers = await chooseScreenManagers(
-            event, isForceChoosing,
-        );
-        choseScreenManagers.forEach((screenManagerBase) => {
-            const { screenSlideManager } = screenManagerBase;
+        const screenIds = await this.chooseScreenIds(event, isForceChoosing);
+        screenIds.forEach((screenId) => {
+            const screenSlideManager = this.getInstance(screenId);
             screenSlideManager.handleSlideSelecting(
                 slideFilePath, slideItemJson,
             );
@@ -285,11 +280,15 @@ export default class ScreenSlideManager extends
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenSlideManager } = getScreenManagerForce(screenId);
+        const screenSlideManager = this.getInstance(screenId);
         screenSlideManager.receiveSyncScreen(message);
     }
 
     clear() {
         this.applySlideItemSrcWithSyncGroup(null);
+    }
+
+    static getInstance(screenId: number) {
+        return super.getInstanceBase<ScreenSlideManager>(screenId);
     }
 }

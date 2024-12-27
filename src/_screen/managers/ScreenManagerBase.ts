@@ -6,16 +6,15 @@ import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import {
-    getAllShowingScreenIds, hideScreen, setDisplay, showScreen,
+    getAllShowingScreenIds, hideScreen, ScreenMessageType, setDisplay,
+    showScreen,
 } from '../screenHelpers';
 import ScreenManagerInf from '../preview/ScreenManagerInf';
 import ScreenSlideManager from './ScreenSlideManager';
 import ColorNoteInf from '../../helper/ColorNoteInf';
 import {
-    getDisplayIdByScreenId, getScreenManagersInstanceSetting,
-    SCREEN_MANAGER_SETTING_NAME,
-} from './screenManagerBaseHelpers';
-import { saveScreenManagersSetting } from './screenManagerHelpers';
+    getDisplayIdByScreenId, SCREEN_MANAGER_SETTING_NAME,
+} from './screenHelpers';
 
 export type ScreenManagerEventType = (
     'instance' | 'update' | 'visible' | 'display-id' | 'resize'
@@ -32,8 +31,8 @@ export default class ScreenManagerBase
     height: number;
     name: string;
     _isSelected: boolean = false;
+    _colorNote: string | null = null;
     private _isShowing: boolean;
-    private _colorNote: string | null = null;
     noSyncGroupMap: Map<string, boolean>;
 
     constructor(screenId: number) {
@@ -49,14 +48,6 @@ export default class ScreenManagerBase
         this._isShowing = ids.some((id) => {
             return id === screenId;
         });
-        const screenManagersSetting = getScreenManagersInstanceSetting();
-        const instanceSetting = screenManagersSetting.find((item) => {
-            return item.screenId === screenId;
-        });
-        if (instanceSetting) {
-            this._isSelected = instanceSetting.isSelected;
-            this._colorNote = instanceSetting.colorNote;
-        }
     }
     get key() {
         return this.screenId.toString();
@@ -80,12 +71,12 @@ export default class ScreenManagerBase
 
     async setColorNote(color: string | null) {
         this._colorNote = color;
-        await saveScreenManagersSetting();
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
         ScreenSlideManager.enableSyncGroup(this.screenId);
         ScreenFullTextManager.enableSyncGroup(this.screenId);
         ScreenAlertManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();
+        ScreenManagerBase.fireUpdateEvent();
     }
 
     checkIsSyncGroupEnabled(Class: { eventNamePrefix: string }) {
@@ -114,7 +105,6 @@ export default class ScreenManagerBase
 
     set isSelected(isSelected: boolean) {
         this._isSelected = isSelected;
-        saveScreenManagersSetting();
         this.fireInstanceEvent();
     }
 
@@ -189,5 +179,17 @@ export default class ScreenManagerBase
 
     receiveScreenDropped(_droppedData: DroppedDataType) {
         throw new Error('receiveScreenDropped is not implemented.');
+    }
+
+    sendScreenMessage(_message: ScreenMessageType, _isForce?: boolean) {
+        throw new Error('sendScreenMessage is not implemented.');
+    }
+
+    createScreenManagerBaseGhost(_screenId: number): ScreenManagerBase {
+        throw new Error('createScreenManagerGhost is not implemented.');
+    }
+
+    getScreenManagerBaseForce(_screenId: number): ScreenManagerBase {
+        throw new Error('getScreenManagerForce is not implemented.');
     }
 }

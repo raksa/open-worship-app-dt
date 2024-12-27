@@ -2,10 +2,12 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    useScreenFullTextManagerEvents, useScreenManagerEvents,
+    useScreenFullTextManagerEvents,
 } from './managers/screenEventHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
-import { useScreenManagerContext } from './managers/screenManagerHelpers';
+import {
+    useScreenManagerContext, useScreenManagerEvents,
+} from './managers/screenManagerHooks';
 
 const styleText = `
 #full-text {

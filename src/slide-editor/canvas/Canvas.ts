@@ -6,9 +6,7 @@ import CanvasItemImage from './CanvasItemImage';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemVideo from './CanvasItemVideo';
 import { handleError } from '../../helper/errorHelpers';
-import {
-    getDefaultScreenDisplay,
-} from '../../_screen/managers/screenManagerBaseHelpers';
+import { getDefaultScreenDisplay } from '../../_screen/managers/screenHelpers';
 
 type CanvasPropsType = {
     width: number,

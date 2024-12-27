@@ -1,11 +1,17 @@
+import { screenManagerSettingNames } from '../../helper/constants';
+import { handleError } from '../../helper/errorHelpers';
+import { isValidJson } from '../../helper/helpers';
+import { getSetting } from '../../helper/settingHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenu';
+import SlideItem from '../../slide-list/SlideItem';
 import ScreenManager from '../managers/ScreenManager';
 import {
-    getSelectedScreenManagerBases,
+    getSelectedScreenManagerBases, getValidOnScreen, saveScreenManagersSetting,
 } from '../managers/screenManagerBaseHelpers';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
+import { SlideListType } from '../screenHelpers';
 
 export function openContextMenu(
     event: any, screenManager: ScreenManager,
@@ -48,8 +54,12 @@ export function openContextMenu(
             },
         }, {
             menuTitle: 'Delete',
-            onClick() {
+            onClick: async () => {
                 screenManager.delete();
+                await saveScreenManagersSetting(
+                    screenManagers, screenManager.screenId,
+                );
+                screenManager.fireInstanceEvent();
             },
         }],
         ...extraMenuItems,
@@ -58,4 +68,24 @@ export function openContextMenu(
         return;
     }
     showAppContextMenu(event, menuItems);
+}
+
+export function getSlideListOnScreenSetting(): SlideListType {
+    const str = getSetting(screenManagerSettingNames.SLIDE, '');
+    try {
+        if (!isValidJson(str, true)) {
+            return {};
+        }
+        const json = JSON.parse(str);
+        Object.values(json).forEach((item: any) => {
+            if (typeof item.slideFilePath !== 'string') {
+                throw new Error('Invalid slide path');
+            }
+            SlideItem.validate(item.slideItemJson);
+        });
+        return getValidOnScreen(json);
+    } catch (error) {
+        handleError(error);
+    }
+    return {};
 }

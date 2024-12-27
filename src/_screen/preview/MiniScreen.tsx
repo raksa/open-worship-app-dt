@@ -1,8 +1,5 @@
 import './MiniScreen.scss';
 
-import {
-    initReceiveScreenMessage, useScreenManagerEvents,
-} from '../managers/screenEventHelpers';
 import ScreenPreviewerItemComp from './ScreenPreviewerItemComp';
 import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
@@ -11,10 +8,13 @@ import {
 import { showAppContextMenu } from '../../others/AppContextMenu';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
 import { handleCtrlWheel } from '../../others/AppRange';
-import { ScreenManagerBaseContext } from '../managers/screenManagerBaseHelpers';
 import {
-    genNewScreenManagerBase, getAllScreenManagers, getScreenManagersSetting,
+    genNewScreenManagerBase, getAllScreenManagers, getScreenManagersFromSetting,
 } from '../managers/screenManagerHelpers';
+import ScreenManager from '../managers/ScreenManager';
+import {
+    ScreenManagerBaseContext, useScreenManagerEvents,
+} from '../managers/screenManagerHooks';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
@@ -28,7 +28,7 @@ function openContextMenu(event: any) {
 }
 
 const DEFAULT_PREVIEW_SIZE = 50;
-initReceiveScreenMessage();
+ScreenManager.initReceiveScreenMessage();
 export default function MiniScreen() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
         'mini-screen-previewer-tool', true,
@@ -43,7 +43,7 @@ export default function MiniScreen() {
         });
     };
     useScreenManagerEvents(['instance']);
-    const screenManagers = getScreenManagersSetting();
+    const screenManagers = getScreenManagersFromSetting();
     const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;
     return (
         <div className='card w-100 h-100'>

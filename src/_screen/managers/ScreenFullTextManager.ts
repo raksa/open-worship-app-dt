@@ -10,7 +10,6 @@ import {
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import appProviderScreen from '../appProviderScreen';
 import fullTextScreenHelper from '../fullTextScreenHelpers';
-import { sendScreenMessage } from './screenEventHelpers';
 import {
     ScreenFTManagerEventType, SCREEN_FT_SETTING_PREFIX,
     renderScreenFullTextManager, bibleItemToFtData,
@@ -25,9 +24,7 @@ import { screenManagerSettingNames } from '../../helper/constants';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
-import {
-    chooseScreenManagers, getAllScreenManagers, getScreenManagerForce,
-} from './screenManagerHelpers';
+import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 
 let textStyle: AnyObjectType = {};
 export default class ScreenFullTextManager
@@ -186,7 +183,7 @@ export default class ScreenFullTextManager
     }
 
     async sendSyncScroll() {
-        sendScreenMessage({
+        this.screenManagerBase.sendScreenMessage({
             screenId: this.screenId,
             type: 'full-text-scroll',
             data: {
@@ -220,7 +217,7 @@ export default class ScreenFullTextManager
     }
 
     sendSyncSelectedIndex() {
-        sendScreenMessage({
+        this.screenManagerBase.sendScreenMessage({
             screenId: this.screenId,
             type: 'full-text-selected-index',
             data: {
@@ -315,8 +312,8 @@ export default class ScreenFullTextManager
     }
 
     static sendSynTextStyle() {
-        getAllScreenManagers().forEach((screenManagerBase) => {
-            sendScreenMessage({
+        getAllScreenManagerBases().forEach((screenManagerBase) => {
+            screenManagerBase.sendScreenMessage({
                 screenId: screenManagerBase.screenId,
                 type: 'full-text-text-style',
                 data: {
@@ -336,11 +333,11 @@ export default class ScreenFullTextManager
         isForceChoosing = false,
     ) {
         const ftItemData = await bibleItemToFtData(bibleItems);
-        const chosenScreenManagers = await chooseScreenManagers(
+        const screenIds = await this.chooseScreenIds(
             genScreenMouseEvent(event) as any, isForceChoosing,
         );
-        chosenScreenManagers.forEach((screenManagerBase) => {
-            const { screenFullTextManager } = screenManagerBase;
+        screenIds.forEach((screenId) => {
+            const screenFullTextManager = this.getInstance(screenId);
             screenFullTextManager.applyFullDataSrcWithSyncGroup(ftItemData);
         });
     }
@@ -385,19 +382,17 @@ export default class ScreenFullTextManager
         }
     }
 
-    static getInstance(screenId: number) {
-        return getScreenManagerForce(screenId).screenFullTextManager;
-    }
-
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const {
-            screenFullTextManager,
-        } = getScreenManagerForce(screenId);
+        const screenFullTextManager = this.getInstance(screenId);
         screenFullTextManager.receiveSyncScreen(message);
     }
 
     clear() {
         this.applyFullDataSrcWithSyncGroup(null);
+    }
+
+    static getInstance(screenId: number) {
+        return super.getInstanceBase<ScreenFullTextManager>(screenId);
     }
 }

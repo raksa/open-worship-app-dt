@@ -1,8 +1,6 @@
 import './ScreenCloseButtonComp.scss';
 
-import {
-    useScreenManagerBaseContext,
-} from './managers/screenManagerBaseHelpers';
+import { useScreenManagerBaseContext } from './managers/screenManagerHooks';
 
 
 export default function ScreenCloseButtonComp() {

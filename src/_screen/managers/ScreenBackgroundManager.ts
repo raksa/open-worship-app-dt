@@ -17,9 +17,6 @@ import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
-import {
-    chooseScreenManagers, getScreenManagerForce,
-} from './screenManagerHelpers';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
@@ -138,11 +135,9 @@ export default class ScreenBackgroundManager
         backgroundType: BackgroundType, src: string | null,
         isForceChoosing = false,
     ) {
-        const chosenScreenManagers = await chooseScreenManagers(
-            event, isForceChoosing,
-        );
-        for (const screenManagerBase of chosenScreenManagers) {
-            const { screenBackgroundManager } = screenManagerBase;
+        const screenIds = await this.chooseScreenIds(event, isForceChoosing);
+        for (const screenId of screenIds) {
+            const screenBackgroundManager = this.getInstance(screenId);
             if (
                 src === null ||
                 screenBackgroundManager.backgroundSrc?.src === src
@@ -234,13 +229,16 @@ export default class ScreenBackgroundManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenBackgroundManager } = getScreenManagerForce(
-            screenId,
-        );
+        const screenBackgroundManager = this.getInstance(screenId);
         screenBackgroundManager.receiveSyncScreen(message);
     }
 
     clear() {
         this.applyBackgroundSrcWithSyncGroup(null);
     }
+
+    static getInstance(screenId: number) {
+        return super.getInstanceBase<ScreenBackgroundManager>(screenId);
+    }
+
 }

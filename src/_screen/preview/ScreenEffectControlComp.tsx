@@ -1,6 +1,5 @@
-import { useScreenManagerContext } from '../managers/screenManagerHelpers';
-import RenderTransitionEffectComp
-    from '../RenderTransitionEffectComp';
+import { useScreenManagerContext } from '../managers/screenManagerHooks';
+import RenderTransitionEffectComp from '../RenderTransitionEffectComp';
 
 export default function ScreenEffectControlComp() {
     const screenManager = useScreenManagerContext();

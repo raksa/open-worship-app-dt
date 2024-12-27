@@ -5,13 +5,11 @@ import ScreenAlertComp from './ScreenAlertComp';
 import ScreenFullTextComp from './ScreenFullTextComp';
 import { RendStyle } from './RenderTransitionEffectComp';
 import appProviderScreen from './appProviderScreen';
-import {
-    initReceiveScreenMessage, sendScreenMessage,
-} from './managers/screenEventHelpers';
-import { ScreenManagerBaseContext } from './managers/screenManagerBaseHelpers';
 import { createScreenManager } from './managers/screenManagerHelpers';
+import ScreenManager from './managers/ScreenManager';
+import { ScreenManagerBaseContext } from './managers/screenManagerHooks';
 
-initReceiveScreenMessage();
+ScreenManager.initReceiveScreenMessage();
 export default function ScreenAppComp() {
     const urlParams = new URLSearchParams(window.location.search);
     const screenId = parseInt(urlParams.get('screenId') ?? '');
@@ -23,7 +21,7 @@ export default function ScreenAppComp() {
         return null;
     }
     if (appProviderScreen.isScreen) {
-        sendScreenMessage({
+        screenManager.sendScreenMessage({
             screenId, type: 'init', data: null,
         }, true);
     }

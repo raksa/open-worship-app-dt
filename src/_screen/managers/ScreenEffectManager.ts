@@ -1,6 +1,5 @@
 import EventHandler from '../../event/EventHandler';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import { sendScreenMessage } from '../managers/screenEventHelpers';
 import {
     ScreenMessageType, PTEffectDataType,
 } from '../screenHelpers';
@@ -9,10 +8,8 @@ import {
     transitionEffect,
 } from '../transitionEffectHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
-import {
-    createScreenManagerGhost, getScreenManagerForce,
-} from './screenManagerHelpers';
 
+const cache = new Map<string, ScreenEffectManager>();
 class ScreenEffectManager extends EventHandler<PTFEventType> {
     screenManagerBase: ScreenManagerBase;
     readonly target: TargetType;
@@ -26,7 +23,13 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
             Object.keys(transitionEffect).includes(effectType)
                 ? effectType as ScreenTransitionEffectType : 'none'
         );
+        cache.set(this.toCacheKey(), this);
     }
+
+    protected toCacheKey() {
+        return `${this.screenId}-${this.target}`;
+    }
+
     get screenId() {
         return this.screenManagerBase.screenId;
     }
@@ -55,7 +58,7 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     }
 
     sendSyncScreen() {
-        sendScreenMessage({
+        this.screenManagerBase.sendScreenMessage({
             screenId: this.screenId, type: 'effect', data: {
                 target: this.target,
                 effect: this.effectType,
@@ -64,24 +67,26 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
-        const screenManagerBase = getScreenManagerForce(
-            message.screenId,
-        );
-        if (screenManagerBase === null) {
-            return;
-        }
         const data = message.data as PTEffectDataType;
-        if (data.target === 'background') {
-            screenManagerBase.backgroundEffectManager.effectType = data.effect;
-        } else if (data.target === 'slide') {
-            screenManagerBase.slideEffectManager.effectType = data.effect;
-        }
+        const effectManager = ScreenEffectManager.getInstance(
+            message.screenId, data.target,
+        );
+        effectManager.effectType = data.effect;
     }
 
     delete() {
-        this.screenManagerBase = createScreenManagerGhost(
-            this.screenId,
+        cache.delete(this.toCacheKey());
+        this.screenManagerBase = (
+            this.screenManagerBase.createScreenManagerBaseGhost(this.screenId)
         );
+    }
+
+    static getInstance(screenId: number, target: TargetType) {
+        const instance = cache.get(`${screenId}-${target}`);
+        if (instance === undefined) {
+            throw new Error('instance is not found.');
+        }
+        return instance;
     }
 
 }

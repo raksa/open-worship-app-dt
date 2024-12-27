@@ -7,7 +7,7 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../others/AppContextMenu';
-import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
+import { SlideItemType } from '../slide-list/SlideItem';
 import appProviderScreen from './appProviderScreen';
 import {
     BibleItemRenderedType, LyricRenderedType,
@@ -16,9 +16,7 @@ import {
     ScreenTransitionEffectType, TargetType,
 } from './transitionEffectHelpers';
 import { electronSendAsync, unlocking } from '../server/appHelpers';
-import {
-    getScreenManagersInstanceSetting,
-} from './managers/screenManagerBaseHelpers';
+import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = typeof fullTextDataTypeList[number];
@@ -132,12 +130,6 @@ export function calMediaSizes({
     };
 }
 
-export type TypeScreenManagerSettingType = {
-    screenId: number,
-    isSelected: boolean,
-    colorNote: string | null,
-};
-
 type SetDisplayType = {
     screenId: number,
     displayId: number,
@@ -186,40 +178,6 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
         return createMouseEvent(rect.x, rect.y);
     }
     return createMouseEvent(0, 0);
-}
-
-function getValidOnScreen(data: { [key: string]: any }) {
-    const instanceSetting = getScreenManagersInstanceSetting();
-    if (instanceSetting.length === 0) {
-        return {};
-    }
-    const screenIdList = instanceSetting.map(({ screenId }: any) => {
-        return screenId;
-    });
-    const validEntry = Object.entries(data).filter(([key, _]) => {
-        return screenIdList.includes(parseInt(key));
-    });
-    return Object.fromEntries(validEntry);
-}
-
-export function getSlideListOnScreenSetting(): SlideListType {
-    const str = getSetting(screenManagerSettingNames.SLIDE, '');
-    try {
-        if (!isValidJson(str, true)) {
-            return {};
-        }
-        const json = JSON.parse(str);
-        Object.values(json).forEach((item: any) => {
-            if (typeof item.slideFilePath !== 'string') {
-                throw new Error('Invalid slide path');
-            }
-            SlideItem.validate(item.slideItemJson);
-        });
-        return getValidOnScreen(json);
-    } catch (error) {
-        handleError(error);
-    }
-    return {};
 }
 
 export function getAlertDataListOnScreenSetting(): AlertSrcListType {

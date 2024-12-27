@@ -1,12 +1,10 @@
+import { getDefaultScreenDisplay } from '../../_screen/managers/screenHelpers';
 import {
     EventMapper as KBEventMapper, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
 import { useFileSourceRefreshEvents } from '../../helper/dirSourceHelpers';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import MenuIsModifying from './MenuIsModifying';
-import {
-    getDefaultScreenDisplay,
-} from '../../_screen/managers/screenManagerBaseHelpers';
 
 const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],

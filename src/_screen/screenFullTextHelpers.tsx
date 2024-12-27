@@ -12,7 +12,7 @@ import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { FullTextItemDataType } from './screenHelpers';
-import { getDisplayByScreenId } from './managers/screenManagerBaseHelpers';
+import { getDisplayByScreenId } from './managers/screenHelpers';
 
 export type ScreenFTManagerEventType = 'update' | 'text-style';
 

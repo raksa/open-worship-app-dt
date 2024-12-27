@@ -8,9 +8,8 @@ import { handleDrop } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
 import ItemColorNote from '../../others/ItemColorNote';
 import {
-    useScreenManagerBaseContext,
-} from '../managers/screenManagerBaseHelpers';
-import { useScreenManagerContext } from '../managers/screenManagerHelpers';
+    useScreenManagerBaseContext, useScreenManagerContext,
+} from '../managers/screenManagerHooks';
 
 function ScreenPreviewerHeaderComp() {
     const screenManagerBase = useScreenManagerBaseContext();

@@ -1,11 +1,15 @@
 import { screenManagerSettingNames } from '../../helper/constants';
-import { getSetting } from '../../helper/settingHelpers';
-import { getAllDisplays } from '../screenHelpers';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
-import { createContext, use } from 'react';
 import { isValidJson } from '../../helper/helpers';
+import { unlocking } from '../../server/appHelpers';
 
-export const SCREEN_MANAGER_SETTING_NAME = 'screen-display-';
+export type TypeScreenManagerSettingType = {
+    screenId: number,
+    isSelected: boolean,
+    colorNote: string | null,
+};
+
 export const screenManagerBaseCache = new Map<string, ScreenManagerBase>();
 
 export function setScreenManagerBaseCache(
@@ -39,41 +43,58 @@ export function getScreenManagersInstanceSetting(): {
     return [];
 }
 
-
-export function getDefaultScreenDisplay() {
-    const { primaryDisplay, displays } = getAllDisplays();
-    return displays.find((display) => {
-        return display.id !== primaryDisplay.id;
-    }) || primaryDisplay;
-}
-
-export function getDisplayById(displayId: number) {
-    const { displays } = getAllDisplays();
-    return displays.find((display) => {
-        return display.id === displayId;
-    })?.id ?? 0;
-}
-
-export function getDisplayByScreenId(screenId: number) {
-    const displayId = getDisplayIdByScreenId(screenId);
-    const { displays } = getAllDisplays();
-    return displays.find((display) => {
-        return display.id === displayId;
-    }) || getDefaultScreenDisplay();
-}
-
-export function getDisplayIdByScreenId(screenId: number) {
-    const defaultDisplay = getDefaultScreenDisplay();
-    const str = getSetting(`${SCREEN_MANAGER_SETTING_NAME}-pid-${screenId}`,
-        defaultDisplay.id.toString());
-    if (isNaN(parseInt(str))) {
-        return defaultDisplay.id;
+export function getValidOnScreen(data: { [key: string]: any }) {
+    const instanceSetting = getScreenManagersInstanceSetting();
+    if (instanceSetting.length === 0) {
+        return {};
     }
-    const id = parseInt(str);
-    const { displays } = getAllDisplays();
-    return displays.find((display) => {
-        return display.id === id;
-    })?.id ?? defaultDisplay.id;
+    const screenIdList = instanceSetting.map(({ screenId }: any) => {
+        return screenId;
+    });
+    const validEntry = Object.entries(data).filter(([key, _]) => {
+        return screenIdList.includes(parseInt(key));
+    });
+    return Object.fromEntries(validEntry);
+}
+
+export function saveScreenManagersSetting(
+    allScreenManagerBases: ScreenManagerBase[], deletedScreenId?: number,
+) {
+    return unlocking(
+        screenManagerSettingNames.MANAGERS, async () => {
+            const newInstanceSetting: TypeScreenManagerSettingType[] = [];
+            for (const screenManagerBase of allScreenManagerBases) {
+                const colorNote = await screenManagerBase.getColorNote();
+                newInstanceSetting.push({
+                    screenId: screenManagerBase.screenId,
+                    isSelected: screenManagerBase.isSelected,
+                    colorNote,
+                });
+            }
+            let instanceSetting = getScreenManagersInstanceSetting();
+            instanceSetting = instanceSetting.map((item) => {
+                return newInstanceSetting.find((newItem) => {
+                    return newItem.screenId === item.screenId;
+                }) || item;
+            });
+            for (const newItem of newInstanceSetting) {
+                if (!instanceSetting.some((item) => {
+                    return item.screenId === newItem.screenId;
+                })) {
+                    instanceSetting.push(newItem);
+                }
+            }
+            if (deletedScreenId !== undefined) {
+                instanceSetting = instanceSetting.filter((item) => {
+                    return item.screenId !== deletedScreenId;
+                });
+            }
+            setSetting(
+                screenManagerSettingNames.MANAGERS,
+                JSON.stringify(instanceSetting),
+            );
+        },
+    );
 }
 
 export function getSelectedScreenManagerBases() {
@@ -101,16 +122,6 @@ export function deleteScreenManagerBaseCache(key: string) {
     screenManagerBaseCache.delete(key);
 }
 
-export const ScreenManagerBaseContext = (
-    createContext<ScreenManagerBase | null>(null)
-);
-export function useScreenManagerBaseContext(): ScreenManagerBase {
-    const screenManagerBase = use(ScreenManagerBaseContext);
-    if (screenManagerBase === null) {
-        throw new Error(
-            'useScreenManager must be used within a ScreenManagerBase ' +
-            'Context Provider',
-        );
-    }
-    return screenManagerBase;
+export function getAllScreenManagerBases(): ScreenManagerBase[] {
+    return Array.from(screenManagerBaseCache.values());
 }

@@ -1,11 +1,16 @@
 import EventHandler from '../../event/EventHandler';
-import { sendScreenMessage } from './screenEventHelpers';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../../others/AppContextMenu';
+import appProvider from '../../server/appProvider';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import {
-    getScreenManagerForce, createScreenManagerGhost,
-} from './screenManagerHelpers';
+    getSelectedScreenManagerBases, getAllScreenManagerBases,
+    getScreenManagerBase,
+} from './screenManagerBaseHelpers';
 
+const cache = new Map<string, ScreenEventHandler<any>>();
 export default abstract class
     ScreenEventHandler<T extends string>
     extends EventHandler<T> {
@@ -15,6 +20,11 @@ export default abstract class
     constructor(screenManagerBase: ScreenManagerBase) {
         super();
         this.screenManagerBase = screenManagerBase;
+        cache.set(this.toCacheKey(), this);
+    }
+
+    protected toCacheKey() {
+        return `${this.screenId}-${this.constructor.name}`;
     }
 
     abstract get isShowing(): boolean;
@@ -30,7 +40,7 @@ export default abstract class
     abstract toSyncMessage(): BasicScreenMessageType;
 
     sendSyncScreen() {
-        sendScreenMessage({
+        this.screenManagerBase.sendScreenMessage({
             screenId: this.screenId,
             ...this.toSyncMessage(),
         });
@@ -55,19 +65,65 @@ export default abstract class
     abstract clear(): void;
 
     static disableSyncGroup(screenId: number) {
-        const screenManagerBase = getScreenManagerForce(screenId);
-        screenManagerBase.noSyncGroupMap.set(this.eventNamePrefix, true);
+        const screenManagerBase = getScreenManagerBase(screenId);
+        screenManagerBase?.noSyncGroupMap.set(this.eventNamePrefix, true);
     }
 
     static enableSyncGroup(screenId: number) {
-        const screenManagerBase = getScreenManagerForce(screenId);
-        screenManagerBase.noSyncGroupMap.set(this.eventNamePrefix, false);
+        const screenManagerBase = getScreenManagerBase(screenId);
+        screenManagerBase?.noSyncGroupMap.set(this.eventNamePrefix, false);
     }
 
     delete() {
-        this.screenManagerBase = createScreenManagerGhost(
-            this.screenId,
+        cache.delete(this.toCacheKey());
+        this.screenManagerBase = (
+            this.screenManagerBase.createScreenManagerBaseGhost(this.screenId)
         );
     }
 
+    static getInstanceBase<T extends ScreenEventHandler<any>>(
+        screenId: number,
+    ) {
+        const instance = cache.get(`${screenId}-${this.name}`) as T;
+        if (instance === undefined) {
+            throw new Error('instance is not found.');
+        }
+        return instance;
+    }
+
+    static getInstance(_screenId: number) {
+        throw new Error('getInstance is not implemented.');
+    }
+
+    static async chooseScreenIds(
+        event: React.MouseEvent, isForceChoosing: boolean,
+    ) {
+        if (!appProvider.isPagePresenter) {
+            return [];
+        }
+        const selectedScreenManagerBases = isForceChoosing ? [] : (
+            getSelectedScreenManagerBases()
+        );
+        if (selectedScreenManagerBases.length > 0) {
+            return selectedScreenManagerBases.map((screenManagerBase) => {
+                return screenManagerBase.screenId;
+            });
+        }
+        return new Promise<number[]>((resolve) => {
+            const screenManagerBases = getAllScreenManagerBases();
+            const menuItems: ContextMenuItemType[] = screenManagerBases.map(
+                (screenManagerBase) => {
+                    return {
+                        menuTitle: screenManagerBase.name,
+                        onClick: () => {
+                            resolve([screenManagerBase.screenId]);
+                        },
+                    };
+                },
+            );
+            showAppContextMenu(event as any, menuItems).then(() => {
+                resolve([]);
+            });
+        });
+    }
 }

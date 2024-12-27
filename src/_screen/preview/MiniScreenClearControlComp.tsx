@@ -1,11 +1,10 @@
 import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import {
-    useScreenManagerEvents,
-} from '../managers/screenEventHelpers';
 import ScreenManager from '../managers/ScreenManager';
-import { useScreenManagerContext } from '../managers/screenManagerHelpers';
+import {
+    useScreenManagerEvents, useScreenManagerContext,
+} from '../managers/screenManagerHooks';
 
 function RenderButtonComp({ btnMaps }: Readonly<{
     btnMaps: {

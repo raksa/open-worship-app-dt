@@ -5,14 +5,14 @@ import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import ScreenSlideManager from './ScreenSlideManager';
 import ScreenEffectManager from './ScreenEffectManager';
-import { deleteScreenManagerBaseCache } from './screenManagerBaseHelpers';
+import {
+    deleteScreenManagerBaseCache, getAllScreenManagerBases,
+    getScreenManagerBase,
+} from './screenManagerBaseHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
 import { RegisteredEventType } from '../../event/EventHandler';
-import { saveScreenManagersSetting } from './screenManagerHelpers';
-
-export type ScreenManagerEventType = (
-    'instance' | 'update' | 'visible' | 'display-id' | 'resize'
-);
+import appProviderScreen from '../appProviderScreen';
+import { ScreenMessageType } from '../screenHelpers';
 
 export default class ScreenManager extends ScreenManagerBase {
 
@@ -46,13 +46,13 @@ export default class ScreenManager extends ScreenManagerBase {
                     this.screenFullTextManager.clear();
                 }
             }),
-            ...this.screenBackgroundManager.registerEventListener(
+            ...this.screenFullTextManager.registerEventListener(
                 ['update'], () => {
-                    if (this.screenBackgroundManager.isShowing) {
+                    if (this.screenFullTextManager.isShowing) {
                         this.screenSlideManager.clear();
                     }
                 },
-            ),
+            )
         );
     }
 
@@ -88,8 +88,6 @@ export default class ScreenManager extends ScreenManagerBase {
         this.screenFullTextManager.delete();
         this.screenAlertManager.delete();
         deleteScreenManagerBaseCache(this.key);
-        await saveScreenManagersSetting(this.screenId);
-        this.fireInstanceEvent();
     }
 
     receiveScreenDropped(droppedData: DroppedDataType) {
@@ -110,4 +108,141 @@ export default class ScreenManager extends ScreenManagerBase {
             log(droppedData);
         }
     }
+
+
+    static getSyncGroupScreenEventHandler(message: ScreenMessageType) {
+        const { type } = message;
+        if (type === 'background') {
+            return ScreenBackgroundManager;
+        } else if (type === 'slide') {
+            return ScreenSlideManager;
+        } else if (type === 'full-text') {
+            return ScreenFullTextManager;
+        } else if (type === 'alert') {
+            return ScreenAlertManager;
+        }
+        return null;
+    }
+
+    static applyScreenManagerSyncScreen(message: ScreenMessageType) {
+        const ScreenHandler = this.getSyncGroupScreenEventHandler(message);
+        if (ScreenHandler !== null) {
+            return ScreenHandler.receiveSyncScreen(message);
+        }
+        const { type, data, screenId } = message;
+        const screenManagerBase = getScreenManagerBase(screenId);
+        if (screenManagerBase === null) {
+            return;
+        }
+        if (type === 'init') {
+            screenManagerBase.sendSyncScreen();
+        } else if (type === 'visible') {
+            screenManagerBase.isShowing = data?.isShowing;
+        } else if (type === 'effect') {
+            ScreenEffectManager.receiveSyncScreen(message);
+        } else if (type === 'full-text-scroll') {
+            ScreenFullTextManager.receiveSyncScroll(message);
+        } else if (type === 'full-text-selected-index') {
+            ScreenFullTextManager.receiveSyncSelectedIndex(message);
+        } else if (type === 'full-text-text-style') {
+            ScreenFullTextManager.receiveSyncTextStyle(message);
+        } else {
+            log(message);
+        }
+    }
+
+    static initReceiveScreenMessage() {
+        const messageUtils = appProviderScreen.messageUtils;
+        const channel = messageUtils.channels.screenMessageChannel;
+        messageUtils.listenForData(channel, (_, message: ScreenMessageType) => {
+            this.applyScreenManagerSyncScreen(message);
+        });
+    }
+
+    static async getAllScreenManagersByColorNote(
+        colorNote: string | null, excludeScreenIds: number[] = [],
+    ): Promise<ScreenManagerBase[]> {
+        if (colorNote === null) {
+            return [];
+        }
+        const allScreenManagers = getAllScreenManagerBases();
+        const instances: ScreenManagerBase[] = [];
+        for (const screenManager of allScreenManagers) {
+            if (excludeScreenIds.includes(screenManager.screenId)) {
+                continue;
+            }
+            const note = await screenManager.getColorNote();
+            if (note === colorNote) {
+                instances.push(screenManager);
+            }
+        }
+        return instances;
+    }
+
+    static async syncScreenManagerGroup(message: ScreenMessageType) {
+        const currentScreenManager = getScreenManagerBase(
+            message.screenId,
+        );
+        if (currentScreenManager === null || currentScreenManager.isDeleted) {
+            return;
+        }
+        const colorNote = await currentScreenManager.getColorNote();
+        const screenManagers = await this.getAllScreenManagersByColorNote(
+            colorNote, [currentScreenManager.screenId],
+        );
+        screenManagers.forEach((screenManagerBase) => {
+            const newMessage: ScreenMessageType = {
+                ...message,
+                screenId: screenManagerBase.screenId,
+            };
+            const ScreenHandler = this.getSyncGroupScreenEventHandler(
+                newMessage,
+            );
+            if (ScreenHandler !== null) {
+                if (!currentScreenManager.checkIsSyncGroupEnabled(
+                    ScreenHandler,
+                )) {
+                    return;
+                }
+                screenManagerBase.noSyncGroupMap.set(
+                    ScreenHandler.eventNamePrefix, true,
+                );
+                ScreenHandler.receiveSyncScreen(newMessage);
+            }
+        });
+    }
+
+    sendScreenMessage(
+        message: ScreenMessageType, isForce?: boolean,
+    ) {
+        if (appProviderScreen.isScreen && !isForce) {
+            return;
+        }
+        const messageUtils = appProviderScreen.messageUtils;
+        const channel = messageUtils.channels.screenMessageChannel;
+        const isSent = messageUtils.sendDataSync(channel, {
+            ...message,
+            isScreen: appProviderScreen.isScreen,
+        });
+        console.assert(isSent, JSON.stringify({ channel, message }));
+        ScreenManager.syncScreenManagerGroup(message);
+    }
+
+    createScreenManagerBaseGhost(screenId: number) {
+        const ghostScreenManager = new ScreenManager(screenId);
+        ghostScreenManager.isDeleted = true;
+        return ghostScreenManager;
+    }
+
+    getScreenManagerBaseForce(screenId: number) {
+        const screenManagerBase = getScreenManagerBase(screenId);
+        if (
+            screenManagerBase === null ||
+            !(screenManagerBase instanceof ScreenManager)
+        ) {
+            return this.createScreenManagerBaseGhost(screenId);
+        }
+        return screenManagerBase;
+    }
+
 }

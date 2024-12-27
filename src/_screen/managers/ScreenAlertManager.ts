@@ -13,9 +13,6 @@ import { screenManagerSettingNames } from '../../helper/constants';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
-import {
-    chooseScreenManagers, getScreenManagerForce,
-} from './screenManagerHelpers';
 
 export type ScreenAlertEventType = 'update';
 
@@ -157,11 +154,9 @@ export default class ScreenAlertManager
             callback(screenAlertManager);
             screenAlertManager.saveAlertData();
         };
-        const chosenScreenManagers = await chooseScreenManagers(
-            event, isForceChoosing,
-        );
-        chosenScreenManagers.forEach((screenManagerBase) => {
-            callbackSave(screenManagerBase.screenAlertManager);
+        const screenIds = await this.chooseScreenIds(event, isForceChoosing);
+        screenIds.forEach((screenId) => {
+            callbackSave(this.getInstance(screenId));
         });
     }
 
@@ -232,7 +227,7 @@ export default class ScreenAlertManager
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const { screenAlertManager } = getScreenManagerForce(screenId);
+        const screenAlertManager = this.getInstance(screenId);
         screenAlertManager.receiveSyncScreen(message);
     }
 
@@ -245,4 +240,9 @@ export default class ScreenAlertManager
         this.setMarqueeData(null);
         this.saveAlertData();
     }
+
+    static getInstance(screenId: number) {
+        return super.getInstanceBase<ScreenAlertManager>(screenId);
+    }
+
 }

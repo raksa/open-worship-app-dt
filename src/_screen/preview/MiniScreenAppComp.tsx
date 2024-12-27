@@ -4,9 +4,10 @@ import ScreenSlideComp from '../ScreenSlideComp';
 import ScreenFullTextComp from '../ScreenFullTextComp';
 import { RendStyle } from '../RenderTransitionEffectComp';
 import {
-    getScreenManagerBase, ScreenManagerBaseContext,
+    getScreenManagerBase,
 } from '../managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../managers/screenManagerHelpers';
+import { ScreenManagerBaseContext } from '../managers/screenManagerHooks';
 
 const IMAGE_BACKGROUND = (
     `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
