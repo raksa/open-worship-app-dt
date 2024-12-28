@@ -39,9 +39,14 @@ export default function SettingComp() {
                         setActiveTab={setTabType} />
                 </div>
                 <div className='setting-body flex-fill'>
-                    {tabTypeList.map(([type, _, target]) => {
-                        return genTabBody<TabType>(tabType, [type, target]);
-                    })}
+                    <div style={{
+                        margin: 'auto',
+                        maxWidth: '600px',
+                    }}>
+                        {tabTypeList.map(([type, _, target]) => {
+                            return genTabBody<TabType>(tabType, [type, target]);
+                        })}
+                    </div>
                 </div>
             </div>
             <div style={{

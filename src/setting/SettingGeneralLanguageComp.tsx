@@ -2,9 +2,7 @@ import { useState } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    getAllLangsAsync,
-    getCurrentLocale,
-    getLang, LanguageType, setCurrentLocale,
+    getAllLangsAsync, getCurrentLocale, getLang, LanguageType, setCurrentLocale,
 } from '../lang';
 import appProvider from '../server/appProvider';
 
@@ -39,18 +37,22 @@ export default function SettingGeneralLanguageComp() {
                 {isSelecting &&
                     <div className='options d-flex flex-wrap'>
                         {allLangs.map((lang) => {
-                            const btnType = lang.locale === currentLocale ?
-                                'btn-info' : 'btn-outline-info';
+                            const btnType = (
+                                lang.locale === currentLocale ?
+                                    'btn-info' : 'btn-outline-info'
+                            );
                             return (
                                 <button key={lang.locale}
                                     onClick={() => {
                                         setCurrentLocale(lang.locale);
                                         appProvider.reload();
                                     }} className={`item btn ${btnType}`}>
-                                    {lang.name} <div className='icon'
+                                    {lang.name}
+                                    <div className='icon'
                                         dangerouslySetInnerHTML={{
                                             __html: lang.flagSVG,
-                                        }} />
+                                        }}
+                                    />
                                 </button>
                             );
                         })}
