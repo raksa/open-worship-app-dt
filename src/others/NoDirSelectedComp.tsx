@@ -2,7 +2,7 @@ import DirSource from '../helper/DirSource';
 import { selectDefaultDataDirName } from '../helper/tourHelpers';
 
 
-export default function NoDirSelected({
+export default function NoDirSelectedComp({
     dirSource, defaultFolderName,
 }: Readonly<{
     dirSource: DirSource, defaultFolderName: string,

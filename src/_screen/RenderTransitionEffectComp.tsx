@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
 import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType, transitionEffect, usePTEEvents,

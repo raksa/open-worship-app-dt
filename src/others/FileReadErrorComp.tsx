@@ -1,4 +1,4 @@
-export default function ItemReadError({
+export default function FileReadErrorComp({
     onContextMenu,
 }: Readonly<{
     onContextMenu?: (event: any) => void,
@@ -6,8 +6,10 @@ export default function ItemReadError({
     return (
         <div className='card pointer'
             onContextMenu={onContextMenu} >
-            <div className='card-header'>
-                Item data error
+            <div className='card-body'>
+                <div className='alert alert-danger'>
+                    Fail to read file data
+                </div>
             </div>
         </div>
     );

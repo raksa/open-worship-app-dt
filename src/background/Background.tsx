@@ -6,9 +6,9 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import TabRender, {
+import TabRenderComp, {
     genTabBody,
-} from '../others/TabRender';
+} from '../others/TabRenderComp';
 import {
     useScreenBackgroundManagerEvents,
 } from '../_screen/managers/screenEventHelpers';
@@ -60,7 +60,7 @@ export default function Background() {
     return (
         <div className='background w-100 d-flex flex-column'>
             <div className='background-header d-flex'>
-                <TabRender<TabType>
+                <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name, toHLS(type)];
                     })}

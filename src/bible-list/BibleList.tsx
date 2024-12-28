@@ -1,6 +1,6 @@
 import './BibleList.scss';
 
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
@@ -34,7 +34,7 @@ export default function BibleList() {
             defaultDataDirNames.BIBLE_PRESENT
     );
     return (
-        <FileListHandler id={`${settingPrefix}bible-list`}
+        <FileListHandlerComp id={`${settingPrefix}bible-list`}
             mimetypeName='bible'
             defaultFolderName={defaultDataDirName}
             dirSource={dirSource}

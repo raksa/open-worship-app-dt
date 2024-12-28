@@ -2,15 +2,15 @@ import {
     createContext, lazy, useState,
 } from 'react';
 
-import PathSelector from '../others/PathSelector';
+import PathSelectorComp from './PathSelectorComp';
 import {
     MimetypeNameType, fsCheckDirExist,
 } from '../server/fileHelpers';
 import {
     ContextMenuItemType,
-} from './AppContextMenu';
+} from './AppContextMenuComp';
 import FileSource from '../helper/FileSource';
-import RenderList from './RenderList';
+import RenderListComp from './RenderListComp';
 import DirSource from '../helper/DirSource';
 import {
     genOnDragOver, genOnDragLeave, genOnDrop, genOnContextMenu,
@@ -20,10 +20,10 @@ import {
 import appProvider from '../server/appProvider';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { handleError } from '../helper/errorHelpers';
-import NoDirSelected from './NoDirSelected';
+import NoDirSelectedComp from './NoDirSelectedComp';
 
 const LazyAskingNewName = lazy(() => {
-    return import('./AskingNewName');
+    return import('./AskingNewNameComp');
 });
 
 async function watch(dirSource: DirSource, signal: AbortSignal) {
@@ -51,7 +51,7 @@ export const DirSourceContext = createContext<DirSource | null>(null);
 
 export type FileListType = FileSource[] | null | undefined
 
-export default function FileListHandler({
+export default function FileListHandlerComp({
     id, mimetypeName, dirSource, header, bodyHandler, contextMenu, onNewFile,
     checkExtraFile, takeDroppedFile, userClassName, defaultFolderName,
     fileSelectionOption,
@@ -120,12 +120,12 @@ export default function FileListHandler({
                     onContextMenu={genOnContextMenu(
                         contextMenu, handleItemsAdding,
                     )}>
-                    <PathSelector prefix={`path-${id}`}
+                    <PathSelectorComp prefix={`path-${id}`}
                         dirSource={dirSource}
                         addItems={handleItemsAdding}
                     />
                     {!dirSource.dirPath ?
-                        <NoDirSelected dirSource={dirSource}
+                        <NoDirSelectedComp dirSource={dirSource}
                             defaultFolderName={defaultFolderName}
                         /> :
                         (
@@ -135,7 +135,7 @@ export default function FileListHandler({
                                         applyName={handleNameApplying}
                                     />
                                 )}
-                                <RenderList dirSource={dirSource}
+                                <RenderListComp dirSource={dirSource}
                                     bodyHandler={bodyHandler}
                                     mimetypeName={mimetypeName}
                                 />

@@ -11,7 +11,7 @@ import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     ContextMenuItemType, genContextMenuItemShortcutKey,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { showBibleOption } from '../bible-search/BibleSelection';
 import {
     genFoundBibleItemContextMenu,

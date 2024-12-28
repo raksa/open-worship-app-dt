@@ -2,7 +2,7 @@ import './BibleSelection.scss';
 
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import {
     useDownloadedBibleInfoList,
 } from '../setting/bible-setting/bibleSettingHelpers';

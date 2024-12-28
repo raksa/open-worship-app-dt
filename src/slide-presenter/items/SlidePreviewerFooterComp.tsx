@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { PathPreviewer } from '../../others/PathPreviewer';
+import { PathPreviewerComp } from '../../others/PathPreviewerComp';
 import {
     useSelectedSlideContext, useSelectedSlideSetterContext,
 } from '../../slide-list/Slide';
@@ -12,7 +12,7 @@ import {
     useScreenSlideManagerEvents,
 } from '../../_screen/managers/screenEventHelpers';
 import { genSlideItemIds, getPresenterIndex } from './slideItemHelpers';
-import AppRange from '../../others/AppRange';
+import AppRangeComp from '../../others/AppRangeComp';
 import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
@@ -76,12 +76,12 @@ export default function SlidePreviewerFooterComp() {
         <div className='card-footer w-100'>
             <div className='d-flex w-100 h-100'>
                 <div className='flex-item'>
-                    <AppRange value={thumbnailSizeScale}
+                    <AppRangeComp value={thumbnailSizeScale}
                         title='SlideItem Thumbnail Size Scale'
                         setValue={setThumbnailSizeScale}
                         defaultSize={defaultRangeSize}
                     />
-                    <PathPreviewer
+                    <PathPreviewerComp
                         dirPath={selectedSlide.filePath}
                         isShowingNameOnly
                         onClick={handleSlideChoosing}

@@ -1,10 +1,10 @@
 import { LazyExoticComponent } from 'react';
 
 import { tran } from '../lang';
-import AppSuspense from './AppSuspense';
+import AppSuspenseComp from './AppSuspenseComp';
 
 export type TabHeaderPropsType<T> = [T, string, string?];
-export default function TabRender<T extends string>({
+export default function TabRenderComp<T extends string>({
     tabs, activeTab, setActiveTab, className,
 }: Readonly<{
     tabs: TabHeaderPropsType<T>[],
@@ -35,10 +35,10 @@ export function genTabBody<T>(
     [tabTab, Element]: [T, LazyExoticComponent<() => React.ReactNode | null>],
 ) {
     return (
-        <AppSuspense key={`tab-${tabTab}`}>
+        <AppSuspenseComp key={`tab-${tabTab}`}>
             {selectedTabTab === tabTab ? (
                 <Element />
             ) : null}
-        </AppSuspense>
+        </AppSuspenseComp>
     );
 }

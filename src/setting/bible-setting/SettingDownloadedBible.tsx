@@ -1,7 +1,7 @@
 import DownloadedBibleItem from './DownloadedBibleItem';
 import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItem from './OnlineBibleItem';
-import LoadingComp from '../../others/LoadingComp';
+import LoadingCompComp from '../../others/LoadingCompComp';
 
 type BibleInfoType = {
     isUpdatable: boolean;
@@ -21,7 +21,7 @@ export default function SettingDownloadedBible({
 }>) {
     if (downloadedBibleInfoList === null) {
         return (
-            <LoadingComp />
+            <LoadingCompComp />
         );
     }
     if (downloadedBibleInfoList === undefined) {

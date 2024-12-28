@@ -6,7 +6,7 @@ import DisplayControl from './DisplayControl';
 import ScreenEffectControlComp from './ScreenEffectControlComp';
 import { handleDrop } from '../../helper/dragHelpers';
 import { openContextMenu } from './screenPreviewerHelpers';
-import ItemColorNote from '../../others/ItemColorNote';
+import ItemColorNoteComp from '../../others/ItemColorNoteComp';
 import {
     useScreenManagerBaseContext, useScreenManagerContext,
 } from '../managers/screenManagerHooks';
@@ -25,7 +25,7 @@ function ScreenPreviewerHeaderComp() {
                     <ShowHideScreen />
                     <MiniScreenClearControlComp />
                     <div className='ms-2'>
-                        <ItemColorNote item={screenManagerBase} />
+                        <ItemColorNoteComp item={screenManagerBase} />
                     </div>
                 </div>
                 <div className='flex-fill d-flex justify-content-end ms-2'>

@@ -4,7 +4,7 @@ import { isValidJson } from '../../helper/helpers';
 import { getSetting } from '../../helper/settingHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../../others/AppContextMenu';
+} from '../../others/AppContextMenuComp';
 import SlideItem from '../../slide-list/SlideItem';
 import ScreenManager from '../managers/ScreenManager';
 import {

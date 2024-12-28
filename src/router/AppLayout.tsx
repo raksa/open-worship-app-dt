@@ -4,13 +4,13 @@ import {
     TabOptionType, editorTab, goToPath, presenterTab, readerTab,
 } from './routeHelpers';
 import {
-    BibleSearchButton, BibleSearchShowingContext, SettingButton,
+    BibleSearchButtonComp, BibleSearchShowingContext, SettingButtonComp,
 } from '../others/commonButtons';
 import { tran } from '../lang';
 import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindows from '../app-modal/AppPopupWindows';
-import AppContextMenu from '../others/AppContextMenu';
+import AppContextMenuComp from '../others/AppContextMenuComp';
 import HandleAlert from '../alert/HandleAlert';
 import Toast from '../toast/Toast';
 import Slide, {
@@ -145,10 +145,10 @@ export default function AppLayout({ children }: Readonly<{
                     'highlight-border-bottom d-flex' +
                     ' justify-content-center flex-fill'
                 }>
-                    <BibleSearchButton />
+                    <BibleSearchButtonComp />
                 </div>
                 <div className='highlight-border-bottom'>
-                    <SettingButton />
+                    <SettingButtonComp />
                 </div>
             </div >
             <div id='app-body' className='app-border-white-round'>
@@ -156,7 +156,7 @@ export default function AppLayout({ children }: Readonly<{
             </div>
             <TopProgressBarComp />
             <Toast />
-            <AppContextMenu />
+            <AppContextMenuComp />
             <HandleAlert />
             <AppPopupWindows />
         </MultiContextRender >

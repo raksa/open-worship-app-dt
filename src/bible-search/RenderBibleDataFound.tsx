@@ -5,7 +5,7 @@ import RenderActionButtons, {
 import {
     BibleViewText, RenderTitleMaterial,
 } from '../bible-reader/BibleViewExtra';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
 import {
     genDefaultBibleItemContextMenu,
 } from '../bible-list/bibleItemHelpers';

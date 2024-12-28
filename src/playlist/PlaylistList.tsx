@@ -1,7 +1,7 @@
 import './PlaylistList.scss';
 
 import PlaylistFile from './PlaylistFile';
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import Playlist from './Playlist';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
@@ -25,7 +25,7 @@ export default function PlaylistList() {
         return null;
     }
     return (
-        <FileListHandler id='playlist-list'
+        <FileListHandlerComp id='playlist-list'
             mimetypeName='playlist'
             defaultFolderName={defaultDataDirNames.PLAYLIST}
             dirSource={dirSource}

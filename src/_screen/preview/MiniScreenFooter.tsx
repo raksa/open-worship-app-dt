@@ -1,4 +1,4 @@
-import AppRange from '../../others/AppRange';
+import AppRangeComp from '../../others/AppRangeComp';
 
 export const defaultRangeSize = {
     size: 1, min: 1, max: 20, step: 1,
@@ -16,7 +16,7 @@ export default function MiniScreenFooter({
             <div className='d-flex w-100 h-100'>
                 <div className='row'>
                     <div className='col-auto'>
-                        <AppRange value={previewSizeScale}
+                        <AppRangeComp value={previewSizeScale}
                             title='Preview Size Scale'
                             setValue={setPreviewSizeScale}
                             defaultSize={defaultRangeSize}

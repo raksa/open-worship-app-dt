@@ -1,4 +1,4 @@
-import { showAppContextMenu } from '../../../others/AppContextMenu';
+import { showAppContextMenu } from '../../../others/AppContextMenuComp';
 import appProvider from '../../../server/appProvider';
 import { useCanvasControllerContext } from '../CanvasController';
 import { useCanvasItemContext } from '../CanvasItem';

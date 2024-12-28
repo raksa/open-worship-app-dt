@@ -4,11 +4,11 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelpers';
-import LoadingComp from './LoadingComp';
+import LoadingCompComp from './LoadingCompComp';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
-export default function RenderList({
+export default function RenderListComp({
     dirSource, mimetypeName, bodyHandler,
 }: Readonly<{
     dirSource: DirSource,
@@ -47,7 +47,7 @@ export default function RenderList({
     }
     if (filePaths === null) {
         return (
-            <LoadingComp />
+            <LoadingCompComp />
         );
 
     }

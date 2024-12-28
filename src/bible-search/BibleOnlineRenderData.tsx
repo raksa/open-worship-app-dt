@@ -1,7 +1,7 @@
 import { genBookMatches } from '../helper/bible-helpers/serverBibleHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     calcPaging, BibleSearchOnlineType, pageNumberToReqData, SelectedBookKeyType,

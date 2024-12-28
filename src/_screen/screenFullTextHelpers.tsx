@@ -1,7 +1,7 @@
 import BibleItem from '../bible-list/BibleItem';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import {
     BibleItemRenderedType,
 } from './fullTextScreenComps';

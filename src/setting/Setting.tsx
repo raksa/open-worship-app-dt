@@ -3,8 +3,8 @@ import './Setting.scss';
 import { lazy } from 'react';
 
 import { useStateSettingString } from '../helper/settingHelpers';
-import TabRender, { genTabBody } from '../others/TabRender';
-import { QuickOrBackButton } from '../others/commonButtons';
+import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
+import { QuickOrBackButtonComp } from '../others/commonButtons';
 
 const LazySettingGeneral = lazy(() => {
     return import('./SettingGeneral');
@@ -31,7 +31,7 @@ export default function Setting() {
             className='shadow card w-100 h-100 overflow-hidden'>
             <div className='card-body d-flex flex-column'>
                 <div className='setting-header d-flex'>
-                    <TabRender<TabType>
+                    <TabRenderComp<TabType>
                         tabs={tabTypeList.map(([type, name]) => {
                             return [type, name];
                         })}
@@ -49,7 +49,7 @@ export default function Setting() {
                 top: 0,
                 right: 0,
             }}>
-                <QuickOrBackButton title='Quit Setting' />
+                <QuickOrBackButtonComp title='Quit Setting' />
             </div>
         </div>
     );

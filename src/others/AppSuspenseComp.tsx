@@ -1,12 +1,12 @@
 import { ReactNode, Suspense } from 'react';
-import LoadingComp from './LoadingComp';
+import LoadingCompComp from './LoadingCompComp';
 
-export default function AppSuspense({ children }: Readonly<{
+export default function AppSuspenseComp({ children }: Readonly<{
     children: ReactNode,
 }>) {
     return (
         <Suspense fallback={(
-            <LoadingComp />
+            <LoadingCompComp />
         )}>
             {children}
         </Suspense>

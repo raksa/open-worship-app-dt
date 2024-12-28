@@ -2,7 +2,7 @@ import { selectFiles } from '../../server/appHelpers';
 import {
     getMimetypeExtensions, isSupportedMimetype,
 } from '../../server/fileHelpers';
-import { showAppContextMenu } from '../../others/AppContextMenu';
+import { showAppContextMenu } from '../../others/AppContextMenuComp';
 import CanvasItem from './CanvasItem';
 import CanvasController from './CanvasController';
 import { showSimpleToast } from '../../toast/toastHelpers';

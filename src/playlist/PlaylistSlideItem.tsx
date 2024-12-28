@@ -1,4 +1,4 @@
-import FileReadError from '../others/FileReadError';
+import FileReadErrorComp from '../others/FileReadErrorComp';
 import PlaylistItem from './PlaylistItem';
 import SlideItemRendererHtml
     from '../slide-presenter/items/SlideItemRendererHtml';
@@ -11,7 +11,7 @@ export default function PlaylistSlideItem({ playlistItem }: Readonly<{
     const item = null;
     if (item === null) {
         return (
-            <FileReadError />
+            <FileReadErrorComp />
         );
     }
     return (

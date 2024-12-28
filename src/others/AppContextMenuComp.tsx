@@ -1,4 +1,4 @@
-import './AppContextMenu.scss';
+import './AppContextMenuComp.scss';
 
 import { ReactElement, useState } from 'react';
 
@@ -91,7 +91,7 @@ export function showAppContextMenu(
     });
 }
 
-export default function AppContextMenu() {
+export default function AppContextMenuComp() {
     const [data, setData] = useState<{
         event: MouseEvent,
         items: ContextMenuItemType[]
@@ -127,7 +127,7 @@ export default function AppContextMenu() {
             }} className='app-context-menu'>
                 {data.items.map((item) => {
                     return (
-                        <ContextMenuItem key={item.menuTitle}
+                        <ContextMenuItemComp key={item.menuTitle}
                             item={item}
                         />
                     );
@@ -137,7 +137,7 @@ export default function AppContextMenu() {
     );
 }
 
-function ContextMenuItem({ item }: Readonly<{
+function ContextMenuItemComp({ item }: Readonly<{
     item: ContextMenuItemType,
 }>) {
     return (

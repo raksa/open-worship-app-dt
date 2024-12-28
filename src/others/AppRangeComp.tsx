@@ -37,7 +37,7 @@ export function handleCtrlWheel({
     setValue(newValue);
 }
 
-export default function AppRange({
+export default function AppRangeComp({
     value, title, id, setValue, defaultSize, isShowValue,
 }: Readonly<{
     value: number,

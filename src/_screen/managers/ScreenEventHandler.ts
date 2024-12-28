@@ -1,7 +1,7 @@
 import EventHandler from '../../event/EventHandler';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../../others/AppContextMenu';
+} from '../../others/AppContextMenuComp';
 import appProvider from '../../server/appProvider';
 import { BasicScreenMessageType, ScreenMessageType } from '../screenHelpers';
 import ScreenManagerBase from './ScreenManagerBase';

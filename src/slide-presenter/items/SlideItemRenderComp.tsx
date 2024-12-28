@@ -1,6 +1,6 @@
 import './SlideItemRenderComp.scss';
 
-import { ContextMenuEventType } from '../../others/AppContextMenu';
+import { ContextMenuEventType } from '../../others/AppContextMenuComp';
 import SlideItem, {
     SelectedEditingSlideItemContext,
 } from '../../slide-list/SlideItem';

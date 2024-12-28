@@ -1,9 +1,9 @@
-import { ContextMenuItemType, showAppContextMenu } from '../AppContextMenu';
+import { ContextMenuItemType, showAppContextMenu } from '../AppContextMenuComp';
 import { copyToClipboard } from '../../server/appHelpers';
 import {
     AppColorType, serializeForDragging,
 } from './colorHelpers';
-import { genShowOnScreensContextMenu } from '../FileItemHandler';
+import { genShowOnScreensContextMenu } from '../FileItemHandlerComp';
 import ScreenBackgroundManager from
     '../../_screen/managers/ScreenBackgroundManager';
 

@@ -1,8 +1,8 @@
-import AskingNewName from './AskingNewName';
+import AskingNewNameComp from './AskingNewNameComp';
 import FileSource from '../helper/FileSource';
 
 
-export default function RenderRenaming({
+export default function RenderRenamingComp({
     setIsRenaming, filePath,
 }: Readonly<{
     setIsRenaming: (value: boolean) => void,
@@ -18,6 +18,6 @@ export default function RenderRenaming({
         setIsRenaming(!isSuccess);
     };
     const fileSource = FileSource.getInstance(filePath);
-    return <AskingNewName defaultName={fileSource.name}
+    return <AskingNewNameComp defaultName={fileSource.name}
         applyName={handleNameApplying} />;
 }

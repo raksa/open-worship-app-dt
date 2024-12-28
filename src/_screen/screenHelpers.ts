@@ -6,7 +6,7 @@ import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
-import { createMouseEvent } from '../others/AppContextMenu';
+import { createMouseEvent } from '../others/AppContextMenuComp';
 import { SlideItemType } from '../slide-list/SlideItem';
 import appProviderScreen from './appProviderScreen';
 import {

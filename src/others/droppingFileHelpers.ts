@@ -3,7 +3,7 @@ import {
 } from '../server/fileHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from './AppContextMenu';
+} from './AppContextMenuComp';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';

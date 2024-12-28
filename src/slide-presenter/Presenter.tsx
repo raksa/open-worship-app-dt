@@ -11,7 +11,7 @@ import {
 import {
     getSetting, useStateSettingString,
 } from '../helper/settingHelpers';
-import TabRender, { genTabBody } from '../others/TabRender';
+import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 
 const LazySlidePreviewer = lazy(() => {
     return import('./items/SlidePreviewer');
@@ -49,7 +49,7 @@ export default function Presenter() {
     useSlideItemSelecting(() => setTabType('s'));
     return (
         <div id='presenter-manager' className='w-100 h-100'>
-            <TabRender<TabType>
+            <TabRenderComp<TabType>
                 tabs={tabTypeList.map(([type, name]) => {
                     return [type, name];
                 })}

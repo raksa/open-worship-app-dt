@@ -1,8 +1,8 @@
-import { showAppContextMenu } from '../others/AppContextMenu';
-import FileListHandler from '../others/FileListHandler';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import {
     genCommonMenu, genShowOnScreensContextMenu, genTrashContextMenu,
-} from '../others/FileItemHandler';
+} from '../others/FileItemHandlerComp';
 import ScreenBackgroundManager from
     '../_screen/managers/ScreenBackgroundManager';
 import {
@@ -10,7 +10,7 @@ import {
 } from '../_screen/managers/screenEventHelpers';
 import FileSource from '../helper/FileSource';
 import { DragTypeEnum } from '../helper/DragInf';
-import ItemColorNote from '../others/ItemColorNote';
+import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import { handleDragStart } from '../helper/dragHelpers';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
@@ -56,7 +56,7 @@ export default function BackgroundMedia({
         return null;
     }
     return (
-        <FileListHandler id={`app-background-${backgroundType}`}
+        <FileListHandlerComp id={`app-background-${backgroundType}`}
             mimetypeName={backgroundType}
             defaultFolderName={defaultFolderName}
             dirSource={dirSource}
@@ -125,7 +125,7 @@ function genBody(
                 position: 'absolute',
                 right: 0,
             }}>
-                <ItemColorNote item={fileSource} />
+                <ItemColorNoteComp item={fileSource} />
             </div>
             {isNameOnTop ? null : (
                 <FileFullNameRenderer fileFullName={fileSource.fileFullName} />

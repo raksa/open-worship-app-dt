@@ -5,9 +5,9 @@ import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
 } from '../../helper/settingHelpers';
-import { showAppContextMenu } from '../../others/AppContextMenu';
+import { showAppContextMenu } from '../../others/AppContextMenuComp';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
-import { handleCtrlWheel } from '../../others/AppRange';
+import { handleCtrlWheel } from '../../others/AppRangeComp';
 import {
     genNewScreenManagerBase, getAllScreenManagers, getScreenManagersFromSetting,
 } from '../managers/screenManagerHelpers';

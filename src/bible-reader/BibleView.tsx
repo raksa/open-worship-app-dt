@@ -3,7 +3,7 @@ import './BibleView.scss';
 import BibleItem from '../bible-list/BibleItem';
 import {
     showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import {
     useBibleItemViewControllerContext,
 } from './BibleItemViewController';

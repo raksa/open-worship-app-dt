@@ -3,12 +3,12 @@ import './SlideItemEditorToolsComp.scss';
 import { lazy } from 'react';
 
 import { useStateSettingString } from '../../../helper/settingHelpers';
-import TabRender, { genTabBody } from '../../../others/TabRender';
+import TabRenderComp, { genTabBody } from '../../../others/TabRenderComp';
 import { useCanvasControllerContext } from '../CanvasController';
 import {
     useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
-import AppRange from '../../../others/AppRange';
+import AppRangeComp from '../../../others/AppRangeComp';
 import SlideItemEditorPropertiesComp from './SlideItemEditorPropertiesComp';
 import { useSelectedCanvasItemsAndSetterContext } from '../CanvasItem';
 
@@ -37,7 +37,7 @@ function ScalingComp() {
             <div className='canvas-board-size-container d-flex ps-1'>
                 <span>{scale.toFixed(1)}x</span>
                 <div style={{ maxWidth: '200px' }}>
-                    <AppRange
+                    <AppRangeComp
                         value={scale}
                         title='Canvas Scale'
                         setValue={(scale) => {
@@ -69,7 +69,7 @@ export default function SlideItemEditorToolsComp() {
             'app-tools d-flex flex-column w-100 h-100 overflow-hidden'
         }>
             <div className='tools-header d-flex'>
-                <TabRender<TabType>
+                <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
                     })}

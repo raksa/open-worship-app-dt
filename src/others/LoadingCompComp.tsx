@@ -1,6 +1,6 @@
 import loading from '../assets/loading.gif';
 
-export default function LoadingComp() {
+export default function LoadingCompComp() {
     return (
         <div
             className='d-flex flex-wrap w-100 h-100'>

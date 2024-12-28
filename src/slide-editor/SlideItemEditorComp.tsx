@@ -5,7 +5,7 @@ import ResizeActor from '../resize-actor/ResizeActor';
 import CanvasController, {
     CanvasControllerContext,
 } from './canvas/CanvasController';
-import { handleCtrlWheel } from '../others/AppRange';
+import { handleCtrlWheel } from '../others/AppRangeComp';
 import { defaultRangeSize } from './canvas/tools/SlideItemEditorToolsComp';
 import {
     useSelectedEditingSlideItemContext,

@@ -1,6 +1,6 @@
 import './SlideList.scss';
 
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import SlideFile from './SlideFile';
 import Slide, {
     useSelectedSlideSetterContext,
@@ -69,7 +69,7 @@ export default function SlideList() {
         return null;
     }
     return (
-        <FileListHandler id='slide-list'
+        <FileListHandlerComp id='slide-list'
             mimetypeName='slide'
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}

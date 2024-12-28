@@ -6,7 +6,7 @@ import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import appProvider from '../server/appProvider';
 import {
     fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
@@ -24,7 +24,7 @@ import {
 } from '../progress-bar/progressBarHelpers';
 import { convertToPdf, getTempPath } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
-import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
+import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenSlideManager from '../_screen/managers/ScreenSlideManager';
 
 export const MIN_THUMBNAIL_SCALE = 1;

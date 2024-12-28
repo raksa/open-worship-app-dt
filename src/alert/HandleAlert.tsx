@@ -3,7 +3,7 @@ import { lazy, useState } from 'react';
 import {
     AlertDataType, alertManager, ConfirmDataType,
 } from './alertHelpers';
-import AppSuspense from '../others/AppSuspense';
+import AppSuspenseComp from '../others/AppSuspenseComp';
 
 const LazyAlertPopup = lazy(() => {
     return import('./AlertPopup');
@@ -30,14 +30,14 @@ export default function HandleAlert() {
     return (
         <>
             {confirmData !== null && (
-                <AppSuspense>
+                <AppSuspenseComp>
                     <LazyConfirmPopup data={confirmData} />
-                </AppSuspense>
+                </AppSuspenseComp>
             )}
             {alertData !== null && (
-                <AppSuspense>
+                <AppSuspenseComp>
                     <LazyAlertPopup data={alertData} />
-                </AppSuspense>
+                </AppSuspenseComp>
             )}
         </>
     );

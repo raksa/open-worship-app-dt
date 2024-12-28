@@ -18,7 +18,7 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
 

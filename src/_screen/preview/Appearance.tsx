@@ -4,7 +4,7 @@ import { AppColorType } from '../../others/color/colorHelpers';
 import { useScreenFullTextManagerEvents } from '../managers/screenEventHelpers';
 import ScreenFullTextManager from '../managers/ScreenFullTextManager';
 import ScreenSlideManager from '../managers/ScreenSlideManager';
-import AppRange from '../../others/AppRange';
+import AppRangeComp from '../../others/AppRangeComp';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
 export default function Appearance() {
@@ -58,7 +58,7 @@ export default function Appearance() {
                 value={color}
             />
             <div>
-                <AppRange value={fontSize}
+                <AppRangeComp value={fontSize}
                     title='Font Size'
                     setValue={setFontSizeToStyle}
                     defaultSize={{

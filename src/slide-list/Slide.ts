@@ -1,7 +1,7 @@
 import SlideItem, { SlideItemType } from './SlideItem';
 import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
 import {
     checkIsPdf, openSlideContextMenu, SlideDynamicType,
 } from './slideHelpers';

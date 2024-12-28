@@ -1,9 +1,9 @@
 import Bible from './Bible';
 import BibleItem from './BibleItem';
-import ItemReadError from '../others/ItemReadError';
+import ItemReadErrorComp from '../others/ItemReadErrorComp';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { handleDragStart } from '../helper/dragHelpers';
-import ItemColorNote from '../others/ItemColorNote';
+import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
@@ -68,7 +68,7 @@ export default function BibleItemRender({
 
     if (bibleItem.isError) {
         return (
-            <ItemReadError
+            <ItemReadErrorComp
                 onContextMenu={handleContextMenuOpening}
             />
         );
@@ -85,7 +85,7 @@ export default function BibleItemRender({
             onDoubleClick={handleDoubleClicking}
             onContextMenu={handleContextMenuOpening}>
             <div className='d-flex'>
-                <ItemColorNote item={bibleItem} />
+                <ItemColorNoteComp item={bibleItem} />
                 <div className='px-1'>
                     <BibleSelectionMini
                         bibleKey={bibleItem.bibleKey}

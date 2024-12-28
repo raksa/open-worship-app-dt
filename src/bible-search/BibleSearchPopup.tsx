@@ -11,7 +11,7 @@ import {
 } from '../bible-list/bibleHelpers';
 import { setSetting } from '../helper/settingHelpers';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
-import LoadingComp from '../others/LoadingComp';
+import LoadingCompComp from '../others/LoadingCompComp';
 
 export default function BibleSearchPopup() {
     const { data } = getPopupWindowTypeData();
@@ -30,7 +30,7 @@ export default function BibleSearchPopup() {
     return (
         <Modal>
             {inputText === null ? (
-                <LoadingComp />
+                <LoadingCompComp />
             ) : (
                 <RenderBibleSearch editorInputText={inputText} />
             )}

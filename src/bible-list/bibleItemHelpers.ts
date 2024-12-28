@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Bible from './Bible';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -11,7 +11,7 @@ import { AnyObjectType } from '../helper/helpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
-import { genShowOnScreensContextMenu } from '../others/FileItemHandler';
+import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 
 export type BibleItemType = {

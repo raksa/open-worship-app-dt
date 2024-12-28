@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { showSimpleToast } from '../toast/toastHelpers';
 
-export default function AskingNewName({
+export default function AskingNewNameComp({
     defaultName, applyName, customIcon,
 }: Readonly<{
     defaultName?: string,

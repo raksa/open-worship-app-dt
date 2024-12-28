@@ -3,7 +3,7 @@ import {
 } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { pathBasename } from '../server/fileHelpers';
-import { showAppContextMenu } from './AppContextMenu';
+import { showAppContextMenu } from './AppContextMenuComp';
 
 // TODO: check direction rtl error with /*
 function cleanPath(path: string) {
@@ -32,7 +32,7 @@ function openContextMenu(dirPath: string, event: any) {
     ]);
 };
 
-export function PathPreviewer({
+export function PathPreviewerComp({
     dirPath, isShowingNameOnly = false, onClick,
 }: Readonly<{
     dirPath: string,

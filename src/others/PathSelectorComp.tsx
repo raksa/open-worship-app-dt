@@ -1,17 +1,17 @@
-import './PathSelector.scss';
+import './PathSelectorComp.scss';
 
 import { lazy } from 'react';
 
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import DirSource from '../helper/DirSource';
-import AppSuspense from './AppSuspense';
-import { PathPreviewer } from './PathPreviewer';
+import AppSuspenseComp from './AppSuspenseComp';
+import { PathPreviewerComp } from './PathPreviewerComp';
 
 const LazyPathEditor = lazy(() => {
-    return import('./PathEditor');
+    return import('./PathEditorComp');
 });
 
-export default function PathSelector({
+export default function PathSelectorComp({
     dirSource, prefix, addItems,
 }: Readonly<{
     dirSource: DirSource,
@@ -39,9 +39,9 @@ export default function PathSelector({
                 )}
             </div>
             {isShowingEditor && (
-                <AppSuspense>
+                <AppSuspenseComp>
                     <LazyPathEditor dirSource={dirSource} prefix={prefix} />
-                </AppSuspense>
+                </AppSuspenseComp>
             )}
         </div>
     );
@@ -56,7 +56,7 @@ function RenderTitle({ dirSource, addItems }: Readonly<{
     }
     return (
         <>
-            <PathPreviewer dirPath={dirSource.dirPath} />
+            <PathPreviewerComp dirPath={dirSource.dirPath} />
             <div className='ps-2'
                 onClick={(event) => {
                     event.stopPropagation();

@@ -3,7 +3,7 @@ import {
 } from '../../event/SlideListEventListener';
 import SlideItemsComp from './SlideItemsComp';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
-import { handleCtrlWheel } from '../../others/AppRange';
+import { handleCtrlWheel } from '../../others/AppRangeComp';
 import { defaultRangeSize } from './SlidePreviewerFooterComp';
 import SlideItemsMenuComp from './SlideItemsMenuComp';
 import { DIV_CLASS_NAME } from './slideItemHelpers';

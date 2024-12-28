@@ -9,7 +9,7 @@ import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     genContextMenuItemShortcutKey, ContextMenuItemType,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRight';
 import {

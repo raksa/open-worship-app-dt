@@ -6,8 +6,12 @@ import {
 import { tran } from '../lang';
 import { goToPath } from '../router/routeHelpers';
 import appProvider from '../server/appProvider';
+import {
+    getDownloadedBibleInfoList,
+} from '../helper/bible-helpers/bibleDownloadHelpers';
+import { showAppConfirm } from '../alert/alertHelpers';
 
-export function QuickOrBackButton({
+export function QuickOrBackButtonComp({
     title, defaultPage = appProvider.presenterHomePage,
 }: Readonly<{
     title: string,
@@ -31,7 +35,7 @@ export function QuickOrBackButton({
     );
 }
 
-export function SettingButton() {
+export function SettingButtonComp() {
     return (
         <button className='btn btn-outline-success rotating-hover'
             title='Setting'
@@ -71,7 +75,7 @@ export function useShowBibleSearchContext(isShowing = true) {
     return context.setIsShowing.bind(null, isShowing);
 }
 
-export function BibleSearchButton() {
+export function BibleSearchButtonComp() {
     const {
         setIsShowing: setIsBibleSearchShowing,
     } = useBibleSearchShowingContext();
@@ -80,7 +84,17 @@ export function BibleSearchButton() {
             style={{ width: '220px' }}
             title={`Bible search [${toShortcutKey(openBibleEventMap)}]`}
             type='button'
-            onClick={() => {
+            onClick={async () => {
+                const infoList = await getDownloadedBibleInfoList();
+                if (!infoList?.length) {
+                    const isConfirmed = await showAppConfirm(
+                        'No Bible',
+                        'You need to download a Bible to use this feature'
+                    );
+                    if (isConfirmed) {
+                        goToPath(appProvider.settingHomePage);
+                    }
+                }
                 setIsBibleSearchShowing(true);
             }}>
             <span className='btn-label'>

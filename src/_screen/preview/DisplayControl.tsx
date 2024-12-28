@@ -1,6 +1,6 @@
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../../others/AppContextMenu';
+} from '../../others/AppContextMenuComp';
 import ScreenManagerBase from '../managers/ScreenManagerBase';
 import {
     useScreenManagerBaseContext, useScreenManagerEvents,

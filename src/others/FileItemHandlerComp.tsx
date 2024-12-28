@@ -1,9 +1,9 @@
 import { lazy, useState } from 'react';
 
-import FileReadError from './FileReadError';
+import FileReadErrorComp from './FileReadErrorComp';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from './AppContextMenuComp';
 import {
     copyToClipboard, showExplorer, trashFile,
 } from '../server/appHelpers';
@@ -12,9 +12,9 @@ import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../alert/alertHelpers';
-import ItemColorNote from './ItemColorNote';
+import ItemColorNoteComp from './ItemColorNoteComp';
 const LazyRenderRenaming = lazy(() => {
-    return import('./RenderRenaming');
+    return import('./RenderRenamingComp');
 });
 
 export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
@@ -97,7 +97,7 @@ export function genShowOnScreensContextMenu(
     ];
 }
 
-export default function FileItemHandler({
+export default function FileItemHandlerComp({
     data, reload, index, filePath, className,
     contextMenuItems, onDrop, onClick, renderChild,
     isPointer, onTrashed, isDisabledColorNote,
@@ -135,7 +135,7 @@ export default function FileItemHandler({
         return null;
     }
     if (data === undefined) {
-        return <FileReadError onContextMenu={handleContextMenuOpening} />;
+        return <FileReadErrorComp onContextMenu={handleContextMenuOpening} />;
     }
     const moreClassName = (
         `${data.isSelected ? 'active' : ''} ` + `${className ?? ''}`
@@ -187,7 +187,7 @@ export default function FileItemHandler({
                     {renderChild(data)}
                     {!isDisabledColorNote && (
                         <div className='color-note-container'>
-                            <ItemColorNote item={fileSource} />
+                            <ItemColorNoteComp item={fileSource} />
                         </div>
                     )}
                 </>

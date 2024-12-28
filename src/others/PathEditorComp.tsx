@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { selectDirs } from '../server/appHelpers';
 import DirSource from '../helper/DirSource';
 
-export default function PathEditor({ dirSource }: Readonly<{
+export default function PathEditorComp({ dirSource }: Readonly<{
     dirSource: DirSource,
     prefix: string
 }>) {

@@ -1,7 +1,7 @@
 import './LyricList.scss';
 
 import LyricFile from './LyricFile';
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import Lyric from './Lyric';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
@@ -25,7 +25,7 @@ export default function LyricList() {
         return null;
     }
     return (
-        <FileListHandler id='lyric-list'
+        <FileListHandlerComp id='lyric-list'
             mimetypeName='lyric'
             defaultFolderName={defaultDataDirNames.LYRIC}
             dirSource={dirSource}

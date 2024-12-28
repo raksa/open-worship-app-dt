@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import FileItemHandler from '../others/FileItemHandler';
+import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import Slide, { useSelectedSlideSetterContext } from './Slide';
 import ItemSource from '../helper/ItemSource';
@@ -9,7 +9,7 @@ import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { ContextMenuItemType } from '../others/AppContextMenu';
+import { ContextMenuItemType } from '../others/AppContextMenuComp';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
 import {
@@ -87,7 +87,7 @@ export default function SlideFile({
         },
     }];
     return (
-        <FileItemHandler
+        <FileItemHandlerComp
             index={index}
             data={slide}
             reload={handleReloading}

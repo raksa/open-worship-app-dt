@@ -1,16 +1,16 @@
 import { lazy, useState } from 'react';
 
-import FileItemHandler from '../others/FileItemHandler';
+import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
-import AppSuspense from '../others/AppSuspense';
+import AppSuspenseComp from '../others/AppSuspenseComp';
 import ItemSource from '../helper/ItemSource';
 import { showAppConfirm } from '../alert/alertHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
-import { ContextMenuItemType } from '../others/AppContextMenu';
+import { ContextMenuItemType } from '../others/AppContextMenuComp';
 
 const LazyRenderBibleItems = lazy(() => {
     return import('./RenderBibleItems');
@@ -80,7 +80,7 @@ export default function BibleFile({
     };
     useFileSourceEvents(['update'], handleReloading, [data], filePath);
     return (
-        <FileItemHandler
+        <FileItemHandlerComp
             index={index}
             data={data}
             reload={handleReloading}
@@ -116,9 +116,9 @@ function BiblePreview({ bible }: Readonly<{ bible: Bible }>) {
                     overflow: 'auto',
                 }}>
                 {bible.isOpened && <div className='accordion-body p-0'>
-                    <AppSuspense>
+                    <AppSuspenseComp>
                         <LazyRenderBibleItems bible={bible} />
-                    </AppSuspense>
+                    </AppSuspenseComp>
                 </div>}
             </div>
         </div>

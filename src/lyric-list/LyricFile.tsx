@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import Lyric from './Lyric';
-import FileItemHandler from '../others/FileItemHandler';
+import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import { previewingEventListener } from '../event/PreviewingEventListener';
@@ -41,7 +41,7 @@ export default function LyricFile({
         setData(null);
     }, [data], filePath);
     return (
-        <FileItemHandler
+        <FileItemHandlerComp
             index={index}
             data={data}
             reload={handleReloading}
