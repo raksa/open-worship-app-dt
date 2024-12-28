@@ -4,10 +4,11 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
     BibleJsonType, checkIsValidUrl, getInputByName, readFromFile, readFromUrl,
-    xmlToJson,
+    xmlFormatExample, xmlToJson,
 } from './bibleXMLHelpers';
 
 export default function SettingBibleXMLComp() {
+    const [isShowingExample, setIsShowingExample] = useState(false);
     const [isFileSelected, setIsFileSelected] = useState(false);
     const [urlText, setUrlText] = useState('');
     const [outputJson, setOutputJson] = useState<BibleJsonType | null>(null);
@@ -38,6 +39,13 @@ export default function SettingBibleXMLComp() {
                     return;
                 }
                 const dataJson = xmlToJson(dataText);
+                if (dataJson === null) {
+                    showSimpleToast(
+                        'Parsing XML',
+                        'Failed to parse XML data',
+                    );
+                    return;
+                }
                 setOutputJson(dataJson);
             } catch (error) {
                 showSimpleToast(
@@ -59,7 +67,27 @@ export default function SettingBibleXMLComp() {
     };
     return (
         <div className='w-100'>
-            <h3>From XML</h3>
+            <h3>
+                From XML <button
+                    title='XML format example'
+                    className={
+                        'btn btn-sm ms-2' +
+                        ` btn${isShowingExample ? '' : '-outline'}-info`
+                    }
+                    onClick={() => {
+                        setIsShowingExample(!isShowingExample);
+                    }}>
+                    <i className='bi bi-question-lg' />
+                </button>
+            </h3>
+            {!isShowingExample ? null : (
+                <div>
+                    <textarea className='form-control' style={{
+                        padding: '5px',
+                        height: '200px',
+                    }} defaultValue={xmlFormatExample} readOnly />
+                </div>
+            )}
             <form onSubmit={handleFormSubmitting}>
                 <div className='app-border-white-round p-2'>
                     {isValidUrl ? null : (
