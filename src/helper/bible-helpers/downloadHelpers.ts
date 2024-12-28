@@ -1,8 +1,10 @@
 import { handleError } from '../errorHelpers';
 import {
     fsCheckFileExist, fsDeleteFile, fsCreateWriteStream,
+    fsCreateDir, fsCheckDirExist,
 } from '../../server/fileHelpers';
 import { WriteStream } from 'node:fs';
+import appProvider from '../../server/appProvider';
 
 export const BIBLE_DOWNLOAD_TOAST_TITLE = 'Bible Download';
 
@@ -14,14 +16,15 @@ export type DownloadOptionsType = {
 export async function writeStreamToFile(
     filePath: string, options: DownloadOptionsType, response: any,
 ) {
-    if (
-        response.statusCode >= 400 || response.statusCode < 200 ||
-        response.complete
-    ) {
+    if (response.statusCode !== 200) {
         return options.onDone(new Error('Error during download'));
     }
     if (await fsCheckFileExist(filePath)) {
         await fsDeleteFile(filePath);
+    }
+    const dir = appProvider.pathUtils.dirname(filePath);
+    if (!(await fsCheckDirExist(dir))) {
+        await fsCreateDir(dir);
     }
     let writeStreamGlobal: WriteStream | null = null;
     try {

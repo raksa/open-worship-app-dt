@@ -27,6 +27,9 @@ export function httpsRequestBible(
             'x-api-key': get_api_key(),
         },
     }, (response) => {
+        if (response.statusCode === 302 && response.headers.location) {
+            return httpsRequestBible(response.headers.location, callback);
+        }
         callback(null, response);
     });
     request.on('error', (event: Error) => {

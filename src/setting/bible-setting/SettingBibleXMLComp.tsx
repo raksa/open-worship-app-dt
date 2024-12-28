@@ -110,6 +110,12 @@ function initHttpRequest(url: URL) {
             method: 'GET',
             hostname: url.hostname,
         }, (response) => {
+            if (response.statusCode === 302 && response.headers.location) {
+                initHttpRequest(new URL(response.headers.location)).then(
+                    resolve,
+                );
+                return;
+            }
             resolve(response);
         });
         request.on('error', (event: Error) => {
