@@ -1,5 +1,7 @@
 import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
-import { QuickOrBackButtonComp, SettingButtonComp } from '../others/commonButtons';
+import {
+    QuickOrBackButtonComp, SettingButtonComp,
+} from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 
 const CLOSE_ON_ADD_BIBLE_ITEM = 'close-on-add-bible-item';

@@ -9,17 +9,17 @@ import { QuickOrBackButtonComp } from '../others/commonButtons';
 const LazySettingGeneral = lazy(() => {
     return import('./SettingGeneralComp');
 });
-const LazySettingBible = lazy(() => {
+const LazySettingBibleComp = lazy(() => {
     return import('./bible-setting/SettingBibleComp');
 });
-const LazySettingAbout = lazy(() => {
+const LazySettingAboutComp = lazy(() => {
     return import('./SettingAboutComp');
 });
 
 const tabTypeList = [
     ['g', 'General', LazySettingGeneral],
-    ['b', 'Bible', LazySettingBible],
-    ['a', 'About', LazySettingAbout],
+    ['b', 'Bible', LazySettingBibleComp],
+    ['a', 'About', LazySettingAboutComp],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function SettingComp() {

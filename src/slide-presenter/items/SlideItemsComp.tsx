@@ -15,7 +15,7 @@ import SlideItem from '../../slide-list/SlideItem';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import { genPdfImagesPreview } from '../../helper/pdfHelpers';
-import LoadingCompComp from '../../others/LoadingCompComp';
+import LoadingComp from '../../others/LoadingComp';
 
 async function getSlideItems(slide: Slide) {
     if (!slide.isPdf) {
@@ -114,7 +114,7 @@ export default function SlideItemsComp() {
     );
     if (isPending) {
         return (
-            <LoadingCompComp />
+            <LoadingComp />
         );
     }
     if (slideItems === null) {

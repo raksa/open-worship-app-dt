@@ -1,15 +1,9 @@
 import appProvider from '../../server/appProvider';
-import {
-    fsCreateDir, fsReadFile, pathJoin,
-} from '../../server/fileHelpers';
+import { fsCreateDir, fsReadFile, pathJoin } from '../../server/fileHelpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../../server/appHelpers';
-import {
-    is_dev, decrypt,
-} from '../../_owa-crypto/owa_crypto';
-import {
-    getKJVChapterCount, toFileName,
-} from './serverBibleHelpers';
+import { is_dev, decrypt } from '../../_owa-crypto/owa_crypto';
+import { getKJVChapterCount, toFileName } from './serverBibleHelpers';
 import { handleError } from '../errorHelpers';
 import { IndexedDbController, ItemParamsType } from '../../db/dbHelpers';
 import {
@@ -230,7 +224,6 @@ export class BibleDataReader {
     }
 }
 export const bibleDataReader = new BibleDataReader();
-
 
 export async function getBibleInfo(bibleKey: string) {
     const info = await bibleDataReader.readBibleData(bibleKey, '_info');

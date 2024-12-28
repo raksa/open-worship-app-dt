@@ -4,7 +4,7 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
 import { MimetypeNameType } from '../server/fileHelpers';
-import LoadingCompComp from './LoadingCompComp';
+import LoadingComp from './LoadingComp';
 
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
@@ -47,7 +47,7 @@ export default function RenderListComp({
     }
     if (filePaths === null) {
         return (
-            <LoadingCompComp />
+            <LoadingComp />
         );
 
     }
