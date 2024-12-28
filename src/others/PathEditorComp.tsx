@@ -20,7 +20,7 @@ export default function PathEditorComp({ dirSource }: Readonly<{
     }
     return (
         <div className='input-group mb-3'>
-            {dirSource.dirPath &&
+            {dirSource.dirPath ? (
                 <button className='btn btn-secondary'
                     type='button'
                     onClick={() => {
@@ -28,13 +28,14 @@ export default function PathEditorComp({ dirSource }: Readonly<{
                     }}>
                     <i className='bi bi-arrow-clockwise' />
                 </button>
-            }
+            ) : null}
             <input type='text'
                 className={`form-control ${dirValidCN}`}
                 value={text}
                 onChange={(event) => {
                     handleNewTextSetting(event.target.value);
-                }} />
+                }}
+            />
             <button className='btn btn-secondary'
                 type='button'
                 onClick={() => {

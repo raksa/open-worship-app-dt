@@ -7,7 +7,7 @@ import DirSource from '../helper/DirSource';
 import AppSuspenseComp from './AppSuspenseComp';
 import { PathPreviewerComp } from './PathPreviewerComp';
 
-const LazyPathEditor = lazy(() => {
+const LazyPathEditorComp = lazy(() => {
     return import('./PathEditorComp');
 });
 
@@ -40,7 +40,7 @@ export default function PathSelectorComp({
             </div>
             {isShowingEditor && (
                 <AppSuspenseComp>
-                    <LazyPathEditor dirSource={dirSource} prefix={prefix} />
+                    <LazyPathEditorComp dirSource={dirSource} prefix={prefix} />
                 </AppSuspenseComp>
             )}
         </div>
