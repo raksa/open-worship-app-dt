@@ -3,7 +3,7 @@ import {
     useBibleItemPropsToInputText, useBibleItemRenderText,
 } from '../bible-list/bibleItemHelpers';
 
-export default function SettingAbout() {
+export default function SettingAboutComp() {
     const bookKey = 'PSA';
     const bibleItem = BibleItem.fromData('KJV', bookKey, 150, 6, 6);
     const text = useBibleItemRenderText(bibleItem);

@@ -12,7 +12,7 @@ import {
     hideProgressBard, showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
 
-export default function DownloadedBibleItem({
+export default function DownloadedBibleItemComp({
     bibleInfo, onDeleted, onUpdate,
 }: Readonly<{
     bibleInfo: BibleMinimalInfoType & { isUpdatable: boolean },

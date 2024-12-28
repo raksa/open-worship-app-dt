@@ -59,7 +59,7 @@ function useDownloadBible(
     return [downloadingProgress, startDownloadBible];
 };
 
-export default function OnlineBibleItem({
+export default function OnlineBibleItemComp({
     bibleInfo, onDownloaded,
 }: Readonly<{
     bibleInfo: BibleMinimalInfoType,

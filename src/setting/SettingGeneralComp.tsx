@@ -1,11 +1,11 @@
 import { clearWidgetSizeSetting } from '../resize-actor/flexSizeHelpers';
-import SettingGeneralLanguage from './SettingGeneralLanguage';
+import SettingGeneralLanguageComp from './SettingGeneralLanguageComp';
 import appProvider from '../server/appProvider';
 
-export default function SettingGeneral() {
+export default function SettingGeneralComp() {
     return (
         <div>
-            <SettingGeneralLanguage />
+            <SettingGeneralLanguageComp />
             <hr />
             <button className='btn btn-info'
                 onClick={() => {

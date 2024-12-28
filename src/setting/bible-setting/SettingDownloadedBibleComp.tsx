@@ -1,6 +1,6 @@
-import DownloadedBibleItem from './DownloadedBibleItem';
+import DownloadedBibleItemComp from './DownloadedBibleItemComp';
 import { BibleListType } from './bibleSettingHelpers';
-import OnlineBibleItem from './OnlineBibleItem';
+import OnlineBibleItemComp from './OnlineBibleItemComp';
 import LoadingCompComp from '../../others/LoadingCompComp';
 
 type BibleInfoType = {
@@ -12,7 +12,7 @@ type BibleInfoType = {
     version: number;
     isDownloading: boolean;
 };
-export default function SettingDownloadedBible({
+export default function SettingDownloadedBibleComp({
     onlineBibleInfoList, downloadedBibleInfoList, setDownloadedBibleInfoList,
 }: Readonly<{
     onlineBibleInfoList: BibleListType,
@@ -94,14 +94,14 @@ function RenderItem({
     };
     if (bibleInfo.isDownloading) {
         return (
-            <OnlineBibleItem key={`${index}`}
+            <OnlineBibleItemComp key={`${index}`}
                 bibleInfo={bibleInfo}
                 onDownloaded={handleDownloadedEvent}
             />
         );
     }
     return (
-        <DownloadedBibleItem key={`${index}`}
+        <DownloadedBibleItemComp key={`${index}`}
             bibleInfo={bibleInfo}
             onDeleted={handleDeleting}
             onUpdate={handleUpdating}

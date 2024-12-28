@@ -1,8 +1,8 @@
 import LoadingCompComp from '../../others/LoadingCompComp';
 import { BibleListType } from './bibleSettingHelpers';
-import OnlineBibleItem from './OnlineBibleItem';
+import OnlineBibleItemComp from './OnlineBibleItemComp';
 
-export default function SettingOnlineBible({
+export default function SettingOnlineBibleComp({
     downloadedBibleInfoList, onlineBibleInfoList, setOnlineBibleInfoList,
     setDownloadedBibleInfoList,
 }: Readonly<{
@@ -55,7 +55,7 @@ export default function SettingOnlineBible({
             <ul className='list-group d-flex flex-fill'>
                 {bibleInfoList.map((bibleInfo) => {
                     return (
-                        <OnlineBibleItem key={bibleInfo.key}
+                        <OnlineBibleItemComp key={bibleInfo.key}
                             bibleInfo={bibleInfo}
                             onDownloaded={handleDownloadedEvent}
                         />

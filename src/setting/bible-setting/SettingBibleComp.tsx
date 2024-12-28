@@ -2,10 +2,10 @@ import {
     useDownloadedBibleInfoList,
     useOnlineBibleInfoList,
 } from './bibleSettingHelpers';
-import SettingDownloadedBible from './SettingDownloadedBible';
-import SettingOnlineBible from './SettingOnlineBible';
+import SettingDownloadedBibleComp from './SettingDownloadedBibleComp';
+import SettingOnlineBibleComp from './SettingOnlineBibleComp';
 
-export default function SettingBible() {
+export default function SettingBibleComp() {
     const [
         downloadedBbInfoList,
         setDownloadedBbInfoList,
@@ -17,13 +17,13 @@ export default function SettingBible() {
     return (
         <div className='w-100'>
             <h3>Downloaded Bible List</h3>
-            <SettingDownloadedBible
+            <SettingDownloadedBibleComp
                 onlineBibleInfoList={onlineBbInfoList}
                 downloadedBibleInfoList={downloadedBbInfoList}
                 setDownloadedBibleInfoList={setDownloadedBbInfoList} />
             <hr />
             <h3>Online Bible List</h3>
-            <SettingOnlineBible
+            <SettingOnlineBibleComp
                 onlineBibleInfoList={onlineBbInfoList}
                 downloadedBibleInfoList={downloadedBbInfoList}
                 setOnlineBibleInfoList={setOnlineBbInfoList}

@@ -8,7 +8,7 @@ import {
 } from '../lang';
 import appProvider from '../server/appProvider';
 
-export default function SettingGeneralLanguage() {
+export default function SettingGeneralLanguageComp() {
     const [isSelecting, setIsSelecting] = useState(false);
     const [allLangs, setAllLangs] = useState<LanguageType[]>([]);
     const currentLocale = getCurrentLocale();

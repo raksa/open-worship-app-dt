@@ -1,11 +1,11 @@
 import HandleAlert from './alert/HandleAlert';
 import { main } from './appInitHelpers';
 import TopProgressBarComp from './progress-bar/TopProgressBarComp';
-import Setting from './setting/Setting';
+import SettingComp from './setting/SettingComp';
 import Toast from './toast/Toast';
 
 main(<>
-    <Setting />
+    <SettingComp />
     <TopProgressBarComp />
     <Toast />
     <HandleAlert />

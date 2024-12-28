@@ -1,4 +1,4 @@
-import './Setting.scss';
+import './SettingComp.scss';
 
 import { lazy } from 'react';
 
@@ -7,13 +7,13 @@ import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 import { QuickOrBackButtonComp } from '../others/commonButtons';
 
 const LazySettingGeneral = lazy(() => {
-    return import('./SettingGeneral');
+    return import('./SettingGeneralComp');
 });
 const LazySettingBible = lazy(() => {
-    return import('./bible-setting/SettingBible');
+    return import('./bible-setting/SettingBibleComp');
 });
 const LazySettingAbout = lazy(() => {
-    return import('./SettingAbout');
+    return import('./SettingAboutComp');
 });
 
 const tabTypeList = [
@@ -22,7 +22,7 @@ const tabTypeList = [
     ['a', 'About', LazySettingAbout],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
-export default function Setting() {
+export default function SettingComp() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'popup-setting-tab', 'b',
     );
