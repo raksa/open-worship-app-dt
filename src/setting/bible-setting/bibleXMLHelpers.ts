@@ -6,6 +6,7 @@ import { getUserWritablePath } from '../../server/appHelpers';
 import { fsDeleteFile, fsReadFile } from '../../server/fileHelpers';
 
 import kjvBibleInfo from '../../helper/bible-helpers/bible.json';
+import { getLocaleCode } from '../../lang';
 
 /**
 * {
@@ -52,7 +53,7 @@ export type BibleJsonType = {
 };
 
 function guessValue(
-    element: Element, keys: string[], defaultValue: string | null = 'Unknown',
+    element: Element, keys: string[], defaultValue: string | null = null,
 ) {
     for (const key of keys) {
         const value = element.getAttribute(key);
@@ -73,10 +74,11 @@ function guessElement(element: Element | Document, tags: string[]) {
 }
 
 function getBibleMap(
-    mapElement: Element, tag: string, defaultMap: { [key: string]: string },
+    mapElement: Element | null, tag: string,
+    defaultMap: { [key: string]: string },
 ) {
     const bookKeyMap: { [key: string]: string } = defaultMap;
-    const bookKeyMapElements = Array.from(
+    const bookKeyMapElements = mapElement === null ? [] : Array.from(
         guessElement(mapElement, [tag]) || [],
     );
     for (const bookKeyMapElement of bookKeyMapElements) {
@@ -90,20 +92,20 @@ function getBibleMap(
     return bookKeyMap;
 }
 
-function getBibleInfoJson(bible: Element): BibleJsonInfoType {
+function getBibleInfoJson(bible: Element): BibleJsonInfoType | null {
     const mapElement = guessElement(bible, ['map'])?.[0];
-    const numberKeyMap = (
-        !mapElement ? {} :
-            getBibleMap(mapElement, 'number',
-                Object.fromEntries(Array.from(
-                    { length: 10 }, (_, i) => [i.toString(), i.toString()],
-                ))
-            )
+    const numberKeyMap = getBibleMap(mapElement || null, 'number',
+        Object.fromEntries(Array.from(
+            { length: 10 }, (_, i) => [i.toString(), i.toString()],
+        ))
     );
-    const bookKeyMap = (
-        !mapElement ? {} :
-            getBibleMap(mapElement, 'book', kjvBibleInfo.kjvKeyValue)
+    const bookKeyMap = getBibleMap(
+        mapElement || null, 'book', kjvBibleInfo.kjvKeyValue,
     );
+    const locale = guessValue(bible, ['locale']) || 'en';
+    if (getLocaleCode(locale) === null) {
+        return null;
+    }
     return {
         title: (
             guessValue(
@@ -112,7 +114,7 @@ function getBibleInfoJson(bible: Element): BibleJsonInfoType {
         ),
         key: guessValue(bible, ['key', 'abbr']) || 'Unknown Key',
         version: parseInt(guessValue(bible, ['version']) || '1') || 1,
-        locale: guessValue(bible, ['locale']) || 'en',
+        locale,
         legalNote: (
             guessValue(bible, ['legalNote', 'status']) || 'Unknown Legal Note'
         ),
@@ -341,17 +343,25 @@ export function checkIsValidUrl(urlText: string) {
 export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
 <bible
     title="Example Bible Translation Version"
+    // [name] optional alternative to title
     name="Example Bible Translation Version"
+    // [translation] optional alternative to title
     translation="Example Bible Translation Version"
+    // "key" is important for identifying ever bible
+    //  the application will popup input key if it is not found
     key="EBTV"
+    // [abbr] optional alternative to key
     abbr="EBTV"
     version="1"
+    // e.g: for Khmer(km) locale="km"
     locale="en"
     legalNote="Example of legal note"
+    // [status] optional alternative to legalNote
     status="Example of legal note"
     publisher="Example of publisher"
     copyRights="Example copy rights">
     <map>
+        // e.g: for Khmer(km) value="លោកុ‌ប្បត្តិ" for value="GEN"
         <book key="GEN" value="GENESIS"/>
         <book key="EXO" value="EXODUS"/>
         <book key="LEV" value="LEVITICUS"/>
@@ -418,8 +428,9 @@ export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
         <book key="3JN" value="3 JOHN"/>
         <book key="JUD" value="JUDE"/>
         <book key="REV" value="REVELATION"/>
+        // e.g: for Khmer(km) value="១" for value="1"
         <number key="0" value="0"/>
-        <number key="1" value="1"/>
+        <number value="0" value="1"/>
         <number key="2" value="2"/>
         <number key="3" value="3"/>
         <number key="4" value="4"/>
