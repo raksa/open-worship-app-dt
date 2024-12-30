@@ -22,8 +22,8 @@ const LazyBiblePreviewerRender = lazy(() => {
 const LazyLyricPreviewer = lazy(() => {
     return import('../full-text-presenter/LyricPreviewer');
 });
-const LazyPresenterAlertController = lazy(() => {
-    return import('../presenter-alert/PresenterAlertControllerComp');
+const LazyPresenterOthersControllerComp = lazy(() => {
+    return import('../presenter-others/PresenterOthersControllerComp');
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
@@ -36,9 +36,9 @@ export function getIsShowingFTPreviewer() {
 
 const tabTypeList = [
     ['s', 'Slides', LazySlidePreviewer],
-    ['b', 'Bibles', LazyBiblePreviewerRender],
     ['l', 'Lyrics', LazyLyricPreviewer],
-    ['a', 'Alert', LazyPresenterAlertController],
+    ['b', 'Bibles', LazyBiblePreviewerRender],
+    ['a', 'Others', LazyPresenterOthersControllerComp],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Presenter() {
