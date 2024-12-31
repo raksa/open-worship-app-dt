@@ -1,8 +1,8 @@
-import './LyricView.scss';
+import './LyricViewComp.scss';
 
 import LyricItem from '../lyric-list/LyricItem';
 
-export default function LyricView({
+export default function LyricViewComp({
     index, lyricItem, lyricItems, onLyricChange, onClose,
 }: Readonly<{
     index: number,
@@ -12,7 +12,7 @@ export default function LyricView({
     onClose: (index: number) => void,
 }>) {
     return (
-        <div className='lyric-view flex-fill'>
+        <div className='app-lyric-view flex-fill'>
             <div className='input-group'>
                 <input className='form-control' type='text'
                     placeholder='title'
@@ -20,15 +20,16 @@ export default function LyricView({
                         const newItem = lyricItem.clone();
                         newItem.title = event.target.value;
                         onLyricChange(newItem, index);
-                    }} />
-                {lyricItems.length > 1 &&
+                    }}
+                />
+                {lyricItems.length > 1 && (
                     <button className='btn btn-outline-danger'
                         onClick={() => {
                             onClose(index);
                         }} >
                         <i className='bi bi-x-lg' />
                     </button>
-                }
+                )}
             </div>
             <textarea className='w-100 h-100 form-control'
                 placeholder='Lyric, use "===" to break text block'
@@ -37,7 +38,8 @@ export default function LyricView({
                     const newItem = lyricItem.clone();
                     newItem.content = event.target.value;
                     onLyricChange(newItem, index);
-                }} />
+                }}
+            />
         </div >
     );
 }

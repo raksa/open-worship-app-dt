@@ -1,4 +1,4 @@
-import HandleAlert from './alert/HandleAlert';
+import HandleAlertComp from './popup-widget/HandleAlertComp';
 import { main } from './appInitHelpers';
 import TopProgressBarComp from './progress-bar/TopProgressBarComp';
 import SettingComp from './setting/SettingComp';
@@ -8,6 +8,6 @@ main(<>
     <SettingComp />
     <TopProgressBarComp />
     <Toast />
-    <HandleAlert />
+    <HandleAlertComp />
 </>
 );

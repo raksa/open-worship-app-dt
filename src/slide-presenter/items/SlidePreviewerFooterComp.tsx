@@ -17,7 +17,7 @@ import {
     useSlideItemThumbnailSizeScale,
 } from '../../event/SlideListEventListener';
 import appProvider from '../../server/appProvider';
-import { showAppAlert } from '../../alert/alertHelpers';
+import { showAppAlert } from '../../popup-widget/popupWidgetHelpers';
 
 function HistoryPreviewerFooter() {
     const selectedSlide = useSelectedSlideContext();

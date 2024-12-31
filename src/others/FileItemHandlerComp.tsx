@@ -11,7 +11,7 @@ import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
-import { showAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenamingComp');

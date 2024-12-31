@@ -1,4 +1,4 @@
-import { showAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { getDesktopPath } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { fsCheckDirExist, fsCreateDir } from '../server/fileHelpers';

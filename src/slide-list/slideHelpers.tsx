@@ -1,6 +1,6 @@
 import ReactDOMServer from 'react-dom/server';
 
-import { showAppAlert, showAppConfirm } from '../alert/alertHelpers';
+import { showAppAlert, showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';

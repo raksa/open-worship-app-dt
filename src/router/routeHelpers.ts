@@ -1,4 +1,4 @@
-import { showAppAlert } from '../alert/alertHelpers';
+import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import appProvider from '../server/appProvider';
 import Slide from '../slide-list/Slide';
 

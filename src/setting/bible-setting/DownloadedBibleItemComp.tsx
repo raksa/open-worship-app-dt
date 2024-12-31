@@ -11,6 +11,7 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
+import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
 
 export default function DownloadedBibleItemComp({
     bibleInfo, onDeleted, onUpdate,
@@ -21,6 +22,13 @@ export default function DownloadedBibleItemComp({
 }>) {
     const { key, title } = bibleInfo;
     const onDeleteHandler = async () => {
+        const isOk = await showAppConfirm(
+            'Delete Bible',
+            `Are you sure to delete bible "${title}"?`,
+        );
+        if (!isOk) {
+            return;
+        }
         try {
             const progressKey = `Deleting bible "${title}"`;
             showProgressBard(progressKey);

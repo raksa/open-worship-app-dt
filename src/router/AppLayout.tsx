@@ -11,7 +11,7 @@ import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindows from '../app-modal/AppPopupWindows';
 import AppContextMenuComp from '../others/AppContextMenuComp';
-import HandleAlert from '../alert/HandleAlert';
+import HandleAlertComp from '../popup-widget/HandleAlertComp';
 import Toast from '../toast/Toast';
 import Slide, {
     SelectedSlideContext,
@@ -157,7 +157,7 @@ export default function AppLayout({ children }: Readonly<{
             <TopProgressBarComp />
             <Toast />
             <AppContextMenuComp />
-            <HandleAlert />
+            <HandleAlertComp />
             <AppPopupWindows />
         </MultiContextRender >
     );

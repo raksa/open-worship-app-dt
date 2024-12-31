@@ -9,7 +9,7 @@ import {
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { showAppAlert } from '../alert/alertHelpers';
+import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 
 export async function showBibleOption(
     event: any, excludeBibleKey: string[],

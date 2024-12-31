@@ -4,9 +4,12 @@ import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
 import { getUserWritablePath } from '../../server/appHelpers';
 import { fsDeleteFile, fsReadFile } from '../../server/fileHelpers';
-
 import kjvBibleInfo from '../../helper/bible-helpers/bible.json';
 import { getLocaleCode } from '../../lang';
+import {
+    showAppConfirm, showAppInput,
+} from '../../popup-widget/popupWidgetHelpers';
+import { genBibleKeyXMLInput } from './bibleXMLKeyGuessing';
 
 /**
 * {
@@ -92,7 +95,25 @@ function getBibleMap(
     return bookKeyMap;
 }
 
-function getBibleInfoJson(bible: Element): BibleJsonInfoType | null {
+function toGuessingBibleKeys(value: string) {
+    return value.split(/[\.,\s]/).map((value1) => {
+        return value1.trim();
+    }).filter((value1) => {
+        return value1;
+    });
+}
+function getGuessingBibleKeys(bible: Element) {
+    const guessingKeys: string[] = [];
+    for (const attribute of Array.from(bible.attributes)) {
+        const value = attribute.nodeValue;
+        if (value) {
+            guessingKeys.push(...toGuessingBibleKeys(value));
+        }
+    }
+    return Array.from(new Set(guessingKeys));
+}
+
+async function getBibleInfoJson(bible: Element) {
     const mapElement = guessElement(bible, ['map'])?.[0];
     const numberKeyMap = getBibleMap(mapElement || null, 'number',
         Object.fromEntries(Array.from(
@@ -102,6 +123,32 @@ function getBibleInfoJson(bible: Element): BibleJsonInfoType | null {
     const bookKeyMap = getBibleMap(
         mapElement || null, 'book', kjvBibleInfo.kjvKeyValue,
     );
+    let key = guessValue(bible, ['key', 'abbr']);
+    while (key === null) {
+        let newKey = '';
+        const isConfirmInput = await showAppInput(
+            'Key is missing',
+            genBibleKeyXMLInput(newKey, (newKey1) => {
+                newKey = newKey1;
+            }, getGuessingBibleKeys(bible)),
+        );
+        if (isConfirmInput) {
+            key = newKey;
+        }
+        const isConfirm = await showAppConfirm(
+            'Confirm Key Value',
+            key ? `Do you want to continue with key="${key}"?` :
+                'Are you sure you want to quite?',
+        );
+        if (isConfirm) {
+            break;
+        } else {
+            key = null;
+        }
+    }
+    if (key === null) {
+        return null;
+    }
     const locale = guessValue(bible, ['locale']) || 'en';
     if (getLocaleCode(locale) === null) {
         return null;
@@ -112,7 +159,7 @@ function getBibleInfoJson(bible: Element): BibleJsonInfoType | null {
                 bible, ['title', 'name', 'translation'],
             ) || 'Unknown Title'
         ),
-        key: guessValue(bible, ['key', 'abbr']) || 'Unknown Key',
+        key,
         version: parseInt(guessValue(bible, ['version']) || '1') || 1,
         locale,
         legalNote: (
@@ -124,7 +171,7 @@ function getBibleInfoJson(bible: Element): BibleJsonInfoType | null {
         ),
         numbersMap: numberKeyMap,
         booksMap: bookKeyMap,
-    };
+    } as BibleJsonInfoType;
 }
 
 function getBibleVerses(chapter: Element): BibleVerseType {
@@ -175,14 +222,14 @@ function getBibleBooksJson(books: Element[]) {
 }
 
 const INDEX_ATTRIBUTES = ['number', 'index', 'id'];
-export function xmlToJson(xmlText: string): BibleJsonType | null {
+export async function xmlToJson(xmlText: string) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     const bible = guessElement(xmlDoc, ['bible'])?.[0];
     if (!bible) {
         return null;
     }
-    const bibleInfo = getBibleInfoJson(bible);
+    const bibleInfo = await getBibleInfoJson(bible);
     if (bibleInfo === null) {
         return null;
     }
@@ -197,7 +244,7 @@ export function xmlToJson(xmlText: string): BibleJsonType | null {
     if (bibleBooks === null) {
         return null;
     }
-    return { info: bibleInfo, books: bibleBooks };
+    return { info: bibleInfo, books: bibleBooks } as BibleJsonType;
 }
 
 export function getInputByName(form: HTMLFormElement, name: string) {

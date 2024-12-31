@@ -115,6 +115,7 @@
         "font-list": "^1.5.1",
         "libreoffice-convert": "^1.6.0",
         "mupdf": "^1.0.0",
+        "reveal.js": "^5.1.0",
         "tar": "^7.4.3"
     }
 }

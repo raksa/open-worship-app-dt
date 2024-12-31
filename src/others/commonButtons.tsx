@@ -9,7 +9,7 @@ import appProvider from '../server/appProvider';
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { showAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 
 export function QuickOrBackButtonComp({
     title, defaultPage = appProvider.presenterHomePage,

@@ -1,13 +1,13 @@
-import './AlertPopup.scss';
+import './AlertPopupComp.scss';
 
 import PrimitiveModal from '../app-modal/PrimitiveModal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     AlertDataType, closeAlert,
-} from './alertHelpers';
+} from './popupWidgetHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
-export default function AlertPopup({ data }: Readonly<{
+export default function AlertPopupComp({ data }: Readonly<{
     data: AlertDataType,
 }>) {
     const handClose = () => {
@@ -20,7 +20,7 @@ export default function AlertPopup({ data }: Readonly<{
     });
     return (
         <PrimitiveModal>
-            <div id='alert-popup' className='shadow card'>
+            <div id='app-alert-popup' className='shadow card'>
                 <HeaderAlertPopup
                     header={<>
                         <i className='bi bi-exclamation-circle' />
@@ -31,7 +31,7 @@ export default function AlertPopup({ data }: Readonly<{
                 <div className='card-body d-flex flex-column'>
                     <div className='p-2 flex-fill app-selectable-text'
                         dangerouslySetInnerHTML={{
-                            __html: data.question,
+                            __html: data.message,
                         }}
                     />
                 </div>

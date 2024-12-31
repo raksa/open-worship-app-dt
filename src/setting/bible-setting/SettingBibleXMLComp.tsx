@@ -38,7 +38,7 @@ export default function SettingBibleXMLComp() {
                     );
                     return;
                 }
-                const dataJson = xmlToJson(dataText);
+                const dataJson = await xmlToJson(dataText);
                 if (dataJson === null) {
                     showSimpleToast(
                         'Parsing XML',

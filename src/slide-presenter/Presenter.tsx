@@ -20,7 +20,7 @@ const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRender');
 });
 const LazyLyricPreviewer = lazy(() => {
-    return import('../full-text-presenter/LyricPreviewer');
+    return import('../advance-presenter/LyricPreviewerComp');
 });
 const LazyPresenterOthersControllerComp = lazy(() => {
     return import('../presenter-others/PresenterOthersControllerComp');

@@ -5,7 +5,7 @@ import './appInit.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
-import { showAppConfirm } from './alert/alertHelpers';
+import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
 import { useKeyboardRegistering } from './event/KeyboardEventListener';
 import {
     getDownloadedBibleInfoList,

@@ -9,7 +9,11 @@ export default function HeaderAlertPopup({ header, onClose }: Readonly<{
                 onClick={() => {
                     onClose();
                 }}
-                className='btn-close float-end' />
+                className='btn-close float-end'
+                style={{
+                    transform: 'translate(0, -90%)',
+                }}
+            />
         </div>
     );
 }

@@ -1,13 +1,13 @@
-import './ConfirmPopup.scss';
+import './ConfirmPopupComp.scss';
 
 import PrimitiveModal from '../app-modal/PrimitiveModal';
 import HeaderAlertPopup from './HeaderAlertPopup';
 import {
     closeAlert, ConfirmDataType,
-} from './alertHelpers';
+} from './popupWidgetHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
-export default function ConfirmPopup({ data }: Readonly<{
+export default function ConfirmPopupComp({ data }: Readonly<{
     data: ConfirmDataType,
 }>) {
     const handleClosing = () => {
@@ -27,7 +27,7 @@ export default function ConfirmPopup({ data }: Readonly<{
     });
     return (
         <PrimitiveModal>
-            <div id='confirm-popup'
+            <div id='app-confirm-popup'
                 className='shadow card'>
                 <HeaderAlertPopup header={(
                     <div className='app-ellipsis'

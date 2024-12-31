@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-import LyricView from './LyricView';
+import LyricViewComp from './LyricViewComp';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
 import LyricList from '../lyric-list/LyricList';
 import LyricItem from '../lyric-list/LyricItem';
 
-export default function LyricPreviewer() {
+export default function LyricPreviewerComp() {
     const [lyric, setLyric] = useState<Lyric | null | undefined>(null);
     useLyricSelecting(setLyric);
     const handleLyricChanging = (
@@ -49,16 +49,18 @@ export default function LyricPreviewer() {
                 style={{
                     width: '20px',
                     padding: '0px',
-                }}><i className='bi bi-save' />
+                }}>
+                <i className='bi bi-save' />
             </button>}
             {lyricItems.map((lyricItem, i) => {
                 return (
-                    <LyricView key={lyricItem.id}
+                    <LyricViewComp key={lyricItem.id}
                         index={i}
                         lyricItem={lyricItem}
                         lyricItems={lyricItems}
                         onLyricChange={handleLyricChanging}
-                        onClose={handleClosing} />
+                        onClose={handleClosing}
+                    />
                 );
             })}
             <button className='btn btn-info'

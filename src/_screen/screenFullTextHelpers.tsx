@@ -7,7 +7,7 @@ import {
 } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
-import { showAppAlert } from '../alert/alertHelpers';
+import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import {
     getDownloadedBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';

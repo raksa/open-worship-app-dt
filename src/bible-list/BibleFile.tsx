@@ -5,7 +5,7 @@ import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 import ItemSource from '../helper/ItemSource';
-import { showAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
 import { copyToClipboard } from '../server/appHelpers';

@@ -12,7 +12,7 @@ import mimeImageList from './mime/image-types.json';
 import mimePlaylistList from './mime/playlist-types.json';
 import mimeVideoList from './mime/video-types.json';
 import mimeSoundList from './mime/sound-types.json';
-import { showAppConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
