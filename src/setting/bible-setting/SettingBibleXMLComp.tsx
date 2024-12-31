@@ -3,11 +3,120 @@ import { useState, useTransition } from 'react';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
-    BibleJsonType, checkIsValidUrl, getInputByName, readFromFile, readFromUrl,
-    xmlFormatExample, xmlToJson,
+    BibleJsonInfoType, BibleJsonType, checkIsValidUrl, getAllXMLFileKeys,
+    getBibleInfo, getInputByName, jsonToXMLText, keyToFilePath,
+    readFromFile, readFromUrl, saveXMLText, xmlFormatExample, xmlToJson,
 } from './bibleXMLHelpers';
+import { useAppEffect } from '../../helper/debuggerHelpers';
+import { fsDeleteFile } from '../../server/fileHelpers';
+import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
 
-export default function SettingBibleXMLComp() {
+let loadBibleInfoList: () => void = () => { };
+function useBibleXMLInfoList() {
+    const [bibleInfoList, setBibleInfoList] = (
+        useState<BibleJsonInfoType[] | null>(null)
+    );
+    const [isPending, startTransition] = useTransition();
+    loadBibleInfoList = () => {
+        startTransition(async () => {
+            const keys = await getAllXMLFileKeys();
+            const promises = keys.map((key) => {
+                return getBibleInfo(key);
+            });
+            const newBibleInfoList = (await Promise.all(promises)).filter(
+                (bibleInfo) => {
+                    return bibleInfo !== null;
+                },
+            );
+            setBibleInfoList(newBibleInfoList);
+        });
+    };
+    useAppEffect(() => {
+        loadBibleInfoList();
+    }, []);
+    return { bibleInfoList, isPending, loadBibleInfoList };
+}
+
+function BibleXMLInfoComp({ bibleInfo }: Readonly<{
+    bibleInfo: BibleJsonInfoType,
+}>) {
+    const handleFileDeleting = async () => {
+        const isConfirmed = await showAppConfirm(
+            'Delete Bible XML',
+            `Are you sure to delete bible XML "${bibleInfo.key}"?`,
+        );
+        if (!isConfirmed) {
+            return;
+        }
+        const filePath = await keyToFilePath(bibleInfo.key);
+        await fsDeleteFile(filePath);
+        loadBibleInfoList();
+    };
+    const { title, key } = bibleInfo;
+    return (
+        <li className='list-group-item'>
+            <div>
+                <span>{title} ({key})</span>
+                <div className='float-end'>
+                    <div className='btn-group'>
+                        <button className='btn btn-danger'
+                            onClick={handleFileDeleting}>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    );
+}
+
+function BibleXMLListComp() {
+    const {
+        bibleInfoList, isPending,
+    } = useBibleXMLInfoList();
+    if (isPending) {
+        return (
+            <LoadingComp />
+        );
+    }
+    const refresher = (
+        <button
+            title='Refresh'
+            className='btn btn-info'
+            onClick={() => {
+                loadBibleInfoList();
+            }}>
+            <i className='bi bi-arrow-clockwise' /> Refresh
+        </button>
+    );
+    if (bibleInfoList === null || bibleInfoList.length === 0) {
+        return (
+            <div>
+                No Bible XML files {refresher}
+            </div>
+        );
+    }
+    return (
+        <>
+            <h3>
+                Bibles XML {refresher}
+            </h3>
+            <div className='w-100 app-border-white-round p-2'>
+                <ul className='list-group d-flex flex-fill'>
+                    {bibleInfoList.map((bibleInfo) => {
+                        return (
+                            <BibleXMLInfoComp
+                                key={bibleInfo.key} bibleInfo={bibleInfo}
+                            />
+                        );
+                    })}
+                </ul>
+            </div>
+        </>
+    );
+}
+
+function BibleXMLImportComp() {
     const [isShowingExample, setIsShowingExample] = useState(false);
     const [isFileSelected, setIsFileSelected] = useState(false);
     const [urlText, setUrlText] = useState('');
@@ -46,7 +155,10 @@ export default function SettingBibleXMLComp() {
                     );
                     return;
                 }
+                const newXMLText = jsonToXMLText(dataJson);
+                await saveXMLText(dataJson.info.key, newXMLText);
                 setOutputJson(dataJson);
+                loadBibleInfoList();
             } catch (error) {
                 showSimpleToast(
                     'Format Submit Error',
@@ -66,9 +178,9 @@ export default function SettingBibleXMLComp() {
         setIsFileSelected(false);
     };
     return (
-        <div className='w-100'>
+        <>
             <h3>
-                From XML <button
+                Import XML File <button
                     title='XML format example'
                     className={
                         'btn btn-sm ms-2' +
@@ -144,7 +256,7 @@ export default function SettingBibleXMLComp() {
                 </div>
                 <div>
                     <input className='form-control' type='submit'
-                        value='Submit' disabled={
+                        value='Import' disabled={
                             isPending || !(isFileSelected || isValidUrl)
                         }
                     />
@@ -158,6 +270,16 @@ export default function SettingBibleXMLComp() {
                     ) : null}
                 </div>
             </form>
+        </>
+    );
+}
+
+export default function SettingBibleXMLComp() {
+    return (
+        <div className='w-100 app-border-white-round p-2'>
+            <BibleXMLListComp />
+            <hr />
+            <BibleXMLImportComp />
         </div>
     );
 }

@@ -21,7 +21,7 @@ export default function DownloadedBibleItemComp({
     onUpdate: () => void,
 }>) {
     const { key, title } = bibleInfo;
-    const onDeleteHandler = async () => {
+    const handleBibleDeleting = async () => {
         const isOk = await showAppConfirm(
             'Delete Bible',
             `Are you sure to delete bible "${title}"?`,
@@ -53,17 +53,18 @@ export default function DownloadedBibleItemComp({
                 <div className='float-end'>
                     <div className='btn-group'>
                         <button className='btn btn-danger'
-                            onClick={onDeleteHandler}>
+                            onClick={handleBibleDeleting}>
                             Delete
                         </button>
-                        {bibleInfo.isUpdatable && (<button
-                            className='btn btn-warning'
-                            onClick={() => {
-                                onUpdate();
-                            }}>
-                            Update
-                        </button>)
-                        }
+                        {bibleInfo.isUpdatable && (
+                            <button
+                                className='btn btn-warning'
+                                onClick={() => {
+                                    onUpdate();
+                                }}>
+                                Update
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

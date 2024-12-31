@@ -12,7 +12,7 @@ export default function SettingBibleJsonComp() {
         onlineBbInfoList, setOnlineBbInfoList,
     ] = useOnlineBibleInfoList();
     return (
-        <div className='w-100'>
+        <div className='w-100 app-border-white-round p-2'>
             <h3>Downloaded Bible List</h3>
             <SettingDownloadedBibleComp
                 onlineBibleInfoList={onlineBbInfoList}

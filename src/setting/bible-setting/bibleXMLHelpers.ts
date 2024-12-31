@@ -3,13 +3,16 @@ import { handleError } from '../../helper/errorHelpers';
 import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
 import { getUserWritablePath } from '../../server/appHelpers';
-import { fsDeleteFile, fsReadFile } from '../../server/fileHelpers';
+import {
+    fsDeleteFile, fsListFiles, fsReadFile, fsWriteFile,
+} from '../../server/fileHelpers';
 import kjvBibleInfo from '../../helper/bible-helpers/bible.json';
 import { getLocaleCode } from '../../lang';
 import {
     showAppConfirm, showAppInput,
 } from '../../popup-widget/popupWidgetHelpers';
-import { genBibleKeyXMLInput } from './bibleXMLKeyGuessing';
+import { genBibleKeyXMLInput } from './bibleXMLAttributesGuessing';
+import { bibleDataReader } from '../../helper/bible-helpers/bibleInfoHelpers';
 
 /**
 * {
@@ -208,11 +211,11 @@ function getBibleBooksJson(books: Element[]) {
         if (bookNumberText === null) {
             continue;
         }
-        const bookNumber = parseInt(bookNumberText);
-        if (isNaN(bookNumber)) {
+        const bookIndex = parseInt(bookNumberText);
+        if (isNaN(bookIndex)) {
             continue;
         }
-        const bookKey = bookKeysOrder[bookNumber - 1];
+        const bookKey = bookKeysOrder[bookIndex - 1];
         if (bookKey === undefined) {
             continue;
         }
@@ -221,11 +224,68 @@ function getBibleBooksJson(books: Element[]) {
     return booksJson;
 }
 
+export function jsonToXMLText(jsonData: BibleJsonType) {
+    const { numbersMap, booksMap, ...info } = jsonData.info;
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(
+        '<?xml version="1.0" encoding="UTF-8"?><bible></bible>',
+        'application/xml'
+    );
+
+    const bible = xmlDoc.getElementsByTagName('bible')[0];
+    for (const [key, value] of Object.entries(info)) {
+        bible.setAttribute(key, value.toString());
+    }
+    const map = xmlDoc.createElement('map');
+    for (const [key, value] of Object.entries(numbersMap)) {
+        const number = xmlDoc.createElement('number');
+        number.setAttribute('key', key);
+        number.setAttribute('value', value);
+        map.appendChild(number);
+    }
+    for (const [key, value] of Object.entries(booksMap)) {
+        const book = xmlDoc.createElement('book');
+        book.setAttribute('key', key);
+        book.setAttribute('value', value);
+        map.appendChild(book);
+    }
+    bible.appendChild(map);
+    const books = jsonData.books;
+    for (const [bookKey, book] of Object.entries(books)) {
+        const bookElement = xmlDoc.createElement('book');
+        const bookIndex = kjvBibleInfo.booksOrder.indexOf(bookKey);
+        if (bookIndex === -1) {
+            continue;
+        }
+        bookElement.setAttribute('number', (bookIndex + 1).toString());
+        for (const [chapterKey, chapter] of Object.entries(book)) {
+            const chapterElement = xmlDoc.createElement('chapter');
+            chapterElement.setAttribute('number', chapterKey);
+            for (const [verseKey, verse] of Object.entries(chapter)) {
+                const verseElement = xmlDoc.createElement('verse');
+                verseElement.setAttribute('number', verseKey);
+                verseElement.textContent = verse;
+                chapterElement.appendChild(verseElement);
+            }
+            bookElement.appendChild(chapterElement);
+        }
+        bible.appendChild(bookElement);
+    }
+    const serializer = new XMLSerializer();
+    const xmlText = serializer.serializeToString(xmlDoc);
+    return xmlText;
+}
+
+function xmlTextToBibleElement(xmlText: string) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+    const bible = guessElement(xmlDoc, ['bible'])?.[0];
+    return bible;
+}
+
 const INDEX_ATTRIBUTES = ['number', 'index', 'id'];
 export async function xmlToJson(xmlText: string) {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-    const bible = guessElement(xmlDoc, ['bible'])?.[0];
+    const bible = xmlTextToBibleElement(xmlText);
     if (!bible) {
         return null;
     }
@@ -385,6 +445,39 @@ export function checkIsValidUrl(urlText: string) {
     ) {
         return false;
     }
+}
+
+export async function getBibleInfo(key: string) {
+    const filePath = await keyToFilePath(key);
+    const xmlText = await fsReadFile(filePath);
+    const bible = xmlTextToBibleElement(xmlText);
+    if (!bible) {
+        return null;
+    }
+    return await getBibleInfoJson(bible);
+}
+
+export async function getAllXMLFileKeys() {
+    const dirPath = await bibleDataReader.getWritableBiblePath();
+    const files = await fsListFiles(dirPath);
+    return files.map((file) => {
+        if (!file.endsWith('.xml')) {
+            return null;
+        }
+        return appProvider.pathUtils.basename(file, '.xml');
+    }).filter((key) => {
+        return key !== null;
+    });
+}
+
+export async function keyToFilePath(key: string) {
+    const dirPath = await bibleDataReader.getWritableBiblePath();
+    return appProvider.pathUtils.resolve(dirPath, `${key}.xml`);
+}
+
+export async function saveXMLText(key: string, xmlText: string) {
+    const filePath = await keyToFilePath(key);
+    await fsWriteFile(filePath, xmlText);
 }
 
 export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
