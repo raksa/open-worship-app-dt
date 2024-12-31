@@ -14,7 +14,7 @@ import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
 import { use } from 'react';
 
-export function RendInfo({ index, slideItem }: Readonly<{
+export function RenderInfoComp({ index, slideItem }: Readonly<{
     index: number,
     slideItem: SlideItem,
 }>) {
@@ -118,7 +118,7 @@ export default function SlideItemRenderComp({
             }}
             onCopy={onCopy}>
             <div className='card-header d-flex' style={{ height: '35px' }}>
-                <RendInfo index={index}
+                <RenderInfoComp index={index}
                     slideItem={slideItem}
                 />
             </div>

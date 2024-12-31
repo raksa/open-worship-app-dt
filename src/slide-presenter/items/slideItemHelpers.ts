@@ -117,7 +117,9 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
         setTimeout(() => {
             const { screenSlideManager } = screenManager;
             screenSlideManager.slideItemData = (
-                screenSlideManager.toSlideItemData(slideItem.toJson())
+                screenSlideManager.toSlideItemData(
+                    slideItem.filePath, slideItem.toJson(),
+                )
             );
             targetDiv.scrollIntoView({
                 behavior: 'smooth', block: 'center',

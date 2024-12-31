@@ -16,7 +16,6 @@ export type SlideItemType = {
     metadata: AnyObjectType,
     isPdf?: boolean,
     imagePreviewSrc?: string,
-    filePath?: string,
     pdfPageNumber?: number,
 };
 
@@ -177,7 +176,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             return this.jsonError;
         }
         const { isPdf } = this.originalJson;
-        const filePath = isPdf ? this.filePath : undefined;
         const pdfPageNumber = (
             isPdf ? this.originalJson.pdfPageNumber : undefined
         );
@@ -188,7 +186,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             id: this.id,
             canvasItems: this.canvasItemsJson,
             metadata: this.metadata,
-            isPdf, filePath, pdfPageNumber, imagePreviewSrc,
+            isPdf, pdfPageNumber, imagePreviewSrc,
         };
     }
 
@@ -280,7 +278,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         return new SlideItem(pageNumber, filePath, {
             id: pageNumber, canvasItems: [], isPdf: true,
             imagePreviewSrc: src,
-            filePath: filePath,
             pdfPageNumber: pageNumber,
             metadata: { width, height },
         });

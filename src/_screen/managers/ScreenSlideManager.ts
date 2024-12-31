@@ -131,11 +131,10 @@ export default class ScreenSlideManager extends
         this.slideItemData = slideItemData;
     }
 
-    toSlideItemData(slideItemJson: SlideItemType): SlideItemDataType {
-        return {
-            slideFilePath: slideItemJson.filePath ?? '',
-            slideItemJson,
-        };
+    toSlideItemData(
+        slideFilePath: string, slideItemJson: SlideItemType,
+    ): SlideItemDataType {
+        return { slideFilePath, slideItemJson };
     }
 
     handleSlideSelecting(slideFilePath: string, slideItemJson: SlideItemType) {
@@ -149,10 +148,10 @@ export default class ScreenSlideManager extends
         const willSelected = (
             `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`
         );
-        const newSlideSrc = selected !== willSelected ? this.toSlideItemData(
-            slideItemJson,
+        const newSlideData = selected !== willSelected ? this.toSlideItemData(
+            slideFilePath, slideItemJson,
         ) : null;
-        this.applySlideItemSrcWithSyncGroup(newSlideSrc);
+        this.applySlideItemSrcWithSyncGroup(newSlideData);
     }
 
     static async handleSlideSelecting(

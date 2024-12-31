@@ -5,7 +5,7 @@ import {
     useScreenSlideManagerEvents,
 } from '../../_screen/managers/screenEventHelpers';
 import {
-    RendInfo, toClassNameHighlight,
+    RenderInfoComp, toClassNameHighlight,
 } from './SlideItemRenderComp';
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
@@ -74,7 +74,7 @@ export default function SlideItemPdfRender({
             onContextMenu={onContextMenu}>
             <div className='card-header d-flex' style={{ height: '35px' }}>
                 <i className='bi bi-filetype-pdf' />
-                <RendInfo index={index}
+                <RenderInfoComp index={index}
                     slideItem={slideItem}
                 />
             </div>
