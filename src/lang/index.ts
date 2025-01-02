@@ -5,7 +5,9 @@ import { getSetting, setSetting } from '../helper/settingHelpers';
 import kmLangData from './data/km';
 import enLangData from './data/en';
 
-export const allLocaleMap = {
+export const DEFAULT_LOCALE = 'en-US';
+
+export const allLocalesMap = {
     'af-ZA': 'af', 'am-ET': 'am', 'ar-AE': 'ar', 'ar-BH': 'ar', 'ar-DZ': 'ar',
     'ar-EG': 'ar', 'ar-IQ': 'ar', 'ar-JO': 'ar', 'ar-KW': 'ar', 'ar-LB': 'ar',
     'ar-LY': 'ar', 'ar-MA': 'ar', 'arn-CL': 'arn', 'ar-OM': 'ar', 'ar-QA': 'ar',
@@ -59,12 +61,12 @@ export const allLocaleMap = {
     'yo-NG': 'yo', 'zh-CN': 'zh', 'zh-HK': 'zh', 'zh-MO': 'zh',
     'zh-SG': 'zh', 'zh-TW': 'zh', 'zu-ZA': 'zu',
 };
-const reversedLocaleMap: { [key: string]: string } = Object.fromEntries(
-    Object.entries(allLocaleMap).map(([key, value]) => [value, key]),
+export const reversedLocalesMap: { [key: string]: string } = Object.fromEntries(
+    Object.entries(allLocalesMap).map(([key, value]) => [value, key]),
 );
 
-export function getLocaleCode(locale: string) {
-    return reversedLocaleMap[locale] || null;
+export function getLangCode(locale: string) {
+    return (allLocalesMap as any)[locale] || null;
 }
 
 export const langDataMap: { [key: string]: LanguageType } = {

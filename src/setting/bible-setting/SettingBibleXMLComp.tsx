@@ -3,60 +3,109 @@ import { useState, useTransition } from 'react';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
-    BibleJsonInfoType, BibleJsonType, checkIsValidUrl, getAllXMLFileKeys,
-    getBibleInfo, getInputByName, jsonToXMLText, keyToFilePath,
-    readFromFile, readFromUrl, saveXMLText, xmlFormatExample, xmlToJson,
+    BibleJsonInfoType, checkIsValidUrl, getAllXMLFileKeys,
+    getBibleInfo, getInputByName, handBibleInfoContextMenuOpening,
+    jsonToXMLText, bibleKeyToFilePath, readFromFile, readFromUrl, saveXMLText,
+    xmlToJson, handBibleKeyContextMenuOpening, updateBibleXMLInfo,
 } from './bibleXMLHelpers';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { fsDeleteFile } from '../../server/fileHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
+import { xmlFormatExample } from './bibleXMLAttributesGuessing';
 
-let loadBibleInfoList: () => void = () => { };
-function useBibleXMLInfoList() {
-    const [bibleInfoList, setBibleInfoList] = (
-        useState<BibleJsonInfoType[] | null>(null)
+function useBibleXMLInfo(bibleKey: string) {
+    const [bibleInfo, setBibleInfo] = (
+        useState<BibleJsonInfoType | null>(null)
     );
     const [isPending, startTransition] = useTransition();
-    loadBibleInfoList = () => {
+    loadBibleKeys = () => {
         startTransition(async () => {
-            const keys = await getAllXMLFileKeys();
-            const promises = keys.map((key) => {
-                return getBibleInfo(key);
-            });
-            const newBibleInfoList = (await Promise.all(promises)).filter(
-                (bibleInfo) => {
-                    return bibleInfo !== null;
-                },
-            );
-            setBibleInfoList(newBibleInfoList);
+            const newBibleInfo = await getBibleInfo(bibleKey);
+            setBibleInfo(newBibleInfo);
         });
     };
     useAppEffect(() => {
-        loadBibleInfoList();
+        loadBibleKeys();
     }, []);
-    return { bibleInfoList, isPending, loadBibleInfoList };
+    return { bibleInfo, isPending, setBibleInfo };
 }
 
-function BibleXMLInfoComp({ bibleInfo }: Readonly<{
-    bibleInfo: BibleJsonInfoType,
+let loadBibleKeys: () => void = () => { };
+function useBibleKeys() {
+    const [bibleKeys, setBibleKeys] = (
+        useState<string[] | null>(null)
+    );
+    const [isPending, startTransition] = useTransition();
+    loadBibleKeys = () => {
+        startTransition(async () => {
+            const keys = await getAllXMLFileKeys();
+            setBibleKeys(keys);
+        });
+    };
+    useAppEffect(() => {
+        loadBibleKeys();
+    }, []);
+    return { bibleKeys, isPending, loadBibleKeys };
+}
+
+function PreviewBibleXMLInfoComp({ bibleKey }: Readonly<{
+    bibleKey: string,
 }>) {
-    const handleFileDeleting = async () => {
+    const { bibleInfo, setBibleInfo, isPending } = useBibleXMLInfo(bibleKey);
+    if (isPending) {
+        return (
+            <LoadingComp />
+        );
+    }
+    if (bibleInfo === null) {
+        return null;
+    }
+    return (
+        <div className='app-border-white-round p-2'
+            onContextMenu={(event) => {
+                handBibleInfoContextMenuOpening(
+                    event, bibleInfo, (newOutputJson) => {
+                        setBibleInfo(newOutputJson);
+                    },
+                );
+            }}>
+            <button className='btn btn-success'
+                onClick={() => {
+                    updateBibleXMLInfo(bibleInfo);
+                    loadBibleKeys();
+                }}>
+                Save
+            </button>
+            <pre>{JSON.stringify(bibleInfo, null, 2)}</pre>
+        </div>
+    );
+}
+
+function BibleXMLInfoComp({ bibleKey }: Readonly<{
+    bibleKey: string,
+}>) {
+    const [isShowing, setIsShowing] = useState(false);
+    const handleFileDeleting = async (event: any) => {
+        event.stopPropagation();
         const isConfirmed = await showAppConfirm(
             'Delete Bible XML',
-            `Are you sure to delete bible XML "${bibleInfo.key}"?`,
+            `Are you sure to delete bible XML "${bibleKey}"?`,
         );
         if (!isConfirmed) {
             return;
         }
-        const filePath = await keyToFilePath(bibleInfo.key);
+        const filePath = await bibleKeyToFilePath(bibleKey);
         await fsDeleteFile(filePath);
-        loadBibleInfoList();
+        loadBibleKeys();
     };
-    const { title, key } = bibleInfo;
     return (
-        <li className='list-group-item'>
+        <li className='list-group-item pointer'
+            onClick={() => {
+                setIsShowing(!isShowing);
+            }}
+            onContextMenu={handBibleKeyContextMenuOpening.bind(null, bibleKey)}>
             <div>
-                <span>{title} ({key})</span>
+                <span>{bibleKey}</span>
                 <div className='float-end'>
                     <div className='btn-group'>
                         <button className='btn btn-danger'
@@ -66,47 +115,55 @@ function BibleXMLInfoComp({ bibleInfo }: Readonly<{
                     </div>
                 </div>
             </div>
+            {isShowing ? (
+                <PreviewBibleXMLInfoComp bibleKey={bibleKey} />
+            ) : null}
         </li>
     );
 }
 
 function BibleXMLListComp() {
-    const {
-        bibleInfoList, isPending,
-    } = useBibleXMLInfoList();
+    const { bibleKeys, isPending } = useBibleKeys();
     if (isPending) {
         return (
             <LoadingComp />
         );
     }
-    const refresher = (
-        <button
-            title='Refresh'
-            className='btn btn-info'
-            onClick={() => {
-                loadBibleInfoList();
-            }}>
-            <i className='bi bi-arrow-clockwise' /> Refresh
-        </button>
+    const buttons = (
+        <>
+            <button
+                title='Refresh'
+                className='btn btn-info'
+                onClick={() => {
+                    loadBibleKeys();
+                }}>
+                <i className='bi bi-arrow-clockwise' /> Refresh
+            </button>
+            <a className='btn btn-secondary ms-2' href={
+                'https://www.google.com/search?q=holy+bible+xml+format'
+            } target='_blank'>
+                Search XML
+            </a>
+        </>
     );
-    if (bibleInfoList === null || bibleInfoList.length === 0) {
+    if (bibleKeys === null || bibleKeys.length === 0) {
         return (
             <div>
-                No Bible XML files {refresher}
+                No Bible XML files {buttons}
             </div>
         );
     }
     return (
         <>
             <h3>
-                Bibles XML {refresher}
+                Bibles XML {buttons}
             </h3>
             <div className='w-100 app-border-white-round p-2'>
                 <ul className='list-group d-flex flex-fill'>
-                    {bibleInfoList.map((bibleInfo) => {
+                    {bibleKeys.map((bibleKey) => {
                         return (
-                            <BibleXMLInfoComp
-                                key={bibleInfo.key} bibleInfo={bibleInfo}
+                            <BibleXMLInfoComp key={bibleKey}
+                                bibleKey={bibleKey}
                             />
                         );
                     })}
@@ -120,7 +177,6 @@ function BibleXMLImportComp() {
     const [isShowingExample, setIsShowingExample] = useState(false);
     const [isFileSelected, setIsFileSelected] = useState(false);
     const [urlText, setUrlText] = useState('');
-    const [outputJson, setOutputJson] = useState<BibleJsonType | null>(null);
     const [isPending, startTransition] = useTransition();
     const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
     const isValidUrl = checkIsValidUrl(urlText);
@@ -157,8 +213,7 @@ function BibleXMLImportComp() {
                 }
                 const newXMLText = jsonToXMLText(dataJson);
                 await saveXMLText(dataJson.info.key, newXMLText);
-                setOutputJson(dataJson);
-                loadBibleInfoList();
+                loadBibleKeys();
             } catch (error) {
                 showSimpleToast(
                     'Format Submit Error',
@@ -264,9 +319,6 @@ function BibleXMLImportComp() {
                 <div className='app-border-white-round'>
                     {isPending ? (
                         <LoadingComp message={loadingMessage} />
-                    ) : null}
-                    {outputJson ? (
-                        <pre>{JSON.stringify(outputJson, null, 2)}</pre>
                     ) : null}
                 </div>
             </form>
