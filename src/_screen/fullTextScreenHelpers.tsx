@@ -1,7 +1,7 @@
 import ReactDOMServer from 'react-dom/server';
 import { getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    getBibleLocale, toLocaleNumBB,
+    getBibleLocale, toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
@@ -133,7 +133,7 @@ const fullTextScreenHelper = {
                     if (verses !== null) {
                         for (let i = bibleItem.target.verseStart;
                             i <= bibleItem.target.verseEnd; i++) {
-                            const verseNumb = await toLocaleNumBB(
+                            const verseNumb = await toLocaleNumBible(
                                 bibleItem.bibleKey, i,
                             );
                             if (verseNumb !== null) {

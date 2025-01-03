@@ -6,7 +6,7 @@ import {
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
 import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
-import { toLocaleNumBB } from './serverBibleHelpers2';
+import { toLocaleNumBible } from './serverBibleHelpers2';
 import { genVerseList } from '../../bible-list/bibleHelpers';
 import BibleItem from '../../bible-list/BibleItem';
 
@@ -40,7 +40,7 @@ export async function genChapterMatches(
         return i + 1;
     });
     const chapterNumStrList = await Promise.all(chapterList.map((chapter) => {
-        return toLocaleNumBB(bibleKey, chapter);
+        return toLocaleNumBible(bibleKey, chapter);
     }));
     const newList = chapterNumStrList.map((chapterNumStr, i) => {
         return [chapterList[i], chapterNumStr];
@@ -185,8 +185,10 @@ async function toChapter(bibleKey: string, bookKey: string,
         return null;
     }
     const book = info.books[bookKey];
-    return `${book} ${info.numList === undefined ? chapterNum :
-        toLocaleNum(chapterNum, info.numList)}`;
+    return (
+        `${book} ${info.numList === undefined ? chapterNum :
+            toLocaleNum(chapterNum, info.numList)}`
+    );
 }
 
 export function getKJVChapterCount(bookKey: string) {
@@ -222,7 +224,7 @@ function toIndex(bookKey: string, chapterNum: number) {
     return index;
 }
 
-export function toFileName(bookKey: string, chapterNum: number) {
+export function toBibleFileName(bookKey: string, chapterNum: number) {
     const index = toIndex(bookKey, chapterNum);
     if (index < 0) {
         throw new Error('Invalid chapter number');

@@ -3,7 +3,7 @@ import appProvider from '../server/appProvider';
 
 export const DB_NAME = 'bible';
 
-interface DbControllerInterface {
+interface DatabaseControllerInterface {
     db: IDBDatabase;
     isDbOpened: boolean;
     createObjectStore: () => void;
@@ -33,25 +33,30 @@ class InitDBOpeningQueue {
         resolve: () => void,
         reject: (reason: any) => void,
     }[] = [];
+
     resolve() {
         while (this.promises.length > 0) {
             const { resolve } = this.promises.shift() as any;
             resolve();
         }
     }
+
     reject(reason: any) {
         while (this.promises.length > 0) {
             const { reject } = this.promises.shift() as any;
             reject(reason);
         }
     }
-    attemptDbOpening(dbController: DbControllerInterface,
-        resolve: () => void, reject: (reason: any) => void) {
+
+    attemptDbOpening(
+        dbController: DatabaseControllerInterface,
+        resolve: () => void, reject: (reason: any) => void,
+    ) {
+        this.promises.push({ resolve, reject });
         if (dbController.isDbOpened) {
             this.resolve();
             return;
         }
-        this.promises.push({ resolve, reject });
         if (this.request !== null) {
             return;
         }
@@ -74,17 +79,24 @@ class InitDBOpeningQueue {
     }
 }
 
-let instance: IndexedDbController | null = null;
-export abstract class IndexedDbController implements DbControllerInterface {
+export abstract class IndexedDbController implements
+    DatabaseControllerInterface {
+
+    static instance: IndexedDbController | null = null;
+
     abstract get storeName(): string;
     private readonly initQueue: InitDBOpeningQueue = new InitDBOpeningQueue();
+
     static instantiate(): IndexedDbController {
         throw new Error('Not implemented');
     }
+
     private _db: IDBDatabase | null = null;
+
     get isDbOpened() {
         return this._db !== null;
     }
+
     set db(db: IDBDatabase | null) {
         if (this._db === db) {
             return;
@@ -94,12 +106,14 @@ export abstract class IndexedDbController implements DbControllerInterface {
         }
         this._db = db;
     }
+
     get db(): IDBDatabase {
         if (!this.isDbOpened) {
             throw new Error('DB is not initialized');
         }
         return this._db as IDBDatabase;
     }
+
     initCallback<T>(target: any,
         resolve: (e: T) => void,
         reject: (e: string) => void) {
@@ -110,6 +124,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
             reject(this.error);
         };
     }
+
     private getTransaction(mode: IDBTransactionMode) {
         if (!this.db.objectStoreNames.contains(this.storeName)) {
             throw new Error(`Object store ${this.storeName} does not exist`);
@@ -118,6 +133,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         const store = transaction.objectStore(this.storeName);
         return { store, transaction };
     }
+
     createObjectStore() {
         try {
             this.db.deleteObjectStore(this.storeName);
@@ -130,6 +146,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         });
         store.createIndex('index1', ['secondaryId'], { unique: false });
     }
+
     init() {
         return new Promise<void>((resolve, reject) => {
             this.initQueue.attemptDbOpening(this, resolve, reject);
@@ -147,6 +164,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
             }, reject);
         });
     }
+
     async addItem({
         id, data, isForceOverride = false, secondaryId = null,
     }: ItemParamsType) {
@@ -167,6 +185,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
             return store.add(newItem);
         });
     }
+
     async getItem<T>(id: string) {
         const request = await this.asyncOperation('readonly', (store) => {
             return store.get(id);
@@ -176,6 +195,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         }
         return request.result as BasicRecordType & { data: T };
     }
+
     async getKeys(secondaryId: string) {
         const request = await this.asyncOperation('readonly', (store) => {
             const index = store.index('index1');
@@ -187,6 +207,7 @@ export abstract class IndexedDbController implements DbControllerInterface {
         }
         return request.result as string[];
     }
+
     updateItem(id: string, data: any) {
         return this.asyncOperation('readwrite', (store) => {
             return store.put({
@@ -196,29 +217,34 @@ export abstract class IndexedDbController implements DbControllerInterface {
             });
         });
     }
+
     deleteItem(id: string) {
         return this.asyncOperation('readwrite', (store) => {
             return store.delete(id);
         });
     }
+
     countAllItems() {
         return this.asyncOperation('readonly', (store) => {
             return store.count();
         });
     }
+
     clearAllItems() {
         return this.asyncOperation('readwrite', (store) => {
             return store.clear();
         });
     }
+
     closeDb() {
         this.db = null;
     }
+
     static async getInstance() {
-        if (instance === null) {
-            instance = this.instantiate();
+        if (this.instance === null) {
+            this.instance = this.instantiate();
         }
-        await instance.init();
-        return instance;
+        await this.instance.init();
+        return this.instance;
     }
 }

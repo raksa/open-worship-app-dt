@@ -5,7 +5,7 @@ import {
     getKJVKeyValue,
 } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    toLocaleNumBB,
+    toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 
 export type BibleTargetType = {
@@ -75,9 +75,9 @@ class BibleRenderHelper {
             book, chapter,
             verseStart, verseEnd,
         } = this.fromBibleVerseKey(bibleVersesKey);
-        const chapterLocale = await toLocaleNumBB(bible, chapter);
-        const verseStartLocale = await toLocaleNumBB(bible, verseStart);
-        const verseEndLocale = await toLocaleNumBB(bible, verseEnd);
+        const chapterLocale = await toLocaleNumBible(bible, chapter);
+        const verseStartLocale = await toLocaleNumBible(bible, verseStart);
+        const verseEndLocale = await toLocaleNumBible(bible, verseEnd);
         const txtV = `${verseStartLocale}${verseStart !== verseEnd ?
             ('-' + verseEndLocale) : ''}`;
         let bookKey = await keyToBook(bible, book);
@@ -119,7 +119,7 @@ class BibleRenderHelper {
         }
         const result: [string, string][] = [];
         for (let i = verseStart; i <= verseEnd; i++) {
-            const localNum = await toLocaleNumBB(bible, i);
+            const localNum = await toLocaleNumBible(bible, i);
             const iString = i.toString();
             result.push([localNum ?? iString, verses[iString] ?? '??']);
         }

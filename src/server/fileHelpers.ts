@@ -74,6 +74,7 @@ export const pathSeparator = appProvider.pathUtils.sep;
 export function pathJoin(filePath: string, fileFullName: string) {
     return appProvider.pathUtils.join(filePath, fileFullName);
 }
+
 export function pathBasename(filePath: string) {
     return appProvider.pathUtils.basename(filePath);
 }

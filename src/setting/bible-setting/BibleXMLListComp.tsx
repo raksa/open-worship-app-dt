@@ -2,11 +2,9 @@ import { useState } from 'react';
 
 import LoadingComp from '../../others/LoadingComp';
 import {
-    handBibleInfoContextMenuOpening, bibleKeyToFilePath,
-    handBibleKeyContextMenuOpening, updateBibleXMLInfo,
-    useBibleXMLInfo,
+    handBibleInfoContextMenuOpening, handBibleKeyContextMenuOpening,
+    updateBibleXMLInfo, useBibleXMLInfo, deleteBibleXML,
 } from './bibleXMLHelpers';
-import { fsDeleteFile } from '../../server/fileHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
 
 function PreviewBibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
@@ -61,8 +59,7 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
         if (!isConfirmed) {
             return;
         }
-        const filePath = await bibleKeyToFilePath(bibleKey);
-        await fsDeleteFile(filePath);
+        await deleteBibleXML(bibleKey);
         loadBibleKeys();
     };
     return (

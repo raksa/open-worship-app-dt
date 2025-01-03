@@ -42,7 +42,7 @@ export function useDownloadBible(
         setDownloadingProgress(null);
     };
     const startDownloadBible = () => {
-        bibleDataReader.clearBibleDBData(bibleInfo.key);
+        bibleDataReader.clearBibleDatabaseData(bibleInfo.key);
         setDownloadingProgress(0);
         downloadBible({
             bibleInfo,

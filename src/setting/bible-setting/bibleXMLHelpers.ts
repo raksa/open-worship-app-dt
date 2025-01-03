@@ -5,6 +5,7 @@ import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
 import { getUserWritablePath, showExplorer } from '../../server/appHelpers';
 import {
     fsDeleteFile, fsListFiles, fsReadFile, fsWriteFile,
+    pathJoin,
 } from '../../server/fileHelpers';
 import kjvBibleInfo from '../../helper/bible-helpers/bible.json';
 import { allLocalesMap, DEFAULT_LOCALE, getLangCode } from '../../lang';
@@ -14,7 +15,9 @@ import {
 import {
     genBibleBooksMapXMLInput, genBibleKeyXMLInput, genBibleNumbersMapXMLInput,
 } from './bibleXMLAttributesGuessing';
-import { bibleDataReader } from '../../helper/bible-helpers/bibleInfoHelpers';
+import {
+    bibleDataReader, BibleInfoType, getBibleInfo,
+} from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
     getAllLocalBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
@@ -23,6 +26,9 @@ import {
 } from '../../others/AppContextMenuComp';
 import { useState, useTransition } from 'react';
 import { useAppEffect } from '../../helper/debuggerHelpers';
+import BibleDatabaseController from
+    '../../helper/bible-helpers/BibleDatabaseController';
+import { toBibleFileName } from '../../helper/bible-helpers/serverBibleHelpers';
 
 /**
 * {
@@ -36,7 +42,12 @@ import { useAppEffect } from '../../helper/debuggerHelpers';
 *         "copyRights": "Copy rights of bible. e.g: Public Domain",
 *         "books": {
 *             "GEN": "GENESIS",
-*         }
+*         },
+*         "numbersMap": {
+*            "0": "0",
+*            "1": "1"
+*         },
+*         "filePath": "Path of file. e.g: /path/to/file.xml"
 *     }
 *     "books": {
 *         "GEN": {
@@ -60,8 +71,8 @@ export type BibleJsonInfoType = {
     legalNote: string,
     publisher: string,
     copyRights: string,
-    numbersMap: { [key: string]: string },
     booksMap: { [booKey: string]: string },
+    numbersMap: { [key: string]: string },
     filePath: string,
 };
 export type BibleJsonType = {
@@ -317,12 +328,6 @@ export async function xmlToJson(xmlText: string) {
         return null;
     }
     const books = Array.from(guessElement(bible, ['book']) || []);
-    const testaments = guessElement(bible, ['testament']);
-    if (testaments !== null) {
-        for (const testament of testaments) {
-            books.push(...Array.from(guessElement(testament, ['book']) || []));
-        }
-    }
     const bibleBooks = getBibleBooksJson(books);
     if (bibleBooks === null) {
         return null;
@@ -500,9 +505,14 @@ export async function getAllXMLFileKeys() {
 
 export async function getBibleXMLCacheInfoList() {
     const bibleKeysMap = await getAllXMLFileKeys();
-    console.log(bibleKeysMap);
-
-    return [] as BibleJsonInfoType[];
+    const promises = Object.entries(bibleKeysMap).map(async ([bibleKey]) => {
+        return getBibleInfo(bibleKey);
+    });
+    let infoList = await Promise.all(promises);
+    infoList = infoList.filter((info) => {
+        return info !== null;
+    });
+    return infoList as BibleInfoType[];
 }
 
 export async function bibleKeyToFilePath(bibleKey: string) {
@@ -608,6 +618,49 @@ export function handBibleInfoContextMenuOpening(
     showAppContextMenu(event, contextMenuItems);
 };
 
+export async function saveJsonDataToXMLfile(jsonData: BibleJsonType) {
+    const databaseController = await BibleDatabaseController.getInstance();
+    const bibleInfo = jsonData.info;
+    const bibleKey = bibleInfo.key;
+    const biblePath = await bibleDataReader.toBiblePath(bibleKey);
+    if (biblePath === null) {
+        return false;
+    }
+    const addItem = async (fileName: string, data: string) => {
+        const filePath = pathJoin(biblePath, fileName);
+        const b64Data = appProvider.appUtils.base64Encode(data);
+        await databaseController.addItem({
+            id: filePath, data: b64Data, isForceOverride: true,
+            secondaryId: bibleKey,
+        });
+    };
+    await addItem('_info', JSON.stringify({
+        ...bibleInfo, books: bibleInfo.booksMap,
+        numList: Array.from({
+            length: 10,
+        }, (_, i) => bibleInfo.numbersMap?.[i]),
+    } as BibleInfoType));
+    for (const [bookKey, book] of Object.entries(jsonData.books)) {
+        const bookName = bibleInfo.booksMap[bookKey];
+        for (const [chapterKey, verses] of Object.entries(book)) {
+            const chapterNumber = parseInt(chapterKey);
+            const fileName = toBibleFileName(bookKey, chapterNumber);
+            await addItem(fileName, JSON.stringify({
+                title: `${bookName} ${chapterKey}`,
+                verses,
+            }));
+        }
+    }
+    await saveXMLText(bibleKey, jsonToXMLText(jsonData));
+    return true;
+}
+
+export async function deleteBibleXML(bibleKey: string) {
+    await bibleDataReader.clearBibleDatabaseData(bibleKey);
+    const filePath = await bibleKeyToFilePath(bibleKey);
+    await fsDeleteFile(filePath);
+}
+
 export async function updateBibleXMLInfo(
     bibleInfo: BibleJsonInfoType,
 ) {
@@ -619,7 +672,7 @@ export async function updateBibleXMLInfo(
         return;
     }
     const jsonData = { ...dataJson, info: bibleInfo };
-    saveXMLText(bibleInfo.key, jsonToXMLText(jsonData));
+    await saveJsonDataToXMLfile(jsonData);
 }
 
 export function useBibleXMLInfo(bibleKey: string) {

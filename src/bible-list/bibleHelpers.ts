@@ -8,7 +8,7 @@ import {
     VerseList, getVerses, keyToBook,
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    extractBibleTitle, toInputText, toLocaleNumBB,
+    extractBibleTitle, toInputText, toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import {
     getAllLocalBibleInfoList,
@@ -150,7 +150,7 @@ export async function genVerseList({
     }
     const verseNumbList = await Promise.all(
         Array.from({ length: Object.keys(verses).length }, (_, i) => {
-            return toLocaleNumBB(bibleKey, i + 1);
+            return toLocaleNumBible(bibleKey, i + 1);
         }),
     );
     const verseList = verseNumbList.map((verseNumSting, i) => {

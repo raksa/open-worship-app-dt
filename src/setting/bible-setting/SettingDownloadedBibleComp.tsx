@@ -3,10 +3,10 @@ import { BibleListType } from './bibleSettingHelpers';
 import OnlineBibleItemComp from './OnlineBibleItemComp';
 import LoadingComp from '../../others/LoadingComp';
 
-type BibleInfoType = {
+type DownloadingBibleInfoType = {
     isUpdatable: boolean;
     filePath: string | undefined;
-    locale: 'km' | 'en';
+    locale: string;
     title: string;
     key: string;
     version: number;
@@ -30,7 +30,7 @@ export default function SettingDownloadedBibleComp({
         );
     }
     const bibleInfoList = downloadedBibleInfoList
-        .map<BibleInfoType>((bibleInfo) => {
+        .map<DownloadingBibleInfoType>((bibleInfo) => {
             const foundBibleInfo = onlineBibleInfoList ?
                 onlineBibleInfoList.find((bible1) => {
                     return bible1.key === bibleInfo.key &&
@@ -77,8 +77,8 @@ export default function SettingDownloadedBibleComp({
 function RenderItem({
     bibleInfoList, bibleInfo, index, setDownloadedBibleInfoList,
 }: Readonly<{
-    bibleInfoList: BibleInfoType[],
-    bibleInfo: BibleInfoType,
+    bibleInfoList: DownloadingBibleInfoType[],
+    bibleInfo: DownloadingBibleInfoType,
     index: number,
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {

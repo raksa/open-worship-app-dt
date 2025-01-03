@@ -1,13 +1,13 @@
 import {
-    useLocalBibleInfoList, useOnlineBibleInfoList,
+    useDownloadedBibleInfoList, useOnlineBibleInfoList,
 } from './bibleSettingHelpers';
 import SettingDownloadedBibleComp from './SettingDownloadedBibleComp';
 import SettingOnlineBibleComp from './SettingOnlineBibleComp';
 
 export default function SettingBibleJsonComp() {
     const [
-        localBbInfoList, setLocalBibleInfoList,
-    ] = useLocalBibleInfoList();
+        downloadedBibleInfoList, setDownloadedBibleInfoList,
+    ] = useDownloadedBibleInfoList();
     const [
         onlineBbInfoList, setOnlineBbInfoList,
     ] = useOnlineBibleInfoList();
@@ -16,16 +16,16 @@ export default function SettingBibleJsonComp() {
             <h3>Downloaded Bible List</h3>
             <SettingDownloadedBibleComp
                 onlineBibleInfoList={onlineBbInfoList}
-                downloadedBibleInfoList={localBbInfoList}
-                setDownloadedBibleInfoList={setLocalBibleInfoList}
+                downloadedBibleInfoList={downloadedBibleInfoList}
+                setDownloadedBibleInfoList={setDownloadedBibleInfoList}
             />
             <hr />
             <h3>Online Bible List</h3>
             <SettingOnlineBibleComp
                 onlineBibleInfoList={onlineBbInfoList}
-                downloadedBibleInfoList={localBbInfoList}
+                downloadedBibleInfoList={downloadedBibleInfoList}
                 setOnlineBibleInfoList={setOnlineBbInfoList}
-                setDownloadedBibleInfoList={setLocalBibleInfoList}
+                setDownloadedBibleInfoList={setDownloadedBibleInfoList}
             />
         </div>
     );

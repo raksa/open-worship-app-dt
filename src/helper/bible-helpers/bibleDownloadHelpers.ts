@@ -1,5 +1,4 @@
 import { handleError } from '../errorHelpers';
-import { LocaleType } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { get_api_url, get_api_key } from '../../_owa-crypto/owa_crypto';
 import appProvider from '../../server/appProvider';
@@ -59,7 +58,7 @@ export async function startDownloadBible({ bibleFileFullName, options }: {
 
 
 export type BibleMinimalInfoType = {
-    locale: LocaleType,
+    locale: string,
     title: string,
     key: string,
     version: number,

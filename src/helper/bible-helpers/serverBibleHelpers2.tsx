@@ -5,6 +5,7 @@ import {
 } from './bibleInfoHelpers';
 import {
     fromLocaleNum, LocaleType, toLocaleNum,
+    toStringNum,
 } from '../../lang';
 import { useAppEffect } from '../debuggerHelpers';
 import BibleItem from '../../bible-list/BibleItem';
@@ -18,18 +19,19 @@ export async function toInputText(
     if (book) {
         txt += `${book} `;
         if (chapter !== undefined && chapter !== null) {
-            txt += `${await toLocaleNumBB(bibleKey, chapter)}`;
+            txt += `${await toLocaleNumBible(bibleKey, chapter)}`;
             if (verseStart !== undefined && verseStart !== null) {
-                txt += `:${await toLocaleNumBB(bibleKey, verseStart)}`;
+                txt += `:${await toLocaleNumBible(bibleKey, verseStart)}`;
                 if (verseEnd !== undefined && verseEnd !== null &&
                     verseEnd !== verseStart) {
-                    txt += `-${await toLocaleNumBB(bibleKey, verseEnd)}`;
+                    txt += `-${await toLocaleNumBible(bibleKey, verseEnd)}`;
                 }
             }
         }
     }
     return txt;
 }
+
 export async function getBibleLocale(bibleKey: string) {
     const info = await getBibleInfo(bibleKey);
     if (info === null) {
@@ -37,36 +39,52 @@ export async function getBibleLocale(bibleKey: string) {
     }
     return info.locale;
 }
-export async function toLocaleNumBB(bibleKey: string, n: number | null) {
+
+// TODO: use LRUCache instead
+const bibleLocaleNumMap = new Map<string, string | null>();
+export async function toLocaleNumBible(bibleKey: string, n: number | null) {
+    const cacheKey = `${bibleKey}:${n}`;
+    if (bibleLocaleNumMap.has(cacheKey)) {
+        return bibleLocaleNumMap.get(cacheKey) as string | null;
+    }
     if (typeof n !== 'number') {
         return null;
     }
-    const locale = await getBibleLocale(bibleKey);
-    return toLocaleNum(locale, n);
+    const info = await getBibleInfo(bibleKey);
+    let localeNum: string | null = null;
+    if (info !== null && info.numList !== undefined) {
+        localeNum = toStringNum(info.numList, n);
+    } else {
+        const locale = await getBibleLocale(bibleKey);
+        localeNum = toLocaleNum(locale, n);
+    }
+    bibleLocaleNumMap.set(cacheKey, localeNum);
+    return localeNum;
 }
-export function useToLocaleNumBB(bibleKey: string, nString: number | null) {
+
+export function useToLocaleNumBible(bibleKey: string, nString: number | null) {
     const [str, setStr] = useState<string | null>(null);
     useAppEffect(() => {
-        toLocaleNumBB(bibleKey, nString).then(setStr);
+        toLocaleNumBible(bibleKey, nString).then(setStr);
     }, [bibleKey, nString]);
     return str;
 }
 
-export async function fromLocaleNumBB(bibleKey: string, localeNum: string) {
+export async function fromLocaleNumBible(bibleKey: string, localeNum: string) {
     const info = await getBibleInfo(bibleKey);
     if (info === null) {
         return null;
     }
     return fromLocaleNum(info.locale, localeNum);
 }
-export function useFromLocaleNumBB(bibleKey: string, localeNum: string) {
+
+export function useFromLocaleNumBible(bibleKey: string, localeNum: string) {
     const [newLocaleNum, setNewLocaleNum] = useState<number | null>(null);
     useAppEffect(() => {
-        fromLocaleNumBB(bibleKey, localeNum).then(setNewLocaleNum);
+        fromLocaleNumBible(bibleKey, localeNum).then(setNewLocaleNum);
     }, [bibleKey, localeNum]);
     return newLocaleNum;
 }
-
 
 export type ExtractedBibleResult = {
     bookKey: string | null,
@@ -89,7 +107,7 @@ export function genExtractedBible(): ExtractedBibleResult {
 export async function parseChapterFromGuessing(
     bibleKey: string, bookKey: string, chapter: string,
 ) {
-    const chapterNum = await fromLocaleNumBB(bibleKey, chapter);
+    const chapterNum = await fromLocaleNumBible(bibleKey, chapter);
     const chapterCount = getKJVChapterCount(bookKey);
     if (chapterNum === null || chapterNum < 1 || chapterNum > chapterCount) {
         return null;
@@ -140,7 +158,7 @@ async function transformExtracted(
     );
     const target = result.bibleItem.target;
     if (verseStart !== null) {
-        const verseStartNum = await fromLocaleNumBB(bibleKey, verseStart);
+        const verseStartNum = await fromLocaleNumBible(bibleKey, verseStart);
         if (verseStartNum !== null) {
             target.verseStart = (
                 verseStartNum > 0 && verseStartNum <= verseCount ?
@@ -149,7 +167,7 @@ async function transformExtracted(
         }
     }
     if (verseEnd !== null) {
-        const verseEndNum = await fromLocaleNumBB(bibleKey, verseEnd);
+        const verseEndNum = await fromLocaleNumBible(bibleKey, verseEnd);
         if (verseEndNum !== null) {
             target.verseEnd = (
                 verseEndNum > 0 && verseEndNum <= verseCount ?

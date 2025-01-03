@@ -104,8 +104,10 @@ export function getCurrentLocale() {
 }
 
 const cache = new Map<string, LanguageType>();
-export function getLang(lang: string) {
-    return cache.get(lang) || null;
+export function getLang(langCodeOrLocal: string) {
+    // TODO: change to completely locale
+    const langCode = getLangCode(langCodeOrLocal);
+    return cache.get(langCode || langCodeOrLocal) || null;
 }
 
 export async function getLangAsync(locale: LocaleType) {
@@ -135,15 +137,19 @@ export function tran(text: string) {
     return dictionary[text] || text;
 }
 
+export const toStringNum = (numList: string[], n: number): string => {
+    return `${n}`.split('').map((n1) => {
+        return numList[parseInt(n1)];
+    }).join('');
+};
+
 export const toLocaleNum = (locale: LocaleType, n: number): string => {
     const langData = getLang(locale);
     if (langData === null) {
         return `${n}`;
     }
     const numList = langData.numList;
-    return `${n}`.split('').map((n1) => {
-        return numList[parseInt(n1)];
-    }).join('');
+    return toStringNum(numList, n);
 };
 
 export function fromLocaleNum(locale: LocaleType, localeNum: string) {

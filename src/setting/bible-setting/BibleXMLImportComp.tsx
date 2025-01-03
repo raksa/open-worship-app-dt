@@ -3,8 +3,8 @@ import { useState, useTransition } from 'react';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
-    checkIsValidUrl, getInputByName, jsonToXMLText, readFromFile,
-    readFromUrl, saveXMLText, xmlToJson,
+    checkIsValidUrl, getInputByName, readFromFile,
+    readFromUrl, saveJsonDataToXMLfile, xmlToJson,
 } from './bibleXMLHelpers';
 import { xmlFormatExample } from './bibleXMLAttributesGuessing';
 
@@ -48,8 +48,7 @@ export default function BibleXMLImportComp({ loadBibleKeys }: Readonly<{
                     );
                     return;
                 }
-                const newXMLText = jsonToXMLText(dataJson);
-                await saveXMLText(dataJson.info.key, newXMLText);
+                await saveJsonDataToXMLfile(dataJson);
                 loadBibleKeys();
             } catch (error) {
                 showSimpleToast(
