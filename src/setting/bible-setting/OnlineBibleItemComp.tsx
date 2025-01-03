@@ -6,19 +6,19 @@ import { useDownloadBible } from './bibleDownloadingHelpers';
 import { getAllXMLFileKeys } from './bibleXMLHelpers';
 
 export default function OnlineBibleItemComp({
-    bibleInfo, onDownloaded, bibleXMLKeys = [], refresh,
+    bibleInfo, onDownloaded, bibleXMLKeysMap = {}, refresh,
 }: Readonly<{
     bibleInfo: BibleMinimalInfoType,
     onDownloaded: () => void,
-    bibleXMLKeys?: string[],
+    bibleXMLKeysMap?: { [key: string]: string },
     refresh?: () => void,
 }>) {
     const [downloadingProgress, startDownloadBible] = useDownloadBible(
         bibleInfo, onDownloaded,
     );
     const handleDownloadStarting = async () => {
-        const keys = await getAllXMLFileKeys();
-        if (keys.includes(bibleInfo.key)) {
+        const keysMap = await getAllXMLFileKeys();
+        if (keysMap[bibleInfo.key]) {
             showSimpleToast(
                 'Already in XML',
                 'This bible is already in XML',
@@ -28,7 +28,7 @@ export default function OnlineBibleItemComp({
         }
         startDownloadBible();
     };
-    const isBibleXMLExist = bibleXMLKeys.includes(bibleInfo.key);
+    const isBibleXMLExist = !!bibleXMLKeysMap[bibleInfo.key];
     return (
         <li className='list-group-item'>
             <div className='w-100'

@@ -480,14 +480,19 @@ export async function getBibleInfo(bibleKey: string) {
 export async function getAllXMLFileKeys() {
     const dirPath = await bibleDataReader.getWritableBiblePath();
     const files = await fsListFiles(dirPath);
-    return files.map((file) => {
+    return Object.fromEntries(files.map((file) => {
         if (!file.endsWith('.xml')) {
             return null;
         }
         return appProvider.pathUtils.basename(file, '.xml');
     }).filter((bibleKey) => {
         return bibleKey !== null;
-    });
+    }).map((bibleKey) => {
+        const filePath = appProvider.pathUtils.resolve(
+            dirPath, `${bibleKey}.xml`,
+        );
+        return [bibleKey, filePath] as [string, string];
+    }));
 }
 
 export async function bibleKeyToFilePath(bibleKey: string) {
@@ -623,16 +628,16 @@ export function useBibleXMLInfo(bibleKey: string) {
 }
 
 export function useBibleXMLKeys() {
-    const [bibleKeys, setBibleKeys] = (
-        useState<string[] | null>(null)
+    const [bibleKeysMap, setBibleKeysMap] = (
+        useState<{ [key: string]: string } | null>(null)
     );
     const [isPending, startTransition] = useTransition();
     const loadBibleKeys = () => {
         startTransition(async () => {
             const keys = await getAllXMLFileKeys();
-            setBibleKeys(keys);
+            setBibleKeysMap(keys);
         });
     };
     useAppEffect(loadBibleKeys, []);
-    return { bibleKeys, isPending, loadBibleKeys };
+    return { bibleKeysMap, isPending, loadBibleKeys };
 }

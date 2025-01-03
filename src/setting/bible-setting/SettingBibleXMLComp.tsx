@@ -3,12 +3,12 @@ import BibleXMLImportComp from './BibleXMLImportComp';
 import BibleXMLListComp from './BibleXMLListComp';
 
 export default function SettingBibleXMLComp() {
-    const { bibleKeys, isPending, loadBibleKeys } = useBibleXMLKeys();
+    const { bibleKeysMap, isPending, loadBibleKeys } = useBibleXMLKeys();
     return (
         <div className='w-100 app-border-white-round p-2'>
             <BibleXMLListComp
                 isPending={isPending}
-                bibleKeys={bibleKeys}
+                bibleKeysMap={bibleKeysMap}
                 loadBibleKeys={loadBibleKeys}
             />
             <hr />

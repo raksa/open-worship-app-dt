@@ -13,7 +13,7 @@ export default function SettingOnlineBibleComp({
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {
     const {
-        bibleKeys: bibleXMLKeys, isPending: isPendingBibleXMLKeys,
+        bibleKeysMap, isPending: isPendingBibleXMLKeys,
         loadBibleKeys: loadBibleXMLKeys,
     } = useBibleXMLKeys();
     const handleDownloadedEvent = () => {
@@ -36,7 +36,7 @@ export default function SettingOnlineBibleComp({
             </button>
         );
     };
-    if (onlineBibleInfoList === undefined || bibleXMLKeys === null) {
+    if (onlineBibleInfoList === undefined || bibleKeysMap === null) {
         return (
             <div>
                 <div>
@@ -65,7 +65,7 @@ export default function SettingOnlineBibleComp({
                         <OnlineBibleItemComp key={bibleInfo.key}
                             bibleInfo={bibleInfo}
                             onDownloaded={handleDownloadedEvent}
-                            bibleXMLKeys={bibleXMLKeys}
+                            bibleXMLKeysMap={bibleKeysMap}
                             refresh={handleRefreshing}
                         />
                     );

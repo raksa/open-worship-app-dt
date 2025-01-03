@@ -46,9 +46,10 @@ function PreviewBibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
     );
 }
 
-function BibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
+function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     bibleKey: string,
     loadBibleKeys: () => void,
+    filePath: string,
 }>) {
     const [isShowing, setIsShowing] = useState(false);
     const handleFileDeleting = async (event: any) => {
@@ -66,6 +67,7 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
     };
     return (
         <li className='list-group-item pointer'
+            title={filePath}
             onClick={() => {
                 setIsShowing(!isShowing);
             }}
@@ -91,10 +93,10 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
 }
 
 export default function BibleXMLListComp({
-    isPending, bibleKeys, loadBibleKeys,
+    isPending, bibleKeysMap, loadBibleKeys,
 }: Readonly<{
     isPending: boolean,
-    bibleKeys: string[] | null,
+    bibleKeysMap: { [key: string]: string } | null,
     loadBibleKeys: () => void,
 }>) {
     if (isPending) {
@@ -119,7 +121,7 @@ export default function BibleXMLListComp({
             </a>
         </>
     );
-    if (bibleKeys === null || bibleKeys.length === 0) {
+    if (bibleKeysMap === null || Object.keys(bibleKeysMap).length === 0) {
         return (
             <div>
                 No Bible XML files {buttons}
@@ -133,14 +135,17 @@ export default function BibleXMLListComp({
             </h3>
             <div className='w-100 app-border-white-round p-2'>
                 <ul className='list-group d-flex flex-fill'>
-                    {bibleKeys.map((bibleKey) => {
-                        return (
-                            <BibleXMLInfoComp key={bibleKey}
-                                bibleKey={bibleKey}
-                                loadBibleKeys={loadBibleKeys}
-                            />
-                        );
-                    })}
+                    {Object.entries(bibleKeysMap).map(
+                        ([bibleKey, filePath]) => {
+                            return (
+                                <BibleXMLInfoComp key={bibleKey}
+                                    bibleKey={bibleKey}
+                                    loadBibleKeys={loadBibleKeys}
+                                    filePath={filePath}
+                                />
+                            );
+                        },
+                    )}
                 </ul>
             </div>
         </>
