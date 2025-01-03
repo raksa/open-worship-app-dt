@@ -1,5 +1,6 @@
 import LoadingComp from '../../others/LoadingComp';
 import { BibleListType } from './bibleSettingHelpers';
+import { useBibleXMLKeys } from './bibleXMLHelpers';
 import OnlineBibleItemComp from './OnlineBibleItemComp';
 
 export default function SettingOnlineBibleComp({
@@ -11,25 +12,31 @@ export default function SettingOnlineBibleComp({
     setOnlineBibleInfoList: (bbList: BibleListType) => void
     setDownloadedBibleInfoList: (bbList: BibleListType) => void,
 }>) {
+    const {
+        bibleKeys: bibleXMLKeys, isPending: isPendingBibleXMLKeys,
+        loadBibleKeys: loadBibleXMLKeys,
+    } = useBibleXMLKeys();
     const handleDownloadedEvent = () => {
         setDownloadedBibleInfoList(null);
     };
-    if (onlineBibleInfoList === null) {
+    if (onlineBibleInfoList === null || isPendingBibleXMLKeys) {
         return (
             <LoadingComp />
         );
     }
+    const handleRefreshing = () => {
+        setOnlineBibleInfoList(null);
+        loadBibleXMLKeys();
+    };
     const getRefresher = () => {
         return (
             <button className='btn btn-info'
-                onClick={() => {
-                    setOnlineBibleInfoList(null);
-                }}>
+                onClick={handleRefreshing}>
                 <i className='bi bi-arrow-clockwise' /> Refresh
             </button>
         );
     };
-    if (onlineBibleInfoList === undefined) {
+    if (onlineBibleInfoList === undefined || bibleXMLKeys === null) {
         return (
             <div>
                 <div>
@@ -58,6 +65,8 @@ export default function SettingOnlineBibleComp({
                         <OnlineBibleItemComp key={bibleInfo.key}
                             bibleInfo={bibleInfo}
                             onDownloaded={handleDownloadedEvent}
+                            bibleXMLKeys={bibleXMLKeys}
+                            refresh={handleRefreshing}
                         />
                     );
                 })}

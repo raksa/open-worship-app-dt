@@ -1,25 +1,44 @@
 import {
     BibleMinimalInfoType,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
+import { showSimpleToast } from '../../toast/toastHelpers';
 import { useDownloadBible } from './bibleDownloadingHelpers';
+import { getAllXMLFileKeys } from './bibleXMLHelpers';
 
 export default function OnlineBibleItemComp({
-    bibleInfo, onDownloaded,
+    bibleInfo, onDownloaded, bibleXMLKeys = [], refresh,
 }: Readonly<{
     bibleInfo: BibleMinimalInfoType,
     onDownloaded: () => void,
+    bibleXMLKeys?: string[],
+    refresh?: () => void,
 }>) {
     const [downloadingProgress, startDownloadBible] = useDownloadBible(
         bibleInfo, onDownloaded,
     );
+    const handleDownloadStarting = async () => {
+        const keys = await getAllXMLFileKeys();
+        if (keys.includes(bibleInfo.key)) {
+            showSimpleToast(
+                'Already in XML',
+                'This bible is already in XML',
+            );
+            refresh?.();
+            return;
+        }
+        startDownloadBible();
+    };
+    const isBibleXMLExist = bibleXMLKeys.includes(bibleInfo.key);
     return (
         <li className='list-group-item'>
-            <div className='w-100'>
+            <div className='w-100'
+                title={isBibleXMLExist ? 'Already in XML' : ''}>
                 <span>{bibleInfo.title} ({bibleInfo.key})</span>
                 {downloadingProgress === null ? (
                     <div className='float-end'>
                         <button className='btn btn-info'
-                            onClick={startDownloadBible}>
+                            disabled={isBibleXMLExist}
+                            onClick={handleDownloadStarting}>
                             Download <i className='bi bi-cloud-arrow-down' />
                         </button>
                     </div>

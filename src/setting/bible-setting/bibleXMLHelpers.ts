@@ -21,6 +21,8 @@ import {
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenuComp';
+import { useState, useTransition } from 'react';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
 /**
 * {
@@ -603,4 +605,34 @@ export async function updateBibleXMLInfo(
     }
     const jsonData = { ...dataJson, info: bibleInfo };
     saveXMLText(bibleInfo.key, jsonToXMLText(jsonData));
+}
+
+export function useBibleXMLInfo(bibleKey: string) {
+    const [bibleInfo, setBibleInfo] = (
+        useState<BibleJsonInfoType | null>(null)
+    );
+    const [isPending, startTransition] = useTransition();
+    const loadBibleKeys = () => {
+        startTransition(async () => {
+            const newBibleInfo = await getBibleInfo(bibleKey);
+            setBibleInfo(newBibleInfo);
+        });
+    };
+    useAppEffect(loadBibleKeys, []);
+    return { bibleInfo, isPending, setBibleInfo };
+}
+
+export function useBibleXMLKeys() {
+    const [bibleKeys, setBibleKeys] = (
+        useState<string[] | null>(null)
+    );
+    const [isPending, startTransition] = useTransition();
+    const loadBibleKeys = () => {
+        startTransition(async () => {
+            const keys = await getAllXMLFileKeys();
+            setBibleKeys(keys);
+        });
+    };
+    useAppEffect(loadBibleKeys, []);
+    return { bibleKeys, isPending, loadBibleKeys };
 }
