@@ -8,7 +8,7 @@ import './others/scrollbar.scss';
 import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
 import { useKeyboardRegistering } from './event/KeyboardEventListener';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
@@ -54,13 +54,13 @@ export async function initApp() {
     };
 
     await initCrypto();
-    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+    const localBibleInfoList = await getAllLocalBibleInfoList();
     const promises = [
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
         getLangAsync(defaultLocal),
     ];
-    for (const bibleInfo of downloadedBibleInfoList || []) {
+    for (const bibleInfo of localBibleInfoList || []) {
         promises.push(getLangAsync(bibleInfo.locale));
     }
     await Promise.all(promises);

@@ -7,7 +7,7 @@ import { tran } from '../lang';
 import { goToPath } from '../router/routeHelpers';
 import appProvider from '../server/appProvider';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 
@@ -85,8 +85,8 @@ export function BibleSearchButtonComp() {
             title={`Bible search [${toShortcutKey(openBibleEventMap)}]`}
             type='button'
             onClick={async () => {
-                const infoList = await getDownloadedBibleInfoList();
-                if (!infoList?.length) {
+                const localBibleInfoList = await getAllLocalBibleInfoList();
+                if (!localBibleInfoList?.length) {
                     const isConfirmed = await showAppConfirm(
                         'No Bible',
                         'You need to download a Bible to use this feature'

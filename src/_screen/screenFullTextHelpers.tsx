@@ -9,7 +9,7 @@ import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { FullTextItemDataType } from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
@@ -34,8 +34,8 @@ async function onBibleSelect(
     const bibleItemingList = bibleRenderedList.map(({ bibleKey }) => {
         return bibleKey;
     });
-    const bibleInfoList = await getDownloadedBibleInfoList();
-    if (bibleInfoList === null) {
+    const localBibleInfoList = await getAllLocalBibleInfoList();
+    if (localBibleInfoList === null) {
         showAppAlert(
             'Unable to get bible info list',
             'We were sorry, but we are unable to get bible list at the moment' +
@@ -43,7 +43,7 @@ async function onBibleSelect(
         );
         return;
     }
-    const bibleListFiltered = bibleInfoList.filter((bibleInfo) => {
+    const bibleListFiltered = localBibleInfoList.filter((bibleInfo) => {
         return !bibleItemingList.includes(bibleInfo.key);
     });
     const applyBibleItems = async (newBibleKeys: string[]) => {

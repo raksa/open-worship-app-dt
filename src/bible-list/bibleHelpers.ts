@@ -11,7 +11,7 @@ import {
     extractBibleTitle, toInputText, toLocaleNumBB,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -25,18 +25,18 @@ import appProvider from '../server/appProvider';
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
 async function getSelectedEditorBibleItem() {
-    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+    const localBibleInfoList = await getAllLocalBibleInfoList();
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
-        if (!downloadedBibleInfoList?.length) {
+        if (!localBibleInfoList?.length) {
             showSimpleToast('Getting Selected Bible',
                 'Unable to get selected bible');
             return null;
         }
-        bibleKey = downloadedBibleInfoList[0].key;
+        bibleKey = localBibleInfoList[0].key;
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
     } else if (
-        downloadedBibleInfoList?.find((bibleInfo) => {
+        localBibleInfoList?.find((bibleInfo) => {
             return bibleInfo.key === bibleKey;
         }) === undefined
     ) {

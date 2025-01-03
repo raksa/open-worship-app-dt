@@ -10,6 +10,9 @@ import { bibleDataReader, getBibleInfo } from './bibleInfoHelpers';
 import { appApiFetch } from '../networkHelpers';
 import { tarExtract } from '../../server/appHelpers';
 import { DownloadOptionsType, writeStreamToFile } from './downloadHelpers';
+import {
+    getBibleXMLCacheInfoList,
+} from '../../setting/bible-setting/bibleXMLHelpers';
 
 export const BIBLE_DOWNLOAD_TOAST_TITLE = 'Bible Download';
 
@@ -61,6 +64,7 @@ export type BibleMinimalInfoType = {
     key: string,
     version: number,
     filePath?: string,
+    isXML?: boolean,
 };
 
 export async function downloadBible({
@@ -156,4 +160,16 @@ export async function getDownloadedBibleInfoList() {
         handleError(error);
     }
     return null;
+}
+
+export async function getAllLocalBibleInfoList() {
+    const localBibleInfoList = await getDownloadedBibleInfoList() || [];
+    const bibleXMLInfoList = await getBibleXMLCacheInfoList();
+    localBibleInfoList.push(...bibleXMLInfoList.map((info) => {
+        return {
+            ...info,
+            isXML: true,
+        } as BibleMinimalInfoType;
+    }));
+    return localBibleInfoList;
 }

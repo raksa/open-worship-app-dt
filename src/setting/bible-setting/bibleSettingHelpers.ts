@@ -2,19 +2,19 @@ import { useState } from 'react';
 
 import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
 import {
-    BibleMinimalInfoType, getDownloadedBibleInfoList, getOnlineBibleInfoList,
+    BibleMinimalInfoType, getAllLocalBibleInfoList, getOnlineBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 
-export function useDownloadedBibleInfoList() {
+export function useLocalBibleInfoList() {
     const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
     useAppEffectAsync(async (methodContext) => {
         if (bibleInfoList !== null) {
             return;
         }
-        const newBibleInfoList = await getDownloadedBibleInfoList();
-        methodContext.setBibleInfoList(newBibleInfoList || undefined);
+        const newLocalBibleInfoList = await getAllLocalBibleInfoList();
+        methodContext.setBibleInfoList(newLocalBibleInfoList || undefined);
     }, [bibleInfoList], { setBibleInfoList });
     return [bibleInfoList, setBibleInfoList] as const;
 }

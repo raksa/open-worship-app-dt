@@ -16,7 +16,7 @@ import {
 } from './bibleXMLAttributesGuessing';
 import { bibleDataReader } from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
@@ -62,6 +62,7 @@ export type BibleJsonInfoType = {
     copyRights: string,
     numbersMap: { [key: string]: string },
     booksMap: { [booKey: string]: string },
+    filePath: string,
 };
 export type BibleJsonType = {
     info: BibleJsonInfoType,
@@ -137,8 +138,8 @@ async function getBibleInfoJson(bible: Element) {
         mapElement || null, 'book', kjvBibleInfo.kjvKeyValue,
     );
     let bibleKey = guessValue(bible, ['key', 'abbr']);
-    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
-    if (downloadedBibleInfoList === null) {
+    const localBibleInfoList = await getAllLocalBibleInfoList();
+    if (localBibleInfoList === null) {
         return null;
     }
     while (bibleKey === null) {
@@ -147,7 +148,7 @@ async function getBibleInfoJson(bible: Element) {
             'Key is missing',
             genBibleKeyXMLInput(newKey, (newKey1) => {
                 newKey = newKey1;
-            }, downloadedBibleInfoList, getGuessingBibleKeys(bible)),
+            }, localBibleInfoList, getGuessingBibleKeys(bible)),
         );
         if (isConfirmInput) {
             bibleKey = newKey;
@@ -170,6 +171,7 @@ async function getBibleInfoJson(bible: Element) {
     if (getLangCode(locale) === null) {
         return null;
     }
+    const filePath = await bibleKeyToFilePath(bibleKey);
     return {
         title: (
             guessValue(
@@ -188,6 +190,7 @@ async function getBibleInfoJson(bible: Element) {
         ),
         numbersMap: numberKeyMap,
         booksMap: bookKeyMap,
+        filePath,
     } as BibleJsonInfoType;
 }
 
@@ -467,7 +470,7 @@ export function checkIsValidUrl(urlText: string) {
     }
 }
 
-export async function getBibleInfo(bibleKey: string) {
+export async function getBibleXMLInfo(bibleKey: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
     const xmlText = await fsReadFile(filePath);
     const bible = xmlTextToBibleElement(xmlText);
@@ -493,6 +496,13 @@ export async function getAllXMLFileKeys() {
         );
         return [bibleKey, filePath] as [string, string];
     }));
+}
+
+export async function getBibleXMLCacheInfoList() {
+    const bibleKeysMap = await getAllXMLFileKeys();
+    console.log(bibleKeysMap);
+
+    return [] as BibleJsonInfoType[];
 }
 
 export async function bibleKeyToFilePath(bibleKey: string) {
@@ -619,7 +629,7 @@ export function useBibleXMLInfo(bibleKey: string) {
     const [isPending, startTransition] = useTransition();
     const loadBibleKeys = () => {
         startTransition(async () => {
-            const newBibleInfo = await getBibleInfo(bibleKey);
+            const newBibleInfo = await getBibleXMLInfo(bibleKey);
             setBibleInfo(newBibleInfo);
         });
     };
