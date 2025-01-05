@@ -8,12 +8,14 @@ import {
 } from './bibleXMLHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
+import { useStateSettingBoolean } from '../../helper/settingHelpers';
 
 function PreviewBibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
     bibleKey: string,
     loadBibleKeys: () => void,
 }>) {
     const { bibleInfo, setBibleInfo, isPending } = useBibleXMLInfo(bibleKey);
+    const [isChanged, setIsChanged] = useState(false);
     if (isPending) {
         return (
             <LoadingComp />
@@ -31,17 +33,20 @@ function PreviewBibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
                 handBibleInfoContextMenuOpening(
                     event, bibleInfo, (newOutputJson) => {
                         setBibleInfo(newOutputJson);
+                        setIsChanged(true);
                     },
                 );
             }}>
-            <button className='btn btn-success'
+            <button className='btn btn-success' style={{
+                position: 'absolute',
+            }} disabled={!isChanged}
                 onClick={() => {
                     updateBibleXMLInfo(bibleInfo);
                     loadBibleKeys();
                 }}>
                 Save
             </button>
-            <pre>{JSON.stringify(bibleInfo, null, 2)}</pre>
+            <pre className='mt-5'>{JSON.stringify(bibleInfo, null, 2)}</pre>
         </div>
     );
 }
@@ -52,7 +57,9 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     filePath: string,
 }>) {
 
-    const [isShowing, setIsShowing] = useState(false);
+    const [isShowing, setIsShowing] = useStateSettingBoolean(
+        `bible-xml-${bibleKey}`, false,
+    );
     const handleFileDeleting = async (event: any) => {
         event.stopPropagation();
         const isConfirmed = await showAppConfirm(
@@ -78,17 +85,17 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     return (
         <li className='list-group-item pointer'
             title={filePath}
-            onClick={() => {
-                setIsShowing(!isShowing);
-            }}
             onContextMenu={handBibleKeyContextMenuOpening.bind(null, bibleKey)}>
-            <div className='d-flex w-100'>
+            <div className='d-flex w-100'
+                onClick={() => {
+                    setIsShowing(!isShowing);
+                }}>
                 <div className='flex-fill'>{bibleKey}</div>
                 <div>
                     <div className='btn-group'>
                         <button className='btn btn-info'
                             onClick={handleReloading}>
-                            Reload
+                            Reload Cache
                         </button>
                         <button className='btn btn-danger'
                             onClick={handleFileDeleting}>

@@ -87,7 +87,8 @@ export function showAppContextMenu(
                 setDataDelegator?.(null);
                 KeyboardEventListener.unregisterEventListener(escEvent);
                 resolve();
-            });
+            },
+        );
     });
 }
 
@@ -104,13 +105,42 @@ export default function AppContextMenuComp() {
         setData(newData);
     };
     useAppEffect(() => {
+        const listener = (event: KeyboardEvent) => {
+            if (
+                event.shiftKey || event.ctrlKey || event.altKey ||
+                event.metaKey
+            ) {
+                return;
+            }
+            const key = event.key.toLowerCase();
+            if (!key) {
+                return;
+            }
+            const container = document.getElementById(
+                'app-context-menu-container',
+            );
+            if (container === null) {
+                return;
+            }
+            const elements = Array.from(
+                container.querySelectorAll('.app-context-menu-item'),
+            );
+            for (const element of elements) {
+                if (element.textContent?.toLowerCase().startsWith(key)) {
+                    element.scrollIntoView();
+                    break;
+                }
+            }
+        };
+        document.addEventListener('keydown', listener);
         setDataDelegator = (newData) => {
             setData1(newData);
         };
         return () => {
+            document.removeEventListener('keydown', listener);
             setDataDelegator = null;
         };
-    });
+    }, []);
     if (data === null) {
         return null;
     }

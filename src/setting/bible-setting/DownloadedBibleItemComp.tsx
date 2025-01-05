@@ -49,7 +49,7 @@ export default function DownloadedBibleItemComp({
     return (
         <li className='list-group-item'>
             <div>
-                <span>{title} ({key})</span>
+                <span>({key}) {title}</span>
                 <div className='float-end'>
                     <div className='btn-group'>
                         <button className='btn btn-danger'

@@ -121,7 +121,7 @@ function BibleNumbersMapXMLInputComp({
                     `https://translate.google.com/?sl=en&tl=${langCode}&` +
                     'text=0%201%202%203%204%205%206%207%208%209&op=translate'
                 } target='_blank'>
-                    Translate
+                    Translate ({langCode})
                 </a>
             </div>
         </div>
@@ -159,6 +159,18 @@ function BibleBooksMapXMLInputComp({
             setInvalidMessage('');
         }
     };
+    const handleMarkupStringParsing = (markupString: string) => {
+        const parser = new DOMParser();
+        markupString = markupString.replace(/<\//g, '@newline</');
+        const doc = parser.parseFromString(markupString, 'text/html');
+        let innerText = doc.body.innerText;
+        innerText = innerText.replace(/@newline/g, '\n');
+        innerText = innerText.replace(/ +/g, ' ');
+        innerText = innerText.replace(/\n\s/g, '\n');
+        innerText = innerText.replace(/\n+/g, '\n');
+        innerText = innerText.trim();
+        setValue1(innerText);
+    };
     const langCode = getLangCode(locale) || 'en';
     return (
         <div className='w-100 h-100'>
@@ -194,8 +206,17 @@ function BibleBooksMapXMLInputComp({
                     '20PETER%0A2%20PETER%0A1%20JOHN%0A2%20JOHN%0A3%20JOHN%0A' +
                     'JUDE%0AREVELATION&op=translate'
                 } target='_blank'>
-                    Translate
+                    Translate ({langCode})
                 </a>
+                {value.includes('<') ? (
+                    <button className='btn btn-info'
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            handleMarkupStringParsing(value);
+                        }}>
+                        Parse Markup String
+                    </button>
+                ) : null}
             </div>
         </div>
     );
@@ -237,90 +258,90 @@ export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
     copyRights="Example copy rights">
     <map>
         // e.g: for Khmer(km) value="លោកុ‌ប្បត្តិ" for value="GEN"
-        <book key="GEN" value="GENESIS"/>
-        <book key="EXO" value="EXODUS"/>
-        <book key="LEV" value="LEVITICUS"/>
-        <book key="NUM" value="NUMBERS"/>
-        <book key="DEU" value="DEUTERONOMY"/>
-        <book key="JOS" value="JOSHUA"/>
-        <book key="JDG" value="JUDGES"/>
-        <book key="RUT" value="RUTH"/>
-        <book key="1SA" value="1 SAMUEL"/>
-        <book key="2SA" value="2 SAMUEL"/>
-        <book key="1KI" value="1 KINGS"/>
-        <book key="2KI" value="2 KINGS"/>
-        <book key="1CH" value="1 CHRONICLES"/>
-        <book key="2CH" value="2 CHRONICLES"/>
-        <book key="EZR" value="EZRA"/>
-        <book key="NEH" value="NEHEMIAH"/>
-        <book key="EST" value="ESTHER"/>
-        <book key="JOB" value="JOB"/>
-        <book key="PSA" value="PSALM"/>
-        <book key="PRO" value="PROVERBS"/>
-        <book key="ECC" value="ECCLESIASTES"/>
-        <book key="SNG" value="SONG OF SOLOMON"/>
-        <book key="ISA" value="ISAIAH"/>
-        <book key="JER" value="JEREMIAH"/>
-        <book key="LAM" value="LAMENTATIONS"/>
-        <book key="EZK" value="EZEKIEL"/>
-        <book key="DAN" value="DANIEL"/>
-        <book key="HOS" value="HOSEA"/>
-        <book key="JOL" value="JOEL"/>
-        <book key="AMO" value="AMOS"/>
-        <book key="OBA" value="OBADIAH"/>
-        <book key="JON" value="JONAH"/>
-        <book key="MIC" value="MICAH"/>
-        <book key="NAM" value="NAHUM"/>
-        <book key="HAB" value="HABAKKUK"/>
-        <book key="ZEP" value="ZEPHANIAH"/>
-        <book key="HAG" value="HAGGAI"/>
-        <book key="ZEC" value="ZECHARIAH"/>
-        <book key="MAL" value="MALACHI"/>
-        <book key="MAT" value="MATTHEW"/>
-        <book key="MRK" value="MARK"/>
-        <book key="LUK" value="LUKE"/>
-        <book key="JHN" value="JOHN"/>
-        <book key="ACT" value="ACTS"/>
-        <book key="ROM" value="ROMANS"/>
-        <book key="1CO" value="1 CORINTHIANS"/>
-        <book key="2CO" value="2 CORINTHIANS"/>
-        <book key="GAL" value="GALATIANS"/>
-        <book key="EPH" value="EPHESIANS"/>
-        <book key="PHP" value="PHILIPPIANS"/>
-        <book key="COL" value="COLOSSIANS"/>
-        <book key="1TH" value="1 THESSALONIANS"/>
-        <book key="2TH" value="2 THESSALONIANS"/>
-        <book key="1TI" value="1 TIMOTHY"/>
-        <book key="2TI" value="2 TIMOTHY"/>
-        <book key="TIT" value="TITUS"/>
-        <book key="PHM" value="PHILEMON"/>
-        <book key="HEB" value="HEBREWS"/>
-        <book key="JAS" value="JAMES"/>
-        <book key="1PE" value="1 PETER"/>
-        <book key="2PE" value="2 PETER"/>
-        <book key="1JN" value="1 JOHN"/>
-        <book key="2JN" value="2 JOHN"/>
-        <book key="3JN" value="3 JOHN"/>
-        <book key="JUD" value="JUDE"/>
-        <book key="REV" value="REVELATION"/>
+        <book-map key="GEN" value="GENESIS"/>
+        <book-map key="EXO" value="EXODUS"/>
+        <book-map key="LEV" value="LEVITICUS"/>
+        <book-map key="NUM" value="NUMBERS"/>
+        <book-map key="DEU" value="DEUTERONOMY"/>
+        <book-map key="JOS" value="JOSHUA"/>
+        <book-map key="JDG" value="JUDGES"/>
+        <book-map key="RUT" value="RUTH"/>
+        <book-map key="1SA" value="1 SAMUEL"/>
+        <book-map key="2SA" value="2 SAMUEL"/>
+        <book-map key="1KI" value="1 KINGS"/>
+        <book-map key="2KI" value="2 KINGS"/>
+        <book-map key="1CH" value="1 CHRONICLES"/>
+        <book-map key="2CH" value="2 CHRONICLES"/>
+        <book-map key="EZR" value="EZRA"/>
+        <book-map key="NEH" value="NEHEMIAH"/>
+        <book-map key="EST" value="ESTHER"/>
+        <book-map key="JOB" value="JOB"/>
+        <book-map key="PSA" value="PSALM"/>
+        <book-map key="PRO" value="PROVERBS"/>
+        <book-map key="ECC" value="ECCLESIASTES"/>
+        <book-map key="SNG" value="SONG OF SOLOMON"/>
+        <book-map key="ISA" value="ISAIAH"/>
+        <book-map key="JER" value="JEREMIAH"/>
+        <book-map key="LAM" value="LAMENTATIONS"/>
+        <book-map key="EZK" value="EZEKIEL"/>
+        <book-map key="DAN" value="DANIEL"/>
+        <book-map key="HOS" value="HOSEA"/>
+        <book-map key="JOL" value="JOEL"/>
+        <book-map key="AMO" value="AMOS"/>
+        <book-map key="OBA" value="OBADIAH"/>
+        <book-map key="JON" value="JONAH"/>
+        <book-map key="MIC" value="MICAH"/>
+        <book-map key="NAM" value="NAHUM"/>
+        <book-map key="HAB" value="HABAKKUK"/>
+        <book-map key="ZEP" value="ZEPHANIAH"/>
+        <book-map key="HAG" value="HAGGAI"/>
+        <book-map key="ZEC" value="ZECHARIAH"/>
+        <book-map key="MAL" value="MALACHI"/>
+        <book-map key="MAT" value="MATTHEW"/>
+        <book-map key="MRK" value="MARK"/>
+        <book-map key="LUK" value="LUKE"/>
+        <book-map key="JHN" value="JOHN"/>
+        <book-map key="ACT" value="ACTS"/>
+        <book-map key="ROM" value="ROMANS"/>
+        <book-map key="1CO" value="1 CORINTHIANS"/>
+        <book-map key="2CO" value="2 CORINTHIANS"/>
+        <book-map key="GAL" value="GALATIANS"/>
+        <book-map key="EPH" value="EPHESIANS"/>
+        <book-map key="PHP" value="PHILIPPIANS"/>
+        <book-map key="COL" value="COLOSSIANS"/>
+        <book-map key="1TH" value="1 THESSALONIANS"/>
+        <book-map key="2TH" value="2 THESSALONIANS"/>
+        <book-map key="1TI" value="1 TIMOTHY"/>
+        <book-map key="2TI" value="2 TIMOTHY"/>
+        <book-map key="TIT" value="TITUS"/>
+        <book-map key="PHM" value="PHILEMON"/>
+        <book-map key="HEB" value="HEBREWS"/>
+        <book-map key="JAS" value="JAMES"/>
+        <book-map key="1PE" value="1 PETER"/>
+        <book-map key="2PE" value="2 PETER"/>
+        <book-map key="1JN" value="1 JOHN"/>
+        <book-map key="2JN" value="2 JOHN"/>
+        <book-map key="3JN" value="3 JOHN"/>
+        <book-map key="JUD" value="JUDE"/>
+        <book-map key="REV" value="REVELATION"/>
         // e.g: for Khmer(km) value="១" for value="1"
-        <number key="0" value="0"/>
-        <number value="0" value="1"/>
-        <number key="2" value="2"/>
-        <number key="3" value="3"/>
-        <number key="4" value="4"/>
-        <number key="5" value="5"/>
-        <number key="6" value="6"/>
-        <number key="7" value="7"/>
-        <number key="8" value="8"/>
-        <number key="9" value="9"/>
+        <number-map key="0" value="0"/>
+        <number-map value="0" value="1"/>
+        <number-map key="2" value="2"/>
+        <number-map key="3" value="3"/>
+        <number-map key="4" value="4"/>
+        <number-map key="5" value="5"/>
+        <number-map key="6" value="6"/>
+        <number-map key="7" value="7"/>
+        <number-map key="8" value="8"/>
+        <number-map key="9" value="9"/>
     </map>
     <testament name="Old">
         <book number="1">
             <chapter number="1">
                 // eslint-disable-next-line max-len
                 <verse number="1">
-                    This is verse text of chapter 1 in book 1
+                    This is verse text number 1 of chapter 1 in book Genesis
                 </verse>
             </chapter>
         </book>
@@ -329,14 +350,23 @@ export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
         <book number="40">
             <chapter number="2">
                 <verse number="1">
-                    This is verse text of chapter 2 in book 40
+                    This is verse text number 1 of chapter 2 in book Matthew
                 </verse>
             </chapter>
         </book>
     </testament>
     <book number="3">
         <chapter number="3">
-            <verse number="1">This is verse text of chapter 3 in book 3</verse>
+            <verse number="1">
+                This is verse text number 1 of chapter 3 in book Leviticus
+            </verse>
+        </chapter>
+    </book>
+    <book number="num">
+        <chapter number="1">
+            <verse number="1">
+                This is verse text number 1 of chapter 1 in book Number
+            </verse>
         </chapter>
     </book>
 </bible>`;
