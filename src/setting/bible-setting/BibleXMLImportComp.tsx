@@ -3,10 +3,11 @@ import { useState, useTransition } from 'react';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
-    checkIsValidUrl, getInputByName, readFromFile,
-    readFromUrl, saveJsonDataToXMLfile, xmlToJson,
+    checkIsValidUrl, getInputByName, readFromFile, readFromUrl,
+    saveJsonDataToXMLfile,
 } from './bibleXMLHelpers';
 import { xmlFormatExample } from './bibleXMLAttributesGuessing';
+import { xmlToJson } from './bibleXMLJsonDataHelpers';
 
 export default function BibleXMLImportComp({ loadBibleKeys }: Readonly<{
     loadBibleKeys: () => void,

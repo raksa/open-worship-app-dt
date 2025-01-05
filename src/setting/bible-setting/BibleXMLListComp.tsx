@@ -4,8 +4,7 @@ import LoadingComp from '../../others/LoadingComp';
 import {
     handBibleInfoContextMenuOpening, handBibleKeyContextMenuOpening,
     updateBibleXMLInfo, useBibleXMLInfo, deleteBibleXML,
-    cacheBibleXMLData,
-    getBibleXMLDataFromKey,
+    cacheBibleXMLData, getBibleXMLDataFromKey,
 } from './bibleXMLHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
@@ -52,7 +51,7 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     loadBibleKeys: () => void,
     filePath: string,
 }>) {
-    
+
     const [isShowing, setIsShowing] = useState(false);
     const handleFileDeleting = async (event: any) => {
         event.stopPropagation();

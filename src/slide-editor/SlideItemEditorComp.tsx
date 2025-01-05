@@ -6,7 +6,6 @@ import CanvasController, {
     CanvasControllerContext,
 } from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRangeComp';
-import { defaultRangeSize } from './canvas/tools/SlideItemEditorToolsComp';
 import {
     useSelectedEditingSlideItemContext,
 } from '../slide-list/SlideItem';
@@ -17,6 +16,7 @@ import CanvasItem, {
 } from './canvas/CanvasItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import { defaultRangeSize } from '../bible-reader/BibleViewSetting';
 
 const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvasComp');
