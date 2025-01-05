@@ -4,8 +4,11 @@ import LoadingComp from '../../others/LoadingComp';
 import {
     handBibleInfoContextMenuOpening, handBibleKeyContextMenuOpening,
     updateBibleXMLInfo, useBibleXMLInfo, deleteBibleXML,
+    cacheBibleXMLData,
+    getBibleXMLDataFromKey,
 } from './bibleXMLHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
 function PreviewBibleXMLInfoComp({ bibleKey, loadBibleKeys }: Readonly<{
     bibleKey: string,
@@ -49,6 +52,7 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     loadBibleKeys: () => void,
     filePath: string,
 }>) {
+    
     const [isShowing, setIsShowing] = useState(false);
     const handleFileDeleting = async (event: any) => {
         event.stopPropagation();
@@ -62,6 +66,16 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
         await deleteBibleXML(bibleKey);
         loadBibleKeys();
     };
+    const handleReloading = async (event: any) => {
+        event.stopPropagation();
+        const jsonData = await getBibleXMLDataFromKey(bibleKey);
+        if (jsonData === null) {
+            showSimpleToast('Loading', 'Failed to load Bible XML');
+            return;
+        }
+        await cacheBibleXMLData(jsonData);
+        showSimpleToast('Loading', 'Bible XML reloaded');
+    };
     return (
         <li className='list-group-item pointer'
             title={filePath}
@@ -69,10 +83,14 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
                 setIsShowing(!isShowing);
             }}
             onContextMenu={handBibleKeyContextMenuOpening.bind(null, bibleKey)}>
-            <div>
-                <span>{bibleKey}</span>
-                <div className='float-end'>
+            <div className='d-flex w-100'>
+                <div className='flex-fill'>{bibleKey}</div>
+                <div>
                     <div className='btn-group'>
+                        <button className='btn btn-info'
+                            onClick={handleReloading}>
+                            Reload
+                        </button>
                         <button className='btn btn-danger'
                             onClick={handleFileDeleting}>
                             Delete

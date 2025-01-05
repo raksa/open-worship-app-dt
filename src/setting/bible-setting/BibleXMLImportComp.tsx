@@ -17,6 +17,15 @@ export default function BibleXMLImportComp({ loadBibleKeys }: Readonly<{
     const [isPending, startTransition] = useTransition();
     const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
     const isValidUrl = checkIsValidUrl(urlText);
+    const handleFileCanceling = (form: any) => {
+        if (form instanceof HTMLFormElement) {
+            const inputFile = getInputByName(form, 'file');
+            if (inputFile instanceof HTMLInputElement) {
+                inputFile.value = '';
+            }
+        }
+        setIsFileSelected(false);
+    };
     const handleFormSubmitting = async (
         event: React.FormEvent<HTMLFormElement>,
     ) => {
@@ -48,8 +57,12 @@ export default function BibleXMLImportComp({ loadBibleKeys }: Readonly<{
                     );
                     return;
                 }
-                await saveJsonDataToXMLfile(dataJson);
-                loadBibleKeys();
+                const isSuccess = await saveJsonDataToXMLfile(dataJson);
+                if (isSuccess) {
+                    handleFileCanceling(form);
+                    setUrlText('');
+                    loadBibleKeys();
+                }
             } catch (error) {
                 showSimpleToast(
                     'Format Submit Error',
@@ -57,16 +70,6 @@ export default function BibleXMLImportComp({ loadBibleKeys }: Readonly<{
                 );
             }
         });
-    };
-    const handleFileCanceling = (event: any) => {
-        const form = event.currentTarget.form;
-        if (form instanceof HTMLFormElement) {
-            const inputFile = getInputByName(form, 'file');
-            if (inputFile instanceof HTMLInputElement) {
-                inputFile.value = '';
-            }
-        }
-        setIsFileSelected(false);
     };
     return (
         <>
@@ -103,7 +106,10 @@ export default function BibleXMLImportComp({ loadBibleKeys }: Readonly<{
                             {isFileSelected ? (
                                 <button type='button' title='Cancel selection'
                                     className='btn btn-sm btn-danger'
-                                    onClick={handleFileCanceling}>
+                                    onClick={(event) => {
+                                        const form = event.currentTarget.form;
+                                        handleFileCanceling(form);
+                                    }}>
                                     <i className='bi bi-x-lg' />
                                 </button>
                             ) : null}
