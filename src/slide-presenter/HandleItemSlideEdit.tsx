@@ -4,7 +4,7 @@ import WindowEventListener, {
     useWindowEvent, EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import SlideItem from '../slide-list/SlideItem';
-import AppSuspense from '../others/AppSuspense';
+import AppSuspenseComp from '../others/AppSuspenseComp';
 
 const LazySlideItemEditorPopup = lazy(() => {
     return import('../slide-editor/SlideItemEditorPopup');
@@ -37,8 +37,8 @@ export default function HandleItemSlideEdit() {
         return null;
     }
     return (
-        <AppSuspense >
+        <AppSuspenseComp >
             <LazySlideItemEditorPopup slideItem={slideItem} />
-        </AppSuspense>
+        </AppSuspenseComp>
     );
 }

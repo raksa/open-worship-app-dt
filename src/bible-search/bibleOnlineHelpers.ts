@@ -50,7 +50,7 @@ export function findPageNumber(
     data: BibleSearchOnlineType, perPage: number, pages: string[],
 ) {
     for (const pageNumber of pages) {
-        if (checkIsCurrentPage(data, parseInt(pageNumber, 10), perPage)) {
+        if (checkIsCurrentPage(data, parseInt(pageNumber), perPage)) {
             return pageNumber;
         }
     }
@@ -87,8 +87,8 @@ export function breakItem(text: string, item: string, bibleKey: string) {
     }
     const [bookKey, chapter] = bookKeyChapter.split('.');
     const target = {
-        bookKey: bookKey, chapter: parseInt(chapter, 10),
-        verseStart: parseInt(verse, 10), verseEnd: parseInt(verse, 10),
+        bookKey: bookKey, chapter: parseInt(chapter),
+        verseStart: parseInt(verse), verseEnd: parseInt(verse),
     };
     const bibleItemJson: BibleItemType = {
         id: -1, metadata: {}, bibleKey, target,
@@ -102,7 +102,7 @@ export function pageNumberToReqData(
     pagingData: PagingDataTye, pageNumber: string,
 ) {
     const { perPage } = pagingData;
-    let newPageNumber = parseInt(pageNumber, 10);
+    let newPageNumber = parseInt(pageNumber);
     newPageNumber -= 1;
     const fromLineNumber = perPage * newPageNumber + 1;
     return {

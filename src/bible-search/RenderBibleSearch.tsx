@@ -28,6 +28,9 @@ export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
     const [inputText, setInputText] = useState<string>(editorInputText);
     const [bibleKey, setBibleKey] = useSelectedBibleKey();
     const viewController = SearchBibleItemViewController.getInstance();
+    if (bibleKey !== null) {
+        viewController.selectedBibleItem.bibleKey = bibleKey;
+    }
     viewController.setBibleKey = setBibleKey;
     const inputTextContextValue = useMemo(() => ({
         inputText, setInputText,
@@ -74,7 +77,7 @@ export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
                     'card-body d-flex w-100 h-100 overflow-hidden'
                 }>
                     {isSearchOnline ? (
-                        <ResizeActor fSizeName='bible-search-popup-body'
+                        <ResizeActor flexSizeName='bible-search-popup-body'
                             isHorizontal
                             isDisableQuickResize
                             flexSizeDefault={{ 'h1': ['1'], 'h2': ['3'] }}

@@ -29,7 +29,7 @@ export const fontSizeSettingNames = {
 export const screenManagerSettingNames = {
     SLIDE: 'screen-slide-manager',
     ALERT: 'screen-alert-manager',
-    BG: 'screen-bg-manager',
-    FT: 'screen-ft-manager',
+    BACKGROUND: 'screen-bg-manager',
+    FULL_TEXT: 'screen-ft-manager',
     MANAGERS: 'screen-managers',
 };

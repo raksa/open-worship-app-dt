@@ -6,20 +6,22 @@ import { handleError } from '../helper/errorHelpers';
 import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
-import { createMouseEvent } from '../others/AppContextMenu';
-import SlideItem, { SlideItemType } from '../slide-list/SlideItem';
+import { createMouseEvent } from '../others/AppContextMenuComp';
+import { SlideItemType } from '../slide-list/SlideItem';
 import appProviderScreen from './appProviderScreen';
 import {
     BibleItemRenderedType, LyricRenderedType,
 } from './fullTextScreenComps';
 import {
     ScreenTransitionEffectType, TargetType,
-} from './transition-effect/transitionEffectHelpers';
+} from './transitionEffectHelpers';
+import { electronSendAsync, unlocking } from '../server/appHelpers';
+import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
 
-export const ftDataTypeList = ['bible-item', 'lyric'] as const;
-export type FfDataType = typeof ftDataTypeList[number];
-export type FTItemDataType = {
-    type: FfDataType,
+export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
+export type FullTextDataType = typeof fullTextDataTypeList[number];
+export type FullTextItemDataType = {
+    type: FullTextDataType,
     bibleItemData?: {
         renderedList: BibleItemRenderedType[],
         bibleItem: BibleItemType,
@@ -30,19 +32,19 @@ export type FTItemDataType = {
     scroll: number,
     selectedIndex: number | null,
 };
-export type FTListType = {
-    [key: string]: FTItemDataType;
+export type FullTextListType = {
+    [key: string]: FullTextItemDataType;
 };
 
-const backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
-export type BackgroundType = typeof backgroundTypeList[number];
+const _backgroundTypeList = ['color', 'image', 'video', 'sound'] as const;
+export type BackgroundType = typeof _backgroundTypeList[number];
 export type BackgroundSrcType = {
     type: BackgroundType;
     src: string;
     width?: number;
     height?: number;
 };
-export type BGSrcListType = {
+export type BackgroundSrcListType = {
     [key: string]: BackgroundSrcType;
 };
 
@@ -88,10 +90,12 @@ export const screenTypeList = [
     'init', 'effect',
 ] as const;
 export type ScreenType = typeof screenTypeList[number];
-export type ScreenMessageType = {
-    screenId: number,
+export type BasicScreenMessageType = {
     type: ScreenType,
     data: any,
+};
+export type ScreenMessageType = BasicScreenMessageType & {
+    screenId: number,
 };
 
 const messageUtils = appProviderScreen.messageUtils;
@@ -146,22 +150,13 @@ export function getAllDisplays(): AllDisplayType {
 type ShowScreenDataType = {
     screenId: number,
     displayId: number,
-    replyEventName: string,
 };
 export function showScreen({ screenId, displayId }: SetDisplayType) {
-    return new Promise<void>((resolve) => {
-        const replyEventName = 'app:main-' + Date.now();
-        messageUtils.listenOnceForData(replyEventName, () => {
-            resolve();
-        });
-        const data: ShowScreenDataType = {
-            screenId,
-            displayId,
-            replyEventName,
-        };
-        messageUtils.sendData('main:app:show-screen', data);
-    });
+    return electronSendAsync<void>('main:app:show-screen', {
+        screenId, displayId,
+    } as ShowScreenDataType);
 }
+
 export function hideScreen(screenId: number) {
     messageUtils.sendData('app:hide-screen', screenId);
 }
@@ -185,58 +180,13 @@ export function genScreenMouseEvent(event?: any): MouseEvent {
     return createMouseEvent(0, 0);
 }
 
-export function getScreenManagersInstanceSetting() {
-    const str = getSetting(screenManagerSettingNames.MANAGERS, '');
-    if (isValidJson(str, true)) {
-        const json = JSON.parse(str);
-        return json.filter(({ screenId, _ }: any) => {
-            return typeof screenId === 'number';
-        });
-    }
-    return [];
-}
-
-function getValidOnScreen(data: { [key: string]: any }) {
-    const instanceSetting = getScreenManagersInstanceSetting();
-    if (instanceSetting.size === 0) {
-        return {};
-    }
-    const screenIdList = instanceSetting.map(({ screenId }: any) => {
-        return screenId;
-    });
-    const validEntry = Object.entries(data).filter(([key, _]) => {
-        return screenIdList.includes(parseInt(key));
-    });
-    return Object.fromEntries(validEntry);
-}
-
-export function getSlideListOnScreenSetting(): SlideListType {
-    const str = getSetting(screenManagerSettingNames.SLIDE, '');
-    try {
-        if (!isValidJson(str, true)) {
-            return {};
-        }
-        const json = JSON.parse(str);
-        Object.values(json).forEach((item: any) => {
-            if (typeof item.slideFilePath !== 'string') {
-                throw new Error('Invalid slide path');
-            }
-            SlideItem.validate(item.slideItemJson);
-        });
-        return getValidOnScreen(json);
-    } catch (error) {
-        handleError(error);
-    }
-    return {};
-}
-
 export function getAlertDataListOnScreenSetting(): AlertSrcListType {
-    const str = getSetting(screenManagerSettingNames.ALERT, '');
+    const string = getSetting(screenManagerSettingNames.ALERT, '');
     try {
-        if (!isValidJson(str, true)) {
+        if (!isValidJson(string, true)) {
             return {};
         }
-        const json = JSON.parse(str);
+        const json = JSON.parse(string);
         Object.values(json).forEach((item: any) => {
             const { countdownData } = item;
             if (
@@ -262,8 +212,8 @@ export function getAlertDataListOnScreenSetting(): AlertSrcListType {
     return {};
 }
 
-export function getBGSrcListOnScreenSetting(): BGSrcListType {
-    const str = getSetting(screenManagerSettingNames.BG, '');
+export function getBackgroundSrcListOnScreenSetting(): BackgroundSrcListType {
+    const str = getSetting(screenManagerSettingNames.BACKGROUND, '');
     if (isValidJson(str, true)) {
         const json = JSON.parse(str);
         const items = Object.values(json);
@@ -309,8 +259,8 @@ const validateLyric = ({ renderedList }: any) => {
     );
 };
 
-export function getFTListOnScreenSetting(): FTListType {
-    const str = getSetting(screenManagerSettingNames.FT, '');
+export function getFullTextListOnScreenSetting(): FullTextListType {
+    const str = getSetting(screenManagerSettingNames.FULL_TEXT, '');
     try {
         if (!isValidJson(str, true)) {
             return {};
@@ -318,7 +268,7 @@ export function getFTListOnScreenSetting(): FTListType {
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
             if (
-                !ftDataTypeList.includes(item.type) ||
+                !fullTextDataTypeList.includes(item.type) ||
                 (
                     item.type === 'bible-item' &&
                     validateBible(item.bibleItemData)
@@ -331,8 +281,11 @@ export function getFTListOnScreenSetting(): FTListType {
         });
         return getValidOnScreen(json);
     } catch (error) {
-        setSetting(screenManagerSettingNames.FT, '');
+        unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+            setSetting(screenManagerSettingNames.FULL_TEXT, '');
+        });
         handleError(error);
     }
     return {};
-}   
+}
+

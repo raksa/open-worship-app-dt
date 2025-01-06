@@ -6,16 +6,18 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import TabRender, {
+import TabRenderComp, {
     genTabBody,
-} from '../others/TabRender';
+} from '../others/TabRenderComp';
 import {
-    usePBGMEvents,
-} from '../_screen/screenEventHelpers';
+    useScreenBackgroundManagerEvents,
+} from '../_screen/managers/screenEventHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import {
-    BackgroundType, getBGSrcListOnScreenSetting,
+    BackgroundType, getBackgroundSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
+import ResizeActor from '../resize-actor/ResizeActor';
+import { tran } from '../lang';
 
 const LazyBackgroundColors = lazy(() => {
     return import('./BackgroundColors');
@@ -44,41 +46,68 @@ export default function Background() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
         'background-tab', 'image',
     );
-    usePBGMEvents(['update']);
-    const bgSrcList = getBGSrcListOnScreenSetting();
+    useScreenBackgroundManagerEvents(['update']);
+    const backgroundSrcList = getBackgroundSrcListOnScreenSetting();
     const toHLS = (type: BackgroundType) => {
-        const isSelected = Object.values(bgSrcList).some((src) => {
+        const isSelected = Object.values(backgroundSrcList).some((src) => {
             return src.type === type;
         });
         return isSelected ? 'nav-highlight-selected' : undefined;
     };
+    const normalBackgroundChild = tabTypeList.map(([type, _, target]) => {
+        return genTabBody<TabType>(tabType, [type, target]);
+    });
     return (
         <div className='background w-100 d-flex flex-column'>
             <div className='background-header d-flex'>
-                <TabRender<TabType>
+                <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name, toHLS(type)];
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType}
                 />
-                <TabRender<'sound' | ''>
-                    tabs={[[
-                        'sound', '♫Sound♫', undefined,
-                    ]]}
-                    activeTab={isSoundActive ? 'sound' : ''}
-                    setActiveTab={() => {
-                        setIsSoundActive(!isSoundActive);
-                    }}
-                />
+                <ul className={
+                    'nav nav-tabs flex-fill d-flex justify-content-end'
+                }>
+                    <li className={'nav-item '}>
+                        <button className={
+                            'btn btn-link nav-link' +
+                            ` ${isSoundActive ? 'active' : ''}`
+                        }
+                            onClick={() => {
+                                setIsSoundActive(!isSoundActive);
+                            }}>
+                            ♫{tran('Sound')}♫
+                        </button>
+                    </li>
+                </ul>
             </div>
             <div className='background-body w-100 flex-fill d-flex'>
-                {tabTypeList.map(([type, _, target]) => {
-                    return genTabBody<TabType>(tabType, [type, target]);
-                })}
-                {!isSoundActive ? null : genTabBody<TabType>(
-                    'sound', ['sound', LazyBackgroundSounds],
-                )}
+                {isSoundActive ? (
+                    <ResizeActor
+                        flexSizeName={'flex-size-background'}
+                        isHorizontal
+                        isDisableQuickResize={true}
+                        flexSizeDefault={{
+                            'h1': ['1'],
+                            'h2': ['1'],
+                        }}
+                        dataInput={[{
+                            children: {
+                                render: () => {
+                                    return normalBackgroundChild;
+                                },
+                            },
+                            key: 'h1',
+                            widgetName: 'Background Sound',
+                        }, {
+                            children: LazyBackgroundSounds,
+                            key: 'h2',
+                            widgetName: 'Background Sound',
+                        }]}
+                    />
+                ) : normalBackgroundChild}
             </div>
         </div>
     );

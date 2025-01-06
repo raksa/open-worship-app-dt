@@ -5,10 +5,10 @@ import './appInit.scss';
 import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
-import { openConfirm } from './alert/alertHelpers';
+import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
 import { useKeyboardRegistering } from './event/KeyboardEventListener';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
@@ -23,7 +23,7 @@ import { StrictMode } from 'react';
 export async function initApp() {
 
     const confirmEraseLocalStorage = () => {
-        openConfirm('Reload is needed',
+        showAppConfirm('Reload is needed',
             'We were sorry, Internal process error, you to refresh the app'
         ).then((isOk) => {
             if (isOk) {
@@ -54,13 +54,13 @@ export async function initApp() {
     };
 
     await initCrypto();
-    const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+    const localBibleInfoList = await getAllLocalBibleInfoList();
     const promises = [
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
         getLangAsync(defaultLocal),
     ];
-    for (const bibleInfo of downloadedBibleInfoList || []) {
+    for (const bibleInfo of localBibleInfoList || []) {
         promises.push(getLangAsync(bibleInfo.locale));
     }
     await Promise.all(promises);
@@ -72,7 +72,7 @@ export function useQuickExitBlock() {
         mControlKey: ['Meta'],
     }], async (event) => {
         event.preventDefault();
-        await openConfirm('Quick Exit',
+        await showAppConfirm('Quick Exit',
             'Are you sure you want to quit the app?'
         ).then((isOk) => {
             if (isOk) {

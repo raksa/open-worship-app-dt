@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 import Lyric from './Lyric';
-import FileItemHandler from '../others/FileItemHandler';
+import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import ItemSource from '../helper/ItemSource';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
@@ -37,11 +37,11 @@ export default function LyricFile({
             Lyric.readFileToData(filePath).then(setData);
         }
     }, [data]);
-    useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
+    useFileSourceEvents(['update', 'history-update', 'edit'], () => {
         setData(null);
-    });
+    }, [data], filePath);
     return (
-        <FileItemHandler
+        <FileItemHandlerComp
             index={index}
             data={data}
             reload={handleReloading}

@@ -18,7 +18,7 @@ shadow.innerHTML = '';
     ` });
 }
 
-function getBGStyle() {
+function getBackgroundStyle() {
     return `
 ele.style.position = 'absolute';
 ele.style.width = '100%';
@@ -26,37 +26,37 @@ ele.style.height = '100%';
 `;
 }
 
-export function renderBGImage(path: string) {
+export function renderBackgroundImage(path: string) {
     const src = (new URL(path)).toString();
     renderPresent({
         script: `
 const shadow = getShadow('background');
 const ele = document.createElement('img');
-${getBGStyle()}
+${getBackgroundStyle()}
 ele.src = '${src}';
 shadow.appendChild(ele);
 clearOldBackground();
 ` });
 }
 
-export function renderBGColor(color: AppColorType) {
+export function renderBackgroundColor(color: AppColorType) {
     renderPresent({
         script: `
 const shadow = getShadow('background');
 const ele = document.createElement('div');
-${getBGStyle()}
+${getBackgroundStyle()}
 ele.style.backgroundColor = '${color}';
 shadow.appendChild(ele);
 clearOldBackground();
     ` });
 }
 
-export function renderBGVideo(src: string) {
+export function renderBackgroundVideo(src: string) {
     renderPresent({
         script: `
 const shadow = getShadow('background');
 const ele = document.createElement('video');
-${getBGStyle()}
+${getBackgroundStyle()}
 ele.style.objectFit = 'cover';
 ele.src = '${src}';
 ele.autoplay = true;

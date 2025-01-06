@@ -36,7 +36,7 @@ export default function RenderColors({
                     <RenderNoColor isSelected />
                 )}
             </div>
-            <div className='d-flex flex-wrap border-white-round'>
+            <div className='d-flex flex-wrap app-border-white-round'>
                 <RenderNoColor isSelected={!selectedColor}
                     onClick={handleNoColoring}
                 />

@@ -11,7 +11,7 @@ import {
 import {
     getSetting, useStateSettingString,
 } from '../helper/settingHelpers';
-import TabRender, { genTabBody } from '../others/TabRender';
+import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 
 const LazySlidePreviewer = lazy(() => {
     return import('./items/SlidePreviewer');
@@ -20,10 +20,10 @@ const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRender');
 });
 const LazyLyricPreviewer = lazy(() => {
-    return import('../full-text-presenter/LyricPreviewer');
+    return import('../advance-presenter/LyricPreviewerComp');
 });
-const LazyPresenterAlertController = lazy(() => {
-    return import('../presenter-alert/PresenterAlertController');
+const LazyPresenterOthersControllerComp = lazy(() => {
+    return import('../presenter-others/PresenterOthersControllerComp');
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
@@ -36,9 +36,9 @@ export function getIsShowingFTPreviewer() {
 
 const tabTypeList = [
     ['s', 'Slides', LazySlidePreviewer],
-    ['b', 'Bibles', LazyBiblePreviewerRender],
     ['l', 'Lyrics', LazyLyricPreviewer],
-    ['a', 'Alert', LazyPresenterAlertController],
+    ['b', 'Bibles', LazyBiblePreviewerRender],
+    ['a', 'Others', LazyPresenterOthersControllerComp],
 ] as const;
 type TabType = typeof tabTypeList[number][0];
 export default function Presenter() {
@@ -49,7 +49,7 @@ export default function Presenter() {
     useSlideItemSelecting(() => setTabType('s'));
     return (
         <div id='presenter-manager' className='w-100 h-100'>
-            <TabRender<TabType>
+            <TabRenderComp<TabType>
                 tabs={tabTypeList.map(([type, name]) => {
                     return [type, name];
                 })}

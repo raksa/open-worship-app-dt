@@ -10,6 +10,7 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
 import BibleSelection from './BibleSelection';
+import LoadingComp from '../others/LoadingComp';
 
 async function loadApiData() {
     try {
@@ -34,10 +35,10 @@ export default function BibleOnlineSearchBodyPreviewer() {
             const apiData1 = await loadApiData();
             methodContext.setApiData(apiData1);
         }
-    }, [apiData], { methods: { setApiData } });
+    }, [apiData], { setApiData });
     if (apiData === undefined) {
         return (
-            <div>Loading...</div>
+            <LoadingComp />
         );
     }
     if (apiData === null) {
@@ -111,7 +112,7 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
                         if (event.key === 'Enter') {
                             event.preventDefault();
                             event.stopPropagation();
-                            alert('search');  
+                            alert('search');
                         }
                     }}
                     onChange={(event) => {

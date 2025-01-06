@@ -154,12 +154,12 @@ export function closeCurrentEditingBibleItem() {
     if (viewController.straightBibleItems.length < 2) {
         return;
     }
-    viewController.removeBibleItem(selectedBibleItem);
+    viewController.deleteBibleItem(selectedBibleItem);
 }
 
 export function useCloseBibleItemRenderer() {
-    useKeyboardRegistering([closeEventMapper], (e) => {
-        e.preventDefault();
+    useKeyboardRegistering([closeEventMapper], (event) => {
+        event.preventDefault();
         closeCurrentEditingBibleItem();
     });
 }

@@ -1,15 +1,15 @@
 import './PlaylistList.scss';
 
 import PlaylistFile from './PlaylistFile';
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import Playlist from './Playlist';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
     defaultDataDirNames, dirSourceSettingNames,
 } from '../helper/constants';
 
 export default function PlaylistList() {
-    const dirSource = useGenDS(dirSourceSettingNames.PLAYLIST);
+    const dirSource = useGenDirSource(dirSourceSettingNames.PLAYLIST);
     const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
@@ -25,8 +25,8 @@ export default function PlaylistList() {
         return null;
     }
     return (
-        <FileListHandler id='playlist-list'
-            mimetype='playlist'
+        <FileListHandlerComp id='playlist-list'
+            mimetypeName='playlist'
             defaultFolderName={defaultDataDirNames.PLAYLIST}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {

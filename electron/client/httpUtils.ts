@@ -1,8 +1,9 @@
+import https from 'node:https';
 
 const httpUtils = {
-    request(options: { [key: string]: any },
-        callback: (res: any) => void) {
-        const https = require('node:https');
+    request(
+        options: { [key: string]: any }, callback: (res: any) => void
+    ) {
         return https.request(options, callback);
     },
 };

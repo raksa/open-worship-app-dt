@@ -1,4 +1,4 @@
-import { htmlFiles, toTitleCase } from '../fsServe';
+import { htmlFiles, toTitleCase } from '../fsServe.js';
 
 function freezeObject(obj: any) {
     if (!['object', 'array'].includes(typeof obj)) {
@@ -22,6 +22,7 @@ export function initProvider(provider: { [key: string]: any }) {
         provider[`${name}HomePage`] = `/${htmlFileFullName}`;
         const isCurrentPage = pathName.startsWith(`/${htmlFileFullName}`);
         provider[`isPage${toTitleCase(name)}`] = isCurrentPage;
+        provider['currentHomePage'] = pathName;
     }
     freezeObject(provider);
     (global as any).provider = (window as any).provider = provider;

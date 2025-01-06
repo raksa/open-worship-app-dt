@@ -12,7 +12,7 @@ const LazySlidePreviewer = lazy(() => {
 
 export default function AppEditorLeft() {
     return (
-        <ResizeActor fSizeName={resizeSettingNames.appEditorLeft}
+        <ResizeActor flexSizeName={resizeSettingNames.appEditorLeft}
             isHorizontal={false}
             flexSizeDefault={{
                 'v1': ['1'],

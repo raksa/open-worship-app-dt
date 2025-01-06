@@ -192,9 +192,12 @@ export default class BibleItem extends ItemBase
     toVerseTextList() {
         return bibleRenderHelper.toVerseTextList(this.bibleKey, this.target);
     }
+    getCopyingBibleKey() {
+        return `(${this.bibleKey})`;
+    }
     async copyTitleToClipboard() {
         const title = await this.toTitle();
-        copyToClipboard(title);
+        copyToClipboard(`${this.getCopyingBibleKey()} ${title}`);
     }
     async copyTextToClipboard() {
         const text = await this.toText();
@@ -202,7 +205,7 @@ export default class BibleItem extends ItemBase
     }
     async copyToClipboard() {
         const { title, text } = await this.toTitleText();
-        copyToClipboard(`${title}\n${text}`);
+        copyToClipboard(`${this.getCopyingBibleKey()} ${title}\n${text}`);
     }
     syncData(bibleItem: BibleItem) {
         this.originalJson = bibleItem.originalJson;

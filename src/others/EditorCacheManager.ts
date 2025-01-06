@@ -22,6 +22,9 @@ export default abstract class EditorCacheManager<T1, T2> {
         this.filePath = filePath;
         this.settingName = `${SETTING_NAME}-${settingNameSuffix}`;
     }
+    get fileSource() {
+        return FileSource.getInstance(this.filePath);
+    }
     get isChanged() {
         return !!this.histories.length;
     }
@@ -72,7 +75,7 @@ export default abstract class EditorCacheManager<T1, T2> {
         changedObject.undoQueue.push(history);
         changedObject.redoQueue = [];
         this._changedObject = changedObject;
-        FileSource.getInstance(this.filePath).fireUpdateEvent();
+        this.fileSource.fireHistoryUpdateEvent();
     }
     popUndo() {
         const changedObject = this._changedObject;
@@ -82,7 +85,7 @@ export default abstract class EditorCacheManager<T1, T2> {
         const history = changedObject.undoQueue.pop() as T1;
         changedObject.redoQueue.push(history);
         this._changedObject = changedObject;
-        const fileSource = FileSource.getInstance(this.filePath);
+        const fileSource = this.fileSource;
         fileSource.fireUpdateEvent();
         fileSource.fireHistoryUpdateEvent();
     }
@@ -94,7 +97,7 @@ export default abstract class EditorCacheManager<T1, T2> {
         const history = changedObject.redoQueue.pop() as T1;
         changedObject.undoQueue.push(history);
         this._changedObject = changedObject;
-        const fileSource = FileSource.getInstance(this.filePath);
+        const fileSource = this.fileSource;
         fileSource.fireUpdateEvent();
         fileSource.fireHistoryUpdateEvent();
     }
@@ -102,7 +105,7 @@ export default abstract class EditorCacheManager<T1, T2> {
         const data = this._changes;
         delete data[this.filePath];
         this._changes = data;
-        const fileSource = FileSource.getInstance(this.filePath);
+        const fileSource = this.fileSource;
         fileSource.fireUpdateEvent();
         fileSource.fireHistoryUpdateEvent();
     }

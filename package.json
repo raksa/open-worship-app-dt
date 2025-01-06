@@ -3,7 +3,8 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "0.0.8",
+    "version": "2024.12.26",
+    "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
         "dev": "concurrently -k \"npm run vite:dev\" \"npm run electron:build && npm run electron\"",
@@ -12,7 +13,7 @@
         "electron": "env-cmd -f .env electron .",
         "electron:watch": "nodemon --exec \"npm run electron\" --watch electron-build",
         "electron:dev": "npm run electron:build && concurrently -k \"npm run electron:build:watch\" \"npm run electron:watch\"",
-        "build": "npm run vite:build && npm run electron:build && node build-copy.mjs",
+        "build": "npm run vite:build && npm run electron:build",
         "pack": "npm run build && electron-builder build --publish never",
         "pack:all": "npm run build && electron-builder build -mwl",
         "pack:mac": "npm run build && electron-builder build --mac",
@@ -113,7 +114,8 @@
     "dependencies": {
         "font-list": "^1.5.1",
         "libreoffice-convert": "^1.6.0",
-        "pdfjs-dist": "^4.9.155",
+        "mupdf": "^1.0.0",
+        "reveal.js": "^5.1.0",
         "tar": "^7.4.3"
     }
 }

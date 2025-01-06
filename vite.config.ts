@@ -4,10 +4,6 @@ import react from '@vitejs/plugin-react-swc';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { readdirSync } from 'node:fs';
 
-const resolveAlias = {
-    '/pdf.worker.min.mjs': 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
-};
-
 const htmlPlugin = () => {
     return {
         name: 'html-transform',
@@ -57,9 +53,6 @@ export default defineConfig({
     },
     server: {
         port: 3000,
-    },
-    resolve: {
-        alias: resolveAlias,
     },
     build: {
         rollupOptions: {

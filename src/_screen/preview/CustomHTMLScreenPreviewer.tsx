@@ -1,8 +1,10 @@
 import { DOMAttributes } from 'react';
 
 import { createRoot } from 'react-dom/client';
-import ScreenManager from '../ScreenManager';
-import MiniScreenApp from './MiniScreenApp';
+import MiniScreenAppComp from './MiniScreenAppComp';
+import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
+import ScreenManagerBase from '../managers/ScreenManagerBase';
+import { getDefaultScreenDisplay } from '../managers/screenHelpers';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 
@@ -36,7 +38,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
     }
     resize() {
         if (this.parentElement) {
-            const display = ScreenManager.getDefaultScreenDisplay();
+            const display = getDefaultScreenDisplay();
             const bounds = display.bounds;
             const scale = this.parentElement.clientWidth / bounds.width;
             const width = scale * bounds.width;
@@ -44,16 +46,16 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.screenId > -1) {
-                const screenManager = ScreenManager.getInstance(
+                const screenManagerBase = getScreenManagerBase(
                     this.screenId,
                 );
-                if (screenManager === null) {
+                if (screenManagerBase === null) {
                     return;
                 }
-                screenManager.width = width;
-                screenManager.height = height;
+                screenManagerBase.width = width;
+                screenManagerBase.height = height;
             }
-            ScreenManager.fireResizeEvent();
+            ScreenManagerBase.fireResizeEvent();
         }
     }
     connectedCallback() {
@@ -61,15 +63,15 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             mode: 'open',
         }).appendChild(this.mountPoint);
         const root = createRoot(this.mountPoint);
-        const screenManager = ScreenManager.getInstance(this.screenId);
-        if (screenManager === null) {
+        const screenManagerBase = getScreenManagerBase(this.screenId);
+        if (screenManagerBase === null) {
             return;
         }
-        screenManager.registerEventListener(['resize'], () => {
+        screenManagerBase.registerEventListener(['resize'], () => {
             this.resize();
         });
         this.resize();
-        root.render(<MiniScreenApp id={this.screenId} />);
+        root.render(<MiniScreenAppComp screenId={this.screenId} />);
     }
 }
 

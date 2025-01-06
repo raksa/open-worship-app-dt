@@ -134,7 +134,7 @@
     overflow-y: hidden;
   }
 
-  .border-white-round {
+  .app-border-white-round {
     border: 1px solid var(--bs-gray-600);
     border-radius: 5px;
   }
@@ -156,7 +156,7 @@
     -#{math.div($bg-width,2)} 0px;
   }
 
-  .ellipsis-left {
+  .app-ellipsis-left {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -280,6 +280,12 @@
       bottom: 0;
       left: 0;
       width: 100%;
+    }
+  }
+
+  .app-focusable {
+    &:focus {
+      border: 1px solid var(--bs-primary);
     }
   }
 }

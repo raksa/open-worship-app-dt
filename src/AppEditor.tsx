@@ -12,7 +12,7 @@ const LazySlideItemEditorGround = lazy(() => {
 
 export default function AppEditor() {
     return (
-        <ResizeActor fSizeName={resizeSettingNames.appEditor}
+        <ResizeActor flexSizeName={resizeSettingNames.appEditor}
             isHorizontal
             flexSizeDefault={{
                 'h1': ['1'],

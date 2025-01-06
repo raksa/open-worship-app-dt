@@ -11,7 +11,7 @@ import {
 } from '../helper/bibleViewHelpers';
 import FullScreenBtn from './FullScreenBtn';
 import { fontSizeSettingNames } from '../helper/constants';
-import { handleCtrlWheel } from '../others/AppRange';
+import { handleCtrlWheel } from '../others/AppRangeComp';
 import appProvider from '../server/appProvider';
 
 export default function BiblePreviewerRender() {

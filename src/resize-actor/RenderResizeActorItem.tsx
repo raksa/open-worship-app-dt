@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 
-import AppSuspense from '../others/AppSuspense';
+import AppSuspenseComp from '../others/AppSuspenseComp';
 import FlexResizeActor, {
     ACTIVE_HIDDEN_WIDGET_CLASS, HIDDEN_WIDGET_CLASS,
 } from './FlexResizeActor';
@@ -15,9 +15,9 @@ const renderChildren = (Children: any) => {
         return Children.render();
     }
     return (
-        <AppSuspense>
+        <AppSuspenseComp>
             <Children />
-        </AppSuspense>
+        </AppSuspenseComp>
     );
 };
 

@@ -1,13 +1,20 @@
-import Slide from '../../slide-list/Slide';
-import ScreenSlideManager from '../../_screen/ScreenSlideManager';
-import { genScreenMouseEvent } from '../../_screen/screenHelpers';
+import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
 import SlideItem from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
+import {
+    getScreenManagerBase,
+} from '../../_screen/managers/screenManagerBaseHelpers';
+import {
+    screenManagerFromBase,
+} from '../../_screen/managers/screenManagerHelpers';
 
-export function getPresenterIndex(slide: Slide) {
-    for (let i = 0; i < slide.items.length; i++) {
+export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
+    if (slideItemIds.length === 0) {
+        return -1;
+    }
+    for (let i = 0; i < slideItemIds.length; i++) {
         const selectedList = ScreenSlideManager.getDataList(
-            slide.filePath, slide.items[i].id,
+            filePath, slideItemIds[i],
         );
         if (selectedList.length > 0) {
             return i;
@@ -22,47 +29,101 @@ export function handleSlideItemSelecting(
     if (appProvider.isPageEditor) {
         selectSelectedSlideItem(slideItem);
     } else {
-        ScreenSlideManager.slideSelect(
-            slideItem.filePath, slideItem.toJson(), event,
+        ScreenSlideManager.handleSlideSelecting(
+            event, slideItem.filePath, slideItem.toJson(),
         );
     }
 }
 
-export function checkSlideItemToView(slide: Slide, element: HTMLElement) {
-    if (slide.itemIdShouldToView < 0) {
+export function genSlideItemIds(slideItems: SlideItem[]) {
+    return slideItems.map((item) => {
+        return item.id;
+    });
+}
+
+export const DIV_CLASS_NAME = 'app-slide-items-comp';
+
+function findNextSlideItem(
+    isLeft: boolean, slideItems: SlideItem[], slideItemId: number,
+    divContainer: HTMLDivElement,
+) {
+    let index = slideItems.findIndex((slideItem) => {
+        return slideItem.id === slideItemId;
+    });
+    if (index === -1) {
+        return { targetSlideItem: null, targetDiv: null };
+    }
+    index += isLeft ? -1 : 1;
+    index += slideItems.length;
+
+    const targetSlideItem = slideItems[index % slideItems.length] ?? null;
+    return {
+        targetSlideItem,
+        targetDiv: targetSlideItem === null ? null : divContainer.querySelector(
+            `[data-slide-item-id="${targetSlideItem.id}"]`,
+        ) as HTMLDivElement,
+    };
+}
+export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
+    if (
+        !appProvider.presenterHomePage ||
+        !document.activeElement?.classList.contains(DIV_CLASS_NAME)
+    ) {
         return;
     }
-    setTimeout(() => {
-        const parentElement = element.parentElement as HTMLElement;
-        parentElement.scrollTo({
-            top: parentElement.scrollHeight,
-            behavior: 'smooth',
-        });
-        slide.itemIdShouldToView = -1;
-    }, 0);
-}
-export function genArrowListener(
-    selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
-    slide: Slide, slideItems: SlideItem[],
-) {
-    return (event: KeyboardEvent) => {
-        const presenterIndex = getPresenterIndex(slide);
-        if (presenterIndex === -1) {
-            return;
-        }
-        const length = slideItems.length;
-        if (length) {
-            let ind = event.key === 'ArrowLeft' ?
-                presenterIndex - 1 : presenterIndex + 1;
-            if (ind >= length) {
-                ind = 0;
-            } else if (ind < 0) {
-                ind = length - 1;
-            }
-            handleSlideItemSelecting(
-                selectSelectedSlideItem,
-                slideItems[ind], genScreenMouseEvent() as any,
+    const isLeft = event.key === 'ArrowLeft';
+    const divSelectedList = document.activeElement.querySelectorAll(
+        '[data-slide-item-id].highlight-selected',
+    );
+    const foundList = Array.from(divSelectedList).reduce(
+        (r: {
+            slideItem: SlideItem, targetDiv: HTMLDivElement,
+            screenId: number,
+        }[], divSelected) => {
+            const slideItemId = parseInt(
+                divSelected?.getAttribute('data-slide-item-id') ?? '',
             );
+            const screenIds = Array.from(
+                divSelected.querySelectorAll('[data-screen-id]')
+            ).map((element) => {
+                return parseInt(
+                    element.getAttribute('data-screen-id') ?? '',
+                );
+            });
+            const { targetSlideItem, targetDiv } = findNextSlideItem(
+                isLeft, slideItems, slideItemId,
+                document.activeElement as HTMLDivElement,
+            );
+            if (targetSlideItem === null || targetDiv === null) {
+                return r;
+            }
+            return r.concat(screenIds.map((screenId) => {
+                return { slideItem: targetSlideItem, targetDiv, screenId };
+            }));
+        }, [],
+    );
+    if (foundList.length === 0) {
+        return;
+    }
+    event.preventDefault();
+    for (let i = 0; i < foundList.length; i++) {
+        const { slideItem, targetDiv, screenId } = foundList[i];
+        const screenManager = screenManagerFromBase(
+            getScreenManagerBase(screenId),
+        );
+        if (screenManager === null) {
+            continue;
         }
-    };
+        setTimeout(() => {
+            const { screenSlideManager } = screenManager;
+            screenSlideManager.slideItemData = (
+                screenSlideManager.toSlideItemData(
+                    slideItem.filePath, slideItem.toJson(),
+                )
+            );
+            targetDiv.scrollIntoView({
+                behavior: 'smooth', block: 'center',
+            });
+        }, i * 100);
+    }
 }

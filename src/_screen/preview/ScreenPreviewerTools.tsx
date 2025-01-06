@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 
-import AppSuspense from '../../others/AppSuspense';
+import AppSuspenseComp from '../../others/AppSuspenseComp';
 
 const LazyCustomStyle = lazy(() => {
     return import('./CustomStyle');
@@ -9,9 +9,9 @@ const LazyCustomStyle = lazy(() => {
 export default function ScreenPreviewerTools() {
     return (
         <div>
-            <AppSuspense>
+            <AppSuspenseComp>
                 <LazyCustomStyle />
-            </AppSuspense>
+            </AppSuspenseComp>
         </div>
     );
 }

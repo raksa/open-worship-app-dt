@@ -1,9 +1,9 @@
 import './BibleList.scss';
 
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import Bible from './Bible';
 import BibleFile from './BibleFile';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { getSettingPrefix } from '../helper/settingHelpers';
 import {
     defaultDataDirNames,
@@ -12,7 +12,7 @@ import appProvider from '../server/appProvider';
 
 export default function BibleList() {
     const dirSourceSettingName = Bible.getDirSourceSettingName();
-    const dirSource = useGenDS(dirSourceSettingName);
+    const dirSource = useGenDirSource(dirSourceSettingName);
     const handleBodyRendering = (filePaths: string[]) => {
         return (
             <>
@@ -34,8 +34,8 @@ export default function BibleList() {
             defaultDataDirNames.BIBLE_PRESENT
     );
     return (
-        <FileListHandler id={`${settingPrefix}bible-list`}
-            mimetype='bible'
+        <FileListHandlerComp id={`${settingPrefix}bible-list`}
+            mimetypeName='bible'
             defaultFolderName={defaultDataDirName}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {

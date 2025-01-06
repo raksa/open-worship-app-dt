@@ -1,16 +1,16 @@
-import HandleAlert from './alert/HandleAlert';
+import HandleAlertComp from './popup-widget/HandleAlertComp';
 import AppReader from './AppReader';
-import AppContextMenu from './others/AppContextMenu';
-import ProgressBar from './progress-bar/ProgressBar';
+import AppContextMenuComp from './others/AppContextMenuComp';
+import TopProgressBarComp from './progress-bar/TopProgressBarComp';
 import Toast from './toast/Toast';
 import { main } from './appInitHelpers';
 
 main(
     <>
         <AppReader />
-        <ProgressBar />
+        <TopProgressBarComp />
         <Toast />
-        <AppContextMenu />
-        <HandleAlert />
+        <AppContextMenuComp />
+        <HandleAlertComp />
     </>
 );

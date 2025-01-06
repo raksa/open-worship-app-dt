@@ -8,9 +8,53 @@ export function getFontListByNodeFont() {
     ) as FontListType | null;
 }
 
-export function openExplorer(dir: string) {
+export function genReturningEventName(eventName: string) {
+    const newDate = (new Date()).getTime();
+    return `${eventName}-return-${newDate}`;
+}
+
+export function electronSendAsync<T>(eventName: string, data: any = {}) {
+    return new Promise<T>((resolve) => {
+        const replyEventName = genReturningEventName(eventName);
+        appProvider.messageUtils.listenOnceForData(
+            replyEventName, (_event, data: T) => {
+                resolve(data);
+            },
+        );
+        appProvider.messageUtils.sendData(eventName, {
+            ...data, replyEventName,
+        });
+    });
+}
+
+export function showExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
+
+export function trashFile(filePath: string) {
+    return electronSendAsync<void>('main:app:trash-path', { path: filePath });
+}
+
+export function previewPdf(src: string) {
+    appProvider.messageUtils.sendData(
+        'main:app:preview-pdf', src,
+    );
+}
+
+export function convertToPdf(
+    officeFilePath: string, pdfFilePath: string,
+) {
+    return electronSendAsync<void>('main:app:convert-to-pdf', {
+        officeFilePath, pdfFilePath,
+    });
+}
+
+export function tarExtract(filePath: string, outputDir: string) {
+    return electronSendAsync<void>('main:app:tar-extract', {
+        filePath, outputDir,
+    });
+}
+
 export function copyToClipboard(str: string) {
     appProvider.browserUtils.copyToClipboard(str);
     showSimpleToast('Copy', 'Text has been copied to clip');
@@ -35,33 +79,30 @@ export function selectFiles(filters: {
     );
 }
 
-export type RenderedType = {
-    background?: boolean,
-    foreground?: boolean,
-    fullText?: boolean,
-    alert?: boolean,
-    show?: boolean,
-};
-export function getScreenRendered() {
-    return new Promise<RenderedType>((resolve) => {
-        const newDate = (new Date()).getTime();
-        const returningEvent = `main:app:is-rendered-return-${newDate}`;
-        appProvider.messageUtils.listenOnceForData(
-            returningEvent, (_event, data: RenderedType) => {
-                resolve(data);
-            },
-        );
-        appProvider.messageUtils.sendData(
-            'main:app:is-rendered', returningEvent,
-        );
-    });
-}
 export function getUserWritablePath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-data-path');
 }
+
 export function getDesktopPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-desktop-path');
 }
+
 export function getTempPath() {
     return appProvider.messageUtils.sendDataSync('main:app:get-temp-path');
+}
+
+const lockSet = new Set<string>();
+export async function unlocking<T>(
+    key: string, callback: () => (Promise<T> | T)
+) {
+    if (lockSet.has(key)) {
+        await new Promise((resolve) => {
+            setTimeout(resolve, 100);
+        });
+        return unlocking(key, callback);
+    }
+    lockSet.add(key);
+    const data = await callback();
+    lockSet.delete(key);
+    return data;
 }

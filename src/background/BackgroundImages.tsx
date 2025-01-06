@@ -10,14 +10,14 @@ import {
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
-    filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
+    filePath: string, selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
     const fileSource = FileSource.getInstance(filePath);
     return (
         <div className='card-body'>
             <RenderScreenIds
-                screenIds={selectedBGSrcList.map(([key]) => {
-                    return parseInt(key, 10);
+                screenIds={selectedBackgroundSrcList.map(([key]) => {
+                    return parseInt(key);
                 })}
             />
             <img src={fileSource.src}
@@ -34,7 +34,7 @@ export default function BackgroundImages() {
     return (
         <BackgroundMedia
             defaultFolderName={defaultDataDirNames.BACKGROUND_IMAGE}
-            dragType={DragTypeEnum.BG_IMAGE}
+            dragType={DragTypeEnum.BACKGROUND_IMAGE}
             rendChild={rendChild}
             dirSourceSettingName={dirSourceSettingNames.BACKGROUND_IMAGE}
         />

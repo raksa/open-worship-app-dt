@@ -15,7 +15,7 @@ if (container !== null) {
         <StrictMode>
             <FinderApp onClose={() => {
                 appProviderScreen.messageUtils.sendData(
-                    'finder:app:close-search',
+                    'finder:app:close-finder',
                 );
             }} />
         </StrictMode>

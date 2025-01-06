@@ -11,6 +11,7 @@ import {
 } from '../bible-list/bibleHelpers';
 import { setSetting } from '../helper/settingHelpers';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
+import LoadingComp from '../others/LoadingComp';
 
 export default function BibleSearchPopup() {
     const { data } = getPopupWindowTypeData();
@@ -25,13 +26,11 @@ export default function BibleSearchPopup() {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleItem.bibleKey);
         const title = await bibleItem.toTitle();
         methodContext.setInputText(title);
-    }, [bibleItem, inputText], { methods: { setInputText } });
+    }, [bibleItem, inputText], { setInputText });
     return (
         <Modal>
             {inputText === null ? (
-                <div>
-                    <span title='Need translation'>(*T)</span> Loading...
-                </div>
+                <LoadingComp />
             ) : (
                 <RenderBibleSearch editorInputText={inputText} />
             )}

@@ -36,7 +36,7 @@ export function isVisible(elem: any) {
     if (style.visibility !== 'visible') {
         return false;
     }
-    if (parseInt(style.opacity, 10) < 0.1) {
+    if (parseInt(style.opacity) < 0.1) {
         return false;
     }
     if (
@@ -75,10 +75,10 @@ export function isVisible(elem: any) {
 
 export function getRotationDeg(str: string) {
     const match = RegExp(/rotate\((.+)deg\)/).exec(str);
-    return match ? parseInt(match[1], 10) : 0;
+    return match ? parseInt(match[1]) : 0;
 }
 export const removePX = (str: string) => {
-    return parseInt(str.replace('px', ''), 10);
+    return parseInt(str.replace('px', ''));
 };
 
 export function genRandomString(length: number = 5) {
@@ -170,9 +170,13 @@ export function toMaxId(ids: number[]) {
 }
 
 export function isValidJson(json: any, isSilent: boolean = false) {
+    if (!json) {
+        return false;
+    }
     try {
         return JSON.parse(json);
     } catch (error) {
+        handleError(error);
         if (!isSilent && json === '') {
             trace('Invalid Json:', json);
         }
@@ -200,4 +204,14 @@ export function freezeObject(obj: any) {
             freezeObject(obj[key]);
         }
     }
+}
+
+export function getHTMLChild<T extends HTMLElement>(
+    parent: HTMLElement, tag: string,
+) {
+    const child = parent.querySelector(tag);
+    if (!child) {
+        throw new Error('Invalid child');
+    }
+    return child as T;
 }

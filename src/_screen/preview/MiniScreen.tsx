@@ -1,38 +1,34 @@
 import './MiniScreen.scss';
 
-import ScreenManager, { ScreenManagerContext } from '../ScreenManager';
-import {
-    initReceiveScreenMessage, usePMEvents,
-} from '../screenEventHelpers';
-import ScreenPreviewerItem from './ScreenPreviewerItem';
+import ScreenPreviewerItemComp from './ScreenPreviewerItemComp';
 import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
 import {
     useStateSettingBoolean, useStateSettingNumber,
 } from '../../helper/settingHelpers';
-import { toMaxId } from '../../helper/helpers';
-import { showAppContextMenu } from '../../others/AppContextMenu';
+import { showAppContextMenu } from '../../others/AppContextMenuComp';
 import ScreenPreviewerTools from './ScreenPreviewerTools';
-import { handleCtrlWheel } from '../../others/AppRange';
+import { handleCtrlWheel } from '../../others/AppRangeComp';
+import {
+    genNewScreenManagerBase, getAllScreenManagers, getScreenManagersFromSetting,
+} from '../managers/screenManagerHelpers';
+import ScreenManager from '../managers/ScreenManager';
+import {
+    ScreenManagerBaseContext, useScreenManagerEvents,
+} from '../managers/screenManagerHooks';
 
 function openContextMenu(event: any) {
     showAppContextMenu(event, [
         {
             menuTitle: 'Add New Screen',
             onClick() {
-                const instances = ScreenManager.getAllInstances();
-                const ids = instances.map((screenManager) => {
-                    return screenManager.screenId;
-                });
-                const maxId = toMaxId(ids);
-                ScreenManager.createInstance(maxId + 1);
-                ScreenManager.fireInstanceEvent();
+                genNewScreenManagerBase();
             },
         },
     ]);
 }
 
 const DEFAULT_PREVIEW_SIZE = 50;
-initReceiveScreenMessage();
+ScreenManager.initReceiveScreenMessage();
 export default function MiniScreen() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
         'mini-screen-previewer-tool', true,
@@ -42,12 +38,12 @@ export default function MiniScreen() {
     );
     const setPreviewScale1 = (size: number) => {
         setPreviewScale(size);
-        ScreenManager.getAllInstances().forEach((screenManager) => {
+        getAllScreenManagers().forEach((screenManager) => {
             screenManager.fireResizeEvent();
         });
     };
-    usePMEvents(['instance']);
-    const screenManagers = ScreenManager.getScreenManagersSetting();
+    useScreenManagerEvents(['instance']);
+    const screenManagers = getScreenManagersFromSetting();
     const previewWidth = DEFAULT_PREVIEW_SIZE * previewScale;
     return (
         <div className='card w-100 h-100'>
@@ -69,15 +65,15 @@ export default function MiniScreen() {
                     <ScreenPreviewerTools />
                 )}
                 <div className='w-100'>
-                    {screenManagers.map((screenManager) => {
+                    {screenManagers.map((screenManagerBase) => {
                         return (
-                            <ScreenManagerContext
-                                key={screenManager.key}
-                                value={screenManager}>
-                                <ScreenPreviewerItem
+                            <ScreenManagerBaseContext
+                                key={screenManagerBase.key}
+                                value={screenManagerBase}>
+                                <ScreenPreviewerItemComp
                                     width={previewWidth}
                                 />
-                            </ScreenManagerContext>
+                            </ScreenManagerBaseContext>
                         );
                     })}
                 </div>

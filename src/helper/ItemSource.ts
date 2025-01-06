@@ -14,10 +14,13 @@ export default abstract class ItemSource<T extends {
 }> {
     protected static SELECT_SETTING_NAME = 'selected';
     SELECT_SETTING_NAME: string = '';
-    protected static mimetype: MimetypeNameType = 'other';
+    protected static mimetypeName: MimetypeNameType = 'other';
     filePath: string;
     constructor(filePath: string) {
         this.filePath = filePath;
+    }
+    get fileSource() {
+        return FileSource.getInstance(this.filePath);
     }
     get isSelected() {
         const selectedFilePath = ItemSource.getSelectedFilePath(
@@ -32,8 +35,7 @@ export default abstract class ItemSource<T extends {
         ItemSource.setSelectedFileSource(
             b ? this.filePath : null, this.SELECT_SETTING_NAME,
         );
-        const fileSource = FileSource.getInstance(this.filePath);
-        fileSource.fireSelectEvent();
+        this.fileSource.fireSelectEvent();
     }
     abstract get maxItemId(): number;
     abstract get metadata(): AnyObjectType;
@@ -84,8 +86,7 @@ export default abstract class ItemSource<T extends {
     }
     abstract clone(): ItemSource<T>;
     async save(): Promise<boolean> {
-        const fileSource = FileSource.getInstance(this.filePath);
-        const isSuccess = await fileSource.saveDataFromItem(this);
+        const isSuccess = await this.fileSource.saveDataFromItem(this);
         if (isSuccess) {
             cache.set(this.filePath, this);
         }
@@ -101,7 +102,7 @@ export default abstract class ItemSource<T extends {
             items,
         });
         const filePath = await createNewFileDetail(dir, name, data,
-            this.mimetype,
+            this.mimetypeName,
         );
         if (filePath !== null) {
             return FileSource.getInstance(filePath);

@@ -1,9 +1,10 @@
 import ReactDOMServer from 'react-dom/server';
-import Countdown from './Countdown';
-import ScreenManager from './ScreenManager';
+import CountdownController from './managers/CountdownController';
+import { getHTMLChild } from '../helper/helpers';
+import ScreenManagerBase from './managers/ScreenManagerBase';
 
-const alertTypeList = ['marquee', 'countdown', 'toast'] as const;
-export type AlertType = typeof alertTypeList[number];
+const _alertTypeList = ['marquee', 'countdown', 'toast'] as const;
+export type AlertType = typeof _alertTypeList[number];
 
 const classNameMapper = {
     marquee: 'marquee-actor',
@@ -12,22 +13,23 @@ const classNameMapper = {
 };
 
 export function genHtmlAlertMarquee(
-    marqueeData: { text: string }, screenManager: ScreenManager,
+    marqueeData: { text: string }, screenManagerBase: ScreenManagerBase,
 ) {
     const { text } = marqueeData;
     const duration = (text.length || 0) / 6;
-    const scale = screenManager.height / 768;
+    const scale = screenManagerBase.height / 768;
     const fontSize = 75 * scale;
     const actorClass = classNameMapper.marquee;
-    const htmlString = ReactDOMServer.renderToStaticMarkup(<div
-        data-alert-cn={actorClass}
-        style={{
-            position: 'absolute',
-            width: '100%',
-            left: '0px',
-            bottom: '0px',
-        }}>
-        <style>{`
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
+        <div
+            data-alert-cn={actorClass}
+            style={{
+                position: 'absolute',
+                width: '100%',
+                left: '0px',
+                bottom: '0px',
+            }}>
+            <style>{`
                 .${actorClass} {
                     width: 100%;
                     padding: 3px 0px;
@@ -73,20 +75,21 @@ export function genHtmlAlertMarquee(
                     100% { transform: translateY(100%); }
                 }
             `}</style>
-        <p className={`marquee ${actorClass}`}>
-            <span>{text}</span>
-        </p>
-    </div>);
+            <p className={`marquee ${actorClass}`}>
+                <span>{text}</span>
+            </p>
+        </div>
+    );
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    return div.firstChild as HTMLDivElement;
+    return getHTMLChild<HTMLDivElement>(div, 'div');
 }
 
 export function genHtmlAlertCountdown(
-    countdownData: { dateTime: Date }, screenManager: ScreenManager,
+    countdownData: { dateTime: Date }, screenManagerBase: ScreenManagerBase,
 ) {
     const { dateTime } = countdownData;
-    const scale = screenManager.height / 768;
+    const scale = screenManagerBase.height / 768;
     const fontSize = 100 * scale;
     const chunkSize = Math.floor(fontSize / 10);
     const actorClass = classNameMapper.countdown;
@@ -129,8 +132,8 @@ export function genHtmlAlertCountdown(
     </div>);
     const div = document.createElement('div');
     div.innerHTML = htmlString;
-    const divContainer = div.firstChild as HTMLDivElement;
-    Countdown.init(divContainer, dateTime);
+    const divContainer = getHTMLChild<HTMLDivElement>(div, 'div');
+    CountdownController.init(divContainer, dateTime);
     return divContainer;
 }
 
@@ -161,8 +164,7 @@ export function checkIsCountdownDatesEq(
     const toString = (date: Date) => {
         const dateStr = toDateArr(date)[0];
         const timeStrFull = toDateArr(date)[1];
-        const timeStr = timeStrFull.substring(0,
-            timeStrFull.lastIndexOf(':'));
+        const timeStr = timeStrFull.substring(0, timeStrFull.lastIndexOf(':'));
         return `${dateStr} ${timeStr}`;
     };
     return toString(date1) === toString(date2);

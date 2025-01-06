@@ -1,0 +1,25 @@
+@use '../others/variables.scss' as *;
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  75% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.app-progress-bar {
+  animation-duration: 1s;
+  animation-name: fade-in;
+
+  div {
+    animation-duration: 0.2s !important;
+    animation-direction: reverse !important;
+  }
+}

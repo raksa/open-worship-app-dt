@@ -2,37 +2,34 @@ import './BibleSelection.scss';
 
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import {
-    useDownloadedBibleInfoList,
+    useLocalBibleInfoList,
 } from '../setting/bible-setting/bibleSettingHelpers';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
-import { openAlert } from '../alert/alertHelpers';
+import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 
 export async function showBibleOption(
     event: any, excludeBibleKey: string[],
     onSelect: (bibleKey: string) => void,
 ) {
-    const bibleInfoList = await getDownloadedBibleInfoList();
-    if (bibleInfoList === null) {
-        openAlert(
+    const localBibleInfoList = await getAllLocalBibleInfoList();
+    if (localBibleInfoList === null) {
+        showAppAlert(
             'Unable to get bible info list',
             'We were sorry, but we are unable to get bible list at the moment' +
             ' please try again later'
         );
         return;
     }
-    const contextMenuItems: ContextMenuItemType[] = (
-        bibleInfoList.filter((bibleInfo) => {
+    const menuItems: ContextMenuItemType[] = (
+        localBibleInfoList.filter((bibleInfo) => {
             return !excludeBibleKey.includes(bibleInfo.key);
         }).map((bibleInfo) => {
             return {
-                menuTitle: bibleInfo.title,
-                otherChild: (
-                    <span className='text-muted'>{bibleInfo.key}</span>
-                ),
+                menuTitle: `(${bibleInfo.key}) ${bibleInfo.title}`,
                 title: bibleInfo.title,
                 onClick: () => {
                     onSelect(bibleInfo.key);
@@ -40,7 +37,7 @@ export async function showBibleOption(
             };
         })
     );
-    showAppContextMenu(event, contextMenuItems);
+    showAppContextMenu(event, menuItems);
 }
 
 function handleClickEvent(
@@ -59,7 +56,7 @@ export default function BibleSelection({
     bibleKey: string,
     onBibleKeyChange: (oldBibleKey: string, newBibleKey: string) => void,
 }>) {
-    const [bibleInfoList] = useDownloadedBibleInfoList();
+    const [bibleInfoList] = useLocalBibleInfoList();
     if (bibleInfoList === null) {
         return (
             <div>Loading ...</div>
@@ -88,7 +85,7 @@ export function BibleSelectionMini({
     onBibleKeyChange?: (oldBibleKey: string, newBibleKey: string) => void,
     isMinimal?: boolean,
 }>) {
-    const [bibleInfoList] = useDownloadedBibleInfoList();
+    const [bibleInfoList] = useLocalBibleInfoList();
     if (bibleInfoList === null) {
         return (
             <div>...</div>
@@ -116,7 +113,7 @@ export function BibleSelectionMini({
 }
 
 function BibleKeyWithTile({ bibleKey }: Readonly<{ bibleKey: string }>) {
-    const [bibleInfoList] = useDownloadedBibleInfoList();
+    const [bibleInfoList] = useLocalBibleInfoList();
     const currentBibleInfo = bibleInfoList?.find(
         (bibleInfo) => bibleInfo.key === bibleKey
     );

@@ -8,8 +8,8 @@ export type FlexSizeType = {
     [key: string]: [string, DisabledType?],
 };
 export type DataInputType = {
-    children: LazyExoticComponent<(props?: any) => React.JSX.Element | null> | {
-        render: () => React.JSX.Element | null,
+    children: LazyExoticComponent<(props?: any) => React.ReactNode | null> | {
+        render: () => React.ReactNode | null,
     },
     key: string,
     widgetName: string,

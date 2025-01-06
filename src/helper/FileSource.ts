@@ -1,8 +1,9 @@
 import DirSource from './DirSource';
 import {
-    checkIsAppFile, extractExtension, fsCheckFileExist, fsCreateFile,
+    checkIsAppFile, getFileExtension, fsCheckFileExist, fsCreateFile,
     fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
     pathBasename, pathJoin, pathSeparator,
+    getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
 import ItemSource from './ItemSource';
@@ -17,12 +18,13 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FSEventType = (
-    'select' | 'update' | 'history-update' | 'edit' | 'delete' | 'delete-cache'
+export type FileSourceEventType = (
+    'select' | 'update' | 'new' | 'history-update' | 'edit' | 'delete' |
+    'delete-cache'
 );
 
 const cache = new Map<string, FileSource>();
-export default class FileSource extends EventHandler<FSEventType>
+export default class FileSource extends EventHandler<FileSourceEventType>
     implements DragInf<string>, ColorNoteInf {
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
@@ -59,8 +61,8 @@ export default class FileSource extends EventHandler<FSEventType>
                     reject(new Error('metadata not found'));
                     return;
                 }
-                const mimeType = metadata.appMimetype.mimetype;
-                resolve(`data:${mimeType};base64,${data}`);
+                const { mimetypeSignature } = metadata.appMimetype;
+                resolve(`data:${mimetypeSignature};base64,${data}`);
             });
         });
     }
@@ -79,13 +81,11 @@ export default class FileSource extends EventHandler<FSEventType>
     }
 
     get name() {
-        return this.fileFullName.substring(
-            0, this.fileFullName.lastIndexOf('.'),
-        );
+        return getFileName(this.fileFullName);
     }
 
     get extension() {
-        return extractExtension(this.fileFullName);
+        return getFileExtension(this.fileFullName);
     }
 
     get dirSource() {
@@ -177,7 +177,7 @@ export default class FileSource extends EventHandler<FSEventType>
 
     dragSerialize(type?: DragTypeEnum) {
         return {
-            type: type || DragTypeEnum.UNKNOWN,
+            type: type ?? DragTypeEnum.UNKNOWN,
             data: this.filePath,
         };
     }
@@ -226,40 +226,51 @@ export default class FileSource extends EventHandler<FSEventType>
         }
     }
 
-    static registerFSEventListener(
-        events: FSEventType[], callback: () => void, filePath?: string,
+    static registerFileSourceEventListener<T>(
+        events: FileSourceEventType[], callback: (data: T) => void,
+        filePath?: string,
     ) {
         const newEvents = events.map((event) => {
-            return filePath ? `${event}:${filePath}` : event;
+            return filePath ? `${event}@${filePath}` : event;
         });
         return super.registerEventListener(newEvents, callback);
     }
 
-    static addFSPropEvent(
-        eventName: FSEventType, filePath: string, data?: any,
+    static addFileSourcePropEvent(
+        eventName: FileSourceEventType, filePath: string, data?: any,
     ): void {
-        const newEventName = `${eventName}:${filePath}` as FSEventType;
+        const newEventName = `${eventName}@${filePath}` as FileSourceEventType;
         super.addPropEvent(eventName, data);
         super.addPropEvent(newEventName, data);
     }
 
-    fireSelectEvent() {
-        FileSource.addFSPropEvent('select', this.filePath);
+    fireSelectEvent(data?: any) {
+        FileSource.addFileSourcePropEvent('select', this.filePath, data);
     }
 
-    fireHistoryUpdateEvent() {
-        FileSource.addFSPropEvent('history-update', this.filePath);
+    fireHistoryUpdateEvent(data?: any) {
+        FileSource.addFileSourcePropEvent(
+            'history-update', this.filePath, data,
+        );
     }
 
-    fireUpdateEvent() {
-        FileSource.addFSPropEvent('update', this.filePath);
+    fireUpdateEvent(data?: any) {
+        FileSource.addFileSourcePropEvent('update', this.filePath, data);
     }
 
-    fireDeleteEvent() {
-        FileSource.addFSPropEvent('delete', this.filePath);
+    fireNewEvent(data?: any) {
+        FileSource.addFileSourcePropEvent('new', this.filePath, data);
     }
 
-    fireDeleteCacheEvent() {
-        FileSource.addFSPropEvent('delete-cache', this.filePath);
+    fireEditEvent(data?: any) {
+        FileSource.addFileSourcePropEvent('edit', this.filePath, data);
+    }
+
+    fireDeleteEvent(data?: any) {
+        FileSource.addFileSourcePropEvent('delete', this.filePath, data);
+    }
+
+    fireDeleteCacheEvent(data?: any) {
+        FileSource.addFileSourcePropEvent('delete-cache', this.filePath, data);
     }
 }

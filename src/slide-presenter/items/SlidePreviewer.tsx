@@ -1,17 +1,13 @@
 import './SlidePreviewer.scss';
 
 import SlideItemsPreviewer from './SlideItemsPreviewer';
-import SlidePreviewerFooter from './SlidePreviewerFooter';
+import SlidePreviewerFooterComp from './SlidePreviewerFooterComp';
 import { SelectedSlideContext } from '../../slide-list/Slide';
-import SlideItemsMenu from './SlideItemsMenu';
 import { use } from 'react';
 
 export default function SlidePreviewer() {
     const selectedSlideContext = use(SelectedSlideContext);
-    if (
-        selectedSlideContext === null ||
-        selectedSlideContext.selectedSlide === null
-    ) {
+    if (!selectedSlideContext?.selectedSlide) {
         return (
             <div>No slide selected</div>
         );
@@ -20,12 +16,9 @@ export default function SlidePreviewer() {
         <div id='slide-previewer'
             className='card w-100 h-100'>
             <div className='card-body w-100 h-100 overflow-hidden'>
-                {!selectedSlideContext.selectedSlide.isPdf && (
-                    <SlideItemsMenu />
-                )}
                 <SlideItemsPreviewer />
             </div>
-            <SlidePreviewerFooter />
+            <SlidePreviewerFooterComp />
         </div>
     );
 }

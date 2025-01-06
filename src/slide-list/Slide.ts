@@ -1,9 +1,9 @@
 import SlideItem, { SlideItemType } from './SlideItem';
 import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
 import {
-    checkIsPdf, openSlideContextMenu, readPdfToSlide, SlideDynamicType,
+    checkIsPdf, openSlideContextMenu, SlideDynamicType,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
@@ -11,7 +11,6 @@ import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
-import { PdfImageDataType } from '../pdf/PdfController';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { createContext, use } from 'react';
 
@@ -26,39 +25,23 @@ export type SlideType = {
 };
 
 export default class Slide extends ItemSource<SlideItem> {
-    static readonly mimetype: MimetypeNameType = 'slide';
+    static readonly mimetypeName: MimetypeNameType = 'slide';
     static readonly SELECT_SETTING_NAME = 'slide-selected';
     SELECT_SETTING_NAME = 'slide-selected';
     editorCacheManager: SlideEditorCacheManager;
-    pdfImageDataList: PdfImageDataType[] | null = null;
     itemIdShouldToView = -1;
+    isPdf = false;
     constructor(filePath: string, json: SlideType) {
         super(filePath);
         this.editorCacheManager = new SlideEditorCacheManager(
             this.filePath, json,
         );
     }
-    get isPdf() {
-        return this.pdfImageDataList !== null;
-    }
     get isChanged() {
         if (this.isPdf) {
             return false;
         }
         return this.editorCacheManager.isChanged;
-    }
-    get copiedItem() {
-        return this.items.find((item) => {
-            return item.isCopied;
-        }) || null;
-    }
-    set copiedItem(newItem: SlideItem | null) {
-        this.items.forEach((item) => {
-            item.isCopied = false;
-        });
-        if (newItem !== null) {
-            newItem.isCopied = true;
-        }
     }
     get metadata() {
         if (this.isPdf) {
@@ -71,18 +54,7 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     get items() {
         if (this.isPdf) {
-            return (this.pdfImageDataList || []).map((pdfImageData, i) => {
-                const slideItem = new SlideItem(i, this.filePath, {
-                    id: i,
-                    canvasItems: [],
-                    pdfImageData,
-                    metadata: {
-                        width: pdfImageData.width,
-                        height: pdfImageData.height,
-                    },
-                });
-                return slideItem;
-            });
+            return [];
         }
         const latestHistory = this.editorCacheManager.presenterJson;
         return latestHistory.items.map((json) => {
@@ -120,10 +92,11 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         return isSuccess;
     }
+
     duplicateItem(slideItem: SlideItem) {
         const items = this.items;
         const index = items.findIndex((item) => {
-            return item.id === slideItem.id;
+            return item.checkIsSame(slideItem);
         });
         if (index === -1) {
             showSimpleToast('Duplicate Item', 'Unable to find item');
@@ -135,17 +108,7 @@ export default class Slide extends ItemSource<SlideItem> {
             items.splice(index + 1, 0, newItem);
             this.itemIdShouldToView = newItem.id;
             this.items = items;
-        }
-    }
-    pasteItem() {
-        if (this.copiedItem === null) {
-            return;
-        }
-        const newItem = this.copiedItem.clone();
-        if (newItem !== null) {
-            newItem.id = this.maxItemId + 1;
-            const newItems: SlideItem[] = [...this.items, newItem];
-            this.items = newItems;
+            this.fileSource.fireNewEvent(newItem);
         }
     }
     moveItem(id: number, toIndex: number, isLeft: boolean) {
@@ -159,12 +122,15 @@ export default class Slide extends ItemSource<SlideItem> {
         const target = items.splice(fromIndex, 1)[0];
         items.splice(toIndex, 0, target);
         this.items = items;
+        this.fileSource.fireUpdateEvent(this.items);
     }
     addItem(slideItem: SlideItem) {
         const items = this.items;
         slideItem.id = this.maxItemId + 1;
+        slideItem.filePath = this.filePath;
         items.push(slideItem);
         this.items = items;
+        this.fileSource.fireNewEvent(slideItem);
     }
     addNewItem() {
         const item = SlideItem.defaultSlideItemData(this.maxItemId + 1);
@@ -187,13 +153,17 @@ export default class Slide extends ItemSource<SlideItem> {
             return item.id !== slideItem.id;
         });
         this.items = newItems;
+        this.fileSource.fireDeleteEvent(slideItem);
     }
+
     static toWrongDimensionString({ slideItem, display }: {
         slideItem: { width: number, height: number },
         display: { width: number, height: number },
     }) {
-        return `⚠️ slide:${slideItem.width}x${slideItem.height} `
-            + `display:${display.width}x${display.height}`;
+        return (
+            `⚠️ slide:${slideItem.width}x${slideItem.height} `
+            + `display:${display.width}x${display.height}`
+        );
     }
     checkIsWrongDimension(display: DisplayType) {
         const found = this.items.find((item) => {
@@ -221,26 +191,27 @@ export default class Slide extends ItemSource<SlideItem> {
         });
         this.editorCacheManager.pushSlideItems(newItemsJson);
     }
-    showSlideItemContextMenu(event: any) {
+    async showSlideItemContextMenu(event: any) {
+        if (this.isPdf) {
+            return;
+        }
+        const copiedSlideItems = await Slide.getCopiedSlideItems();
         showAppContextMenu(event, [{
-            menuTitle: 'Deselect',
-            onClick: () => {
-                this.isSelected = false;
-            },
-        }, {
             menuTitle: 'New Slide Item',
             onClick: () => {
                 this.addNewItem();
             },
-        }, {
+        }, ...(copiedSlideItems.length > 0 ? [{
             menuTitle: 'Paste',
-            disabled: SlideItem.copiedItem === null,
-            onClick: () => this.pasteItem(),
-        }]);
+            onClick: () => {
+                for (const copiedSlideItem of copiedSlideItems) {
+                    this.addItem(copiedSlideItem);
+                }
+            },
+        }] : [])]);
     }
     async discardChanged() {
         this.editorCacheManager.delete();
-        FileSource.getInstance(this.filePath).fireUpdateEvent();
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
@@ -250,18 +221,18 @@ export default class Slide extends ItemSource<SlideItem> {
         const selectedFilePath = Slide.getSelectedFilePath();
         return this.filePath === selectedFilePath;
     }
-    set isSelected(b: boolean) {
-        if (this.isSelected === b) {
+    set isSelected(isSelected: boolean) {
+        if (this.isSelected === isSelected) {
             return;
         }
-        if (b) {
+        if (isSelected) {
             Slide.setSelectedFileSource(this.filePath);
             previewingEventListener.showSlide(this);
         } else {
             Slide.setSelectedFileSource(null);
             previewingEventListener.showSlide(null);
         }
-        FileSource.getInstance(this.filePath).fireSelectEvent();
+        this.fileSource.fireSelectEvent(this);
     }
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
@@ -271,7 +242,9 @@ export default class Slide extends ItemSource<SlideItem> {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
             if (fileSource.src && checkIsPdf(fileSource.extension)) {
-                return readPdfToSlide(filePath);
+                const slide = new Slide(filePath, { items: [], metadata: {} });
+                slide.isPdf = true;
+                return slide;
             }
         }
         const data = await super.readFileToDataNoCache(filePath);
@@ -291,17 +264,13 @@ export default class Slide extends ItemSource<SlideItem> {
             [SlideItem.defaultSlideItemData(0)]);
     }
     openContextMenu(event: any, slideItem: SlideItem) {
-        if (this.isPdf) {
-            event.stopPropagation();
-            return;
-        }
         openSlideContextMenu(event, this, slideItem);
     }
     clone() {
         return Slide.fromJson(this.filePath, this.toJson());
     }
     static slideItemExtractKey(key: string) {
-        const [filePath, id] = key.split(':');
+        const [filePath, id] = key.split(SlideItem.KEY_SEPARATOR);
         if (filePath === undefined || id === undefined) {
             return null;
         }
@@ -319,7 +288,7 @@ export default class Slide extends ItemSource<SlideItem> {
         if (filePath === undefined || id === undefined) {
             return null;
         }
-        const slide = await Slide.readFileToData(filePath);
+        const slide = await this.readFileToData(filePath);
         if (!slide) {
             return null;
         }
@@ -327,6 +296,41 @@ export default class Slide extends ItemSource<SlideItem> {
     }
     static slideItemDragDeserialize(data: any) {
         return this.slideItemFromKey(data);
+    }
+    static async getSelectedSlide() {
+        const selectedSlideFilePath = this.getSelectedFilePath();
+        if (selectedSlideFilePath === null) {
+            return null;
+        }
+        const slide = await this.readFileToData(selectedSlideFilePath);
+        return slide || null;
+    };
+
+    static async getSelectedSlideItem() {
+        const slide = await Slide.getSelectedSlide();
+        if (!slide) {
+            return null;
+        }
+        return slide.items[0];
+    };
+
+    static async getCopiedSlideItems() {
+        const clipboardItems = await navigator.clipboard.read();
+        const copiedSlideItems: SlideItem[] = [];
+        const textPlainType = 'text/plain';
+        for (const clipboardItem of clipboardItems) {
+            if (clipboardItem.types.some((type) => {
+                return type === textPlainType;
+            })) {
+                const blob = await clipboardItem.getType(textPlainType);
+                const json = await blob.text();
+                const copiedSlideItem = SlideItem.clipboardDeserialize(json);
+                if (copiedSlideItem !== null) {
+                    copiedSlideItems.push(copiedSlideItem);
+                }
+            }
+        }
+        return copiedSlideItems;
     }
 }
 

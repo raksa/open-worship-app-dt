@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Bible from './Bible';
 import {
     ContextMenuItemType, showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { moveBibleItemTo } from './bibleHelpers';
 import BibleItem from './BibleItem';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -11,6 +11,8 @@ import { AnyObjectType } from '../helper/helpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { BibleTargetType } from './bibleRenderHelpers';
 import { toInputText } from '../helper/bible-helpers/serverBibleHelpers2';
+import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
+import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 
 export type BibleItemType = {
     id: number,
@@ -70,6 +72,13 @@ export async function openBibleItemContextMenu(
                 bible.save();
             },
         },
+        ...genShowOnScreensContextMenu(
+            (event) => {
+                ScreenFullTextManager.handleBibleItemSelecting(
+                    event, [bibleItem], true,
+                );
+            }
+        ),
         {
             menuTitle: '(*T) ' + 'Move To',
             onClick: (event1: any) => {
@@ -79,7 +88,7 @@ export async function openBibleItemContextMenu(
         {
             menuTitle: '(*T) ' + 'Delete',
             onClick: () => {
-                bible.removeItemAtIndex(index);
+                bible.deleteItemAtIndex(index);
                 bible.save();
             },
         },
@@ -127,7 +136,7 @@ export function useBibleItemRenderTitle(bibleItem: BibleItem) {
     useAppEffectAsync(async (methodContext) => {
         const title = await bibleItem.toTitle();
         methodContext.setTitle(title);
-    }, [bibleItem], { methods: { setTitle } });
+    }, [bibleItem], { setTitle });
     return title;
 }
 export function useBibleItemRenderText(bibleItem: BibleItem) {
@@ -135,7 +144,7 @@ export function useBibleItemRenderText(bibleItem: BibleItem) {
     useAppEffectAsync(async (methodContext) => {
         const text = await bibleItem.toText();
         methodContext.setText(text);
-    }, [bibleItem], { methods: { setText } });
+    }, [bibleItem], { setText });
     return text;
 }
 export function useBibleItemVerseTextList(bibleItem: BibleItem) {
@@ -143,7 +152,7 @@ export function useBibleItemVerseTextList(bibleItem: BibleItem) {
     useAppEffectAsync(async (methodContext) => {
         const result = await bibleItem.toVerseTextList();
         methodContext.setResult(result);
-    }, [bibleItem], { methods: { setResult } });
+    }, [bibleItem], { setResult });
     return result;
 }
 
@@ -159,7 +168,7 @@ export function useBibleItemPropsToInputText(
         methodContext.setText(text1);
     },
         [bibleKey, book, chapter, verseStart, verseEnd],
-        { methods: { setText } },
+        { setText },
     );
     return text;
 }

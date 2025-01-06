@@ -9,11 +9,11 @@ import { freezeObject } from '../helper/helpers';
 
 
 export default function ResizeActor({
-    isHorizontal, fSizeName, flexSizeDefault, dataInput,
+    isHorizontal, flexSizeName, flexSizeDefault, dataInput,
     isDisableQuickResize, isNotSaveSetting = false,
 }: Readonly<{
     isHorizontal: boolean,
-    fSizeName: string,
+    flexSizeName: string,
     flexSizeDefault: Readonly<FlexSizeType>,
     dataInput: DataInputType[],
     isDisableQuickResize?: boolean,
@@ -30,12 +30,12 @@ export default function ResizeActor({
     }
     const defaultFlexSize = (
         isNotSaveSetting ? flexSizeDefault :
-            getFlexSizeSetting(fSizeName, flexSizeDefault)
+            getFlexSizeSetting(flexSizeName, flexSizeDefault)
     );
     const [flexSize, setFlexSize] = useState(defaultFlexSize);
     const setFlexSize1 = (newFlexSize: FlexSizeType) => {
         if (!isNotSaveSetting) {
-            setFlexSizeSetting(fSizeName, newFlexSize);
+            setFlexSizeSetting(flexSizeName, newFlexSize);
         }
         setFlexSize(newFlexSize);
     };
@@ -72,7 +72,7 @@ export default function ResizeActor({
                         flexSize={flexSize}
                         setFlexSize={setFlexSize1}
                         defaultFlexSize={defaultFlexSize}
-                        fSizeName={fSizeName}
+                        fSizeName={flexSizeName}
                         dataInput={dataInput}
                         isDisableQuickResize={isDisableQuickResize || false}
                         isHorizontal={isHorizontal}

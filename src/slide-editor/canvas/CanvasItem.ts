@@ -1,4 +1,4 @@
-import { CSSProperties, createContext } from 'react';
+import { CSSProperties, createContext, use, useOptimistic } from 'react';
 
 import {
     AnyObjectType, cloneJson,
@@ -10,6 +10,9 @@ import {
     VAlignmentType,
 } from './canvasHelpers';
 import { log } from '../../helper/loggerHelpers';
+import EventHandler from '../../event/EventHandler';
+import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
 
 export type CanvasItemPropsType = {
     id: number,
@@ -24,17 +27,14 @@ export type CanvasItemPropsType = {
     type: CanvasItemKindType,
 };
 
+export type CanvasItemEventType = 'edit';
 
-export default abstract class CanvasItem<T extends CanvasItemPropsType> {
+export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
+    EventHandler<CanvasItemEventType> {
     props: T;
-    isSelected: boolean;
-    isControlling: boolean;
-    isEditing: boolean;
     constructor(props: T) {
+        super();
         this.props = cloneJson(props);
-        this.isSelected = false;
-        this.isControlling = false;
-        this.isEditing = false;
     }
     get id() {
         return this.props.id;
@@ -55,7 +55,7 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             width: `${props.width}px`,
             height: `${props.height}px`,
             position: 'absolute',
-            backgroundColor: props.backgroundColor || 'transparent',
+            backgroundColor: props.backgroundColor ?? 'transparent',
         };
         return style;
     }
@@ -93,8 +93,9 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
         });
     }
     clone() {
-        const newItem = (this.constructor as typeof CanvasItem<any>)
-            .fromJson(this.toJson());
+        const newItem = (
+            (this.constructor as typeof CanvasItem<any>).fromJson(this.toJson())
+        );
         newItem.props.id = -1;
         return newItem;
     }
@@ -117,6 +118,14 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> {
             log(json);
             throw new Error('Invalid canvas item data');
         }
+    }
+
+    fireEditEvent() {
+        this.addPropEvent('edit');
+    }
+
+    clipboardSerialize() {
+        return JSON.stringify(this.toJson());
     }
 }
 
@@ -142,9 +151,120 @@ export class CanvasItemError extends CanvasItem<any> {
         item.jsonError = json;
         return item;
     }
-    toJson() {
-        return this.jsonError as any;
+}
+
+export const CanvasItemsContext = createContext<CanvasItem<any>[] | null>(null);
+export function useCanvasItemsContext() {
+    const context = use(CanvasItemsContext);
+    if (context === null) {
+        throw new Error('CanvasItemsContext not found');
     }
+    return context;
+}
+
+export const SelectedCanvasItemsAndSetterContext = (
+    createContext<{
+        canvasItems: CanvasItem<any>[],
+        setCanvasItems: (canvasItems: CanvasItem<any>[]) => void,
+    } | null>(null)
+);
+export function useSelectedCanvasItemsAndSetterContext() {
+    const context = use(SelectedCanvasItemsAndSetterContext);
+    if (context === null) {
+        throw new Error('SelectedCanvasItemsAndSetterContext not found');
+    }
+    return context;
+}
+
+export function checkCanvasItemsIncludes(
+    canvasItems: CanvasItem<any>[], targetCanvasItem: CanvasItem<any>,
+) {
+    return canvasItems.includes(targetCanvasItem);
+}
+
+export function useSetSelectedCanvasItems() {
+    const {
+        canvasItems, setCanvasItems,
+    } = useSelectedCanvasItemsAndSetterContext();
+    return (targetCanvasItem: CanvasItem<any>, isControlling = true) => {
+        let newCanvasItems = [targetCanvasItem];
+        if (
+            !isControlling &&
+            checkCanvasItemsIncludes(canvasItems, targetCanvasItem)
+        ) {
+            newCanvasItems = [];
+        }
+        setCanvasItems(newCanvasItems);
+    };
+}
+
+export const EditingCanvasItemAndSetterContext = (
+    createContext<{
+        canvasItem: CanvasItem<any> | null,
+        setCanvasItem: (canvasItem: CanvasItem<any> | null) => void,
+    } | null>(null)
+);
+export function useEditingCanvasItemAndSetterContext() {
+    const context = use(EditingCanvasItemAndSetterContext);
+    if (context === null) {
+        throw new Error('EditingCanvasItemAndSetterContext not found');
+    }
+    return context;
+}
+
+export function useSetEditingCanvasItem() {
+    const {
+        canvasItem, setCanvasItem,
+    } = useEditingCanvasItemAndSetterContext();
+    return (targetCanvasItem: CanvasItem<any>, isEditing = true) => {
+        let newCanvasItem: CanvasItem<any> | null = targetCanvasItem;
+        if (!isEditing) {
+            newCanvasItem = canvasItem !== targetCanvasItem ? canvasItem : null;
+        }
+        setCanvasItem(newCanvasItem);
+    };
 }
 
 export const CanvasItemContext = createContext<CanvasItem<any> | null>(null);
+export function useCanvasItemContext() {
+    const context = use(CanvasItemContext);
+    if (context === null) {
+        throw new Error('CanvasItemContext not found');
+    }
+    return context;
+}
+
+export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
+    const canvasItem = useCanvasItemContext();
+    const [props, setProps] = useOptimistic(cloneJson(canvasItem.props));
+    const { startTransaction } = useProgressBarComp();
+    useAppEffect(() => {
+        canvasItem.registerEventListener(['edit'], () => {
+            startTransaction(() => {
+                setProps(cloneJson(canvasItem.props));
+            });
+        });
+    });
+    return props as T;
+}
+
+export function useIsCanvasItemSelected() {
+    const canvasItem = useCanvasItemContext();
+    const {
+        canvasItems: selectedCasItems,
+    } = useSelectedCanvasItemsAndSetterContext();
+    return checkCanvasItemsIncludes(selectedCasItems, canvasItem);
+}
+
+export function useStopAllModes() {
+    const {
+        setCanvasItem: setEditingCanvasItem,
+    } = useEditingCanvasItemAndSetterContext();
+    const {
+        setCanvasItems: setSelectedCanvasItems,
+    } = useSelectedCanvasItemsAndSetterContext();
+    return () => {
+        setEditingCanvasItem(null);
+        setSelectedCanvasItems([]);
+    };
+}

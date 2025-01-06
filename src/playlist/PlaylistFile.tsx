@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import PlaylistSlideItem from './PlaylistSlideItem';
-import FileItemHandler from '../others/FileItemHandler';
+import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import Playlist from './Playlist';
 import BibleItemRender from '../bible-list/BibleItemRender';
 import PlaylistItem from './PlaylistItem';
 import ItemSource from '../helper/ItemSource';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import FileSource from '../helper/FileSource';
-import AppSuspense from '../others/AppSuspense';
+import AppSuspenseComp from '../others/AppSuspenseComp';
 
 export default function PlaylistFile({
     index, filePath,
@@ -49,7 +49,7 @@ export default function PlaylistFile({
         }
     }, [data]);
     return (
-        <FileItemHandler
+        <FileItemHandlerComp
             index={index}
             data={data}
             reload={handleReloading}
@@ -109,11 +109,11 @@ function RenderPlaylistItem({
     } else if (playlistItem.isBibleItem) {
         playlistItem.getBibleItem();
         return (
-            <AppSuspense>
+            <AppSuspenseComp>
                 <PlaylistBibleItem key={index}
                     index={index}
                     playlistItem={playlistItem} />
-            </AppSuspense>
+            </AppSuspenseComp>
         );
     } else if (playlistItem.isLyric) {
         return (

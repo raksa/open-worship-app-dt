@@ -4,12 +4,12 @@ import {
 import {
     addBibleItem, updateBibleItem,
 } from '../bible-list/bibleHelpers';
-import ScreenFTManager from '../_screen/ScreenFTManager';
+import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import BibleItem from '../bible-list/BibleItem';
 import {
     genContextMenuItemShortcutKey, ContextMenuItemType,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRight';
 import {
@@ -60,7 +60,7 @@ export default function RenderActionButtons() {
                             bibleItem, data,
                         );
                         if (updatedBibleItem !== null) {
-                            ScreenFTManager.ftBibleItemSelect(
+                            ScreenFullTextManager.handleBibleItemSelecting(
                                 event, [bibleItem],
                             );
                         } else {
@@ -89,7 +89,7 @@ async function addBibleItemAndPresent(
 ) {
     const addedBibleItem = await addBibleItem(bibleItem, onDone);
     if (addedBibleItem !== null) {
-        ScreenFTManager.ftBibleItemSelect(
+        ScreenFullTextManager.handleBibleItemSelecting(
             event, [addedBibleItem],
         );
     } else {
@@ -105,12 +105,11 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
             hideBibleSearchPopup : () => false
     );
     SearchBibleItemViewController.getInstance().onSearchAddBibleItem = onDone;
-    useKeyboardRegistering([addListEventMapper], () => {
-        addBibleItem(bibleItem, onDone).then((addedBibleItem) => {
-            if (addedBibleItem === null) {
-                showAddingBibleItemFail();
-            }
-        });
+    useKeyboardRegistering([addListEventMapper], async () => {
+        const addedBibleItem = await addBibleItem(bibleItem, onDone);
+        if (addedBibleItem === null) {
+            showAddingBibleItemFail();
+        }
     });
     useKeyboardRegistering([presenterEventMapper], (event) => {
         if (!appProvider.isPagePresenter) {
@@ -144,14 +143,16 @@ export function genFoundBibleItemContextMenu(
             {
                 menuTitle: 'Show bible item',
                 onClick: (event: any) => {
-                    ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
+                    ScreenFullTextManager.handleBibleItemSelecting(
+                        event, [bibleItem],
+                    );
                 },
             },
             {
                 otherChild: isKeyboardShortcut ? (
                     genContextMenuItemShortcutKey(presenterEventMapper)
                 ) : undefined,
-                menuTitle: `Add bible item and show on screen`,
+                menuTitle: 'Add bible item and show on screen',
                 onClick: async (event: any) => {
                     addBibleItemAndPresent(event, bibleItem, onDone);
                 },

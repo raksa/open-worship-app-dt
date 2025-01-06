@@ -4,9 +4,9 @@ import {
     decrypt, bible_ref,
 } from '../_owa-crypto';
 import { handleError } from '../helper/errorHelpers';
-import { toFileName } from '../helper/bible-helpers/serverBibleHelpers';
+import { toBibleFileName } from '../helper/bible-helpers/serverBibleHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { IndexedDbController } from '../db/dbHelpers';
+import { IndexedDbController } from '../db/databaseHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 
 export type RawBibleRefListType = string[][];
@@ -104,9 +104,9 @@ export function useGetBibleRef(bookKey: string, chapter: number,
     verseNum: number) {
     const [bibleRef, setBibleRef] = useState<BibleRefType[][] | null>(null);
     useAppEffectAsync(async (methodContext) => {
-        const key = `${toFileName(bookKey, chapter)}.${verseNum}`;
+        const key = `${toBibleFileName(bookKey, chapter)}.${verseNum}`;
         const data = await getBibleRef(key);
         methodContext.setBibleRef(data);
-    }, [bookKey, chapter], { methods: { setBibleRef } });
+    }, [bookKey, chapter], { setBibleRef });
     return bibleRef;
 }

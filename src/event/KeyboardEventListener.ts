@@ -1,3 +1,4 @@
+import { DependencyList } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getLastItem } from '../helper/helpers';
 import appProvider from '../server/appProvider';
@@ -100,12 +101,13 @@ export default class KeyboardEventListener extends EventHandler<string> {
     }
     static toEventMapperKey(eventMapper: EventMapper) {
         const key = toShortcutKey(eventMapper);
-        return `${this.getLastLayer()}:${key}`;
+        return `${this.getLastLayer()}>${key}`;
     }
 }
 
 export function useKeyboardRegistering(
     eventMappers: EventMapper[], listener: ListenerType,
+    deps?: DependencyList
 ) {
     useAppEffect(() => {
         const eventNames = eventMappers.map((eventMapper) => {
@@ -117,10 +119,13 @@ export function useKeyboardRegistering(
         return () => {
             KeyboardEventListener.unregisterEventListener(registeredEvents);
         };
-    });
+    }, deps);
 }
 
 
 document.onkeydown = function (event) {
+    if (['Meta', 'Alt', 'Control', 'Shift'].includes(event.key)) {
+        return;
+    }
     KeyboardEventListener.fireEvent(event);
 };

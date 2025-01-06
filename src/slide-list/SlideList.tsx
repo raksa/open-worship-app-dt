@@ -1,27 +1,35 @@
 import './SlideList.scss';
 
-import FileListHandler from '../others/FileListHandler';
+import FileListHandlerComp from '../others/FileListHandlerComp';
 import SlideFile from './SlideFile';
-import Slide from './Slide';
+import Slide, {
+    useSelectedSlideSetterContext,
+} from './Slide';
 import {
     checkIsPdf, convertOfficeFile, supportOfficeFileExtensions,
 } from './slideHelpers';
 import {
-    extractExtension, getFileFullName, getMimetypeExtensions,
+    getFileExtension, getFileFullName, getMimetypeExtensions,
     mimetypePdf,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
-import { useGenDS } from '../helper/dirSourceHelpers';
+import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
     defaultDataDirNames, dirSourceSettingNames,
 } from '../helper/constants';
 import { DroppedFileType } from '../others/droppingFileHelpers';
 
 export default function SlideList() {
-    const dirSource = useGenDS(dirSourceSettingNames.SLIDE);
+    const setSelectedSlide = useSelectedSlideSetterContext();
+    const dirSource = useGenDirSource(dirSourceSettingNames.SLIDE);
     if (dirSource !== null) {
+        Slide.getSelectedSlide().then((slide) => {
+            if (slide === null) {
+                setSelectedSlide(null);
+            }
+        });
         dirSource.checkExtraFile = (fileFullName: string) => {
-            if (checkIsPdf(extractExtension(fileFullName))) {
+            if (checkIsPdf(getFileExtension(fileFullName))) {
                 return {
                     fileFullName: fileFullName,
                     appMimetype: mimetypePdf,
@@ -42,7 +50,7 @@ export default function SlideList() {
             return false;
         }
         const fileFullName = getFileFullName(file);
-        const ext = extractExtension(fileFullName).toLocaleLowerCase();
+        const ext = getFileExtension(fileFullName).toLocaleLowerCase();
         if (supportOfficeFileExtensions.includes(ext)) {
             convertOfficeFile(file, dirSource);
             return true;
@@ -61,8 +69,8 @@ export default function SlideList() {
         return null;
     }
     return (
-        <FileListHandler id='slide-list'
-            mimetype='slide'
+        <FileListHandlerComp id='slide-list'
+            mimetypeName='slide'
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
             checkExtraFile={handleExtraFileChecking}
@@ -73,7 +81,7 @@ export default function SlideList() {
             header={<span>Slides</span>}
             bodyHandler={handleBodyRendering}
             fileSelectionOption={{
-                windowTitle: `Select slide files`,
+                windowTitle: 'Select slide files',
                 dirPath: dirSource.dirPath,
                 extensions: [
                     ...getMimetypeExtensions('slide'),

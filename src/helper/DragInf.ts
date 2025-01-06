@@ -3,10 +3,10 @@ export enum DragTypeEnum {
     SLIDE_ITEM = 'slideItem',
     BIBLE_ITEM = 'bibleItem',
     LYRIC_ITEM = 'lyricItem',
-    BG_VIDEO = 'bg-video',
-    BG_SOUND = 'bg-sound',
-    BG_IMAGE = 'bg-image',
-    BG_COLOR = 'bg-color',
+    BACKGROUND_VIDEO = 'bg-video',
+    BACKGROUND_SOUND = 'bg-sound',
+    BACKGROUND_IMAGE = 'bg-image',
+    BACKGROUND_COLOR = 'bg-color',
 };
 
 export type DragDataType<T> = {
