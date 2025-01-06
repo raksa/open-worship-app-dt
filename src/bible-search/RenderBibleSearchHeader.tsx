@@ -1,6 +1,4 @@
-import InputHandler, {
-    useInputTextContext,
-} from './InputHandler';
+import InputHandler, { useInputTextContext } from './InputHandler';
 import {
     genInputText,
 } from '../bible-list/bibleHelpers';
@@ -10,7 +8,7 @@ import { getPopupWindowTypeData } from '../app-modal/helpers';
 import {
     SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
-import InputHistory from './InputHistory';
+import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
 import { ModalCloseButton } from '../app-modal/Modal';
 import { useShowBibleSearchContext } from '../others/commonButtons';
@@ -52,7 +50,7 @@ export default function RenderBibleSearchHeader({
             <div className='flex-item' style={{
                 width: 'calc(50% - 175px)',
             }}>
-                <InputHistory />
+                <InputHistoryComp />
             </div>
             <div className='flex-item input-group app-input-group-header'
                 style={{ width: 350 }}>

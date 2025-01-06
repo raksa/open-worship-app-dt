@@ -5,7 +5,7 @@ import {
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import RenderBibleDataFound from './RenderBibleDataFound';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
-import { attemptAddingHistory } from './InputHistory';
+import { attemptAddingHistory } from './InputHistoryComp';
 
 export default function RenderSearchSuggestion({
     bibleResult, applyChapterSelection, applyVerseSelection,

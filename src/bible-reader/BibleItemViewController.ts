@@ -17,7 +17,7 @@ import {
     genFoundBibleItemContextMenu,
 } from '../bible-search/RenderActionButtons';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
-import { attemptAddingHistory } from '../bible-search/InputHistory';
+import { attemptAddingHistory } from '../bible-search/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleView';
 

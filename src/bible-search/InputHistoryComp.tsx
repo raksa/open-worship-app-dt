@@ -11,7 +11,7 @@ let timeoutId: any = null;
 export function attemptAddingHistory(
     bibleKey: string, text: string, isQuick = false,
 ) {
-    const newText = `${bibleKey}>${text}`;
+    const newText = `(${bibleKey}) ${text}`;
     if (isQuick) {
         addHistory(newText);
         return;
@@ -57,9 +57,7 @@ function useHistoryTextList(maxHistoryCount: number) {
     return [historyTextList, setHistoryTextList1] as const;
 }
 
-export default function InputHistory({
-    maxHistoryCount = 20,
-}: Readonly<{
+export default function InputHistoryComp({ maxHistoryCount = 20 }: Readonly<{
     maxHistoryCount?: number,
 }>) {
     const [historyTextList, setHistoryTextList] = useHistoryTextList(
@@ -73,7 +71,13 @@ export default function InputHistory({
     };
     const handleDoubleClicking = async (event: any, historyText: string) => {
         event.preventDefault();
-        const [bibleKey, bibleTitle] = historyText.split('>');
+        const regex = /^\((.+)\)\s(.+)$/;
+        const found = regex.exec(historyText);
+        if (found === null) {
+            return;
+        }
+        const bibleKey = found[1];
+        const bibleTitle = found[2];
         const { result } = await extractBibleTitle(bibleKey, bibleTitle);
         if (result.bibleItem === null) {
             return;
