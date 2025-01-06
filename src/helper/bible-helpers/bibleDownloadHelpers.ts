@@ -1,6 +1,6 @@
 import { handleError } from '../errorHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
-import { get_api_url, get_api_key } from '../../_owa-crypto/owa_crypto';
+import { get_api_url, get_api_key } from '../../_owa-crypto';
 import appProvider from '../../server/appProvider';
 import {
     fsDeleteFile, fsListDirectories, fsCheckDirExist, pathBasename, getFileName,
