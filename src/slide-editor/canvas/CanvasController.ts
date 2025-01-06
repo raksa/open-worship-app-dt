@@ -22,6 +22,12 @@ import { createContext, use } from 'react';
 import { showCanvasItemContextMenu } from './canvasContextMenuHelpers';
 
 const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
+export const defaultRangeSize = {
+    size: 1,
+    min: 0.1,
+    max: 2,
+    step: 0.1,
+};
 
 export type CanvasItemEventDataType = { canvasItems: CanvasItem<any>[] };
 

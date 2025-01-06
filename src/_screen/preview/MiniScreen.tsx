@@ -65,11 +65,11 @@ export default function MiniScreen() {
                     <ScreenPreviewerTools />
                 )}
                 <div className='w-100'>
-                    {screenManagers.map((screenManagerBase) => {
+                    {screenManagers.map((screenManager) => {
                         return (
                             <ScreenManagerBaseContext
-                                key={screenManagerBase.key}
-                                value={screenManagerBase}>
+                                key={screenManager.key}
+                                value={screenManager}>
                                 <ScreenPreviewerItemComp
                                     width={previewWidth}
                                 />

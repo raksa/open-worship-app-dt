@@ -4,14 +4,15 @@ import { lazy } from 'react';
 
 import { useStateSettingString } from '../../../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../../../others/TabRenderComp';
-import { useCanvasControllerContext } from '../CanvasController';
+import {
+    defaultRangeSize, useCanvasControllerContext,
+} from '../CanvasController';
 import {
     useSlideItemCanvasScale,
 } from '../canvasEventHelpers';
 import AppRangeComp from '../../../others/AppRangeComp';
 import SlideItemEditorPropertiesComp from './SlideItemEditorPropertiesComp';
 import { useSelectedCanvasItemsAndSetterContext } from '../CanvasItem';
-import { defaultRangeSize } from './slideItemEditorHelpers';
 
 const LazyToolCanvasItems = lazy(() => {
     return import('./ToolCanvasItemsComp');
