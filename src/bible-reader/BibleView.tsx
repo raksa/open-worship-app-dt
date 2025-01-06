@@ -3,7 +3,7 @@ import './BibleView.scss';
 import BibleItem from '../bible-list/BibleItem';
 import {
     showAppContextMenu,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import {
     useBibleItemViewControllerContext,
 } from './BibleItemViewController';
@@ -54,7 +54,7 @@ export default function BibleView({ bibleItem }: Readonly<{
                         );
                     }}
                     onClose={() => {
-                        viewController.removeBibleItem(bibleItem);
+                        viewController.deleteBibleItem(bibleItem);
                     }}
                 />
                 <div className='card-body p-3'>

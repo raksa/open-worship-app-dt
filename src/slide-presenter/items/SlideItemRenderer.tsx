@@ -1,16 +1,21 @@
 import ReactDOMServer from 'react-dom/server';
-import CanvasItemRenderer from './CanvasItemRenderer';
+import CanvasItemRendererComp from '../../slide-editor/CanvasItemRendererComp';
 import CanvasItem, {
+    CanvasItemContext,
     CanvasItemPropsType,
 } from '../../slide-editor/canvas/CanvasItem';
+import { getHTMLChild } from '../../helper/helpers';
+import Canvas from '../../slide-editor/canvas/Canvas';
 
 export function genHtmlSlideItem(canvasItemsJson: CanvasItemPropsType[]) {
-    const str = ReactDOMServer.renderToStaticMarkup(
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
         <SlideItemRenderer width={'100%'} height={'100%'}
-            canvasItemsJson={canvasItemsJson} />);
+            canvasItemsJson={canvasItemsJson}
+        />
+    );
     const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.firstChild as HTMLDivElement;
+    div.innerHTML = htmlString;
+    return getHTMLChild<HTMLDivElement>(div, 'div');
 }
 
 export default function SlideItemRenderer({
@@ -24,12 +29,14 @@ export default function SlideItemRenderer({
             width: `${width}px`,
             height: `${height}px`,
         }}>
-            {canvasItemsJson.map((canvasItemJson: any, i) => {
+            {canvasItemsJson.map((canvasItemJson: any) => {
+                const canvasItem = Canvas.canvasItemFromJson(canvasItemJson);
                 return (
                     <div key={canvasItemJson.id}
                         style={CanvasItem.genBoxStyle(canvasItemJson)}>
-                        <CanvasItemRenderer
-                            props={canvasItemJson} />
+                        <CanvasItemContext value={canvasItem}>
+                            <CanvasItemRendererComp />
+                        </CanvasItemContext>
                     </div>
                 );
             })}

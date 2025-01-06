@@ -1,17 +1,20 @@
 import { useState } from 'react';
 
-import FileItemHandler from '../others/FileItemHandler';
+import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import Slide, { useSelectedSlideSetterContext } from './Slide';
 import ItemSource from '../helper/ItemSource';
 import { getIsShowingSlidePreviewer } from '../slide-presenter/Presenter';
 import { previewingEventListener } from '../event/PreviewingEventListener';
-import { useFSEvents } from '../helper/dirSourceHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { SlideDynamicType } from './slideHelpers';
-import appProvider from '../server/appProvider';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { ContextMenuItemType } from '../others/AppContextMenuComp';
 import { editorTab, goToPath } from '../router/routeHelpers';
-import { ContextMenuItemType } from '../others/AppContextMenu';
+import { previewPdf } from '../server/appHelpers';
+import {
+    removePdfImagesPreview,
+} from '../helper/pdfHelpers';
 
 export default function SlideFile({
     index, filePath,
@@ -20,20 +23,20 @@ export default function SlideFile({
     filePath: string,
 }>) {
     const setSelectedSlide = useSelectedSlideSetterContext();
-    const [data, setData] = useState<SlideDynamicType>(null);
+    const [slide, setSlide] = useState<SlideDynamicType>(null);
     const handleReloading = () => {
-        setData(null);
+        setSlide(null);
     };
     const handleClicking = () => {
-        if (!data) {
+        if (!slide) {
             return;
         }
-        if (data.isSelected && !getIsShowingSlidePreviewer()) {
-            previewingEventListener.showSlide(data);
+        if (slide.isSelected && !getIsShowingSlidePreviewer()) {
+            previewingEventListener.showSlide(slide);
             return;
         }
-        data.isSelected = true;
-        setSelectedSlide(data);
+        slide.isSelected = true;
+        setSelectedSlide(slide);
     };
     const handleChildRendering = (slide: ItemSource<any>) => {
         const slide1 = slide as Slide;
@@ -45,48 +48,55 @@ export default function SlideFile({
     };
     const handleSlideDeleting = () => {
         const selectedFilePath = Slide.getSelectedFilePath();
-        if (selectedFilePath === filePath) {
+        if (selectedFilePath === null || selectedFilePath === filePath) {
             Slide.setSelectedFileSource(null);
+            setSelectedSlide(null);
         }
-        data?.editorCacheManager.delete();
+        slide?.editorCacheManager.delete();
+        if (slide?.isPdf) {
+            removePdfImagesPreview(filePath);
+        }
     };
     useAppEffectAsync(async (methodContext) => {
-        if (data === null) {
+        if (slide === null) {
             const slide = await Slide.readFileToData(filePath);
             methodContext.setData(slide);
         }
-    }, [data], { methods: { setData } });
-    useFSEvents(['update', 'history-update', 'edit'], filePath, () => {
-        setData(null);
-    });
-    const contextMenuItems: ContextMenuItemType[] | undefined = data?.isPdf ? [{
+    }, [slide], { setData: setSlide });
+    useFileSourceEvents(['update', 'history-update', 'edit'], () => {
+        setSlide(null);
+    }, [slide], filePath);
+    const menuItems: ContextMenuItemType[] | undefined = slide?.isPdf ? [{
         menuTitle: 'Preview PDF',
         onClick: () => {
-            const fileSource = FileSource.getInstance(data.filePath);
-            appProvider.messageUtils.sendData(
-                'app:preview-pdf', fileSource.src,
-            );
+            previewPdf(slide.fileSource.src);
+        },
+    }, {
+        menuTitle: 'Refresh PDF Images',
+        onClick: async () => {
+            await removePdfImagesPreview(slide.filePath);
+            slide.fileSource.fireUpdateEvent();
         },
     }] : [{
         menuTitle: 'Edit',
         onClick: () => {
-            if (data) {
-                data.isSelected = true;
+            if (slide) {
+                slide.isSelected = true;
                 goToPath(editorTab.routePath);
             }
         },
     }];
     return (
-        <FileItemHandler
+        <FileItemHandlerComp
             index={index}
-            data={data}
+            data={slide}
             reload={handleReloading}
             filePath={filePath}
             isPointer
             onClick={handleClicking}
             renderChild={handleChildRendering}
-            contextMenuItems={contextMenuItems}
-            onDelete={handleSlideDeleting}
+            contextMenuItems={menuItems}
+            onTrashed={handleSlideDeleting}
         />
     );
 }

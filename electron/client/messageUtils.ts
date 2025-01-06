@@ -1,22 +1,22 @@
-import { IpcRendererEvent } from 'electron';
-import { channels } from '../electronEventListener';
-import electron from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
+
+import { channels } from '../electronEventListener.js';
 
 const messageUtils = {
     channels,
     sendData(channel: string, ...args: any[]) {
-        electron.ipcRenderer.send(channel, ...args);
+        ipcRenderer.send(channel, ...args);
     },
     sendDataSync(channel: string, ...args: any[]) {
-        return electron.ipcRenderer.sendSync(channel, ...args);
+        return ipcRenderer.sendSync(channel, ...args);
     },
     listenForData(channel: string,
         callback: (event: IpcRendererEvent, ...args: any[]) => void) {
-        electron.ipcRenderer.on(channel, callback);
+        ipcRenderer.on(channel, callback);
     },
     listenOnceForData(channel: string,
         callback: (event: IpcRendererEvent, ...args: any[]) => void) {
-        electron.ipcRenderer.once(channel, callback);
+        ipcRenderer.once(channel, callback);
     },
 };
 

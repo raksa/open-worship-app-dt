@@ -1,32 +1,33 @@
+/* eslint-disable max-len */
 import { LanguageType } from '..';
 
 const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
 
 const dictionary = {
-  'bible-search': 'ស្វែងរកខគម្ពីរ',
-  'bible-presenter': 'បទបង្ហាញ​ព្រះ​គម្ពីរ',
-  'General': 'ទូទៅ',
-  'Bible': 'ព្រះគម្ពីរ',
-  'About': 'អារម្មណ៏កថា',
-  'Editor': 'ការកែលំអ',
-  'Presenter': 'ធ្វើបទបង្ហាញ',
-  'Colors': 'ពណ៌',
-  'Images': 'រូបភាព',
-  'Videos': 'វីដេអូ',
-  'Text': 'អក្សរ',
-  'Box': 'ប្រអប់',
-  'Appearance': 'រូបរាង',
-  'Shadow': 'ស្រមោល',
-  'Lyric': 'ចំរៀង',
-  'Slide': 'ស្លាយ',
-  'Full Text': 'បង្ហាញពេញ',
+    'bible-search': 'ស្វែងរកខគម្ពីរ',
+    'bible-presenter': 'បទបង្ហាញ​ព្រះ​គម្ពីរ',
+    'General': 'ទូទៅ',
+    'Bible': 'ព្រះគម្ពីរ',
+    'About': 'អារម្មណ៏កថា',
+    'Editor': 'ការកែលំអ',
+    'Presenter': 'ធ្វើបទបង្ហាញ',
+    'Colors': 'ពណ៌',
+    'Images': 'រូបភាព',
+    'Videos': 'វីដេអូ',
+    'Text': 'អក្សរ',
+    'Box': 'ប្រអប់',
+    'Appearance': 'រូបរាង',
+    'Shadow': 'ស្រមោល',
+    'Lyric': 'ចំរៀង',
+    'Slide': 'ស្លាយ',
+    'Full Text': 'បង្ហាញពេញ',
 };
 const km: LanguageType = {
-  numList,
-  dictionary,
-  name: 'Khmer',
-  locale: 'km',
-  flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
+    numList,
+    dictionary,
+    name: 'Khmer',
+    locale: 'km',
+    flagSVG: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-kh" viewBox="0 0 640 480">
     <path fill="#032ea1" d="M0 0h640v480H0z"/>
     <path fill="#e00025" d="M0 120h640v240H0z"/>
     <g fill="#fff" stroke="#000" transform="matrix(1.2 0 0 1.2 85.6 -522)">

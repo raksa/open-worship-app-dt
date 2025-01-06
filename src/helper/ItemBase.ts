@@ -1,4 +1,5 @@
 import ColorNoteInf from './ColorNoteInf';
+import FileSource from './FileSource';
 import { AnyObjectType, cloneJson } from './helpers';
 
 export abstract class ItemBase implements ColorNoteInf {
@@ -22,6 +23,12 @@ export abstract class ItemBase implements ColorNoteInf {
         metadata['colorNote'] = c;
         this.metadata = metadata;
         this.save();
+    }
+    get fileSource() {
+        if (!this.filePath) {
+            return null;
+        }
+        return FileSource.getInstance(this.filePath);
     }
     get isSelectedEditing() {
         throw new Error('Method not implemented.');

@@ -1,5 +1,5 @@
 import { DragTypeEnum } from '../../helper/DragInf';
-import { handleDragStart } from '../../bible-list/dragHelpers';
+import { handleDragStart } from '../../helper/dragHelpers';
 
 export const BLACK_COLOR = '#000000';
 export type AppColorType = `#${string}`;
@@ -28,7 +28,7 @@ export function serializeForDragging(event: any, color: AppColorType) {
     handleDragStart(event, {
         dragSerialize: () => {
             return {
-                type: DragTypeEnum.BG_COLOR,
+                type: DragTypeEnum.BACKGROUND_COLOR,
                 data: color,
             };
         },

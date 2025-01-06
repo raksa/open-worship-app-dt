@@ -9,7 +9,7 @@ import {
 import {
     fontSizeToHeightStyle, useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
-import ItemColorNote from '../others/ItemColorNote';
+import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
@@ -36,7 +36,7 @@ export function RenderTitleMaterial({
     };
     return (
         <div className='d-flex text-nowrap w-100'>
-            <ItemColorNote item={colorNoteHandler} />
+            <ItemColorNoteComp item={colorNoteHandler} />
             <div className='d-flex flex-fill'>
                 <div className='d-flex ps-1'>
                     <div style={{ margin: 'auto' }}>

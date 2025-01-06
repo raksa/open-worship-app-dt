@@ -39,7 +39,7 @@ export default function BibleViewRenderer({
     })) as FlexSizeType;
     return (
         <ResizeActor
-            fSizeName={
+            flexSizeName={
                 viewController.toSettingName(
                     `${RESIZE_SETTING_NAME}-${classPrefix}`
                 )
@@ -64,6 +64,7 @@ export default function BibleViewRenderer({
                     key: `${typeText}${i + 1}`,
                     widgetName: 'Bible View',
                 };
-            })} />
+            })}
+        />
     );
 }

@@ -1,16 +1,18 @@
 import ReactDOMServer from 'react-dom/server';
 
-import { openAlert, openConfirm } from '../alert/alertHelpers';
+import {
+    showAppAlert, showAppConfirm,
+} from '../popup-widget/popupWidgetHelpers';
 import SlideListEventListener from '../event/SlideListEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
-import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenu';
-import PdfController from '../pdf/PdfController';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../others/AppContextMenuComp';
 import appProvider from '../server/appProvider';
 import {
     fsCheckFileExist, fsCopyFilePathToPath, fsDeleteFile, getFileFullName,
-    mimetypePdf,
+    getFileName, mimetypePdf, pathBasename,
 } from '../server/fileHelpers';
 import {
     openSlideItemQuickEdit,
@@ -22,7 +24,10 @@ import { DroppedFileType } from '../others/droppingFileHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
-import { getTempPath } from '../server/appHelpers';
+import { convertToPdf, getTempPath } from '../server/appHelpers';
+import { dirSourceSettingNames } from '../helper/constants';
+import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
+import ScreenSlideManager from '../_screen/managers/ScreenSlideManager';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -32,13 +37,25 @@ export const THUMBNAIL_WIDTH_SETTING_NAME = 'presenter-item-thumbnail-size';
 
 export type SlideDynamicType = Slide | null | undefined;
 
-export function openSlideContextMenu(event: any,
-    slide: Slide, slideItem: SlideItem) {
-    showAppContextMenu(event, [
+export function openSlideContextMenu(
+    event: any, slide: Slide, slideItem: SlideItem,
+) {
+    const menuItemOnScreens = genShowOnScreensContextMenu(
+        (event) => {
+            ScreenSlideManager.handleSlideSelecting(
+                event, slideItem.filePath, slideItem.toJson(), true,
+            );
+        }
+    );
+    if (slideItem.isPdf) {
+        return showAppContextMenu(event, menuItemOnScreens);
+    }
+    const menuItems: ContextMenuItemType[] = [
         {
             menuTitle: 'Copy',
             onClick: () => {
-                SlideItem.copiedItem = slideItem;
+                navigator.clipboard.writeText(slideItem.clipboardSerialize());
+                showSimpleToast('Copied', 'SlideItem is copied');
             },
         },
         {
@@ -47,7 +64,7 @@ export function openSlideContextMenu(event: any,
                 slide.duplicateItem(slideItem);
             },
         },
-        {
+        ...(appProvider.isPagePresenter ? [{
             menuTitle: 'Quick Edit',
             onClick: () => {
                 if (appProvider.isPageEditor) {
@@ -56,14 +73,16 @@ export function openSlideContextMenu(event: any,
                     openSlideItemQuickEdit(slideItem);
                 }
             },
-        },
+        }] : []),
+        ...menuItemOnScreens,
         {
             menuTitle: 'Delete',
             onClick: () => {
                 slide.deleteItem(slideItem);
             },
         },
-    ]);
+    ];
+    showAppContextMenu(event, menuItems);
 }
 
 export function checkIsPdf(ext: string) {
@@ -99,14 +118,14 @@ const alertMessage = ReactDOMServer.renderToStaticMarkup(<div>
 
 const WIDGET_TITLE = 'Converting to PDF';
 
-function showConfirmPDFConvert(dirPath: string, file: DroppedFileType) {
+function showConfirmPdfConvert(dirPath: string, file: DroppedFileType) {
     const fileFullName = getFileFullName(file);
     const confirmMessage = ReactDOMServer.renderToStaticMarkup(<div>
         <b>"{fileFullName}"</b>
         {' will be converted to PDF into '}
         <b>{dirPath}</b>
     </div>);
-    return openConfirm(WIDGET_TITLE, confirmMessage);
+    return showAppConfirm(WIDGET_TITLE, confirmMessage);
 }
 
 async function getTempFilePath() {
@@ -126,12 +145,28 @@ function toHtmlBold(text: string) {
     return `<b>${text}</b>`;
 };
 
+async function getPdfFilePath(dirPath: string, fileName: string) {
+    let i = 0;
+    while (true) {
+        const targetPDFFilePath = appProvider.pathUtils.join(
+            dirPath, `${fileName}${i === 0 ? '' : ('-' + i)}.pdf`,
+        );
+        if (!await fsCheckFileExist(targetPDFFilePath)) {
+            return targetPDFFilePath;
+        }
+        i++;
+    }
+}
+
 async function startConvertingOfficeFile(
     file: DroppedFileType, dirSource: DirSource,
     retryCount = 5,
 ) {
-    const fileFullName = getFileFullName(file);
     const tempFilePath = await getTempFilePath();
+    const fileFullName = getFileFullName(file);
+    const targetPDFFilePath = await getPdfFilePath(
+        dirSource.dirPath, getFileName(fileFullName)
+    );
     try {
         showProgressBard(WIDGET_TITLE);
         if (!await fsCopyFilePathToPath(file, tempFilePath, '')) {
@@ -140,16 +175,17 @@ async function startConvertingOfficeFile(
         showSimpleToast(
             WIDGET_TITLE, 'Do not close application',
         );
-        await appProvider.pdfUtils.officeFileToPdf(
-            tempFilePath, dirSource.dirPath, fileFullName,
-        );
+        await convertToPdf(tempFilePath, targetPDFFilePath);
         showSimpleToast(
-            WIDGET_TITLE, `${toHtmlBold(fileFullName)} is converted to PDF`,
+            WIDGET_TITLE, (
+            `${toHtmlBold(fileFullName)} is converted to PDF ` +
+            `"${targetPDFFilePath}"`
+        ),
         );
     } catch (error: any) {
         const regex = /Could not find .+ binary/i;
         if (regex.test(error.message)) {
-            openAlert('LibreOffice is not installed', alertMessage);
+            showAppAlert('LibreOffice is not installed', alertMessage);
         } else {
             handleError(error);
             if (retryCount > 0) {
@@ -169,26 +205,34 @@ async function startConvertingOfficeFile(
 export async function convertOfficeFile(
     file: DroppedFileType, dirSource: DirSource,
 ) {
-    const isConfirm = await showConfirmPDFConvert(dirSource.dirPath, file);
+    const isConfirm = await showConfirmPdfConvert(dirSource.dirPath, file);
     if (!isConfirm) {
         return;
     }
     await startConvertingOfficeFile(file, dirSource);
 }
 
-export async function readPdfToSlide(filePath: string) {
-    const pdfManager = PdfController.getInstance();
-    try {
-        const fileSource = FileSource.getInstance(filePath);
-        const imageDataList = await pdfManager.genPdfImages(fileSource.src);
-        const slide = new Slide(filePath, {
-            items: [],
-            metadata: {},
+export async function selectSlide(event: any, currentFilePath: string) {
+    const dirSource = await DirSource.getInstance(
+        dirSourceSettingNames.SLIDE,
+    );
+    const newFilePaths = await dirSource.getFilePaths('slide');
+    if (newFilePaths?.length) {
+        return new Promise<Slide | null>((resolve) => {
+            const menuItems = newFilePaths.filter((filePath) => {
+                return filePath !== currentFilePath;
+            }).map((filePath) => {
+                return {
+                    menuTitle: pathBasename(filePath),
+                    title: filePath,
+                    onClick: async () => {
+                        const slide = await Slide.readFileToData(filePath);
+                        resolve(slide || null);
+                    },
+                } as ContextMenuItemType;
+            });
+            showAppContextMenu(event, menuItems);
         });
-        slide.pdfImageDataList = imageDataList;
-        return slide;
-    } catch (error) {
-        handleError(error);
     }
     return null;
 }

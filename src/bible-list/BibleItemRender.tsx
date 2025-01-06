@@ -1,16 +1,16 @@
 import Bible from './Bible';
 import BibleItem from './BibleItem';
-import ItemReadError from '../others/ItemReadError';
-import { useFSEvents } from '../helper/dirSourceHelpers';
-import { handleDragStart } from './dragHelpers';
-import ItemColorNote from '../others/ItemColorNote';
+import ItemReadErrorComp from '../others/ItemReadErrorComp';
+import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
+import { handleDragStart } from '../helper/dragHelpers';
+import ItemColorNoteComp from '../others/ItemColorNoteComp';
 import {
     BibleSelectionMini,
 } from '../bible-search/BibleSelection';
 import {
     SearchBibleItemViewController, useBibleItemViewControllerContext,
 } from '../bible-reader/BibleItemViewController';
-import ScreenFTManager from '../_screen/ScreenFTManager';
+import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
 import {
     openBibleItemContextMenu, useBibleItemRenderTitle,
 } from './bibleItemHelpers';
@@ -29,7 +29,7 @@ export default function BibleItemRender({
 }>) {
     const showBibleSearchPopup = useShowBibleSearchContext();
     const viewController = useBibleItemViewControllerContext();
-    useFSEvents(['select'], filePath);
+    useFileSourceRefreshEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
     const changeBible = async (newBibleKey: string) => {
         const bible = bibleItem.filePath ?
@@ -40,14 +40,14 @@ export default function BibleItemRender({
         bibleItem.bibleKey = newBibleKey;
         bibleItem.save(bible);
     };
-    const openContextMenu = (event: React.MouseEvent<any>) => {
+    const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
         openBibleItemContextMenu(
             event, bibleItem, index, showBibleSearchPopup,
         );
     };
-    const handleDBClicking = (event: any) => {
+    const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
-            ScreenFTManager.ftBibleItemSelect(event, [bibleItem]);
+            ScreenFullTextManager.handleBibleItemSelecting(event, [bibleItem]);
         } else if (appProvider.isPageReader) {
             const searchViewController = (
                 SearchBibleItemViewController.getInstance()
@@ -68,8 +68,8 @@ export default function BibleItemRender({
 
     if (bibleItem.isError) {
         return (
-            <ItemReadError
-                onContextMenu={openContextMenu}
+            <ItemReadErrorComp
+                onContextMenu={handleContextMenuOpening}
             />
         );
     }
@@ -82,10 +82,10 @@ export default function BibleItemRender({
             onDragStart={(event) => {
                 handleDragStart(event, bibleItem);
             }}
-            onDoubleClick={handleDBClicking}
-            onContextMenu={openContextMenu}>
+            onDoubleClick={handleDoubleClicking}
+            onContextMenu={handleContextMenuOpening}>
             <div className='d-flex'>
-                <ItemColorNote item={bibleItem} />
+                <ItemColorNoteComp item={bibleItem} />
                 <div className='px-1'>
                     <BibleSelectionMini
                         bibleKey={bibleItem.bibleKey}

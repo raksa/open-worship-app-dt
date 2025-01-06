@@ -6,7 +6,7 @@ import {
 } from '../bible-reader/BibleItemViewController';
 import BibleView from '../bible-reader/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
-import AppSuspense from '../others/AppSuspense';
+import AppSuspenseComp from '../others/AppSuspenseComp';
 import {
     useCloseBibleItemRenderer, useNextEditingBibleItem,
     useSplitBibleItemRenderer,
@@ -42,9 +42,9 @@ export default function BibleSearchBodyPreviewer() {
     };
     return (
         <BibleItemViewControllerContext value={viewController}>
-            <AppSuspense>
+            <AppSuspenseComp>
                 <LazyBiblePreviewerRender />
-            </AppSuspense>
+            </AppSuspenseComp>
         </BibleItemViewControllerContext>
     );
 }

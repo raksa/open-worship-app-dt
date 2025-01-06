@@ -12,10 +12,6 @@ const fileUtils = {
     rmdir: fs.rmdir,
     readFile: fs.readFile,
     copyFile: fs.copyFile,
-    tarExtract: function () {
-        const tar = require('tar');
-        return tar.x(...arguments);
-    },
     watch: fs.watch,
 };
 

@@ -46,7 +46,7 @@ export function useStateSettingString<T extends string>(
 export function useStateSettingNumber(
     settingName: string, defaultNumber: number,
 ): [number, (n: number) => void] {
-    const defaultData = parseInt(getSetting(settingName), 10);
+    const defaultData = parseInt(getSetting(settingName));
     const [data, setData] = useState(
         isNaN(defaultData) ? defaultNumber : defaultData,
     );

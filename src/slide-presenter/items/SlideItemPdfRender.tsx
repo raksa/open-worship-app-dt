@@ -1,11 +1,15 @@
-import './SlideItemRender.scss';
+import './SlideItemRenderComp.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
-import { usePSlideMEvents } from '../../_screen/screenEventHelpers';
 import {
-    RendInfo, toCNHighlight,
-} from './SlideItemRender';
+    useScreenSlideManagerEvents,
+} from '../../_screen/managers/screenEventHelpers';
+import {
+    RenderInfoComp, toClassNameHighlight,
+} from './SlideItemRenderComp';
 import ReactDOMServer from 'react-dom/server';
+import { getHTMLChild } from '../../helper/helpers';
+import { handleDragStart } from '../../helper/dragHelpers';
 
 export function SlideItemPdfRenderContent({
     pdfImageSrc, isFullWidth = false,
@@ -27,46 +31,65 @@ export function SlideItemPdfRenderContent({
 }
 
 export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
-    const str = ReactDOMServer.renderToStaticMarkup(
+    const htmlString = ReactDOMServer.renderToStaticMarkup(
         <SlideItemPdfRenderContent pdfImageSrc={pdfImageSrc}
             isFullWidth={isFullWidth}
         />,
     );
     const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.firstChild as HTMLDivElement;
+    div.innerHTML = htmlString;
+    return getHTMLChild<HTMLDivElement>(div, 'img');
 }
 
 export default function SlideItemPdfRender({
-    slideItem, width, index, onClick,
+    slideItem, width, index, onClick, onContextMenu, onDragStart,
+    onDragEnd,
 }: Readonly<{
     slideItem: SlideItem;
     width: number,
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+    onContextMenu: (event: any) => void,
+    onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
+    onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
 }>) {
-    usePSlideMEvents(['update']);
+    useScreenSlideManagerEvents(['update']);
     const {
         activeCN, presenterCN,
-    } = toCNHighlight(slideItem);
+    } = toClassNameHighlight(slideItem);
+    const pdfPreviewSrc = slideItem.pdfPreviewSrc;
     return (
         <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
-            style={{
-                width: `${width}px`,
+            style={{ width: `${width}px` }}
+            data-slide-item-id={slideItem.id}
+            draggable
+            onDragStart={(event) => {
+                handleDragStart(event, slideItem);
+                onDragStart(event);
             }}
-            onClick={onClick}>
-            <div className='card-header d-flex'>
+            onDragEnd={(event) => {
+                onDragEnd(event);
+            }}
+            onClick={onClick}
+            onContextMenu={onContextMenu}>
+            <div className='card-header d-flex' style={{ height: '35px' }}>
                 <i className='bi bi-filetype-pdf' />
-                <RendInfo index={index}
+                <RenderInfoComp index={index}
                     slideItem={slideItem}
                 />
             </div>
-            <div className='card-body overflow-hidden'
-                style={{ padding: '0px' }} >
-                <SlideItemPdfRenderContent
-                    pdfImageSrc={slideItem.pdfImageSrc}
-                />
-            </div>
+            {pdfPreviewSrc === null ? (
+                <div className='alert alert-danger'>
+                    Unable to preview right now
+                </div>
+            ) : (
+                <div className='card-body overflow-hidden'
+                    style={{ padding: '0px' }} >
+                    <SlideItemPdfRenderContent
+                        pdfImageSrc={pdfPreviewSrc}
+                    />
+                </div>
+            )}
         </div>
     );
 }

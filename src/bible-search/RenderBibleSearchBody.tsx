@@ -61,7 +61,7 @@ function useExtractInput(bibleKey: string, inputText: string) {
             checkAndSyncResult(prev, result);
             return result;
         });
-    }, [bibleKey, inputText], { methods: { setExtractedInput } });
+    }, [bibleKey, inputText], { setExtractedInput });
     return extractedInput;
 }
 

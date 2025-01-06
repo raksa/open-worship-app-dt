@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 
-import SlideItemRender from './SlideItemRender';
+import SlideItemRenderComp from './SlideItemRenderComp';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
 import { useSelectedSlideContext } from '../../slide-list/Slide';
 import SlideItem, {
@@ -31,7 +31,7 @@ export default function SlideItemRenderWrapper({
         selectedSlide.openContextMenu(event, slideItem);
     };
     const handleCopying = () => {
-        selectedSlide.copiedItem = slideItem;
+        navigator.clipboard.writeText(slideItem.clipboardSerialize());
     };
     const handleDragStarting = () => {
         setDraggingIndex(index);
@@ -44,7 +44,11 @@ export default function SlideItemRenderWrapper({
             <SlideItemPdfRender key={slideItem.id}
                 onClick={handleClicking}
                 slideItem={slideItem}
-                width={thumbSize} index={index}
+                width={thumbSize} 
+                index={index}
+                onContextMenu={handleContextMenuOpening}
+                onDragStart={handleDragStarting}
+                onDragEnd={handleDragEnding}
             />
         );
     }
@@ -64,7 +68,7 @@ export default function SlideItemRenderWrapper({
                     onDrop={handleDropping}
                 />
             )}
-            <SlideItemRender index={index}
+            <SlideItemRenderComp index={index}
                 slideItem={slideItem}
                 width={thumbSize}
                 onClick={handleClicking}

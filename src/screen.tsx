@@ -5,14 +5,14 @@ import { StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
 import appProviderScreen from './_screen/appProviderScreen';
-import ScreenApp from './_screen/ScreenApp';
+import ScreenAppComp from './_screen/ScreenAppComp';
 
 const container = document.getElementById('root');
 if (container !== null) {
     const root = createRoot(container);
     root.render(
         <StrictMode>
-            <ScreenApp />
+            <ScreenAppComp />
         </StrictMode>
     );
 }

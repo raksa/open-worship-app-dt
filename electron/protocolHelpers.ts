@@ -1,15 +1,18 @@
+import { join, resolve } from 'node:path';
 import { BrowserWindow } from 'electron';
 
 import {
     rootUrl as fsServeRootUrl, preloadFileMap, toTitleCase,
-} from './fsServe';
-import { isDev } from './electronHelpers';
+} from './fsServe.js';
+import { isDev } from './electronHelpers.js';
 
 function getPreloadFilePath(htmlFileFullName: string) {
     const preloadName = (
         preloadFileMap.minimal.includes(htmlFileFullName) ? 'minimal' : 'full'
     );
-    return `${__dirname}/client/preload${toTitleCase(preloadName)}.js`;
+    return resolve(join(
+        __dirname, 'client', `preload${toTitleCase(preloadName)}.js`,
+    ));
 }
 
 export function genRoutProps(htmlFileFullName: string) {

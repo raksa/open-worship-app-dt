@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-const ALGORITHM = 'aes-256-cbc';
+const ALGORITHM = 'aes-256-cbc'; //TODO: use a secure mode
 const IV_STRING = '6ce2b3237d3d6690';
 
 const cryptoUtils = {

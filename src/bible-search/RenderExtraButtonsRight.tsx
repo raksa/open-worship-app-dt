@@ -1,5 +1,7 @@
 import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
-import { QuickOrBackButton, SettingButton } from '../others/commonButtons';
+import {
+    QuickOrBackButtonComp, SettingButtonComp,
+} from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 
 const CLOSE_ON_ADD_BIBLE_ITEM = 'close-on-add-bible-item';
@@ -45,8 +47,8 @@ export default function RenderExtraButtonsRight({
             </button>
             {!appProvider.isPageReader ? null : (
                 <>
-                    <QuickOrBackButton title='Quit Reader' />
-                    <SettingButton />
+                    <QuickOrBackButtonComp title='Quit Reader' />
+                    <SettingButtonComp />
                 </>
             )}
         </div>

@@ -11,13 +11,13 @@ import { BibleItemType } from '../bible-list/bibleItemHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     ContextMenuItemType, genContextMenuItemShortcutKey,
-} from '../others/AppContextMenu';
+} from '../others/AppContextMenuComp';
 import { showBibleOption } from '../bible-search/BibleSelection';
 import {
     genFoundBibleItemContextMenu,
 } from '../bible-search/RenderActionButtons';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
-import { attemptAddingHistory } from '../bible-search/InputHistory';
+import { attemptAddingHistory } from '../bible-search/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleView';
 
@@ -351,11 +351,8 @@ export default class BibleItemViewController
         }
     }
 
-    removeBibleItem(bibleItem: BibleItem) {
+    deleteBibleItem(bibleItem: BibleItem) {
         try {
-            if (this.isAlone) {
-                return;
-            }
             const {
                 nestedBibleItems, parentNestedBibleItems, index,
             } = this.seek(
@@ -363,7 +360,9 @@ export default class BibleItemViewController
             );
             parentNestedBibleItems.splice(index, 1);
             this.nestedBibleItems = nestedBibleItems;
-        } catch (error) { }
+        } catch (error) {
+            handleError(error);
+        }
     }
 
     addBibleItem(
@@ -539,8 +538,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
-            bibleItem, this.onSearchAddBibleItem,
-            isBibleItemSelected,
+            bibleItem, this.onSearchAddBibleItem, isBibleItemSelected,
         );
         const menus2 = super.genContextMenu(bibleItem);
         if (!isBibleItemSelected) {
@@ -581,7 +579,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
                     if (bibleItem === this.selectedBibleItem) {
                         closeCurrentEditingBibleItem();
                     } else {
-                        this.removeBibleItem(bibleItem);
+                        this.deleteBibleItem(bibleItem);
                     }
                 },
             },
@@ -609,8 +607,11 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         newBibleItem.target = this.selectedBibleItem.clone().target;
         this.changeBibleItem(bibleItem, newBibleItem);
     }
-    removeBibleItem(bibleItem: BibleItem) {
-        super.removeBibleItem(bibleItem);
+    deleteBibleItem(bibleItem: BibleItem) {
+        if (this.isAlone) {
+            return;
+        }
+        super.deleteBibleItem(bibleItem);
         const straightBibleItems = this.straightBibleItems;
         if (!straightBibleItems.includes(this.selectedBibleItem)) {
             const lastBibleItem = straightBibleItems[

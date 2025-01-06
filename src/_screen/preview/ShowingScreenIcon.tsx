@@ -1,4 +1,7 @@
+import { freezeObject } from '../../helper/helpers';
 import colorList from '../../others/color-list.json';
+
+freezeObject(colorList);
 
 const screenIdColorMap: Record<string, string> = {};
 export function genColorFromScreenId(screenId: number) {
@@ -19,7 +22,8 @@ export default function ShowingScreenIcon({ screenId }: Readonly<{
 }>) {
     const color = genColorFromScreenId(screenId);
     return (
-        <span title={`Screen: ${screenId}`}>
+        <span className='d-flex' title={`Screen: ${screenId}`}
+            data-screen-id={screenId}>
             <i className='bi bi-collection' style={{ color }} />
             {screenId}
         </span>

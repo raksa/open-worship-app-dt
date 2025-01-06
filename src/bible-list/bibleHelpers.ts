@@ -5,36 +5,43 @@ import {
 } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import {
-    VerseList, getVerses, keyToBook,
+    getVerses, keyToBook,
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    extractBibleTitle, toInputText, toLocaleNumBB,
+    extractBibleTitle, toInputText, toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import {
-    getDownloadedBibleInfoList,
+    getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import Bible from './Bible';
 import { showSimpleToast } from '../toast/toastHelpers';
-import CanvasController from '../slide-editor/canvas/CanvasController';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import DirSource from '../helper/DirSource';
 import FileSource from '../helper/FileSource';
-import { showAppContextMenu } from '../others/AppContextMenu';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
+import { VerseList } from '../helper/bible-helpers/BibleDataReader';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 
 async function getSelectedEditorBibleItem() {
+    const localBibleInfoList = await getAllLocalBibleInfoList();
     let bibleKey = getSetting(SELECTED_BIBLE_SETTING_NAME) || null;
     if (bibleKey === null) {
-        const downloadedBibleInfoList = await getDownloadedBibleInfoList();
-        if (!downloadedBibleInfoList?.length) {
+        if (!localBibleInfoList?.length) {
             showSimpleToast('Getting Selected Bible',
                 'Unable to get selected bible');
             return null;
         }
-        bibleKey = downloadedBibleInfoList[0].key;
+        bibleKey = localBibleInfoList[0].key;
+        setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
+    } else if (
+        localBibleInfoList?.find((bibleInfo) => {
+            return bibleInfo.key === bibleKey;
+        }) === undefined
+    ) {
+        bibleKey = 'KJV';
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey);
     }
     return bibleKey;
@@ -54,7 +61,7 @@ export function useSelectedBibleKey() {
     useAppEffectAsync(async (methodContext) => {
         const bibleKey = await getSelectedEditorBibleItem();
         methodContext.setBibleKeySelected1(bibleKey);
-    }, [], { methods: { setBibleKeySelected1 } });
+    }, [], { setBibleKeySelected1 });
     return [bibleKeySelected, setBibleKeySelected1] as const;
 }
 
@@ -65,7 +72,7 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
             const title = await bibleItem.toTitle();
             methodContext.setInputText(title);
         }
-    }, [bibleItem], { methods: { setInputText } });
+    }, [bibleItem], { setInputText });
     return [inputText, setInputText] as [string, (s: string) => void];
 }
 
@@ -110,8 +117,8 @@ export async function addBibleItem(
     bibleItem: BibleItem, onDone: () => void,
 ) {
     if (appProvider.isPageEditor) {
-        const canvasController = CanvasController.getInstance();
-        canvasController.addNewBibleItem(bibleItem);
+        // TODO: Implement this, find canvasController
+        // canvasController.addNewBibleItem(bibleItem);
         return null;
     }
     const savedBibleItem = await Bible.addBibleItemToDefault(bibleItem);
@@ -144,7 +151,7 @@ export async function genVerseList({
     }
     const verseNumbList = await Promise.all(
         Array.from({ length: Object.keys(verses).length }, (_, i) => {
-            return toLocaleNumBB(bibleKey, i + 1);
+            return toLocaleNumBible(bibleKey, i + 1);
         }),
     );
     const verseList = verseNumbList.map((verseNumSting, i) => {

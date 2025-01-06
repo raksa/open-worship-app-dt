@@ -3,7 +3,7 @@ import './CustomStyle.scss';
 import { lazy } from 'react';
 
 import { useStateSettingString } from '../../helper/settingHelpers';
-import TabRender, { genTabBody } from '../../others/TabRender';
+import TabRenderComp, { genTabBody } from '../../others/TabRenderComp';
 
 const LazyAppearance = lazy(() => {
     return import('./Appearance');
@@ -14,7 +14,7 @@ const LazyTextShadow = lazy(() => {
 
 export default function CustomStyle() {
     return (
-        <div className='custom-style card pointer border-white-round mt-1'>
+        <div className='custom-style card pointer app-border-white-round mt-1'>
             <Body />
         </div>
     );
@@ -33,7 +33,7 @@ function Body() {
     return (
         <div className='card-body'>
             <div className='d-flex'>
-                <TabRender<TabType>
+                <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
                     })}

@@ -12,18 +12,20 @@ import {
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
-    filePath: string, selectedBGSrcList: [string, BackgroundSrcType][],
+    filePath: string, selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
     return (
         <RendBody filePath={filePath}
-            selectedBGSrcList={selectedBGSrcList}
+            selectedBackgroundSrcList={selectedBackgroundSrcList}
         />
     );
 }
 
-function RendBody({ filePath, selectedBGSrcList }: Readonly<{
+function RendBody({
+    filePath, selectedBackgroundSrcList,
+}: Readonly<{
     filePath: string,
-    selectedBGSrcList: [string, BackgroundSrcType][],
+    selectedBackgroundSrcList: [string, BackgroundSrcType][],
 }>) {
     const vRef = createRef<HTMLVideoElement>();
     const fileSource = FileSource.getInstance(filePath);
@@ -39,8 +41,8 @@ function RendBody({ filePath, selectedBGSrcList }: Readonly<{
                 }
             }}>
             <RenderScreenIds
-                screenIds={selectedBGSrcList.map(([key]) => {
-                    return parseInt(key, 10);
+                screenIds={selectedBackgroundSrcList.map(([key]) => {
+                    return parseInt(key);
                 })}
             />
             <video ref={vRef}
@@ -56,7 +58,7 @@ export default function BackgroundVideos() {
     return (
         <BackgroundMedia
             defaultFolderName={defaultDataDirNames.BACKGROUND_VIDEO}
-            dragType={DragTypeEnum.BG_VIDEO}
+            dragType={DragTypeEnum.BACKGROUND_VIDEO}
             rendChild={rendChild}
             dirSourceSettingName={dirSourceSettingNames.BACKGROUND_VIDEO}
         />

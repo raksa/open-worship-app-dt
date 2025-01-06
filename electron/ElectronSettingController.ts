@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import electron, { BrowserWindow } from 'electron';
-import { htmlFiles } from './fsServe';
+
+import { htmlFiles } from './fsServe.js';
 
 const settingObject: {
     mainWinBounds: Electron.Rectangle | null,
@@ -58,8 +59,10 @@ export default class ElectronSettingController {
         return electron.screen.getPrimaryDisplay();
     }
 
-    getDisplayById(id: number) {
-        return this.allDisplays.find((newDisplay) => newDisplay.id == id);
+    getDisplayById(displayId: number) {
+        return this.allDisplays.find((display) => {
+            return display.id == displayId;
+        });
     }
 
     save() {

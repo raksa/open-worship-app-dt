@@ -9,6 +9,9 @@ import {
 import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';
 import { useAppEffect } from '../../helper/debuggerHelpers';
+import { freezeObject } from '../../helper/helpers';
+
+freezeObject(colorList);
 
 export default function ColorPicker({
     defaultColor, color, onColorChange, onNoColor,

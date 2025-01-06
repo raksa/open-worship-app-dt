@@ -1,7 +1,7 @@
 import ReactDOMServer from 'react-dom/server';
 import { getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    getBibleLocale, toLocaleNumBB,
+    getBibleLocale, toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
 import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
@@ -10,6 +10,7 @@ import {
     BibleItemRenderedType, FTBibleTable, LyricRenderedType, FTLyricItem,
     BibleRenderVerseType,
 } from './fullTextScreenComps';
+import { getHTMLChild } from '../helper/helpers';
 
 const fullTextScreenHelper = {
     genHtmlFromFtBibleItem(bibleRenderedList: BibleItemRenderedType[],
@@ -18,13 +19,16 @@ const fullTextScreenHelper = {
             return document.createElement('table');
         }
         const versesCount = bibleRenderedList[0].verses.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(<FTBibleTable
-            bibleRenderedList={bibleRenderedList}
-            isLineSync={isLineSync}
-            versesCount={versesCount} />);
+        const htmlString = ReactDOMServer.renderToStaticMarkup(
+            <FTBibleTable
+                bibleRenderedList={bibleRenderedList}
+                isLineSync={isLineSync}
+                versesCount={versesCount}
+            />
+        );
         const div = document.createElement('div');
         div.innerHTML = htmlString;
-        return div.firstChild as HTMLTableElement;
+        return getHTMLChild<HTMLDivElement>(div, 'div');
     },
     genHtmlFromFtLyric(lyricRenderedList: LyricRenderedType[],
         isLineSync: boolean) {
@@ -32,13 +36,16 @@ const fullTextScreenHelper = {
             return document.createElement('table');
         }
         const itemsCount = lyricRenderedList[0].items.length;
-        const htmlString = ReactDOMServer.renderToStaticMarkup(<FTLyricItem
-            lyricRenderedList={lyricRenderedList}
-            isLineSync={isLineSync}
-            itemsCount={itemsCount} />);
+        const htmlString = ReactDOMServer.renderToStaticMarkup(
+            <FTLyricItem
+                lyricRenderedList={lyricRenderedList}
+                isLineSync={isLineSync}
+                itemsCount={itemsCount}
+            />
+        );
         const div = document.createElement('div');
         div.innerHTML = htmlString;
-        return div.firstChild as HTMLTableElement;
+        return getHTMLChild<HTMLTableElement>(div, 'table');
     },
     removeClassName(parent: HTMLElement, className: string) {
         const targets = parent.querySelectorAll<HTMLSpanElement>(
@@ -65,14 +72,14 @@ const fullTextScreenHelper = {
             }
         }
     },
-    registerHighlight(table: HTMLTableElement, {
+    registerHighlight(div: HTMLDivElement, {
         onSelectIndex, onBibleSelect,
     }: {
         onSelectIndex: (selectedIndex: number | null) => void,
         onBibleSelect: (event: MouseEvent, index: number) => void,
     }) {
         if (!appProviderScreen.isScreen) {
-            const divBibleKeys = table.querySelectorAll<HTMLSpanElement>(
+            const divBibleKeys = div.querySelectorAll<HTMLSpanElement>(
                 'div.bible-name',
             );
             Array.from(divBibleKeys).forEach((divBibleKey) => {
@@ -90,25 +97,25 @@ const fullTextScreenHelper = {
                 });
             });
         }
-        const spans = table.querySelectorAll<HTMLSpanElement>('span.highlight');
+        const spans = div.querySelectorAll<HTMLSpanElement>('span.highlight');
         Array.from(spans).forEach((span) => {
             span.addEventListener('mouseover', () => {
                 this.resetClassName(
-                    table, 'hover', true, span.dataset.highlight,
+                    div, 'hover', true, span.dataset.highlight,
                 );
             });
             span.addEventListener('mouseout', () => {
                 this.resetClassName(
-                    table, 'hover', false, span.dataset.highlight,
+                    div, 'hover', false, span.dataset.highlight,
                 );
             });
             span.addEventListener('click', () => {
-                const arrChildren = this.removeClassName(table, 'selected');
+                const arrChildren = this.removeClassName(div, 'selected');
                 if (
                     !arrChildren.includes(span) && span.dataset.highlight
-                    && !isNaN(parseInt(span.dataset.highlight, 10))
+                    && !isNaN(parseInt(span.dataset.highlight))
                 ) {
-                    onSelectIndex(parseInt(span.dataset.highlight, 10));
+                    onSelectIndex(parseInt(span.dataset.highlight));
                 } else {
                     onSelectIndex(null);
                 }
@@ -126,7 +133,7 @@ const fullTextScreenHelper = {
                     if (verses !== null) {
                         for (let i = bibleItem.target.verseStart;
                             i <= bibleItem.target.verseEnd; i++) {
-                            const verseNumb = await toLocaleNumBB(
+                            const verseNumb = await toLocaleNumBible(
                                 bibleItem.bibleKey, i,
                             );
                             if (verseNumb !== null) {

@@ -12,7 +12,7 @@ const LazyMiniScreen = lazy(() => {
 
 export default function AppPresenterRight() {
     return (
-        <ResizeActor fSizeName={resizeSettingNames.appPresenterRight}
+        <ResizeActor flexSizeName={resizeSettingNames.appPresenterRight}
             isHorizontal={false}
             flexSizeDefault={{
                 'v1': ['1'],

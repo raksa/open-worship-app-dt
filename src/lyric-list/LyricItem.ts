@@ -20,8 +20,8 @@ export default class LyricItem extends ItemBase
     isCopied: boolean;
     showingType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     // TODO: implement copying elements
-    static copiedItem: LyricItem | null = null;
     editorCacheManager: LyricEditorCacheManager;
+    static readonly KEY_SEPARATOR = '<liid>';
     constructor(
         id: number, filePath: string, json: LyricItemType,
         editorCacheManager?: LyricEditorCacheManager,
@@ -126,7 +126,7 @@ export default class LyricItem extends ItemBase
         return lyricItem;
     }
     static genKeyByFileSource(filePath: string, id: number) {
-        return `${filePath}:${id}`;
+        return `${filePath}${this.KEY_SEPARATOR}${id}`;
     }
     static genDefaultLyric(name: string): LyricItemType {
         return {

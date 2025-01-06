@@ -4,21 +4,24 @@ import {
     TabOptionType, editorTab, goToPath, presenterTab, readerTab,
 } from './routeHelpers';
 import {
-    BibleSearchButton, BibleSearchShowingContext, SettingButton,
+    BibleSearchButtonComp, BibleSearchShowingContext, SettingButtonComp,
 } from '../others/commonButtons';
 import { tran } from '../lang';
 import appProvider from '../server/appProvider';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import AppPopupWindows from '../app-modal/AppPopupWindows';
-import AppContextMenu from '../others/AppContextMenu';
-import HandleAlert from '../alert/HandleAlert';
+import AppContextMenuComp from '../others/AppContextMenuComp';
+import HandleAlertComp from '../popup-widget/HandleAlertComp';
 import Toast from '../toast/Toast';
-import Slide, { SelectedSlideContext } from '../slide-list/Slide';
+import Slide, {
+    SelectedSlideContext,
+} from '../slide-list/Slide';
 import SlideItem, {
     SelectedEditingSlideItemContext,
 } from '../slide-list/SlideItem';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import ProgressBar from '../progress-bar/ProgressBar';
+import TopProgressBarComp from '../progress-bar/TopProgressBarComp';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 
 const tabs: TabOptionType[] = [];
@@ -63,25 +66,22 @@ function useSlideContextValues() {
         useState<SlideItem | null>(null)
     );
     useAppEffectAsync(async (methodContext) => {
-        const selectedSlideFilePath = Slide.getSelectedFilePath();
-        if (selectedSlideFilePath === null) {
-            return;
-        }
-        const slide = await Slide.readFileToData(selectedSlideFilePath);
-        if (!slide) {
-            return;
-        }
+        const slide = await Slide.getSelectedSlide();
         methodContext.setSelectedSlide(slide);
-        const firstSlideItem = slide.items[0];
-        methodContext.setSelectedSlideItem(firstSlideItem);
-    }, undefined, { methods: { setSelectedSlide, setSelectedSlideItem } });
+        const slideItem = await Slide.getSelectedSlideItem();
+        methodContext.setSelectedSlideItem(slideItem);
+    }, undefined, { setSelectedSlide, setSelectedSlideItem });
     const slideContextValue = useMemo(() => {
         return {
             selectedSlide: selectedSlide,
-            setSelectedSlide: (newSelectedSlide: Slide) => {
+            setSelectedSlide: (newSelectedSlide: Slide | null) => {
                 setSelectedSlide(newSelectedSlide);
-                const firstSlideItem = newSelectedSlide.items[0];
-                setSelectedSlideItem(firstSlideItem);
+                if (newSelectedSlide === null) {
+                    setSelectedSlideItem(null);
+                } else {
+                    const firstSlideItem = newSelectedSlide.items[0];
+                    setSelectedSlideItem(firstSlideItem);
+                }
             },
         };
     }, [selectedSlide, setSelectedSlide]);
@@ -93,6 +93,24 @@ function useSlideContextValues() {
             },
         };
     }, [selectedSlideItem, setSelectedSlideItem]);
+    useFileSourceEvents(['delete'], (deletedSlideItem: SlideItem) => {
+        setSelectedSlideItem((slideItem) => {
+            if (slideItem?.checkIsSame(deletedSlideItem)) {
+                return null;
+            }
+            return slideItem;
+        });
+    }, [selectedSlide], selectedSlide?.filePath);
+    useFileSourceEvents(['update'], () => {
+        setSelectedSlideItem((oldSlideItem) => {
+            const newSlideItem = (
+                oldSlideItem ? selectedSlide?.items.find((item) => {
+                    return item.checkIsSame(oldSlideItem);
+                }) : null
+            );
+            return newSlideItem || oldSlideItem;
+        });
+    }, [selectedSlide], selectedSlide?.filePath);
     return {
         slideContextValue,
         editingSlideItemContextValue,
@@ -127,19 +145,19 @@ export default function AppLayout({ children }: Readonly<{
                     'highlight-border-bottom d-flex' +
                     ' justify-content-center flex-fill'
                 }>
-                    <BibleSearchButton />
+                    <BibleSearchButtonComp />
                 </div>
                 <div className='highlight-border-bottom'>
-                    <SettingButton />
+                    <SettingButtonComp />
                 </div>
             </div >
-            <div id='app-body' className='border-white-round'>
+            <div id='app-body' className='app-border-white-round'>
                 {children}
             </div>
-            <ProgressBar />
+            <TopProgressBarComp />
             <Toast />
-            <AppContextMenu />
-            <HandleAlert />
+            <AppContextMenuComp />
+            <HandleAlertComp />
             <AppPopupWindows />
         </MultiContextRender >
     );

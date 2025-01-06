@@ -1,22 +1,34 @@
 import { useState } from 'react';
 
-import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
 import {
-    BibleMinimalInfoType, getDownloadedBibleInfoList, getOnlineBibleInfoList,
+    BibleMinimalInfoType, getAllLocalBibleInfoList, getDownloadedBibleInfoList,
+    getOnlineBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 
 export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 
-export function useDownloadedBibleInfoList() {
+export function useLocalBibleInfoList() {
     const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (bibleInfoList !== null) {
             return;
         }
-        getDownloadedBibleInfoList().then((bibleInfoList) => {
-            setBibleInfoList(bibleInfoList || undefined);
-        });
-    }, [bibleInfoList]);
+        const newLocalBibleInfoList = await getAllLocalBibleInfoList();
+        methodContext.setBibleInfoList(newLocalBibleInfoList || undefined);
+    }, [bibleInfoList], { setBibleInfoList });
+    return [bibleInfoList, setBibleInfoList] as const;
+}
+
+export function useDownloadedBibleInfoList() {
+    const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
+    useAppEffectAsync(async (methodContext) => {
+        if (bibleInfoList !== null) {
+            return;
+        }
+        const newDownloadedBibleInfoList = await getDownloadedBibleInfoList();
+        methodContext.setBibleInfoList(newDownloadedBibleInfoList || undefined);
+    }, [bibleInfoList], { setBibleInfoList });
     return [bibleInfoList, setBibleInfoList] as const;
 }
 

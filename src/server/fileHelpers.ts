@@ -12,15 +12,24 @@ import mimeImageList from './mime/image-types.json';
 import mimePlaylistList from './mime/playlist-types.json';
 import mimeVideoList from './mime/video-types.json';
 import mimeSoundList from './mime/sound-types.json';
-import { openConfirm } from '../alert/alertHelpers';
+import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
+import { cloneJson, freezeObject } from '../helper/helpers';
+
+freezeObject(mimeBibleList);
+freezeObject(mimeLyricList);
+freezeObject(mimeSlideList);
+freezeObject(mimeImageList);
+freezeObject(mimePlaylistList);
+freezeObject(mimeVideoList);
+freezeObject(mimeSoundList);
 
 export const mimetypePdf: AppMimetypeType = {
     type: 'PDF File',
     title: 'PDF File',
-    mimetype: 'application/pdf',
+    mimetypeSignature: 'application/pdf',
     mimetypeName: 'other',
     extensions: ['.pdf'],
 };
@@ -54,7 +63,7 @@ const mimeTypesMapper = {
 export type AppMimetypeType = {
     type: string,
     title: string,
-    mimetype: string,
+    mimetypeSignature: string,
     mimetypeName: MimetypeNameType,
     extensions: string[],
 };
@@ -65,7 +74,7 @@ export type FileMetadataType = {
 };
 
 export function checkIsAppFile(fileFullName: string) {
-    const ext = extractExtension(fileFullName);
+    const ext = getFileExtension(fileFullName);
     const isAppFile = appExtensions.includes(ext);
     return isAppFile;
 }
@@ -74,14 +83,28 @@ export const pathSeparator = appProvider.pathUtils.sep;
 export function pathJoin(filePath: string, fileFullName: string) {
     return appProvider.pathUtils.join(filePath, fileFullName);
 }
+
 export function pathBasename(filePath: string) {
     return appProvider.pathUtils.basename(filePath);
 }
 
+export function getFileName(fileFullName: string) {
+    return fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+}
+
+export function getFileExtension(fileFullName: string) {
+    return fileFullName.substring(fileFullName.lastIndexOf('.'));
+}
+
+export function addExtension(name: string, extension: string) {
+    return `${name}${extension}`;
+}
+
+
 export const createNewFileDetail = async (dir: string, name: string,
-    content: string, mimetype: MimetypeNameType) => {
+    content: string, mimetypeName: MimetypeNameType) => {
     // TODO: verify file name before create
-    const mimetypeList = getAppMimetype(mimetype);
+    const mimetypeList = getAppMimetype(mimetypeName);
     const fileFullName = `${name}${mimetypeList[0].extensions[0]}`;
     try {
         const filePath = pathJoin(dir, fileFullName);
@@ -102,7 +125,7 @@ export type MimetypeNameType = typeof mimetypeNameTypeList[number];
 export function getFileMetaData(fileFullName: string,
     mimetypeList?: AppMimetypeType[]): FileMetadataType | null {
     mimetypeList = mimetypeList || getAllAppMimetype();
-    const ext = extractExtension(fileFullName);
+    const ext = getFileExtension(fileFullName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);
     });
@@ -120,18 +143,18 @@ export function getAllAppMimetype() {
     }, []);
 }
 
-export function getAppMimetype(mimetype: MimetypeNameType) {
-    if (mimetype === 'other') {
+export function getAppMimetype(mimetypeName: MimetypeNameType) {
+    if (mimetypeName === 'other') {
         return [];
     }
-    const json = mimeTypesMapper[mimetype];
+    const json = cloneJson(mimeTypesMapper[mimetypeName]);
     json.forEach((data: any) => {
-        data.mimetypeName = mimetype;
+        data.mimetypeName = mimetypeName;
     });
     return json as AppMimetypeType[];
 }
-export function getMimetypeExtensions(mimetype: MimetypeNameType) {
-    const mimetypeList = getAppMimetype(mimetype);
+export function getMimetypeExtensions(mimetypeName: MimetypeNameType) {
+    const mimetypeList = getAppMimetype(mimetypeName);
     return mimetypeList.reduce((r: string[], mimetype) => {
         r.push(...mimetype.extensions);
         return r;
@@ -141,27 +164,20 @@ export function getMimetypeExtensions(mimetype: MimetypeNameType) {
 }
 
 export function isSupportedMimetype(fileMimetype: string,
-    mimetype: MimetypeNameType) {
-    const mimetypeList = getAppMimetype(mimetype);
+    mimetypeName: MimetypeNameType) {
+    const mimetypeList = getAppMimetype(mimetypeName);
     return mimetypeList.map((newMimetype) => {
-        return newMimetype.mimetype;
+        return newMimetype.mimetypeSignature;
     }).some((type) => {
         return type === fileMimetype;
     });
 }
 
-export function extractExtension(fileFullName: string) {
-    return fileFullName.substring(fileFullName.lastIndexOf('.'));
-}
-export function addExtension(name: string, extension: string) {
-    return `${name}${extension}`;
-}
-
 export function isSupportedExt(
-    fileFullName: string, mimetype: MimetypeNameType,
+    fileFullName: string, mimetypeName: MimetypeNameType,
 ) {
-    const mimetypeList = getAppMimetype(mimetype);
-    const ext = extractExtension(fileFullName);
+    const mimetypeList = getAppMimetype(mimetypeName);
+    const ext = getFileExtension(fileFullName);
     return mimetypeList.map((newMimetype) => {
         return newMimetype.extensions;
     }).some((extensions) => {
@@ -329,13 +345,13 @@ export async function fsListDirectories(dirPath: string) {
 }
 
 export async function fsListFilesWithMimetype(
-    dir: string, mimetype: MimetypeNameType,
+    dir: string, mimetypeName: MimetypeNameType,
 ) {
     if (!dir) {
         return [];
     }
     try {
-        const mimetypeList = getAppMimetype(mimetype);
+        const mimetypeList = getAppMimetype(mimetypeName);
         const files = await fsListFiles(dir);
         const matchedFiles = files.map((fileFullName) => {
             return getFileMetaData(fileFullName, mimetypeList);
@@ -423,7 +439,7 @@ export async function fsCopyFilePathToPath(
     try {
         const isFileExist = await fsCheckFileExist(targetPath);
         if (isFileExist) {
-            const isConfirm = await openConfirm(
+            const isConfirm = await showAppConfirm(
                 'Copy File',
                 `File path "${targetPath}" exist, do you want to override it?`,
             );

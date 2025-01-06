@@ -8,9 +8,7 @@ export type MessageEventType = {
 };
 
 export type MessageUtilsType = {
-    channels: {
-        screenMessageChannel: string,
-    },
+    channels: { screenMessageChannel: string },
     sendData: (channel: string, ...args: any[]) => void,
     sendDataSync: (channel: string, ...args: any[]) => any,
     listenForData: (
@@ -45,6 +43,8 @@ export type FileUtilsType = {
 export type PathUtilsType = {
     sep: typeof path.sep,
     basename: typeof path.basename,
+    dirname: typeof path.dirname,
+    resolve: typeof path.resolve,
     join: typeof path.join,
 };
 
@@ -71,11 +71,6 @@ export type AppUtilsType = {
     base64Encode: (str: string) => string,
     base64Decode: (str: string) => string,
 };
-export type PdfUtilsType = {
-    officeFileToPdf: (
-        filePath: string, outputDir: string, fileFullName: string,
-    ) => Promise<void>,
-}
 
 export enum AppTypeEnum {
     Desktop = 'desktop',
@@ -122,9 +117,9 @@ const appProvider = (window as any).provider as Readonly<PagePropsType & {
     appInfo: AppInfoType,
     reload: () => void,
     appUtils: AppUtilsType,
-    pdfUtils: PdfUtilsType,
     presenterHomePage: string,
     readerHomePage: string,
+    currentHomePage: string,
 }>;
 
 export default appProvider;

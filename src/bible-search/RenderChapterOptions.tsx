@@ -54,17 +54,17 @@ function ChapterOptions({
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
     if (matches === null) {
         return (
-            <div>
-                No chapter options available
-            </div>
+            <div>No chapter options available</div>
         );
     }
     return (
         <>
             {matches.map(([chapter, chapterNumStr], i) => {
-                const className = 'chapter-select btn btn-outline-success' +
+                const className = (
+                    'chapter-select btn btn-outline-success' +
                     ` ${OPTION_CLASS}` +
-                    ` ${i === 0 ? OPTION_SELECTED_CLASS : ''}`;
+                    ` ${i === 0 ? OPTION_SELECTED_CLASS : ''}`
+                );
                 const isDiff = `${chapter}` !== chapterNumStr;
                 return (
                     <div key={chapter}
@@ -77,11 +77,11 @@ function ChapterOptions({
                             }}>
                             <span>
                                 {chapterNumStr}
-                                {isDiff ?
+                                {isDiff ? (
                                     <small className='text-muted'>
                                         ({chapter})
-                                    </small> : null
-                                }
+                                    </small>
+                                ) : null}
                             </span>
                         </button>
                     </div>

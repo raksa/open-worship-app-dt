@@ -1,5 +1,5 @@
-import ElectronAppController from './ElectronAppController';
-import { isDev } from './electronHelpers';
+import ElectronAppController from './ElectronAppController.js';
+import { isDev } from './electronHelpers.js';
 
 export async function initDevtools(appController: ElectronAppController) {
     if (!isDev) {

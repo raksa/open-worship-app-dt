@@ -1,5 +1,8 @@
 import { ModalCloseButton } from '../app-modal/Modal';
 import { tran } from '../lang';
+import {
+    closeSlideItemQuickEdit,
+} from '../slide-presenter/HandleItemSlideEdit';
 
 export default function SlideItemEditorPopupHeader() {
     return (
@@ -8,11 +11,7 @@ export default function SlideItemEditorPopupHeader() {
                 <i className='bi bi-pencil-square' />
                 {tran('edit-item-thumb')}
             </span>
-            <ModalCloseButton
-                close={() => {
-                    alert('close');
-                }}
-            />
+            <ModalCloseButton close={closeSlideItemQuickEdit} />
         </div>
     );
 }

@@ -1,30 +1,30 @@
 import { useState } from 'react';
 
 import { AppColorType } from '../../others/color/colorHelpers';
-import { usePFTMEvents } from '../screenEventHelpers';
-import ScreenFTManager from '../ScreenFTManager';
-import ScreenSlideManager from '../ScreenSlideManager';
-import ScreenManager from '../ScreenManager';
-import AppRange from '../../others/AppRange';
+import { useScreenFullTextManagerEvents } from '../managers/screenEventHelpers';
+import ScreenFullTextManager from '../managers/ScreenFullTextManager';
+import ScreenSlideManager from '../managers/ScreenSlideManager';
+import AppRangeComp from '../../others/AppRangeComp';
+import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
 export default function Appearance() {
     const [color, setColor] = useState(
-        ScreenFTManager.textStyleTextColor,
+        ScreenFullTextManager.textStyleTextColor,
     );
     const [fontSize, setFontSize] = useState(
-        ScreenFTManager.textStyleTextFontSize,
+        ScreenFullTextManager.textStyleTextFontSize,
     );
-    usePFTMEvents(['text-style'], undefined, () => {
-        setColor(ScreenFTManager.textStyleTextColor);
-        setFontSize(ScreenFTManager.textStyleTextFontSize);
+    useScreenFullTextManagerEvents(['text-style'], undefined, () => {
+        setColor(ScreenFullTextManager.textStyleTextColor);
+        setFontSize(ScreenFullTextManager.textStyleTextFontSize);
     });
     const setColorToStyle = (newColor: AppColorType) => {
-        ScreenFTManager.applyTextStyle({
+        ScreenFullTextManager.applyTextStyle({
             color: newColor,
         });
     };
     const setFontSizeToStyle = (newFontSize: number) => {
-        ScreenFTManager.applyTextStyle({
+        ScreenFullTextManager.applyTextStyle({
             fontSize: newFontSize,
         });
     };
@@ -58,13 +58,13 @@ export default function Appearance() {
                 value={color}
             />
             <div>
-                <AppRange value={fontSize}
+                <AppRangeComp value={fontSize}
                     title='Font Size'
                     setValue={setFontSizeToStyle}
                     defaultSize={{
                         size: fontSize,
                         min: 1,
-                        max: ScreenFTManager.maxTextStyleTextFontSize,
+                        max: ScreenFullTextManager.maxTextStyleTextFontSize,
                         step: 1,
                     }}
                 />
@@ -77,11 +77,11 @@ export default function Appearance() {
 
 function PDFAppearanceSetting() {
     const [isFullWidth, setIsFullWidth] = useState(
-        ScreenSlideManager.isPDFFullWidth,
+        ScreenSlideManager.isPdfFullWidth,
     );
     const setIsFullWidth1 = (b: boolean) => {
-        ScreenSlideManager.isPDFFullWidth = b;
-        for (const { screenSlideManager } of ScreenManager.getAllInstances()) {
+        ScreenSlideManager.isPdfFullWidth = b;
+        for (const { screenSlideManager } of getAllScreenManagers()) {
             screenSlideManager.render();
             screenSlideManager.sendSyncScreen();
         }

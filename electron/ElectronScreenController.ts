@@ -1,10 +1,9 @@
 import { BrowserWindow } from 'electron';
-import {
-    AnyObjectType, channels,
-} from './electronEventListener';
-import { genRoutProps } from './protocolHelpers';
-import { htmlFiles } from './fsServe';
-import { isSecured } from './electronHelpers';
+
+import { AnyObjectType, channels } from './electronEventListener.js';
+import { genRoutProps } from './protocolHelpers.js';
+import { htmlFiles } from './fsServe.js';
+import { isSecured } from './electronHelpers.js';
 
 const routeProps = genRoutProps(htmlFiles.screen);
 const cache = new Map<string, ElectronScreenController>();
@@ -74,8 +73,7 @@ export default class ElectronScreenController {
         this.win.webContents.send(
             channels.screenMessageChannel, {
             screenId: this.screenId,
-            type,
-            data,
+            type, data,
         });
     }
 

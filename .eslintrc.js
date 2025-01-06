@@ -26,11 +26,19 @@ module.exports = {
                 "ignoreReadBeforeAssign": false
             }
         ],
-        "no-unused-vars": "off",
         "max-len": [
             "error",
             {
                 "code": 80,
+            }
+        ],
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_",
+                "args": "after-used",
+                "ignoreRestSiblings": true
             }
         ],
     }

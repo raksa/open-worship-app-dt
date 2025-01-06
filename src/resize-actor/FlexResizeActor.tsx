@@ -18,7 +18,7 @@ export interface Props {
     disable: (dataFSizeKey: string, target: DisabledType) => void,
 }
 export default class FlexResizeActor extends Component<Props, {}> {
-    myRef: RefObject<HTMLDivElement>;
+    myRef: RefObject<HTMLDivElement | null>;
     lastPos: number = 0;
     previousMinSize: number = 0;
     nextMinSize: number = 0;
@@ -39,7 +39,10 @@ export default class FlexResizeActor extends Component<Props, {}> {
         };
     }
     private get currentNode() {
-        return this.myRef.current as HTMLDivElement;
+        if (this.myRef.current === null) {
+            throw new Error('currentNode is null');
+        }
+        return this.myRef.current;
     }
     private getSiblingFromNode(node: HTMLDivElement, isNext: boolean) {
         if (isNext) {
@@ -81,7 +84,7 @@ export default class FlexResizeActor extends Component<Props, {}> {
         this.currentNode.classList.add('active');
 
         this.previousMinSize = parseInt(this.preNode.dataset['minSize'] || '');
-        this.nextMinSize = parseInt(this.nextNode.dataset['minSize'] || '', 10);
+        this.nextMinSize = parseInt(this.nextNode.dataset['minSize'] || '');
         this.preSize = this.getOffsetSize(prev);
         this.nextSize = this.getOffsetSize(next);
         this.sumSize = this.preSize + this.nextSize;
@@ -102,14 +105,28 @@ export default class FlexResizeActor extends Component<Props, {}> {
         window.addEventListener('mousemove', this.mouseMoveListener);
         window.addEventListener('mouseup', this.mouseUpListener);
     }
+    get isPreReachMinSize() {
+        return this.preSize <= this.previousMinSize;
+    }
+    get isNextReachMinSize() {
+        return this.nextSize <= this.nextMinSize;
+    }
     onMouseMove(event: MouseEvent) {
         if (this.isShouldIgnore(event)) {
             return;
         }
         let pos = this.getMousePagePos(event);
-        const d = pos - this.lastPos;
-        this.preSize += d;
-        this.nextSize -= d;
+        const posDiff = pos - this.lastPos;
+        if (
+            this.props.isDisableQuickResize && (
+                (posDiff < 0 && this.isPreReachMinSize) ||
+                (posDiff > 0 && this.isNextReachMinSize)
+            )
+        ) {
+            return;
+        }
+        this.preSize += posDiff;
+        this.nextSize -= posDiff;
         if (this.preSize < 0) {
             this.nextSize += this.preSize;
             pos -= this.preSize;
@@ -121,12 +138,12 @@ export default class FlexResizeActor extends Component<Props, {}> {
             this.nextSize = 0;
         }
 
-        if (this.preSize < this.previousMinSize) {
+        if (this.isPreReachMinSize) {
             this.addHiddenWidgetClassName(this.preNode);
         } else {
             this.removeHiddenWidgetClassname(this.preNode);
         }
-        if (this.nextSize < this.nextMinSize) {
+        if (this.isNextReachMinSize) {
             this.addHiddenWidgetClassName(this.nextNode);
         } else {
             this.removeHiddenWidgetClassname(this.nextNode);
@@ -211,7 +228,8 @@ export default class FlexResizeActor extends Component<Props, {}> {
                     onClick={(event) => {
                         event.stopPropagation();
                         this.quicMove(type);
-                    }} />
+                    }}
+                />
             );
         });
         return (

@@ -2,7 +2,9 @@ import path from 'node:path';
 
 const pathUtils = {
     sep: path.sep,
-    basename:path.basename,
+    basename: path.basename,
+    dirname: path.dirname,
+    resolve: path.resolve,
     join: path.join,
 };
 

@@ -1,50 +1,64 @@
-import { useScreenManagerContext } from '../ScreenManager';
-import { showAppContextMenu } from '../../others/AppContextMenu';
-import { usePMEvents } from '../screenEventHelpers';
+import {
+    ContextMenuItemType, showAppContextMenu,
+} from '../../others/AppContextMenuComp';
+import ScreenManagerBase from '../managers/ScreenManagerBase';
+import {
+    useScreenManagerBaseContext, useScreenManagerEvents,
+} from '../managers/screenManagerHooks';
 import { getAllDisplays } from '../screenHelpers';
 
+function handleDisplayChoosing(
+    screenManagerBase: ScreenManagerBase, displayId: number, event: any,
+) {
+    const { primaryDisplay, displays } = getAllDisplays();
+    const contextMenuItems = (
+        displays.map((display) => {
+            const label = (display as any).label ?? 'Unknown';
+            const bounds = display.bounds;
+            const isPrimary = display.id === primaryDisplay.id;
+            const isSelected = display.id === displayId;
+            const menuTitle = (
+                (isSelected ? '*' : '') +
+                `${label}(${display.id}): ` +
+                `${bounds.width}x${bounds.height}` +
+                (isPrimary ? ' (primary)' : '')
+            );
+            return {
+                menuTitle,
+                onClick: () => {
+                    screenManagerBase.displayId = display.id;
+                },
+            } as ContextMenuItemType;
+        })
+    );
+    showAppContextMenu(event, contextMenuItems);
+}
+
 export default function DisplayControl() {
+    const screenManagerBase = useScreenManagerBaseContext();
+    const { displayId } = screenManagerBase;
+    useScreenManagerEvents(['display-id'], screenManagerBase);
 
-    const screenManager = useScreenManagerContext();
-    usePMEvents(['display-id'], screenManager);
-    const displayId = screenManager.displayId;
-
+    const { displays } = getAllDisplays();
+    const currentDisplay = displays.find((display) => {
+        return display.id === displayId;
+    });
+    const currentDisplayLabel = (
+        currentDisplay ? (currentDisplay as any).label : 'Unknown'
+    );
     return (
-        <div className={
-            'display-control d-flex justify-content-center ' +
-            'align-items-center'
-        }
+        <button className='btn btn-sm btn-outline-secondary app-ellipsis'
             title={
-                `Screen:${screenManager.name}, id:${screenManager.screenId}` +
+                `Display:${currentDisplayLabel}, ` +
+                `screen id:${screenManagerBase.screenId}` +
                 `, display id:${displayId}`
-            }>
-            <button className='btn btn-sm btn-outline-secondary'
-                onClick={(event) => {
-                    const {
-                        primaryDisplay, displays,
-                    } = getAllDisplays();
-                    showAppContextMenu(event as any, displays.map((display) => {
-                        const label = (display as any).label ?? 'Unknown';
-                        const bounds = display.bounds;
-                        const isPrimary = display.id === primaryDisplay.id;
-                        const isSelected = display.id === displayId;
-                        const title = (
-                            (isSelected ? '*' : '') +
-                            `${label}(${display.id}): ` +
-                            `${bounds.width}x${bounds.height}` +
-                            (isPrimary ? ' (primary)' : '')
-                        );
-                        return {
-                            title,
-                            onClick: () => {
-                                screenManager.displayId = display.id;
-                            },
-                        };
-                    }));
-                }}>
-                <i className='bi bi-display' />
-                {screenManager.name}({screenManager.screenId}):{displayId}
-            </button>
-        </div >
+            }
+            onClick={
+                handleDisplayChoosing.bind(null, screenManagerBase, displayId)
+            }
+            style={{ maxWidth: '80px' }}>
+            <i className='bi bi-display' />
+            {currentDisplayLabel}({screenManagerBase.screenId}):{displayId}
+        </button>
     );
 }

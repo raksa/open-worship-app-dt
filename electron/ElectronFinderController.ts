@@ -1,7 +1,8 @@
 import { BrowserWindow } from 'electron';
-import { genRoutProps } from './protocolHelpers';
-import { htmlFiles } from './fsServe';
-import { isSecured } from './electronHelpers';
+
+import { genRoutProps } from './protocolHelpers.js';
+import { htmlFiles } from './fsServe.js';
+import { isSecured } from './electronHelpers.js';
 
 const routeProps = genRoutProps(htmlFiles.finder);
 export default class ElectronFinderController {

@@ -6,15 +6,17 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import SlideEditorCacheManager from './SlideEditorCacheManager';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
-import { PdfImageDataType } from '../pdf/PdfController';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { log } from '../helper/loggerHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export type SlideItemType = {
     id: number,
     canvasItems: CanvasItemPropsType[],
-    pdfImageData?: PdfImageDataType,
     metadata: AnyObjectType,
+    isPdf?: boolean,
+    imagePreviewSrc?: string,
+    pdfPageNumber?: number,
 };
 
 export default class SlideItem extends ItemBase implements DragInf<string> {
@@ -22,11 +24,10 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     static readonly SELECT_SETTING_NAME = 'slide-item-selected';
     id: number;
     filePath: string;
-    isCopied: boolean;
     showingType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     // TODO: implement copying elements
-    static copiedItem: SlideItem | null = null;
     editorCacheManager: SlideEditorCacheManager;
+    static readonly KEY_SEPARATOR = '<siid>';
     constructor(
         id: number, filePath: string, json: SlideItemType,
         editorCacheManager?: SlideEditorCacheManager,
@@ -45,19 +46,18 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             });
             this.editorCacheManager.isUsingHistory = false;
         }
-        this.isCopied = false;
+    }
+
+    get isPdf() {
+        return this.originalJson.isPdf;
+    }
+
+    get pdfPreviewSrc() {
+        return this.originalJson.imagePreviewSrc ?? null;
     }
 
     get key() {
         return SlideItem.genKeyByFileSource(this.filePath, this.id);
-    }
-
-    get pdfImageData() {
-        return this.originalJson.pdfImageData || null;
-    }
-
-    get isPdf() {
-        return this.pdfImageData !== null;
     }
 
     get originalJson() {
@@ -78,6 +78,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             return item;
         });
         this.editorCacheManager.pushSlideItems(newItems);
+        this.fileSource?.fireEditEvent(this);
     }
 
     get metadata() {
@@ -88,10 +89,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         const json = cloneJson(this.originalJson);
         json.metadata = metadata;
         this.originalJson = json;
-    }
-
-    get pdfImageSrc() {
-        return this.pdfImageData?.src || '';
     }
 
     get canvas() {
@@ -118,9 +115,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     get width() {
-        if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.width || 0);
-        }
         return this.metadata.width;
     }
 
@@ -131,9 +125,6 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     get height() {
-        if (this.isPdf) {
-            return Math.floor(this.pdfImageData?.height || 0);
-        }
         return this.metadata.height;
     }
 
@@ -184,11 +175,18 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         if (this.isError) {
             return this.jsonError;
         }
+        const { isPdf } = this.originalJson;
+        const pdfPageNumber = (
+            isPdf ? this.originalJson.pdfPageNumber : undefined
+        );
+        const imagePreviewSrc = (
+            isPdf ? this.originalJson.imagePreviewSrc : undefined
+        );
         return {
             id: this.id,
             canvasItems: this.canvasItemsJson,
-            pdfImageData: this.pdfImageData || undefined,
             metadata: this.metadata,
+            isPdf, pdfPageNumber, imagePreviewSrc,
         };
     }
 
@@ -212,7 +210,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     static genKeyByFileSource(filePath: string, id: number) {
-        return `${filePath}:${id}`;
+        return `${filePath}${this.KEY_SEPARATOR}${id}`;
     }
 
     checkIsWrongDimension({ bounds }: DisplayType) {
@@ -221,21 +219,79 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     dragSerialize() {
-        return {
-            type: DragTypeEnum.SLIDE_ITEM,
-            data: this.key,
+        const dragging: any = {
+            key: this.key, isPdf: this.isPdf,
         };
+        if (this.isPdf) {
+            dragging['pdfData'] = {
+                src: this.pdfPreviewSrc,
+                width: this.width,
+                height: this.height,
+            };
+        }
+        return {
+            type: DragTypeEnum.SLIDE_ITEM, data: JSON.stringify(dragging),
+        };
+    }
+
+    showInViewport() {
+        setTimeout(() => {
+            const querySelector = `[data-slide-item-id="${this.id}"]`;
+            const element = document.querySelector(querySelector);
+            if (element === null) {
+                return;
+            }
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'center',
+            });
+        }, 0);
+    }
+
+    clipboardSerialize() {
+        const json = this.toJson();
+        return JSON.stringify({
+            filePath: this.filePath,
+            data: json,
+        });
+    }
+
+    static clipboardDeserialize(json: string) {
+        if (!json) {
+            return null;
+        }
+        try {
+            const { filePath, data } = JSON.parse(json);
+            SlideItem.validate(data);
+            return SlideItem.fromJson(data, filePath);
+        } catch (error) {
+            handleError(error);
+        }
+        return null;
+    }
+
+    static fromPdfJson({ filePath, pageNumber, src, width = 0, height = 0 }: {
+        filePath: string, pageNumber: number, src: string,
+        width?: number, height?: number
+    }) {
+        return new SlideItem(pageNumber, filePath, {
+            id: pageNumber, canvasItems: [], isPdf: true,
+            imagePreviewSrc: src,
+            pdfPageNumber: pageNumber,
+            metadata: { width, height },
+        });
     }
 }
 
 export const SelectedEditingSlideItemContext = createContext<{
-    selectedSlideItem: SlideItem,
-    setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
+    selectedSlideItem: SlideItem | null,
+    setSelectedSlideItem: (newSelectedSlideItem: SlideItem | null) => void,
 } | null>(null);
 
 function useContext() {
     const context = use(SelectedEditingSlideItemContext);
-    if (!context) {
+    if (context === null) {
         throw new Error(
             'useSelectedEditingSlideItemContext must be used within a ' +
             'SelectedEditingSlideItemContext'
@@ -254,8 +310,5 @@ export function useSelectedEditingSlideItemContext() {
 
 export function useSelectedEditingSlideItemSetterContext() {
     const context = useContext();
-    if (context.selectedSlideItem === null) {
-        throw new Error('No selected slide item');
-    }
     return context.setSelectedSlideItem;
 }

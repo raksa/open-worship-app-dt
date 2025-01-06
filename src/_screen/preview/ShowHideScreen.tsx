@@ -1,28 +1,29 @@
 import {
     toShortcutKey, useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { usePMEvents } from '../screenEventHelpers';
-import { useScreenManagerContext } from '../ScreenManager';
+import {
+    useScreenManagerBaseContext, useScreenManagerEvents,
+} from '../managers/screenManagerHooks';
 import ShowingScreenIcon from './ShowingScreenIcon';
 
 const showingScreenEventMap = { key: 'F5' };
 export default function ShowHideScreen() {
-    const screenManager = useScreenManagerContext();
+    const screenManagerBase = useScreenManagerBaseContext();
     useKeyboardRegistering([showingScreenEventMap], () => {
-        screenManager.isShowing = !isShowing;
+        screenManagerBase.isShowing = !isShowing;
     });
-    usePMEvents(['visible'], screenManager);
-    const isShowing = screenManager.isShowing;
+    useScreenManagerEvents(['visible'], screenManagerBase);
+    const isShowing = screenManagerBase.isShowing;
     return (
-        <div className={`show-hide pointer ${isShowing ? 'show' : ''}`}
+        <div className={`d-flex show-hide pointer ${isShowing ? 'show' : ''}`}
             title={
                 'Toggle showing screen ' +
                 `[${toShortcutKey(showingScreenEventMap)}]`
             }
             onClick={() => {
-                screenManager.isShowing = !isShowing;
+                screenManagerBase.isShowing = !isShowing;
             }}>
-            <ShowingScreenIcon screenId={screenManager.screenId} />
+            <ShowingScreenIcon screenId={screenManagerBase.screenId} />
             <i className='bi bi-file-slides-fill' />
         </div>
     );

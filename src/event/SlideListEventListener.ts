@@ -38,7 +38,7 @@ export function useSlideItemThumbnailSizeScale(
     defaultSize = DEFAULT_THUMBNAIL_SIZE_FACTOR,
 ): [number, (newScale: number) => void] {
     const getDefaultSize = () => {
-        return parseInt(getSetting(settingName, defaultSize.toString()), 10);
+        return parseInt(getSetting(settingName, defaultSize.toString()));
     };
     const [thumbnailSizeScale, setThumbnailSizeScale] = useStateSettingNumber(
         settingName, getDefaultSize(),

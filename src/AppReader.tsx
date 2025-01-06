@@ -33,7 +33,7 @@ const viewController = new BibleItemViewController('reader');
 export default function AppReader() {
     return (
         <BibleItemViewControllerContext value={viewController}>
-            <ResizeActor fSizeName={resizeSettingNames.read}
+            <ResizeActor flexSizeName={resizeSettingNames.read}
                 isHorizontal
                 flexSizeDefault={flexSizeDefault}
                 dataInput={dataInput}

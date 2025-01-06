@@ -1,67 +1,55 @@
-import { useState } from 'react';
+import { DependencyList, useState } from 'react';
 
-import { useAppEffect } from './debuggerHelpers';
-import DirSource, {
-    DirSourceEventType,
-} from './DirSource';
-import FileSource, { FSEventType } from './FileSource';
+import { useAppEffect, useAppEffectAsync } from './debuggerHelpers';
+import DirSource from './DirSource';
+import FileSource, { FileSourceEventType } from './FileSource';
 
-export function useGenDS(settingName: string) {
+export function useGenDirSource(settingName: string) {
     const [dirSource, setDirSource] = useState<DirSource | null>(null);
-    useAppEffect(() => {
+    useAppEffectAsync(async (methodContext) => {
         if (dirSource !== null) {
-            return;
+            const registeredEvent = dirSource.registerEventListener(
+                ['reload'], () => {
+                    methodContext.setDirSource(null);
+                },
+            );
+            return () => {
+                dirSource.unregisterEventListener(registeredEvent);
+            };
         }
-        DirSource.getInstance(settingName).then((newDirSource) => {
-            newDirSource.registerEventListener(['reload'], () => {
-                setDirSource(null);
-            });
-            setDirSource(newDirSource);
-        });
-    }, [dirSource]);
+        const newDirSource = await DirSource.getInstance(settingName);
+        methodContext.setDirSource(newDirSource);
+    }, [dirSource], { setDirSource });
     return dirSource;
 }
 
-export function useDSEvents(events: DirSourceEventType[],
-    dirSource?: DirSource,
-    callback?: () => void) {
-    const [n, setN] = useState(0);
-    useAppEffect(() => {
-        const update = () => {
-            setN(n + 1);
-            callback?.();
-        };
-        let registeredEvents: any;
-        const isGlobal = dirSource === undefined;
-        if (isGlobal) {
-            registeredEvents = DirSource.registerEventListener(events, update);
-        } else {
-            registeredEvents = dirSource.registerEventListener(events, update);
-        }
-        return () => {
-            if (isGlobal) {
-                DirSource.unregisterEventListener(registeredEvents);
-            } else {
-                dirSource.unregisterEventListener(registeredEvents);
-            }
-        };
-    }, [dirSource, n]);
-}
-
-export function useFSEvents(
-    events: FSEventType[], filePath?: string, callback?: () => void,
+export function useFileSourceRefreshEvents(
+    events: FileSourceEventType[], filePath?: string,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {
             setN(n + 1);
-            callback?.();
         };
-        const staticEvents = FileSource.registerFSEventListener(
+        const staticEvents = FileSource.registerFileSourceEventListener(
             events, update, filePath,
         );
         return () => {
             FileSource.unregisterEventListener(staticEvents);
         };
     }, [filePath, n]);
+}
+
+export function useFileSourceEvents<T>(
+    events: FileSourceEventType[], callback: (data: T) => void,
+    deps?: DependencyList, filePath?: string,
+) {
+    useAppEffect(() => {
+        const staticEvents = FileSource.registerFileSourceEventListener(
+            events, callback, filePath,
+        );
+        return () => {
+            FileSource.unregisterEventListener(staticEvents);
+        };
+    }, [filePath, ...deps ?? []]);
 }

@@ -1,4 +1,4 @@
-import AppRange from '../others/AppRange';
+import AppRangeComp from '../others/AppRangeComp';
 
 const MIN_FONT_SIZE = 5;
 const MAX_FONT_SIZE = 150;
@@ -26,7 +26,7 @@ export default function BibleViewSetting({ fontSize, setFontSize }: Readonly<{
                         <label htmlFor={rangeId} className='form-label'>
                             Font Size ({fontSize}px):
                         </label>
-                        <AppRange
+                        <AppRangeComp
                             value={fontSize}
                             title='Font Size'
                             id={rangeId}
