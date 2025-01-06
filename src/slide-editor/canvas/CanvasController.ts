@@ -23,10 +23,10 @@ import { showCanvasItemContextMenu } from './canvasContextMenuHelpers';
 
 const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
 export const defaultRangeSize = {
-    size: 1,
-    min: 0.1,
-    max: 2,
-    step: 0.1,
+    size: 10,
+    min: 1,
+    max: 20,
+    step: 1,
 };
 
 export type CanvasItemEventDataType = { canvasItems: CanvasItem<any>[] };
@@ -54,9 +54,9 @@ export default class CanvasController extends
     get scale() {
         return this._scale;
     }
-    set scale(n: number) {
-        this._scale = n;
-        setSetting(EDITOR_SCALE_SETTING_NAME, n.toString());
+    set scale(newScale: number) {
+        this._scale = newScale;
+        setSetting(EDITOR_SCALE_SETTING_NAME, this._scale.toString());
         this.addPropEvent('scale', { canvasItems: this.canvas.newCanvasItems });
     }
     addPropEvent(

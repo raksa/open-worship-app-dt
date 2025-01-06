@@ -124,10 +124,11 @@ export default function SlideItemEditorComp() {
         }]}>
             <div className='slide-item-editor w-100 h-100 overflow-hidden'
                 onWheel={(event) => {
+                    event.stopPropagation();
                     handleCtrlWheel({
-                        event, value: canvasController.scale,
+                        event, value: canvasController.scale * 10,
                         setValue: (scale) => {
-                            canvasController.scale = scale;
+                            canvasController.scale = scale / 10;
                         },
                         defaultSize: defaultRangeSize,
                     });
