@@ -204,7 +204,7 @@ export async function getAllXMLFileKeys() {
 export async function getBibleXMLCacheInfoList() {
     const bibleKeysMap = await getAllXMLFileKeys();
     const promises = Object.entries(bibleKeysMap).map(async ([bibleKey]) => {
-        return getBibleInfo(bibleKey);
+        return getBibleInfo(bibleKey, true);
     });
     let infoList = await Promise.all(promises);
     infoList = infoList.filter((info) => {

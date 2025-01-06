@@ -4,7 +4,7 @@ import {
     bookToKey, getBibleInfo, getVerses,
 } from './bibleInfoHelpers';
 import {
-    fromLocaleNum, LocaleType, toLocaleNum,
+    fromLocaleNum, fromStringNum, LocaleType, toLocaleNum,
     toStringNum,
 } from '../../lang';
 import { useAppEffect } from '../debuggerHelpers';
@@ -54,7 +54,8 @@ export async function toLocaleNumBible(bibleKey: string, n: number | null) {
     let localeNum: string | null = null;
     if (info !== null && info.numList !== undefined) {
         localeNum = toStringNum(info.numList, n);
-    } else {
+    }
+    if (localeNum === null) {
         const locale = await getBibleLocale(bibleKey);
         localeNum = toLocaleNum(locale, n);
     }
@@ -70,12 +71,24 @@ export function useToLocaleNumBible(bibleKey: string, nString: number | null) {
     return str;
 }
 
+// TODO: use LRUCache instead
+const bibleNumMap = new Map<string, number | null>();
 export async function fromLocaleNumBible(bibleKey: string, localeNum: string) {
-    const info = await getBibleInfo(bibleKey);
-    if (info === null) {
-        return null;
+    const cacheKey = `${bibleKey}:${localeNum}`;
+    if (bibleNumMap.has(cacheKey)) {
+        return bibleNumMap.get(cacheKey) as number | null;
     }
-    return fromLocaleNum(info.locale, localeNum);
+    const info = await getBibleInfo(bibleKey);
+    let num: number | null = null;
+    if (info !== null && info.numList !== undefined) {
+        num = fromStringNum(info.numList, localeNum);
+    }
+    if (num === null) {
+        const locale = await getBibleLocale(bibleKey);
+        num = fromLocaleNum(locale, localeNum);
+    }
+    bibleNumMap.set(cacheKey, num);
+    return num;
 }
 
 export function useFromLocaleNumBible(bibleKey: string, localeNum: string) {

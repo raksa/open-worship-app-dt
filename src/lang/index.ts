@@ -152,12 +152,7 @@ export const toLocaleNum = (locale: LocaleType, n: number): string => {
     return toStringNum(numList, n);
 };
 
-export function fromLocaleNum(locale: LocaleType, localeNum: string) {
-    const langData = getLang(locale);
-    if (langData === null) {
-        return null;
-    }
-    const numList = langData.numList;
+export function fromStringNum(numList: string[], localeNum: string) {
     const nString = `${localeNum}`.split('').map((n) => {
         const ind = numList.indexOf(n);
         if (ind > -1) {
@@ -169,4 +164,13 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
         return null;
     }
     return Number(nString);
+}
+
+export function fromLocaleNum(locale: LocaleType, localeNum: string) {
+    const langData = getLang(locale);
+    if (langData === null) {
+        return null;
+    }
+    const numList = langData.numList;
+    return fromStringNum(numList, localeNum);
 }

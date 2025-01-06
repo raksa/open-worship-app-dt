@@ -209,7 +209,10 @@ export const bibleDataReader = new BibleDataReader();
 const bibleInfoMap = (
     new Map<string, { info: BibleInfoType, timestamp: number }>()
 );
-export async function getBibleInfo(bibleKey: string) {
+export async function getBibleInfo(bibleKey: string, isForce = false) {
+    if (isForce) {
+        bibleInfoMap.delete(bibleKey);
+    }
     if (bibleInfoMap.has(bibleKey)) {
         const item = bibleInfoMap.get(bibleKey);
         const duration = 1000 * 10; // 10 seconds

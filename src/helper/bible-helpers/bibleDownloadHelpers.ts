@@ -148,7 +148,7 @@ export async function getDownloadedBibleInfoList() {
     }
     const directoryNames = await fsListDirectories(writableBiblePath);
     const promises = directoryNames.map(async (bibleKey) => {
-        return getBibleInfo(bibleKey);
+        return getBibleInfo(bibleKey, true);
     });
     try {
         const infoList = await Promise.all(promises);

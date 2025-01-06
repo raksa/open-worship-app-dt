@@ -12,7 +12,7 @@ import { getLangAsync } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
 
 async function syncBibleLanguage(bibleKey: string) {
-    const bibleInfo = await getBibleInfo(bibleKey);
+    const bibleInfo = await getBibleInfo(bibleKey, true);
     if (bibleInfo === null) {
         const message = 'Cannot get bible info';
         showSimpleToast('Getting Bible Info', message);
@@ -61,7 +61,7 @@ export function useDownloadBible(
                     setDownloadingProgress(percentage);
                 },
                 onDone: async (error, filePath) => {
-                    await getBibleInfo(bibleInfo.key);
+                    await getBibleInfo(bibleInfo.key, true);
                     handleDoneDownloaded(error, filePath);
                 },
             },

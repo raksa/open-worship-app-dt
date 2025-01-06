@@ -11,6 +11,9 @@ import {
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { bibleDataReader } from '../../helper/bible-helpers/bibleInfoHelpers';
 import appProvider from '../../server/appProvider';
+import { cloneJson, freezeObject } from '../../helper/helpers';
+
+freezeObject(kjvBibleInfo);
 
 /**
 * {
@@ -152,7 +155,8 @@ export async function getBibleInfoJson(bible: Element) {
         ))
     );
     const bookKeyMap = getBibleMap(
-        mapElement || null, tagNamesMap.bookMap, kjvBibleInfo.kjvKeyValue,
+        mapElement || null, tagNamesMap.bookMap,
+        cloneJson(kjvBibleInfo.kjvKeyValue),
     );
     let bibleKey = guessValue(bible, attributesMap.bibleKey);
     const localBibleInfoList = await getAllLocalBibleInfoList();
