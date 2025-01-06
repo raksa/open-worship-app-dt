@@ -3,7 +3,7 @@ import { lazy, useState } from 'react';
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import CanvasController, {
-    CanvasControllerContext,
+    CanvasControllerContext, defaultRangeSize,
 } from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRangeComp';
 import {
@@ -16,7 +16,6 @@ import CanvasItem, {
 } from './canvas/CanvasItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
-import { defaultRangeSize } from '../bible-reader/BibleViewSetting';
 
 const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvasComp');
