@@ -57,6 +57,17 @@ export default class ScreenManager extends ScreenManagerBase {
         );
     }
 
+    get isSelected() {
+        return super.isSelected;
+    }
+
+    set isSelected(isSelected: boolean) {
+        super.isSelected = isSelected;
+        saveScreenManagersSetting().then(() => {
+            this.fireInstanceEvent();
+        });
+    }
+
     async setColorNote(color: string | null) {
         await super.setColorNote(color);
         await saveScreenManagersSetting();

@@ -59,6 +59,10 @@ export default class ScreenManagerBase
         return this._isSelected;
     }
 
+    set isSelected(isSelected: boolean) {
+        this._isSelected = isSelected;
+    }
+
     get isShowing() {
         return this._isShowing;
     }
@@ -97,11 +101,6 @@ export default class ScreenManagerBase
         };
         this.addPropEvent('display-id', data);
         ScreenManagerBase.addPropEvent('display-id', data);
-    }
-
-    set isSelected(isSelected: boolean) {
-        this._isSelected = isSelected;
-        this.fireInstanceEvent();
     }
 
     set isShowing(isShowing: boolean) {
