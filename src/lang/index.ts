@@ -110,7 +110,7 @@ export function getLang(langCodeOrLocal: string) {
     return cache.get(langCode || langCodeOrLocal) || null;
 }
 
-export async function getLangAsync(locale: LocaleType) {
+export async function getLangAsync(locale: string) {
     if (!cache.has(locale)) {
         try {
             const langData = langDataMap[locale];
