@@ -7,13 +7,33 @@ import {
     genBibleKeyXMLInput,
 } from './bibleXMLAttributesGuessing';
 import {
-    getAllLocalBibleInfoList,
+    getDownloadedBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
-import { bibleDataReader } from '../../helper/bible-helpers/bibleInfoHelpers';
 import appProvider from '../../server/appProvider';
 import { cloneJson, freezeObject } from '../../helper/helpers';
+import { bibleDataReader } from '../../helper/bible-helpers/BibleDataReader';
+import { fsListFiles } from '../../server/fileHelpers';
 
 freezeObject(kjvBibleInfo);
+
+export async function getAllXMLFileKeys() {
+    const dirPath = await bibleDataReader.getWritableBiblePath();
+    const files = await fsListFiles(dirPath);
+    return Object.fromEntries(files.map((file) => {
+        if (!file.endsWith('.xml')) {
+            return null;
+        }
+        return appProvider.pathUtils.basename(file, '.xml');
+    }).filter((bibleKey) => {
+        return bibleKey !== null;
+    }).map((bibleKey) => {
+        const filePath = appProvider.pathUtils.resolve(
+            dirPath, `${bibleKey}.xml`,
+        );
+        return [bibleKey, filePath] as [string, string];
+    }));
+}
+
 
 /**
 * {
@@ -159,17 +179,22 @@ export async function getBibleInfoJson(bible: Element) {
         cloneJson(kjvBibleInfo.kjvKeyValue),
     );
     let bibleKey = guessValue(bible, attributesMap.bibleKey);
-    const localBibleInfoList = await getAllLocalBibleInfoList();
-    if (localBibleInfoList === null) {
-        return null;
-    }
     while (bibleKey === null) {
+        const downloadedBibleInfoList = await getDownloadedBibleInfoList();
+        if (downloadedBibleInfoList === null) {
+            return null;
+        }
+        const bibleKeysMap = await getAllXMLFileKeys();
+        const takenBibleKeys = new Set(Object.keys(bibleKeysMap));
+        for (const info of downloadedBibleInfoList) {
+            takenBibleKeys.add(info.key);
+        }
         let newKey = '';
         const isConfirmInput = await showAppInput(
             'Key is missing',
             genBibleKeyXMLInput(newKey, (newKey1) => {
                 newKey = newKey1;
-            }, localBibleInfoList, getGuessingBibleKeys(bible)),
+            }, Array.from(takenBibleKeys), getGuessingBibleKeys(bible)),
         );
         if (isConfirmInput) {
             bibleKey = newKey;

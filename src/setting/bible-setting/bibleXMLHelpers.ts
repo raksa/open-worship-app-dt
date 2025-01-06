@@ -4,7 +4,7 @@ import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
 import { getUserWritablePath, showExplorer } from '../../server/appHelpers';
 import {
-    fsDeleteFile, fsListFiles, fsReadFile, fsWriteFile, pathJoin,
+    fsDeleteFile, fsReadFile, fsWriteFile, pathJoin,
 } from '../../server/fileHelpers';
 import { allLocalesMap } from '../../lang';
 import {
@@ -13,9 +13,7 @@ import {
 import {
     genBibleBooksMapXMLInput, genBibleNumbersMapXMLInput,
 } from './bibleXMLAttributesGuessing';
-import {
-    bibleDataReader, BibleInfoType, getBibleInfo,
-} from '../../helper/bible-helpers/bibleInfoHelpers';
+import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
 import {
     ContextMenuItemType, showAppContextMenu,
 } from '../../others/AppContextMenuComp';
@@ -26,10 +24,12 @@ import BibleDatabaseController from
 import { toBibleFileName } from '../../helper/bible-helpers/serverBibleHelpers';
 import {
     bibleKeyToFilePath, BibleJsonInfoType, BibleJsonType, jsonToXMLText,
-    xmlToJson,
-    xmlTextToBibleElement,
-    getBibleInfoJson,
+    xmlToJson, xmlTextToBibleElement, getBibleInfoJson,
+    getAllXMLFileKeys,
 } from './bibleXMLJsonDataHelpers';
+import {
+    bibleDataReader, BibleInfoType,
+} from '../../helper/bible-helpers/BibleDataReader';
 
 type MessageCallbackType = (message: string | null) => void;
 
@@ -183,34 +183,16 @@ export async function getBibleXMLInfo(bibleKey: string) {
     return await getBibleInfoJson(bible);
 }
 
-export async function getAllXMLFileKeys() {
-    const dirPath = await bibleDataReader.getWritableBiblePath();
-    const files = await fsListFiles(dirPath);
-    return Object.fromEntries(files.map((file) => {
-        if (!file.endsWith('.xml')) {
-            return null;
-        }
-        return appProvider.pathUtils.basename(file, '.xml');
-    }).filter((bibleKey) => {
-        return bibleKey !== null;
-    }).map((bibleKey) => {
-        const filePath = appProvider.pathUtils.resolve(
-            dirPath, `${bibleKey}.xml`,
-        );
-        return [bibleKey, filePath] as [string, string];
-    }));
-}
-
 export async function getBibleXMLCacheInfoList() {
     const bibleKeysMap = await getAllXMLFileKeys();
-    const promises = Object.entries(bibleKeysMap).map(async ([bibleKey]) => {
-        return getBibleInfo(bibleKey, true);
-    });
-    let infoList = await Promise.all(promises);
-    infoList = infoList.filter((info) => {
-        return info !== null;
-    });
-    return infoList as BibleInfoType[];
+    const infoList: BibleInfoType[] = [];
+    for (const bibleKey of Object.keys(bibleKeysMap)) {
+        const bibleInfo = await getBibleInfo(bibleKey, true);
+        if (bibleInfo !== null) {
+            infoList.push(bibleInfo);
+        }
+    }
+    return infoList;
 }
 
 export async function saveXMLText(bibleKey: string, xmlText: string) {

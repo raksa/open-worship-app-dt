@@ -1,26 +1,20 @@
 import { useState } from 'react';
 
-import {
-    BibleMinimalInfoType,
-} from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { getLangCode } from '../../lang';
 
 function BibleKeyXMLInputComp({
-    defaultVale, onChange, guessingKeys, downloadedBibleInfoList,
+    defaultVale, onChange, guessingKeys, takenBibleKeys,
 }: Readonly<{
     defaultVale: string, onChange: (key: string) => void,
     guessingKeys?: string[],
-    downloadedBibleInfoList: BibleMinimalInfoType[],
+    takenBibleKeys: string[],
 }>) {
-    const takenKeys = downloadedBibleInfoList.map((bible) => {
-        return bible.key.toLowerCase();
-    });
     const [value, setValue] = useState(defaultVale);
     const [invalidMessage, setInvalidMessage] = useState<string>('');
     const setValue1 = (value: string) => {
         setValue(value);
         onChange(value);
-        if (takenKeys.includes(value.toLowerCase())) {
+        if (takenBibleKeys.includes(value.toLowerCase())) {
             setInvalidMessage('Key is already taken');
         } else {
             setInvalidMessage('');
@@ -47,8 +41,9 @@ function BibleKeyXMLInputComp({
                     <div>
                         {guessingKeys.map((guessingKey) => {
                             if (
-                                takenKeys.includes(guessingKey.toLowerCase()) ||
-                                guessingKey === value
+                                takenBibleKeys.includes(
+                                    guessingKey.toLowerCase(),
+                                ) || guessingKey === value
                             ) {
                                 return null;
                             }
@@ -71,12 +66,12 @@ function BibleKeyXMLInputComp({
 
 export function genBibleKeyXMLInput(
     key: string, onChange: (key: string) => void,
-    downloadedBibleInfoList: BibleMinimalInfoType[],
+    takenBibleKeys: string[],
     guessingKeys?: string[],
 ) {
     return (
         <BibleKeyXMLInputComp
-            downloadedBibleInfoList={downloadedBibleInfoList}
+            takenBibleKeys={takenBibleKeys}
             defaultVale={key} onChange={onChange}
             guessingKeys={guessingKeys}
         />

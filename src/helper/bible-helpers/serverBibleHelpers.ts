@@ -9,6 +9,9 @@ import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
 import { toLocaleNumBible } from './serverBibleHelpers2';
 import { genVerseList } from '../../bible-list/bibleHelpers';
 import BibleItem from '../../bible-list/BibleItem';
+import { freezeObject } from '../helpers';
+
+freezeObject(bibleJson);
 
 export const bibleObj = bibleJson as {
     booksOrder: string[],

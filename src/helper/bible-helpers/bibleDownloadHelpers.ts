@@ -5,13 +5,14 @@ import appProvider from '../../server/appProvider';
 import {
     fsDeleteFile, fsListDirectories, fsCheckDirExist, pathBasename, getFileName,
 } from '../../server/fileHelpers';
-import { bibleDataReader, getBibleInfo } from './bibleInfoHelpers';
+import { getBibleInfo } from './bibleInfoHelpers';
 import { appApiFetch } from '../networkHelpers';
 import { tarExtract } from '../../server/appHelpers';
 import { DownloadOptionsType, writeStreamToFile } from './downloadHelpers';
 import {
     getBibleXMLCacheInfoList,
 } from '../../setting/bible-setting/bibleXMLHelpers';
+import { bibleDataReader } from './BibleDataReader';
 
 export const BIBLE_DOWNLOAD_TOAST_TITLE = 'Bible Download';
 
@@ -162,13 +163,13 @@ export async function getDownloadedBibleInfoList() {
 }
 
 export async function getAllLocalBibleInfoList() {
-    const localBibleInfoList = await getDownloadedBibleInfoList() || [];
+    const downloadedBibleInfoList = await getDownloadedBibleInfoList() || [];
     const bibleXMLInfoList = await getBibleXMLCacheInfoList();
-    localBibleInfoList.push(...bibleXMLInfoList.map((info) => {
+    downloadedBibleInfoList.push(...bibleXMLInfoList.map((info) => {
         return {
             ...info,
             isXML: true,
         } as BibleMinimalInfoType;
     }));
-    return localBibleInfoList;
+    return downloadedBibleInfoList;
 }

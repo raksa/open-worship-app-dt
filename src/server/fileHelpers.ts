@@ -16,6 +16,15 @@ import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import {
     hideProgressBard, showProgressBard,
 } from '../progress-bar/progressBarHelpers';
+import { cloneJson, freezeObject } from '../helper/helpers';
+
+freezeObject(mimeBibleList);
+freezeObject(mimeLyricList);
+freezeObject(mimeSlideList);
+freezeObject(mimeImageList);
+freezeObject(mimePlaylistList);
+freezeObject(mimeVideoList);
+freezeObject(mimeSoundList);
 
 export const mimetypePdf: AppMimetypeType = {
     type: 'PDF File',
@@ -138,7 +147,7 @@ export function getAppMimetype(mimetypeName: MimetypeNameType) {
     if (mimetypeName === 'other') {
         return [];
     }
-    const json = mimeTypesMapper[mimetypeName];
+    const json = cloneJson(mimeTypesMapper[mimetypeName]);
     json.forEach((data: any) => {
         data.mimetypeName = mimetypeName;
     });

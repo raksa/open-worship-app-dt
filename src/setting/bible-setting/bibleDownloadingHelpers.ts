@@ -2,14 +2,13 @@ import { useState } from 'react';
 
 import { handleError } from '../../helper/errorHelpers';
 import {
-    BIBLE_DOWNLOAD_TOAST_TITLE,
-    BibleMinimalInfoType, downloadBible, extractDownloadedBible,
+    BIBLE_DOWNLOAD_TOAST_TITLE, BibleMinimalInfoType, downloadBible,
+    extractDownloadedBible,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
-import {
-    bibleDataReader, getBibleInfo,
-} from '../../helper/bible-helpers/bibleInfoHelpers';
+import { getBibleInfo } from '../../helper/bible-helpers/bibleInfoHelpers';
 import { getLangAsync } from '../../lang';
 import { showSimpleToast } from '../../toast/toastHelpers';
+import { bibleDataReader } from '../../helper/bible-helpers/BibleDataReader';
 
 async function syncBibleLanguage(bibleKey: string) {
     const bibleInfo = await getBibleInfo(bibleKey, true);

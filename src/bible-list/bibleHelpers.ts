@@ -5,7 +5,7 @@ import {
 } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
 import {
-    VerseList, getVerses, keyToBook,
+    getVerses, keyToBook,
 } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     extractBibleTitle, toInputText, toLocaleNumBible,
@@ -21,6 +21,7 @@ import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { addExtension } from '../server/fileHelpers';
 import appProvider from '../server/appProvider';
+import { VerseList } from '../helper/bible-helpers/BibleDataReader';
 
 export const SELECTED_BIBLE_SETTING_NAME = 'selected-bible';
 

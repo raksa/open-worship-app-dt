@@ -1,7 +1,4 @@
 import {
-    bibleDataReader,
-} from '../../helper/bible-helpers/bibleInfoHelpers';
-import {
     fsCheckDirExist, fsDeleteDir,
 } from '../../server/fileHelpers';
 import {
@@ -12,6 +9,7 @@ import {
     hideProgressBard, showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
 import { showAppConfirm } from '../../popup-widget/popupWidgetHelpers';
+import { bibleDataReader } from '../../helper/bible-helpers/BibleDataReader';
 
 export default function DownloadedBibleItemComp({
     bibleInfo, onDeleted, onUpdate,

@@ -1,4 +1,7 @@
+import { freezeObject } from '../../helper/helpers';
 import colorList from '../../others/color-list.json';
+
+freezeObject(colorList);
 
 const screenIdColorMap: Record<string, string> = {};
 export function genColorFromScreenId(screenId: number) {

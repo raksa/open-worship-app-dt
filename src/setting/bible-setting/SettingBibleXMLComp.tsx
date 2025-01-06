@@ -6,13 +6,13 @@ export default function SettingBibleXMLComp() {
     const { bibleKeysMap, isPending, loadBibleKeys } = useBibleXMLKeys();
     return (
         <div className='w-100 app-border-white-round p-2'>
-            <BibleXMLListComp
-                isPending={isPending}
-                bibleKeysMap={bibleKeysMap}
+            <BibleXMLImportComp
                 loadBibleKeys={loadBibleKeys}
             />
             <hr />
-            <BibleXMLImportComp
+            <BibleXMLListComp
+                isPending={isPending}
+                bibleKeysMap={bibleKeysMap}
                 loadBibleKeys={loadBibleKeys}
             />
         </div>

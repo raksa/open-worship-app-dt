@@ -3,7 +3,7 @@ import {
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import { useDownloadBible } from './bibleDownloadingHelpers';
-import { getAllXMLFileKeys } from './bibleXMLHelpers';
+import { getAllXMLFileKeys } from './bibleXMLJsonDataHelpers';
 
 export default function OnlineBibleItemComp({
     bibleInfo, onDownloaded, bibleXMLKeysMap = {}, refresh,
