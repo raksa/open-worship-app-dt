@@ -125,7 +125,7 @@ export default class BibleDataReader {
                     handleError(error);
                 }
             }
-            this._writableBiblePath = pathJoin(userWritablePath, 'bibles');
+            this._writableBiblePath = dirPath;
         }
         return this._writableBiblePath;
     }
