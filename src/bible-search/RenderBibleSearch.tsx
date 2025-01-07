@@ -16,6 +16,7 @@ import {
 import ResizeActor from '../resize-actor/ResizeActor';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleSearchHeader from './RenderBibleSearchHeader';
+import RenderExtraButtonsRight from './RenderExtraButtonsRight';
 
 const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewer');
@@ -38,7 +39,18 @@ export default function RenderBibleSearch({ editorInputText = '' }: Readonly<{
 
     if (bibleKey === null) {
         return (
-            <BibleNotAvailable />
+            <div className='w-100 h-100'>
+                <div className='d-flex'>
+                    <div className='flex-fill'></div>
+                    <RenderExtraButtonsRight
+                        setIsSearchOnline={setIsSearchOnline}
+                        isSearchOnline={isSearchOnline}
+                    />
+                </div>
+                <div className='flex-fill'>
+                    <BibleNotAvailable />
+                </div>
+            </div>
         );
     }
     const searchingBody = (

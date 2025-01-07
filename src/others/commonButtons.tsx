@@ -94,6 +94,7 @@ export function BibleSearchButtonComp() {
                     if (isConfirmed) {
                         goToPath(appProvider.settingHomePage);
                     }
+                    return;
                 }
                 setIsBibleSearchShowing(true);
             }}>
