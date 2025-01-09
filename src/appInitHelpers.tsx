@@ -12,7 +12,7 @@ import {
 } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
-import { getCurrentLangAsync, getLangAsync, defaultLocal } from './lang';
+import { getCurrentLangAsync, getLangAsync, defaultLocale } from './lang';
 import appProvider from './server/appProvider';
 import initCrypto from './_owa-crypto';
 import { useHandleFind } from './_find/finderHelpers';
@@ -58,7 +58,7 @@ export async function initApp() {
     const promises = [
         FileSourceMetaManager.checkAllColorNotes(),
         getCurrentLangAsync(),
-        getLangAsync(defaultLocal),
+        getLangAsync(defaultLocale),
     ];
     for (const bibleInfo of localBibleInfoList || []) {
         promises.push(getLangAsync(bibleInfo.locale));
