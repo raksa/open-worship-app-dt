@@ -1,3 +1,4 @@
+import SettingBibleJsonComp from './SettingBibleJsonComp';
 import SettingBibleXMLComp from './SettingBibleXMLComp';
 
 export default function SettingBibleComp() {
@@ -5,7 +6,7 @@ export default function SettingBibleComp() {
         <div className='w-100'>
             <SettingBibleXMLComp />
             <hr />
-            {/* <SettingBibleJsonComp /> */}
+            <SettingBibleJsonComp />
         </div>
     );
 }

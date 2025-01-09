@@ -7,7 +7,7 @@ import {
     useLocalBibleInfoList,
 } from '../setting/bible-setting/bibleSettingHelpers';
 import {
-    getAllLocalBibleInfoList,
+    BibleMinimalInfoType, getAllLocalBibleInfoList,
 } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 
@@ -15,7 +15,7 @@ export async function showBibleOption(
     event: any, excludeBibleKey: string[],
     onSelect: (bibleKey: string) => void,
 ) {
-    const localBibleInfoList = await getAllLocalBibleInfoList();
+    let localBibleInfoList = await getAllLocalBibleInfoList();
     if (localBibleInfoList === null) {
         showAppAlert(
             'Unable to get bible info list',
@@ -24,10 +24,23 @@ export async function showBibleOption(
         );
         return;
     }
-    const menuItems: ContextMenuItemType[] = (
-        localBibleInfoList.filter((bibleInfo) => {
-            return !excludeBibleKey.includes(bibleInfo.key);
-        }).map((bibleInfo) => {
+    localBibleInfoList = localBibleInfoList.filter((bibleInfo) => {
+        return !excludeBibleKey.includes(bibleInfo.key);
+    });
+    const localBibleInfoMap: { [locale: string]: BibleMinimalInfoType[] } = {};
+    localBibleInfoList.forEach((bibleInfo) => {
+        if (localBibleInfoMap[bibleInfo.locale] === undefined) {
+            localBibleInfoMap[bibleInfo.locale] = [];
+        }
+        localBibleInfoMap[bibleInfo.locale].push(bibleInfo);
+    });
+    const menuItems: ContextMenuItemType[] = [];
+    for (const locale in localBibleInfoMap) {
+        const bibleInfoList = localBibleInfoMap[locale];
+        menuItems.push(...[{
+            menuTitle: locale,
+            disabled: true,
+        }, ...bibleInfoList.map((bibleInfo) => {
             return {
                 menuTitle: `(${bibleInfo.key}) ${bibleInfo.title}`,
                 title: bibleInfo.title,
@@ -35,8 +48,8 @@ export async function showBibleOption(
                     onSelect(bibleInfo.key);
                 },
             };
-        })
-    );
+        })]);
+    }
     showAppContextMenu(event, menuItems);
 }
 

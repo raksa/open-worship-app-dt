@@ -173,7 +173,7 @@ function ContextMenuItemComp({ item }: Readonly<{
     return (
         <div className={
             'app-context-menu-item d-flex w-100 overflow-hidden' +
-            `${item.disabled ? 'disabled' : ''}`
+            `${item.disabled ? ' disabled' : ''}`
         }
             title={item.title ?? item.menuTitle}
             onClick={(event) => {
