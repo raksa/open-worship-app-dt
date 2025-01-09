@@ -36,7 +36,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useAppEffect(() => {
@@ -46,7 +46,7 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
 export function useSlideSelecting(listener: ListenerType<Slide | null>) {
     useAppEffect(() => {
@@ -56,7 +56,7 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
 export function useSlideUpdating(listener: ListenerType<Slide>) {
     useAppEffect(() => {
@@ -66,5 +66,5 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
