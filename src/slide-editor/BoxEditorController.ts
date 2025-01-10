@@ -218,7 +218,9 @@ export default class BoxEditorController {
         });
     }
     moveHandler(event: MouseEvent) {
-        if (this.editor === null || this.target === null) {
+        if (
+            event.button === 2 || this.editor === null || this.target === null
+        ) {
             return;
         }
         this.blockMouseEvent(event);

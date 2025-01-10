@@ -30,7 +30,7 @@ export function useSlideItemSelecting(
         return () => {
             SlideListEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
 
 export function useSlideItemThumbnailSizeScale(
@@ -51,7 +51,7 @@ export function useSlideItemThumbnailSizeScale(
         return () => {
             SlideListEventListener.unregisterEventListener(event);
         };
-    });
+    }, []);
     const applyThumbnailSizeScale = (size: number) => {
         setThumbnailSizeScale(size);
         SlideListEventListener.slideItemSizing();

@@ -59,6 +59,14 @@ export function openContextMenu(
             },
         }],
         ...extraMenuItems,
+        {
+            menuTitle: 'Refresh Preview',
+            onClick() {
+                getAllScreenManagers().forEach((screenManager) => {
+                    screenManager.fireResizeEvent();
+                });
+            },
+        },
     ];
     if (menuItems.length === 0) {
         return;

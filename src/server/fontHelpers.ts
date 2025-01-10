@@ -22,7 +22,7 @@ export function useFontList() {
                 setFontList(fonts);
             }
         }
-    });
+    }, [fontList]);
     return fontList;
 }
 

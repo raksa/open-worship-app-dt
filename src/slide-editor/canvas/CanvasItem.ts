@@ -244,7 +244,7 @@ export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
                 setProps(cloneJson(canvasItem.props));
             });
         });
-    });
+    }, []);
     return props as T;
 }
 

@@ -23,6 +23,13 @@ function openContextMenu(event: any) {
             onClick() {
                 genNewScreenManagerBase();
             },
+        }, {
+            menuTitle: 'Refresh Preview',
+            onClick() {
+                getAllScreenManagers().forEach((screenManager) => {
+                    screenManager.fireResizeEvent();
+                });
+            },
         },
     ]);
 }

@@ -56,7 +56,15 @@ export function useSelectedBibleKey() {
     );
     const setBibleKeySelected1 = (bibleKey: string | null) => {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
-        setBibleKeySelected(bibleKey);
+        getAllLocalBibleInfoList().then((localBibleInfoList) => {
+            if (localBibleInfoList?.find((bibleInfo) => {
+                return bibleInfo.key === bibleKey;
+            }) === undefined) {
+                showSimpleToast('Setting Bible Key', 'Invalid bible key');
+                return;
+            }
+            setBibleKeySelected(bibleKey);
+        });
     };
     useAppEffectAsync(async (methodContext) => {
         const bibleKey = await getSelectedEditorBibleItem();

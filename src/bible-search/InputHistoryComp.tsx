@@ -53,7 +53,7 @@ function useHistoryTextList(maxHistoryCount: number) {
         return () => {
             addHistory = () => { };
         };
-    });
+    }, [historyTextList]);
     return [historyTextList, setHistoryTextList1] as const;
 }
 
