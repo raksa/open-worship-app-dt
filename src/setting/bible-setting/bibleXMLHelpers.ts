@@ -2,7 +2,9 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import appProvider from '../../server/appProvider';
 import { writeStreamToFile } from '../../helper/bible-helpers/downloadHelpers';
-import { getUserWritablePath, showExplorer } from '../../server/appHelpers';
+import {
+    getUserWritablePath, showExplorer, trashFile,
+} from '../../server/appHelpers';
 import {
     fsDeleteFile, fsReadFile, fsWriteFile, pathJoin,
 } from '../../server/fileHelpers';
@@ -343,7 +345,7 @@ export async function saveJsonDataToXMLfile(jsonData: BibleJsonType) {
 export async function deleteBibleXML(bibleKey: string) {
     await bibleDataReader.clearBibleDatabaseData(bibleKey);
     const filePath = await bibleKeyToFilePath(bibleKey);
-    await fsDeleteFile(filePath);
+    await trashFile(filePath);
 }
 
 export async function getBibleXMLDataFromKey(bibleKey: string) {

@@ -1,10 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import { getRootElement } from './appInitHelpers';
-import { pathJoin } from './server/fileHelpers';
+import {
+    fsCheckFileExist, fsReadFile, fsWriteFile, pathJoin,
+} from './server/fileHelpers';
 import { getUserWritablePath } from './server/appHelpers';
 import EditingHistoryManager, {
-    useEditingHistoryEvent,
-    useEditingHistoryStatus,
+    useEditingHistoryEvent, useEditingHistoryStatus,
 } from './others/EditingHistoryManager';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppEffectAsync } from './helper/debuggerHelpers';
@@ -12,20 +13,25 @@ import { useAppEffectAsync } from './helper/debuggerHelpers';
 const container = getRootElement<HTMLDivElement>();
 const root = createRoot(container);
 
-const filePath = pathJoin(getUserWritablePath(), 'history.txt');
-console.log(filePath);
+const filePath = pathJoin(getUserWritablePath(), 'history1.txt');
 
 let timeoutId: any = null;
 function HistoryAppComp() {
-    const [canUndo, canRedo] = useEditingHistoryStatus(filePath);
+    const { canUndo, canRedo, canSave } = useEditingHistoryStatus(filePath);
     const [text, setText] = useState('');
     const historyManager = useMemo(() => {
         return new EditingHistoryManager(filePath);
     }, []);
     const setTextFromHistory = useCallback(async () => {
+        if (!await fsCheckFileExist(filePath)) {
+            await fsWriteFile(filePath, '');
+        }
         const lastHistory = await historyManager.getCurrentHistory();
         if (lastHistory !== null) {
             setText(lastHistory);
+        } else {
+            const text = await fsReadFile(filePath);
+            setText(text);
         }
     }, [setText, historyManager]);
     useEditingHistoryEvent(filePath, setTextFromHistory);
@@ -37,9 +43,15 @@ function HistoryAppComp() {
         }
         timeoutId = setTimeout(() => {
             timeoutId = null;
-            console.log('Saving', newText);
             historyManager.addHistory(newText);
         }, 1e3);
+    };
+    const handleSaving = async () => {
+        const lastHistory = await historyManager.getCurrentHistory();
+        if (lastHistory !== null) {
+            await fsWriteFile(filePath, lastHistory);
+            historyManager.fireEvent();
+        }
     };
     return (
         <div style={{
@@ -56,6 +68,12 @@ function HistoryAppComp() {
                     onClick={() => {
                         historyManager.redo();
                     }}>Redo</button>
+                <button disabled={!canSave}
+                    onClick={() => {
+                        historyManager.discard();
+                    }}>Discard</button>
+                <button disabled={!canSave}
+                    onClick={handleSaving}>Save</button>
                 <hr />
                 <textarea style={{
                     width: '100%',

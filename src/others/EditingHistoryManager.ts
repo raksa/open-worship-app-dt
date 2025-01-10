@@ -4,17 +4,23 @@ import { handleError } from '../helper/errorHelpers';
 import EventHandler, { RegisteredEventType } from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    fsCheckDirExist, fsCreateDir, fsDeleteDir, fsDeleteFile,
-    fsListFiles, fsMoveFile, fsReadFile, fsWriteFile, pathBasename, pathJoin,
+    fsCheckDirExist, fsCheckFileExist, fsCloneFile, fsCreateDir, fsDeleteDir,
+    fsDeleteFile, fsListFiles, fsMoveFile, fsReadFile, fsWriteFile,
+    pathBasename, pathJoin,
 } from '../server/fileHelpers';
 import { unlocking } from '../server/appHelpers';
+import appProvider from '../server/appProvider';
+
+const { diffUtils } = appProvider;
 
 const CURRENT_FILE_SIGN = '-*';
 class FileLineHandler {
+    filePath: string;
     dirPath: string;
 
     constructor(filePath: string) {
-        this.dirPath = `${filePath}.histories`;
+        this.filePath = filePath;
+        this.dirPath = `${this.filePath}.histories`;
     }
 
     private async getAllHistoryFiles() {
@@ -44,11 +50,11 @@ class FileLineHandler {
 
     async getCurrentFileFullPath() {
         const fileNames = await this.getAllHistoryFiles();
-        const fileName = fileNames.find((fileFullName) => {
+        const currentFiles = fileNames.filter((fileFullName) => {
             return fileFullName.endsWith(CURRENT_FILE_SIGN);
         });
-        if (fileName) {
-            return pathJoin(this.dirPath, fileName);
+        if (currentFiles.length === 1) {
+            return pathJoin(this.dirPath, currentFiles[0]);
         }
         return null;
     }
@@ -91,19 +97,51 @@ class FileLineHandler {
         return this.getNeighborFileFullPath(false);
     }
 
+    private async moveFile(fileFullPath: string, newFileFullPath: string) {
+        await fsMoveFile(fileFullPath, newFileFullPath);
+        return newFileFullPath;
+    }
+
+    async rollback(filePath: string) {
+        const currentFilePath = await this.getCurrentFileFullPath();
+        if (currentFilePath === null) {
+            return false;
+        }
+        const currentContent = await fsReadFile(currentFilePath);
+        const patchedText = await fsReadFile(filePath);
+        const patcher = diffUtils.parsePatch(patchedText);
+        const reversePatcher = diffUtils.reversePatch(patcher);
+        const originalContent = diffUtils.applyPatch(
+            currentContent, reversePatcher,
+        );
+        if (originalContent === false) {
+            return false;
+        }
+        await fsWriteFile(filePath, originalContent);
+        return true;
+    }
+
     async changeCurrent(fileFullPath: string) {
         return await unlocking(this.dirPath, async () => {
-            const currentFilePath = await this.getCurrentFileFullPath();
-            if (currentFilePath !== null) {
-                const currentFileIndex = this.toFileIndex(currentFilePath);
-                await fsMoveFile(
-                    currentFilePath, this.toFileFullPath(currentFileIndex),
+            let lastFilePath = await this.getCurrentFileFullPath();
+            if (lastFilePath !== null) {
+                const lastFileIndex = this.toFileIndex(lastFilePath);
+                lastFilePath = await this.moveFile(
+                    lastFilePath, this.toFileFullPath(lastFileIndex),
                 );
             }
             const fileIndex = this.toFileIndex(fileFullPath);
-            await fsMoveFile(
+            const currentFilePath = await this.moveFile(
                 fileFullPath, this.toCurrentFileFullPath(fileIndex),
             );
+            if (lastFilePath !== null) {
+                const lastContent = await fsReadFile(lastFilePath);
+                const currentContent = await fsReadFile(currentFilePath);
+                const patchedText = diffUtils.createPatch(
+                    this.filePath, lastContent, currentContent,
+                );
+                await fsWriteFile(lastFilePath, patchedText);
+            }
             return true;
         });
     }
@@ -111,18 +149,12 @@ class FileLineHandler {
     async appendHistory(text: string) {
         try {
             let currentFilePath = await this.getCurrentFileFullPath();
-            let nextFileIndex = 0;
             if (currentFilePath === null) {
-                await this.clearHistories();
-            } else {
-                const currentFileIndex = this.toFileIndex(
-                    currentFilePath,
-                );
-                await this.clearNextHistories(currentFileIndex);
-                nextFileIndex = currentFileIndex + 1;
+                return false;
             }
-            await this.ensureHistoriesDir();
-            currentFilePath = this.toFileFullPath(nextFileIndex);
+            const currentFileIndex = this.toFileIndex(currentFilePath);
+            await this.clearNextHistories(currentFileIndex);
+            currentFilePath = this.toFileFullPath(currentFileIndex + 1);
             await fsWriteFile(currentFilePath, text);
             await this.changeCurrent(currentFilePath);
             return true;
@@ -135,6 +167,14 @@ class FileLineHandler {
     async ensureHistoriesDir() {
         if (!await fsCheckDirExist(this.dirPath)) {
             await fsCreateDir(this.dirPath);
+        }
+        const fileNames = await fsListFiles(this.dirPath);
+        if (fileNames.length === 0) {
+            if (!await fsCheckFileExist(this.filePath)) {
+                throw new Error(`File ${this.filePath} does not exist`);
+            }
+            const currentFilePath = this.toCurrentFileFullPath(0);
+            await fsCloneFile(this.filePath, currentFilePath);
         }
     }
 
@@ -171,6 +211,10 @@ export default class EditingHistoryManager {
 
     }
 
+    fireEvent() {
+        EditingHistoryManager.fireEvent(this.filePath);
+    }
+
     static fireEvent(filePath: string) {
         this.eventHandler.addPropEvent(this.toEventKey(filePath));
     }
@@ -200,31 +244,35 @@ export default class EditingHistoryManager {
         return nextFilePath !== null;
     }
 
+    private async moveHistory(filePath: string | null) {
+        if (filePath === null) {
+            return false;
+        }
+        const isRollbackSuccess = await this.fileLineHandler.rollback(filePath);
+        if (!isRollbackSuccess) {
+            return false;
+        }
+        await this.fileLineHandler.changeCurrent(filePath);
+        this.fireEvent();
+        return true;
+    }
+
     async undo() {
         const filePath = (
             await this.fileLineHandler.getPreviousFileFullPath()
         );
-        if (filePath === null) {
-            return false;
-        }
-        await this.fileLineHandler.changeCurrent(filePath);
-        EditingHistoryManager.fireEvent(this.filePath);
-        return true;
+        return await this.moveHistory(filePath);
     }
 
     async redo() {
         const filePath = await this.fileLineHandler.getNextFileFullPath();
-        if (filePath === null) {
-            return false;
-        }
-        await this.fileLineHandler.changeCurrent(filePath);
-        EditingHistoryManager.fireEvent(this.filePath);
-        return true;
+        return await this.moveHistory(filePath);
     }
 
     async addHistory(text: string) {
+        await this.fileLineHandler.ensureHistoriesDir();
         await this.fileLineHandler.appendHistory(text);
-        EditingHistoryManager.fireEvent(this.filePath);
+        this.fireEvent();
     }
 
     async getCurrentHistory() {
@@ -240,7 +288,7 @@ export default class EditingHistoryManager {
     async discard() {
         try {
             await this.fileLineHandler.clearHistories();
-            EditingHistoryManager.fireEvent(this.filePath);
+            this.fireEvent();
             return true;
         } catch (error) {
             handleError(error);
@@ -264,12 +312,19 @@ export function useEditingHistoryEvent(
 }
 
 export function useEditingHistoryStatus(filePath: string) {
-    const [status, setStatus] = useState([false, false]);
+    const [status, setStatus] = useState({
+        canUndo: false,
+        canRedo: false,
+        canSave: false,
+    });
     const update = async () => {
         const editingHistoryManager = new EditingHistoryManager(filePath);
         const canUndo = await editingHistoryManager.checkCanUndo();
         const canRedo = await editingHistoryManager.checkCanRedo();
-        setStatus([canUndo, canRedo]);
+        const historyText = await editingHistoryManager.getCurrentHistory();
+        const text = await fsReadFile(filePath);
+        const canSave = historyText !== null && historyText !== text;
+        setStatus({ canUndo, canRedo, canSave });
     };
     useEditingHistoryEvent(filePath, update);
     useAppEffect(() => {

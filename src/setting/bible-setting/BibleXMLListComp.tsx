@@ -60,7 +60,7 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     const [isShowing, setIsShowing] = useStateSettingBoolean(
         `bible-xml-${bibleKey}`, false,
     );
-    const handleFileDeleting = async (event: any) => {
+    const handleFileTrashing = async (event: any) => {
         event.stopPropagation();
         const isConfirmed = await showAppConfirm(
             'Delete Bible XML',
@@ -103,8 +103,8 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
                             Reload Cache
                         </button>
                         <button className='btn btn-danger'
-                            onClick={handleFileDeleting}>
-                            Delete
+                            onClick={handleFileTrashing}>
+                            Move to Trash
                         </button>
                     </div>
                 </div>

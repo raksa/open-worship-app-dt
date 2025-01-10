@@ -1,6 +1,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import * as diff from 'diff';
 
 export type MessageEventType = {
     returnValue: any,
@@ -110,6 +111,7 @@ const appProvider = (window as any).provider as Readonly<PagePropsType & {
         request: typeof http.request,
     };
     fileUtils: FileUtilsType,
+    diffUtils: typeof diff,
     pathUtils: PathUtilsType,
     systemUtils: SystemUtilsType,
     appInfo: AppInfoType,

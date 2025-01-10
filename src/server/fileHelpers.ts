@@ -256,7 +256,7 @@ function _fsUnlink(filePath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.unlink, filePath);
 }
 
-function _fsCopyFile(src: File | string, dest: string) {
+export function fsCloneFile(src: File | string, dest: string) {
     if (src instanceof File) {
         return new Promise<void>((resolve, reject) => {
             const writeStream = fsCreateWriteStream(dest);
@@ -462,7 +462,7 @@ export async function fsCopyFilePathToPath(
                 throw new Error('Canceled by user');
             }
         }
-        await _fsCopyFile(file, targetPath);
+        await fsCloneFile(file, targetPath);
         hideProgressBard(progressKey);
         return targetPath;
     } catch (error: any) {
