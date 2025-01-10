@@ -153,6 +153,7 @@ export function getAppMimetype(mimetypeName: MimetypeNameType) {
     });
     return json as AppMimetypeType[];
 }
+
 export function getMimetypeExtensions(mimetypeName: MimetypeNameType) {
     const mimetypeList = getAppMimetype(mimetypeName);
     return mimetypeList.reduce((r: string[], mimetype) => {
@@ -214,39 +215,48 @@ function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
         fn(...args);
     });
 }
+
 function _fsStat(filePath: string) {
     return fsFilePromise<Stats>(appProvider.fileUtils.stat, filePath);
 }
+
 function _fsMkdir(dirPath: string, isRecursive: boolean) {
     return fsFilePromise<void>(appProvider.fileUtils.mkdir, dirPath, {
         recursive: isRecursive,
     });
 }
+
 function _fsRmdir(dirPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rmdir, dirPath, {
         recursive: true,
     });
 }
+
 function _fsReaddir(dirPath: string) {
     return fsFilePromise<string[]>(appProvider.fileUtils.readdir, dirPath);
 }
+
 function _fsReadFile(filePath: string, options?: any) {
     return fsFilePromise<string>(
         appProvider.fileUtils.readFile, filePath, options,
     );
 }
+
 function _fsWriteFile(filePath: string, data: string, options?: any) {
     return fsFilePromise<void>(
         appProvider.fileUtils.writeFile, filePath, data, options,
     );
 }
-function _fsRename(oldPath: string, newPath: string) {
+
+export function fsMoveFile(oldPath: string, newPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
 }
+
 function _fsUnlink(filePath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.unlink, filePath);
 }
-function _fsCopyFile(src: File | string, dest: string) {
+
+export function fsCloneFile(src: File | string, dest: string) {
     if (src instanceof File) {
         return new Promise<void>((resolve, reject) => {
             const writeStream = fsCreateWriteStream(dest);
@@ -266,6 +276,7 @@ function _fsCopyFile(src: File | string, dest: string) {
     }
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
 }
+
 async function _fsCheckExist(
     isFile: boolean, filePath: string, fileFullName?: string,
 ) {
@@ -291,9 +302,11 @@ async function _fsCheckExist(
         }
     }
 }
+
 export function fsCheckDirExist(dirPath: string) {
     return _fsCheckExist(false, dirPath);
 }
+
 export function fsCheckFileExist(filePath: string, fileFullName?: string) {
     return _fsCheckExist(true, filePath, fileFullName);
 }
@@ -374,21 +387,17 @@ export async function fsListFilesWithMimetype(
 export function fsCreateDir(dirPath: string, isRecursive = true) {
     return _fsMkdir(dirPath, isRecursive);
 }
+
 export async function fsWriteFile(filePath: string, txt: string) {
-    if (await fsCheckDirExist(filePath)) {
-        throw new Error(`${filePath} is not a directory`);
-    }
     await _fsWriteFile(filePath, txt, {
         encoding: 'utf8',
         flag: 'w',
     });
     return filePath;
 }
+
 export async function fsCreateFile(filePath: string,
     txt: string, isOverride?: boolean) {
-    if (await fsCheckDirExist(filePath)) {
-        throw new Error(`${filePath} is not a directory`);
-    }
     if (await fsCheckFileExist(filePath)) {
         if (isOverride) {
             await fsDeleteFile(filePath);
@@ -399,8 +408,10 @@ export async function fsCreateFile(filePath: string,
     await _fsWriteFile(filePath, txt);
     return filePath;
 }
-export async function fsRenameFile(basePath: string,
-    oldFileName: string, newFileName: string) {
+
+export async function fsRenameFile(
+    basePath: string, oldFileName: string, newFileName: string
+) {
     const oldFilePath = pathJoin(basePath, oldFileName);
     const newFilePath = pathJoin(basePath, newFileName);
     if (!await fsCheckFileExist(oldFilePath)) {
@@ -408,8 +419,9 @@ export async function fsRenameFile(basePath: string,
     } else if (await fsCheckFileExist(newFilePath)) {
         throw new Error('File exist');
     }
-    return _fsRename(oldFilePath, newFilePath);
+    return fsMoveFile(oldFilePath, newFilePath);
 }
+
 export async function fsDeleteFile(filePath: string) {
     if (await fsCheckDirExist(filePath)) {
         throw new Error(`${filePath} is not a file`);
@@ -418,6 +430,7 @@ export async function fsDeleteFile(filePath: string) {
         await _fsUnlink(filePath);
     }
 }
+
 export async function fsDeleteDir(filePath: string) {
     if (await fsCheckFileExist(filePath)) {
         throw new Error(`${filePath} is not a directory`);
@@ -426,9 +439,11 @@ export async function fsDeleteDir(filePath: string) {
         await _fsRmdir(filePath);
     }
 }
+
 export function fsReadFile(filePath: string) {
     return _fsReadFile(filePath, 'utf8');
 }
+
 export async function fsCopyFilePathToPath(
     file: File | string, destinationPath: string, fileFullName?: string,
 ) {
@@ -447,7 +462,7 @@ export async function fsCopyFilePathToPath(
                 throw new Error('Canceled by user');
             }
         }
-        await _fsCopyFile(file, targetPath);
+        await fsCloneFile(file, targetPath);
         hideProgressBard(progressKey);
         return targetPath;
     } catch (error: any) {

@@ -21,7 +21,7 @@ export function useShowProgressBar(listener: ListenerType<string>) {
         return () => {
             ProgressBarEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }
 
 export function useHideProgressBar(listener: ListenerType<string>) {
@@ -32,5 +32,5 @@ export function useHideProgressBar(listener: ListenerType<string>) {
         return () => {
             ProgressBarEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }

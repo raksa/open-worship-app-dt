@@ -26,7 +26,7 @@ const LazyAskingNewName = lazy(() => {
     return import('./AskingNewNameComp');
 });
 
-async function watch(dirSource: DirSource, signal: AbortSignal) {
+async function watchDir(dirSource: DirSource, signal: AbortSignal) {
     const isDirExist = await fsCheckDirExist(dirSource.dirPath);
     if (!isDirExist) {
         return;
@@ -82,7 +82,7 @@ export default function FileListHandlerComp({
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     useAppEffect(() => {
         const abortController = new AbortController();
-        watch(dirSource, abortController.signal);
+        watchDir(dirSource, abortController.signal);
         return () => {
             abortController.abort();
         };

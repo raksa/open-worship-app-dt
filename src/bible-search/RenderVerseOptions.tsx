@@ -17,7 +17,7 @@ export default function RenderVerseOptions({
         return () => {
             document.body.removeEventListener('mouseup', mouseUp);
         };
-    });
+    }, []);
     if (verseList === null) {
         return null;
     }

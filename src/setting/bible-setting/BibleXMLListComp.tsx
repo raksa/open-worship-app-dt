@@ -60,7 +60,7 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
     const [isShowing, setIsShowing] = useStateSettingBoolean(
         `bible-xml-${bibleKey}`, false,
     );
-    const handleFileDeleting = async (event: any) => {
+    const handleFileTrashing = async (event: any) => {
         event.stopPropagation();
         const isConfirmed = await showAppConfirm(
             'Delete Bible XML',
@@ -83,23 +83,28 @@ function BibleXMLInfoComp({ bibleKey, loadBibleKeys, filePath }: Readonly<{
         showSimpleToast('Loading', 'Bible XML reloaded');
     };
     return (
-        <li className='list-group-item pointer'
+        <li className='list-group-item'
             title={filePath}
             onContextMenu={handBibleKeyContextMenuOpening.bind(null, bibleKey)}>
-            <div className='d-flex w-100'
-                onClick={() => {
-                    setIsShowing(!isShowing);
-                }}>
+            <div className='d-flex w-100'>
                 <div className='flex-fill'>{bibleKey}</div>
                 <div>
                     <div className='btn-group'>
+                        <button className={
+                            `btn btn-${isShowing ? '' : 'outline-'}primary`
+                        }
+                            onClick={() => {
+                                setIsShowing(!isShowing);
+                            }}>
+                            Edit
+                        </button>
                         <button className='btn btn-info'
                             onClick={handleReloading}>
                             Reload Cache
                         </button>
                         <button className='btn btn-danger'
-                            onClick={handleFileDeleting}>
-                            Delete
+                            onClick={handleFileTrashing}>
+                            Move to Trash
                         </button>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.01.05",
+    "version": "2025.01.07",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -89,6 +89,7 @@
         "node": ">=18.16.0"
     },
     "devDependencies": {
+        "@types/diff": "^7.0.0",
         "@types/node": "^22.10.1",
         "@types/react": "^19.0.1",
         "@types/react-dom": "^19.0.1",
@@ -109,15 +110,16 @@
         "prettier": "3.4.2",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
+        "reveal.js": "^5.1.0",
         "sass": "^1.81.0",
         "typescript": "^5.7.2",
         "vite": "^6.0.1"
     },
     "dependencies": {
+        "diff": "^7.0.0",
         "font-list": "^1.5.1",
         "libreoffice-convert": "^1.6.0",
         "mupdf": "^1.0.0",
-        "reveal.js": "^5.1.0",
         "tar": "^7.4.3"
     }
 }

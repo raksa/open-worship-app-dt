@@ -39,7 +39,7 @@ export default function TextShadow() {
                 listen.d.removeEventListener('click', listen.listener);
             });
         };
-    });
+    }, []);
     const color1 = '#ffffff';
     const color2 = '#4054b2';
     return (

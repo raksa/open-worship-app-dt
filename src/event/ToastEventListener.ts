@@ -19,5 +19,5 @@ export function useToastSimpleShowing(listener: ListenerType<SimpleToastType>) {
         return () => {
             ToastEventListener.unregisterEventListener(event);
         };
-    });
+    }, [listener]);
 }

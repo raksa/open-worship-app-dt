@@ -1,6 +1,7 @@
 import browserUtils from './browserUtils.js';
 import cryptoUtils from './cryptoUtils.js';
 import fileUtils from './fileUtils.js';
+import diffUtils from './diffUtils';
 import httpUtils from './httpUtils.js';
 import messageUtils from './messageUtils.js';
 import systemUtils from './systemUtils.js';
@@ -27,6 +28,7 @@ export const provider = {
     httpUtils,
     pathUtils,
     fileUtils,
+    diffUtils,
     systemUtils,
     appInfo: {
         name: appInfo.name,

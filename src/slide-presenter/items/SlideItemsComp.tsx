@@ -100,7 +100,7 @@ function useSlideItems() {
         Object.keys(slideItemsToView).forEach((key) => {
             delete slideItemsToView[key];
         });
-    });
+    }, [slideItems]);
 
     return { slideItems, isPending, startLoading };
 }
