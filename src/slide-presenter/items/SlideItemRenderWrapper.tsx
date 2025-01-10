@@ -7,17 +7,20 @@ import SlideItem, {
     useSelectedEditingSlideItemSetterContext,
 } from '../../slide-list/SlideItem';
 import SlideItemPdfRender from './SlideItemPdfRender';
-import {
-    handleSlideItemSelecting,
-} from './slideItemHelpers';
+import { handleSlideItemSelecting } from './slideItemHelpers';
 
 export default function SlideItemRenderWrapper({
-    draggingIndex, thumbSize, slideItem, index, setDraggingIndex,
+    draggingIndex,
+    thumbSize,
+    slideItem,
+    index,
+    setDraggingIndex,
 }: Readonly<{
-    draggingIndex: number | null,
-    thumbSize: number, slideItem: SlideItem,
-    index: number,
-    setDraggingIndex: (index: number | null) => void,
+    draggingIndex: number | null;
+    thumbSize: number;
+    slideItem: SlideItem;
+    index: number;
+    setDraggingIndex: (index: number | null) => void;
 }>) {
     const selectedSlide = useSelectedSlideContext();
     const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
@@ -41,10 +44,11 @@ export default function SlideItemRenderWrapper({
     };
     if (slideItem.isPdf) {
         return (
-            <SlideItemPdfRender key={slideItem.id}
+            <SlideItemPdfRender
+                key={slideItem.id}
                 onClick={handleClicking}
                 slideItem={slideItem}
-                width={thumbSize} 
+                width={thumbSize}
                 index={index}
                 onContextMenu={handleContextMenuOpening}
                 onDragStart={handleDragStarting}
@@ -52,13 +56,12 @@ export default function SlideItemRenderWrapper({
             />
         );
     }
-    const shouldReceiveAtFirst = (
-        draggingIndex !== null && draggingIndex !== 0 && index === 0
-    );
-    const shouldReceiveAtLast = (
-        draggingIndex !== null && draggingIndex !== index &&
-        draggingIndex !== index + 1
-    );
+    const shouldReceiveAtFirst =
+        draggingIndex !== null && draggingIndex !== 0 && index === 0;
+    const shouldReceiveAtLast =
+        draggingIndex !== null &&
+        draggingIndex !== index &&
+        draggingIndex !== index + 1;
     return (
         <Fragment key={slideItem.id}>
             {shouldReceiveAtFirst && (
@@ -68,7 +71,8 @@ export default function SlideItemRenderWrapper({
                     onDrop={handleDropping}
                 />
             )}
-            <SlideItemRenderComp index={index}
+            <SlideItemRenderComp
+                index={index}
                 slideItem={slideItem}
                 width={thumbSize}
                 onClick={handleClicking}

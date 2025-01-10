@@ -1,30 +1,27 @@
 import './BibleView.scss';
 
 import BibleItem from '../bible-list/BibleItem';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import {
-    showAppContextMenu,
-} from '../others/AppContextMenuComp';
-import {
-    useBibleItemViewControllerContext,
-} from './BibleItemViewController';
-import {
-    applyDragged, genDraggingClass, removeDraggingClass,
+    applyDragged,
+    genDraggingClass,
+    removeDraggingClass,
 } from './readBibleHelpers';
-import {
-    BibleViewText, RenderHeader,
-} from './BibleViewExtra';
-import {
-    genDefaultBibleItemContextMenu,
-} from '../bible-list/bibleItemHelpers';
+import { BibleViewText, RenderHeader } from './BibleViewExtra';
+import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import { BibleItemContext } from './BibleItemContext';
 
-export default function BibleView({ bibleItem }: Readonly<{
-    bibleItem: BibleItem,
+export default function BibleView({
+    bibleItem,
+}: Readonly<{
+    bibleItem: BibleItem;
 }>) {
     const viewController = useBibleItemViewControllerContext();
     return (
         <BibleItemContext value={bibleItem}>
-            <div className='bible-view card flex-fill w-100 h-100'
+            <div
+                className="bible-view card flex-fill w-100 h-100"
                 style={{ minWidth: '30%' }}
                 onDragOver={(event) => {
                     event.preventDefault();
@@ -44,20 +41,19 @@ export default function BibleView({ bibleItem }: Readonly<{
                         ...genDefaultBibleItemContextMenu(bibleItem),
                         ...viewController.genContextMenu(bibleItem),
                     ]);
-                }}>
+                }}
+            >
                 <RenderHeader
                     onChange={(_oldBibleKey: string, newBibleKey: string) => {
                         const newBibleItem = bibleItem.clone(true);
                         newBibleItem.bibleKey = newBibleKey;
-                        viewController.changeBibleItem(
-                            bibleItem, newBibleItem,
-                        );
+                        viewController.changeBibleItem(bibleItem, newBibleItem);
                     }}
                     onClose={() => {
                         viewController.deleteBibleItem(bibleItem);
                     }}
                 />
-                <div className='card-body p-3'>
+                <div className="card-body p-3">
                     <BibleViewText />
                     {/* TODO: implement this
                 <RefRenderer /> */}
@@ -68,7 +64,5 @@ export default function BibleView({ bibleItem }: Readonly<{
 }
 
 export function finalRenderer(bibleItem: BibleItem) {
-    return (
-        <BibleView bibleItem={bibleItem} />
-    );
+    return <BibleView bibleItem={bibleItem} />;
 }

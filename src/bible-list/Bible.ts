@@ -1,10 +1,9 @@
 import {
-    fsListFilesWithMimetype, MimetypeNameType,
+    fsListFilesWithMimetype,
+    MimetypeNameType,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
-import {
-    AnyObjectType, cloneJson, toMaxId,
-} from '../helper/helpers';
+import { AnyObjectType, cloneJson, toMaxId } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import { getSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
@@ -14,9 +13,9 @@ import { dirSourceSettingNames } from '../helper/constants';
 import appProvider from '../server/appProvider';
 
 export type BibleType = {
-    items: BibleItemType[],
-    metadata: AnyObjectType,
-}
+    items: BibleItemType[];
+    metadata: AnyObjectType;
+};
 export default class Bible extends ItemSource<BibleItem> {
     static readonly DEFAULT_FILE_NAME = 'Default';
     private readonly originalJson: BibleType;
@@ -25,10 +24,9 @@ export default class Bible extends ItemSource<BibleItem> {
         this.originalJson = cloneJson(json);
     }
     static getDirSourceSettingName() {
-        const dirSourceSettingName = (
-            appProvider.isPageReader ? dirSourceSettingNames.BIBLE_READ :
-                dirSourceSettingNames.BIBLE_PRESENT
-        );
+        const dirSourceSettingName = appProvider.isPageReader
+            ? dirSourceSettingNames.BIBLE_READ
+            : dirSourceSettingNames.BIBLE_PRESENT;
         return dirSourceSettingName;
     }
     static fromJson(filePath: string, json: any) {
@@ -149,7 +147,8 @@ export default class Bible extends ItemSource<BibleItem> {
             if (index !== undefined) {
                 if (!backupBibleItems[index]) {
                     showSimpleToast(
-                        'Moving Bible Item', 'Cannot find Bible Item',
+                        'Moving Bible Item',
+                        'Cannot find Bible Item',
                     );
                     return;
                 }
@@ -162,30 +161,30 @@ export default class Bible extends ItemSource<BibleItem> {
                 return !targetBibleItems.includes(item);
             });
             await fromBible.save();
-
         } catch (error: any) {
             showSimpleToast('Moving Bible Item', error.message);
         }
     }
     static readonly mimetypeName: MimetypeNameType = 'bible';
     static async readFileToDataNoCache(filePath: string | null) {
-        return super.readFileToDataNoCache(
-            filePath,
-        ) as Promise<Bible | null | undefined>;
+        return super.readFileToDataNoCache(filePath) as Promise<
+            Bible | null | undefined
+        >;
     }
     static async readFileToData(
-        filePath: string | null, isForceCache?: boolean,
+        filePath: string | null,
+        isForceCache?: boolean,
     ) {
-        return super.readFileToData(
-            filePath, isForceCache,
-        ) as Promise<Bible | null | undefined>;
+        return super.readFileToData(filePath, isForceCache) as Promise<
+            Bible | null | undefined
+        >;
     }
     static async getDefault() {
         const dir = getSetting(Bible.getDirSourceSettingName(), '');
         if (!dir) {
             return null;
         }
-        const filePaths = await fsListFilesWithMimetype(dir, 'bible') || [];
+        const filePaths = (await fsListFilesWithMimetype(dir, 'bible')) || [];
         if (filePaths === null) {
             return null;
         }
@@ -199,8 +198,10 @@ export default class Bible extends ItemSource<BibleItem> {
             defaultFS?.filePath || null,
         );
         if (!defaultBible) {
-            showSimpleToast('Getting Default Bible File',
-                'Fail to get default bible file');
+            showSimpleToast(
+                'Getting Default Bible File',
+                'Fail to get default bible file',
+            );
             return null;
         }
         await defaultBible.setIsOpened(true);

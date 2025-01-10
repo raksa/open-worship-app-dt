@@ -1,11 +1,7 @@
 import EventHandler from '../../event/EventHandler';
 import Canvas from './Canvas';
-import CanvasItem, {
-    CanvasItemPropsType,
-} from './CanvasItem';
-import {
-    getSetting, setSetting,
-} from '../../helper/settingHelpers';
+import CanvasItem, { CanvasItemPropsType } from './CanvasItem';
+import { getSetting, setSetting } from '../../helper/settingHelpers';
 import FileSource from '../../helper/FileSource';
 import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
@@ -13,7 +9,8 @@ import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
 import SlideItem from '../../slide-list/SlideItem';
 import {
-    CanvasItemMediaPropsType, CanvasControllerEventType,
+    CanvasItemMediaPropsType,
+    CanvasControllerEventType,
 } from './canvasHelpers';
 import CanvasItemVideo from './CanvasItemVideo';
 import { showSimpleToast } from '../../toast/toastHelpers';
@@ -31,9 +28,7 @@ export const defaultRangeSize = {
 
 export type CanvasItemEventDataType = { canvasItems: CanvasItem<any>[] };
 
-export default class CanvasController extends
-    EventHandler<CanvasControllerEventType> {
-
+export default class CanvasController extends EventHandler<CanvasControllerEventType> {
     static readonly eventNamePrefix: string = 'canvas-c';
     private readonly _canvas: Canvas;
     readonly slideItem: SlideItem;
@@ -60,7 +55,8 @@ export default class CanvasController extends
         this.addPropEvent('scale', { canvasItems: this.canvas.newCanvasItems });
     }
     addPropEvent(
-        eventName: CanvasControllerEventType, data: CanvasItemEventDataType,
+        eventName: CanvasControllerEventType,
+        data: CanvasItemEventDataType,
     ): void {
         super.addPropEvent(eventName, data);
     }
@@ -108,9 +104,7 @@ export default class CanvasController extends
         this.addNewItem(newItem);
     }
     getMousePosition(event: any) {
-        const rect = (
-            (event.target as HTMLDivElement).getBoundingClientRect()
-        );
+        const rect = (event.target as HTMLDivElement).getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);
         return { x, y };
@@ -118,21 +112,19 @@ export default class CanvasController extends
     async genNewMediaItemFromFilePath(filePath: string, event: any) {
         try {
             const fileSource = FileSource.getInstance(filePath);
-            const mediaType = (
-                fileSource.metadata?.appMimetype.mimetypeName ?? ''
-            );
+            const mediaType =
+                fileSource.metadata?.appMimetype.mimetypeName ?? '';
             if (!['image', 'video'].includes(mediaType)) {
                 showSimpleToast(
-                    'Insert Medias', 'Only image and video files are supported',
+                    'Insert Medias',
+                    'Only image and video files are supported',
                 );
                 return;
             }
             const { x, y } = this.getMousePosition(event);
-            const newItem = (
-                await (mediaType === 'image' ?
-                    CanvasItemImage.genFromInsertion(x, y, filePath) :
-                    CanvasItemVideo.genFromInsertion(x, y, filePath))
-            );
+            const newItem = await (mediaType === 'image'
+                ? CanvasItemImage.genFromInsertion(x, y, filePath)
+                : CanvasItemVideo.genFromInsertion(x, y, filePath));
             return newItem;
         } catch (error) {
             handleError(error);
@@ -177,12 +169,13 @@ export default class CanvasController extends
         this.setCanvasItems(newCanvasItems);
     }
     scaleCanvasItemToSize(
-        canvasItem: CanvasItem<any>, targetWidth: number, targetHeight: number,
-        width: number, height: number,
+        canvasItem: CanvasItem<any>,
+        targetWidth: number,
+        targetHeight: number,
+        width: number,
+        height: number,
     ) {
-        const scale = Math.min(
-            targetWidth / width, targetHeight / height,
-        );
+        const scale = Math.min(targetWidth / width, targetHeight / height);
         const props = canvasItem.props as CanvasItemPropsType;
         props.width = width * scale;
         props.height = height * scale;
@@ -208,7 +201,11 @@ export default class CanvasController extends
         const targetWidth = this.canvas.width;
         const targetHeight = this.canvas.height;
         this.scaleCanvasItemToSize(
-            canvasItem, targetWidth, targetHeight, width, height,
+            canvasItem,
+            targetWidth,
+            targetHeight,
+            width,
+            height,
         );
     }
     applyCanvasItemMediaStrip(canvasItem: CanvasItem<any>) {
@@ -222,7 +219,11 @@ export default class CanvasController extends
         const width = mediaProps.mediaWidth;
         const height = mediaProps.mediaHeight;
         this.scaleCanvasItemToSize(
-            canvasItem, targeWidth, targetHeightHeight, width, height,
+            canvasItem,
+            targeWidth,
+            targetHeightHeight,
+            width,
+            height,
         );
     }
     setCanvasItems(canvasItems: CanvasItem<any>[]) {
@@ -230,12 +231,16 @@ export default class CanvasController extends
         this.fireUpdateEvent();
     }
     genHandleContextMenuOpening(
-        canvasItem: CanvasItem<any>, handleCanvasItemEditing: () => void,
+        canvasItem: CanvasItem<any>,
+        handleCanvasItemEditing: () => void,
     ) {
         return (event: any) => {
             event.stopPropagation();
             showCanvasItemContextMenu(
-                event, this, canvasItem, handleCanvasItemEditing,
+                event,
+                this,
+                canvasItem,
+                handleCanvasItemEditing,
             );
         };
     }
@@ -245,14 +250,14 @@ export default class CanvasController extends
         listener: (data: CanvasItemEventDataType) => void,
     ) {
         return super.registerEventListener<CanvasItemEventDataType>(
-            eventNames, listener,
+            eventNames,
+            listener,
         );
     }
-
 }
 
-export const CanvasControllerContext = (
-    createContext<CanvasController | null>(null)
+export const CanvasControllerContext = createContext<CanvasController | null>(
+    null,
 );
 export function useCanvasControllerContext() {
     const context = use(CanvasControllerContext);

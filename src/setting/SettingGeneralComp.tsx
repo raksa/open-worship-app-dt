@@ -7,11 +7,15 @@ export default function SettingGeneralComp() {
         <div>
             <SettingGeneralLanguageComp />
             <hr />
-            <button className='btn btn-info'
+            <button
+                className="btn btn-info"
                 onClick={() => {
                     clearWidgetSizeSetting();
                     appProvider.reload();
-                }}>Reset Widgets Size</button>
+                }}
+            >
+                Reset Widgets Size
+            </button>
         </div>
     );
 }

@@ -3,17 +3,18 @@ import RenderActionButtons, {
     useFoundActionKeyboard,
 } from './RenderActionButtons';
 import {
-    BibleViewText, RenderTitleMaterial,
+    BibleViewText,
+    RenderTitleMaterial,
 } from '../bible-reader/BibleViewExtra';
 import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import {
-    genDefaultBibleItemContextMenu,
-} from '../bible-list/bibleItemHelpers';
-import {
-    closeEventMapper, SearchBibleItemViewController,
+    closeEventMapper,
+    SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import {
-    fontSizeToHeightStyle, useBibleViewFontSizeContext,
+    fontSizeToHeightStyle,
+    useBibleViewFontSizeContext,
 } from '../helper/bibleViewHelpers';
 import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelpers';
 import { toShortcutKey } from '../event/KeyboardEventListener';
@@ -22,7 +23,7 @@ import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 export default function RenderBibleDataFound({
     onVerseChange,
 }: Readonly<{
-    onVerseChange?: (verseStart?: number, verseEnd?: number) => void,
+    onVerseChange?: (verseStart?: number, verseEnd?: number) => void;
 }>) {
     const bibleItem = useBibleItemContext();
     const isSearching = onVerseChange !== undefined;
@@ -30,7 +31,8 @@ export default function RenderBibleDataFound({
     const viewController = SearchBibleItemViewController.getInstance();
     viewController.selectedBibleItem.syncData(bibleItem);
     return (
-        <div className='card border-success w-100 h-100'
+        <div
+            className="card border-success w-100 h-100"
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
                     ...genDefaultBibleItemContextMenu(bibleItem),
@@ -38,15 +40,14 @@ export default function RenderBibleDataFound({
                         viewController.selectedBibleItem,
                     ),
                 ]);
-            }}>
+            }}
+        >
             <RenderBibleFoundHeader />
-            <div className='card-body bg-transparent border-success p-0'>
+            <div className="card-body bg-transparent border-success p-0">
                 {!isSearching ? null : (
-                    <RenderVerseOptions
-                        onVersesChange={onVerseChange}
-                    />
+                    <RenderVerseOptions onVersesChange={onVerseChange} />
                 )}
-                <div className='p-2'>
+                <div className="p-2">
                     <BibleViewText />
                 </div>
             </div>
@@ -58,9 +59,11 @@ function RenderBibleFoundHeader() {
     const fontSize = useBibleViewFontSizeContext();
     const viewController = SearchBibleItemViewController.getInstance();
     return (
-        <div className='card-header bg-transparent border-success'
-            style={fontSizeToHeightStyle(fontSize)}>
-            <div className='d-flex w-100 h-100'>
+        <div
+            className="card-header bg-transparent border-success"
+            style={fontSizeToHeightStyle(fontSize)}
+        >
+            <div className="d-flex w-100 h-100">
                 <RenderTitleMaterial
                     editingBibleItem={viewController.selectedBibleItem}
                 />
@@ -69,7 +72,8 @@ function RenderBibleFoundHeader() {
                 </div>
                 <div>
                     {viewController.isAlone ? null : (
-                        <button className='btn-close'
+                        <button
+                            className="btn-close"
                             title={`Close [${toShortcutKey(closeEventMapper)}]`}
                             onClick={() => {
                                 closeCurrentEditingBibleItem();

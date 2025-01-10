@@ -1,4 +1,4 @@
-@use "sass:math";
+@use 'sass:math';
 @use './others/variables.scss' as *;
 
 #app {
@@ -38,7 +38,7 @@
     padding: 2px;
   }
 
-  &>.footer {
+  & > .footer {
     height: 5px;
     background-color: var(--bs-dark);
   }
@@ -81,13 +81,20 @@
   }
 
   .background-blank {
-    background-image: linear-gradient(45deg,
-        rgba(204, 204, 204, 0.5) 25%, transparent 25%),
+    background-image: linear-gradient(
+        45deg,
+        rgba(204, 204, 204, 0.5) 25%,
+        transparent 25%
+      ),
       linear-gradient(-45deg, rgba(204, 204, 204, 0.5) 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%),
       linear-gradient(-45deg, transparent 75%, rgba(204, 204, 204, 0.5) 75%);
     background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-position:
+      0 0,
+      0 10px,
+      10px -10px,
+      -10px 0px;
   }
 
   .rotating {
@@ -144,16 +151,16 @@
   $bg-width: 60px;
 
   .blank-bg {
-    background-image: linear-gradient(45deg,
-        $bg-color1 25%, $bg-color2 25%),
+    background-image: linear-gradient(45deg, $bg-color1 25%, $bg-color2 25%),
       linear-gradient(-45deg, $bg-color1 25%, $bg-color2 25%),
       linear-gradient(45deg, $bg-color2 75%, $bg-color1 75%),
       linear-gradient(-45deg, $bg-color2 75%, $bg-color1 75%);
     background-size: $bg-width $bg-width;
-    background-position: 0 0,
-    0 #{math.div($bg-width,2)},
-    #{math.div($bg-width,2)} -#{math.div($bg-width,2)},
-    -#{math.div($bg-width,2)} 0px;
+    background-position:
+      0 0,
+      0 #{math.div($bg-width, 2)},
+      #{math.div($bg-width, 2)} -#{math.div($bg-width, 2)},
+      -#{math.div($bg-width, 2)} 0px;
   }
 
   .app-ellipsis-left {
@@ -181,7 +188,10 @@
   .hidden-widget {
     width: 100%;
     height: 100%;
-    transition: width 0.3s, height 0.3s, background-color 0.3s;
+    transition:
+      width 0.3s,
+      height 0.3s,
+      background-color 0.3s;
     transition-timing-function: step-end;
     $bg-color: var(--bs-gray-700);
     $bg-color-hover: var(--bs-gray-600);
@@ -190,11 +200,13 @@
     padding: 3px;
     border-radius: 5px;
     background-color: $bg-color;
-    background: repeating-linear-gradient(45deg,
-        $color,
-        $color 4px,
-        $bg-color 2px,
-        $bg-color 8px);
+    background: repeating-linear-gradient(
+      45deg,
+      $color,
+      $color 4px,
+      $bg-color 2px,
+      $bg-color 8px
+    );
 
     &.bar-type-v {
       height: 6px;
@@ -218,11 +230,13 @@
     }
 
     &:hover {
-      background: repeating-linear-gradient(45deg,
-          $color,
-          $color 4px,
-          $bg-color-hover 2px,
-          $bg-color-hover 8px);
+      background: repeating-linear-gradient(
+        45deg,
+        $color,
+        $color 4px,
+        $bg-color-hover 2px,
+        $bg-color-hover 8px
+      );
 
       * {
         font-size: 10px;
@@ -260,9 +274,12 @@
   .auto-hide {
     background-color: transparent;
 
-    &>div {
+    & > div {
       transform: translateY(100%);
-      transition: transform 0.3s, backdrop-filter 2s, background-color 2s;
+      transition:
+        transform 0.3s,
+        backdrop-filter 2s,
+        background-color 2s;
       transition-timing-function: step-end;
     }
 
@@ -270,7 +287,7 @@
       background-color: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(5px);
 
-      &>div {
+      & > div {
         transform: translateY(0);
       }
     }

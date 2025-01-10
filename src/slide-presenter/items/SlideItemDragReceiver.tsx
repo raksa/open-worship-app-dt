@@ -7,30 +7,37 @@ import { handleDrop } from '../../helper/dragHelpers';
 import { DragTypeEnum } from '../../helper/DragInf';
 
 export default function SlideItemDragReceiver({
-    width, onDrop, isLeft,
+    width,
+    onDrop,
+    isLeft,
 }: Readonly<{
-    width: number, isLeft?: boolean,
-    onDrop: (id: number, isLeft: boolean) => void,
+    width: number;
+    isLeft?: boolean;
+    onDrop: (id: number, isLeft: boolean) => void;
 }>) {
     const [isVertical, setIsVertical] = useState(false);
-    const style: CSSProperties = isVertical ? {
-        width: `${width}px`,
-        height: '20px',
-    } : {
-        width: '20px',
-    };
+    const style: CSSProperties = isVertical
+        ? {
+              width: `${width}px`,
+              height: '20px',
+          }
+        : {
+              width: '20px',
+          };
     return (
-        <div className='slide-item-drag-receiver'
+        <div
+            className="slide-item-drag-receiver"
             style={style}
             ref={(div) => {
                 if (div) {
-                    const childrenElements = div.parentElement?.
-                        querySelectorAll('.slide-item');
+                    const childrenElements =
+                        div.parentElement?.querySelectorAll('.slide-item');
                     const children = Array.from(childrenElements || []);
                     const getLeft = (element: Element) => {
                         return element.getBoundingClientRect().left;
                     };
-                    const isVertical = children.length > 1 &&
+                    const isVertical =
+                        children.length > 1 &&
                         getLeft(children[1]) - getLeft(children[0]) < width;
                     setIsVertical(isVertical);
                 }
@@ -45,8 +52,10 @@ export default function SlideItemDragReceiver({
             }}
             onDrop={async (event) => {
                 const droppedData = await handleDrop(event);
-                if (droppedData === null ||
-                    droppedData.type !== DragTypeEnum.SLIDE_ITEM) {
+                if (
+                    droppedData === null ||
+                    droppedData.type !== DragTypeEnum.SLIDE_ITEM
+                ) {
                     return;
                 }
                 onDrop((droppedData.item as SlideItem).id, !!isLeft);

@@ -4,27 +4,32 @@ import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
+    dirSourceSettingNames,
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
-    filePath: string, selectedBackgroundSrcList: [string, BackgroundSrcType][],
+    filePath: string,
+    selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
     return (
-        <RendBody filePath={filePath}
+        <RendBody
+            filePath={filePath}
             selectedBackgroundSrcList={selectedBackgroundSrcList}
         />
     );
 }
 
-function RendBody({ filePath }: Readonly<{
-    filePath: string,
-    selectedBackgroundSrcList: [string, BackgroundSrcType][],
+function RendBody({
+    filePath,
+}: Readonly<{
+    filePath: string;
+    selectedBackgroundSrcList: [string, BackgroundSrcType][];
 }>) {
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <div className='card-body'>
+        <div className="card-body">
             <audio controls>
                 <source src={fileSource.src} />
                 <track kind="captions" />

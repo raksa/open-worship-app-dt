@@ -3,10 +3,10 @@ import appProvider from '../server/appProvider';
 import Slide from '../slide-list/Slide';
 
 export type TabOptionType = {
-    title: string,
-    routePath: string,
-    preCheck?: () => Promise<boolean>,
-}
+    title: string;
+    routePath: string;
+    preCheck?: () => Promise<boolean>;
+};
 
 export enum WindowModEnum {
     Editor = 0,
@@ -23,7 +23,7 @@ export const editorTab: TabOptionType = {
             return true;
         }
         showAppAlert(
-            'No slide selected', 
+            'No slide selected',
             'Please select an Open Worship slide first',
         );
         return false;

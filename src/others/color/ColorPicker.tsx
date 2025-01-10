@@ -4,7 +4,9 @@ import { useState } from 'react';
 
 import colorList from '../color-list.json';
 import {
-    AppColorType, transparentColor, colorToTransparent,
+    AppColorType,
+    transparentColor,
+    colorToTransparent,
 } from './colorHelpers';
 import OpacitySlider from './OpacitySlider';
 import RenderColors from './RenderColors';
@@ -14,29 +16,32 @@ import { freezeObject } from '../../helper/helpers';
 freezeObject(colorList);
 
 export default function ColorPicker({
-    defaultColor, color, onColorChange, onNoColor,
+    defaultColor,
+    color,
+    onColorChange,
+    onNoColor,
 }: Readonly<{
-    defaultColor: AppColorType,
-    color: AppColorType | null,
-    onColorChange?: (color: AppColorType, event: MouseEvent) => void
-    onNoColor?: (color: AppColorType, event: MouseEvent) => void
+    defaultColor: AppColorType;
+    color: AppColorType | null;
+    onColorChange?: (color: AppColorType, event: MouseEvent) => void;
+    onNoColor?: (color: AppColorType, event: MouseEvent) => void;
 }>) {
     const [localColor, setLocalColor] = useState(color);
-    const handleColorChanging = (
-        newColor: AppColorType | null, event: any) => {
+    const handleColorChanging = (newColor: AppColorType | null, event: any) => {
         if (newColor === null) {
             onNoColor?.(defaultColor, event);
             return;
         } else {
             onColorChange?.(newColor, event);
         }
-        const hex = localColor === null ? 'ff' :
-            transparentColor(colorToTransparent(localColor));
+        const hex =
+            localColor === null
+                ? 'ff'
+                : transparentColor(colorToTransparent(localColor));
         const newColorStr = newColor + hex;
         applyNewColor(newColorStr, event);
     };
-    const handleOpacityChanging = (
-        value: number, event: any) => {
+    const handleOpacityChanging = (value: number, event: any) => {
         if (localColor === null) {
             return;
         }
@@ -58,9 +63,10 @@ export default function ColorPicker({
         setLocalColor(upperColor);
     };
     return (
-        <div className='flex-item color-picker'>
-            <div className='p-3 overflow-hidden'>
-                <RenderColors colors={colorList.main}
+        <div className="flex-item color-picker">
+            <div className="p-3 overflow-hidden">
+                <RenderColors
+                    colors={colorList.main}
                     selectedColor={localColor}
                     onColorChange={handleColorChanging}
                 />

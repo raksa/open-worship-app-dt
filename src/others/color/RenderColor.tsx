@@ -1,11 +1,8 @@
 import { ContextMenuItemType, showAppContextMenu } from '../AppContextMenuComp';
 import { copyToClipboard } from '../../server/appHelpers';
-import {
-    AppColorType, serializeForDragging,
-} from './colorHelpers';
+import { AppColorType, serializeForDragging } from './colorHelpers';
 import { genShowOnScreensContextMenu } from '../FileItemHandlerComp';
-import ScreenBackgroundManager from
-    '../../_screen/managers/ScreenBackgroundManager';
+import ScreenBackgroundManager from '../../_screen/managers/ScreenBackgroundManager';
 
 function showContextMenu(event: any, color: AppColorType) {
     const menuItems: ContextMenuItemType[] = [
@@ -17,22 +14,29 @@ function showContextMenu(event: any, color: AppColorType) {
         },
         ...genShowOnScreensContextMenu((event) => {
             ScreenBackgroundManager.handleBackgroundSelecting(
-                event, 'color', color, true,
+                event,
+                'color',
+                color,
+                true,
             );
         }),
     ];
     showAppContextMenu(event, menuItems);
 }
 export default function RenderColor({
-    name, color, isSelected, onClick,
+    name,
+    color,
+    isSelected,
+    onClick,
 }: Readonly<{
-    name: string,
-    color: AppColorType,
-    isSelected?: boolean,
-    onClick?: (event: MouseEvent, color: AppColorType) => void,
+    name: string;
+    color: AppColorType;
+    isSelected?: boolean;
+    onClick?: (event: MouseEvent, color: AppColorType) => void;
 }>) {
     return (
-        <div title={name}
+        <div
+            title={name}
             draggable
             onDragStart={(event) => {
                 serializeForDragging(event, color);

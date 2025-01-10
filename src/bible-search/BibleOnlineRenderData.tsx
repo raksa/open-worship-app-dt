@@ -1,15 +1,21 @@
 import { genBookMatches } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    ContextMenuItemType, showAppContextMenu,
+    ContextMenuItemType,
+    showAppContextMenu,
 } from '../others/AppContextMenuComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
-    calcPaging, BibleSearchOnlineType, pageNumberToReqData, SelectedBookKeyType,
+    calcPaging,
+    BibleSearchOnlineType,
+    pageNumberToReqData,
+    SelectedBookKeyType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderPerPage from './BibleOnlineRenderPerPage';
 
 async function selectBookKey(
-    event: any, bibleKey: string, selectedBook: SelectedBookKeyType,
+    event: any,
+    bibleKey: string,
+    selectedBook: SelectedBookKeyType,
     setSelectedBook: (_: SelectedBookKeyType) => void,
 ) {
     const bookList = await genBookMatches(bibleKey, '');
@@ -25,9 +31,7 @@ async function selectBookKey(
             },
         },
         ...bookList.map(([bookKey, localBookName, bookName]) => {
-            const extraName = (
-                localBookName !== bookName ? `(${bookName})` : ''
-            );
+            const extraName = localBookName !== bookName ? `(${bookName})` : '';
             return {
                 menuTitle: `${localBookName}${extraName}`,
                 disabled: selectedBook?.[0] === bookKey,
@@ -40,33 +44,39 @@ async function selectBookKey(
 }
 
 export default function BibleOnlineRenderData({
-    text, allData, searchFor, bibleKey, selectedBook, setSelectedBook,
+    text,
+    allData,
+    searchFor,
+    bibleKey,
+    selectedBook,
+    setSelectedBook,
 }: Readonly<{
-    text: string,
-    allData: { [key: string]: BibleSearchOnlineType },
-    searchFor: (from: number, to: number) => void,
-    bibleKey: string,
-    selectedBook: SelectedBookKeyType,
-    setSelectedBook: (_: SelectedBookKeyType) => void,
+    text: string;
+    allData: { [key: string]: BibleSearchOnlineType };
+    searchFor: (from: number, to: number) => void;
+    bibleKey: string;
+    selectedBook: SelectedBookKeyType;
+    setSelectedBook: (_: SelectedBookKeyType) => void;
 }>) {
     const genBookSection = (message: string) => {
         return (
-            <div className='d-flex w-100'>
-                <div className='flex-fill'>
+            <div className="d-flex w-100">
+                <div className="flex-fill">
                     <h4>{message}</h4>
                 </div>
                 <div>
-                    <button className='btn btn-sm btn-info'
+                    <button
+                        className="btn btn-sm btn-info"
                         onClick={(event) => {
                             selectBookKey(
-                                event, bibleKey, selectedBook,
+                                event,
+                                bibleKey,
+                                selectedBook,
                                 setSelectedBook,
                             );
-                        }}>
-                        {
-                            selectedBook === null ?
-                                'all books' : selectedBook[1]
-                        }
+                        }}
+                    >
+                        {selectedBook === null ? 'all books' : selectedBook[1]}
                     </button>
                 </div>
             </div>
@@ -84,7 +94,7 @@ export default function BibleOnlineRenderData({
     const { pages } = pagingData;
     return (
         <>
-            <div className='card-body w-100'>
+            <div className="card-body w-100">
                 {genBookSection(text)}
                 {allPageNumberFound.map((pageNumber) => {
                     if (!pages.includes(pageNumber)) {
@@ -92,34 +102,40 @@ export default function BibleOnlineRenderData({
                     }
                     const data = allData[pageNumber];
                     return (
-                        <BibleOnlineRenderPerPage key={pageNumber}
+                        <BibleOnlineRenderPerPage
+                            key={pageNumber}
                             text={text}
-                            data={data} pageNumber={pageNumber}
+                            data={data}
+                            pageNumber={pageNumber}
                             bibleKey={bibleKey}
                         />
                     );
                 })}
             </div>
-            <div className='card-footer' style={{
-                maxHeight: 200,
-                overflowY: 'auto',
-            }}>
+            <div
+                className="card-footer"
+                style={{
+                    maxHeight: 200,
+                    overflowY: 'auto',
+                }}
+            >
                 <nav>
-                    <ul className='pagination flex-wrap'>
+                    <ul className="pagination flex-wrap">
                         {pages.map((pageNumber) => {
-                            const isActive = allPageNumberFound.includes(
-                                pageNumber,
-                            );
+                            const isActive =
+                                allPageNumberFound.includes(pageNumber);
                             return (
-                                <li key={pageNumber}
-                                    className={
-                                        `page-item ${isActive ? 'active' : ''}`
-                                    }>
-                                    <button className='page-link'
+                                <li
+                                    key={pageNumber}
+                                    className={`page-item ${isActive ? 'active' : ''}`}
+                                >
+                                    <button
+                                        className="page-link"
                                         disabled={isActive}
                                         onClick={() => {
                                             searchFor1(pageNumber);
-                                        }}>
+                                        }}
+                                    >
                                         {pageNumber}
                                     </button>
                                 </li>

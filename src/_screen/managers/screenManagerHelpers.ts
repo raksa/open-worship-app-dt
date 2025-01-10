@@ -2,8 +2,10 @@ import { getAllShowingScreenIds } from '../screenHelpers';
 import ScreenManager from './ScreenManager';
 import ScreenManagerBase from './ScreenManagerBase';
 import {
-    getAllScreenManagerBases, getScreenManagersInstanceSetting,
-    saveScreenManagersSetting, screenManagerBaseCache,
+    getAllScreenManagerBases,
+    getScreenManagersInstanceSetting,
+    saveScreenManagersSetting,
+    screenManagerBaseCache,
     setScreenManagerBaseCache,
 } from './screenManagerBaseHelpers';
 

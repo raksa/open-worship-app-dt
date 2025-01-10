@@ -12,20 +12,25 @@ const LazySlidePreviewer = lazy(() => {
 
 export default function AppEditorLeft() {
     return (
-        <ResizeActor flexSizeName={resizeSettingNames.appEditorLeft}
+        <ResizeActor
+            flexSizeName={resizeSettingNames.appEditorLeft}
             isHorizontal={false}
             flexSizeDefault={{
-                'v1': ['1'],
-                'v2': ['2'],
+                v1: ['1'],
+                v2: ['2'],
             }}
             dataInput={[
                 {
-                    children: LazySlideList, key: 'v1',
-                    widgetName: 'Slide List', className: 'flex-item',
+                    children: LazySlideList,
+                    key: 'v1',
+                    widgetName: 'Slide List',
+                    className: 'flex-item',
                 },
                 {
-                    children: LazySlidePreviewer, key: 'v2',
-                    widgetName: 'Slide Previewer', className: 'flex-item',
+                    children: LazySlidePreviewer,
+                    key: 'v2',
+                    widgetName: 'Slide Previewer',
+                    className: 'flex-item',
                 },
             ]}
         />

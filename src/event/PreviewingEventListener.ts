@@ -4,13 +4,12 @@ import Slide from '../slide-list/Slide';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type PreviewingType =
-    'select-lyric'
+    | 'select-lyric'
     | 'update-lyric'
     | 'select-slide'
     | 'update-slide';
 
-export default class PreviewingEventListener extends
-    EventHandler<PreviewingType> {
+export default class PreviewingEventListener extends EventHandler<PreviewingType> {
     static readonly eventNamePrefix: string = 'previewing';
     selectLyric(lyric: Lyric | null) {
         this.addPropEvent('select-lyric', lyric);
@@ -31,7 +30,8 @@ export const previewingEventListener = new PreviewingEventListener();
 export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['select-lyric'], listener,
+            ['select-lyric'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
@@ -41,7 +41,8 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['update-lyric'], listener,
+            ['update-lyric'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
@@ -51,7 +52,8 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
 export function useSlideSelecting(listener: ListenerType<Slide | null>) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['select-slide'], listener,
+            ['select-slide'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);
@@ -61,7 +63,8 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
 export function useSlideUpdating(listener: ListenerType<Slide>) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['update-slide'], listener,
+            ['update-slide'],
+            listener,
         );
         return () => {
             previewingEventListener.unregisterEventListener(event);

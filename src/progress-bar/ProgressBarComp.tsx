@@ -1,20 +1,22 @@
 import { useTransition } from 'react';
 import './ProgressBarComp.scss';
 
-export default function ProgressBarComp({ title }: Readonly<{
+export default function ProgressBarComp({
+    title,
+}: Readonly<{
     title?: string;
 }>) {
     return (
-        <div className='app-progress-bar progress w-100 h-100'
-            title={
-                title === undefined ? undefined :
-                    `Progress: ${title}`
-            }>
-            <div className={
-                'progress-bar progress-bar-striped ' +
-                'progress-bar-animated bg-success'
-            }
-                role='progressbar'
+        <div
+            className="app-progress-bar progress w-100 h-100"
+            title={title === undefined ? undefined : `Progress: ${title}`}
+        >
+            <div
+                className={
+                    'progress-bar progress-bar-striped ' +
+                    'progress-bar-animated bg-success'
+                }
+                role="progressbar"
                 aria-valuenow={100}
                 aria-valuemin={0}
                 aria-valuemax={100}
@@ -32,8 +34,8 @@ export function useProgressBarComp() {
         isPending,
         startTransaction,
         progressBarChild: (
-            <div className='w-100' style={{ height: '1px' }}>
-                {isPending ? (<ProgressBarComp />) : null}
+            <div className="w-100" style={{ height: '1px' }}>
+                {isPending ? <ProgressBarComp /> : null}
             </div>
         ),
     } as const;

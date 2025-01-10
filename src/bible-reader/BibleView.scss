@@ -33,7 +33,6 @@
 }
 
 .bible-view-text {
-
   .verse-number,
   .verse-text {
     display: inline;
@@ -54,7 +53,12 @@
     }
 
     &.selected {
-      background: linear-gradient(transparent, transparent, rgb(134, 0, 120), transparent);
+      background: linear-gradient(
+        transparent,
+        transparent,
+        rgb(134, 0, 120),
+        transparent
+      );
     }
   }
 }

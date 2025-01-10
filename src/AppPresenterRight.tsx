@@ -12,22 +12,27 @@ const LazyMiniScreen = lazy(() => {
 
 export default function AppPresenterRight() {
     return (
-        <ResizeActor flexSizeName={resizeSettingNames.appPresenterRight}
+        <ResizeActor
+            flexSizeName={resizeSettingNames.appPresenterRight}
             isHorizontal={false}
             flexSizeDefault={{
-                'v1': ['1'],
-                'v2': ['1'],
+                v1: ['1'],
+                v2: ['1'],
             }}
             dataInput={[
                 {
-                    children: LazyBibleList, key: 'v1',
+                    children: LazyBibleList,
+                    key: 'v1',
                     widgetName: 'Bible List',
                     className: 'flex-item',
                 },
                 {
-                    children: LazyMiniScreen, key: 'v2',
-                    widgetName: 'Mini Screen', className: 'flex-item',
+                    children: LazyMiniScreen,
+                    key: 'v2',
+                    widgetName: 'Mini Screen',
+                    className: 'flex-item',
                 },
-            ]} />
+            ]}
+        />
     );
 }

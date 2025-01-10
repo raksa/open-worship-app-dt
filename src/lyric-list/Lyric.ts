@@ -7,15 +7,15 @@ import LyricItem, { LyricItemType } from './LyricItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export type LyricEditorHistoryType = {
-    items?: LyricItemType[],
-    metadata?: AnyObjectType,
+    items?: LyricItemType[];
+    metadata?: AnyObjectType;
 };
 
 export type LyricType = {
-    items: LyricItemType[],
-    metadata: AnyObjectType,
-}
-export default class Lyric extends ItemSource<LyricItem>{
+    items: LyricItemType[];
+    metadata: AnyObjectType;
+};
+export default class Lyric extends ItemSource<LyricItem> {
     static readonly mimetypeName: MimetypeNameType = 'lyric';
     static readonly SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
@@ -23,7 +23,8 @@ export default class Lyric extends ItemSource<LyricItem>{
     constructor(filePath: string, json: LyricType) {
         super(filePath);
         this.editorCacheManager = new LyricEditorCacheManager(
-            this.filePath, json,
+            this.filePath,
+            json,
         );
     }
     get isChanged() {
@@ -37,13 +38,17 @@ export default class Lyric extends ItemSource<LyricItem>{
         return latestHistory.items.map((json) => {
             try {
                 return LyricItem.fromJson(
-                    json as any, this.filePath, this.editorCacheManager,
+                    json as any,
+                    this.filePath,
+                    this.editorCacheManager,
                 );
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
             return LyricItem.fromJsonError(
-                json, this.filePath, this.editorCacheManager,
+                json,
+                this.filePath,
+                this.editorCacheManager,
             );
         });
     }
@@ -80,20 +85,20 @@ export default class Lyric extends ItemSource<LyricItem>{
         return new Lyric(filePath, json);
     }
     static async readFileToDataNoCache(filePath: string | null) {
-        return super.readFileToDataNoCache(
-            filePath,
-        ) as Promise<Lyric | null | undefined>;
+        return super.readFileToDataNoCache(filePath) as Promise<
+            Lyric | null | undefined
+        >;
     }
     static async readFileToData(
-        filePath: string | null, isForceCache?: boolean,
+        filePath: string | null,
+        isForceCache?: boolean,
     ) {
-        return super.readFileToData(
-            filePath, isForceCache,
-        ) as Promise<Lyric | null | undefined>;
+        return super.readFileToData(filePath, isForceCache) as Promise<
+            Lyric | null | undefined
+        >;
     }
     static async create(dir: string, name: string) {
-        return super.create(dir, name,
-            [LyricItem.genDefaultLyric(name)]);
+        return super.create(dir, name, [LyricItem.genDefaultLyric(name)]);
     }
     addItem(lyricItem: LyricItem) {
         const items = this.items;

@@ -21,27 +21,32 @@ const viewController = new BibleItemViewController('presenter');
 export default function AppPresenter() {
     return (
         <BibleItemViewControllerContext value={viewController}>
-            <ResizeActor flexSizeName={resizeSettingNames.appPresenter}
+            <ResizeActor
+                flexSizeName={resizeSettingNames.appPresenter}
                 isHorizontal
                 flexSizeDefault={{
-                    'h1': ['1'],
-                    'h2': ['3'],
-                    'h3': ['2'],
+                    h1: ['1'],
+                    h2: ['3'],
+                    h3: ['2'],
                 }}
                 dataInput={[
                     {
-                        children: LazyAppPresenterLeft, key: 'h1',
+                        children: LazyAppPresenterLeft,
+                        key: 'h1',
                         widgetName: 'App Presenter Left',
                     },
                     {
-                        children: LazyAppPresenterMiddle, key: 'h2',
+                        children: LazyAppPresenterMiddle,
+                        key: 'h2',
                         widgetName: 'App Presenter Middle',
                     },
                     {
-                        children: LazyAppPresenterRight, key: 'h3',
+                        children: LazyAppPresenterRight,
+                        key: 'h3',
                         widgetName: 'App Presenter Right',
                     },
-                ]} />
+                ]}
+            />
             <HandleItemSlideEdit />
         </BibleItemViewControllerContext>
     );

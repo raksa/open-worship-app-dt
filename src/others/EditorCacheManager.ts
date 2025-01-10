@@ -1,16 +1,14 @@
 import FileSource from '../helper/FileSource';
 import { isValidJson } from '../helper/helpers';
 import { log } from '../helper/loggerHelpers';
-import {
-    getSetting, setSetting,
-} from '../helper/settingHelpers';
+import { getSetting, setSetting } from '../helper/settingHelpers';
 
 type ChangeObjectType<T> = {
-    undoQueue: T[],
-    redoQueue: T[],
+    undoQueue: T[];
+    redoQueue: T[];
 };
 type ChangesType<T> = {
-    [key: string]: ChangeObjectType<T> | undefined
+    [key: string]: ChangeObjectType<T> | undefined;
 };
 
 const SETTING_NAME = 'editor-cache';

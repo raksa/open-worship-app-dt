@@ -1,30 +1,25 @@
-import {
-    AnyObjectType, cloneJson, isValidJson,
-} from '../helper/helpers';
+import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
 import { ItemBase } from '../helper/ItemBase';
-import {
-    setSetting, getSetting,
-} from '../helper/settingHelpers';
+import { setSetting, getSetting } from '../helper/settingHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
-import {
-    BibleTargetType, bibleRenderHelper,
-} from './bibleRenderHelpers';
+import { BibleTargetType, bibleRenderHelper } from './bibleRenderHelpers';
 import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
 import { copyToClipboard } from '../server/appHelpers';
 
 const BIBLE_PRESENT_SETTING_NAME = 'bible-presenter';
 
-export default class BibleItem extends ItemBase
-    implements DragInf<BibleItemType> {
+export default class BibleItem
+    extends ItemBase
+    implements DragInf<BibleItemType>
+{
     static readonly SELECT_SETTING_NAME = 'bible-item-selected';
     private originalJson: BibleItemType;
     id: number;
     filePath?: string;
-    constructor(id: number, json: BibleItemType,
-        filePath?: string) {
+    constructor(id: number, json: BibleItemType, filePath?: string) {
         super();
         this.id = id;
         this.filePath = filePath;
@@ -66,23 +61,30 @@ export default class BibleItem extends ItemBase
         return new BibleItem(json.id, json, filePath);
     }
     static fromJsonError(json: BibleItemType, filePath?: string) {
-        const item = new BibleItem(-1, {
-            id: -1,
-            bibleKey: '',
-            target: {
-                bookKey: '',
-                chapter: 0,
-                verseStart: 0,
-                verseEnd: 0,
+        const item = new BibleItem(
+            -1,
+            {
+                id: -1,
+                bibleKey: '',
+                target: {
+                    bookKey: '',
+                    chapter: 0,
+                    verseStart: 0,
+                    verseEnd: 0,
+                },
+                metadata: {},
             },
-            metadata: {},
-        }, filePath);
+            filePath,
+        );
         item.jsonError = json;
         return item;
     }
     static fromData(
-        bibleKey: string, bookKey: string, chapter: number, verseStart: number,
-        verseEnd: number
+        bibleKey: string,
+        bookKey: string,
+        chapter: number,
+        verseStart: number,
+        verseEnd: number,
     ) {
         return BibleItem.fromJson({
             id: -1,
@@ -108,14 +110,17 @@ export default class BibleItem extends ItemBase
         };
     }
     static validate(json: AnyObjectType) {
-        if (!json.bibleKey ||
+        if (
+            !json.bibleKey ||
             typeof json.id !== 'number' ||
             (json.metadata && typeof json.metadata !== 'object') ||
-            !json.target || typeof json.target !== 'object' ||
+            !json.target ||
+            typeof json.target !== 'object' ||
             !json.target.bookKey ||
             typeof json.target.chapter !== 'number' ||
             typeof json.target.verseStart !== 'number' ||
-            typeof json.target.verseEnd !== 'number') {
+            typeof json.target.verseEnd !== 'number'
+        ) {
             loggerHelpers.error(json);
             throw new Error('Invalid bible item data');
         }
@@ -145,7 +150,8 @@ export default class BibleItem extends ItemBase
         this.metadata = bibleItem.metadata;
     }
     static convertPresent(
-        bibleItem: BibleItem, presenterBibleItems: BibleItem[],
+        bibleItem: BibleItem,
+        presenterBibleItems: BibleItem[],
     ) {
         let list;
         if (presenterBibleItems.length < 2) {
@@ -239,7 +245,8 @@ export default class BibleItem extends ItemBase
         return BibleItem.fromJson(json, json.filePath);
     }
     static saveFromBibleSearch(
-        bible: ItemSource<any>, oldBibleItem: BibleItem,
+        bible: ItemSource<any>,
+        oldBibleItem: BibleItem,
         newBibleItem: BibleItem,
     ) {
         oldBibleItem.bibleKey = newBibleItem.bibleKey;

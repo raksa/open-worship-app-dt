@@ -1,17 +1,15 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { getSetting, useStateSettingNumber } from '../helper/settingHelpers';
 import {
-    getSetting, useStateSettingNumber,
-} from '../helper/settingHelpers';
-import {
-    DEFAULT_THUMBNAIL_SIZE_FACTOR, THUMBNAIL_WIDTH_SETTING_NAME,
+    DEFAULT_THUMBNAIL_SIZE_FACTOR,
+    THUMBNAIL_WIDTH_SETTING_NAME,
 } from '../slide-list/slideHelpers';
 import SlideItem from '../slide-list/SlideItem';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type SlideListEventType = 'slide-item-select' | 'slide-item-sizing';
 
-export default class SlideListEventListener extends
-    EventHandler<SlideListEventType> {
+export default class SlideListEventListener extends EventHandler<SlideListEventType> {
     static readonly eventNamePrefix: string = 'slide-list';
     static selectSlideItem(slideItem: SlideItem | null) {
         this.addPropEvent('slide-item-select', slideItem);
@@ -22,10 +20,12 @@ export default class SlideListEventListener extends
 }
 
 export function useSlideItemSelecting(
-    listener: ListenerType<SlideItem | null>) {
+    listener: ListenerType<SlideItem | null>,
+) {
     useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(
-            ['slide-item-select'], listener,
+            ['slide-item-select'],
+            listener,
         );
         return () => {
             SlideListEventListener.unregisterEventListener(event);
@@ -41,7 +41,8 @@ export function useSlideItemThumbnailSizeScale(
         return parseInt(getSetting(settingName, defaultSize.toString()));
     };
     const [thumbnailSizeScale, setThumbnailSizeScale] = useStateSettingNumber(
-        settingName, getDefaultSize(),
+        settingName,
+        getDefaultSize(),
     );
     useAppEffect(() => {
         const event = SlideListEventListener.registerEventListener(

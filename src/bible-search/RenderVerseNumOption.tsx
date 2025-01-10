@@ -6,12 +6,15 @@ export function mouseUp() {
 }
 
 export default function RenderVerseNumOption({
-    index, verseNum, verseNumText, onVerseChange,
+    index,
+    verseNum,
+    verseNumText,
+    onVerseChange,
 }: Readonly<{
-    index: number,
-    verseNum: number,
-    verseNumText: string,
-    onVerseChange: (verseStart?: number, verseEnd?: number) => void,
+    index: number;
+    verseNum: number;
+    verseNumText: string;
+    onVerseChange: (verseStart?: number, verseEnd?: number) => void;
 }>) {
     const bibleItem = useBibleItemContext();
     const { target } = bibleItem;
@@ -25,16 +28,16 @@ export default function RenderVerseNumOption({
     select += ` ${inside ? 'selected' : ''}`;
     select += ` ${ended ? 'selected-end' : ''}`;
     return (
-        <div className={`item alert pointer text-center ${select}`}
+        <div
+            className={`item alert pointer text-center ${select}`}
             title={
                 `${verseNum}` !== verseNumText ? `Verse ${verseNum}` : undefined
             }
             onMouseDown={(event) => {
                 if (event.shiftKey) {
-                    const arr = [ind, sVerse, eVerse]
-                        .sort((a, b) => {
-                            return a - b;
-                        });
+                    const arr = [ind, sVerse, eVerse].sort((a, b) => {
+                        return a - b;
+                    });
                     onVerseChange(arr.shift(), arr.pop());
                 } else {
                     onVerseChange(ind);
@@ -43,10 +46,13 @@ export default function RenderVerseNumOption({
             }}
             onMouseEnter={() => {
                 if (mouseDownInd !== null) {
-                    onVerseChange(Math.min(mouseDownInd, ind),
-                        Math.max(mouseDownInd, ind));
+                    onVerseChange(
+                        Math.min(mouseDownInd, ind),
+                        Math.max(mouseDownInd, ind),
+                    );
                 }
-            }}>
+            }}
+        >
             <span>{verseNumText}</span>
         </div>
     );

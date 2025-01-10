@@ -5,23 +5,27 @@ import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
+    dirSourceSettingNames,
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
-    filePath: string, selectedBackgroundSrcList: [string, BackgroundSrcType][],
+    filePath: string,
+    selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <div className='card-body'>
+        <div className="card-body">
             <RenderScreenIds
                 screenIds={selectedBackgroundSrcList.map(([key]) => {
                     return parseInt(key);
                 })}
             />
-            <img src={fileSource.src}
-                className='card-img-top' alt='...'
+            <img
+                src={fileSource.src}
+                className="card-img-top"
+                alt="..."
                 style={{
                     pointerEvents: 'none',
                 }}

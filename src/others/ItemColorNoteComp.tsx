@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import {
-    ContextMenuItemType, showAppContextMenu,
-} from './AppContextMenuComp';
+import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -12,8 +10,10 @@ freezeObject(colorList);
 
 // https://www.w3.org/wiki/CSS/Properties/color/keywords
 
-export default function ItemColorNoteComp({ item }: Readonly<{
-    item: ColorNoteInf,
+export default function ItemColorNoteComp({
+    item,
+}: Readonly<{
+    item: ColorNoteInf;
 }>) {
     const [colorNote, setColorNote] = useState('');
     useAppEffect(() => {
@@ -26,14 +26,16 @@ export default function ItemColorNoteComp({ item }: Readonly<{
         item.setColorNote(colorNote);
     };
     const title = useMemo(() => {
-        const reverseColorMap: Record<string, string> =
-            Object.entries({
-                ...colorList.main,
-                ...colorList.extension,
-            }).reduce((acc, [name, colorCode]) => {
+        const reverseColorMap: Record<string, string> = Object.entries({
+            ...colorList.main,
+            ...colorList.extension,
+        }).reduce(
+            (acc, [name, colorCode]) => {
                 acc[colorCode] = name;
                 return acc;
-            }, {} as Record<string, string>);
+            },
+            {} as Record<string, string>,
+        );
         return reverseColorMap[colorNote] || 'no color';
     }, [colorNote]);
     const handleColorSelecting = (event: any) => {
@@ -59,25 +61,34 @@ export default function ItemColorNoteComp({ item }: Readonly<{
                         setColorNote1(colorCode);
                     },
                     otherChild: (
-                        <div className='flex-fill'>
-                            <i className='bi bi-record-circle float-end'
+                        <div className="flex-fill">
+                            <i
+                                className="bi bi-record-circle float-end"
                                 style={{ color: colorCode }}
                             />
                         </div>
                     ),
                 };
-            })];
+            }),
+        ];
         showAppContextMenu(event, items);
     };
 
     return (
-        <span className={`color-note pointer ${colorNote ? 'active' : ''}`}
+        <span
+            className={`color-note pointer ${colorNote ? 'active' : ''}`}
             title={title}
-            onClick={handleColorSelecting} >
-            <i className='bi bi-record-circle'
-                style={colorNote ? {
-                    color: colorNote,
-                } : {}}
+            onClick={handleColorSelecting}
+        >
+            <i
+                className="bi bi-record-circle"
+                style={
+                    colorNote
+                        ? {
+                              color: colorNote,
+                          }
+                        : {}
+                }
             />
         </span>
     );

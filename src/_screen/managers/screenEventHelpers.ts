@@ -10,13 +10,13 @@ import ScreenSlideManager, {
     ScreenSlideManagerEventType,
 } from './ScreenSlideManager';
 import EventHandler from '../../event/EventHandler';
-import ScreenAlertManager, {
-    ScreenAlertEventType,
-} from './ScreenAlertManager';
+import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
 
 export function useScreenEvents<T extends string>(
-    events: T[], Class: EventHandler<T>,
-    eventHandler?: EventHandler<T>, callback?: (data: any) => void,
+    events: T[],
+    Class: EventHandler<T>,
+    eventHandler?: EventHandler<T>,
+    callback?: (data: any) => void,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
@@ -26,15 +26,12 @@ export function useScreenEvents<T extends string>(
             });
             callback?.(data);
         };
-        const registeredEvents = (
+        const registeredEvents =
             eventHandler?.registerEventListener(events, update) ||
-            Class.registerEventListener(events, update)
-        );
+            Class.registerEventListener(events, update);
         return () => {
-            (
-                eventHandler?.unregisterEventListener(registeredEvents) ??
-                Class.unregisterEventListener(registeredEvents)
-            );
+            eventHandler?.unregisterEventListener(registeredEvents) ??
+                Class.unregisterEventListener(registeredEvents);
         };
     }, [eventHandler]);
     return n;
@@ -46,7 +43,9 @@ export function useScreenBackgroundManagerEvents(
     callback?: () => void,
 ) {
     useScreenEvents(
-        events, ScreenBackgroundManager as any, screenBackgroundManager,
+        events,
+        ScreenBackgroundManager as any,
+        screenBackgroundManager,
         callback,
     );
 }
@@ -57,7 +56,10 @@ export function useScreenSlideManagerEvents(
     callback?: () => void,
 ) {
     useScreenEvents(
-        events, ScreenSlideManager as any, screenSlideManager, callback,
+        events,
+        ScreenSlideManager as any,
+        screenSlideManager,
+        callback,
     );
 }
 
@@ -67,15 +69,22 @@ export function useScreenFullTextManagerEvents(
     callback?: (args: any) => void,
 ) {
     useScreenEvents(
-        events, ScreenFullTextManager as any, screenFulTextManager, callback,
+        events,
+        ScreenFullTextManager as any,
+        screenFulTextManager,
+        callback,
     );
 }
 
 export function useScreenAlertManagerEvents(
-    events: ScreenAlertEventType[], screenAlertManager?: ScreenAlertManager,
+    events: ScreenAlertEventType[],
+    screenAlertManager?: ScreenAlertManager,
     callback?: () => void,
 ) {
     useScreenEvents(
-        events, ScreenAlertManager as any, screenAlertManager, callback,
+        events,
+        ScreenAlertManager as any,
+        screenAlertManager,
+        callback,
     );
 }

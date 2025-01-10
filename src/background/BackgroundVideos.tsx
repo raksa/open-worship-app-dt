@@ -7,30 +7,35 @@ import FileSource from '../helper/FileSource';
 import BackgroundMedia from './BackgroundMedia';
 import { DragTypeEnum } from '../helper/DragInf';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
+    dirSourceSettingNames,
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
 
 function rendChild(
-    filePath: string, selectedBackgroundSrcList: [string, BackgroundSrcType][],
+    filePath: string,
+    selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
     return (
-        <RendBody filePath={filePath}
+        <RendBody
+            filePath={filePath}
             selectedBackgroundSrcList={selectedBackgroundSrcList}
         />
     );
 }
 
 function RendBody({
-    filePath, selectedBackgroundSrcList,
+    filePath,
+    selectedBackgroundSrcList,
 }: Readonly<{
-    filePath: string,
-    selectedBackgroundSrcList: [string, BackgroundSrcType][],
+    filePath: string;
+    selectedBackgroundSrcList: [string, BackgroundSrcType][];
 }>) {
     const vRef = createRef<HTMLVideoElement>();
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <div className='card-body'
+        <div
+            className="card-body"
             onMouseEnter={() => {
                 vRef.current?.play();
             }}
@@ -39,17 +44,14 @@ function RendBody({
                     vRef.current.pause();
                     vRef.current.currentTime = 0;
                 }
-            }}>
+            }}
+        >
             <RenderScreenIds
                 screenIds={selectedBackgroundSrcList.map(([key]) => {
                     return parseInt(key);
                 })}
             />
-            <video ref={vRef}
-                loop
-                muted
-                src={fileSource.src}
-            />
+            <video ref={vRef} loop muted src={fileSource.src} />
         </div>
     );
 }

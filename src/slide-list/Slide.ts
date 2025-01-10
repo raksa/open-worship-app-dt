@@ -3,7 +3,9 @@ import ItemSource from '../helper/ItemSource';
 import FileSource from '../helper/FileSource';
 import { showAppContextMenu } from '../others/AppContextMenuComp';
 import {
-    checkIsPdf, openSlideContextMenu, SlideDynamicType,
+    checkIsPdf,
+    openSlideContextMenu,
+    SlideDynamicType,
 } from './slideHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
@@ -15,13 +17,13 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { createContext, use } from 'react';
 
 export type SlideEditorHistoryType = {
-    items?: SlideItemType[],
-    metadata?: AnyObjectType,
+    items?: SlideItemType[];
+    metadata?: AnyObjectType;
 };
 
 export type SlideType = {
-    items: SlideItemType[],
-    metadata: AnyObjectType,
+    items: SlideItemType[];
+    metadata: AnyObjectType;
 };
 
 export default class Slide extends ItemSource<SlideItem> {
@@ -34,7 +36,8 @@ export default class Slide extends ItemSource<SlideItem> {
     constructor(filePath: string, json: SlideType) {
         super(filePath);
         this.editorCacheManager = new SlideEditorCacheManager(
-            this.filePath, json,
+            this.filePath,
+            json,
         );
     }
     get isChanged() {
@@ -60,13 +63,18 @@ export default class Slide extends ItemSource<SlideItem> {
         return latestHistory.items.map((json) => {
             try {
                 return SlideItem.fromJson(
-                    json as any, this.filePath, this.editorCacheManager,
+                    json as any,
+                    this.filePath,
+                    this.editorCacheManager,
                 );
             } catch (error: any) {
                 showSimpleToast('Instantiating Bible Item', error.message);
             }
-            return SlideItem.fromJsonError(json, this.filePath,
-                this.editorCacheManager);
+            return SlideItem.fromJsonError(
+                json,
+                this.filePath,
+                this.editorCacheManager,
+            );
         });
     }
     set items(newItems: SlideItem[]) {
@@ -143,8 +151,12 @@ export default class Slide extends ItemSource<SlideItem> {
             },
             canvasItems: [], // TODO: add default canvas item
         };
-        const newItem = new SlideItem(item.id, this.filePath, json,
-            this.editorCacheManager);
+        const newItem = new SlideItem(
+            item.id,
+            this.filePath,
+            json,
+            this.editorCacheManager,
+        );
         this.itemIdShouldToView = newItem.id;
         this.addItem(newItem);
     }
@@ -156,13 +168,16 @@ export default class Slide extends ItemSource<SlideItem> {
         this.fileSource.fireDeleteEvent(slideItem);
     }
 
-    static toWrongDimensionString({ slideItem, display }: {
-        slideItem: { width: number, height: number },
-        display: { width: number, height: number },
+    static toWrongDimensionString({
+        slideItem,
+        display,
+    }: {
+        slideItem: { width: number; height: number };
+        display: { width: number; height: number };
     }) {
         return (
-            `⚠️ slide:${slideItem.width}x${slideItem.height} `
-            + `display:${display.width}x${display.height}`
+            `⚠️ slide:${slideItem.width}x${slideItem.height} ` +
+            `display:${display.width}x${display.height}`
         );
     }
     checkIsWrongDimension(display: DisplayType) {
@@ -196,19 +211,26 @@ export default class Slide extends ItemSource<SlideItem> {
             return;
         }
         const copiedSlideItems = await Slide.getCopiedSlideItems();
-        showAppContextMenu(event, [{
-            menuTitle: 'New Slide Item',
-            onClick: () => {
-                this.addNewItem();
+        showAppContextMenu(event, [
+            {
+                menuTitle: 'New Slide Item',
+                onClick: () => {
+                    this.addNewItem();
+                },
             },
-        }, ...(copiedSlideItems.length > 0 ? [{
-            menuTitle: 'Paste',
-            onClick: () => {
-                for (const copiedSlideItem of copiedSlideItems) {
-                    this.addItem(copiedSlideItem);
-                }
-            },
-        }] : [])]);
+            ...(copiedSlideItems.length > 0
+                ? [
+                      {
+                          menuTitle: 'Paste',
+                          onClick: () => {
+                              for (const copiedSlideItem of copiedSlideItems) {
+                                  this.addItem(copiedSlideItem);
+                              }
+                          },
+                      },
+                  ]
+                : []),
+        ]);
     }
     async discardChanged() {
         this.editorCacheManager.delete();
@@ -237,8 +259,10 @@ export default class Slide extends ItemSource<SlideItem> {
     getItemById(id: number) {
         return this.items.find((item) => item.id === id) || null;
     }
-    static async readFileToDataNoCache(filePath: string | null,
-        isOrigin?: boolean) {
+    static async readFileToDataNoCache(
+        filePath: string | null,
+        isOrigin?: boolean,
+    ) {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
             if (fileSource.src && checkIsPdf(fileSource.extension)) {
@@ -254,14 +278,15 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         return slide;
     }
-    static async readFileToData(filePath: string | null,
-        isForceCache?: boolean) {
+    static async readFileToData(
+        filePath: string | null,
+        isForceCache?: boolean,
+    ) {
         const slide = super.readFileToData(filePath, isForceCache);
         return slide as Promise<Slide | undefined | null>;
     }
     static async create(dir: string, name: string) {
-        return super.create(dir, name,
-            [SlideItem.defaultSlideItemData(0)]);
+        return super.create(dir, name, [SlideItem.defaultSlideItemData(0)]);
     }
     openContextMenu(event: any, slideItem: SlideItem) {
         openSlideContextMenu(event, this, slideItem);
@@ -304,7 +329,7 @@ export default class Slide extends ItemSource<SlideItem> {
         }
         const slide = await this.readFileToData(selectedSlideFilePath);
         return slide || null;
-    };
+    }
 
     static async getSelectedSlideItem() {
         const slide = await Slide.getSelectedSlide();
@@ -312,16 +337,18 @@ export default class Slide extends ItemSource<SlideItem> {
             return null;
         }
         return slide.items[0];
-    };
+    }
 
     static async getCopiedSlideItems() {
         const clipboardItems = await navigator.clipboard.read();
         const copiedSlideItems: SlideItem[] = [];
         const textPlainType = 'text/plain';
         for (const clipboardItem of clipboardItems) {
-            if (clipboardItem.types.some((type) => {
-                return type === textPlainType;
-            })) {
+            if (
+                clipboardItem.types.some((type) => {
+                    return type === textPlainType;
+                })
+            ) {
                 const blob = await clipboardItem.getType(textPlainType);
                 const json = await blob.text();
                 const copiedSlideItem = SlideItem.clipboardDeserialize(json);
@@ -335,8 +362,8 @@ export default class Slide extends ItemSource<SlideItem> {
 }
 
 export const SelectedSlideContext = createContext<{
-    selectedSlide: Slide | null,
-    setSelectedSlide: (newSelectedSlide: Slide | null) => void,
+    selectedSlide: Slide | null;
+    setSelectedSlide: (newSelectedSlide: Slide | null) => void;
 } | null>(null);
 
 function useContext() {

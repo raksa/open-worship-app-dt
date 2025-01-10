@@ -1,14 +1,15 @@
 import { Fragment } from 'react';
 
+import { useBookMatch } from '../helper/bible-helpers/serverBibleHelpers';
 import {
-    useBookMatch,
-} from '../helper/bible-helpers/serverBibleHelpers';
-import {
-    allArrows, KeyboardType, useKeyboardRegistering,
+    allArrows,
+    KeyboardType,
+    useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import {
     SelectBookType,
-    processSelection, userEnteringSelected,
+    processSelection,
+    userEnteringSelected,
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
@@ -16,36 +17,38 @@ const OPTION_CLASS = 'bible-search-book-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderBookOptions({
-    onSelect, bookKey, guessingBook,
+    onSelect,
+    bookKey,
+    guessingBook,
 }: Readonly<{
-    onSelect: SelectBookType,
-    bookKey: string | null,
-    guessingBook: string | null,
+    onSelect: SelectBookType;
+    bookKey: string | null;
+    guessingBook: string | null;
 }>) {
     if (bookKey !== null) {
         return null;
     }
 
     return (
-        <BookOptions
-            onSelect={onSelect}
-            guessingBook={guessingBook ?? ''}
-        />
+        <BookOptions onSelect={onSelect} guessingBook={guessingBook ?? ''} />
     );
 }
 
 function BookOptions({
-    onSelect, guessingBook,
+    onSelect,
+    guessingBook,
 }: Readonly<{
-    onSelect: SelectBookType,
-    guessingBook: string,
+    onSelect: SelectBookType;
+    guessingBook: string;
 }>) {
-    const bibleKey = useBibleKeyContext();;
+    const bibleKey = useBibleKeyContext();
     const matches = useBookMatch(bibleKey, guessingBook);
     const useKeyEvent = (key: KeyboardType) => {
         useKeyboardRegistering([{ key }], (event: KeyboardEvent) => {
             processSelection(
-                OPTION_CLASS, OPTION_SELECTED_CLASS, event.key as KeyboardType,
+                OPTION_CLASS,
+                OPTION_SELECTED_CLASS,
+                event.key as KeyboardType,
             );
         });
     };
@@ -53,9 +56,7 @@ function BookOptions({
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
 
     if (matches === null) {
-        return (
-            <div>No book options available</div>
-        );
+        return <div>No book options available</div>;
     }
     return (
         <>
@@ -63,7 +64,11 @@ function BookOptions({
                 return (
                     <Fragment key={bookKey}>
                         {genBookOption({
-                            bookKey, book, bookKJV, onSelect, index: i,
+                            bookKey,
+                            book,
+                            bookKJV,
+                            onSelect,
+                            index: i,
                         })}
                     </Fragment>
                 );
@@ -73,34 +78,40 @@ function BookOptions({
 }
 
 function genBookOption({
-    onSelect, index, bookKey, book, bookKJV,
+    onSelect,
+    index,
+    bookKey,
+    book,
+    bookKJV,
 }: {
-    onSelect: SelectBookType,
-    index: number,
-    bookKey: string,
-    book: string,
-    bookKJV: string,
+    onSelect: SelectBookType;
+    index: number;
+    bookKey: string;
+    book: string;
+    bookKJV: string;
 }) {
     return (
         <div style={{ margin: '2px' }}>
-            <button className={
-                'text-nowrap btn-sm btn btn-outline-success' +
-                ` ${OPTION_CLASS} ${index === 0 ? OPTION_SELECTED_CLASS : ''}`
-            }
+            <button
+                className={
+                    'text-nowrap btn-sm btn btn-outline-success' +
+                    ` ${OPTION_CLASS} ${index === 0 ? OPTION_SELECTED_CLASS : ''}`
+                }
                 style={{
                     width: '240px',
                     overflowX: 'auto',
                 }}
-                type='button'
+                type="button"
                 onClick={() => {
                     onSelect(bookKey, book);
-                }}>
+                }}
+            >
                 <span>{book}</span>
-                {book !== bookKJV ? <>
-                    (<small className='text-muted'>
-                        {bookKJV}
-                    </small>)
-                </> : null}
+                {book !== bookKJV ? (
+                    <>
+                        (<small className="text-muted">{bookKJV}</small>)
+                    </>
+                ) : null}
             </button>
         </div>
     );

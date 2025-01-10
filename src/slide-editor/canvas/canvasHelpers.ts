@@ -5,13 +5,14 @@ import { AppColorType } from '../../others/color/colorHelpers';
 export type CanvasControllerEventType = 'update' | 'scale';
 
 export type CanvasItemMediaPropsType = {
-    srcData: SrcData,
+    srcData: SrcData;
     mediaWidth: number;
     mediaHeight: number;
 };
 
 export function validateMediaProps(props: AnyObjectType) {
-    if (typeof props.srcData !== 'string' ||
+    if (
+        typeof props.srcData !== 'string' ||
         typeof props.mediaWidth !== 'number' ||
         typeof props.mediaHeight !== 'number'
     ) {
@@ -20,15 +21,20 @@ export function validateMediaProps(props: AnyObjectType) {
 }
 
 export const hAlignmentList = ['left', 'center', 'right'] as const;
-export type HAlignmentType = typeof hAlignmentList[number];
+export type HAlignmentType = (typeof hAlignmentList)[number];
 export const vAlignmentList = ['start', 'center', 'end'] as const;
-export type VAlignmentType = typeof vAlignmentList[number];
+export type VAlignmentType = (typeof vAlignmentList)[number];
 
-export function tooling2BoxProps(boxData: ToolingBoxType, state: {
-    parentWidth: number, parentHeight: number,
-    width: number, height: number,
-}) {
-    const boxProps: { top?: number, left?: number } = {};
+export function tooling2BoxProps(
+    boxData: ToolingBoxType,
+    state: {
+        parentWidth: number;
+        parentHeight: number;
+        width: number;
+        height: number;
+    },
+) {
+    const boxProps: { top?: number; left?: number } = {};
     if (boxData) {
         if (boxData.verticalAlignment === 'start') {
             boxProps.top = 0;
@@ -49,18 +55,24 @@ export function tooling2BoxProps(boxData: ToolingBoxType, state: {
 }
 
 export type ToolingBoxType = {
-    backgroundColor?: AppColorType | null,
-    rotate?: number,
-    horizontalAlignment?: HAlignmentType,
-    verticalAlignment?: VAlignmentType,
+    backgroundColor?: AppColorType | null;
+    rotate?: number;
+    horizontalAlignment?: HAlignmentType;
+    verticalAlignment?: VAlignmentType;
 };
 export const canvasItemList = [
-    'text', 'image', 'video', 'bible', 'error',
+    'text',
+    'image',
+    'video',
+    'bible',
+    'error',
 ] as const;
-export type CanvasItemKindType = typeof canvasItemList[number];
+export type CanvasItemKindType = (typeof canvasItemList)[number];
 
-export function genTextDefaultBoxStyle(width: number = 700,
-    height: number = 400) {
+export function genTextDefaultBoxStyle(
+    width: number = 700,
+    height: number = 400,
+) {
     return {
         id: -1,
         top: 279,

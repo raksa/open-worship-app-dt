@@ -12,23 +12,29 @@ export const defaultRangeSize = {
 
 const rangeId = 'preview-fon-size';
 
-export default function BibleViewSetting({ fontSize, setFontSize }: Readonly<{
-    fontSize: number,
-    setFontSize: (fontSize: number) => void,
+export default function BibleViewSetting({
+    fontSize,
+    setFontSize,
+}: Readonly<{
+    fontSize: number;
+    setFontSize: (fontSize: number) => void;
 }>) {
     return (
-        <div className='bible-view-setting' style={{
-            maxWidth: 450,
-        }}>
-            <div className='input-group d-flex'>
-                <div className='flex-fill d-flex mx-1'>
-                    <div className='d-flex flex-fill'>
-                        <label htmlFor={rangeId} className='form-label'>
+        <div
+            className="bible-view-setting"
+            style={{
+                maxWidth: 450,
+            }}
+        >
+            <div className="input-group d-flex">
+                <div className="flex-fill d-flex mx-1">
+                    <div className="d-flex flex-fill">
+                        <label htmlFor={rangeId} className="form-label">
                             Font Size ({fontSize}px):
                         </label>
                         <AppRangeComp
                             value={fontSize}
-                            title='Font Size'
+                            title="Font Size"
                             id={rangeId}
                             setValue={setFontSize}
                             defaultSize={defaultRangeSize}

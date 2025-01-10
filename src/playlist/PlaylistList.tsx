@@ -5,7 +5,8 @@ import FileListHandlerComp from '../others/FileListHandlerComp';
 import Playlist from './Playlist';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
+    dirSourceSettingNames,
 } from '../helper/constants';
 
 export default function PlaylistList() {
@@ -14,9 +15,13 @@ export default function PlaylistList() {
         return (
             <>
                 {filePaths.map((filePath, i) => {
-                    return <PlaylistFile key={filePath}
-                        index={i}
-                        filePath={filePath} />;
+                    return (
+                        <PlaylistFile
+                            key={filePath}
+                            index={i}
+                            filePath={filePath}
+                        />
+                    );
                 })}
             </>
         );
@@ -25,14 +30,16 @@ export default function PlaylistList() {
         return null;
     }
     return (
-        <FileListHandlerComp id='playlist-list'
-            mimetypeName='playlist'
+        <FileListHandlerComp
+            id="playlist-list"
+            mimetypeName="playlist"
             defaultFolderName={defaultDataDirNames.PLAYLIST}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
-                return !await Playlist.create(dirPath, name);
+                return !(await Playlist.create(dirPath, name));
             }}
             header={<span>Playlists</span>}
-            bodyHandler={handleBodyRendering} />
+            bodyHandler={handleBodyRendering}
+        />
     );
 }

@@ -1,7 +1,8 @@
 import { lazy, useState } from 'react';
 
 import WindowEventListener, {
-    useWindowEvent, EventMapper as WEventMapper,
+    useWindowEvent,
+    EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
 import SlideItem from '../slide-list/SlideItem';
 import AppSuspenseComp from '../others/AppSuspenseComp';
@@ -37,7 +38,7 @@ export default function HandleItemSlideEdit() {
         return null;
     }
     return (
-        <AppSuspenseComp >
+        <AppSuspenseComp>
             <LazySlideItemEditorPopup slideItem={slideItem} />
         </AppSuspenseComp>
     );

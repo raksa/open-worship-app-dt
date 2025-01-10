@@ -10,20 +10,22 @@ function SizingComp() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     return (
-        <SlideItemEditorToolTitleComp title='Size'>
-            <button className='btn btn-secondary'
+        <SlideItemEditorToolTitleComp title="Size">
+            <button
+                className="btn btn-secondary"
                 onClick={() => {
                     canvasController.applyCanvasItemFully(canvasItem);
-                }}>
+                }}
+            >
                 Full
             </button>
             {['image', 'video'].includes(canvasItem.type) ? (
-                <button className='btn btn-secondary ms-1'
+                <button
+                    className="btn btn-secondary ms-1"
                     onClick={() => {
-                        canvasController.applyCanvasItemMediaStrip(
-                            canvasItem,
-                        );
-                    }}>
+                        canvasController.applyCanvasItemMediaStrip(canvasItem);
+                    }}
+                >
                     Strip
                 </button>
             ) : null}
@@ -43,32 +45,41 @@ function LayerComp() {
         canvasController.fireEditEvent(canvasItem);
     };
     return (
-        <div className='ps-2'>
-            <div className='d-flex'>
-                <SlideItemEditorToolTitleComp title='Box Layer'>
-                    <button className='btn btn-info'
+        <div className="ps-2">
+            <div className="d-flex">
+                <SlideItemEditorToolTitleComp title="Box Layer">
+                    <button
+                        className="btn btn-info"
                         onClick={() => {
                             canvasController.applyOrderingData(
-                                canvasItem, true,
+                                canvasItem,
+                                true,
                             );
-                        }}>
-                        <i className='bi bi-layer-backward' />
+                        }}
+                    >
+                        <i className="bi bi-layer-backward" />
                     </button>
-                    <button className='btn btn-info'
+                    <button
+                        className="btn btn-info"
                         onClick={() => {
                             canvasController.applyOrderingData(
-                                canvasItem, false);
-                        }}>
-                        <i className='bi bi-layer-forward' />
+                                canvasItem,
+                                false,
+                            );
+                        }}
+                    >
+                        <i className="bi bi-layer-forward" />
                     </button>
                 </SlideItemEditorToolTitleComp>
-                <SlideItemEditorToolTitleComp title='Rotate'>
-                    <button className='btn btn-info'
+                <SlideItemEditorToolTitleComp title="Rotate">
+                    <button
+                        className="btn btn-info"
                         onClick={() => {
                             applyBoxData({
                                 rotate: 0,
                             });
-                        }}>
+                        }}
+                    >
                         UnRotate
                     </button>
                 </SlideItemEditorToolTitleComp>
@@ -102,14 +113,14 @@ export default function SlideItemEditorToolsBoxComp() {
         canvasController.fireEditEvent(canvasItem);
     };
     return (
-        <div className='d-flex'>
+        <div className="d-flex">
             <SlideItemEditorToolsColorComp
                 color={canvasItem.props.backgroundColor}
                 handleNoColoring={handleNoColoring}
                 handleColorChanging={handleColorChanging}
             />
-            <div className='ps-2'>
-                <SlideItemEditorToolTitleComp title='Box Alignment'>
+            <div className="ps-2">
+                <SlideItemEditorToolTitleComp title="Box Alignment">
                     <SlideItemEditorToolAlignComp onData={handleDataEvent} />
                 </SlideItemEditorToolTitleComp>
                 <LayerComp />

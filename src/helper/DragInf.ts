@@ -7,7 +7,7 @@ export enum DragTypeEnum {
     BACKGROUND_SOUND = 'bg-sound',
     BACKGROUND_IMAGE = 'bg-image',
     BACKGROUND_COLOR = 'bg-color',
-};
+}
 
 export type DragDataType<T> = {
     type: DragTypeEnum;

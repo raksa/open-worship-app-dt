@@ -15,29 +15,34 @@ const LazyPlaylistList = lazy(() => {
 
 export default function AppPresenterLeft() {
     return (
-        <ResizeActor flexSizeName={resizeSettingNames.appPresenterLeft}
+        <ResizeActor
+            flexSizeName={resizeSettingNames.appPresenterLeft}
             isHorizontal={false}
             flexSizeDefault={{
-                'v1': ['1'],
-                'v2': ['1'],
-                'v3': ['1'],
+                v1: ['1'],
+                v2: ['1'],
+                v3: ['1'],
             }}
             dataInput={[
                 {
-                    children: LazySlideList, key: 'v1',
+                    children: LazySlideList,
+                    key: 'v1',
                     widgetName: 'Slide List',
                     className: 'flex-item',
                 },
                 {
-                    children: LazyLyricList, key: 'v2',
+                    children: LazyLyricList,
+                    key: 'v2',
                     widgetName: 'Lyric List',
                     className: 'flex-item',
                 },
                 {
-                    children: LazyPlaylistList, key: 'v3',
+                    children: LazyPlaylistList,
+                    key: 'v3',
                     widgetName: 'Playlist List',
                     className: 'flex-item',
                 },
-            ]} />
+            ]}
+        />
     );
 }

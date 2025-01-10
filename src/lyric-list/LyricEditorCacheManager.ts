@@ -3,9 +3,10 @@ import EditorCacheManager from '../others/EditorCacheManager';
 import { LyricEditorHistoryType, LyricType } from './Lyric';
 import { LyricItemType } from './LyricItem';
 
-export default class LyricEditorCacheManager
-    extends EditorCacheManager<LyricEditorHistoryType, LyricType> {
-
+export default class LyricEditorCacheManager extends EditorCacheManager<
+    LyricEditorHistoryType,
+    LyricType
+> {
     private originalJson: Readonly<LyricType>;
 
     constructor(filePath: string, json: LyricType) {
@@ -40,9 +41,11 @@ export default class LyricEditorCacheManager
     }
     getLyricItemById(id: number) {
         const latestHistory = this.presenterJson;
-        return latestHistory.items.find((item) => {
-            return item.id === id;
-        }) || null;
+        return (
+            latestHistory.items.find((item) => {
+                return item.id === id;
+            }) || null
+        );
     }
     checkIsLyricItemChanged(id: number) {
         const newItem = this.getLyricItemById(id);
@@ -50,8 +53,10 @@ export default class LyricEditorCacheManager
         const originalItem = lyricItems.find((item) => {
             return item.id === id;
         });
-        return newItem?.title !== originalItem?.title ||
-            newItem?.content !== originalItem?.content;
+        return (
+            newItem?.title !== originalItem?.title ||
+            newItem?.content !== originalItem?.content
+        );
     }
     pushLyricItems(items: LyricItemType[]) {
         const newHistory = {

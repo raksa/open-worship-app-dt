@@ -1,21 +1,22 @@
 import {
-    fsCopyFilePathToPath, isSupportedExt, MimetypeNameType,
+    fsCopyFilePathToPath,
+    isSupportedExt,
+    MimetypeNameType,
 } from '../server/fileHelpers';
-import {
-    ContextMenuItemType, showAppContextMenu,
-} from './AppContextMenuComp';
+import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
 import DirSource from '../helper/DirSource';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { selectFiles } from '../server/appHelpers';
 
-function changeDragEventStyle(event: React.DragEvent<HTMLDivElement>,
-    key: string, value: string) {
+function changeDragEventStyle(
+    event: React.DragEvent<HTMLDivElement>,
+    key: string,
+    value: string,
+) {
     (event.currentTarget.style as any)[key] = value;
 }
 
-export function genOnDragOver(
-    dirSource: DirSource,
-) {
+export function genOnDragOver(dirSource: DirSource) {
     return (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
         const items = Object.entries(event.dataTransfer.items);
@@ -23,9 +24,12 @@ export function genOnDragOver(
             changeDragEventStyle(event, 'opacity', '0.5');
             return;
         }
-        if (items.length > 0 && items.every(([_, { kind }]) => {
-            return kind === 'file';
-        })) {
+        if (
+            items.length > 0 &&
+            items.every(([_, { kind }]) => {
+                return kind === 'file';
+            })
+        ) {
             changeDragEventStyle(event, 'opacity', '0.5');
         }
     };
@@ -38,7 +42,7 @@ export function genOnDragLeave() {
     };
 }
 
-export type DroppedFileType = File | string
+export type DroppedFileType = File | string;
 
 async function* readDroppedFiles(
     event: React.DragEvent<HTMLDivElement>,
@@ -57,9 +61,9 @@ async function* readDroppedFiles(
     }
     for (const item of event.dataTransfer.items) {
         if (item.kind === 'file') {
-            const entry: FileSystemFileHandle = (
-                await (item as any).getAsFileSystemHandle()
-            );
+            const entry: FileSystemFileHandle = await (
+                item as any
+            ).getAsFileSystemHandle();
             if ((entry as any).kind === 'directory') {
                 yield* readDirectory(entry);
             } else {
@@ -70,10 +74,17 @@ async function* readDroppedFiles(
     }
 }
 
-function checkAndCopyFiles({ checkIsValidFile, takeFile }: {
-    checkIsValidFile: (fileFullName: string) => boolean,
-    takeFile?: (file: DroppedFileType | string) => boolean,
-}, dirPath: string, file: DroppedFileType | string) {
+function checkAndCopyFiles(
+    {
+        checkIsValidFile,
+        takeFile,
+    }: {
+        checkIsValidFile: (fileFullName: string) => boolean;
+        takeFile?: (file: DroppedFileType | string) => boolean;
+    },
+    dirPath: string,
+    file: DroppedFileType | string,
+) {
     const isString = typeof file === 'string';
     if (!takeFile?.(file) && checkIsValidFile(isString ? file : file.name)) {
         return fsCopyFilePathToPath(file, dirPath);
@@ -82,12 +93,15 @@ function checkAndCopyFiles({ checkIsValidFile, takeFile }: {
 }
 
 export function genOnDrop({
-    dirSource, mimetypeName, checkIsExtraFile, takeDroppedFile,
+    dirSource,
+    mimetypeName,
+    checkIsExtraFile,
+    takeDroppedFile,
 }: {
-    dirSource: DirSource,
-    mimetypeName: MimetypeNameType,
-    checkIsExtraFile?: (fileFullName: string) => boolean,
-    takeDroppedFile?: (file: DroppedFileType) => boolean,
+    dirSource: DirSource;
+    mimetypeName: MimetypeNameType;
+    checkIsExtraFile?: (fileFullName: string) => boolean;
+    takeDroppedFile?: (file: DroppedFileType) => boolean;
 }) {
     const checkIsValidFile = (fileFullName: string) => {
         return (
@@ -103,12 +117,15 @@ export function genOnDrop({
             return;
         }
         const promises = [];
-        for await (
-            const file of readDroppedFiles(event)
-        ) {
-            const copyingPromise = checkAndCopyFiles({
-                checkIsValidFile, takeFile: takeDroppedFile,
-            }, dirSource.dirPath, file);
+        for await (const file of readDroppedFiles(event)) {
+            const copyingPromise = checkAndCopyFiles(
+                {
+                    checkIsValidFile,
+                    takeFile: takeDroppedFile,
+                },
+                dirSource.dirPath,
+                file,
+            );
             if (copyingPromise !== null) {
                 promises.push(copyingPromise);
             }
@@ -118,32 +135,38 @@ export function genOnDrop({
 }
 
 export type FileSelectionOptionType = {
-    windowTitle: string,
-    extensions: string[],
+    windowTitle: string;
+    extensions: string[];
 
-    dirPath: string,
-    onFileSelected?: (filePaths: string[]) => void,
-    takeSelectedFile?: (filePath: string) => boolean,
+    dirPath: string;
+    onFileSelected?: (filePaths: string[]) => void;
+    takeSelectedFile?: (filePath: string) => boolean;
 };
 
 export async function handleFilesSelectionMenuItem(
     fileSelectionOption: FileSelectionOptionType,
 ) {
     const {
-        dirPath, windowTitle, extensions, onFileSelected,
+        dirPath,
+        windowTitle,
+        extensions,
+        onFileSelected,
         takeSelectedFile,
     } = fileSelectionOption;
-    const filePaths = selectFiles(
-        [{ name: windowTitle, extensions }],
-    );
+    const filePaths = selectFiles([{ name: windowTitle, extensions }]);
     onFileSelected?.(filePaths);
     const promises = [];
     for (const filePath of filePaths) {
-        const copyingPromise = checkAndCopyFiles({
-            checkIsValidFile: () => true, takeFile: () => {
-                return takeSelectedFile?.(filePath) || false;
+        const copyingPromise = checkAndCopyFiles(
+            {
+                checkIsValidFile: () => true,
+                takeFile: () => {
+                    return takeSelectedFile?.(filePath) || false;
+                },
             },
-        }, dirPath, filePath);
+            dirPath,
+            filePath,
+        );
         if (copyingPromise !== null) {
             promises.push(copyingPromise);
         }
@@ -156,9 +179,7 @@ export function genOnContextMenu(
     addItems?: () => void,
 ) {
     return (event: React.MouseEvent<any>) => {
-        const menuItems: ContextMenuItemType[] = [
-            ...(contextMenu || []),
-        ];
+        const menuItems: ContextMenuItemType[] = [...(contextMenu || [])];
         if (addItems !== undefined) {
             menuItems.push({
                 menuTitle: 'Add Items',

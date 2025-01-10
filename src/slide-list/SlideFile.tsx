@@ -12,15 +12,14 @@ import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { ContextMenuItemType } from '../others/AppContextMenuComp';
 import { editorTab, goToPath } from '../router/routeHelpers';
 import { previewPdf } from '../server/appHelpers';
-import {
-    removePdfImagesPreview,
-} from '../helper/pdfHelpers';
+import { removePdfImagesPreview } from '../helper/pdfHelpers';
 
 export default function SlideFile({
-    index, filePath,
+    index,
+    filePath,
 }: Readonly<{
-    index: number,
-    filePath: string,
+    index: number;
+    filePath: string;
 }>) {
     const setSelectedSlide = useSelectedSlideSetterContext();
     const [slide, setSlide] = useState<SlideDynamicType>(null);
@@ -57,35 +56,51 @@ export default function SlideFile({
             removePdfImagesPreview(filePath);
         }
     };
-    useAppEffectAsync(async (methodContext) => {
-        if (slide === null) {
-            const slide = await Slide.readFileToData(filePath);
-            methodContext.setData(slide);
-        }
-    }, [slide], { setData: setSlide });
-    useFileSourceEvents(['update', 'history-update', 'edit'], () => {
-        setSlide(null);
-    }, [slide], filePath);
-    const menuItems: ContextMenuItemType[] | undefined = slide?.isPdf ? [{
-        menuTitle: 'Preview PDF',
-        onClick: () => {
-            previewPdf(slide.fileSource.src);
-        },
-    }, {
-        menuTitle: 'Refresh PDF Images',
-        onClick: async () => {
-            await removePdfImagesPreview(slide.filePath);
-            slide.fileSource.fireUpdateEvent();
-        },
-    }] : [{
-        menuTitle: 'Edit',
-        onClick: () => {
-            if (slide) {
-                slide.isSelected = true;
-                goToPath(editorTab.routePath);
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (slide === null) {
+                const slide = await Slide.readFileToData(filePath);
+                methodContext.setData(slide);
             }
         },
-    }];
+        [slide],
+        { setData: setSlide },
+    );
+    useFileSourceEvents(
+        ['update', 'history-update', 'edit'],
+        () => {
+            setSlide(null);
+        },
+        [slide],
+        filePath,
+    );
+    const menuItems: ContextMenuItemType[] | undefined = slide?.isPdf
+        ? [
+              {
+                  menuTitle: 'Preview PDF',
+                  onClick: () => {
+                      previewPdf(slide.fileSource.src);
+                  },
+              },
+              {
+                  menuTitle: 'Refresh PDF Images',
+                  onClick: async () => {
+                      await removePdfImagesPreview(slide.filePath);
+                      slide.fileSource.fireUpdateEvent();
+                  },
+              },
+          ]
+        : [
+              {
+                  menuTitle: 'Edit',
+                  onClick: () => {
+                      if (slide) {
+                          slide.isSelected = true;
+                          goToPath(editorTab.routePath);
+                      }
+                  },
+              },
+          ];
     return (
         <FileItemHandlerComp
             index={index}
@@ -101,16 +116,13 @@ export default function SlideFile({
     );
 }
 
-
 function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
-        <div className='w-100 h-100 app-ellipsis'>
-            <i className='bi bi-file-earmark-slides' />
+        <div className="w-100 h-100 app-ellipsis">
+            <i className="bi bi-file-earmark-slides" />
             {fileSource.name}
-            {slide.isChanged && (
-                <span style={{ color: 'red' }}>*</span>
-            )}
+            {slide.isChanged && <span style={{ color: 'red' }}>*</span>}
         </div>
     );
 }
@@ -118,8 +130,8 @@ function SlideFilePreviewNormal({ slide }: Readonly<{ slide: Slide }>) {
 function SlideFilePreviewPdf({ slide }: Readonly<{ slide: Slide }>) {
     const fileSource = FileSource.getInstance(slide.filePath);
     return (
-        <div className='w-100 h-100 app-ellipsis'>
-            <i className='bi bi-filetype-pdf' />
+        <div className="w-100 h-100 app-ellipsis">
+            <i className="bi bi-filetype-pdf" />
             {fileSource.name}
         </div>
     );

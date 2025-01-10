@@ -6,15 +6,12 @@ import {
     useStateSettingBoolean,
     useStateSettingString,
 } from '../helper/settingHelpers';
-import TabRenderComp, {
-    genTabBody,
-} from '../others/TabRenderComp';
-import {
-    useScreenBackgroundManagerEvents,
-} from '../_screen/managers/screenEventHelpers';
+import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
+import { useScreenBackgroundManagerEvents } from '../_screen/managers/screenEventHelpers';
 import ShowingScreenIcon from '../_screen/preview/ShowingScreenIcon';
 import {
-    BackgroundType, getBackgroundSrcListOnScreenSetting,
+    BackgroundType,
+    getBackgroundSrcListOnScreenSetting,
 } from '../_screen/screenHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import { tran } from '../lang';
@@ -32,19 +29,20 @@ const LazyBackgroundSounds = lazy(() => {
     return import('./BackgroundSounds');
 });
 
-
 const tabTypeList = [
     ['color', 'Colors', LazyBackgroundColors],
     ['image', 'Images', LazyBackgroundImages],
     ['video', 'Videos', LazyBackgroundVideos],
 ] as const;
-type TabType = typeof tabTypeList[number][0] | 'sound';
+type TabType = (typeof tabTypeList)[number][0] | 'sound';
 export default function Background() {
     const [isSoundActive, setIsSoundActive] = useStateSettingBoolean(
-        'background-sound', false,
+        'background-sound',
+        false,
     );
     const [tabType, setTabType] = useStateSettingString<TabType>(
-        'background-tab', 'image',
+        'background-tab',
+        'image',
     );
     useScreenBackgroundManagerEvents(['update']);
     const backgroundSrcList = getBackgroundSrcListOnScreenSetting();
@@ -58,8 +56,8 @@ export default function Background() {
         return genTabBody<TabType>(tabType, [type, target]);
     });
     return (
-        <div className='background w-100 d-flex flex-column'>
-            <div className='background-header d-flex'>
+        <div className="background w-100 d-flex flex-column">
+            <div className="background-header d-flex">
                 <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name, toHLS(type)];
@@ -67,67 +65,75 @@ export default function Background() {
                     activeTab={tabType}
                     setActiveTab={setTabType}
                 />
-                <ul className={
-                    'nav nav-tabs flex-fill d-flex justify-content-end'
-                }>
+                <ul
+                    className={
+                        'nav nav-tabs flex-fill d-flex justify-content-end'
+                    }
+                >
                     <li className={'nav-item '}>
-                        <button className={
-                            'btn btn-link nav-link' +
-                            ` ${isSoundActive ? 'active' : ''}`
-                        }
+                        <button
+                            className={
+                                'btn btn-link nav-link' +
+                                ` ${isSoundActive ? 'active' : ''}`
+                            }
                             onClick={() => {
                                 setIsSoundActive(!isSoundActive);
-                            }}>
+                            }}
+                        >
                             ♫{tran('Sound')}♫
                         </button>
                     </li>
                 </ul>
             </div>
-            <div className='background-body w-100 flex-fill d-flex'>
+            <div className="background-body w-100 flex-fill d-flex">
                 {isSoundActive ? (
                     <ResizeActor
                         flexSizeName={'flex-size-background'}
                         isHorizontal
                         isDisableQuickResize={true}
                         flexSizeDefault={{
-                            'h1': ['1'],
-                            'h2': ['1'],
+                            h1: ['1'],
+                            h2: ['1'],
                         }}
-                        dataInput={[{
-                            children: {
-                                render: () => {
-                                    return normalBackgroundChild;
+                        dataInput={[
+                            {
+                                children: {
+                                    render: () => {
+                                        return normalBackgroundChild;
+                                    },
                                 },
+                                key: 'h1',
+                                widgetName: 'Background Sound',
                             },
-                            key: 'h1',
-                            widgetName: 'Background Sound',
-                        }, {
-                            children: LazyBackgroundSounds,
-                            key: 'h2',
-                            widgetName: 'Background Sound',
-                        }]}
+                            {
+                                children: LazyBackgroundSounds,
+                                key: 'h2',
+                                widgetName: 'Background Sound',
+                            },
+                        ]}
                     />
-                ) : normalBackgroundChild}
+                ) : (
+                    normalBackgroundChild
+                )}
             </div>
         </div>
     );
 }
 
-export function RenderScreenIds({ screenIds }: Readonly<{
-    screenIds: number[],
+export function RenderScreenIds({
+    screenIds,
+}: Readonly<{
+    screenIds: number[];
 }>) {
     return (
-        <div style={{
-            position: 'absolute',
-            textShadow: '1px 1px 5px #000',
-        }}>
+        <div
+            style={{
+                position: 'absolute',
+                textShadow: '1px 1px 5px #000',
+            }}
+        >
             {screenIds.map((screenId) => {
-                return (
-                    <ShowingScreenIcon
-                        key={screenId}
-                        screenId={screenId}
-                    />
-                );
+                return <ShowingScreenIcon key={screenId} screenId={screenId} />;
             })}
         </div>
     );

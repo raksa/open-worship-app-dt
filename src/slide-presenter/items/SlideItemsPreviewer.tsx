@@ -1,6 +1,4 @@
-import {
-    useSlideItemThumbnailSizeScale,
-} from '../../event/SlideListEventListener';
+import { useSlideItemThumbnailSizeScale } from '../../event/SlideListEventListener';
 import SlideItemsComp from './SlideItemsComp';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleCtrlWheel } from '../../others/AppRangeComp';
@@ -10,16 +8,17 @@ import { DIV_CLASS_NAME } from './slideItemHelpers';
 
 export default function SlideItemsPreviewer() {
     const selectedSlide = useSelectedSlideContext();
-    const [
-        thumbSizeScale, setThumbnailSizeScale,
-    ] = useSlideItemThumbnailSizeScale();
+    const [thumbSizeScale, setThumbnailSizeScale] =
+        useSlideItemThumbnailSizeScale();
     return (
-        <div className={`${DIV_CLASS_NAME} app-focusable w-100 h-100 pb-5`}
+        <div
+            className={`${DIV_CLASS_NAME} app-focusable w-100 h-100 pb-5`}
             tabIndex={0}
             style={{ overflow: 'auto' }}
             onWheel={(event) => {
                 handleCtrlWheel({
-                    event, value: thumbSizeScale,
+                    event,
+                    value: thumbSizeScale,
                     setValue: setThumbnailSizeScale,
                     defaultSize: defaultRangeSize,
                 });
@@ -32,11 +31,9 @@ export default function SlideItemsPreviewer() {
                 for (const copiedSlideItem of copiedSlideItems) {
                     selectedSlide.addItem(copiedSlideItem);
                 }
-
-            }}>
-            {!selectedSlide.isPdf && (
-                <SlideItemsMenuComp />
-            )}
+            }}
+        >
+            {!selectedSlide.isPdf && <SlideItemsMenuComp />}
             <SlideItemsComp />
         </div>
     );

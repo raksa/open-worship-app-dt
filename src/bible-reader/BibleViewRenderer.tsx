@@ -1,27 +1,27 @@
 import {
-    NestedBibleItemsType, RESIZE_SETTING_NAME,
+    NestedBibleItemsType,
+    RESIZE_SETTING_NAME,
     useBibleItemViewControllerContext,
 } from './BibleItemViewController';
-import ResizeActor, {
-} from '../resize-actor/ResizeActor';
+import ResizeActor from '../resize-actor/ResizeActor';
 import NoBibleViewAvailable from './NoBibleViewAvailable';
 import { FlexSizeType, DataInputType } from '../resize-actor/flexSizeHelpers';
 
 export default function BibleViewRenderer({
-    isHorizontal = true, classPrefix = '', nestedBibleItems,
+    isHorizontal = true,
+    classPrefix = '',
+    nestedBibleItems,
 }: Readonly<{
-    isHorizontal?: boolean,
-    classPrefix?: string,
-    nestedBibleItems: NestedBibleItemsType,
+    isHorizontal?: boolean;
+    classPrefix?: string;
+    nestedBibleItems: NestedBibleItemsType;
 }>) {
     const viewController = useBibleItemViewControllerContext();
     if (!(nestedBibleItems instanceof Array)) {
         return viewController.finalRenderer(nestedBibleItems);
     }
     if (nestedBibleItems.length === 0) {
-        return (
-            <NoBibleViewAvailable />
-        );
+        return <NoBibleViewAvailable />;
     }
     const typeText = isHorizontal ? 'h' : 'v';
     classPrefix += typeText;
@@ -34,16 +34,16 @@ export default function BibleViewRenderer({
             />
         );
     }
-    const flexSizeDefault = Object.fromEntries(nestedBibleItems.map((_, i) => {
-        return [`${typeText}${i + 1}`, ['1']];
-    })) as FlexSizeType;
+    const flexSizeDefault = Object.fromEntries(
+        nestedBibleItems.map((_, i) => {
+            return [`${typeText}${i + 1}`, ['1']];
+        }),
+    ) as FlexSizeType;
     return (
         <ResizeActor
-            flexSizeName={
-                viewController.toSettingName(
-                    `${RESIZE_SETTING_NAME}-${classPrefix}`
-                )
-            }
+            flexSizeName={viewController.toSettingName(
+                `${RESIZE_SETTING_NAME}-${classPrefix}`,
+            )}
             isHorizontal={isHorizontal}
             isNotSaveSetting
             isDisableQuickResize={true}

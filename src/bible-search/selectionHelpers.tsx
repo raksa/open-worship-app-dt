@@ -1,11 +1,12 @@
 import {
-    KeyboardType, useKeyboardRegistering,
+    KeyboardType,
+    useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 
 export const INPUT_TEXT_CLASS = 'bible-search-input-text';
 
 function indexing(listLength: number, index: number, isNext: boolean) {
-    return ((index + (isNext ? 1 : -1)) + listLength) % listLength;
+    return (index + (isNext ? 1 : -1) + listLength) % listLength;
 }
 
 function getElements(optionClass: string) {
@@ -51,9 +52,11 @@ function calculateIndexer(optionClass: string, selectedClass: string) {
         for (const element of indexer) {
             row.push(element[i]);
         }
-        rotatedIndexer.push(row.filter((e) => {
-            return e === null;
-        }));
+        rotatedIndexer.push(
+            row.filter((e) => {
+                return e === null;
+            }),
+        );
     }
     return { elements, indexer, rotatedIndexer, preIndex };
 }
@@ -68,10 +71,15 @@ function cordToIndex(hLength: number, x: number, y: number) {
     return x + y * hLength;
 }
 
-function genIndex(optionClass: string,
-    selectedClass: string, key: KeyboardType) {
+function genIndex(
+    optionClass: string,
+    selectedClass: string,
+    key: KeyboardType,
+) {
     const { elements, indexer, rotatedIndexer, preIndex } = calculateIndexer(
-        optionClass, selectedClass);
+        optionClass,
+        selectedClass,
+    );
     if (!indexer.length) {
         return { index: -1, elements: [] };
     }
@@ -103,18 +111,22 @@ export function getSelectedElement(optionClass: string, selectedClass: string) {
 
 function blurInputText() {
     const inputText = document.querySelector<HTMLInputElement>(
-        `.${INPUT_TEXT_CLASS}`);
+        `.${INPUT_TEXT_CLASS}`,
+    );
     if (inputText) {
         inputText.blur();
     }
 }
 
 export function processSelection(
-    optionClass: string, selectedClass: string, key: KeyboardType,
+    optionClass: string,
+    selectedClass: string,
+    key: KeyboardType,
 ) {
     if (
         (key === 'ArrowLeft' || key === 'ArrowRight') &&
-        checkIsBibleSearchInputFocused() && getBibleSearchInputText() !== ''
+        checkIsBibleSearchInputFocused() &&
+        getBibleSearchInputText() !== ''
     ) {
         return;
     }
@@ -136,7 +148,8 @@ export function processSelection(
 export type SelectBookType = (newBookKey: string, newBook: string) => void;
 
 export function userEnteringSelected(
-    optionClass: string, selectedClass: string,
+    optionClass: string,
+    selectedClass: string,
 ) {
     useKeyboardRegistering([{ key: 'Enter' }], () => {
         const selectedElement = getSelectedElement(optionClass, selectedClass);

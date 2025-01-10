@@ -13,7 +13,7 @@
   backdrop-filter: blur(5px);
   padding: 10px;
 
-  &>div:first-child {
+  & > div:first-child {
     background-color: var(--bs-gray-800);
   }
 }

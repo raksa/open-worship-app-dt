@@ -3,15 +3,11 @@ import './Modal.scss';
 import { PropsWithChildren, ReactNode } from 'react';
 
 interface MyProps {
-    children?: ReactNode
+    children?: ReactNode;
 }
 
 export default function PrimitiveModal({
     children,
 }: PropsWithChildren<MyProps>) {
-    return (
-        <div id='modal-container'>
-            {children}
-        </div>
-    );
+    return <div id="modal-container">{children}</div>;
 }

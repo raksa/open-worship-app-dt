@@ -12,10 +12,10 @@ function checkIsActiveHiddenWidgetNode(node: HTMLDivElement) {
 
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
-    type: ResizeKindType,
-    isDisableQuickResize: boolean,
-    checkSize: () => void,
-    disable: (dataFSizeKey: string, target: DisabledType) => void,
+    type: ResizeKindType;
+    isDisableQuickResize: boolean;
+    checkSize: () => void;
+    disable: (dataFSizeKey: string, target: DisabledType) => void;
 }
 export default class FlexResizeActor extends Component<Props, {}> {
     myRef: RefObject<HTMLDivElement | null>;
@@ -118,10 +118,9 @@ export default class FlexResizeActor extends Component<Props, {}> {
         let pos = this.getMousePagePos(event);
         const posDiff = pos - this.lastPos;
         if (
-            this.props.isDisableQuickResize && (
-                (posDiff < 0 && this.isPreReachMinSize) ||
-                (posDiff > 0 && this.isNextReachMinSize)
-            )
+            this.props.isDisableQuickResize &&
+            ((posDiff < 0 && this.isPreReachMinSize) ||
+                (posDiff > 0 && this.isNextReachMinSize))
         ) {
             return;
         }
@@ -189,9 +188,9 @@ export default class FlexResizeActor extends Component<Props, {}> {
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = (
-            isFirst ? this.preNode.dataset['fs'] : this.nextNode.dataset['fs']
-        );
+        const dataFSizeKey = isFirst
+            ? this.preNode.dataset['fs']
+            : this.nextNode.dataset['fs'];
         if (dataFSizeKey !== undefined) {
             if (isFirst) {
                 this.nextNode.style.flexGrow = `${this.sumGrow}`;
@@ -215,25 +214,29 @@ export default class FlexResizeActor extends Component<Props, {}> {
     }
     render() {
         const props = this.props;
-        const moverChildren = props.isDisableQuickResize ? null : [
-            ['left', 'chevron-left'],
-            ['right', 'chevron-right'],
-            ['up', 'chevron-up'],
-            ['down', 'chevron-down'],
-        ].map(([type, icon]) => {
-            return (
-                <i key={type}
-                    title={`Disable ${type}`}
-                    className={`${type} bi bi-${icon}`}
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        this.quicMove(type);
-                    }}
-                />
-            );
-        });
+        const moverChildren = props.isDisableQuickResize
+            ? null
+            : [
+                  ['left', 'chevron-left'],
+                  ['right', 'chevron-right'],
+                  ['up', 'chevron-up'],
+                  ['down', 'chevron-down'],
+              ].map(([type, icon]) => {
+                  return (
+                      <i
+                          key={type}
+                          title={`Disable ${type}`}
+                          className={`${type} bi bi-${icon}`}
+                          onClick={(event) => {
+                              event.stopPropagation();
+                              this.quicMove(type);
+                          }}
+                      />
+                  );
+              });
         return (
-            <div className={`flex-resize-actor ${props.type}`}
+            <div
+                className={`flex-resize-actor ${props.type}`}
                 onDoubleClick={() => {
                     const prevGrowNew = this.preNode.dataset['fsDefault'] || 1;
                     const nextGrowNew = this.nextNode.dataset['fsDefault'] || 1;
@@ -243,10 +246,9 @@ export default class FlexResizeActor extends Component<Props, {}> {
                     this.nextNode.style.flexGrow = '';
                     props.checkSize();
                 }}
-                ref={this.myRef}>
-                <div className='mover'>
-                    {moverChildren}
-                </div>
+                ref={this.myRef}
+            >
+                <div className="mover">{moverChildren}</div>
             </div>
         );
     }

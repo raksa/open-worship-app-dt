@@ -8,7 +8,7 @@ import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 export default function RenderVerseOptions({
     onVersesChange,
 }: Readonly<{
-    onVersesChange: (verseStart?: number, verseEnd?: number) => void,
+    onVersesChange: (verseStart?: number, verseEnd?: number) => void;
 }>) {
     const bibleItem = useBibleItemContext();
     const verseList = useGenVerseList(bibleItem);
@@ -22,10 +22,12 @@ export default function RenderVerseOptions({
         return null;
     }
     return (
-        <div className='render-found'>
-            <div className={
-                'verse-select d-flex p-1 align-content-start flex-wrap'
-            }>
+        <div className="render-found">
+            <div
+                className={
+                    'verse-select d-flex p-1 align-content-start flex-wrap'
+                }
+            >
                 {verseList.map(([verseNum, verseNumStr], i) => {
                     return (
                         <RenderVerseNumOption

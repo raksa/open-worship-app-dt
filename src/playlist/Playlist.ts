@@ -1,14 +1,12 @@
-import {
-    AnyObjectType, cloneJson, isValidJson,
-} from '../helper/helpers';
+import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
 import ItemSource from '../helper/ItemSource';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 export type PlaylistType = {
-    items: PlaylistItemType[],
-    metadata: AnyObjectType,
-}
+    items: PlaylistItemType[];
+    metadata: AnyObjectType;
+};
 
 export default class Playlist extends ItemSource<PlaylistItem> {
     private readonly _originalJson: PlaylistType;
@@ -37,14 +35,17 @@ export default class Playlist extends ItemSource<PlaylistItem> {
         return 0;
     }
     static async readFileToDataNoCache(filePath: string | null) {
-        return super.readFileToDataNoCache(filePath) as
-            Promise<Playlist | null | undefined>;
+        return super.readFileToDataNoCache(filePath) as Promise<
+            Playlist | null | undefined
+        >;
     }
     static async readFileToData(
-        filePath: string | null, isForceCache?: boolean,
+        filePath: string | null,
+        isForceCache?: boolean,
     ) {
-        return super.readFileToData(filePath, isForceCache) as
-            Promise<Playlist | null | undefined>;
+        return super.readFileToData(filePath, isForceCache) as Promise<
+            Playlist | null | undefined
+        >;
     }
     static async create(dir: string, name: string) {
         return super.create(dir, name, []);

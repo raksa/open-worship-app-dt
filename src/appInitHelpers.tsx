@@ -7,9 +7,7 @@ import './others/scrollbar.scss';
 
 import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
 import { useKeyboardRegistering } from './event/KeyboardEventListener';
-import {
-    getAllLocalBibleInfoList,
-} from './helper/bible-helpers/bibleDownloadHelpers';
+import { getAllLocalBibleInfoList } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
 import { getCurrentLangAsync, getLangAsync, defaultLocale } from './lang';
@@ -21,10 +19,10 @@ import { createRoot } from 'react-dom/client';
 import { StrictMode } from 'react';
 
 export async function initApp() {
-
     const confirmEraseLocalStorage = () => {
-        showAppConfirm('Reload is needed',
-            'We were sorry, Internal process error, you to refresh the app'
+        showAppConfirm(
+            'Reload is needed',
+            'We were sorry, Internal process error, you to refresh the app',
         ).then((isOk) => {
             if (isOk) {
                 appProvider.reload();
@@ -67,19 +65,25 @@ export async function initApp() {
 }
 
 export function useQuickExitBlock() {
-    useKeyboardRegistering([{
-        key: 'q',
-        mControlKey: ['Meta'],
-    }], async (event) => {
-        event.preventDefault();
-        await showAppConfirm('Quick Exit',
-            'Are you sure you want to quit the app?'
-        ).then((isOk) => {
-            if (isOk) {
-                window.close();
-            }
-        });
-    });
+    useKeyboardRegistering(
+        [
+            {
+                key: 'q',
+                mControlKey: ['Meta'],
+            },
+        ],
+        async (event) => {
+            event.preventDefault();
+            await showAppConfirm(
+                'Quick Exit',
+                'Are you sure you want to quit the app?',
+            ).then((isOk) => {
+                if (isOk) {
+                    window.close();
+                }
+            });
+        },
+    );
 }
 
 export function getRootElement<T>(): T {
@@ -92,17 +96,17 @@ export function getRootElement<T>(): T {
     return container as T;
 }
 
-export function RenderApp({ children }: Readonly<{
-    children: React.ReactNode,
+export function RenderApp({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
 }>) {
     useQuickExitBlock();
     useCheckSelectedDir();
     useHandleFind();
     return (
-        <div id='app' className='dark' data-bs-theme='dark'>
-            <StrictMode>
-                {children}
-            </StrictMode>
+        <div id="app" className="dark" data-bs-theme="dark">
+            <StrictMode>{children}</StrictMode>
         </div>
     );
 }
@@ -111,9 +115,5 @@ export async function main(children: React.ReactNode) {
     await initApp();
     const container = getRootElement<HTMLDivElement>();
     const root = createRoot(container);
-    root.render(
-        <RenderApp>
-            {children}
-        </RenderApp>
-    );
+    root.render(<RenderApp>{children}</RenderApp>);
 }

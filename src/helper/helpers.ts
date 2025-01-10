@@ -11,8 +11,10 @@ export type AnyObjectType = {
 };
 
 export function getRandomUUID() {
-    return Math.random().toString(36).substring(2) +
-        (new Date()).getTime().toString(36);
+    return (
+        Math.random().toString(36).substring(2) +
+        new Date().getTime().toString(36)
+    );
 }
 
 export function getRandomColor() {
@@ -40,9 +42,11 @@ export function isVisible(elem: any) {
         return false;
     }
     if (
-        elem.offsetWidth + elem.offsetHeight +
-        elem.getBoundingClientRect().height +
-        elem.getBoundingClientRect().width === 0
+        elem.offsetWidth +
+            elem.offsetHeight +
+            elem.getBoundingClientRect().height +
+            elem.getBoundingClientRect().width ===
+        0
     ) {
         return false;
     }
@@ -83,13 +87,12 @@ export const removePX = (str: string) => {
 
 export function genRandomString(length: number = 5) {
     let result = '';
-    const characters = (
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    );
+    const characters =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
-        result += (
-            characters.charAt(Math.floor(Math.random() * charactersLength))
+        result += characters.charAt(
+            Math.floor(Math.random() * charactersLength),
         );
     }
     return result;
@@ -97,14 +100,14 @@ export function genRandomString(length: number = 5) {
 
 export function getWindowDim() {
     const { documentElement } = document;
-    const width = (
-        window.innerWidth || documentElement.clientWidth ||
-        document.body.clientWidth
-    );
-    const height = (
-        window.innerHeight || documentElement.clientHeight ||
-        document.body.clientHeight
-    );
+    const width =
+        window.innerWidth ||
+        documentElement.clientWidth ||
+        document.body.clientWidth;
+    const height =
+        window.innerHeight ||
+        documentElement.clientHeight ||
+        document.body.clientHeight;
     return { width, height };
 }
 export function validateAppMeta(meta: any) {
@@ -152,9 +155,13 @@ export function getImageDim(src: string) {
 export function getVideoDim(src: string) {
     return new Promise<[number, number]>((resolve, reject) => {
         const video = document.createElement('video');
-        video.addEventListener('loadedmetadata', () => {
-            resolve([video.videoWidth, video.videoHeight]);
-        }, false);
+        video.addEventListener(
+            'loadedmetadata',
+            () => {
+                resolve([video.videoWidth, video.videoHeight]);
+            },
+            false,
+        );
         video.onerror = () => {
             reject(new Error('Fail to load video:' + src));
         };
@@ -165,7 +172,7 @@ export function getVideoDim(src: string) {
 export function toMaxId(ids: number[]) {
     if (ids.length === 0) {
         return 0;
-    };
+    }
     return Math.max(...ids);
 }
 
@@ -207,7 +214,8 @@ export function freezeObject(obj: any) {
 }
 
 export function getHTMLChild<T extends HTMLElement>(
-    parent: HTMLElement, tag: string,
+    parent: HTMLElement,
+    tag: string,
 ) {
     const child = parent.querySelector(tag);
     if (!child) {

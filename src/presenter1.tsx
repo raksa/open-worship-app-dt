@@ -1,11 +1,15 @@
 import { createRoot } from 'react-dom/client';
 import { getRootElement } from './appInitHelpers';
 import {
-    fsCheckFileExist, fsReadFile, fsWriteFile, pathJoin,
+    fsCheckFileExist,
+    fsReadFile,
+    fsWriteFile,
+    pathJoin,
 } from './server/fileHelpers';
 import { getUserWritablePath } from './server/appHelpers';
 import EditingHistoryManager, {
-    useEditingHistoryEvent, useEditingHistoryStatus,
+    useEditingHistoryEvent,
+    useEditingHistoryStatus,
 } from './others/EditingHistoryManager';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppEffectAsync } from './helper/debuggerHelpers';
@@ -23,7 +27,7 @@ function HistoryAppComp() {
         return new EditingHistoryManager(filePath);
     }, []);
     const setTextFromHistory = useCallback(async () => {
-        if (!await fsCheckFileExist(filePath)) {
+        if (!(await fsCheckFileExist(filePath))) {
             await fsWriteFile(filePath, '');
         }
         const lastHistory = await historyManager.getCurrentHistory();
@@ -54,31 +58,49 @@ function HistoryAppComp() {
         }
     };
     return (
-        <div style={{
-            width: '600px',
-            margin: 'auto',
-            backgroundColor: 'white',
-        }}>
+        <div
+            style={{
+                width: '600px',
+                margin: 'auto',
+                backgroundColor: 'white',
+            }}
+        >
             <h1>Editing History</h1>
             <div>
-                <button disabled={!canUndo} onClick={() => {
-                    historyManager.undo();
-                }}>Undo</button>
-                <button disabled={!canRedo}
+                <button
+                    disabled={!canUndo}
+                    onClick={() => {
+                        historyManager.undo();
+                    }}
+                >
+                    Undo
+                </button>
+                <button
+                    disabled={!canRedo}
                     onClick={() => {
                         historyManager.redo();
-                    }}>Redo</button>
-                <button disabled={!canSave}
+                    }}
+                >
+                    Redo
+                </button>
+                <button
+                    disabled={!canSave}
                     onClick={() => {
                         historyManager.discard();
-                    }}>Discard</button>
-                <button disabled={!canSave}
-                    onClick={handleSaving}>Save</button>
+                    }}
+                >
+                    Discard
+                </button>
+                <button disabled={!canSave} onClick={handleSaving}>
+                    Save
+                </button>
                 <hr />
-                <textarea style={{
-                    width: '100%',
-                    height: '300px',
-                }} value={text}
+                <textarea
+                    style={{
+                        width: '100%',
+                        height: '300px',
+                    }}
+                    value={text}
                     onChange={(event) => {
                         handleTextChanging(event.target.value);
                     }}
@@ -88,6 +110,4 @@ function HistoryAppComp() {
     );
 }
 
-root.render(
-    <HistoryAppComp />
-);
+root.render(<HistoryAppComp />);

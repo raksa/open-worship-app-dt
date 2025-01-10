@@ -13,74 +13,85 @@ type DownloadingBibleInfoType = {
     isDownloading: boolean;
 };
 export default function SettingDownloadedBibleComp({
-    onlineBibleInfoList, downloadedBibleInfoList, setDownloadedBibleInfoList,
+    onlineBibleInfoList,
+    downloadedBibleInfoList,
+    setDownloadedBibleInfoList,
 }: Readonly<{
-    onlineBibleInfoList: BibleListType,
-    downloadedBibleInfoList: BibleListType,
-    setDownloadedBibleInfoList: (bbList: BibleListType) => void,
+    onlineBibleInfoList: BibleListType;
+    downloadedBibleInfoList: BibleListType;
+    setDownloadedBibleInfoList: (bbList: BibleListType) => void;
 }>) {
     if (downloadedBibleInfoList === null) {
-        return (
-            <LoadingComp />
-        );
+        return <LoadingComp />;
     }
     if (downloadedBibleInfoList === undefined) {
-        return (
-            <div>Unable to get downloaded bible list</div>
-        );
+        return <div>Unable to get downloaded bible list</div>;
     }
-    const bibleInfoList = downloadedBibleInfoList
-        .map<DownloadingBibleInfoType>((bibleInfo) => {
-            const foundBibleInfo = onlineBibleInfoList ?
-                onlineBibleInfoList.find((bible1) => {
-                    return bible1.key === bibleInfo.key &&
-                        bible1.version >= bibleInfo.version;
-                }) : undefined;
+    const bibleInfoList = downloadedBibleInfoList.map<DownloadingBibleInfoType>(
+        (bibleInfo) => {
+            const foundBibleInfo = onlineBibleInfoList
+                ? onlineBibleInfoList.find((bible1) => {
+                      return (
+                          bible1.key === bibleInfo.key &&
+                          bible1.version >= bibleInfo.version
+                      );
+                  })
+                : undefined;
             return {
                 isDownloading: false,
                 ...bibleInfo,
                 isUpdatable: !!foundBibleInfo,
                 filePath: foundBibleInfo?.filePath,
             };
-        });
+        },
+    );
     return (
-        <div className='w-100'>
+        <div className="w-100">
             <div>
-                <button className='btn btn-info'
+                <button
+                    className="btn btn-info"
                     onClick={() => {
                         setDownloadedBibleInfoList(null);
-                    }}>
-                    <i className='bi bi-arrow-clockwise' /> Refresh
+                    }}
+                >
+                    <i className="bi bi-arrow-clockwise" /> Refresh
                 </button>
             </div>
-            <ul className='list-group d-flex flex-fill'>
-                {bibleInfoList.length === 0 ? (<div>
-                    No bible downloaded
-                </div>) : (<>
-                    {bibleInfoList.map((bibleInfo, i) => {
-                        return (
-                            <RenderItem key={bibleInfo.key}
-                                index={i}
-                                bibleInfoList={bibleInfoList}
-                                bibleInfo={bibleInfo}
-                                setDownloadedBibleInfoList={
-                                    setDownloadedBibleInfoList}
-                            />
-                        );
-                    })}
-                </>)}
+            <ul className="list-group d-flex flex-fill">
+                {bibleInfoList.length === 0 ? (
+                    <div>No bible downloaded</div>
+                ) : (
+                    <>
+                        {bibleInfoList.map((bibleInfo, i) => {
+                            return (
+                                <RenderItem
+                                    key={bibleInfo.key}
+                                    index={i}
+                                    bibleInfoList={bibleInfoList}
+                                    bibleInfo={bibleInfo}
+                                    setDownloadedBibleInfoList={
+                                        setDownloadedBibleInfoList
+                                    }
+                                />
+                            );
+                        })}
+                    </>
+                )}
             </ul>
         </div>
     );
 }
 
 function RenderItem({
-    bibleInfoList, bibleInfo, index, setDownloadedBibleInfoList,
+    bibleInfoList,
+    bibleInfo,
+    index,
+    setDownloadedBibleInfoList,
 }: Readonly<{
-    bibleInfoList: DownloadingBibleInfoType[],
-    bibleInfo: DownloadingBibleInfoType,
-    index: number,
-    setDownloadedBibleInfoList: (bbList: BibleListType) => void,
+    bibleInfoList: DownloadingBibleInfoType[];
+    bibleInfo: DownloadingBibleInfoType;
+    index: number;
+    setDownloadedBibleInfoList: (bbList: BibleListType) => void;
 }>) {
     const handleDownloadedEvent = () => {
         setDownloadedBibleInfoList(null);
@@ -94,14 +105,16 @@ function RenderItem({
     };
     if (bibleInfo.isDownloading) {
         return (
-            <OnlineBibleItemComp key={`${index}`}
+            <OnlineBibleItemComp
+                key={`${index}`}
                 bibleInfo={bibleInfo}
                 onDownloaded={handleDownloadedEvent}
             />
         );
     }
     return (
-        <DownloadedBibleItemComp key={`${index}`}
+        <DownloadedBibleItemComp
+            key={`${index}`}
             bibleInfo={bibleInfo}
             onDeleted={handleDeleting}
             onUpdate={handleUpdating}

@@ -1,30 +1,33 @@
 import './SlideItemRenderComp.scss';
 
 import SlideItem from '../../slide-list/SlideItem';
-import {
-    useScreenSlideManagerEvents,
-} from '../../_screen/managers/screenEventHelpers';
-import {
-    RenderInfoComp, toClassNameHighlight,
-} from './SlideItemRenderComp';
+import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
+import { RenderInfoComp, toClassNameHighlight } from './SlideItemRenderComp';
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 
 export function SlideItemPdfRenderContent({
-    pdfImageSrc, isFullWidth = false,
+    pdfImageSrc,
+    isFullWidth = false,
 }: Readonly<{
-    pdfImageSrc: string,
-    isFullWidth?: boolean,
+    pdfImageSrc: string;
+    isFullWidth?: boolean;
 }>) {
     return (
-        <img alt='pdf-image' style={isFullWidth ? {
-            width: '100%',
-        } : {
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-        }}
+        <img
+            alt="pdf-image"
+            style={
+                isFullWidth
+                    ? {
+                          width: '100%',
+                      }
+                    : {
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                      }
+            }
             src={pdfImageSrc}
         />
     );
@@ -32,7 +35,8 @@ export function SlideItemPdfRenderContent({
 
 export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
     const htmlString = ReactDOMServer.renderToStaticMarkup(
-        <SlideItemPdfRenderContent pdfImageSrc={pdfImageSrc}
+        <SlideItemPdfRenderContent
+            pdfImageSrc={pdfImageSrc}
             isFullWidth={isFullWidth}
         />,
     );
@@ -42,24 +46,28 @@ export function genPdfSlideItem(pdfImageSrc: string, isFullWidth = false) {
 }
 
 export default function SlideItemPdfRender({
-    slideItem, width, index, onClick, onContextMenu, onDragStart,
+    slideItem,
+    width,
+    index,
+    onClick,
+    onContextMenu,
+    onDragStart,
     onDragEnd,
 }: Readonly<{
     slideItem: SlideItem;
-    width: number,
+    width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
-    onContextMenu: (event: any) => void,
-    onDragStart: (event: React.DragEvent<HTMLDivElement>) => void,
-    onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void,
+    onContextMenu: (event: any) => void;
+    onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
+    onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
     useScreenSlideManagerEvents(['update']);
-    const {
-        activeCN, presenterCN,
-    } = toClassNameHighlight(slideItem);
+    const { activeCN, presenterCN } = toClassNameHighlight(slideItem);
     const pdfPreviewSrc = slideItem.pdfPreviewSrc;
     return (
-        <div className={`slide-item card pointer ${activeCN} ${presenterCN}`}
+        <div
+            className={`slide-item card pointer ${activeCN} ${presenterCN}`}
             style={{ width: `${width}px` }}
             data-slide-item-id={slideItem.id}
             draggable
@@ -71,23 +79,22 @@ export default function SlideItemPdfRender({
                 onDragEnd(event);
             }}
             onClick={onClick}
-            onContextMenu={onContextMenu}>
-            <div className='card-header d-flex' style={{ height: '35px' }}>
-                <i className='bi bi-filetype-pdf' />
-                <RenderInfoComp index={index}
-                    slideItem={slideItem}
-                />
+            onContextMenu={onContextMenu}
+        >
+            <div className="card-header d-flex" style={{ height: '35px' }}>
+                <i className="bi bi-filetype-pdf" />
+                <RenderInfoComp index={index} slideItem={slideItem} />
             </div>
             {pdfPreviewSrc === null ? (
-                <div className='alert alert-danger'>
+                <div className="alert alert-danger">
                     Unable to preview right now
                 </div>
             ) : (
-                <div className='card-body overflow-hidden'
-                    style={{ padding: '0px' }} >
-                    <SlideItemPdfRenderContent
-                        pdfImageSrc={pdfPreviewSrc}
-                    />
+                <div
+                    className="card-body overflow-hidden"
+                    style={{ padding: '0px' }}
+                >
+                    <SlideItemPdfRenderContent pdfImageSrc={pdfPreviewSrc} />
                 </div>
             )}
         </div>

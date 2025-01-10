@@ -8,11 +8,11 @@
     }
   }
 
-  &>.background-header {
+  & > .background-header {
     height: $header-height;
   }
 
-  &>.background-body {
+  & > .background-body {
     background-color: var(--bs-gray-900);
     overflow-y: auto;
     padding: 1px;

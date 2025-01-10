@@ -13,11 +13,13 @@ if (container !== null) {
     const root = createRoot(container);
     root.render(
         <StrictMode>
-            <FinderApp onClose={() => {
-                appProviderScreen.messageUtils.sendData(
-                    'finder:app:close-finder',
-                );
-            }} />
-        </StrictMode>
+            <FinderApp
+                onClose={() => {
+                    appProviderScreen.messageUtils.sendData(
+                        'finder:app:close-finder',
+                    );
+                }}
+            />
+        </StrictMode>,
     );
 }

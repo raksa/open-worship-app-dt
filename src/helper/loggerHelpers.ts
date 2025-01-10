@@ -1,7 +1,7 @@
 const logLevelMapper = {
-    'verbose': ['error', 'warn', 'log', 'trace'],
-    'minimal': ['error', 'warn'],
-    'critical': ['error'],
+    verbose: ['error', 'warn', 'log', 'trace'],
+    minimal: ['error', 'warn'],
+    critical: ['error'],
 };
 const logLevel: 'verbose' | 'minimal' | 'critical' = 'verbose';
 const logLevelList = logLevelMapper[logLevel];

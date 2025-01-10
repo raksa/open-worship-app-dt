@@ -6,9 +6,9 @@ const numList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const dictionary = {
     'bible-search': 'Bible Search',
     'bible-presenter': 'Bible Presenter',
-    'general': 'General',
-    'bible': 'Bible',
-    'about': 'About',
+    general: 'General',
+    bible: 'Bible',
+    about: 'About',
 };
 const en: LanguageType = {
     numList,

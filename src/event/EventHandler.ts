@@ -1,15 +1,15 @@
-export type ListenerType<T> = (data: T) => (void | Promise<void>);
+export type ListenerType<T> = (data: T) => void | Promise<void>;
 
 export type RegisteredEventType<T, F> = {
-    eventName: T,
-    listener: ListenerType<F>,
+    eventName: T;
+    listener: ListenerType<F>;
 };
 
 export class BasicEventHandler<T extends string> {
     private eventListenersMapper = new Map<string, ListenerType<any>[]>();
     private readonly propEvent: {
-        eventName: T,
-        data?: any,
+        eventName: T;
+        data?: any;
     }[];
     constructor() {
         this.propEvent = [];
@@ -72,9 +72,10 @@ export class BasicEventHandler<T extends string> {
         }
     }
 
-    registerEventListener<F>(eventNames: T[], listener: ListenerType<F>):
-        RegisteredEventType<T, F>[] {
-
+    registerEventListener<F>(
+        eventNames: T[],
+        listener: ListenerType<F>,
+    ): RegisteredEventType<T, F>[] {
         return eventNames.map((eventName) => {
             this.addOnEventListener(eventName, listener);
             return { eventName, listener };
@@ -90,33 +91,35 @@ export class BasicEventHandler<T extends string> {
 
 const eventHandler = new BasicEventHandler<any>();
 
-export default class EventHandler<T extends string> extends
-    BasicEventHandler<T> {
-
+export default class EventHandler<
+    T extends string,
+> extends BasicEventHandler<T> {
     static readonly eventNamePrefix: string = 'event';
 
     static registerEventListener<T extends string, F>(
-        eventNames: T[], listener: ListenerType<F>,
-    ):
-        RegisteredEventType<T, F>[] {
+        eventNames: T[],
+        listener: ListenerType<F>,
+    ): RegisteredEventType<T, F>[] {
         return eventNames.map((eventName) => {
             eventHandler.addOnEventListener(
-                this.prefixEventName(eventName), listener,
+                this.prefixEventName(eventName),
+                listener,
             );
             return { eventName, listener };
         });
     }
-
 
     static addPropEvent<T extends string>(eventName: T, data?: any) {
         eventHandler.addPropEvent(this.prefixEventName(eventName), data);
     }
 
     static unregisterEventListener<T extends string, F>(
-        regEvents: RegisteredEventType<T, F>[]) {
+        regEvents: RegisteredEventType<T, F>[],
+    ) {
         regEvents.forEach(({ eventName, listener }) => {
             eventHandler.removeOnEventListener(
-                this.prefixEventName(eventName), listener,
+                this.prefixEventName(eventName),
+                listener,
             );
         });
     }

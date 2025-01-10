@@ -5,12 +5,12 @@ import Lyric from '../lyric-list/Lyric';
 import Slide from '../slide-list/Slide';
 
 const itemTypeList = ['error', 'slide', 'bible-item', 'lyric'] as const;
-type ItemType = typeof itemTypeList[number];
+type ItemType = (typeof itemTypeList)[number];
 export type PlaylistItemType = {
     type: ItemType;
-    filePath: string,
-    id?: number,
-}
+    filePath: string;
+    id?: number;
+};
 
 export default class PlaylistItem {
     private readonly originalJson: Readonly<PlaylistItemType>;
@@ -79,9 +79,10 @@ export default class PlaylistItem {
         };
     }
     static validate(json: AnyObjectType) {
-        if (!itemTypeList.includes(json.type)
-            || json.path && typeof json.path !== 'string'
-            || (json.type === 'bible-item' && typeof json.id !== 'number')
+        if (
+            !itemTypeList.includes(json.type) ||
+            (json.path && typeof json.path !== 'string') ||
+            (json.type === 'bible-item' && typeof json.id !== 'number')
         ) {
             loggerHelpers.error(json);
             throw new Error('Invalid playlist item data');

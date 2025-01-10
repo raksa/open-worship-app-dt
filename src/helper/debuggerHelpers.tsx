@@ -1,5 +1,9 @@
 import {
-    DependencyList, EffectCallback, useEffect, useMemo, useState,
+    DependencyList,
+    EffectCallback,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
 
 import { warn } from './loggerHelpers';
@@ -8,14 +12,14 @@ const THRESHOLD = 10;
 const MILLIE_SECOND = 1000;
 
 type StoreType = {
-    count: number,
-    timeoutId: any,
+    count: number;
+    timeoutId: any;
 };
 function restore(toKey: string) {
-    const store = (storeMapper.get(toKey) || {
+    const store = storeMapper.get(toKey) || {
         count: 0,
         timeoutId: 0,
-    });
+    };
     store.count++;
     if (store.timeoutId) {
         clearTimeout(store.timeoutId);
@@ -30,10 +34,8 @@ function restore(toKey: string) {
 }
 
 function warningMethod(key: string) {
-    warn(
-        `[useAppEffect] ${key} is called after unmounting`,
-    );
-};
+    warn(`[useAppEffect] ${key} is called after unmounting`);
+}
 
 const storeMapper = new Map<string, StoreType>();
 function checkStore(toKey: string) {
@@ -41,13 +43,13 @@ function checkStore(toKey: string) {
     storeMapper.set(toKey, store);
     if (store.count > THRESHOLD) {
         warn(
-            `[useAppEffect] ${toKey} is called more than `
-            + `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
+            `[useAppEffect] ${toKey} is called more than ` +
+                `${THRESHOLD} times in ${MILLIE_SECOND}ms`,
         );
     }
 }
 
-type MethodContextType = { [key: string]: any }
+type MethodContextType = { [key: string]: any };
 export function useAppEffectAsync<T extends MethodContextType>(
     effectMethod: (methodContext: T) => Promise<(() => void) | void>,
     deps?: DependencyList,
@@ -58,9 +60,9 @@ export function useAppEffectAsync<T extends MethodContextType>(
         return key ?? effectMethod.toString();
     }, []);
     const isAllUndefined = deps === undefined && methods === undefined;
-    const totalDeps = isAllUndefined ? undefined : [
-        ...(deps || []), ...Object.values(methods ?? {}),
-    ];
+    const totalDeps = isAllUndefined
+        ? undefined
+        : [...(deps || []), ...Object.values(methods ?? {})];
     useEffect(() => {
         const methodContext = { ...(methods ?? {}) } as T;
         checkStore(toKey);
@@ -96,19 +98,26 @@ export function useAppEffect(
 function TestInfinite() {
     const [count, setCount] = useState(0);
     const [isStopped, setIsStopped] = useState(false);
-    useAppEffect(() => {
-        if (isStopped) {
-            return;
-        }
-        setTimeout(() => {
-            setCount(count + 1);
-        }, 20);
-    }, [count], 'test');
+    useAppEffect(
+        () => {
+            if (isStopped) {
+                return;
+            }
+            setTimeout(() => {
+                setCount(count + 1);
+            }, 20);
+        },
+        [count],
+        'test',
+    );
     return (
         <h2>
-            <button onClick={() => {
-                setIsStopped(true);
-            }} disabled={isStopped}>
+            <button
+                onClick={() => {
+                    setIsStopped(true);
+                }}
+                disabled={isStopped}
+            >
                 {isStopped ? 'Stopped' : 'Stop'}
             </button>
             Count: {count}

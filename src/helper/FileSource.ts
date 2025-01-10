@@ -1,8 +1,17 @@
 import DirSource from './DirSource';
 import {
-    checkIsAppFile, getFileExtension, fsCheckFileExist, fsCreateFile,
-    fsDeleteFile, fsReadFile, fsRenameFile, fsWriteFile, getFileMetaData,
-    pathBasename, pathJoin, pathSeparator,
+    checkIsAppFile,
+    getFileExtension,
+    fsCheckFileExist,
+    fsCreateFile,
+    fsDeleteFile,
+    fsReadFile,
+    fsRenameFile,
+    fsWriteFile,
+    getFileMetaData,
+    pathBasename,
+    pathJoin,
+    pathSeparator,
     getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
@@ -18,14 +27,20 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FileSourceEventType = (
-    'select' | 'update' | 'new' | 'history-update' | 'edit' | 'delete' |
-    'delete-cache'
-);
+export type FileSourceEventType =
+    | 'select'
+    | 'update'
+    | 'new'
+    | 'history-update'
+    | 'edit'
+    | 'delete'
+    | 'delete-cache';
 
 const cache = new Map<string, FileSource>();
-export default class FileSource extends EventHandler<FileSourceEventType>
-    implements DragInf<string>, ColorNoteInf {
+export default class FileSource
+    extends EventHandler<FileSourceEventType>
+    implements DragInf<string>, ColorNoteInf
+{
     static readonly eventNamePrefix: string = 'file-source';
     basePath: string;
     fileFullName: string;
@@ -34,7 +49,10 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     colorNote: string | null = null;
 
     constructor(
-        basePath: string, fileFullName: string, filePath: string, src: string,
+        basePath: string,
+        fileFullName: string,
+        filePath: string,
+        src: string,
     ) {
         super();
         this.basePath = basePath;
@@ -49,21 +67,25 @@ export default class FileSource extends EventHandler<FileSourceEventType>
 
     getSrcData() {
         return new Promise<SrcData>((resolve, reject) => {
-            appProvider.fileUtils.readFile(this.filePath, {
-                encoding: 'base64',
-            }, (err, data) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                const metadata = this.metadata;
-                if (metadata === null) {
-                    reject(new Error('metadata not found'));
-                    return;
-                }
-                const { mimetypeSignature } = metadata.appMimetype;
-                resolve(`data:${mimetypeSignature};base64,${data}`);
-            });
+            appProvider.fileUtils.readFile(
+                this.filePath,
+                {
+                    encoding: 'base64',
+                },
+                (err, data) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    const metadata = this.metadata;
+                    if (metadata === null) {
+                        reject(new Error('metadata not found'));
+                        return;
+                    }
+                    const { mimetypeSignature } = metadata.appMimetype;
+                    resolve(`data:${mimetypeSignature};base64,${data}`);
+                },
+            );
         });
     }
 
@@ -108,7 +130,7 @@ export default class FileSource extends EventHandler<FileSourceEventType>
             showSimpleToast(
                 'Reader File Data',
                 'Error occurred during reading ' +
-                `file: "${this.filePath}", error: ${error.message}`
+                    `file: "${this.filePath}", error: ${error.message}`,
             );
         }
         return null;
@@ -158,12 +180,18 @@ export default class FileSource extends EventHandler<FileSourceEventType>
             fileFullName = pathBasename(filePath);
         }
         return new FileSource(
-            basePath, fileFullName, filePath, pathToFileURL(filePath),
+            basePath,
+            fileFullName,
+            filePath,
+            pathToFileURL(filePath),
         );
     }
 
-    static getInstance(filePath: string, fileFullName?: string,
-        refreshCache?: boolean) {
+    static getInstance(
+        filePath: string,
+        fileFullName?: string,
+        refreshCache?: boolean,
+    ) {
         const fileSource = this.getInstanceNoCache(filePath, fileFullName);
         if (refreshCache) {
             cache.delete(fileSource.filePath);
@@ -191,13 +219,18 @@ export default class FileSource extends EventHandler<FileSourceEventType>
             return false;
         }
         try {
-            await fsRenameFile(this.basePath, this.fileFullName,
-                newName + this.extension);
+            await fsRenameFile(
+                this.basePath,
+                this.fileFullName,
+                newName + this.extension,
+            );
             return true;
         } catch (error: any) {
             handleError(error);
-            showSimpleToast('Renaming File',
-                `Unable to rename file: ${error.message}`);
+            showSimpleToast(
+                'Renaming File',
+                `Unable to rename file: ${error.message}`,
+            );
         }
         return false;
     }
@@ -205,8 +238,9 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     private async _duplicate() {
         let i = 1;
         let newName = this.name + ' (Copy)';
-        while (await fsCheckFileExist(
-            this.basePath, newName + this.extension)) {
+        while (
+            await fsCheckFileExist(this.basePath, newName + this.extension)
+        ) {
             newName = this.name + ' (Copy ' + i + ')';
             i++;
         }
@@ -227,7 +261,8 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     }
 
     static registerFileSourceEventListener<T>(
-        events: FileSourceEventType[], callback: (data: T) => void,
+        events: FileSourceEventType[],
+        callback: (data: T) => void,
         filePath?: string,
     ) {
         const newEvents = events.map((event) => {
@@ -237,7 +272,9 @@ export default class FileSource extends EventHandler<FileSourceEventType>
     }
 
     static addFileSourcePropEvent(
-        eventName: FileSourceEventType, filePath: string, data?: any,
+        eventName: FileSourceEventType,
+        filePath: string,
+        data?: any,
     ): void {
         const newEventName = `${eventName}@${filePath}` as FileSourceEventType;
         super.addPropEvent(eventName, data);
@@ -250,7 +287,9 @@ export default class FileSource extends EventHandler<FileSourceEventType>
 
     fireHistoryUpdateEvent(data?: any) {
         FileSource.addFileSourcePropEvent(
-            'history-update', this.filePath, data,
+            'history-update',
+            this.filePath,
+            data,
         );
     }
 

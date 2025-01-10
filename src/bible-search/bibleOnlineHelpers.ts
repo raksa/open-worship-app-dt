@@ -9,26 +9,25 @@ export type SelectedBookKeyType = [string, string] | null;
 export type APIDataType = {
     mapper: {
         [key: string]: {
-            apiKey: string,
-            apiUrl: string,
-        }
-    }
-}
+            apiKey: string;
+            apiUrl: string;
+        };
+    };
+};
 
 export type BibleSearchOnlineType = {
     maxLineNumber: number;
     fromLineNumber: number;
     toLineNumber: number;
     content: string[];
-}
+};
 export type BibleSearchForType = {
-    bookKey?: string,
+    bookKey?: string;
     fromLineNumber?: number;
     toLineNumber?: number;
     text: string;
-    isFresh?: boolean,
-}
-
+    isFresh?: boolean;
+};
 
 export type PagingDataTye = {
     pages: string[];
@@ -39,7 +38,9 @@ export type PagingDataTye = {
 export type AllDataType = { [key: string]: BibleSearchOnlineType };
 
 export function checkIsCurrentPage(
-    data: BibleSearchOnlineType, pageNumber: number, perPage: number
+    data: BibleSearchOnlineType,
+    pageNumber: number,
+    perPage: number,
 ) {
     const size = pageNumber * perPage;
     if (data.fromLineNumber <= size && size <= data.toLineNumber) {
@@ -47,7 +48,9 @@ export function checkIsCurrentPage(
     }
 }
 export function findPageNumber(
-    data: BibleSearchOnlineType, perPage: number, pages: string[],
+    data: BibleSearchOnlineType,
+    perPage: number,
+    pages: string[],
 ) {
     for (const pageNumber of pages) {
         if (checkIsCurrentPage(data, parseInt(pageNumber), perPage)) {
@@ -66,7 +69,7 @@ export function calcPaging(data: BibleSearchOnlineType): PagingDataTye {
     const perPage = calcPerPage(data);
     const pageSize = Math.ceil(data.maxLineNumber / perPage);
     const pages = Array.from(Array(pageSize)).map((_, i) => {
-        return (i + 1) + '';
+        return i + 1 + '';
     });
     const currentPage = findPageNumber(data, perPage, pages);
     return { pages, currentPage, pageSize, perPage };
@@ -77,9 +80,7 @@ export function breakItem(text: string, item: string, bibleKey: string) {
     const [bookKeyChapter, verse, ...newItems] = item.split(':');
     let newItem = newItems.join(':');
     if (indexText > 10) {
-        newItem = item.substring(
-            indexText - 10, indexText + 20
-        );
+        newItem = item.substring(indexText - 10, indexText + 20);
         newItem = newItem.replace(
             new RegExp(`(${text})`, 'ig'),
             '<span style="color:red">$1</span>',
@@ -87,11 +88,16 @@ export function breakItem(text: string, item: string, bibleKey: string) {
     }
     const [bookKey, chapter] = bookKeyChapter.split('.');
     const target = {
-        bookKey: bookKey, chapter: parseInt(chapter),
-        verseStart: parseInt(verse), verseEnd: parseInt(verse),
+        bookKey: bookKey,
+        chapter: parseInt(chapter),
+        verseStart: parseInt(verse),
+        verseEnd: parseInt(verse),
     };
     const bibleItemJson: BibleItemType = {
-        id: -1, metadata: {}, bibleKey, target,
+        id: -1,
+        metadata: {},
+        bibleKey,
+        target,
     };
     const bibleItem = BibleItem.fromJson(bibleItemJson);
     const kjvTitle = `${bookKey} ${chapter}:${verse}`;
@@ -99,7 +105,8 @@ export function breakItem(text: string, item: string, bibleKey: string) {
 }
 
 export function pageNumberToReqData(
-    pagingData: PagingDataTye, pageNumber: string,
+    pagingData: PagingDataTye,
+    pageNumber: string,
 ) {
     const { perPage } = pagingData;
     let newPageNumber = parseInt(pageNumber);
@@ -112,7 +119,9 @@ export function pageNumberToReqData(
 }
 
 export async function searchOnline(
-    apiUrl: string, apiKey: string, searchData: BibleSearchForType,
+    apiUrl: string,
+    apiKey: string,
+    searchData: BibleSearchForType,
 ) {
     try {
         const response = await fetch(apiUrl, {
@@ -122,8 +131,7 @@ export async function searchOnline(
             },
             method: 'POST',
             body: JSON.stringify(searchData),
-        },
-        );
+        });
         const result = await response.json();
         if (result['content']) {
             return result as BibleSearchOnlineType;
@@ -131,7 +139,8 @@ export async function searchOnline(
         loggerHelpers.error(`Invalid bible search online ${result}`);
     } catch (error) {
         showSimpleToast(
-            'Fetching Bible Search Online', 'Fail to fetch bible online',
+            'Fetching Bible Search Online',
+            'Fail to fetch bible online',
         );
         handleError(error);
     }

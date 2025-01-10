@@ -3,14 +3,11 @@ import './Presenter.scss';
 import { lazy } from 'react';
 
 import {
-    useLyricSelecting, useSlideSelecting,
+    useLyricSelecting,
+    useSlideSelecting,
 } from '../event/PreviewingEventListener';
-import {
-    useSlideItemSelecting,
-} from '../event/SlideListEventListener';
-import {
-    getSetting, useStateSettingString,
-} from '../helper/settingHelpers';
+import { useSlideItemSelecting } from '../event/SlideListEventListener';
+import { getSetting, useStateSettingString } from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 
 const LazySlidePreviewer = lazy(() => {
@@ -40,23 +37,26 @@ const tabTypeList = [
     ['b', 'Bibles', LazyBiblePreviewerRender],
     ['a', 'Others', LazyPresenterOthersControllerComp],
 ] as const;
-type TabType = typeof tabTypeList[number][0];
+type TabType = (typeof tabTypeList)[number][0];
 export default function Presenter() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
-        PRESENT_TAB_SETTING_NAME, 's');
+        PRESENT_TAB_SETTING_NAME,
+        's',
+    );
     useLyricSelecting(() => setTabType('l'));
     useSlideSelecting(() => setTabType('s'));
     useSlideItemSelecting(() => setTabType('s'));
     return (
-        <div id='presenter-manager' className='w-100 h-100'>
+        <div id="presenter-manager" className="w-100 h-100">
             <TabRenderComp<TabType>
                 tabs={tabTypeList.map(([type, name]) => {
                     return [type, name];
                 })}
                 activeTab={tabType}
                 setActiveTab={setTabType}
-                className='header' />
-            <div className='body w-100 overflow-hidden'>
+                className="header"
+            />
+            <div className="body w-100 overflow-hidden">
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

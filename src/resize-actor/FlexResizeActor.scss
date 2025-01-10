@@ -1,5 +1,5 @@
 @use '../others/variables.scss' as *;
-$color : rgb(73, 103, 123);
+$color: rgb(73, 103, 123);
 $dot-border: 1px dashed greenyellow;
 
 .flex-resize-actor {
@@ -47,7 +47,6 @@ $dot-border: 1px dashed greenyellow;
 
   &.v {
     .mover {
-
       .left,
       .right {
         display: none;
@@ -72,7 +71,6 @@ $dot-border: 1px dashed greenyellow;
 
   &.h {
     .mover {
-
       .up,
       .down {
         display: none;

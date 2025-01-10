@@ -5,14 +5,16 @@ import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import * as loggerHelpers from '../helper/loggerHelpers';
 
 export type LyricItemType = {
-    id: number,
-    title: string,
-    content: string,
-    metadata: AnyObjectType,
+    id: number;
+    title: string;
+    content: string;
+    metadata: AnyObjectType;
 };
 
-export default class LyricItem extends ItemBase
-    implements DragInf<LyricItemType> {
+export default class LyricItem
+    extends ItemBase
+    implements DragInf<LyricItemType>
+{
     private readonly _originalJson: Readonly<LyricItemType>;
     static readonly SELECT_SETTING_NAME = 'lyric-item-selected';
     id: number;
@@ -23,7 +25,9 @@ export default class LyricItem extends ItemBase
     editorCacheManager: LyricEditorCacheManager;
     static readonly KEY_SEPARATOR = '<liid>';
     constructor(
-        id: number, filePath: string, json: LyricItemType,
+        id: number,
+        filePath: string,
+        json: LyricItemType,
         editorCacheManager?: LyricEditorCacheManager,
     ) {
         super();
@@ -34,10 +38,11 @@ export default class LyricItem extends ItemBase
             this.editorCacheManager = editorCacheManager;
         } else {
             this.editorCacheManager = new LyricEditorCacheManager(
-                this.filePath, {
-                items: [json],
-                metadata: {},
-            },
+                this.filePath,
+                {
+                    items: [json],
+                    metadata: {},
+                },
             );
             this.editorCacheManager.isUsingHistory = false;
         }
@@ -82,23 +87,29 @@ export default class LyricItem extends ItemBase
         return this.editorCacheManager.checkIsLyricItemChanged(this.id);
     }
     static fromJson(
-        json: LyricItemType, filePath: string,
+        json: LyricItemType,
+        filePath: string,
         editorCacheManager?: LyricEditorCacheManager,
     ) {
         this.validate(json);
-        return new LyricItem(json.id, filePath, json,
-            editorCacheManager);
+        return new LyricItem(json.id, filePath, json, editorCacheManager);
     }
     static fromJsonError(
-        json: AnyObjectType, filePath: string,
+        json: AnyObjectType,
+        filePath: string,
         editorCacheManager?: LyricEditorCacheManager,
     ) {
-        const item = new LyricItem(-1, filePath, {
-            id: -1,
-            metadata: {},
-            title: 'Error',
-            content: 'Error',
-        }, editorCacheManager);
+        const item = new LyricItem(
+            -1,
+            filePath,
+            {
+                id: -1,
+                metadata: {},
+                title: 'Error',
+                content: 'Error',
+            },
+            editorCacheManager,
+        );
         item.jsonError = json;
         return item;
     }

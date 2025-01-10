@@ -9,7 +9,7 @@ export function getFontListByNodeFont() {
 }
 
 export function genReturningEventName(eventName: string) {
-    const newDate = (new Date()).getTime();
+    const newDate = new Date().getTime();
     return `${eventName}-return-${newDate}`;
 }
 
@@ -17,12 +17,14 @@ export function electronSendAsync<T>(eventName: string, data: any = {}) {
     return new Promise<T>((resolve) => {
         const replyEventName = genReturningEventName(eventName);
         appProvider.messageUtils.listenOnceForData(
-            replyEventName, (_event, data: T) => {
+            replyEventName,
+            (_event, data: T) => {
                 resolve(data);
             },
         );
         appProvider.messageUtils.sendData(eventName, {
-            ...data, replyEventName,
+            ...data,
+            replyEventName,
         });
     });
 }
@@ -36,22 +38,20 @@ export function trashFile(filePath: string) {
 }
 
 export function previewPdf(src: string) {
-    appProvider.messageUtils.sendData(
-        'main:app:preview-pdf', src,
-    );
+    appProvider.messageUtils.sendData('main:app:preview-pdf', src);
 }
 
-export function convertToPdf(
-    officeFilePath: string, pdfFilePath: string,
-) {
+export function convertToPdf(officeFilePath: string, pdfFilePath: string) {
     return electronSendAsync<void>('main:app:convert-to-pdf', {
-        officeFilePath, pdfFilePath,
+        officeFilePath,
+        pdfFilePath,
     });
 }
 
 export function tarExtract(filePath: string, outputDir: string) {
     return electronSendAsync<void>('main:app:tar-extract', {
-        filePath, outputDir,
+        filePath,
+        outputDir,
     });
 }
 
@@ -62,21 +62,20 @@ export function copyToClipboard(str: string) {
 }
 
 export function selectDirs() {
-    return (
-        appProvider.messageUtils.sendDataSync(
-            'main:app:select-dirs',
-        ) as string[]
-    );
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:select-dirs',
+    ) as string[];
 }
-export function selectFiles(filters: {
-    name: string,
-    extensions: string[],
-}[]) {
-    return (
-        appProvider.messageUtils.sendDataSync(
-            'main:app:select-files', filters,
-        ) as string[]
-    );
+export function selectFiles(
+    filters: {
+        name: string;
+        extensions: string[];
+    }[],
+) {
+    return appProvider.messageUtils.sendDataSync(
+        'main:app:select-files',
+        filters,
+    ) as string[];
 }
 
 export function getUserWritablePath() {
@@ -93,7 +92,8 @@ export function getTempPath() {
 
 const lockSet = new Set<string>();
 export async function unlocking<T>(
-    key: string, callback: () => (Promise<T> | T)
+    key: string,
+    callback: () => Promise<T> | T,
 ) {
     if (lockSet.has(key)) {
         await new Promise((resolve) => {

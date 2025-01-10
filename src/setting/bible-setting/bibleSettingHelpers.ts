@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import { useAppEffect, useAppEffectAsync } from '../../helper/debuggerHelpers';
 import {
-    BibleMinimalInfoType, getAllLocalBibleInfoList, getDownloadedBibleInfoList,
+    BibleMinimalInfoType,
+    getAllLocalBibleInfoList,
+    getDownloadedBibleInfoList,
     getOnlineBibleInfoList,
 } from '../../helper/bible-helpers/bibleDownloadHelpers';
 
@@ -10,25 +12,36 @@ export type BibleListType = BibleMinimalInfoType[] | null | undefined;
 
 export function useLocalBibleInfoList() {
     const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
-    useAppEffectAsync(async (methodContext) => {
-        if (bibleInfoList !== null) {
-            return;
-        }
-        const newLocalBibleInfoList = await getAllLocalBibleInfoList();
-        methodContext.setBibleInfoList(newLocalBibleInfoList || undefined);
-    }, [bibleInfoList], { setBibleInfoList });
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (bibleInfoList !== null) {
+                return;
+            }
+            const newLocalBibleInfoList = await getAllLocalBibleInfoList();
+            methodContext.setBibleInfoList(newLocalBibleInfoList || undefined);
+        },
+        [bibleInfoList],
+        { setBibleInfoList },
+    );
     return [bibleInfoList, setBibleInfoList] as const;
 }
 
 export function useDownloadedBibleInfoList() {
     const [bibleInfoList, setBibleInfoList] = useState<BibleListType>(null);
-    useAppEffectAsync(async (methodContext) => {
-        if (bibleInfoList !== null) {
-            return;
-        }
-        const newDownloadedBibleInfoList = await getDownloadedBibleInfoList();
-        methodContext.setBibleInfoList(newDownloadedBibleInfoList || undefined);
-    }, [bibleInfoList], { setBibleInfoList });
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (bibleInfoList !== null) {
+                return;
+            }
+            const newDownloadedBibleInfoList =
+                await getDownloadedBibleInfoList();
+            methodContext.setBibleInfoList(
+                newDownloadedBibleInfoList || undefined,
+            );
+        },
+        [bibleInfoList],
+        { setBibleInfoList },
+    );
     return [bibleInfoList, setBibleInfoList] as const;
 }
 

@@ -11,12 +11,12 @@ import { log } from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 
 export type SlideItemType = {
-    id: number,
-    canvasItems: CanvasItemPropsType[],
-    metadata: AnyObjectType,
-    isPdf?: boolean,
-    imagePreviewSrc?: string,
-    pdfPageNumber?: number,
+    id: number;
+    canvasItems: CanvasItemPropsType[];
+    metadata: AnyObjectType;
+    isPdf?: boolean;
+    imagePreviewSrc?: string;
+    pdfPageNumber?: number;
 };
 
 export default class SlideItem extends ItemBase implements DragInf<string> {
@@ -29,7 +29,9 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     editorCacheManager: SlideEditorCacheManager;
     static readonly KEY_SEPARATOR = '<siid>';
     constructor(
-        id: number, filePath: string, json: SlideItemType,
+        id: number,
+        filePath: string,
+        json: SlideItemType,
         editorCacheManager?: SlideEditorCacheManager,
     ) {
         super();
@@ -39,8 +41,7 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         if (editorCacheManager !== undefined) {
             this.editorCacheManager = editorCacheManager;
         } else {
-            this.editorCacheManager = new SlideEditorCacheManager(
-                filePath, {
+            this.editorCacheManager = new SlideEditorCacheManager(filePath, {
                 items: [json],
                 metadata: {},
             });
@@ -151,14 +152,16 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     static fromJson(
-        json: SlideItemType, filePath: string,
+        json: SlideItemType,
+        filePath: string,
         editorCacheManager?: SlideEditorCacheManager,
     ) {
         return new SlideItem(json.id, filePath, json, editorCacheManager);
     }
 
     static fromJsonError(
-        json: AnyObjectType, filePath: string,
+        json: AnyObjectType,
+        filePath: string,
         editorCacheManager?: SlideEditorCacheManager,
     ) {
         const newJson = {
@@ -176,26 +179,30 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             return this.jsonError;
         }
         const { isPdf } = this.originalJson;
-        const pdfPageNumber = (
-            isPdf ? this.originalJson.pdfPageNumber : undefined
-        );
-        const imagePreviewSrc = (
-            isPdf ? this.originalJson.imagePreviewSrc : undefined
-        );
+        const pdfPageNumber = isPdf
+            ? this.originalJson.pdfPageNumber
+            : undefined;
+        const imagePreviewSrc = isPdf
+            ? this.originalJson.imagePreviewSrc
+            : undefined;
         return {
             id: this.id,
             canvasItems: this.canvasItemsJson,
             metadata: this.metadata,
-            isPdf, pdfPageNumber, imagePreviewSrc,
+            isPdf,
+            pdfPageNumber,
+            imagePreviewSrc,
         };
     }
 
     static validate(json: AnyObjectType) {
-        if (typeof json.id !== 'number' ||
+        if (
+            typeof json.id !== 'number' ||
             typeof json.metadata !== 'object' ||
             typeof json.metadata.width !== 'number' ||
             typeof json.metadata.height !== 'number' ||
-            !(json.canvasItems instanceof Array)) {
+            !(json.canvasItems instanceof Array)
+        ) {
             log(json);
             throw new Error('Invalid slide item data');
         }
@@ -214,13 +221,13 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
     }
 
     checkIsWrongDimension({ bounds }: DisplayType) {
-        return bounds.width !== this.width ||
-            bounds.height !== this.height;
+        return bounds.width !== this.width || bounds.height !== this.height;
     }
 
     dragSerialize() {
         const dragging: any = {
-            key: this.key, isPdf: this.isPdf,
+            key: this.key,
+            isPdf: this.isPdf,
         };
         if (this.isPdf) {
             dragging['pdfData'] = {
@@ -230,7 +237,8 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
             };
         }
         return {
-            type: DragTypeEnum.SLIDE_ITEM, data: JSON.stringify(dragging),
+            type: DragTypeEnum.SLIDE_ITEM,
+            data: JSON.stringify(dragging),
         };
     }
 
@@ -271,12 +279,23 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
         return null;
     }
 
-    static fromPdfJson({ filePath, pageNumber, src, width = 0, height = 0 }: {
-        filePath: string, pageNumber: number, src: string,
-        width?: number, height?: number
+    static fromPdfJson({
+        filePath,
+        pageNumber,
+        src,
+        width = 0,
+        height = 0,
+    }: {
+        filePath: string;
+        pageNumber: number;
+        src: string;
+        width?: number;
+        height?: number;
     }) {
         return new SlideItem(pageNumber, filePath, {
-            id: pageNumber, canvasItems: [], isPdf: true,
+            id: pageNumber,
+            canvasItems: [],
+            isPdf: true,
             imagePreviewSrc: src,
             pdfPageNumber: pageNumber,
             metadata: { width, height },
@@ -285,8 +304,8 @@ export default class SlideItem extends ItemBase implements DragInf<string> {
 }
 
 export const SelectedEditingSlideItemContext = createContext<{
-    selectedSlideItem: SlideItem | null,
-    setSelectedSlideItem: (newSelectedSlideItem: SlideItem | null) => void,
+    selectedSlideItem: SlideItem | null;
+    setSelectedSlideItem: (newSelectedSlideItem: SlideItem | null) => void;
 } | null>(null);
 
 function useContext() {
@@ -294,7 +313,7 @@ function useContext() {
     if (context === null) {
         throw new Error(
             'useSelectedEditingSlideItemContext must be used within a ' +
-            'SelectedEditingSlideItemContext'
+                'SelectedEditingSlideItemContext',
         );
     }
     return context;

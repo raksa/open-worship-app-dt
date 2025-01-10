@@ -1,7 +1,11 @@
 import EventHandler from '../event/EventHandler';
 import {
-    FileMetadataType, getFileMetaData, MimetypeNameType, getAppMimetype,
-    fsListFiles, fsCheckDirExist,
+    FileMetadataType,
+    getFileMetaData,
+    MimetypeNameType,
+    getAppMimetype,
+    fsListFiles,
+    fsCheckDirExist,
 } from '../server/fileHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { handleError } from './errorHelpers';
@@ -47,9 +51,11 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         return cacheKey;
     }
     static getCacheKeyByDirPath(dirPath: string) {
-        return fileCacheKeys.find((cacheKey) => {
-            return cacheKey.includes(dirPath);
-        }) ?? null;
+        return (
+            fileCacheKeys.find((cacheKey) => {
+                return cacheKey.includes(dirPath);
+            }) ?? null
+        );
     }
     getFileSourceInstance(fileFullName: string) {
         return FileSource.getInstance(this.dirPath, fileFullName);
@@ -71,17 +77,20 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
         try {
             const mimetypeList = getAppMimetype(mimetypeName);
             const files = await fsListFiles(this.dirPath);
-            const matchedFiles = files.map((fileFullName) => {
-                const fileMetadata = getFileMetaData(
-                    fileFullName, mimetypeList,
-                );
-                if (fileMetadata === null && this.checkExtraFile) {
-                    return this.checkExtraFile(fileFullName);
-                }
-                return fileMetadata;
-            }).filter((fileMetadata) => {
-                return fileMetadata !== null;
-            });
+            const matchedFiles = files
+                .map((fileFullName) => {
+                    const fileMetadata = getFileMetaData(
+                        fileFullName,
+                        mimetypeList,
+                    );
+                    if (fileMetadata === null && this.checkExtraFile) {
+                        return this.checkExtraFile(fileFullName);
+                    }
+                    return fileMetadata;
+                })
+                .filter((fileMetadata) => {
+                    return fileMetadata !== null;
+                });
             const filePaths = matchedFiles.map((fileMetadata) => {
                 const fileSource = this.getFileSourceInstance(
                     fileMetadata.fileFullName,
@@ -91,8 +100,10 @@ export default class DirSource extends EventHandler<DirSourceEventType> {
             return filePaths;
         } catch (error) {
             handleError(error);
-            showSimpleToast('Getting File List',
-                'Error occurred during listing file');
+            showSimpleToast(
+                'Getting File List',
+                'Error occurred during listing file',
+            );
         }
     }
     static async getInstance(settingName: string) {

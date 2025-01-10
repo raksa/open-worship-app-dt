@@ -30,14 +30,15 @@ export default function SlideItemEditorToolsTextComp() {
         canvasController.fireEditEvent(canvasItem);
     };
     return (
-        <div className='d-flex'>
+        <div className="d-flex">
             <SlideItemEditorToolsColorComp
                 color={canvasItem.props.color}
                 handleColorChanging={handleColorChanging}
             />
-            <div className='ps-2'>
-                <SlideItemEditorToolTitleComp title='Text Alignment'>
-                    <SlideItemEditorToolAlignComp isText
+            <div className="ps-2">
+                <SlideItemEditorToolTitleComp title="Text Alignment">
+                    <SlideItemEditorToolAlignComp
+                        isText
                         onData={handleDataEvent}
                     />
                 </SlideItemEditorToolTitleComp>

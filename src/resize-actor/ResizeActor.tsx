@@ -1,37 +1,42 @@
 import { useState } from 'react';
 
 import {
-    DataInputType, FlexSizeType, getFlexSizeSetting, setFlexSizeSetting,
+    DataInputType,
+    FlexSizeType,
+    getFlexSizeSetting,
+    setFlexSizeSetting,
 } from './flexSizeHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import RenderResizeActorItem from './RenderResizeActorItem';
 import { freezeObject } from '../helper/helpers';
 
-
 export default function ResizeActor({
-    isHorizontal, flexSizeName, flexSizeDefault, dataInput,
-    isDisableQuickResize, isNotSaveSetting = false,
+    isHorizontal,
+    flexSizeName,
+    flexSizeDefault,
+    dataInput,
+    isDisableQuickResize,
+    isNotSaveSetting = false,
 }: Readonly<{
-    isHorizontal: boolean,
-    flexSizeName: string,
-    flexSizeDefault: Readonly<FlexSizeType>,
-    dataInput: DataInputType[],
-    isDisableQuickResize?: boolean,
-    isNotSaveSetting?: boolean,
+    isHorizontal: boolean;
+    flexSizeName: string;
+    flexSizeDefault: Readonly<FlexSizeType>;
+    dataInput: DataInputType[];
+    isDisableQuickResize?: boolean;
+    isNotSaveSetting?: boolean;
 }>) {
     freezeObject(flexSizeDefault);
     for (const { key } of dataInput) {
         if (flexSizeDefault[key] === undefined) {
             throw new Error(
                 `key ${key} not found in flexSizeDefault:` +
-                JSON.stringify(flexSizeDefault)
+                    JSON.stringify(flexSizeDefault),
             );
         }
     }
-    const defaultFlexSize = (
-        isNotSaveSetting ? flexSizeDefault :
-            getFlexSizeSetting(flexSizeName, flexSizeDefault)
-    );
+    const defaultFlexSize = isNotSaveSetting
+        ? flexSizeDefault
+        : getFlexSizeSetting(flexSizeName, flexSizeDefault);
     const [flexSize, setFlexSize] = useState(defaultFlexSize);
     const setFlexSize1 = (newFlexSize: FlexSizeType) => {
         if (!isNotSaveSetting) {
@@ -60,13 +65,14 @@ export default function ResizeActor({
     }, [flexSize, flexSizeDefault]);
 
     return (
-        <div className={
-            `w-100 h-100 flex ${isHorizontal ? 'h' : 'v'} overflow-hidden`
-        }>
+        <div
+            className={`w-100 h-100 flex ${isHorizontal ? 'h' : 'v'} overflow-hidden`}
+        >
             {dataInput.map((data, i) => {
                 const { key, className } = data;
                 return (
-                    <RenderResizeActorItem key={`${key}-${className}}`}
+                    <RenderResizeActorItem
+                        key={`${key}-${className}}`}
                         data={data}
                         index={i}
                         flexSize={flexSize}

@@ -21,15 +21,18 @@ export default function ScreenAppComp() {
         return null;
     }
     if (appProviderScreen.isScreen) {
-        screenManager.sendScreenMessage({
-            screenId, type: 'init', data: null,
-        }, true);
+        screenManager.sendScreenMessage(
+            {
+                screenId,
+                type: 'init',
+                data: null,
+            },
+            true,
+        );
     }
     return (
         <ScreenManagerBaseContext value={screenManager}>
-            <RendStyle screenEffectManager={
-                screenManager.slideEffectManager
-            } />
+            <RendStyle screenEffectManager={screenManager.slideEffectManager} />
             <RendStyle
                 screenEffectManager={screenManager.backgroundEffectManager}
             />

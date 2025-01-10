@@ -2,9 +2,7 @@ import './BoxEditorComp.scss';
 
 import BoxEditorNormalModeComp from './BoxEditorNormalModeComp';
 import BoxEditorControllingModeComp from './BoxEditorControllingModeComp';
-import {
-    useSlideItemCanvasScale,
-} from '../canvasEventHelpers';
+import { useSlideItemCanvasScale } from '../canvasEventHelpers';
 import BoxEditorController, {
     BoxEditorControllerContext,
 } from '../../BoxEditorController';
@@ -26,7 +24,5 @@ export function BoxEditorComp() {
             </BoxEditorControllerContext>
         );
     }
-    return (
-        <BoxEditorNormalModeComp />
-    );
+    return <BoxEditorNormalModeComp />;
 }

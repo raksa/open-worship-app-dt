@@ -3,15 +3,13 @@ import { CSSProperties } from 'react';
 import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
 import SlideItem, { SlideItemType } from '../../slide-list/SlideItem';
-import {
-    genPdfSlideItem,
-} from '../../slide-presenter/items/SlideItemPdfRender';
-import {
-    genHtmlSlideItem,
-} from '../../slide-presenter/items/SlideItemRenderer';
+import { genPdfSlideItem } from '../../slide-presenter/items/SlideItemPdfRender';
+import { genHtmlSlideItem } from '../../slide-presenter/items/SlideItemRenderer';
 import appProviderScreen from '../appProviderScreen';
 import {
-    BasicScreenMessageType, ScreenMessageType, SlideItemDataType,
+    BasicScreenMessageType,
+    ScreenMessageType,
+    SlideItemDataType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import { unlocking } from '../../server/appHelpers';
@@ -32,9 +30,7 @@ export function setIsPdfFullWidth(isPdfFullWidth: boolean) {
     setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${isPdfFullWidth}`);
 }
 
-export default class ScreenSlideManager extends
-    ScreenEventHandler<ScreenSlideManagerEventType> {
-
+export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-slide-m';
     private _slideItemData: SlideItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -132,7 +128,8 @@ export default class ScreenSlideManager extends
     }
 
     toSlideItemData(
-        slideFilePath: string, slideItemJson: SlideItemType,
+        slideFilePath: string,
+        slideItemJson: SlideItemType,
     ): SlideItemDataType {
         return { slideFilePath, slideItemJson };
     }
@@ -141,29 +138,29 @@ export default class ScreenSlideManager extends
         const { slideItemData } = this;
         const selectedSlideFilePath = slideItemData?.slideFilePath ?? '';
         const selectedSlideItemId = slideItemData?.slideItemJson.id ?? '';
-        const selected = (
+        const selected =
             `${selectedSlideFilePath}${SlideItem.KEY_SEPARATOR}` +
-            `${selectedSlideItemId}`
-        );
-        const willSelected = (
-            `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`
-        );
-        const newSlideData = selected !== willSelected ? this.toSlideItemData(
-            slideFilePath, slideItemJson,
-        ) : null;
+            `${selectedSlideItemId}`;
+        const willSelected = `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`;
+        const newSlideData =
+            selected !== willSelected
+                ? this.toSlideItemData(slideFilePath, slideItemJson)
+                : null;
         this.applySlideItemSrcWithSyncGroup(newSlideData);
     }
 
     static async handleSlideSelecting(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        slideFilePath: string, slideItemJson: SlideItemType,
+        slideFilePath: string,
+        slideItemJson: SlideItemType,
         isForceChoosing = false,
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         screenIds.forEach((screenId) => {
             const screenSlideManager = this.getInstance(screenId);
             screenSlideManager.handleSlideSelecting(
-                slideFilePath, slideItemJson,
+                slideFilePath,
+                slideItemJson,
             );
         });
     }
@@ -174,12 +171,14 @@ export default class ScreenSlideManager extends
         }
         const isFullWidth = checkIsPdfFullWidth();
         const content = genPdfSlideItem(
-            pdfImageData.imagePreviewSrc, isFullWidth,
+            pdfImageData.imagePreviewSrc,
+            isFullWidth,
         );
         const parentWidth = this.screenManagerBase.width;
         const width = parentWidth;
         Object.assign(divHaftScale.style, {
-            width: '100%', height: '100%',
+            width: '100%',
+            height: '100%',
             overflow: isFullWidth ? 'auto' : 'hidden',
             transform: 'translate(-50%, -50%)',
         });
@@ -208,7 +207,8 @@ export default class ScreenSlideManager extends
         this.cleanupSlideContent(content);
         const { width, height } = slideItemJson.metadata;
         Object.assign(divHaftScale.style, {
-            width: `${width}px`, height: `${height}px`,
+            width: `${width}px`,
+            height: `${height}px`,
             transform: 'translate(-50%, -50%)',
         });
         const scale = this.screenManagerBase.width / width;
@@ -238,11 +238,9 @@ export default class ScreenSlideManager extends
         divContainer.appendChild(divHaftScale);
         const { slideItemJson } = this.slideItemData;
 
-        const target = (
-            slideItemJson.isPdf ? this.renderPdf(
-                divHaftScale, slideItemJson,
-            ) : this.renderHtml(divHaftScale, slideItemJson)
-        );
+        const target = slideItemJson.isPdf
+            ? this.renderPdf(divHaftScale, slideItemJson)
+            : this.renderHtml(divHaftScale, slideItemJson);
         if (target === null) {
             return;
         }
@@ -258,9 +256,7 @@ export default class ScreenSlideManager extends
             position: 'absolute',
             width: `${this.screenManagerBase.width}px`,
             height: `${this.screenManagerBase.height}px`,
-            transform: (
-                `scale(${target.scale},${target.scale}) translate(50%, 50%)`
-            ),
+            transform: `scale(${target.scale},${target.scale}) translate(50%, 50%)`,
         });
         this.slideEffectManager.styleAnim.animIn(divContainer);
     }

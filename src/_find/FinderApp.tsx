@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import { SearchingOptions, findString } from './finderHelpers';
 
-export default function FinderApp({ onClose }: Readonly<{
+export default function FinderApp({
+    onClose,
+}: Readonly<{
     onClose: () => void;
 }>) {
     const [searchingText, setSearchingText] = useState('');
@@ -27,7 +29,8 @@ export default function FinderApp({ onClose }: Readonly<{
         });
     });
     const setSearchingText1 = (
-        text: string, options: SearchingOptions = {},
+        text: string,
+        options: SearchingOptions = {},
     ) => {
         setSearchingText(text);
         findString(text, {
@@ -36,27 +39,34 @@ export default function FinderApp({ onClose }: Readonly<{
         });
     };
     return (
-        <div className='finder-container card w-100 h-100'
-            data-bs-theme='dark'>
-            <div className='card-body'>
-                <div className='finder input-group'>
-                    <button className='btn btn-info' onClick={() => {
-                        setSearchingText1(searchingText, {
-                            forward: false,
-                            findNext: true,
-                        });
-                    }}>
-                        <i className='bi bi-arrow-left' />
+        <div className="finder-container card w-100 h-100" data-bs-theme="dark">
+            <div className="card-body">
+                <div className="finder input-group">
+                    <button
+                        className="btn btn-info"
+                        onClick={() => {
+                            setSearchingText1(searchingText, {
+                                forward: false,
+                                findNext: true,
+                            });
+                        }}
+                    >
+                        <i className="bi bi-arrow-left" />
                     </button>
-                    <button className='btn btn-info' onClick={() => {
-                        setSearchingText1(searchingText, {
-                            forward: true,
-                            findNext: true,
-                        });
-                    }}>
-                        <i className='bi bi-arrow-right' />
+                    <button
+                        className="btn btn-info"
+                        onClick={() => {
+                            setSearchingText1(searchingText, {
+                                forward: true,
+                                findNext: true,
+                            });
+                        }}
+                    >
+                        <i className="bi bi-arrow-right" />
                     </button>
-                    <input type='text' className='form-control'
+                    <input
+                        type="text"
+                        className="form-control"
                         autoFocus
                         value={searchingText}
                         onChange={(event) => {
@@ -64,9 +74,11 @@ export default function FinderApp({ onClose }: Readonly<{
                             setSearchingText1(text);
                         }}
                     />
-                    <div className='input-group-text'>
-                        Aa <input className='form-check-input mt-0'
-                            type='checkbox'
+                    <div className="input-group-text">
+                        Aa{' '}
+                        <input
+                            className="form-check-input mt-0"
+                            type="checkbox"
                             checked={isMatchCase}
                             onChange={(event) => {
                                 const checked = event.target.checked;

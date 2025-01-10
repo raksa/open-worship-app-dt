@@ -3,43 +3,32 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint'],
     rules: {
-        "semi": [
-            "error",
-            "always"
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "comma-dangle": [
-            "error",
-            "always-multiline"
-        ],
-        "curly": [
-            "error",
-            "all"
-        ],
-        "prefer-const": [
-            "error",
+        semi: ['error', 'always'],
+        quotes: ['error', 'single'],
+        'comma-dangle': ['error', 'always-multiline'],
+        curly: ['error', 'all'],
+        'prefer-const': [
+            'error',
             {
-                "destructuring": "any",
-                "ignoreReadBeforeAssign": false
-            }
+                destructuring: 'any',
+                ignoreReadBeforeAssign: false,
+            },
         ],
-        "max-len": [
-            "error",
+        'max-len': [
+            'error',
             {
-                "code": 80,
-            }
+                code: 80,
+                ignorePattern: '^import\\s.+\\sfrom\\s.+;$',
+            },
         ],
-        "@typescript-eslint/no-unused-vars": [
-            "error",
+        '@typescript-eslint/no-unused-vars': [
+            'error',
             {
-                "argsIgnorePattern": "^_",
-                "varsIgnorePattern": "^_",
-                "args": "after-used",
-                "ignoreRestSiblings": true
-            }
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+                args: 'after-used',
+                ignoreRestSiblings: true,
+            },
         ],
-    }
+    },
 };

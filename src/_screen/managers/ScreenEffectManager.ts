@@ -1,10 +1,11 @@
 import EventHandler from '../../event/EventHandler';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
+import { ScreenMessageType, PTEffectDataType } from '../screenHelpers';
 import {
-    ScreenMessageType, PTEffectDataType,
-} from '../screenHelpers';
-import {
-    ScreenTransitionEffectType, PTFEventType, styleAnimList, TargetType,
+    ScreenTransitionEffectType,
+    PTFEventType,
+    styleAnimList,
+    TargetType,
     transitionEffect,
 } from '../transitionEffectHelpers';
 import ScreenManagerBase from './ScreenManagerBase';
@@ -19,10 +20,9 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         this.screenManagerBase = screenManagerBase;
         this.target = target;
         const effectType = getSetting(this.settingName, '');
-        this._effectType = (
-            Object.keys(transitionEffect).includes(effectType)
-                ? effectType as ScreenTransitionEffectType : 'none'
-        );
+        this._effectType = Object.keys(transitionEffect).includes(effectType)
+            ? (effectType as ScreenTransitionEffectType)
+            : 'none';
         cache.set(this.toCacheKey(), this);
     }
 
@@ -59,7 +59,9 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
 
     sendSyncScreen() {
         this.screenManagerBase.sendScreenMessage({
-            screenId: this.screenId, type: 'effect', data: {
+            screenId: this.screenId,
+            type: 'effect',
+            data: {
                 target: this.target,
                 effect: this.effectType,
             } as PTEffectDataType,
@@ -69,16 +71,16 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
     static receiveSyncScreen(message: ScreenMessageType) {
         const data = message.data as PTEffectDataType;
         const effectManager = ScreenEffectManager.getInstance(
-            message.screenId, data.target,
+            message.screenId,
+            data.target,
         );
         effectManager.effectType = data.effect;
     }
 
     delete() {
         cache.delete(this.toCacheKey());
-        this.screenManagerBase = (
-            this.screenManagerBase.createScreenManagerBaseGhost(this.screenId)
-        );
+        this.screenManagerBase =
+            this.screenManagerBase.createScreenManagerBaseGhost(this.screenId);
     }
 
     static getInstance(screenId: number, target: TargetType) {
@@ -88,7 +90,6 @@ class ScreenEffectManager extends EventHandler<PTFEventType> {
         }
         return instance;
     }
-
 }
 
 export default ScreenEffectManager;

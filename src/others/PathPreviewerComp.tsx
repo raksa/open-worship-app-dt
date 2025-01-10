@@ -1,6 +1,4 @@
-import {
-    copyToClipboard, showExplorer,
-} from '../server/appHelpers';
+import { copyToClipboard, showExplorer } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { pathBasename } from '../server/fileHelpers';
 import { showAppContextMenu } from './AppContextMenuComp';
@@ -11,7 +9,7 @@ function cleanPath(path: string) {
         path = path.substring(1);
     }
     return path;
-};
+}
 function openContextMenu(dirPath: string, event: any) {
     showAppContextMenu(event, [
         {
@@ -21,23 +19,24 @@ function openContextMenu(dirPath: string, event: any) {
             },
         },
         {
-            menuTitle: (
-                `Reveal in ${appProvider.systemUtils.isMac ?
-                    'Finder' : 'File Explorer'}`
-            ),
+            menuTitle: `Reveal in ${
+                appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
+            }`,
             onClick: () => {
                 showExplorer(dirPath);
             },
         },
     ]);
-};
+}
 
 export function PathPreviewerComp({
-    dirPath, isShowingNameOnly = false, onClick,
+    dirPath,
+    isShowingNameOnly = false,
+    onClick,
 }: Readonly<{
-    dirPath: string,
-    isShowingNameOnly?: boolean,
-    onClick?: (event: any) => void,
+    dirPath: string;
+    isShowingNameOnly?: boolean;
+    onClick?: (event: any) => void;
 }>) {
     const cleanedPath = cleanPath(dirPath);
     let path = cleanedPath;
@@ -49,13 +48,15 @@ export function PathPreviewerComp({
         }
     }
     return (
-        <div className={
-            'app-ellipsis-left app-border-white-round px-1 flex-fill' +
-            ` ${onClick ? 'pointer' : ''}`
-        }
+        <div
+            className={
+                'app-ellipsis-left app-border-white-round px-1 flex-fill' +
+                ` ${onClick ? 'pointer' : ''}`
+            }
             onContextMenu={openContextMenu.bind(null, cleanedPath)}
             onClick={onClick}
-            title={cleanedPath}>
+            title={cleanedPath}
+        >
             {path}
         </div>
     );

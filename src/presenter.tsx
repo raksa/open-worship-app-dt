@@ -5,5 +5,5 @@ import AppLayout from './router/AppLayout';
 main(
     <AppLayout>
         <AppPresenter />
-    </AppLayout>
+    </AppLayout>,
 );

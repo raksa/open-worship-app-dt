@@ -3,8 +3,6 @@
         "type": "OpenWorship Playlist",
         "title": "Json file for OpenWorship playlist",
         "mimetypeSignature": "application/json",
-        "extensions": [
-            ".owp"
-        ]
+        "extensions": [".owp"]
     }
 ]

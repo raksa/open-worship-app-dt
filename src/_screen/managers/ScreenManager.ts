@@ -6,7 +6,8 @@ import ScreenFullTextManager from './ScreenFullTextManager';
 import ScreenSlideManager from './ScreenSlideManager';
 import ScreenEffectManager from './ScreenEffectManager';
 import {
-    deleteScreenManagerBaseCache, getAllScreenManagerBases,
+    deleteScreenManagerBaseCache,
+    getAllScreenManagerBases,
     getScreenManagerBase,
     saveScreenManagersSetting,
 } from './screenManagerBaseHelpers';
@@ -16,7 +17,6 @@ import appProviderScreen from '../appProviderScreen';
 import { ScreenMessageType } from '../screenHelpers';
 
 export default class ScreenManager extends ScreenManagerBase {
-
     readonly screenBackgroundManager: ScreenBackgroundManager;
     readonly screenSlideManager: ScreenSlideManager;
     readonly screenFullTextManager: ScreenFullTextManager;
@@ -25,18 +25,20 @@ export default class ScreenManager extends ScreenManagerBase {
     readonly backgroundEffectManager: ScreenEffectManager;
     private readonly registeredEventListeners: RegisteredEventType<any, any>[];
 
-
     constructor(screenId: number) {
         super(screenId);
         this.slideEffectManager = new ScreenEffectManager(this, 'slide');
         this.backgroundEffectManager = new ScreenEffectManager(
-            this, 'background',
+            this,
+            'background',
         );
         this.screenBackgroundManager = new ScreenBackgroundManager(
-            this, this.backgroundEffectManager,
+            this,
+            this.backgroundEffectManager,
         );
         this.screenSlideManager = new ScreenSlideManager(
-            this, this.slideEffectManager,
+            this,
+            this.slideEffectManager,
         );
         this.screenFullTextManager = new ScreenFullTextManager(this);
         this.screenAlertManager = new ScreenAlertManager(this);
@@ -48,12 +50,13 @@ export default class ScreenManager extends ScreenManagerBase {
                 }
             }),
             ...this.screenFullTextManager.registerEventListener(
-                ['update'], () => {
+                ['update'],
+                () => {
                     if (this.screenFullTextManager.isShowing) {
                         this.screenSlideManager.clear();
                     }
                 },
-            )
+            ),
         );
     }
 
@@ -111,24 +114,26 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     receiveScreenDropped(droppedData: DroppedDataType) {
-        if ([
-            DragTypeEnum.BACKGROUND_COLOR,
-            DragTypeEnum.BACKGROUND_IMAGE,
-            DragTypeEnum.BACKGROUND_VIDEO,
-        ].includes(droppedData.type)) {
+        if (
+            [
+                DragTypeEnum.BACKGROUND_COLOR,
+                DragTypeEnum.BACKGROUND_IMAGE,
+                DragTypeEnum.BACKGROUND_VIDEO,
+            ].includes(droppedData.type)
+        ) {
             this.screenBackgroundManager.receiveScreenDropped(droppedData);
         } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
             this.screenSlideManager.receiveScreenDropped(droppedData);
-        } else if ([
-            DragTypeEnum.BIBLE_ITEM,
-            DragTypeEnum.LYRIC_ITEM,
-        ].includes(droppedData.type)) {
+        } else if (
+            [DragTypeEnum.BIBLE_ITEM, DragTypeEnum.LYRIC_ITEM].includes(
+                droppedData.type,
+            )
+        ) {
             this.screenFullTextManager.receiveScreenDropped(droppedData);
         } else {
             log(droppedData);
         }
     }
-
 
     static getSyncGroupScreenEventHandler(message: ScreenMessageType) {
         const { type } = message;
@@ -180,7 +185,8 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     static async getAllScreenManagersByColorNote(
-        colorNote: string | null, excludeScreenIds: number[] = [],
+        colorNote: string | null,
+        excludeScreenIds: number[] = [],
     ): Promise<ScreenManagerBase[]> {
         if (colorNote === null) {
             return [];
@@ -200,41 +206,38 @@ export default class ScreenManager extends ScreenManagerBase {
     }
 
     static async syncScreenManagerGroup(message: ScreenMessageType) {
-        const currentScreenManager = getScreenManagerBase(
-            message.screenId,
-        );
+        const currentScreenManager = getScreenManagerBase(message.screenId);
         if (currentScreenManager === null || currentScreenManager.isDeleted) {
             return;
         }
         const colorNote = await currentScreenManager.getColorNote();
         const screenManagers = await this.getAllScreenManagersByColorNote(
-            colorNote, [currentScreenManager.screenId],
+            colorNote,
+            [currentScreenManager.screenId],
         );
         screenManagers.forEach((screenManagerBase) => {
             const newMessage: ScreenMessageType = {
                 ...message,
                 screenId: screenManagerBase.screenId,
             };
-            const ScreenHandler = this.getSyncGroupScreenEventHandler(
-                newMessage,
-            );
+            const ScreenHandler =
+                this.getSyncGroupScreenEventHandler(newMessage);
             if (ScreenHandler !== null) {
-                if (!currentScreenManager.checkIsSyncGroupEnabled(
-                    ScreenHandler,
-                )) {
+                if (
+                    !currentScreenManager.checkIsSyncGroupEnabled(ScreenHandler)
+                ) {
                     return;
                 }
                 screenManagerBase.noSyncGroupMap.set(
-                    ScreenHandler.eventNamePrefix, true,
+                    ScreenHandler.eventNamePrefix,
+                    true,
                 );
                 ScreenHandler.receiveSyncScreen(newMessage);
             }
         });
     }
 
-    sendScreenMessage(
-        message: ScreenMessageType, isForce?: boolean,
-    ) {
+    sendScreenMessage(message: ScreenMessageType, isForce?: boolean) {
         if (appProviderScreen.isScreen && !isForce) {
             return;
         }
@@ -264,5 +267,4 @@ export default class ScreenManager extends ScreenManagerBase {
         }
         return screenManagerBase;
     }
-
 }

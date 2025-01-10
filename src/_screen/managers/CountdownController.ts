@@ -16,7 +16,8 @@ export default class CountdownController {
 
     get hours() {
         return Math.floor(
-            (this.diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            (this.diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        );
     }
 
     get minutes() {

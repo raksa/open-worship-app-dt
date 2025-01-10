@@ -5,7 +5,8 @@ import FileListHandlerComp from '../others/FileListHandlerComp';
 import Lyric from './Lyric';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
+    dirSourceSettingNames,
 } from '../helper/constants';
 
 export default function LyricList() {
@@ -14,9 +15,13 @@ export default function LyricList() {
         return (
             <>
                 {filePaths.map((filePath, i) => {
-                    return <LyricFile key={filePath}
-                        index={i}
-                        filePath={filePath} />;
+                    return (
+                        <LyricFile
+                            key={filePath}
+                            index={i}
+                            filePath={filePath}
+                        />
+                    );
                 })}
             </>
         );
@@ -25,14 +30,16 @@ export default function LyricList() {
         return null;
     }
     return (
-        <FileListHandlerComp id='lyric-list'
-            mimetypeName='lyric'
+        <FileListHandlerComp
+            id="lyric-list"
+            mimetypeName="lyric"
             defaultFolderName={defaultDataDirNames.LYRIC}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
-                return !await Lyric.create(dirPath, name);
+                return !(await Lyric.create(dirPath, name));
             }}
             header={<span>Lyrics</span>}
-            bodyHandler={handleBodyRendering} />
+            bodyHandler={handleBodyRendering}
+        />
     );
 }

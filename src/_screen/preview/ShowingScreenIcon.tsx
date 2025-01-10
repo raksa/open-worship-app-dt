@@ -8,8 +8,8 @@ export function genColorFromScreenId(screenId: number) {
     if (screenIdColorMap[screenId]) {
         return screenIdColorMap[screenId];
     }
-    const allColors = (
-        Object.values(colorList.main).concat(Object.values(colorList.extension))
+    const allColors = Object.values(colorList.main).concat(
+        Object.values(colorList.extension),
     );
     const colorIndex = screenId % allColors.length;
     const color = allColors[colorIndex];
@@ -17,14 +17,19 @@ export function genColorFromScreenId(screenId: number) {
     return color;
 }
 
-export default function ShowingScreenIcon({ screenId }: Readonly<{
-    screenId: number,
+export default function ShowingScreenIcon({
+    screenId,
+}: Readonly<{
+    screenId: number;
 }>) {
     const color = genColorFromScreenId(screenId);
     return (
-        <span className='d-flex' title={`Screen: ${screenId}`}
-            data-screen-id={screenId}>
-            <i className='bi bi-collection' style={{ color }} />
+        <span
+            className="d-flex"
+            title={`Screen: ${screenId}`}
+            data-screen-id={screenId}
+        >
+            <i className="bi bi-collection" style={{ color }} />
             {screenId}
         </span>
     );

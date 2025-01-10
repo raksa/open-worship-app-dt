@@ -2,20 +2,23 @@ import './SlideList.scss';
 
 import FileListHandlerComp from '../others/FileListHandlerComp';
 import SlideFile from './SlideFile';
-import Slide, {
-    useSelectedSlideSetterContext,
-} from './Slide';
+import Slide, { useSelectedSlideSetterContext } from './Slide';
 import {
-    checkIsPdf, convertOfficeFile, supportOfficeFileExtensions,
+    checkIsPdf,
+    convertOfficeFile,
+    supportOfficeFileExtensions,
 } from './slideHelpers';
 import {
-    getFileExtension, getFileFullName, getMimetypeExtensions,
+    getFileExtension,
+    getFileFullName,
+    getMimetypeExtensions,
     mimetypePdf,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import {
-    defaultDataDirNames, dirSourceSettingNames,
+    defaultDataDirNames,
+    dirSourceSettingNames,
 } from '../helper/constants';
 import { DroppedFileType } from '../others/droppingFileHelpers';
 
@@ -60,23 +63,28 @@ export default function SlideList() {
     const handleBodyRendering = (filePaths: string[]) => {
         return filePaths.map((filePath, i) => {
             const fileSource = FileSource.getInstance(filePath);
-            return <SlideFile key={fileSource.fileFullName}
-                index={i}
-                filePath={filePath} />;
+            return (
+                <SlideFile
+                    key={fileSource.fileFullName}
+                    index={i}
+                    filePath={filePath}
+                />
+            );
         });
     };
     if (dirSource === null) {
         return null;
     }
     return (
-        <FileListHandlerComp id='slide-list'
-            mimetypeName='slide'
+        <FileListHandlerComp
+            id="slide-list"
+            mimetypeName="slide"
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}
             checkExtraFile={handleExtraFileChecking}
             takeDroppedFile={handleFileTaking}
             onNewFile={async (dirPath: string, name: string) => {
-                return !await Slide.create(dirPath, name);
+                return !(await Slide.create(dirPath, name));
             }}
             header={<span>Slides</span>}
             bodyHandler={handleBodyRendering}

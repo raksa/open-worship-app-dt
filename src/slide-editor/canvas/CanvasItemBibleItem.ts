@@ -1,24 +1,21 @@
 import BibleItem from '../../bible-list/BibleItem';
-import CanvasItemText, {
-    CanvasItemTextPropsType,
-} from './CanvasItemText';
+import CanvasItemText, { CanvasItemTextPropsType } from './CanvasItemText';
 import { AnyObjectType, cloneJson } from '../../helper/helpers';
 import { CanvasItemError } from './CanvasItem';
-import {
-    HAlignmentType, VAlignmentType,
-} from './canvasHelpers';
+import { HAlignmentType, VAlignmentType } from './canvasHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import {
-    BibleTargetType, bibleRenderHelper,
+    BibleTargetType,
+    bibleRenderHelper,
 } from '../../bible-list/bibleRenderHelpers';
 
 export type CanvasItemBiblePropsType = CanvasItemTextPropsType & {
     bibleKeys: string[];
-    bibleItemTarget: BibleTargetType,
+    bibleItemTarget: BibleTargetType;
     bibleRenderedList: {
-        title: string,
-        text: string,
-    }[],
+        title: string;
+        text: string;
+    }[];
 };
 export default class CanvasItemBibleItem extends CanvasItemText {
     props: CanvasItemBiblePropsType;
@@ -41,7 +38,8 @@ export default class CanvasItemBibleItem extends CanvasItemText {
     static async fromBibleItem(id: number, bibleItem: BibleItem) {
         const title = await bibleItem.toTitle();
         const text = await bibleRenderHelper.toText(
-            bibleItem.bibleKey, bibleItem.target,
+            bibleItem.bibleKey,
+            bibleItem.target,
         );
         const newTextItem = super.genDefaultItem();
         const props = newTextItem.toJson();
@@ -50,9 +48,12 @@ export default class CanvasItemBibleItem extends CanvasItemText {
             ...props,
             bibleKeys: [bibleItem.bibleKey],
             bibleItemTarget: bibleItem.toJson().target,
-            bibleRenderedList: [{
-                title, text,
-            }],
+            bibleRenderedList: [
+                {
+                    title,
+                    text,
+                },
+            ],
             horizontalAlignment: 'left' as HAlignmentType,
             verticalAlignment: 'top' as VAlignmentType,
             textHorizontalAlignment: 'left' as HAlignmentType,

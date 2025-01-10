@@ -3,9 +3,10 @@ import EditorCacheManager from '../others/EditorCacheManager';
 import { SlideEditorHistoryType, SlideType } from './Slide';
 import { SlideItemType } from './SlideItem';
 
-export default class SlideEditorCacheManager
-    extends EditorCacheManager<SlideEditorHistoryType, SlideType> {
-
+export default class SlideEditorCacheManager extends EditorCacheManager<
+    SlideEditorHistoryType,
+    SlideType
+> {
     private _originalJson: Readonly<SlideType>;
 
     constructor(filePath: string, json: SlideType) {
@@ -40,9 +41,11 @@ export default class SlideEditorCacheManager
     }
     getSlideItemById(id: number) {
         const latestHistory = this.presenterJson;
-        return latestHistory.items.find((item) => {
-            return item.id === id;
-        }) || null;
+        return (
+            latestHistory.items.find((item) => {
+                return item.id === id;
+            }) || null
+        );
     }
     checkIsSlideItemChanged(id: number) {
         const newItem = this.getSlideItemById(id);

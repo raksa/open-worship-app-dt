@@ -3,15 +3,17 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import { get_api_url, get_api_key } from '../../_owa-crypto';
 import appProvider from '../../server/appProvider';
 import {
-    fsDeleteFile, fsListDirectories, fsCheckDirExist, pathBasename, getFileName,
+    fsDeleteFile,
+    fsListDirectories,
+    fsCheckDirExist,
+    pathBasename,
+    getFileName,
 } from '../../server/fileHelpers';
 import { getBibleInfo } from './bibleInfoHelpers';
 import { appApiFetch } from '../networkHelpers';
 import { tarExtract } from '../../server/appHelpers';
 import { DownloadOptionsType, writeStreamToFile } from './downloadHelpers';
-import {
-    getBibleXMLCacheInfoList,
-} from '../../setting/bible-setting/bibleXMLHelpers';
+import { getBibleXMLCacheInfoList } from '../../setting/bible-setting/bibleXMLHelpers';
 import { bibleDataReader } from './BibleDataReader';
 
 export const BIBLE_DOWNLOAD_TOAST_TITLE = 'Bible Download';
@@ -21,29 +23,35 @@ export function httpsRequestBible(
     callback: (error: Error | null, response?: any) => void,
 ) {
     const hostname = get_api_url().split('//')[1];
-    const request = appProvider.httpUtils.request({
-        port: 443,
-        path: pathName,
-        method: 'GET',
-        hostname,
-        headers: {
-            'x-api-key': get_api_key(),
+    const request = appProvider.httpUtils.request(
+        {
+            port: 443,
+            path: pathName,
+            method: 'GET',
+            hostname,
+            headers: {
+                'x-api-key': get_api_key(),
+            },
         },
-    }, (response) => {
-        if (response.statusCode === 302 && response.headers.location) {
-            return httpsRequestBible(response.headers.location, callback);
-        }
-        callback(null, response);
-    });
+        (response) => {
+            if (response.statusCode === 302 && response.headers.location) {
+                return httpsRequestBible(response.headers.location, callback);
+            }
+            callback(null, response);
+        },
+    );
     request.on('error', (event: Error) => {
         callback(event);
     });
     request.end();
 }
 
-export async function startDownloadBible({ bibleFileFullName, options }: {
-    bibleFileFullName: string,
-    options: DownloadOptionsType
+export async function startDownloadBible({
+    bibleFileFullName,
+    options,
+}: {
+    bibleFileFullName: string;
+    options: DownloadOptionsType;
 }) {
     const filePath = await bibleDataReader.toBiblePath(bibleFileFullName);
     if (filePath === null) {
@@ -57,21 +65,21 @@ export async function startDownloadBible({ bibleFileFullName, options }: {
     });
 }
 
-
 export type BibleMinimalInfoType = {
-    locale: string,
-    title: string,
-    key: string,
-    version: number,
-    filePath?: string,
-    isXML?: boolean,
+    locale: string;
+    title: string;
+    key: string;
+    version: number;
+    filePath?: string;
+    isXML?: boolean;
 };
 
 export async function downloadBible({
-    bibleInfo, options,
+    bibleInfo,
+    options,
 }: {
-    bibleInfo: BibleMinimalInfoType,
-    options: DownloadOptionsType,
+    bibleInfo: BibleMinimalInfoType;
+    options: DownloadOptionsType;
 }) {
     if (bibleInfo.filePath === undefined) {
         return options.onDone(new Error('Invalid file path'));
@@ -82,7 +90,8 @@ export async function downloadBible({
             return options.onDone(new Error('Cannot create writable path'));
         }
         await startDownloadBible({
-            bibleFileFullName: `/${encodeURI(bibleInfo.filePath)}`, options,
+            bibleFileFullName: `/${encodeURI(bibleInfo.filePath)}`,
+            options,
         });
     } catch (error: any) {
         options.onDone(error);
@@ -111,31 +120,34 @@ export async function extractDownloadedBible(filePath: string) {
         fsDeleteFile(filePath).catch((error) => {
             handleError(error);
             showSimpleToast(
-                BIBLE_DOWNLOAD_TOAST_TITLE, 'Fail to delete downloaded file',
+                BIBLE_DOWNLOAD_TOAST_TITLE,
+                'Fail to delete downloaded file',
             );
         });
     }
     return isExtracted;
 }
 
-export async function getOnlineBibleInfoList():
-    Promise<BibleMinimalInfoType[] | null> {
+export async function getOnlineBibleInfoList(): Promise<
+    BibleMinimalInfoType[] | null
+> {
     try {
         const content = await appApiFetch('info.json');
         const json = await content.json();
         if (typeof json.mapper !== 'object') {
             throw new Error('Cannot get bible list');
         }
-        return Object.entries(json.mapper).map(([key, value]:
-            [key: string, value: any]) => {
-            return {
-                locale: value.locale,
-                title: value.title,
-                key,
-                version: value.version,
-                filePath: value.filePath,
-            };
-        });
+        return Object.entries(json.mapper).map(
+            ([key, value]: [key: string, value: any]) => {
+                return {
+                    locale: value.locale,
+                    title: value.title,
+                    key,
+                    version: value.version,
+                    filePath: value.filePath,
+                };
+            },
+        );
     } catch (error) {
         handleError(error);
     }
@@ -163,13 +175,15 @@ export async function getDownloadedBibleInfoList() {
 }
 
 export async function getAllLocalBibleInfoList() {
-    const downloadedBibleInfoList = await getDownloadedBibleInfoList() || [];
+    const downloadedBibleInfoList = (await getDownloadedBibleInfoList()) || [];
     const bibleXMLInfoList = await getBibleXMLCacheInfoList();
-    downloadedBibleInfoList.push(...bibleXMLInfoList.map((info) => {
-        return {
-            ...info,
-            isXML: true,
-        } as BibleMinimalInfoType;
-    }));
+    downloadedBibleInfoList.push(
+        ...bibleXMLInfoList.map((info) => {
+            return {
+                ...info,
+                isXML: true,
+            } as BibleMinimalInfoType;
+        }),
+    );
     return downloadedBibleInfoList;
 }

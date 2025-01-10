@@ -1,8 +1,13 @@
 import { useState } from 'react';
 
 import {
-    AllDataType, BibleSearchForType, searchOnline, calcPaging, findPageNumber,
-    APIDataType, SelectedBookKeyType,
+    AllDataType,
+    BibleSearchForType,
+    searchOnline,
+    calcPaging,
+    findPageNumber,
+    APIDataType,
+    SelectedBookKeyType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderData from './BibleOnlineRenderData';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
@@ -30,47 +35,47 @@ export default function BibleOnlineSearchBodyPreviewer() {
     const [apiData, setApiData] = useState<APIDataType | null | undefined>(
         undefined,
     );
-    useAppEffectAsync(async (methodContext) => {
-        if (apiData === undefined) {
-            const apiData1 = await loadApiData();
-            methodContext.setApiData(apiData1);
-        }
-    }, [apiData], { setApiData });
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (apiData === undefined) {
+                const apiData1 = await loadApiData();
+                methodContext.setApiData(apiData1);
+            }
+        },
+        [apiData],
+        { setApiData },
+    );
     if (apiData === undefined) {
-        return (
-            <LoadingComp />
-        );
+        return <LoadingComp />;
     }
     if (apiData === null) {
         return (
-            <div className='alert alert-warning'>
-                <i className='bi bi-info-circle' />
-                <div className='ms-2'>
-                    Fail to get api data!
-                </div>
-                <button className='btn btn-info'
+            <div className="alert alert-warning">
+                <i className="bi bi-info-circle" />
+                <div className="ms-2">Fail to get api data!</div>
+                <button
+                    className="btn btn-info"
                     onClick={() => {
                         setApiData(undefined);
-                    }}>
+                    }}
+                >
                     Reload
                 </button>
             </div>
         );
     }
 
-    return (
-        <BibleOnlineSearchBody apiData={apiData} />
-    );
+    return <BibleOnlineSearchBody apiData={apiData} />;
 }
 
-function BibleOnlineSearchBody({ apiData }: Readonly<{
-    apiData: APIDataType,
+function BibleOnlineSearchBody({
+    apiData,
+}: Readonly<{
+    apiData: APIDataType;
 }>) {
     const selectedBibleKey = useBibleKeyContext();
     const [bibleKey, setBibleKey] = useState(selectedBibleKey);
-    const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(
-        null,
-    );
+    const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(null);
     const [inputText, setInputText] = useState('');
     const [searchingText, setSearchingText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
@@ -85,28 +90,33 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
         if (selectedBook !== null) {
             searchData['bookKey'] = selectedBook[0];
         }
-        searchOnline(
-            apiDataMap.apiUrl, apiDataMap.apiKey, searchData,
-        ).then((data) => {
-            if (data !== null) {
-                const { perPage, pages } = calcPaging(data);
-                const pageNumber = findPageNumber(data, perPage, pages);
-                const newAllData = { ...allData, [pageNumber]: data };
-                delete newAllData['0'];
-                setAllData(newAllData);
-            }
-        });
+        searchOnline(apiDataMap.apiUrl, apiDataMap.apiKey, searchData).then(
+            (data) => {
+                if (data !== null) {
+                    const { perPage, pages } = calcPaging(data);
+                    const pageNumber = findPageNumber(data, perPage, pages);
+                    const newAllData = { ...allData, [pageNumber]: data };
+                    delete newAllData['0'];
+                    setAllData(newAllData);
+                }
+            },
+        );
     };
     return (
-        <div className='card overflow-hidden w-100 h-100'>
-            <div className='card-header input-group overflow-hidden' style={{
-                height: 45,
-            }}>
-                <BibleSelection bibleKey={bibleKey}
+        <div className="card overflow-hidden w-100 h-100">
+            <div
+                className="card-header input-group overflow-hidden"
+                style={{
+                    height: 45,
+                }}
+            >
+                <BibleSelection
+                    bibleKey={bibleKey}
                     onBibleKeyChange={setBibleKey1}
                 />
-                <input type='text'
-                    className='form-control'
+                <input
+                    type="text"
+                    className="form-control"
                     value={inputText}
                     onKeyUp={(event) => {
                         if (event.key === 'Enter') {
@@ -118,8 +128,10 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
                     onChange={(event) => {
                         const value = event.target.value;
                         setInputText(value);
-                    }} />
-                <button className='btn btn-sm'
+                    }}
+                />
+                <button
+                    className="btn btn-sm"
                     onClick={() => {
                         if (!inputText) {
                             return;
@@ -127,12 +139,14 @@ function BibleOnlineSearchBody({ apiData }: Readonly<{
                         setSearchingText(inputText);
                         setAllData({});
                         searchOnline1({ text: inputText });
-                    }}>
-                    <i className='bi bi-search' />
+                    }}
+                >
+                    <i className="bi bi-search" />
                 </button>
             </div>
             <BibleOnlineRenderData
-                text={searchingText} allData={allData}
+                text={searchingText}
+                allData={allData}
                 searchFor={(from: number, to: number) => {
                     searchOnline1({
                         fromLineNumber: from,

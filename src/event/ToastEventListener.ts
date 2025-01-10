@@ -14,7 +14,8 @@ export default class ToastEventListener extends EventHandler<ToastEventType> {
 export function useToastSimpleShowing(listener: ListenerType<SimpleToastType>) {
     useAppEffect(() => {
         const event = ToastEventListener.registerEventListener(
-            ['simple'], listener,
+            ['simple'],
+            listener,
         );
         return () => {
             ToastEventListener.unregisterEventListener(event);

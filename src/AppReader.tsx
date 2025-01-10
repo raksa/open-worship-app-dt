@@ -1,7 +1,9 @@
 import { lazy } from 'react';
 
 import {
-    DataInputType, FlexSizeType, resizeSettingNames,
+    DataInputType,
+    FlexSizeType,
+    resizeSettingNames,
 } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 import BibleItemViewController, {
@@ -16,16 +18,18 @@ const LazyRenderBibleSearch = lazy(() => {
 });
 
 const flexSizeDefault: FlexSizeType = {
-    'h1': ['1'],
-    'h2': ['4'],
+    h1: ['1'],
+    h2: ['4'],
 };
 const dataInput: DataInputType[] = [
     {
-        children: LazyBibleList, key: 'h1',
+        children: LazyBibleList,
+        key: 'h1',
         widgetName: 'Bible List',
     },
     {
-        children: LazyRenderBibleSearch, key: 'h2',
+        children: LazyRenderBibleSearch,
+        key: 'h2',
         widgetName: 'Bible Previewer',
     },
 ];
@@ -33,7 +37,8 @@ const viewController = new BibleItemViewController('reader');
 export default function AppReader() {
     return (
         <BibleItemViewControllerContext value={viewController}>
-            <ResizeActor flexSizeName={resizeSettingNames.read}
+            <ResizeActor
+                flexSizeName={resizeSettingNames.read}
                 isHorizontal
                 flexSizeDefault={flexSizeDefault}
                 dataInput={dataInput}

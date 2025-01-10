@@ -5,9 +5,7 @@ import Bible from './Bible';
 import BibleFile from './BibleFile';
 import { useGenDirSource } from '../helper/dirSourceHelpers';
 import { getSettingPrefix } from '../helper/settingHelpers';
-import {
-    defaultDataDirNames,
-} from '../helper/constants';
+import { defaultDataDirNames } from '../helper/constants';
 import appProvider from '../server/appProvider';
 
 export default function BibleList() {
@@ -17,9 +15,13 @@ export default function BibleList() {
         return (
             <>
                 {filePaths.map((filePath, i) => {
-                    return <BibleFile key={filePath}
-                        index={i}
-                        filePath={filePath} />;
+                    return (
+                        <BibleFile
+                            key={filePath}
+                            index={i}
+                            filePath={filePath}
+                        />
+                    );
                 })}
             </>
         );
@@ -29,20 +31,21 @@ export default function BibleList() {
     }
     Bible.getDefault();
     const settingPrefix = getSettingPrefix();
-    const defaultDataDirName = (
-        appProvider.isPageReader ? defaultDataDirNames.BIBLE_READ :
-            defaultDataDirNames.BIBLE_PRESENT
-    );
+    const defaultDataDirName = appProvider.isPageReader
+        ? defaultDataDirNames.BIBLE_READ
+        : defaultDataDirNames.BIBLE_PRESENT;
     return (
-        <FileListHandlerComp id={`${settingPrefix}bible-list`}
-            mimetypeName='bible'
+        <FileListHandlerComp
+            id={`${settingPrefix}bible-list`}
+            mimetypeName="bible"
             defaultFolderName={defaultDataDirName}
             dirSource={dirSource}
             onNewFile={async (dirPath: string, name: string) => {
-                return !await Bible.create(dirPath, name);
+                return !(await Bible.create(dirPath, name));
             }}
             header={<span>Bibles</span>}
             bodyHandler={handleBodyRendering}
-            userClassName='p-0' />
+            userClassName="p-0"
+        />
     );
 }

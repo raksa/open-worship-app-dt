@@ -9,10 +9,11 @@ import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
 
 export default function LyricFile({
-    index, filePath,
+    index,
+    filePath,
 }: Readonly<{
-    index: number,
-    filePath: string,
+    index: number;
+    filePath: string;
 }>) {
     const [data, setData] = useState<Lyric | null | undefined>(null);
     const handleReloading = () => {
@@ -28,18 +29,21 @@ export default function LyricFile({
         }
     };
     const handleChildRendering = (lyric: ItemSource<any>) => {
-        return (
-            <LyricFilePreview lyric={lyric as Lyric} />
-        );
+        return <LyricFilePreview lyric={lyric as Lyric} />;
     };
     useAppEffect(() => {
         if (data === null) {
             Lyric.readFileToData(filePath).then(setData);
         }
     }, [data]);
-    useFileSourceEvents(['update', 'history-update', 'edit'], () => {
-        setData(null);
-    }, [data], filePath);
+    useFileSourceEvents(
+        ['update', 'history-update', 'edit'],
+        () => {
+            setData(null);
+        },
+        [data],
+        filePath,
+    );
     return (
         <FileItemHandlerComp
             index={index}
@@ -57,10 +61,9 @@ function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
     const fileSource = FileSource.getInstance(lyric.filePath);
     return (
         <>
-            <i className='bi bi-music-note' />
+            <i className="bi bi-music-note" />
             {fileSource.name}
-            {lyric.isChanged && <span
-                style={{ color: 'red' }}>*</span>}
+            {lyric.isChanged && <span style={{ color: 'red' }}>*</span>}
         </>
     );
 }

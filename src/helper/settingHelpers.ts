@@ -17,14 +17,14 @@ export function getSetting(key: string, defaultValue?: string): string {
 }
 
 export function useStateSettingBoolean(
-    settingName: string, defaultValue?: boolean,
+    settingName: string,
+    defaultValue?: boolean,
 ) {
     const originalSettingName = getSetting(settingName);
-    const defaultData = (
-        originalSettingName === '' ?
-            !!defaultValue :
-            originalSettingName === 'true'
-    );
+    const defaultData =
+        originalSettingName === ''
+            ? !!defaultValue
+            : originalSettingName === 'true';
     const [data, setData] = useState(defaultData);
     const setDataSetting = (b: boolean) => {
         setData(b);
@@ -33,7 +33,8 @@ export function useStateSettingBoolean(
     return [data, setDataSetting] as [boolean, (b: boolean) => void];
 }
 export function useStateSettingString<T extends string>(
-    settingName: string, defaultString: T = '' as T,
+    settingName: string,
+    defaultString: T = '' as T,
 ) {
     const defaultData = getSetting(settingName) || defaultString;
     const [data, setData] = useState<T>(defaultData as T);
@@ -44,7 +45,8 @@ export function useStateSettingString<T extends string>(
     return [data, setDataSetting] as [T, (t: T) => void];
 }
 export function useStateSettingNumber(
-    settingName: string, defaultNumber: number,
+    settingName: string,
+    defaultNumber: number,
 ): [number, (n: number) => void] {
     const defaultData = parseInt(getSetting(settingName));
     const [data, setData] = useState(
@@ -68,15 +70,19 @@ export class SettingManager<T> {
     defaultValue: T;
     isErrorToDefault: boolean;
     constructor({
-        settingName, defaultValue, isErrorToDefault,
-        validate, serialize, deserialize,
+        settingName,
+        defaultValue,
+        isErrorToDefault,
+        validate,
+        serialize,
+        deserialize,
     }: {
-        settingName: string,
-        defaultValue: T,
-        isErrorToDefault?: boolean,
-        validate?: SettingValidatorType,
-        serialize?: SettingSerializeType,
-        deserialize?: SettingDeserializeType,
+        settingName: string;
+        defaultValue: T;
+        isErrorToDefault?: boolean;
+        validate?: SettingValidatorType;
+        serialize?: SettingSerializeType;
+        deserialize?: SettingDeserializeType;
     }) {
         this.settingName = settingName;
         this.defaultValue = defaultValue;
@@ -87,8 +93,10 @@ export class SettingManager<T> {
     }
     getSetting(defaultValue?: T): T {
         defaultValue = defaultValue || this.defaultValue;
-        const value = getSetting(this.settingName,
-            this.serialize(defaultValue));
+        const value = getSetting(
+            this.settingName,
+            this.serialize(defaultValue),
+        );
         if (!this.validate(value)) {
             if (this.isErrorToDefault) {
                 return defaultValue;

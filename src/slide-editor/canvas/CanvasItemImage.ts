@@ -1,19 +1,16 @@
 import { AnyObjectType, getImageDim } from '../../helper/helpers';
 import FileSource, { SrcData } from '../../helper/FileSource';
 import {
-    CanvasItemMediaPropsType, genTextDefaultBoxStyle, validateMediaProps,
+    CanvasItemMediaPropsType,
+    genTextDefaultBoxStyle,
+    validateMediaProps,
 } from './canvasHelpers';
-import CanvasItem, {
-    CanvasItemError, CanvasItemPropsType,
-} from './CanvasItem';
+import CanvasItem, { CanvasItemError, CanvasItemPropsType } from './CanvasItem';
 import { handleError } from '../../helper/errorHelpers';
 
-export type CanvasItemImagePropsType = (
-    CanvasItemPropsType & CanvasItemMediaPropsType
-);
-export default class CanvasItemImage
-    extends CanvasItem<CanvasItemImagePropsType> {
-
+export type CanvasItemImagePropsType = CanvasItemPropsType &
+    CanvasItemMediaPropsType;
+export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
     static gegStyle(_props: CanvasItemImagePropsType) {
         return {};
     }
@@ -21,8 +18,11 @@ export default class CanvasItemImage
         return CanvasItemImage.gegStyle(this.props);
     }
     static async genCanvasItem(
-        srcData: SrcData, mediaWidth: number, mediaHeight: number,
-        x: number, y: number,
+        srcData: SrcData,
+        mediaWidth: number,
+        mediaHeight: number,
+        x: number,
+        y: number,
     ) {
         const props: CanvasItemImagePropsType = {
             srcData,
@@ -37,17 +37,13 @@ export default class CanvasItemImage
         };
         return this.fromJson(props);
     }
-    static async genFromInsertion(
-        x: number, y: number, filePath: string,
-    ) {
+    static async genFromInsertion(x: number, y: number, filePath: string) {
         const fileSource = FileSource.getInstance(filePath);
         const [mediaWidth, mediaHeight] = await getImageDim(fileSource.src);
         const srcData = await fileSource.getSrcData();
         return this.genCanvasItem(srcData, mediaWidth, mediaHeight, x, y);
     }
-    static async genFromBlob(
-        x: number, y: number, blob: Blob,
-    ) {
+    static async genFromBlob(x: number, y: number, blob: Blob) {
         const srcData = await new Promise<SrcData>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => {

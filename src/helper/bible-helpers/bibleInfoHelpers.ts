@@ -1,12 +1,11 @@
 import { getKJVChapterCount, toBibleFileName } from './serverBibleHelpers';
-import {
-    bibleKeyToFilePath,
-} from '../../setting/bible-setting/bibleXMLJsonDataHelpers';
+import { bibleKeyToFilePath } from '../../setting/bible-setting/bibleXMLJsonDataHelpers';
 import { bibleDataReader, BibleInfoType, ChapterType } from './BibleDataReader';
 import { fsCheckFileExist } from '../../server/fileHelpers';
 import { showSimpleToast } from '../../toast/toastHelpers';
 import {
-    cacheBibleXMLData, getBibleXMLDataFromKey,
+    cacheBibleXMLData,
+    getBibleXMLDataFromKey,
 } from '../../setting/bible-setting/bibleXMLHelpers';
 
 export async function getBookKVList(bibleKey: string) {
@@ -28,9 +27,11 @@ export async function getBookVKList(bibleKey: string) {
     if (bibleVKList === null) {
         return null;
     }
-    return Object.fromEntries(Object.entries(bibleVKList).map(([k, v]) => {
-        return [v, k];
-    }));
+    return Object.fromEntries(
+        Object.entries(bibleVKList).map(([k, v]) => {
+            return [v, k];
+        }),
+    );
 }
 export async function bookToKey(bibleKey: string, book: string) {
     const bookVKList = await getBookVKList(bibleKey);
@@ -48,32 +49,37 @@ export async function getChapterCount(bibleKey: string, book: string) {
     return chapterCount;
 }
 export async function getBookChapterData(
-    bibleKey: string, bookKey: string, chapter: number,
+    bibleKey: string,
+    bookKey: string,
+    chapter: number,
 ) {
     const chapterCount = getKJVChapterCount(bookKey);
     if (chapterCount === null || chapter > chapterCount) {
         return null;
     }
     const fileName = toBibleFileName(bookKey, chapter);
-    const verseInfo = (
-        await bibleDataReader.readBibleData(bibleKey, fileName) as
-        ChapterType | null
-    );
+    const verseInfo = (await bibleDataReader.readBibleData(
+        bibleKey,
+        fileName,
+    )) as ChapterType | null;
     if (verseInfo === null) {
         return null;
     }
     return verseInfo;
 }
 export async function getVerses(
-    bibleKey: string, bookKey: string, chapter: number,
+    bibleKey: string,
+    bookKey: string,
+    chapter: number,
 ) {
-    const chapterData = await getBookChapterData(bibleKey, bookKey, chapter);;
+    const chapterData = await getBookChapterData(bibleKey, bookKey, chapter);
     return chapterData ? chapterData.verses : null;
 }
 
-const bibleInfoMap = (
-    new Map<string, { info: BibleInfoType, timestamp: number }>()
-);
+const bibleInfoMap = new Map<
+    string,
+    { info: BibleInfoType; timestamp: number }
+>();
 export async function getBibleInfo(bibleKey: string, isForce = false) {
     if (isForce) {
         bibleInfoMap.delete(bibleKey);

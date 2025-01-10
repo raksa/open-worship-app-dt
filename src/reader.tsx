@@ -12,5 +12,5 @@ main(
         <Toast />
         <AppContextMenuComp />
         <HandleAlertComp />
-    </>
+    </>,
 );

@@ -9,9 +9,9 @@ import { handleError } from '../../helper/errorHelpers';
 import { getDefaultScreenDisplay } from '../../_screen/managers/screenHelpers';
 
 type CanvasPropsType = {
-    width: number,
-    height: number,
-    canvasItems: CanvasItem<any>[],
+    width: number;
+    height: number;
+    canvasItems: CanvasItem<any>[];
 };
 export default class Canvas {
     props: CanvasPropsType;
@@ -43,7 +43,8 @@ export default class Canvas {
     static genDefaultCanvas() {
         const { width, height } = Canvas.getDefaultDim();
         return new Canvas({
-            width, height,
+            width,
+            height,
             canvasItems: [],
         });
     }
@@ -66,13 +67,18 @@ export default class Canvas {
                 return CanvasItemError.fromJsonError(json);
         }
     }
-    static fromJson({ metadata, canvasItems: canvasItemsJson }: {
-        metadata: AnyObjectType,
-        canvasItems: AnyObjectType[],
+    static fromJson({
+        metadata,
+        canvasItems: canvasItemsJson,
+    }: {
+        metadata: AnyObjectType;
+        canvasItems: AnyObjectType[];
     }) {
-        const canvasItems = canvasItemsJson.map((json: any) => {
-            return this.canvasItemFromJson(json);
-        }).filter((item) => item !== null) as CanvasItem<any>[];
+        const canvasItems = canvasItemsJson
+            .map((json: any) => {
+                return this.canvasItemFromJson(json);
+            })
+            .filter((item) => item !== null) as CanvasItem<any>[];
         return new Canvas({
             width: metadata.width,
             height: metadata.height,
@@ -105,14 +111,15 @@ export default class Canvas {
         const copiedCanvasItems: CanvasItem<any>[] = [];
         const textPlainType = 'text/plain';
         for (const clipboardItem of clipboardItems) {
-            if (clipboardItem.types.some((type) => {
-                return type === textPlainType;
-            })) {
+            if (
+                clipboardItem.types.some((type) => {
+                    return type === textPlainType;
+                })
+            ) {
                 const blob = await clipboardItem.getType(textPlainType);
                 const json = await blob.text();
-                const copiedCanvasItem = this.clipboardDeserializeCanvasItem(
-                    json,
-                );
+                const copiedCanvasItem =
+                    this.clipboardDeserializeCanvasItem(json);
                 if (copiedCanvasItem !== null) {
                     copiedCanvasItems.push(copiedCanvasItem);
                 }

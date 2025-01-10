@@ -1,15 +1,14 @@
 import { useStateSettingString } from '../helper/settingHelpers';
 import ScreenAlertManager from '../_screen/managers/ScreenAlertManager';
-import {
-    useScreenAlertManagerEvents,
-} from '../_screen/managers/screenEventHelpers';
+import { useScreenAlertManagerEvents } from '../_screen/managers/screenEventHelpers';
 import { getShowingScreenIds, hideAlert } from './alertHelpers';
 import ScreensRendererComp from './ScreensRendererComp';
 
 export default function MarqueeComp() {
     useScreenAlertManagerEvents(['update']);
     const [text, setText] = useStateSettingString<string>(
-        'marquee-setting', ''
+        'marquee-setting',
+        '',
     );
     const showingScreenIds = getShowingScreenIds((data) => {
         return data.marqueeData !== null;
@@ -20,33 +19,37 @@ export default function MarqueeComp() {
         });
     };
     const handleMarqueeShowing = (event: any, isForceChoosing = false) => {
-        ScreenAlertManager.setMarquee(
-            event, text, isForceChoosing,
-        );
+        ScreenAlertManager.setMarquee(event, text, isForceChoosing);
     };
     const handleContextMenuOpening = (event: any) => {
         handleMarqueeShowing(event, true);
     };
     return (
         <div>
-            <div className='form-floating'>
-                <textarea id='marquee-textarea'
-                    className='form-control'
-                    cols={30} rows={20} value={text}
+            <div className="form-floating">
+                <textarea
+                    id="marquee-textarea"
+                    className="form-control"
+                    cols={30}
+                    rows={20}
+                    value={text}
                     onChange={(event) => {
                         setText(event.target.value);
                     }}
-                    placeholder='Leave a marquee text here'
+                    placeholder="Leave a marquee text here"
                 />
-                <label htmlFor='marquee-textarea'>Marquee</label>
-                <button className='btn btn-secondary'
+                <label htmlFor="marquee-textarea">Marquee</label>
+                <button
+                    className="btn btn-secondary"
                     onClick={handleMarqueeShowing}
-                    onContextMenu={handleContextMenuOpening}>
+                    onContextMenu={handleContextMenuOpening}
+                >
                     Show Marquee
                 </button>
             </div>
-            <ScreensRendererComp showingScreenIds={showingScreenIds}
-                buttonTitle='Hide Marquee'
+            <ScreensRendererComp
+                showingScreenIds={showingScreenIds}
+                buttonTitle="Hide Marquee"
                 handleMarqueeHiding={handleMarqueeHiding}
             />
         </div>

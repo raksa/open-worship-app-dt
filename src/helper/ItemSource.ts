@@ -1,17 +1,19 @@
 import {
-    MimetypeNameType, createNewFileDetail, fsCheckFileExist,
+    MimetypeNameType,
+    createNewFileDetail,
+    fsCheckFileExist,
 } from '../server/fileHelpers';
 import FileSource from './FileSource';
-import {
-    AnyObjectType, validateAppMeta,
-} from './helpers';
+import { AnyObjectType, validateAppMeta } from './helpers';
 import { setSetting, getSetting } from './settingHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 
 const cache = new Map<string, ItemSource<any>>();
-export default abstract class ItemSource<T extends {
-    toJson(): AnyObjectType;
-}> {
+export default abstract class ItemSource<
+    T extends {
+        toJson(): AnyObjectType;
+    },
+> {
     protected static SELECT_SETTING_NAME = 'selected';
     SELECT_SETTING_NAME: string = '';
     protected static mimetypeName: MimetypeNameType = 'other';
@@ -33,7 +35,8 @@ export default abstract class ItemSource<T extends {
             return;
         }
         ItemSource.setSelectedFileSource(
-            b ? this.filePath : null, this.SELECT_SETTING_NAME,
+            b ? this.filePath : null,
+            this.SELECT_SETTING_NAME,
         );
         this.fileSource.fireSelectEvent();
     }
@@ -58,8 +61,11 @@ export default abstract class ItemSource<T extends {
         return json;
     }
     static validate(json: AnyObjectType) {
-        if (!json.items || !(json.items instanceof Array)
-            || !validateAppMeta(json.metadata)) {
+        if (
+            !json.items ||
+            !(json.items instanceof Array) ||
+            !validateAppMeta(json.metadata)
+        ) {
             throw new Error('Invalid item source data');
         }
     }
@@ -67,7 +73,8 @@ export default abstract class ItemSource<T extends {
         return settingName || this.SELECT_SETTING_NAME;
     }
     static setSelectedFileSource(
-        filePath: string | null, settingName?: string,
+        filePath: string | null,
+        settingName?: string,
     ) {
         settingName = this.toSettingName(settingName);
         setSetting(settingName, filePath || '');
@@ -97,11 +104,14 @@ export default abstract class ItemSource<T extends {
             metadata: {
                 fileVersion: 1,
                 app: 'OpenWorship',
-                initDate: (new Date()).toJSON(),
+                initDate: new Date().toJSON(),
             },
             items,
         });
-        const filePath = await createNewFileDetail(dir, name, data,
+        const filePath = await createNewFileDetail(
+            dir,
+            name,
+            data,
             this.mimetypeName,
         );
         if (filePath !== null) {
@@ -128,7 +138,8 @@ export default abstract class ItemSource<T extends {
         cache.delete(key);
     }
     static async readFileToData(
-        filePath: string | null, refreshCache?: boolean,
+        filePath: string | null,
+        refreshCache?: boolean,
     ) {
         if (filePath === null) {
             return null;

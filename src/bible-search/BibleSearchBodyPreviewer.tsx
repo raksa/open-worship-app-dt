@@ -2,13 +2,15 @@ import { lazy, useMemo } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
 import {
-    BibleItemViewControllerContext, SearchBibleItemViewController,
+    BibleItemViewControllerContext,
+    SearchBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import BibleView from '../bible-reader/BibleView';
 import RenderBibleSearchBody from './RenderBibleSearchBody';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 import {
-    useCloseBibleItemRenderer, useNextEditingBibleItem,
+    useCloseBibleItemRenderer,
+    useNextEditingBibleItem,
     useSplitBibleItemRenderer,
 } from '../bible-reader/readBibleHelpers';
 import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
@@ -22,17 +24,18 @@ export default function BibleSearchBodyPreviewer() {
     useCloseBibleItemRenderer();
     useSplitBibleItemRenderer();
     const viewController = SearchBibleItemViewController.getInstance();
-    const contextValue = useMemo(() => ({
-        onDBClick: (bibleItem: BibleItem) => {
-            viewController.editBibleItem(bibleItem);
-        },
-    }), [viewController]);
+    const contextValue = useMemo(
+        () => ({
+            onDBClick: (bibleItem: BibleItem) => {
+                viewController.editBibleItem(bibleItem);
+            },
+        }),
+        [viewController],
+    );
     viewController.finalRenderer = function (bibleItem: BibleItem) {
-        const isSelected = viewController.checkIsBibleItemSelected(
-            bibleItem,
-        );
+        const isSelected = viewController.checkIsBibleItemSelected(bibleItem);
         if (isSelected) {
-            return (<RenderBibleSearchBody />);
+            return <RenderBibleSearchBody />;
         }
         return (
             <BibleViewTitleMaterialContext value={contextValue}>

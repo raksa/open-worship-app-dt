@@ -3,16 +3,17 @@ import { lazy, useState } from 'react';
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
 import ResizeActor from '../resize-actor/ResizeActor';
 import CanvasController, {
-    CanvasControllerContext, defaultRangeSize,
+    CanvasControllerContext,
+    defaultRangeSize,
 } from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRangeComp';
-import {
-    useSelectedEditingSlideItemContext,
-} from '../slide-list/SlideItem';
+import { useSelectedEditingSlideItemContext } from '../slide-list/SlideItem';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import CanvasItem, {
-    CanvasItemsContext, checkCanvasItemsIncludes,
-    EditingCanvasItemAndSetterContext, SelectedCanvasItemsAndSetterContext,
+    CanvasItemsContext,
+    checkCanvasItemsIncludes,
+    EditingCanvasItemAndSetterContext,
+    SelectedCanvasItemsAndSetterContext,
 } from './canvas/CanvasItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
@@ -26,9 +27,9 @@ const LazySlideItemEditorTools = lazy(() => {
 
 function useCanvasController() {
     const selectedSlideItem = useSelectedEditingSlideItemContext();
-    const [
-        canvasController, setCanvasController,
-    ] = useState(new CanvasController(selectedSlideItem));
+    const [canvasController, setCanvasController] = useState(
+        new CanvasController(selectedSlideItem),
+    );
     useAppEffect(() => {
         setCanvasController(new CanvasController(selectedSlideItem));
     }, [selectedSlideItem]);
@@ -39,12 +40,11 @@ function useCanvasItemsData(canvasController: CanvasController) {
     const [canvasItems, setCanvasItems] = useState(
         canvasController.canvas.newCanvasItems,
     );
-    const [selectedCanvasItems, setSelectedCanvasItems] = (
-        useState<CanvasItem<any>[]>([])
-    );
-    const [editingCanvasItem, setEditingCanvasItem] = (
-        useState<CanvasItem<any> | null>(null)
-    );
+    const [selectedCanvasItems, setSelectedCanvasItems] = useState<
+        CanvasItem<any>[]
+    >([]);
+    const [editingCanvasItem, setEditingCanvasItem] =
+        useState<CanvasItem<any> | null>(null);
     const setEditingCanvasItem1 = (canvasItem: CanvasItem<any> | null) => {
         setEditingCanvasItem(canvasItem);
         if (canvasItem !== null) {
@@ -63,19 +63,20 @@ function useCanvasItemsData(canvasController: CanvasController) {
             if (prevEditingCanvasItem === null) {
                 return null;
             }
-            return newCanvasItems.find((item) => {
-                return item === prevEditingCanvasItem;
-            }) || null;
+            return (
+                newCanvasItems.find((item) => {
+                    return item === prevEditingCanvasItem;
+                }) || null
+            );
         });
     };
     useAppEffect(refreshData, [canvasController]);
     const filePath = canvasController.slideItem.filePath;
-    useFileSourceEvents(
-        ['update'], refreshData, [], filePath,
-    );
+    useFileSourceEvents(['update'], refreshData, [], filePath);
     useAppEffect(() => {
         const regEvents = canvasController.itemRegisterEventListener(
-            ['update'], refreshData,
+            ['update'],
+            refreshData,
         );
         return () => {
             canvasController.unregisterEventListener(regEvents);
@@ -91,65 +92,85 @@ function useCanvasItemsData(canvasController: CanvasController) {
     };
     return {
         canvasItems,
-        selectedCanvasItems, setSelectedCanvasItems: setSelectedCanvasItems1,
-        editingCanvasItem, setEditingCanvasItem: setEditingCanvasItem1,
+        selectedCanvasItems,
+        setSelectedCanvasItems: setSelectedCanvasItems1,
+        editingCanvasItem,
+        setEditingCanvasItem: setEditingCanvasItem1,
     };
 }
 
 export default function SlideItemEditorComp() {
     const canvasController = useCanvasController();
     const {
-        canvasItems, selectedCanvasItems, setSelectedCanvasItems,
-        editingCanvasItem, setEditingCanvasItem,
+        canvasItems,
+        selectedCanvasItems,
+        setSelectedCanvasItems,
+        editingCanvasItem,
+        setEditingCanvasItem,
     } = useCanvasItemsData(canvasController);
     return (
-        <MultiContextRender contexts={[{
-            context: CanvasControllerContext,
-            value: canvasController,
-        }, {
-            context: CanvasItemsContext,
-            value: canvasItems,
-        }, {
-            context: SelectedCanvasItemsAndSetterContext,
-            value: {
-                canvasItems: selectedCanvasItems,
-                setCanvasItems: setSelectedCanvasItems,
-            },
-        }, {
-            context: EditingCanvasItemAndSetterContext,
-            value: {
-                canvasItem: editingCanvasItem,
-                setCanvasItem: setEditingCanvasItem,
-            },
-        }]}>
-            <div className='slide-item-editor w-100 h-100 overflow-hidden'
+        <MultiContextRender
+            contexts={[
+                {
+                    context: CanvasControllerContext,
+                    value: canvasController,
+                },
+                {
+                    context: CanvasItemsContext,
+                    value: canvasItems,
+                },
+                {
+                    context: SelectedCanvasItemsAndSetterContext,
+                    value: {
+                        canvasItems: selectedCanvasItems,
+                        setCanvasItems: setSelectedCanvasItems,
+                    },
+                },
+                {
+                    context: EditingCanvasItemAndSetterContext,
+                    value: {
+                        canvasItem: editingCanvasItem,
+                        setCanvasItem: setEditingCanvasItem,
+                    },
+                },
+            ]}
+        >
+            <div
+                className="slide-item-editor w-100 h-100 overflow-hidden"
                 onWheel={(event) => {
                     event.stopPropagation();
                     handleCtrlWheel({
-                        event, value: canvasController.scale * 10,
+                        event,
+                        value: canvasController.scale * 10,
                         setValue: (scale) => {
                             canvasController.scale = scale / 10;
                         },
                         defaultSize: defaultRangeSize,
                     });
-                }}>
-                <ResizeActor flexSizeName={resizeSettingNames.slideItemEditor}
+                }}
+            >
+                <ResizeActor
+                    flexSizeName={resizeSettingNames.slideItemEditor}
                     isHorizontal={false}
                     flexSizeDefault={{
-                        'v1': ['3'],
-                        'v2': ['1'],
+                        v1: ['3'],
+                        v2: ['1'],
                     }}
                     dataInput={[
                         {
-                            children: LazySlideItemEditorCanvas, key: 'v1',
+                            children: LazySlideItemEditorCanvas,
+                            key: 'v1',
                             widgetName: 'Slide Item Editor Canvas',
                             className: 'flex-item',
                         },
                         {
-                            children: LazySlideItemEditorTools, key: 'v2',
-                            widgetName: 'Tools', className: 'flex-item',
+                            children: LazySlideItemEditorTools,
+                            key: 'v2',
+                            widgetName: 'Tools',
+                            className: 'flex-item',
                         },
-                    ]} />
+                    ]}
+                />
             </div>
         </MultiContextRender>
     );

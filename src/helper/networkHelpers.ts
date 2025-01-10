@@ -1,6 +1,4 @@
-import {
-    get_api_url, get_api_key,
-} from '../_owa-crypto';
+import { get_api_url, get_api_key } from '../_owa-crypto';
 
 export function appApiFetch(pathName: string, options: any = {}) {
     const apiUrl = get_api_url();

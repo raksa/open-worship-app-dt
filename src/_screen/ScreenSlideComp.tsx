@@ -2,7 +2,8 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    useScreenManagerContext, useScreenManagerEvents,
+    useScreenManagerContext,
+    useScreenManagerEvents,
 } from './managers/screenManagerHooks';
 
 export default function ScreenSlideComp() {
@@ -18,8 +19,6 @@ export default function ScreenSlideComp() {
         }
     }, [div.current]);
     return (
-        <div id='slide' ref={div}
-            style={screenSlideManager.containerStyle}
-        />
+        <div id="slide" ref={div} style={screenSlideManager.containerStyle} />
     );
 }

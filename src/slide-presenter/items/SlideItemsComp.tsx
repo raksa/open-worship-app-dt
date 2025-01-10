@@ -1,11 +1,10 @@
 import { useState, useTransition } from 'react';
 
 import {
-    KeyboardType, useKeyboardRegistering,
+    KeyboardType,
+    useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import {
-    useSlideItemThumbnailSizeScale,
-} from '../../event/SlideListEventListener';
+import { useSlideItemThumbnailSizeScale } from '../../event/SlideListEventListener';
 import SlideItemGhost from './SlideItemGhost';
 import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
 import { handleArrowing } from './slideItemHelpers';
@@ -27,7 +26,11 @@ async function getSlideItems(slide: Slide) {
     }
     return imageFileInfoList.map(({ src, pageNumber, width, height }) => {
         return SlideItem.fromPdfJson({
-            filePath: slide.filePath, pageNumber, src, width, height,
+            filePath: slide.filePath,
+            pageNumber,
+            src,
+            width,
+            height,
         });
     });
 }
@@ -45,26 +48,33 @@ function useSlideItems() {
     };
     useAppEffect(startLoading, [selectedSlide]);
 
-    useFileSourceEvents(['new'], async (newSlideItem: SlideItem) => {
-        let newSlideItems = await getSlideItems(selectedSlide);
-        if (newSlideItems === null) {
-            setSlideItems(null);
-            return;
-        }
-        newSlideItems = newSlideItems.map((slideItem) => {
-            if (slideItem.checkIsSame(newSlideItem)) {
-                slideItemsToView[newSlideItem.id] = newSlideItem;
-                return newSlideItem;
-            } else {
-                return slideItem;
-            }
-        });
-        setSlideItems(newSlideItems);
-    }, [selectedSlide], selectedSlide.filePath);
     useFileSourceEvents(
-        ['edit'], (editingSlideItem: any) => {
+        ['new'],
+        async (newSlideItem: SlideItem) => {
+            let newSlideItems = await getSlideItems(selectedSlide);
+            if (newSlideItems === null) {
+                setSlideItems(null);
+                return;
+            }
+            newSlideItems = newSlideItems.map((slideItem) => {
+                if (slideItem.checkIsSame(newSlideItem)) {
+                    slideItemsToView[newSlideItem.id] = newSlideItem;
+                    return newSlideItem;
+                } else {
+                    return slideItem;
+                }
+            });
+            setSlideItems(newSlideItems);
+        },
+        [selectedSlide],
+        selectedSlide.filePath,
+    );
+    useFileSourceEvents(
+        ['edit'],
+        (editingSlideItem: any) => {
             if (
-                !(editingSlideItem instanceof SlideItem) || slideItems === null
+                !(editingSlideItem instanceof SlideItem) ||
+                slideItems === null
             ) {
                 return;
             }
@@ -76,18 +86,27 @@ function useSlideItems() {
                 }
             });
             setSlideItems(newSlideItems);
-        }, [slideItems], selectedSlide.filePath
+        },
+        [slideItems],
+        selectedSlide.filePath,
     );
     useFileSourceEvents(
-        ['update', 'delete'], startLoading, undefined, selectedSlide.filePath
+        ['update', 'delete'],
+        startLoading,
+        undefined,
+        selectedSlide.filePath,
     );
 
     const arrows: KeyboardType[] = ['ArrowLeft', 'ArrowRight'];
-    useKeyboardRegistering(arrows.map((key) => {
-        return { key };
-    }), (event) => {
-        handleArrowing(event, slideItems || []);
-    }, [slideItems]);
+    useKeyboardRegistering(
+        arrows.map((key) => {
+            return { key };
+        }),
+        (event) => {
+            handleArrowing(event, slideItems || []);
+        },
+        [slideItems],
+    );
 
     useAppEffect(() => {
         const slideItems = Object.values(slideItemsToView);
@@ -109,29 +128,27 @@ export default function SlideItemsComp() {
     const [thumbSizeScale] = useSlideItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
     const { slideItems, isPending, startLoading } = useSlideItems();
-    const slideItemThumbnailSize = (
-        thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR
-    );
+    const slideItemThumbnailSize =
+        thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR;
     if (isPending) {
-        return (
-            <LoadingComp />
-        );
+        return <LoadingComp />;
     }
     if (slideItems === null) {
         return (
-            <div className='d-flex justify-content-center'>
-                <p className='alert alert-warning'>Fail to load slide items</p>
-                <button onClick={startLoading} className='btn btn-primary'>
+            <div className="d-flex justify-content-center">
+                <p className="alert alert-warning">Fail to load slide items</p>
+                <button onClick={startLoading} className="btn btn-primary">
                     Reload
                 </button>
             </div>
         );
     }
     return (
-        <div className='d-flex flex-wrap justify-content-center'>
+        <div className="d-flex flex-wrap justify-content-center">
             {slideItems.map((slideItem, i) => {
                 return (
-                    <SlideItemRenderWrapper key={slideItem.id}
+                    <SlideItemRenderWrapper
+                        key={slideItem.id}
                         draggingIndex={draggingIndex}
                         thumbSize={slideItemThumbnailSize}
                         slideItem={slideItem}
@@ -142,7 +159,8 @@ export default function SlideItemsComp() {
             })}
             {Array.from({ length: 2 }, (_, i) => {
                 return (
-                    <SlideItemGhost key={`${i}`}
+                    <SlideItemGhost
+                        key={`${i}`}
                         width={slideItemThumbnailSize}
                     />
                 );

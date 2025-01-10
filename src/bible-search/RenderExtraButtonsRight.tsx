@@ -1,6 +1,7 @@
 import { getSetting, useStateSettingBoolean } from '../helper/settingHelpers';
 import {
-    QuickOrBackButtonComp, SettingButtonComp,
+    QuickOrBackButtonComp,
+    SettingButtonComp,
 } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 
@@ -14,21 +15,25 @@ export function getIsKeepingPopup() {
 }
 
 export default function RenderExtraButtonsRight({
-    setIsSearchOnline, isSearchOnline,
+    setIsSearchOnline,
+    isSearchOnline,
 }: Readonly<{
-    setIsSearchOnline: (_: boolean) => void,
-    isSearchOnline: boolean,
+    setIsSearchOnline: (_: boolean) => void;
+    isSearchOnline: boolean;
 }>) {
     const [isKeepingPopup, setIsKeepingPopup] = useStateSettingBoolean(
-        CLOSE_ON_ADD_BIBLE_ITEM, false,
+        CLOSE_ON_ADD_BIBLE_ITEM,
+        false,
     );
     return (
-        <div className='d-flex'>
+        <div className="d-flex">
             {appProvider.isPagePresenter ? (
-                <div className='btn-group form-check form-switch'>
-                    <input className='form-check-input pointer'
-                        title='Keep window open when add bible item'
-                        type='checkbox' role='switch'
+                <div className="btn-group form-check form-switch">
+                    <input
+                        className="form-check-input pointer"
+                        title="Keep window open when add bible item"
+                        type="checkbox"
+                        role="switch"
                         checked={isKeepingPopup}
                         onChange={(event) => {
                             setIsKeepingPopup(event.target.checked);
@@ -36,18 +41,18 @@ export default function RenderExtraButtonsRight({
                     />
                 </div>
             ) : null}
-            <button className={
-                `btn btn-sm btn-${isSearchOnline ? '' : 'outline-'}info`
-            }
-                title='Search bible online'
+            <button
+                className={`btn btn-sm btn-${isSearchOnline ? '' : 'outline-'}info`}
+                title="Search bible online"
                 onClick={() => {
                     setIsSearchOnline(!isSearchOnline);
-                }}>
-                <i className='bi bi-search' />
+                }}
+            >
+                <i className="bi bi-search" />
             </button>
             {!appProvider.isPageReader ? null : (
                 <>
-                    <QuickOrBackButtonComp title='Quit Reader' />
+                    <QuickOrBackButtonComp title="Quit Reader" />
                     <SettingButtonComp />
                 </>
             )}

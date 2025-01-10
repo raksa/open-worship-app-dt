@@ -5,11 +5,12 @@ import SettingComp from './setting/SettingComp';
 import Toast from './toast/Toast';
 import AppContextMenuComp from './others/AppContextMenuComp';
 
-main(<>
-    <SettingComp />
-    <TopProgressBarComp />
-    <Toast />
-    <HandleAlertComp />
-    <AppContextMenuComp />
-</>
+main(
+    <>
+        <SettingComp />
+        <TopProgressBarComp />
+        <Toast />
+        <HandleAlertComp />
+        <AppContextMenuComp />
+    </>,
 );

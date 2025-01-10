@@ -5,16 +5,14 @@ import BibleXMLListComp from './BibleXMLListComp';
 export default function SettingBibleXMLComp() {
     const { bibleKeysMap, isPending, loadBibleKeys } = useBibleXMLKeys();
     return (
-        <div className='w-100 app-border-white-round p-2'>
+        <div className="w-100 app-border-white-round p-2">
             <BibleXMLListComp
                 isPending={isPending}
                 bibleKeysMap={bibleKeysMap}
                 loadBibleKeys={loadBibleKeys}
             />
             <hr />
-            <BibleXMLImportComp
-                loadBibleKeys={loadBibleKeys}
-            />
+            <BibleXMLImportComp loadBibleKeys={loadBibleKeys} />
             <hr />
         </div>
     );

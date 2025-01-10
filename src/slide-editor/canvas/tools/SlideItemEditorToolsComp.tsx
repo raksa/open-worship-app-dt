@@ -5,11 +5,10 @@ import { lazy } from 'react';
 import { useStateSettingString } from '../../../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../../../others/TabRenderComp';
 import {
-    defaultRangeSize, useCanvasControllerContext,
+    defaultRangeSize,
+    useCanvasControllerContext,
 } from '../CanvasController';
-import {
-    useSlideItemCanvasScale,
-} from '../canvasEventHelpers';
+import { useSlideItemCanvasScale } from '../canvasEventHelpers';
 import AppRangeComp from '../../../others/AppRangeComp';
 import SlideItemEditorPropertiesComp from './SlideItemEditorPropertiesComp';
 import { useSelectedCanvasItemsAndSetterContext } from '../CanvasItem';
@@ -23,15 +22,13 @@ function ScalingComp() {
     const scale = useSlideItemCanvasScale();
     const actualScale = scale * 10;
     return (
-        <div className={
-            'align-self-end flex-fill d-flex justify-content-end'
-        }>
-            <div className='canvas-board-size-container d-flex ps-1'>
+        <div className={'align-self-end flex-fill d-flex justify-content-end'}>
+            <div className="canvas-board-size-container d-flex ps-1">
                 <span>{actualScale.toFixed(1)}x</span>
                 <div style={{ maxWidth: '200px' }}>
                     <AppRangeComp
                         value={actualScale}
-                        title='Canvas Scale'
+                        title="Canvas Scale"
                         setValue={(scale) => {
                             canvasController.scale = scale / 10;
                         }}
@@ -47,20 +44,22 @@ const tabTypeList = [
     ['p', 'Properties'],
     ['c', 'Canvas Items'],
 ] as const;
-type TabType = typeof tabTypeList[number][0];
+type TabType = (typeof tabTypeList)[number][0];
 export default function SlideItemEditorToolsComp() {
-    const {
-        canvasItems: selectedCanvasItems,
-    } = useSelectedCanvasItemsAndSetterContext();
+    const { canvasItems: selectedCanvasItems } =
+        useSelectedCanvasItemsAndSetterContext();
 
     const [tabType, setTabType] = useStateSettingString<TabType>(
-        'editor-tools-tab', 'p',
+        'editor-tools-tab',
+        'p',
     );
     return (
-        <div className={
-            'app-tools d-flex flex-column w-100 h-100 overflow-hidden'
-        }>
-            <div className='tools-header d-flex'>
+        <div
+            className={
+                'app-tools d-flex flex-column w-100 h-100 overflow-hidden'
+            }
+        >
+            <div className="tools-header d-flex">
                 <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
@@ -70,9 +69,12 @@ export default function SlideItemEditorToolsComp() {
                 />
                 <ScalingComp />
             </div>
-            <div className='tools-body w-100 h-100' style={{
-                overflow: 'auto',
-            }}>
+            <div
+                className="tools-body w-100 h-100"
+                style={{
+                    overflow: 'auto',
+                }}
+            >
                 {tabType === 'p' ? (
                     <SlideItemEditorPropertiesComp
                         canvasItems={selectedCanvasItems}

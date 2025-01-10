@@ -13,10 +13,11 @@ import FileSource from '../helper/FileSource';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 
 export default function PlaylistFile({
-    index, filePath,
+    index,
+    filePath,
 }: Readonly<{
-    index: number,
-    filePath: string,
+    index: number;
+    filePath: string;
 }>) {
     const [data, setData] = useState<Playlist | null | undefined>(null);
     const settingName = `opened-${filePath}`;
@@ -40,7 +41,8 @@ export default function PlaylistFile({
             <PlaylistPreview
                 isOpened={isOpened}
                 setIsOpened={setIsOpened}
-                playlist={playlist as Playlist} />
+                playlist={playlist as Playlist}
+            />
         );
     };
     useAppEffect(() => {
@@ -54,7 +56,7 @@ export default function PlaylistFile({
             data={data}
             reload={handleReloading}
             filePath={filePath}
-            className='playlist-file'
+            className="playlist-file"
             onClick={handleClicking}
             onDrop={handleDropping}
             renderChild={handleChildRendering}
@@ -63,71 +65,79 @@ export default function PlaylistFile({
 }
 
 function PlaylistPreview({
-    isOpened, setIsOpened, playlist,
+    isOpened,
+    setIsOpened,
+    playlist,
 }: Readonly<{
-    isOpened: boolean,
-    setIsOpened: (isOpened: boolean) => void,
-    playlist: Playlist,
+    isOpened: boolean;
+    setIsOpened: (isOpened: boolean) => void;
+    playlist: Playlist;
 }>) {
     const fileSource = FileSource.getInstance(playlist.filePath);
     return (
-        <div className='card pointer mt-1 ps-2'>
-            <div className='card-header'
+        <div className="card pointer mt-1 ps-2">
+            <div
+                className="card-header"
                 onClick={() => {
                     setIsOpened(!isOpened);
-                }}>
-                <i className={`bi ${isOpened ?
-                    'bi-chevron-down' : 'bi-chevron-right'}`} />
+                }}
+            >
+                <i
+                    className={`bi ${
+                        isOpened ? 'bi-chevron-down' : 'bi-chevron-right'
+                    }`}
+                />
                 {fileSource.name}
             </div>
-            {isOpened && playlist && <div
-                className='card-body d-flex flex-column'>
-                {playlist.items.map((playlistItem, i) => {
-                    return (
-                        <RenderPlaylistItem
-                            key={fileSource.fileFullName}
-                            index={i}
-                            playlistItem={playlistItem} />
-                    );
-                })}
-            </div>}
+            {isOpened && playlist && (
+                <div className="card-body d-flex flex-column">
+                    {playlist.items.map((playlistItem, i) => {
+                        return (
+                            <RenderPlaylistItem
+                                key={fileSource.fileFullName}
+                                index={i}
+                                playlistItem={playlistItem}
+                            />
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
 
 function RenderPlaylistItem({
-    playlistItem, index,
+    playlistItem,
+    index,
 }: Readonly<{
-    playlistItem: PlaylistItem,
-    index: number,
+    playlistItem: PlaylistItem;
+    index: number;
 }>) {
     if (playlistItem.isSlide) {
-        return (
-            <PlaylistSlideItem
-                playlistItem={playlistItem} />
-        );
+        return <PlaylistSlideItem playlistItem={playlistItem} />;
     } else if (playlistItem.isBibleItem) {
         playlistItem.getBibleItem();
         return (
             <AppSuspenseComp>
-                <PlaylistBibleItem key={index}
+                <PlaylistBibleItem
+                    key={index}
                     index={index}
-                    playlistItem={playlistItem} />
+                    playlistItem={playlistItem}
+                />
             </AppSuspenseComp>
         );
     } else if (playlistItem.isLyric) {
-        return (
-            <div>Not Supported Item Type</div>
-        );
+        return <div>Not Supported Item Type</div>;
     }
     return null;
 }
 
 function PlaylistBibleItem({
-    index, playlistItem,
+    index,
+    playlistItem,
 }: Readonly<{
-    index: number
-    playlistItem: PlaylistItem,
+    index: number;
+    playlistItem: PlaylistItem;
 }>) {
     const [bibleItem, setBibleItem] = useState<BibleItem | null>(null);
     useAppEffect(() => {
@@ -138,9 +148,5 @@ function PlaylistBibleItem({
     if (bibleItem === null) {
         return null;
     }
-    return (
-        <BibleItemRender index={index}
-            bibleItem={bibleItem}
-        />
-    );
+    return <BibleItemRender index={index} bibleItem={bibleItem} />;
 }

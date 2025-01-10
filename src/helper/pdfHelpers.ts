@@ -1,7 +1,10 @@
 import { electronSendAsync } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import {
-    fsCheckDirExist, fsCreateDir, fsDeleteDir, fsListFiles,
+    fsCheckDirExist,
+    fsCreateDir,
+    fsDeleteDir,
+    fsListFiles,
 } from '../server/fileHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import FileSource from './FileSource';
@@ -9,7 +12,8 @@ import FileSource from './FileSource';
 function toPdfImagesPreviewDirPath(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
     return appProvider.pathUtils.resolve(
-        fileSource.basePath, `.${fileSource.fileFullName}-images`,
+        fileSource.basePath,
+        `.${fileSource.fileFullName}-images`,
     );
 }
 
@@ -26,13 +30,15 @@ function genPdfImagePreviewInfo(filePath: string) {
 
 export async function genPdfImagesPreview(filePath: string, isForce = false) {
     const outDir = toPdfImagesPreviewDirPath(filePath);
-    if (!isForce && await fsCheckDirExist(outDir)) {
+    if (!isForce && (await fsCheckDirExist(outDir))) {
         let fileList = await fsListFiles(outDir);
-        fileList = fileList.filter((fileFullName) => {
-            return fileFullName.toLowerCase().endsWith('.png');
-        }).map((fileFullName) => {
-            return appProvider.pathUtils.resolve(outDir, fileFullName);
-        });
+        fileList = fileList
+            .filter((fileFullName) => {
+                return fileFullName.toLowerCase().endsWith('.png');
+            })
+            .map((fileFullName) => {
+                return appProvider.pathUtils.resolve(outDir, fileFullName);
+            });
         if (fileList.length > 0) {
             return fileList.map(genPdfImagePreviewInfo);
         }
@@ -44,11 +50,14 @@ export async function genPdfImagesPreview(filePath: string, isForce = false) {
     await fsDeleteDir(outDir);
     await fsCreateDir(outDir);
     const previewData: {
-        isSuccessful: boolean, message?: string,
-        filePaths?: string[],
-    } = await electronSendAsync(
-        'main:app:pdf-to-images', { filePath, outDir, isForce: true },
-    );
+        isSuccessful: boolean;
+        message?: string;
+        filePaths?: string[];
+    } = await electronSendAsync('main:app:pdf-to-images', {
+        filePath,
+        outDir,
+        isForce: true,
+    });
     if (!previewData.isSuccessful || !previewData.filePaths) {
         return null;
     }
@@ -57,4 +66,4 @@ export async function genPdfImagesPreview(filePath: string, isForce = false) {
         return null;
     }
     return imageFileInfoList;
-};
+}
