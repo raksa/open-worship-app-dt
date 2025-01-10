@@ -5,26 +5,27 @@ import { getUserWritablePath } from '../../server/appHelpers';
 import { is_dev, decrypt } from '../../_owa-crypto';
 import { handleError } from '../errorHelpers';
 import {
-    hideProgressBard, showProgressBard,
+    hideProgressBard,
+    showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
 import BibleDatabaseController from './BibleDatabaseController';
 
 const { base64Decode } = appProvider.appUtils;
 
 export type BibleInfoType = {
-    title: string,
-    key: string,
-    locale: LocaleType,
-    legalNote: string,
-    publisher: string,
-    copyRights: string,
-    books: { [key: string]: string },
-    numList?: string[],
-    version: number,
+    title: string;
+    key: string;
+    locale: LocaleType;
+    legalNote: string;
+    publisher: string;
+    copyRights: string;
+    books: { [key: string]: string };
+    numList?: string[];
+    version: number;
 };
 export type BookList = { [key: string]: string };
 export type VerseList = { [key: string]: string };
-export type ChapterType = { title: string, verses: VerseList };
+export type ChapterType = { title: string; verses: VerseList };
 
 type ReaderBibleDataType = BibleInfoType | null;
 type CallbackType = (data: ReaderBibleDataType) => void;
@@ -50,9 +51,7 @@ export default class BibleDataReader {
     }
     async getDatabaseController() {
         if (this._dbController === null) {
-            this._dbController = (
-                await BibleDatabaseController.getInstance()
-            );
+            this._dbController = await BibleDatabaseController.getInstance();
         }
         return this._dbController;
     }
@@ -70,7 +69,9 @@ export default class BibleDataReader {
                 const fileData = await fsReadFile(filePath);
                 b64Data = decrypt(fileData);
                 await databaseController.addItem({
-                    id: filePath, data: b64Data, isForceOverride: true,
+                    id: filePath,
+                    data: b64Data,
+                    isForceOverride: true,
                     secondaryId: bibleKey,
                 });
             }
@@ -85,9 +86,7 @@ export default class BibleDataReader {
         }
         return data;
     }
-    async _genBibleData(
-        bibleKey: string, key: string, callback: CallbackType,
-    ) {
+    async _genBibleData(bibleKey: string, key: string, callback: CallbackType) {
         const biblePath = await this.toBiblePath(bibleKey);
         if (biblePath === null) {
             return callback(null);
@@ -115,8 +114,10 @@ export default class BibleDataReader {
     async getWritableBiblePath() {
         if (this._writableBiblePath === null) {
             const userWritablePath = getUserWritablePath();
-            const dirPath = pathJoin(userWritablePath,
-                `bibles${is_dev() ? '-dev' : ''}`);
+            const dirPath = pathJoin(
+                userWritablePath,
+                `bibles${is_dev() ? '-dev' : ''}`,
+            );
             try {
                 await fsCreateDir(dirPath);
             } catch (error: any) {
