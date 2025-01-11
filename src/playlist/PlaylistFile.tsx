@@ -7,7 +7,7 @@ import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import Playlist from './Playlist';
 import BibleItemRender from '../bible-list/BibleItemRender';
 import PlaylistItem from './PlaylistItem';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import FileSource from '../helper/FileSource';
 import AppSuspenseComp from '../others/AppSuspenseComp';
@@ -32,11 +32,11 @@ export default function PlaylistFile({
         if (data) {
             const receivedData = event.dataTransfer.getData('text');
             if (data.addFromData(receivedData)) {
-                data.save();
+                // data.save();
             }
         }
     };
-    const handleChildRendering = (playlist: ItemSource<any>) => {
+    const handleChildRendering = (playlist: AppDocumentSourceAbs) => {
         return (
             <PlaylistPreview
                 isOpened={isOpened}
@@ -47,7 +47,7 @@ export default function PlaylistFile({
     };
     useAppEffect(() => {
         if (data === null) {
-            Playlist.readFileToData(filePath).then(setData);
+            // Playlist.readFileToData(filePath).then(setData);
         }
     }, [data]);
     return (

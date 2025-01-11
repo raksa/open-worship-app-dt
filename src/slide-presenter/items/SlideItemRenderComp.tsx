@@ -1,9 +1,7 @@
 import './SlideItemRenderComp.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenuComp';
-import SlideItem, {
-    SelectedEditingSlideItemContext,
-} from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 import SlideItemRendererHtml from './SlideItemRendererHtml';
 import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
 import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
@@ -11,15 +9,21 @@ import { handleDragStart } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
 import { use } from 'react';
+import {
+    SelectedEditingSlideItemContext,
+    useSlideItemChanged,
+    VaryAppDocumentItemType,
+} from '../../slide-list/appDocumentHelpers';
 
 export function RenderInfoComp({
     index,
-    slideItem,
+    varyAppDocumentItem,
 }: Readonly<{
     index: number;
-    slideItem: SlideItem;
+    varyAppDocumentItem: VaryAppDocumentItemType;
 }>) {
-    const { selectedList } = toClassNameHighlight(slideItem);
+    const { selectedList } = toClassNameHighlight(varyAppDocumentItem);
+    const isChanged = useSlideItemChanged(varyAppDocumentItem);
     return (
         <div className="d-flex w-100">
             <div className="flex-fill d-flex">
@@ -47,31 +51,34 @@ export function RenderInfoComp({
                     </div>
                 ) : null}
                 <span
-                    title={`width:${slideItem.width}, height:${slideItem.height}`}
+                    title={
+                        `width:${varyAppDocumentItem.width}, ` +
+                        `height:${varyAppDocumentItem.height}`
+                    }
                 >
                     <small className="pe-2">
-                        {slideItem.width}x{slideItem.height}
+                        {varyAppDocumentItem.width}x{varyAppDocumentItem.height}
                     </small>
                 </span>
-                {slideItem.isChanged && <span style={{ color: 'red' }}>*</span>}
+                {isChanged && <span style={{ color: 'red' }}>*</span>}
             </div>
         </div>
     );
 }
 
 export function toClassNameHighlight(
-    slideItem: SlideItem,
-    selectedSlideItem?: SlideItem | null,
+    varyAppDocumentItem: VaryAppDocumentItemType,
+    selectedVaryAppDocumentItem?: VaryAppDocumentItemType | null,
 ) {
     const activeCN =
         appProvider.isPageEditor &&
-        selectedSlideItem &&
-        slideItem.checkIsSame(selectedSlideItem)
+        selectedVaryAppDocumentItem &&
+        varyAppDocumentItem.checkIsSame(selectedVaryAppDocumentItem)
             ? 'active'
             : '';
     const selectedList = ScreenSlideManager.getDataList(
-        slideItem.filePath,
-        slideItem.id,
+        varyAppDocumentItem.filePath,
+        varyAppDocumentItem.id,
     );
     const presenterCN =
         appProvider.isPageEditor || selectedList.length == 0
@@ -94,7 +101,7 @@ export default function SlideItemRenderComp({
     onDragStart,
     onDragEnd,
 }: Readonly<{
-    slideItem: SlideItem;
+    slideItem: Slide;
     width: number;
     index: number;
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
@@ -104,7 +111,7 @@ export default function SlideItemRenderComp({
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
     const selectedSlideItem =
-        use(SelectedEditingSlideItemContext)?.selectedSlideItem || null;
+        use(SelectedEditingSlideItemContext)?.selectedVaryAppDocumentItem || null;
     useScreenSlideManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(
         slideItem,
@@ -113,7 +120,7 @@ export default function SlideItemRenderComp({
     return (
         <div
             className={`slide-item card pointer ${activeCN} ${presenterCN}`}
-            data-slide-item-id={slideItem.id}
+            data-app-document-item-id={slideItem.id}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, slideItem);
@@ -132,7 +139,7 @@ export default function SlideItemRenderComp({
             onCopy={onCopy}
         >
             <div className="card-header d-flex" style={{ height: '35px' }}>
-                <RenderInfoComp index={index} slideItem={slideItem} />
+                <RenderInfoComp index={index} varyAppDocumentItem={slideItem} />
             </div>
             <div
                 className="card-body overflow-hidden"

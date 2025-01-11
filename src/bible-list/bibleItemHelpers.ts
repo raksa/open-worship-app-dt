@@ -53,8 +53,10 @@ export async function openBibleItemContextMenu(
     index: number,
     openBibleSearch: (() => void) | null,
 ) {
-    const bible = await Bible.readFileToData(bibleItem.filePath ?? null);
-    if (!bible) {
+    const bible = bibleItem.filePath
+        ? await Bible.fromFilePath(bibleItem.filePath)
+        : null;
+    if (bible === null) {
         showSimpleToast('Open Bible Item Context Menu', 'Unable to get bible');
         return;
     }

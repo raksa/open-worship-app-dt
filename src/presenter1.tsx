@@ -50,13 +50,6 @@ function HistoryAppComp() {
             historyManager.addHistory(newText);
         }, 1e3);
     };
-    const handleSaving = async () => {
-        const lastHistory = await historyManager.getCurrentHistory();
-        if (lastHistory !== null) {
-            await fsWriteFile(filePath, lastHistory);
-            historyManager.fireEvent();
-        }
-    };
     return (
         <div
             style={{
@@ -91,7 +84,12 @@ function HistoryAppComp() {
                 >
                     Discard
                 </button>
-                <button disabled={!canSave} onClick={handleSaving}>
+                <button
+                    disabled={!canSave}
+                    onClick={() => {
+                        historyManager.save();
+                    }}
+                >
                     Save
                 </button>
                 <hr />

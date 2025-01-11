@@ -4,7 +4,7 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const LazySlidePreviewer = lazy(() => {
-    return import('./slide-presenter/items/SlidePreviewer');
+    return import('./slide-presenter/items/AppDocumentPreviewerComp');
 });
 const LazySlideItemEditorGround = lazy(() => {
     return import('./slide-editor/SlideItemEditorGround');
@@ -28,7 +28,7 @@ export default function AppEditor() {
                 {
                     children: LazySlideItemEditorGround,
                     key: 'h2',
-                    widgetName: 'Slide Item Editor Ground',
+                    widgetName: 'Slide Editor Ground',
                 },
             ]}
         />

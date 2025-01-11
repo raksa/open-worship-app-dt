@@ -1,5 +1,6 @@
 import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
+import { OptionalPromise } from '../others/otherHelpers';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -93,7 +94,7 @@ export function getTempPath() {
 const lockSet = new Set<string>();
 export async function unlocking<T>(
     key: string,
-    callback: () => Promise<T> | T,
+    callback: () => OptionalPromise<T>,
 ) {
     if (lockSet.has(key)) {
         await new Promise((resolve) => {

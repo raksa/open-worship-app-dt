@@ -1,12 +1,10 @@
 import FileReadErrorComp from '../others/FileReadErrorComp';
 import PlaylistItem from './PlaylistItem';
 import SlideItemRendererHtml from '../slide-presenter/items/SlideItemRendererHtml';
-import SlideListEventListener from '../event/SlideListEventListener';
+import AppDocumentListEventListener from '../event/SlideListEventListener';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function PlaylistSlideItem({
-    playlistItem,
-}: Readonly<{
+export default function PlaylistSlideItem({}: Readonly<{
     playlistItem: PlaylistItem;
 }>) {
     const item = null;
@@ -17,7 +15,7 @@ export default function PlaylistSlideItem({
         <div
             className="card overflow-hidden"
             onClick={() => {
-                SlideListEventListener.selectSlideItem(item);
+                AppDocumentListEventListener.selectAppDocumentItem(item);
             }}
         >
             <SlideItemRendererHtml slideItem={item} />

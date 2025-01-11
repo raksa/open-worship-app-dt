@@ -6,8 +6,11 @@ import DragInf, {
     DroppedDataType,
 } from './DragInf';
 import FileSource from './FileSource';
-import Slide from '../slide-list/Slide';
-import SlideItem from '../slide-list/SlideItem';
+import {
+    appDocumentItemExtractKey,
+    appDocumentItemFromKey,
+} from '../slide-list/appDocumentHelpers';
+import PDFSlide from '../slide-list/PDFSlide';
 
 export function handleDragStart(
     event: any,
@@ -34,21 +37,15 @@ async function deserializeDragData({
     let item: any = null;
     if (type === DragTypeEnum.SLIDE_ITEM) {
         const droppedData = JSON.parse(data);
-        if (droppedData.isPdf) {
-            const extracted = Slide.slideItemExtractKey(droppedData.key);
+        item = await appDocumentItemFromKey(droppedData.key);
+    } else if (type === DragTypeEnum.PDF_SLIDE) {
+        const droppedData = JSON.parse(data);
+        if (PDFSlide.tryValidate(droppedData)) {
+            const extracted = appDocumentItemExtractKey(droppedData.key);
             if (extracted === null) {
                 return null;
             }
-            const { pdfData } = droppedData;
-            item = SlideItem.fromPdfJson({
-                filePath: extracted.filePath,
-                pageNumber: extracted.id,
-                src: pdfData.src,
-                width: pdfData.width,
-                height: pdfData.height,
-            });
-        } else {
-            item = await Slide.slideItemDragDeserialize(droppedData.key);
+            item = new PDFSlide(extracted.id, extracted.filePath, droppedData);
         }
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);

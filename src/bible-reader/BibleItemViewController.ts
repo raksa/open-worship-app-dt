@@ -207,7 +207,7 @@ const movingPosition: { [key: string]: [boolean, boolean] } = {
 export type MovingPositionType = keyof typeof movingPosition;
 
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
-export default class BibleItemViewController extends EventHandler<UpdateEventType> {
+class BibleItemViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
     readonly colorNoteMap: WeakMap<BibleItem, string> = new WeakMap();
     constructor(settingNameSuffix: string) {
@@ -672,3 +672,5 @@ export function useBIVCUpdateEvent() {
     }, [viewController]);
     return nestedBibleItems;
 }
+
+export default BibleItemViewController;

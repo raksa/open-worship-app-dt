@@ -4,7 +4,7 @@ import WindowEventListener, {
     useWindowEvent,
     EventMapper as WEventMapper,
 } from '../event/WindowEventListener';
-import SlideItem from '../slide-list/SlideItem';
+import Slide from '../slide-list/Slide';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 
 const LazySlideItemEditorPopup = lazy(() => {
@@ -19,7 +19,7 @@ export const closeItemSlideEditEvent: WEventMapper = {
     widget: 'slide-item-edit',
     state: 'close',
 };
-export function openSlideItemQuickEdit(slideItem: SlideItem) {
+export function openSlideItemQuickEdit(slideItem: Slide) {
     WindowEventListener.fireEvent(openItemSlideEditEvent, slideItem);
 }
 export function closeSlideItemQuickEdit() {
@@ -27,8 +27,8 @@ export function closeSlideItemQuickEdit() {
 }
 
 export default function HandleItemSlideEdit() {
-    const [slideItem, setSlideItem] = useState<SlideItem | null>(null);
-    useWindowEvent(openItemSlideEditEvent, (item: SlideItem | null) => {
+    const [slideItem, setSlideItem] = useState<Slide | null>(null);
+    useWindowEvent(openItemSlideEditEvent, (item: Slide | null) => {
         return setSlideItem(item);
     });
     useWindowEvent(closeItemSlideEditEvent, () => {

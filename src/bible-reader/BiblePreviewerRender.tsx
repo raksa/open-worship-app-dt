@@ -24,7 +24,10 @@ export default function BiblePreviewerRender() {
     );
     return (
         <div
-            className={`card w-100 h-100 ${isFulledScreen ? 'app-popup-full' : ''}`}
+            className={
+                'card w-100 h-100' +
+                ` ${isFulledScreen ? 'app-popup-full' : ''}`
+            }
             onWheel={(event) => {
                 handleCtrlWheel({
                     event,

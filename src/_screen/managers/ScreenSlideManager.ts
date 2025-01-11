@@ -1,22 +1,28 @@
 import { CSSProperties } from 'react';
 
-import { DragTypeEnum, DroppedDataType } from '../../helper/DragInf';
+import { DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import SlideItem, { SlideItemType } from '../../slide-list/SlideItem';
-import { genPdfSlideItem } from '../../slide-presenter/items/SlideItemPdfRender';
+import { SlideItemType } from '../../slide-list/Slide';
+import { genPdfSlide } from '../../slide-presenter/items/PdfSlideRenderContentComp';
 import { genHtmlSlideItem } from '../../slide-presenter/items/SlideItemRenderer';
 import appProviderScreen from '../appProviderScreen';
 import {
     BasicScreenMessageType,
     ScreenMessageType,
-    SlideItemDataType,
+    VaryAppDocumentItemScreenDataType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
 import { unlocking } from '../../server/appHelpers';
 import ScreenEventHandler from './ScreenEventHandler';
 import ScreenManagerBase from './ScreenManagerBase';
 import ScreenEffectManager from './ScreenEffectManager';
-import { getSlideListOnScreenSetting } from '../preview/screenPreviewerHelpers';
+import { getAppDocumentListOnScreenSetting } from '../preview/screenPreviewerHelpers';
+import {
+    toKeyByFilePath,
+    VaryAppDocumentItemDataType,
+    VaryAppDocumentItemType,
+} from '../../slide-list/appDocumentHelpers';
+import PDFSlide, { PDFSlideType } from '../../slide-list/PDFSlide';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -30,9 +36,10 @@ export function setIsPdfFullWidth(isPdfFullWidth: boolean) {
     setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${isPdfFullWidth}`);
 }
 
-export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType> {
+class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-slide-m';
-    private _slideItemData: SlideItemDataType | null = null;
+    private _varyAppDocumentItemData: VaryAppDocumentItemScreenDataType | null =
+        null;
     private _div: HTMLDivElement | null = null;
     slideEffectManager: ScreenEffectManager;
 
@@ -43,13 +50,13 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
         super(screenManagerBase);
         this.slideEffectManager = slideEffectManager;
         if (appProviderScreen.isPagePresenter) {
-            const allSlideList = getSlideListOnScreenSetting();
-            this._slideItemData = allSlideList[this.key] || null;
+            const allSlideList = getAppDocumentListOnScreenSetting();
+            this._varyAppDocumentItemData = allSlideList[this.key] || null;
         }
     }
 
     get isShowing() {
-        return this.slideItemData !== null;
+        return this.varyAppDocumentItemData !== null;
     }
 
     get div() {
@@ -61,23 +68,28 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
         this.render();
     }
 
-    get slideItemData() {
-        return this._slideItemData;
+    get varyAppDocumentItemData() {
+        return this._varyAppDocumentItemData;
     }
+
     static get isPdfFullWidth() {
         return checkIsPdfFullWidth();
     }
+
     static set isPdfFullWidth(isFullWidth: boolean) {
         setIsPdfFullWidth(isFullWidth);
     }
-    set slideItemData(slideItemData: SlideItemDataType | null) {
-        this._slideItemData = slideItemData;
+
+    set varyAppDocumentItemData(
+        appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
+    ) {
+        this._varyAppDocumentItemData = appDocumentItemData;
         unlocking(screenManagerSettingNames.SLIDE, () => {
-            const allSlideList = getSlideListOnScreenSetting();
-            if (slideItemData === null) {
+            const allSlideList = getAppDocumentListOnScreenSetting();
+            if (appDocumentItemData === null) {
                 delete allSlideList[this.key];
             } else {
-                allSlideList[this.key] = slideItemData;
+                allSlideList[this.key] = appDocumentItemData;
             }
             const string = JSON.stringify(allSlideList);
             setSetting(screenManagerSettingNames.SLIDE, string);
@@ -90,12 +102,12 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
     toSyncMessage() {
         return {
             type: 'slide',
-            data: this.slideItemData,
+            data: this.varyAppDocumentItemData,
         } as BasicScreenMessageType;
     }
 
     receiveSyncScreen(message: ScreenMessageType) {
-        this.slideItemData = message.data;
+        this.varyAppDocumentItemData = message.data;
     }
 
     fireUpdateEvent() {
@@ -103,18 +115,15 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
         ScreenSlideManager.fireUpdateEvent();
     }
 
-    static getDataList(slideFilePath?: string, slideItemId?: number) {
-        const dataList = getSlideListOnScreenSetting();
+    static getDataList(filePath?: string, varyAppDocumentItemId?: number) {
+        const dataList = getAppDocumentListOnScreenSetting();
         return Object.entries(dataList).filter(([_, data]) => {
-            if (
-                slideFilePath !== undefined &&
-                data.slideFilePath !== slideFilePath
-            ) {
+            if (filePath !== undefined && data.filePath !== filePath) {
                 return false;
             }
             if (
-                slideItemId !== undefined &&
-                data.slideItemJson.id !== slideItemId
+                varyAppDocumentItemId !== undefined &&
+                data.itemJson.id !== varyAppDocumentItemId
             ) {
                 return false;
             }
@@ -122,58 +131,58 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
         });
     }
 
-    applySlideItemSrcWithSyncGroup(slideItemData: SlideItemDataType | null) {
+    applySlideItemSrcWithSyncGroup(
+        varyAppDocumentItemScreenData: VaryAppDocumentItemScreenDataType | null,
+    ) {
         ScreenSlideManager.enableSyncGroup(this.screenId);
-        this.slideItemData = slideItemData;
+        this.varyAppDocumentItemData = varyAppDocumentItemScreenData;
     }
 
     toSlideItemData(
-        slideFilePath: string,
-        slideItemJson: SlideItemType,
-    ): SlideItemDataType {
-        return { slideFilePath, slideItemJson };
+        filePath: string,
+        itemJson: VaryAppDocumentItemDataType,
+    ): VaryAppDocumentItemScreenDataType {
+        return { filePath, itemJson };
     }
 
-    handleSlideSelecting(slideFilePath: string, slideItemJson: SlideItemType) {
-        const { slideItemData } = this;
-        const selectedSlideFilePath = slideItemData?.slideFilePath ?? '';
-        const selectedSlideItemId = slideItemData?.slideItemJson.id ?? '';
-        const selected =
-            `${selectedSlideFilePath}${SlideItem.KEY_SEPARATOR}` +
-            `${selectedSlideItemId}`;
-        const willSelected = `${slideFilePath}${SlideItem.KEY_SEPARATOR}${slideItemJson.id}`;
+    handleSlideSelecting(
+        filePath: string,
+        itemJson: VaryAppDocumentItemDataType,
+    ) {
+        const { varyAppDocumentItemData } = this;
+        const selectedFilePath = varyAppDocumentItemData?.filePath ?? '';
+        const selectedSlideItemId = varyAppDocumentItemData?.itemJson.id ?? '';
+        const selected = toKeyByFilePath(
+            selectedFilePath,
+            selectedSlideItemId || -1,
+        );
+        const willSelected = toKeyByFilePath(filePath, itemJson.id);
         const newSlideData =
             selected !== willSelected
-                ? this.toSlideItemData(slideFilePath, slideItemJson)
+                ? this.toSlideItemData(filePath, itemJson)
                 : null;
         this.applySlideItemSrcWithSyncGroup(newSlideData);
     }
 
     static async handleSlideSelecting(
         event: React.MouseEvent<HTMLElement, MouseEvent>,
-        slideFilePath: string,
-        slideItemJson: SlideItemType,
+        filePath: string,
+        itemJson: VaryAppDocumentItemDataType,
         isForceChoosing = false,
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         screenIds.forEach((screenId) => {
             const screenSlideManager = this.getInstance(screenId);
-            screenSlideManager.handleSlideSelecting(
-                slideFilePath,
-                slideItemJson,
-            );
+            screenSlideManager.handleSlideSelecting(filePath, itemJson);
         });
     }
 
-    renderPdf(divHaftScale: HTMLDivElement, pdfImageData: SlideItemType) {
+    renderPdf(divHaftScale: HTMLDivElement, pdfImageData: PDFSlideType) {
         if (!pdfImageData.imagePreviewSrc) {
             return null;
         }
         const isFullWidth = checkIsPdfFullWidth();
-        const content = genPdfSlideItem(
-            pdfImageData.imagePreviewSrc,
-            isFullWidth,
-        );
+        const content = genPdfSlide(pdfImageData.imagePreviewSrc, isFullWidth);
         const parentWidth = this.screenManagerBase.width;
         const width = parentWidth;
         Object.assign(divHaftScale.style, {
@@ -202,10 +211,10 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
         });
     }
 
-    renderHtml(divHaftScale: HTMLDivElement, slideItemJson: SlideItemType) {
-        const content = genHtmlSlideItem(slideItemJson.canvasItems);
+    renderAppDocument(divHaftScale: HTMLDivElement, itemJson: SlideItemType) {
+        const content = genHtmlSlideItem(itemJson.canvasItems);
         this.cleanupSlideContent(content);
-        const { width, height } = slideItemJson.metadata;
+        const { width, height } = itemJson.metadata;
         Object.assign(divHaftScale.style, {
             width: `${width}px`,
             height: `${height}px`,
@@ -229,18 +238,18 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
             return;
         }
         const div = this.div;
-        if (this.slideItemData === null) {
+        if (this.varyAppDocumentItemData === null) {
             this.clearJung(div);
             return;
         }
         const divContainer = document.createElement('div');
         const divHaftScale = document.createElement('div');
         divContainer.appendChild(divHaftScale);
-        const { slideItemJson } = this.slideItemData;
+        const { itemJson } = this.varyAppDocumentItemData;
 
-        const target = slideItemJson.isPdf
-            ? this.renderPdf(divHaftScale, slideItemJson)
-            : this.renderHtml(divHaftScale, slideItemJson);
+        const target = PDFSlide.tryValidate(itemJson)
+            ? this.renderPdf(divHaftScale, itemJson as PDFSlideType)
+            : this.renderAppDocument(divHaftScale, itemJson as SlideItemType);
         if (target === null) {
             return;
         }
@@ -271,13 +280,11 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
     }
 
     async receiveScreenDropped(droppedData: DroppedDataType) {
-        if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
-            const slideItem = droppedData.item as SlideItem;
-            this.slideItemData = {
-                slideFilePath: slideItem.filePath,
-                slideItemJson: slideItem.toJson(),
-            };
-        }
+        const item: VaryAppDocumentItemType = droppedData.item;
+        this.varyAppDocumentItemData = {
+            filePath: item.filePath,
+            itemJson: item.toJson(),
+        };
     }
 
     static receiveSyncScreen(message: ScreenMessageType) {
@@ -294,3 +301,5 @@ export default class ScreenSlideManager extends ScreenEventHandler<ScreenSlideMa
         return super.getInstanceBase<ScreenSlideManager>(screenId);
     }
 }
+
+export default ScreenSlideManager;

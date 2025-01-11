@@ -17,6 +17,7 @@ import { log } from '../../helper/loggerHelpers';
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
+import { ClipboardInf } from '../../slide-list/appDocumentHelpers';
 
 export type CanvasItemPropsType = {
     id: number;
@@ -33,9 +34,10 @@ export type CanvasItemPropsType = {
 
 export type CanvasItemEventType = 'edit';
 
-export default abstract class CanvasItem<
-    T extends CanvasItemPropsType,
-> extends EventHandler<CanvasItemEventType> {
+export default abstract class CanvasItem<T extends CanvasItemPropsType>
+    extends EventHandler<CanvasItemEventType>
+    implements ClipboardInf
+{
     props: T;
     constructor(props: T) {
         super();

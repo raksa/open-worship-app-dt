@@ -42,7 +42,10 @@ export default function RenderExtraButtonsRight({
                 </div>
             ) : null}
             <button
-                className={`btn btn-sm btn-${isSearchOnline ? '' : 'outline-'}info`}
+                className={
+                    'btn btn-sm btn' +
+                    `-${isSearchOnline ? '' : 'outline-'}info`
+                }
                 title="Search bible online"
                 onClick={() => {
                     setIsSearchOnline(!isSearchOnline);

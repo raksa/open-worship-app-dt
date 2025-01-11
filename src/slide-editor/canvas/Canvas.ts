@@ -1,5 +1,5 @@
 import { AnyObjectType, toMaxId } from '../../helper/helpers';
-import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';
@@ -86,7 +86,7 @@ export default class Canvas {
         });
     }
 
-    static fromSlideItem(slideItem: SlideItem) {
+    static fromSlideItem(slideItem: Slide) {
         return Canvas.fromJson(slideItem.toJson());
     }
 

@@ -43,6 +43,33 @@ async function selectBookKey(
     ]);
 }
 
+function RenderPageNumberComp({
+    pageNumber,
+    isActive,
+    handleSearching,
+}: Readonly<{
+    pageNumber: string;
+    isActive: boolean;
+    handleSearching: (pageNumber: string) => void;
+}>) {
+    return (
+        <li
+            key={pageNumber}
+            className={`page-item ${isActive ? 'active' : ''}`}
+        >
+            <button
+                className="page-link"
+                disabled={isActive}
+                onClick={() => {
+                    handleSearching(pageNumber);
+                }}
+            >
+                {pageNumber}
+            </button>
+        </li>
+    );
+}
+
 export default function BibleOnlineRenderData({
     text,
     allData,
@@ -125,20 +152,12 @@ export default function BibleOnlineRenderData({
                             const isActive =
                                 allPageNumberFound.includes(pageNumber);
                             return (
-                                <li
+                                <RenderPageNumberComp
                                     key={pageNumber}
-                                    className={`page-item ${isActive ? 'active' : ''}`}
-                                >
-                                    <button
-                                        className="page-link"
-                                        disabled={isActive}
-                                        onClick={() => {
-                                            searchFor1(pageNumber);
-                                        }}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                </li>
+                                    pageNumber={pageNumber}
+                                    isActive={isActive}
+                                    handleSearching={searchFor1}
+                                />
                             );
                         })}
                     </ul>

@@ -4,14 +4,14 @@ import { lazy } from 'react';
 
 import {
     useLyricSelecting,
-    useSlideSelecting,
+    useVaryAppDocumentSelecting,
 } from '../event/PreviewingEventListener';
-import { useSlideItemSelecting } from '../event/SlideListEventListener';
+import { useAppDocumentItemSelecting } from '../event/SlideListEventListener';
 import { getSetting, useStateSettingString } from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 
 const LazySlidePreviewer = lazy(() => {
-    return import('./items/SlidePreviewer');
+    return import('./items/AppDocumentPreviewerComp');
 });
 const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRender');
@@ -24,7 +24,7 @@ const LazyPresenterOthersControllerComp = lazy(() => {
 });
 
 const PRESENT_TAB_SETTING_NAME = 'presenter-tab';
-export function getIsShowingSlidePreviewer() {
+export function getIsShowingVaryAppDocumentPreviewer() {
     return getSetting(PRESENT_TAB_SETTING_NAME) === 's';
 }
 export function getIsShowingFTPreviewer() {
@@ -44,8 +44,8 @@ export default function Presenter() {
         's',
     );
     useLyricSelecting(() => setTabType('l'));
-    useSlideSelecting(() => setTabType('s'));
-    useSlideItemSelecting(() => setTabType('s'));
+    useVaryAppDocumentSelecting(() => setTabType('s'));
+    useAppDocumentItemSelecting(() => setTabType('s'));
     return (
         <div id="presenter-manager" className="w-100 h-100">
             <TabRenderComp<TabType>

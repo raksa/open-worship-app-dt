@@ -7,7 +7,7 @@ import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
-import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 import {
     CanvasItemMediaPropsType,
     CanvasControllerEventType,
@@ -28,20 +28,20 @@ export const defaultRangeSize = {
 
 export type CanvasItemEventDataType = { canvasItems: CanvasItem<any>[] };
 
-export default class CanvasController extends EventHandler<CanvasControllerEventType> {
+class CanvasController extends EventHandler<CanvasControllerEventType> {
     static readonly eventNamePrefix: string = 'canvas-c';
     private readonly _canvas: Canvas;
-    readonly slideItem: SlideItem;
+    readonly slide: Slide;
     private _scale: number = 1;
-    constructor(slideItem: SlideItem) {
+    constructor(slide: Slide) {
         super();
         this._canvas = Canvas.genDefaultCanvas();
         const defaultData = parseFloat(getSetting(EDITOR_SCALE_SETTING_NAME));
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }
-        this.slideItem = slideItem;
-        this._canvas = slideItem.canvas || Canvas.genDefaultCanvas();
+        this.slide = slide;
+        this._canvas = slide.canvas || Canvas.genDefaultCanvas();
     }
     get canvas() {
         return this._canvas;
@@ -61,11 +61,11 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         super.addPropEvent(eventName, data);
     }
     fireEditEvent(canvasItem: CanvasItem<any>) {
-        this.slideItem.canvas = this.canvas;
+        this.slide.canvas = this.canvas;
         canvasItem.fireEditEvent();
     }
     fireUpdateEvent() {
-        this.slideItem.canvas = this.canvas;
+        this.slide.canvas = this.canvas;
         this.addPropEvent('update', {
             canvasItems: this.canvas.newCanvasItems,
         });
@@ -255,6 +255,8 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         );
     }
 }
+
+export default CanvasController;
 
 export const CanvasControllerContext = createContext<CanvasController | null>(
     null,

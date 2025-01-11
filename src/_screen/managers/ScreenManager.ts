@@ -122,7 +122,11 @@ export default class ScreenManager extends ScreenManagerBase {
             ].includes(droppedData.type)
         ) {
             this.screenBackgroundManager.receiveScreenDropped(droppedData);
-        } else if (droppedData.type === DragTypeEnum.SLIDE_ITEM) {
+        } else if (
+            [DragTypeEnum.SLIDE_ITEM, DragTypeEnum.PDF_SLIDE].includes(
+                droppedData.type,
+            )
+        ) {
             this.screenSlideManager.receiveScreenDropped(droppedData);
         } else if (
             [DragTypeEnum.BIBLE_ITEM, DragTypeEnum.LYRIC_ITEM].includes(

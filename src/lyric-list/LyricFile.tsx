@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Lyric from './Lyric';
 import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';
@@ -28,12 +28,12 @@ export default function LyricFile({
             data.isSelected = true;
         }
     };
-    const handleChildRendering = (lyric: ItemSource<any>) => {
+    const handleChildRendering = (lyric: AppDocumentSourceAbs) => {
         return <LyricFilePreview lyric={lyric as Lyric} />;
     };
     useAppEffect(() => {
         if (data === null) {
-            Lyric.readFileToData(filePath).then(setData);
+            // Lyric.readFileToData(filePath).then(setData);
         }
     }, [data]);
     useFileSourceEvents(
@@ -63,7 +63,7 @@ function LyricFilePreview({ lyric }: Readonly<{ lyric: Lyric }>) {
         <>
             <i className="bi bi-music-note" />
             {fileSource.name}
-            {lyric.isChanged && <span style={{ color: 'red' }}>*</span>}
+            <span style={{ color: 'red' }}>*</span>
         </>
     );
 }

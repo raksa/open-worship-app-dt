@@ -19,13 +19,19 @@ import AppPopupWindows from '../app-modal/AppPopupWindows';
 import AppContextMenuComp from '../others/AppContextMenuComp';
 import HandleAlertComp from '../popup-widget/HandleAlertComp';
 import Toast from '../toast/Toast';
-import Slide, { SelectedSlideContext } from '../slide-list/Slide';
-import SlideItem, {
-    SelectedEditingSlideItemContext,
-} from '../slide-list/SlideItem';
+import AppDocument from '../slide-list/AppDocument';
+import Slide from '../slide-list/Slide';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import TopProgressBarComp from '../progress-bar/TopProgressBarComp';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import {
+    SelectedEditingSlideItemContext,
+    SelectedVaryAppDocumentContext,
+    getSelectedVaryAppDocument,
+    VaryAppDocumentType,
+    VaryAppDocumentItemType,
+    getSelectedVaryAppDocumentItem,
+} from '../slide-list/appDocumentHelpers';
 
 const tabs: TabOptionType[] = [];
 if (!appProvider.isPagePresenter) {
@@ -63,73 +69,83 @@ function TabRender() {
     );
 }
 
-function useSlideContextValues() {
-    const [selectedSlide, setSelectedSlide] = useState<Slide | null>(null);
-    const [selectedSlideItem, setSelectedSlideItem] =
-        useState<SlideItem | null>(null);
+function useAppDocumentContextValues() {
+    const [selectedVaryAppDocument, setSelectedVaryAppDocument] =
+        useState<VaryAppDocumentType | null>(null);
+    const [selectedVaryAppDocumentItem, setSelectedVaryAppDocumentItem] =
+        useState<VaryAppDocumentItemType | null>(null);
     useAppEffectAsync(
         async (methodContext) => {
-            const slide = await Slide.getSelectedSlide();
-            methodContext.setSelectedSlide(slide);
-            const slideItem = await Slide.getSelectedSlideItem();
-            methodContext.setSelectedSlideItem(slideItem);
+            const varyAppDocument = await getSelectedVaryAppDocument();
+            methodContext.setSelectedVaryAppDocument(varyAppDocument);
+            const varyAppDocumentItem = await getSelectedVaryAppDocumentItem();
+            methodContext.setSelectedVaryAppDocumentItem(varyAppDocumentItem);
         },
         undefined,
-        { setSelectedSlide, setSelectedSlideItem },
+        {
+            setSelectedVaryAppDocument,
+            setSelectedVaryAppDocumentItem,
+        },
     );
-    const slideContextValue = useMemo(() => {
+    const varyAppDocumentContextValue = useMemo(() => {
         return {
-            selectedSlide: selectedSlide,
-            setSelectedSlide: (newSelectedSlide: Slide | null) => {
-                setSelectedSlide(newSelectedSlide);
+            selectedVaryAppDocument,
+            setSelectedVaryAppDocument: async (
+                newSelectedSlide: AppDocument | null,
+            ) => {
+                setSelectedVaryAppDocument(newSelectedSlide);
                 if (newSelectedSlide === null) {
-                    setSelectedSlideItem(null);
+                    setSelectedVaryAppDocumentItem(null);
                 } else {
-                    const firstSlideItem = newSelectedSlide.items[0];
-                    setSelectedSlideItem(firstSlideItem);
+                    const slideItems = await newSelectedSlide.getItems();
+                    const firstSlideItem = slideItems[0];
+                    setSelectedVaryAppDocumentItem(firstSlideItem);
                 }
             },
         };
-    }, [selectedSlide, setSelectedSlide]);
-    const editingSlideItemContextValue = useMemo(() => {
+    }, [selectedVaryAppDocument, setSelectedVaryAppDocument]);
+    const editingAppDocumentItemContextValue = useMemo(() => {
         return {
-            selectedSlideItem,
-            setSelectedSlideItem: (newSelectedSlideItem: SlideItem) => {
-                setSelectedSlideItem(newSelectedSlideItem);
+            selectedVaryAppDocumentItem,
+            setSelectedVaryAppDocumentItem: (newSelectedSlideItem: Slide) => {
+                setSelectedVaryAppDocumentItem(newSelectedSlideItem);
             },
         };
-    }, [selectedSlideItem, setSelectedSlideItem]);
+    }, [selectedVaryAppDocumentItem, setSelectedVaryAppDocumentItem]);
     useFileSourceEvents(
         ['delete'],
-        (deletedSlideItem: SlideItem) => {
-            setSelectedSlideItem((slideItem) => {
+        (deletedSlideItem: Slide) => {
+            setSelectedVaryAppDocumentItem((slideItem) => {
                 if (slideItem?.checkIsSame(deletedSlideItem)) {
                     return null;
                 }
                 return slideItem;
             });
         },
-        [selectedSlide],
-        selectedSlide?.filePath,
+        [selectedVaryAppDocument],
+        selectedVaryAppDocument?.filePath,
     );
     useFileSourceEvents(
         ['update'],
-        () => {
-            setSelectedSlideItem((oldSlideItem) => {
-                const newSlideItem = oldSlideItem
-                    ? selectedSlide?.items.find((item) => {
-                          return item.checkIsSame(oldSlideItem);
+        async () => {
+            const varyAppDocumentItems = selectedVaryAppDocument
+                ? await selectedVaryAppDocument.getItems()
+                : [];
+            setSelectedVaryAppDocumentItem((oldVaryAppDocumentItem) => {
+                const newVaryAppDocumentItem = oldVaryAppDocumentItem
+                    ? varyAppDocumentItems.find((item) => {
+                          return item.checkIsSame(oldVaryAppDocumentItem);
                       })
                     : null;
-                return newSlideItem || oldSlideItem;
+                return newVaryAppDocumentItem || oldVaryAppDocumentItem;
             });
         },
-        [selectedSlide],
-        selectedSlide?.filePath,
+        [selectedVaryAppDocument],
+        selectedVaryAppDocument?.filePath,
     );
     return {
-        slideContextValue,
-        editingSlideItemContextValue,
+        varyAppDocumentContextValue,
+        editingAppDocumentItemContextValue,
     };
 }
 
@@ -139,8 +155,8 @@ export default function AppLayout({
     children: React.ReactNode;
 }>) {
     const [isBibleSearchShowing, setIsBibleSearchShowing] = useState(false);
-    const { slideContextValue, editingSlideItemContextValue } =
-        useSlideContextValues();
+    const { varyAppDocumentContextValue, editingAppDocumentItemContextValue } =
+        useAppDocumentContextValues();
     return (
         <MultiContextRender
             contexts={[
@@ -152,12 +168,12 @@ export default function AppLayout({
                     },
                 },
                 {
-                    context: SelectedSlideContext,
-                    value: slideContextValue,
+                    context: SelectedVaryAppDocumentContext,
+                    value: varyAppDocumentContextValue,
                 },
                 {
                     context: SelectedEditingSlideItemContext,
-                    value: editingSlideItemContextValue,
+                    value: editingAppDocumentItemContextValue,
                 },
             ]}
         >

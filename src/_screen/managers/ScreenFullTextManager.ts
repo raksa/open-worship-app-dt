@@ -28,7 +28,7 @@ import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 
 let textStyle: AnyObjectType = {};
-export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
+class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-ft-m';
     private _ftItemData: FullTextItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -408,3 +408,5 @@ export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTMa
         return super.getInstanceBase<ScreenFullTextManager>(screenId);
     }
 }
+
+export default ScreenFullTextManager;

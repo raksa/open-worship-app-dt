@@ -4,7 +4,7 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const LazySlideList = lazy(() => {
-    return import('./slide-list/SlideList');
+    return import('./slide-list/AppDocumentListComp');
 });
 const LazyLyricList = lazy(() => {
     return import('./lyric-list/LyricList');
@@ -27,7 +27,7 @@ export default function AppPresenterLeft() {
                 {
                     children: LazySlideList,
                     key: 'v1',
-                    widgetName: 'Slide List',
+                    widgetName: 'Document List',
                     className: 'flex-item',
                 },
                 {

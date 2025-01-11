@@ -3,38 +3,68 @@ import {
     EventMapper as KBEventMapper,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { useFileSourceRefreshEvents } from '../../helper/dirSourceHelpers';
-import Slide, { useSelectedSlideContext } from '../../slide-list/Slide';
+import EditingHistoryManager, {
+    useEditingHistoryStatus,
+} from '../../others/EditingHistoryManager';
+import {
+    useSelectedVaryAppDocumentContext,
+    useSlideWrongDimension,
+} from '../../slide-list/appDocumentHelpers';
+import AppDocument, { WrongDimensionType } from '../../slide-list/AppDocument';
 import MenuIsModifying from './MenuIsModifying';
 
 const savingEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl'],
     key: 's',
 };
-export default function SlideItemsMenuComp() {
-    const selectedSlide = useSelectedSlideContext();
+
+function CheckingDimensionComp({
+    wrongDimension,
+}: Readonly<{
+    wrongDimension: WrongDimensionType;
+}>) {
+    const selectedSlide = useSelectedVaryAppDocumentContext();
     const screenDisplay = getDefaultScreenDisplay();
-    useFileSourceRefreshEvents(['history-update'], selectedSlide.filePath);
+    return (
+        <button
+            type="button"
+            className="btn btn-sm btn-warning"
+            title={
+                'Fix slide dimension: ' +
+                AppDocument.toWrongDimensionString(wrongDimension)
+            }
+            onClick={() => {
+                selectedSlide.fixSlideDimension(screenDisplay);
+            }}
+        >
+            <i className="bi bi-hammer" />
+        </button>
+    );
+}
+
+export default function SlideItemsMenuComp() {
+    const selectedSlide = useSelectedVaryAppDocumentContext();
+    const screenDisplay = getDefaultScreenDisplay();
+    const { canUndo, canRedo, canSave } = useEditingHistoryStatus(
+        selectedSlide.filePath,
+    );
+    const editingHistoryManager = EditingHistoryManager.getInstance(
+        selectedSlide.filePath,
+    );
+
     useKeyboardRegistering([savingEventMapper], () => {
-        selectedSlide.save();
+        editingHistoryManager.save();
     });
-    const foundWrongDimension =
-        selectedSlide.checkIsWrongDimension(screenDisplay);
-    const editCacheManager = selectedSlide.editorCacheManager;
-    const undo = editCacheManager.undoQueue;
-    const redo = editCacheManager.redoQueue;
-    const isHavingHistories = !!undo.length || !!redo.length;
-    const isShowingMenu = undo.length || redo.length || foundWrongDimension;
+    const wrongDimension = useSlideWrongDimension(selectedSlide, screenDisplay);
+    if (!canSave && !wrongDimension) {
+        return null;
+    }
     return (
         <div
             style={{
                 borderBottom: '1px solid #00000024',
                 backgroundColor: '#00000020',
-                minHeight:
-                    isHavingHistories || selectedSlide.isChanged
-                        ? '35px'
-                        : '0px',
-                display: isShowingMenu ? 'block' : 'none',
+                minHeight: '35px',
             }}
         >
             <div className="btn-group control d-flex justify-content-center">
@@ -42,9 +72,9 @@ export default function SlideItemsMenuComp() {
                     type="button"
                     className="btn btn-sm btn-info"
                     title="Undo"
-                    disabled={!undo.length}
+                    disabled={!canUndo}
                     onClick={() => {
-                        editCacheManager.popUndo();
+                        editingHistoryManager.undo();
                     }}
                 >
                     <i className="bi bi-arrow-90deg-left" />
@@ -53,32 +83,17 @@ export default function SlideItemsMenuComp() {
                     type="button"
                     className="btn btn-sm btn-info"
                     title="Redo"
-                    disabled={redo.length === 0}
+                    disabled={canRedo}
                     onClick={() => {
-                        editCacheManager.popRedo();
+                        editingHistoryManager.redo();
                     }}
                 >
                     <i className="bi bi-arrow-90deg-right" />
                 </button>
-                <MenuIsModifying
-                    isHavingHistories={isHavingHistories}
-                    eventMapper={savingEventMapper}
-                />
-                {foundWrongDimension !== null && (
-                    <button
-                        type="button"
-                        className="btn btn-sm btn-warning"
-                        title={
-                            'Fix slide dimension: ' +
-                            Slide.toWrongDimensionString(foundWrongDimension)
-                        }
-                        onClick={() => {
-                            selectedSlide.fixSlideDimension(screenDisplay);
-                        }}
-                    >
-                        <i className="bi bi-hammer" />
-                    </button>
-                )}
+                <MenuIsModifying eventMapper={savingEventMapper} />
+                {wrongDimension !== null ? (
+                    <CheckingDimensionComp wrongDimension={wrongDimension} />
+                ) : null}
             </div>
         </div>
     );

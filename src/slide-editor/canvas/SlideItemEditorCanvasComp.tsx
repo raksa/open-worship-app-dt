@@ -29,7 +29,9 @@ export default function SlideItemEditorCanvasComp() {
                 <div
                     className="w-100 h-100"
                     style={{
-                        transform: `scale(${scale.toFixed(2)}) translate(50%, 50%)`,
+                        transform:
+                            `scale(${scale.toFixed(2)}) ` +
+                            'translate(50%, 50%)',
                     }}
                 >
                     <BodyRendererComp />

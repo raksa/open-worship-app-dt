@@ -1,3 +1,4 @@
+import BibleItem from '../bible-list/BibleItem';
 import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
 
@@ -12,6 +13,10 @@ export default function BibleOnlineRenderPerPage({
     text: string;
     bibleKey: string;
 }>) {
+    const handleClicking = (bibleItem: BibleItem) => {
+        const viewController = SearchBibleItemViewController.getInstance();
+        viewController.appendBibleItem(bibleItem);
+    };
     return (
         <>
             <div className="d-flex">
@@ -32,9 +37,7 @@ export default function BibleOnlineRenderPerPage({
                                 'app-ellipsis w-100 overflow-hidden-x'
                             }
                             onClick={() => {
-                                SearchBibleItemViewController.getInstance().appendBibleItem(
-                                    bibleItem,
-                                );
+                                handleClicking(bibleItem);
                             }}
                             title={item}
                             style={{ textAlign: 'left' }}

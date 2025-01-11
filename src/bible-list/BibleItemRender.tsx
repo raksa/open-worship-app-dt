@@ -34,7 +34,7 @@ export default function BibleItemRender({
     const title = useBibleItemRenderTitle(bibleItem);
     const changeBible = async (newBibleKey: string) => {
         const bible = bibleItem.filePath
-            ? await Bible.readFileToData(bibleItem.filePath)
+            ? await Bible.fromFilePath(bibleItem.filePath)
             : null;
         if (!bible) {
             return;

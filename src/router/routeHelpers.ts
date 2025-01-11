@@ -1,11 +1,13 @@
+import { OptionalPromise } from '../others/otherHelpers';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import appProvider from '../server/appProvider';
-import Slide from '../slide-list/Slide';
+import { getSelectedVaryAppDocument } from '../slide-list/appDocumentHelpers';
+import AppDocument from '../slide-list/AppDocument';
 
 export type TabOptionType = {
     title: string;
     routePath: string;
-    preCheck?: () => Promise<boolean>;
+    preCheck?: () => OptionalPromise<boolean>;
 };
 
 export enum WindowModEnum {
@@ -18,8 +20,8 @@ export const editorTab: TabOptionType = {
     title: 'Editor↗️',
     routePath: appProvider.editorHomePage,
     preCheck: async () => {
-        const slide = await Slide.readFileToData(Slide.getSelectedFilePath());
-        if (slide && !slide.isPdf) {
+        const varyAppDocument = getSelectedVaryAppDocument();
+        if (AppDocument.checkIsThisType(varyAppDocument)) {
             return true;
         }
         showAppAlert(

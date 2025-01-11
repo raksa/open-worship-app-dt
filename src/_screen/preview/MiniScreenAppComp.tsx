@@ -7,7 +7,6 @@ import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../managers/screenManagerHelpers';
 import { ScreenManagerBaseContext } from '../managers/screenManagerHooks';
 
-// eslint-disable-next-line max-len
 const IMAGE_BACKGROUND = `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(-45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%),

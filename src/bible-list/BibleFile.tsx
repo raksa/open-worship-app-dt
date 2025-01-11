@@ -4,7 +4,7 @@ import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import Bible from './Bible';
 import AppSuspenseComp from '../others/AppSuspenseComp';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { moveBibleItemTo } from './bibleHelpers';
@@ -71,14 +71,14 @@ export default function BibleFile({
     useAppEffectAsync(
         async (methodContext) => {
             if (data === null) {
-                const bible = await Bible.readFileToData(filePath);
+                const bible = await Bible.fromFilePath(filePath);
                 methodContext.setData(bible);
             }
         },
         [data],
         { setData },
     );
-    const handlerChildRendering = (bible: ItemSource<any>) => {
+    const handlerChildRendering = (bible: AppDocumentSourceAbs) => {
         return <BiblePreview bible={bible as Bible} />;
     };
     const handleReloading = () => {

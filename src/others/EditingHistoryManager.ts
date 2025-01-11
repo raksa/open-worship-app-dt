@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { DependencyList, useState } from 'react';
 
 import { handleError } from '../helper/errorHelpers';
 import EventHandler, { RegisteredEventType } from '../event/EventHandler';
@@ -214,7 +214,7 @@ class FileLineHandler {
     }
 }
 
-export type EditingHistoryEventType = 'update';
+const cache = new Map<string, EditingHistoryManager>();
 export default class EditingHistoryManager {
     private static readonly _eventPrefix = 'editing';
     public static readonly eventHandler = new EventHandler<any>();
@@ -311,11 +311,28 @@ export default class EditingHistoryManager {
         }
         return false;
     }
+
+    async save() {
+        const lastHistory = await this.getCurrentHistory();
+        if (lastHistory === null) {
+            return false;
+        }
+        await fsWriteFile(this.filePath, lastHistory);
+        this.fireEvent();
+    }
+
+    static getInstance(filePath: string) {
+        if (!cache.has(filePath)) {
+            cache.set(filePath, new EditingHistoryManager(filePath));
+        }
+        return cache.get(filePath) as EditingHistoryManager;
+    }
 }
 
 export function useEditingHistoryEvent(
     filePath: string,
     listener: () => Promise<void>,
+    deps?: DependencyList,
 ) {
     useAppEffect(() => {
         const registeredEvents = EditingHistoryManager.registerEventListener(
@@ -325,7 +342,7 @@ export function useEditingHistoryEvent(
         return () => {
             EditingHistoryManager.unregisterEventListener(registeredEvents);
         };
-    }, [filePath, listener]);
+    }, [filePath, listener, ...(deps || [])]);
 }
 
 export function useEditingHistoryStatus(filePath: string) {

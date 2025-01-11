@@ -1,8 +1,8 @@
 import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
-import SlideItem from '../../slide-list/SlideItem';
 import appProvider from '../../server/appProvider';
 import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
+import { VaryAppDocumentItemType } from '../../slide-list/appDocumentHelpers';
 
 export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
     if (slideItemIds.length === 0) {
@@ -19,24 +19,28 @@ export function getPresenterIndex(filePath: string, slideItemIds: number[]) {
     }
     return -1;
 }
-export function handleSlideItemSelecting(
-    selectSelectedSlideItem: (newSelectedSlideItem: SlideItem) => void,
-    slideItem: SlideItem,
+export function handleAppDocumentItemSelecting(
+    selectSelectedSlideItem: (
+        varyAppDocumentItem: VaryAppDocumentItemType,
+    ) => void,
+    varyAppDocumentItem: VaryAppDocumentItemType,
     event: any,
 ) {
     if (appProvider.isPageEditor) {
-        selectSelectedSlideItem(slideItem);
+        selectSelectedSlideItem(varyAppDocumentItem);
     } else {
         ScreenSlideManager.handleSlideSelecting(
             event,
-            slideItem.filePath,
-            slideItem.toJson(),
+            varyAppDocumentItem.filePath,
+            varyAppDocumentItem.toJson(),
         );
     }
 }
 
-export function genSlideItemIds(slideItems: SlideItem[]) {
-    return slideItems.map((item) => {
+export function genSlideItemIds(
+    varyAppDocumentItems: VaryAppDocumentItemType[],
+) {
+    return varyAppDocumentItems.map((item) => {
         return item.id;
     });
 }
@@ -45,31 +49,34 @@ export const DIV_CLASS_NAME = 'app-slide-items-comp';
 
 function findNextSlideItem(
     isLeft: boolean,
-    slideItems: SlideItem[],
-    slideItemId: number,
+    items: VaryAppDocumentItemType[],
+    itemId: number,
     divContainer: HTMLDivElement,
 ) {
-    let index = slideItems.findIndex((slideItem) => {
-        return slideItem.id === slideItemId;
+    let index = items.findIndex((item) => {
+        return item.id === itemId;
     });
     if (index === -1) {
-        return { targetSlideItem: null, targetDiv: null };
+        return { targetItem: null, targetDiv: null };
     }
     index += isLeft ? -1 : 1;
-    index += slideItems.length;
+    index += items.length;
 
-    const targetSlideItem = slideItems[index % slideItems.length] ?? null;
+    const targetItem = items[index % items.length] ?? null;
     return {
-        targetSlideItem,
+        targetItem,
         targetDiv:
-            targetSlideItem === null
+            targetItem === null
                 ? null
                 : (divContainer.querySelector(
-                      `[data-slide-item-id="${targetSlideItem.id}"]`,
+                      `[data-app-document-item-id="${targetItem.id}"]`,
                   ) as HTMLDivElement),
     };
 }
-export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
+export function handleArrowing(
+    event: KeyboardEvent,
+    varyAppDocumentItems: VaryAppDocumentItemType[],
+) {
     if (
         !appProvider.presenterHomePage ||
         !document.activeElement?.classList.contains(DIV_CLASS_NAME)
@@ -83,13 +90,13 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
     const foundList = Array.from(divSelectedList).reduce(
         (
             r: {
-                slideItem: SlideItem;
+                item: VaryAppDocumentItemType;
                 targetDiv: HTMLDivElement;
                 screenId: number;
             }[],
             divSelected,
         ) => {
-            const slideItemId = parseInt(
+            const itemId = parseInt(
                 divSelected?.getAttribute('data-slide-item-id') ?? '',
             );
             const screenIds = Array.from(
@@ -97,18 +104,19 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
             ).map((element) => {
                 return parseInt(element.getAttribute('data-screen-id') ?? '');
             });
-            const { targetSlideItem, targetDiv } = findNextSlideItem(
-                isLeft,
-                slideItems,
-                slideItemId,
-                document.activeElement as HTMLDivElement,
-            );
+            const { targetItem: targetSlideItem, targetDiv } =
+                findNextSlideItem(
+                    isLeft,
+                    varyAppDocumentItems,
+                    itemId,
+                    document.activeElement as HTMLDivElement,
+                );
             if (targetSlideItem === null || targetDiv === null) {
                 return r;
             }
             return r.concat(
                 screenIds.map((screenId) => {
-                    return { slideItem: targetSlideItem, targetDiv, screenId };
+                    return { item: targetSlideItem, targetDiv, screenId };
                 }),
             );
         },
@@ -119,7 +127,7 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
     }
     event.preventDefault();
     for (let i = 0; i < foundList.length; i++) {
-        const { slideItem, targetDiv, screenId } = foundList[i];
+        const { item, targetDiv, screenId } = foundList[i];
         const screenManager = screenManagerFromBase(
             getScreenManagerBase(screenId),
         );
@@ -128,10 +136,10 @@ export function handleArrowing(event: KeyboardEvent, slideItems: SlideItem[]) {
         }
         setTimeout(() => {
             const { screenSlideManager } = screenManager;
-            screenSlideManager.slideItemData =
+            screenSlideManager.varyAppDocumentItemData =
                 screenSlideManager.toSlideItemData(
-                    slideItem.filePath,
-                    slideItem.toJson(),
+                    item.filePath,
+                    item.toJson(),
                 );
             targetDiv.scrollIntoView({
                 behavior: 'smooth',

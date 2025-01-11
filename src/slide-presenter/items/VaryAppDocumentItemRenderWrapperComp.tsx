@@ -2,39 +2,62 @@ import { Fragment } from 'react';
 
 import SlideItemRenderComp from './SlideItemRenderComp';
 import SlideItemDragReceiver from './SlideItemDragReceiver';
-import { useSelectedSlideContext } from '../../slide-list/Slide';
-import SlideItem, {
+import PdfAppDocumentItemRenderComp from './PdfSlideRenderContentComp';
+import { handleAppDocumentItemSelecting } from './slideItemHelpers';
+import {
     useSelectedEditingSlideItemSetterContext,
-} from '../../slide-list/SlideItem';
-import SlideItemPdfRender from './SlideItemPdfRender';
-import { handleSlideItemSelecting } from './slideItemHelpers';
+    useSelectedVaryAppDocumentContext,
+    VaryAppDocumentItemType,
+} from '../../slide-list/appDocumentHelpers';
+import PDFSlide from '../../slide-list/PDFSlide';
+import AppDocument from '../../slide-list/AppDocument';
+import { showSimpleToast } from '../../toast/toastHelpers';
 
-export default function SlideItemRenderWrapper({
+export default function VaryAppDocumentItemRenderWrapperComp({
     draggingIndex,
     thumbSize,
-    slideItem,
+    varyAppDocumentItem,
     index,
     setDraggingIndex,
 }: Readonly<{
     draggingIndex: number | null;
     thumbSize: number;
-    slideItem: SlideItem;
+    varyAppDocumentItem: VaryAppDocumentItemType;
     index: number;
     setDraggingIndex: (index: number | null) => void;
 }>) {
-    const selectedSlide = useSelectedSlideContext();
-    const setSelectedSlideItem = useSelectedEditingSlideItemSetterContext();
+    const selectedAppDocument = useSelectedVaryAppDocumentContext();
+    const setSelectedAppDocumentItem =
+        useSelectedEditingSlideItemSetterContext();
     const handleDropping = (id: number, isLeft: boolean) => {
-        selectedSlide.moveItem(id, index, isLeft);
+        if (!(selectedAppDocument instanceof AppDocument)) {
+            return;
+        }
+        selectedAppDocument.moveItem(id, index, isLeft);
     };
     const handleClicking = (event: any) => {
-        handleSlideItemSelecting(setSelectedSlideItem, slideItem, event);
+        handleAppDocumentItemSelecting(
+            setSelectedAppDocumentItem,
+            varyAppDocumentItem,
+            event,
+        );
     };
     const handleContextMenuOpening = (event: any) => {
-        selectedSlide.openContextMenu(event, slideItem);
+        selectedAppDocument.showItemContextMenu(
+            event,
+            varyAppDocumentItem as any,
+        );
     };
-    const handleCopying = () => {
-        navigator.clipboard.writeText(slideItem.clipboardSerialize());
+    const handleCopying = async () => {
+        const text = await varyAppDocumentItem.clipboardSerialize();
+        if (text === null) {
+            showSimpleToast(
+                'Cannot copy this item.',
+                'Unable to serialize this item for clipboard.',
+            );
+            return;
+        }
+        navigator.clipboard.writeText(text);
     };
     const handleDragStarting = () => {
         setDraggingIndex(index);
@@ -42,12 +65,12 @@ export default function SlideItemRenderWrapper({
     const handleDragEnding = () => {
         setDraggingIndex(null);
     };
-    if (slideItem.isPdf) {
+    if (varyAppDocumentItem instanceof PDFSlide) {
         return (
-            <SlideItemPdfRender
-                key={slideItem.id}
+            <PdfAppDocumentItemRenderComp
+                key={varyAppDocumentItem.id}
                 onClick={handleClicking}
-                slideItem={slideItem}
+                pdfSlide={varyAppDocumentItem}
                 width={thumbSize}
                 index={index}
                 onContextMenu={handleContextMenuOpening}
@@ -63,7 +86,7 @@ export default function SlideItemRenderWrapper({
         draggingIndex !== index &&
         draggingIndex !== index + 1;
     return (
-        <Fragment key={slideItem.id}>
+        <Fragment key={varyAppDocumentItem.id}>
             {shouldReceiveAtFirst && (
                 <SlideItemDragReceiver
                     width={thumbSize}
@@ -73,7 +96,7 @@ export default function SlideItemRenderWrapper({
             )}
             <SlideItemRenderComp
                 index={index}
-                slideItem={slideItem}
+                slideItem={varyAppDocumentItem}
                 width={thumbSize}
                 onClick={handleClicking}
                 onContextMenu={handleContextMenuOpening}

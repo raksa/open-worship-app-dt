@@ -7,7 +7,6 @@ import CanvasController, {
     defaultRangeSize,
 } from './canvas/CanvasController';
 import { handleCtrlWheel } from '../others/AppRangeComp';
-import { useSelectedEditingSlideItemContext } from '../slide-list/SlideItem';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import CanvasItem, {
     CanvasItemsContext,
@@ -17,6 +16,7 @@ import CanvasItem, {
 } from './canvas/CanvasItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
+import { useSelectedEditingSlideItemContext } from '../slide-list/appDocumentHelpers';
 
 const LazySlideItemEditorCanvas = lazy(() => {
     return import('./canvas/SlideItemEditorCanvasComp');
@@ -71,7 +71,7 @@ function useCanvasItemsData(canvasController: CanvasController) {
         });
     };
     useAppEffect(refreshData, [canvasController]);
-    const filePath = canvasController.slideItem.filePath;
+    const filePath = canvasController.slide.filePath;
     useFileSourceEvents(['update'], refreshData, [], filePath);
     useAppEffect(() => {
         const regEvents = canvasController.itemRegisterEventListener(
@@ -160,7 +160,7 @@ export default function SlideItemEditorComp() {
                         {
                             children: LazySlideItemEditorCanvas,
                             key: 'v1',
-                            widgetName: 'Slide Item Editor Canvas',
+                            widgetName: 'Slide Editor Canvas',
                             className: 'flex-item',
                         },
                         {

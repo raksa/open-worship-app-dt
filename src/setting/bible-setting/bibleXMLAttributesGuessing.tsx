@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { useState } from 'react';
 
 import { getLangCode } from '../../lang';
@@ -367,7 +368,6 @@ export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
     <testament name="Old">
         <book number="1">
             <chapter number="1">
-                // eslint-disable-next-line max-len
                 <verse number="1">
                     This is verse text number 1 of chapter 1 in book Genesis
                 </verse>

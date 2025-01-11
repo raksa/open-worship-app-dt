@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 import SlideItemRenderer from './SlideItemRenderer';
 
 export default function SlideItemRendererHtml({
     slideItem,
 }: Readonly<{
-    slideItem: SlideItem;
+    slideItem: Slide;
 }>) {
     const [parentWidth, setParentWidth] = useState(0);
     if (slideItem.isError) {

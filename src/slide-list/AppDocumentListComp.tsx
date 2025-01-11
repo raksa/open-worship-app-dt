@@ -1,13 +1,8 @@
 import './SlideList.scss';
 
 import FileListHandlerComp from '../others/FileListHandlerComp';
-import SlideFile from './SlideFile';
-import Slide, { useSelectedSlideSetterContext } from './Slide';
-import {
-    checkIsPdf,
-    convertOfficeFile,
-    supportOfficeFileExtensions,
-} from './slideHelpers';
+import AppDocumentFileComp from './AppDocumentFileComp';
+import AppDocument from './AppDocument';
 import {
     getFileExtension,
     getFileFullName,
@@ -21,16 +16,18 @@ import {
     dirSourceSettingNames,
 } from '../helper/constants';
 import { DroppedFileType } from '../others/droppingFileHelpers';
+import {
+    checkIsPdf,
+    convertOfficeFile,
+    getSelectedVaryAppDocument,
+    supportOfficeFileExtensions,
+    useSelectedAppDocumentSetterContext,
+} from './appDocumentHelpers';
 
-export default function SlideList() {
-    const setSelectedSlide = useSelectedSlideSetterContext();
+export default function AppDocumentListComp() {
+    const setSelectedAppDocument = useSelectedAppDocumentSetterContext();
     const dirSource = useGenDirSource(dirSourceSettingNames.SLIDE);
     if (dirSource !== null) {
-        Slide.getSelectedSlide().then((slide) => {
-            if (slide === null) {
-                setSelectedSlide(null);
-            }
-        });
         dirSource.checkExtraFile = (fileFullName: string) => {
             if (checkIsPdf(getFileExtension(fileFullName))) {
                 return {
@@ -40,6 +37,12 @@ export default function SlideList() {
             }
             return null;
         };
+        setTimeout(async () => {
+            const varAppDocument = await getSelectedVaryAppDocument();
+            if (varAppDocument === null) {
+                setSelectedAppDocument(null);
+            }
+        }, 1000);
     }
     const handleExtraFileChecking = (filePath: string) => {
         const fileSource = FileSource.getInstance(filePath);
@@ -64,7 +67,7 @@ export default function SlideList() {
         return filePaths.map((filePath, i) => {
             const fileSource = FileSource.getInstance(filePath);
             return (
-                <SlideFile
+                <AppDocumentFileComp
                     key={fileSource.fileFullName}
                     index={i}
                     filePath={filePath}
@@ -84,7 +87,7 @@ export default function SlideList() {
             checkExtraFile={handleExtraFileChecking}
             takeDroppedFile={handleFileTaking}
             onNewFile={async (dirPath: string, name: string) => {
-                return !(await Slide.create(dirPath, name));
+                return !(await AppDocument.create(dirPath, name));
             }}
             header={<span>Slides</span>}
             bodyHandler={handleBodyRendering}

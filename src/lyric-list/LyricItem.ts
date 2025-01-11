@@ -129,6 +129,7 @@ export default class LyricItem
             throw new Error('Invalid lyric item data');
         }
     }
+    
     clone(isDuplicateId?: boolean) {
         const lyricItem = LyricItem.fromJson(this.toJson(), this.filePath);
         if (!isDuplicateId) {
@@ -136,9 +137,7 @@ export default class LyricItem
         }
         return lyricItem;
     }
-    static genKeyByFileSource(filePath: string, id: number) {
-        return `${filePath}${this.KEY_SEPARATOR}${id}`;
-    }
+
     static genDefaultLyric(name: string): LyricItemType {
         return {
             id: -1,
@@ -147,6 +146,7 @@ export default class LyricItem
             metadata: {},
         };
     }
+
     dragSerialize() {
         return {
             type: DragTypeEnum.LYRIC_ITEM,

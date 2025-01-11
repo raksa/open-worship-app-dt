@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import ItemSource from './ItemSource';
+import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { trace } from './loggerHelpers';
 
 export type AnyObjectType = {
@@ -120,7 +120,7 @@ export function validateAppMeta(meta: any) {
     }
     return false;
 }
-export function useReadFileToData<T extends ItemSource<any>>(
+export function useReadFileToData<T extends AppDocumentSourceAbs>(
     filePath: string | null,
 ) {
     const [data, setData] = useState<T | null | undefined>(null);

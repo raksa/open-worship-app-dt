@@ -2,17 +2,16 @@ import './SlideItemEditorPopup.scss';
 
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import SlideItemEditorPopupHeader from './SlideItemEditorPopupHeader';
-import SlideItem, {
-    SelectedEditingSlideItemContext,
-} from '../slide-list/SlideItem';
+import Slide from '../slide-list/Slide';
 import SlideItemEditorComp from './SlideItemEditorComp';
 import { closeSlideItemQuickEdit } from '../slide-presenter/HandleItemSlideEdit';
 import { Modal } from '../app-modal/Modal';
+import { SelectedEditingSlideItemContext } from '../slide-list/appDocumentHelpers';
 
 export default function SlideItemEditorPopup({
     slideItem,
 }: Readonly<{
-    slideItem: SlideItem;
+    slideItem: Slide;
 }>) {
     useKeyboardRegistering([{ key: 'Escape' }], closeSlideItemQuickEdit);
     return (
@@ -22,7 +21,7 @@ export default function SlideItemEditorPopup({
                 <div className="body card-body w-100 overflow-hidden">
                     <SelectedEditingSlideItemContext
                         value={{
-                            selectedSlideItem: slideItem,
+                            selectedVaryAppDocumentItem: slideItem,
                             setSelectedSlideItem: () => {},
                         }}
                     >

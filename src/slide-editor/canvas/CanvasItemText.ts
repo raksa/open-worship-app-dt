@@ -44,7 +44,7 @@ export type ToolingTextType = {
     textHorizontalAlignment?: HAlignmentType;
     textVerticalAlignment?: VAlignmentType;
 };
-export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
+class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
     get type(): CanvasItemKindType {
         return 'text';
     }
@@ -104,3 +104,5 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
         }
     }
 }
+
+export default CanvasItemText;

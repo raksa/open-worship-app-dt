@@ -1,15 +1,16 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
 import Lyric from '../lyric-list/Lyric';
-import Slide from '../slide-list/Slide';
+import AppDocument from '../slide-list/AppDocument';
 import EventHandler, { ListenerType } from './EventHandler';
+import { VaryAppDocumentType } from '../slide-list/appDocumentHelpers';
 
 export type PreviewingType =
     | 'select-lyric'
     | 'update-lyric'
-    | 'select-slide'
-    | 'update-slide';
+    | 'select-app-document'
+    | 'update-app-document';
 
-export default class PreviewingEventListener extends EventHandler<PreviewingType> {
+class PreviewingEventListener extends EventHandler<PreviewingType> {
     static readonly eventNamePrefix: string = 'previewing';
     selectLyric(lyric: Lyric | null) {
         this.addPropEvent('select-lyric', lyric);
@@ -17,11 +18,11 @@ export default class PreviewingEventListener extends EventHandler<PreviewingType
     updateLyric(lyric: Lyric) {
         this.addPropEvent('update-lyric', lyric);
     }
-    showSlide(slide: Slide | null) {
-        this.addPropEvent('select-slide', slide);
+    showVaryAppDocument(varyAppDocument: VaryAppDocumentType | null) {
+        this.addPropEvent('select-app-document', varyAppDocument);
     }
-    updateSlide(slide: Slide) {
-        this.addPropEvent('update-slide', slide);
+    updateVaryAppDocument(varyAppDocument: VaryAppDocumentType) {
+        this.addPropEvent('update-app-document', varyAppDocument);
     }
 }
 
@@ -38,6 +39,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
         };
     }, [listener]);
 }
+
 export function useLyricUpdating(listener: ListenerType<Lyric>) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
@@ -49,10 +51,13 @@ export function useLyricUpdating(listener: ListenerType<Lyric>) {
         };
     }, [listener]);
 }
-export function useSlideSelecting(listener: ListenerType<Slide | null>) {
+
+export function useVaryAppDocumentSelecting(
+    listener: ListenerType<AppDocument | null>,
+) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['select-slide'],
+            ['select-app-document'],
             listener,
         );
         return () => {
@@ -60,10 +65,13 @@ export function useSlideSelecting(listener: ListenerType<Slide | null>) {
         };
     }, [listener]);
 }
-export function useSlideUpdating(listener: ListenerType<Slide>) {
+
+export function useVaryAppDocumentUpdating(
+    listener: ListenerType<AppDocument>,
+) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
-            ['update-slide'],
+            ['update-app-document'],
             listener,
         );
         return () => {
@@ -71,3 +79,5 @@ export function useSlideUpdating(listener: ListenerType<Slide>) {
         };
     }, [listener]);
 }
+
+export default PreviewingEventListener;

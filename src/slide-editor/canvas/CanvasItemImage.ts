@@ -10,7 +10,7 @@ import { handleError } from '../../helper/errorHelpers';
 
 export type CanvasItemImagePropsType = CanvasItemPropsType &
     CanvasItemMediaPropsType;
-export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
+class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType> {
     static gegStyle(_props: CanvasItemImagePropsType) {
         return {};
     }
@@ -77,3 +77,5 @@ export default class CanvasItemImage extends CanvasItem<CanvasItemImagePropsType
         validateMediaProps(json);
     }
 }
+
+export default CanvasItemImage;

@@ -2,7 +2,7 @@ import './SlideItemDragReceiver.scss';
 
 import { CSSProperties, useState } from 'react';
 
-import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 import { handleDrop } from '../../helper/dragHelpers';
 import { DragTypeEnum } from '../../helper/DragInf';
 
@@ -58,7 +58,7 @@ export default function SlideItemDragReceiver({
                 ) {
                     return;
                 }
-                onDrop((droppedData.item as SlideItem).id, !!isLeft);
+                onDrop((droppedData.item as Slide).id, !!isLeft);
             }}
         />
     );

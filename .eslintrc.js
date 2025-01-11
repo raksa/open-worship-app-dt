@@ -3,7 +3,6 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint'],
     rules: {
-        semi: ['error', 'always'],
         quotes: ['error', 'single'],
         'comma-dangle': ['error', 'always-multiline'],
         curly: ['error', 'all'],
@@ -12,13 +11,6 @@ module.exports = {
             {
                 destructuring: 'any',
                 ignoreReadBeforeAssign: false,
-            },
-        ],
-        'max-len': [
-            'error',
-            {
-                code: 80,
-                ignorePattern: '^import\\s.+\\sfrom\\s.+;$',
             },
         ],
         '@typescript-eslint/no-unused-vars': [

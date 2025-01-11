@@ -4,7 +4,7 @@ import FileReadErrorComp from './FileReadErrorComp';
 import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
 import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
@@ -111,7 +111,7 @@ export default function FileItemHandlerComp({
     isDisabledColorNote,
     userClassName,
 }: Readonly<{
-    data: ItemSource<any> | null | undefined;
+    data: AppDocumentSourceAbs<any> | null | undefined;
     reload: () => void;
     index: number;
     filePath: string;
@@ -119,7 +119,7 @@ export default function FileItemHandlerComp({
     contextMenuItems?: ContextMenuItemType[];
     onDrop?: (event: any) => void;
     onClick?: () => void;
-    renderChild: (lyric: ItemSource<any>) => any;
+    renderChild: (lyric: AppDocumentSourceAbs<any>) => any;
     isPointer?: boolean;
     onTrashed?: () => void;
     isDisabledColorNote?: boolean;

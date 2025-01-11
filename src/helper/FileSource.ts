@@ -15,7 +15,7 @@ import {
     getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
-import ItemSource from './ItemSource';
+import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
@@ -116,7 +116,7 @@ export default class FileSource
 
     deleteCache() {
         cache.delete(this.filePath);
-        ItemSource.deleteCache(this.filePath);
+        AppDocumentSourceAbs.deleteCache(this.filePath);
         this.fireDeleteCacheEvent();
     }
 
@@ -152,7 +152,7 @@ export default class FileSource
         return false;
     }
 
-    async saveDataFromItem(item: ItemSource<any>) {
+    async saveDataFromItem(item: AppDocumentSourceAbs<any>) {
         const content = JSON.stringify(item.toJson());
         return this.saveData(content);
     }

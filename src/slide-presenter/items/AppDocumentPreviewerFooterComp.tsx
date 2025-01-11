@@ -2,29 +2,28 @@ import { useState } from 'react';
 
 import { PathPreviewerComp } from '../../others/PathPreviewerComp';
 import {
-    useSelectedSlideContext,
-    useSelectedSlideSetterContext,
-} from '../../slide-list/Slide';
-import {
     MIN_THUMBNAIL_SCALE,
     MAX_THUMBNAIL_SCALE,
     THUMBNAIL_SCALE_STEP,
     selectSlide,
-} from '../../slide-list/slideHelpers';
+    useSelectedVaryAppDocumentContext,
+    useSelectedAppDocumentSetterContext,
+} from '../../slide-list/appDocumentHelpers';
 import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
 import { genSlideItemIds, getPresenterIndex } from './slideItemHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
-import { useSlideItemThumbnailSizeScale } from '../../event/SlideListEventListener';
+import { useAppDocumentItemThumbnailSizeScale } from '../../event/SlideListEventListener';
 import appProvider from '../../server/appProvider';
 import { showAppAlert } from '../../popup-widget/popupWidgetHelpers';
 
-function HistoryPreviewerFooter() {
-    const selectedSlide = useSelectedSlideContext();
+function HistoryPreviewerFooterComp() {
+    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
     const [history, setHistory] = useState<number[]>([]);
-    useScreenSlideManagerEvents(['update'], undefined, () => {
+    useScreenSlideManagerEvents(['update'], undefined, async () => {
+        const appVaryDocumentItems = await selectedVaryAppDocument.getItems();
         const index = getPresenterIndex(
-            selectedSlide.filePath,
-            genSlideItemIds(selectedSlide.items),
+            selectedVaryAppDocument.filePath,
+            genSlideItemIds(appVaryDocumentItems),
         );
         if (index < 0) {
             return;
@@ -52,11 +51,11 @@ export const defaultRangeSize = {
     max: MAX_THUMBNAIL_SCALE,
     step: THUMBNAIL_SCALE_STEP,
 };
-export default function SlidePreviewerFooterComp() {
-    const selectedSlide = useSelectedSlideContext();
-    const setSelectedSlide = useSelectedSlideSetterContext();
+export default function AppDocumentPreviewerFooterComp() {
+    const selectedSlide = useSelectedVaryAppDocumentContext();
+    const setSelectedSlide = useSelectedAppDocumentSetterContext();
     const [thumbnailSizeScale, setThumbnailSizeScale] =
-        useSlideItemThumbnailSizeScale();
+        useAppDocumentItemThumbnailSizeScale();
     const handleSlideChoosing = async (event: any) => {
         const slide = await selectSlide(event, selectedSlide.filePath);
         if (slide === null) {
@@ -87,7 +86,7 @@ export default function SlidePreviewerFooterComp() {
                 </div>
                 {appProvider.isPagePresenter ? (
                     <div className="flex-item">
-                        <HistoryPreviewerFooter />
+                        <HistoryPreviewerFooterComp />
                     </div>
                 ) : null}
             </div>

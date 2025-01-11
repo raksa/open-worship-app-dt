@@ -1,8 +1,6 @@
 import Bible from '../bible-list/Bible';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
-import Lyric from '../lyric-list/Lyric';
-import Slide from '../slide-list/Slide';
 
 const itemTypeList = ['error', 'slide', 'bible-item', 'lyric'] as const;
 type ItemType = (typeof itemTypeList)[number];
@@ -29,18 +27,13 @@ export default class PlaylistItem {
     get isSlide() {
         return this.type === 'slide';
     }
-    async getSlide() {
-        if (!this.isSlide) {
-            return null;
-        }
-        return Slide.readFileToData(this.filePath);
-    }
+
     get isBibleItem() {
         return this.type === 'bible-item';
     }
     async getBibleItem() {
         if (this.isBibleItem) {
-            const bible = await Bible.readFileToData(this.filePath);
+            const bible = await Bible.fromFilePath(this.filePath);
             if (bible) {
                 return bible.getItemById(this.originalJson.id as number);
             }
@@ -51,10 +44,7 @@ export default class PlaylistItem {
         return this.type === 'lyric';
     }
     async getLyric() {
-        if (!this.isLyric) {
-            return null;
-        }
-        return Lyric.readFileToData(this.filePath);
+        return null;
     }
     static fromJson(filePath: string, json: PlaylistItemType) {
         this.validate(json);

@@ -3,37 +3,41 @@ import { getSetting, useStateSettingNumber } from '../helper/settingHelpers';
 import {
     DEFAULT_THUMBNAIL_SIZE_FACTOR,
     THUMBNAIL_WIDTH_SETTING_NAME,
-} from '../slide-list/slideHelpers';
-import SlideItem from '../slide-list/SlideItem';
+    VaryAppDocumentItemType,
+} from '../slide-list/appDocumentHelpers';
 import EventHandler, { ListenerType } from './EventHandler';
 
-export type SlideListEventType = 'slide-item-select' | 'slide-item-sizing';
+export type AppDocumentListEventType =
+    | 'app-document-item-select'
+    | 'app-document-item-sizing';
 
-export default class SlideListEventListener extends EventHandler<SlideListEventType> {
-    static readonly eventNamePrefix: string = 'slide-list';
-    static selectSlideItem(slideItem: SlideItem | null) {
-        this.addPropEvent('slide-item-select', slideItem);
+export default class AppDocumentListEventListener extends EventHandler<AppDocumentListEventType> {
+    static readonly eventNamePrefix: string = 'app-document-list';
+    static selectAppDocumentItem(
+        varyAppDocumentItem: VaryAppDocumentItemType | null,
+    ) {
+        this.addPropEvent('app-document-item-select', varyAppDocumentItem);
     }
-    static slideItemSizing() {
-        this.addPropEvent('slide-item-sizing');
+    static appDocumentItemSizing() {
+        this.addPropEvent('app-document-item-sizing');
     }
 }
 
-export function useSlideItemSelecting(
-    listener: ListenerType<SlideItem | null>,
+export function useAppDocumentItemSelecting(
+    listener: ListenerType<VaryAppDocumentItemType | null>,
 ) {
     useAppEffect(() => {
-        const event = SlideListEventListener.registerEventListener(
-            ['slide-item-select'],
+        const event = AppDocumentListEventListener.registerEventListener(
+            ['app-document-item-select'],
             listener,
         );
         return () => {
-            SlideListEventListener.unregisterEventListener(event);
+            AppDocumentListEventListener.unregisterEventListener(event);
         };
     }, [listener]);
 }
 
-export function useSlideItemThumbnailSizeScale(
+export function useAppDocumentItemThumbnailSizeScale(
     settingName = THUMBNAIL_WIDTH_SETTING_NAME,
     defaultSize = DEFAULT_THUMBNAIL_SIZE_FACTOR,
 ): [number, (newScale: number) => void] {
@@ -45,17 +49,17 @@ export function useSlideItemThumbnailSizeScale(
         getDefaultSize(),
     );
     useAppEffect(() => {
-        const event = SlideListEventListener.registerEventListener(
-            ['slide-item-sizing'],
+        const event = AppDocumentListEventListener.registerEventListener(
+            ['app-document-item-sizing'],
             () => setThumbnailSizeScale(getDefaultSize()),
         );
         return () => {
-            SlideListEventListener.unregisterEventListener(event);
+            AppDocumentListEventListener.unregisterEventListener(event);
         };
     }, []);
     const applyThumbnailSizeScale = (size: number) => {
         setThumbnailSizeScale(size);
-        SlideListEventListener.slideItemSizing();
+        AppDocumentListEventListener.appDocumentItemSizing();
     };
     return [thumbnailSizeScale, applyThumbnailSizeScale];
 }

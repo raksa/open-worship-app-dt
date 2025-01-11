@@ -1,5 +1,5 @@
 import { AnyObjectType, cloneJson, isValidJson } from '../helper/helpers';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import PlaylistItem, { PlaylistItemType } from './PlaylistItem';
 import { showSimpleToast } from '../toast/toastHelpers';
 
@@ -8,7 +8,7 @@ export type PlaylistType = {
     metadata: AnyObjectType;
 };
 
-export default class Playlist extends ItemSource<PlaylistItem> {
+export default class Playlist extends AppDocumentSourceAbs {
     private readonly _originalJson: PlaylistType;
     constructor(filePath: string, json: PlaylistType) {
         super(filePath);
@@ -33,19 +33,6 @@ export default class Playlist extends ItemSource<PlaylistItem> {
     }
     get maxItemId() {
         return 0;
-    }
-    static async readFileToDataNoCache(filePath: string | null) {
-        return super.readFileToDataNoCache(filePath) as Promise<
-            Playlist | null | undefined
-        >;
-    }
-    static async readFileToData(
-        filePath: string | null,
-        isForceCache?: boolean,
-    ) {
-        return super.readFileToData(filePath, isForceCache) as Promise<
-            Playlist | null | undefined
-        >;
     }
     static async create(dir: string, name: string) {
         return super.create(dir, name, []);

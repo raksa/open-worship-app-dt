@@ -6,14 +6,14 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../../others/AppContextMenuComp';
-import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../slide-list/Slide';
 import ScreenManager from '../managers/ScreenManager';
 import {
     getSelectedScreenManagerBases,
     getValidOnScreen,
 } from '../managers/screenManagerBaseHelpers';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
-import { SlideListType } from '../screenHelpers';
+import { AppDocumentListType } from '../screenHelpers';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
     const screenManagers = getAllScreenManagers();
@@ -91,7 +91,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
     showAppContextMenu(event, menuItems);
 }
 
-export function getSlideListOnScreenSetting(): SlideListType {
+export function getAppDocumentListOnScreenSetting(): AppDocumentListType {
     const str = getSetting(screenManagerSettingNames.SLIDE, '');
     try {
         if (!isValidJson(str, true)) {
@@ -102,7 +102,7 @@ export function getSlideListOnScreenSetting(): SlideListType {
             if (typeof item.slideFilePath !== 'string') {
                 throw new Error('Invalid slide path');
             }
-            SlideItem.validate(item.slideItemJson);
+            Slide.validate(item.itemJson);
         });
         return getValidOnScreen(json);
     } catch (error) {
