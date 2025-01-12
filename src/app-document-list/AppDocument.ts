@@ -143,7 +143,7 @@ export default class AppDocument
 
     async getItemByIndex(index: number) {
         const slides = await this.getItems();
-        return slides[index] || null;
+        return slides[index] ?? null;
     }
 
     async checkIsSlideChanged(id: number) {
@@ -294,7 +294,7 @@ export default class AppDocument
         return (
             slides.find((slide) => {
                 return slide.id === id;
-            }) || null
+            }) ?? null
         );
     }
 

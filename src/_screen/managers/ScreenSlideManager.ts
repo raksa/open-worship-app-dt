@@ -51,7 +51,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
         this.slideEffectManager = slideEffectManager;
         if (appProviderScreen.isPagePresenter) {
             const allSlideList = getAppDocumentListOnScreenSetting();
-            this._varyAppDocumentItemData = allSlideList[this.key] || null;
+            this._varyAppDocumentItemData = allSlideList[this.key] ?? null;
         }
     }
 

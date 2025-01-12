@@ -66,7 +66,7 @@ function useCanvasItemsData(canvasController: CanvasController) {
             return (
                 newCanvasItems.find((item) => {
                     return item === prevEditingCanvasItem;
-                }) || null
+                }) ?? null
             );
         });
     };

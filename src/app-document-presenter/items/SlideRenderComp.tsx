@@ -111,7 +111,7 @@ export default function SlideRenderComp({
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
     const selectedSlide =
-        use(SelectedEditingSlideContext)?.selectedSlide || null;
+        use(SelectedEditingSlideContext)?.selectedSlide ?? null;
     useScreenSlideManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(
         slide,

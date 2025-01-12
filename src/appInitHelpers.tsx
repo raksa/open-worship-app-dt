@@ -85,7 +85,7 @@ export async function initApp() {
         getCurrentLangAsync(),
         getLangAsync(defaultLocale),
     ];
-    for (const bibleInfo of localBibleInfoList || []) {
+    for (const bibleInfo of localBibleInfoList) {
         promises.push(getLangAsync(bibleInfo.locale));
     }
     await Promise.all(promises);

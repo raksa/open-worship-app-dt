@@ -438,7 +438,7 @@ export async function getSelectedVaryAppDocument() {
 export async function setSelectedVaryAppDocument(
     varyAppDocument: VaryAppDocumentType | null,
 ) {
-    setSelectedVaryAppDocumentFilePath(varyAppDocument?.filePath || null);
+    setSelectedVaryAppDocumentFilePath(varyAppDocument?.filePath ?? null);
 }
 
 export async function getSelectedEditingSlideFilePath() {
@@ -482,7 +482,7 @@ export async function getSelectedEditingSlide() {
 }
 
 export function setSelectedEditingSlide(slide: Slide | null) {
-    setSelectedEditingSlideFilePath(slide?.filePath || null, slide?.id ?? -1);
+    setSelectedEditingSlideFilePath(slide?.filePath ?? null, slide?.id ?? -1);
 }
 
 export function varyAppDocumentFromFilePath(filePath: string) {

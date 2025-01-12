@@ -177,14 +177,14 @@ function getGuessingBibleKeys(bible: Element) {
 export async function getBibleInfoJson(bible: Element) {
     const mapElement = guessElement(bible, tagNamesMap.map)?.[0];
     const numberKeyMap = getBibleMap(
-        mapElement || null,
+        mapElement ?? null,
         tagNamesMap.numberMap,
         Object.fromEntries(
             Array.from({ length: 10 }, (_, i) => [i.toString(), i.toString()]),
         ),
     );
     const bookKeyMap = getBibleMap(
-        mapElement || null,
+        mapElement ?? null,
         tagNamesMap.bookMap,
         cloneJson(kjvBibleInfo.kjvKeyValue),
     );

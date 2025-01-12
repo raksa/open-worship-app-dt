@@ -44,7 +44,7 @@ export default class LyricEditorCacheManager extends EditorCacheManager<
         return (
             latestHistory.items.find((item) => {
                 return item.id === id;
-            }) || null
+            }) ?? null
         );
     }
     checkIsLyricItemChanged(id: number) {

@@ -17,7 +17,7 @@ export function genHtmlAlertMarquee(
     screenManagerBase: ScreenManagerBase,
 ) {
     const { text } = marqueeData;
-    const duration = (text.length || 0) / 6;
+    const duration = text.length / 6;
     const scale = screenManagerBase.height / 768;
     const fontSize = 75 * scale;
     const actorClass = classNameMapper.marquee;

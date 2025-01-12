@@ -27,7 +27,7 @@ export function useInputTextContext() {
 
 export function getInputTrueValue() {
     const input = document.getElementById(BIBLE_SEARCH_INPUT_ID);
-    return (input as HTMLInputElement)?.value || null;
+    return (input as HTMLInputElement)?.value ?? null;
 }
 
 export default function InputHandler({

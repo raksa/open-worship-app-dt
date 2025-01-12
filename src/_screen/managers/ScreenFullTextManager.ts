@@ -39,7 +39,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         super(screenManagerBase);
         if (appProviderScreen.isPagePresenter) {
             const allFTList = getFullTextListOnScreenSetting();
-            this._ftItemData = allFTList[this.key] || null;
+            this._ftItemData = allFTList[this.key] ?? null;
 
             const str = getSetting(
                 `${SCREEN_FT_SETTING_PREFIX}-style-text`,
@@ -86,7 +86,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     }
 
     get div() {
-        return this._div || null;
+        return this._div;
     }
 
     set div(div: HTMLDivElement | null) {

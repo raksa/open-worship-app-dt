@@ -115,7 +115,7 @@ function move(): StyleAnimType {
         callback: (n: number, isDone?: boolean) => void;
     }) => {
         const distDiff = to - from;
-        const easeFn = easingFunctions[easing || 'ease-in'];
+        const easeFn = easingFunctions[easing ?? 'ease-in'];
         const startTime = Date.now();
         const step = () => {
             const timeNow = Date.now();
@@ -142,7 +142,7 @@ function move(): StyleAnimType {
                     targetElement.parentElement.getBoundingClientRect();
                 const from = -rect.width;
                 const styleLst = (targetElement.previousSibling as HTMLElement)
-                    ?.style || {
+                    ?.style ?? {
                     left: '0px',
                 };
                 const styleTarget = targetElement.style;

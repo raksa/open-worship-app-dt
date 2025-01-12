@@ -35,7 +35,7 @@ class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManager
         this.backgroundEffectManager = backgroundEffectManager;
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
-            this._backgroundSrc = allBackgroundSrcList[this.key] || null;
+            this._backgroundSrc = allBackgroundSrcList[this.key] ?? null;
         }
     }
 

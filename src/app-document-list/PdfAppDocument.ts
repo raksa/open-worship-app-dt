@@ -56,12 +56,12 @@ export default class PdfAppDocument
 
     async getItemByIndex(index: number) {
         const items = await this.getItems();
-        return items[index] || null;
+        return items[index] ?? null;
     }
 
     async getItemById(id: number) {
         const items = await this.getItems();
-        return items.find((item) => item.id === id) || null;
+        return items.find((item) => item.id === id) ?? null;
     }
 
     static getInstance(filePath: string) {

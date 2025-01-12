@@ -119,8 +119,8 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
     ) {
         if (
             !checkIsCountdownDatesEq(
-                countdownData?.dateTime || null,
-                this.alertData.countdownData?.dateTime || null,
+                countdownData?.dateTime ?? null,
+                this.alertData.countdownData?.dateTime ?? null,
             )
         ) {
             this.cleanRender(this.divCountdown);

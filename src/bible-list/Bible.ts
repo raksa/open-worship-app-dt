@@ -119,11 +119,11 @@ export default class Bible
     }
 
     getItemByIndex(index: number): BibleItem | null {
-        return this.items[index] || null;
+        return this.items[index] ?? null;
     }
 
     getItemById(id: number): BibleItem | null {
-        return this.items.find((item) => item.id === id) || null;
+        return this.items.find((item) => item.id === id) ?? null;
     }
 
     setItemById(id: number, bibleItem: BibleItem) {
@@ -160,7 +160,7 @@ export default class Bible
         const bibleItems = this.items;
         const removedItems = bibleItems.splice(index, 1);
         this.items = bibleItems;
-        return removedItems[0] || null;
+        return removedItems[0] ?? null;
     }
 
     deleteItem(bibleItem: BibleItem) {
@@ -234,7 +234,7 @@ export default class Bible
             }
         }
         const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
-        const filePath = defaultFS?.filePath || null;
+        const filePath = defaultFS?.filePath ?? null;
         const defaultBible = filePath
             ? await Bible.fromFilePath(filePath)
             : null;

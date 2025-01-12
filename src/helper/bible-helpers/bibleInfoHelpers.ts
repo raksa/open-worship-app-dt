@@ -20,7 +20,7 @@ export async function keyToBook(bibleKey: string, bookKey: string) {
     if (bookKVList === null) {
         return null;
     }
-    return bookKVList[bookKey] || null;
+    return bookKVList[bookKey] ?? null;
 }
 export async function getBookVKList(bibleKey: string) {
     const bibleVKList = await getBookKVList(bibleKey);
@@ -38,7 +38,7 @@ export async function bookToKey(bibleKey: string, book: string) {
     if (bookVKList === null) {
         return null;
     }
-    return bookVKList[book] || null;
+    return bookVKList[book] ?? null;
 }
 export async function getChapterCount(bibleKey: string, book: string) {
     const bookKey = await bookToKey(bibleKey, book);

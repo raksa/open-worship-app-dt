@@ -114,7 +114,7 @@ function useAppDocumentContextValues() {
                 ) {
                     const varyAppDocumentItems =
                         await newVaryAppDocument.getItems();
-                    selectedSlide = varyAppDocumentItems[0] || null;
+                    selectedSlide = varyAppDocumentItems[0] ?? null;
                 }
                 setSlide1(selectedSlide);
             },
