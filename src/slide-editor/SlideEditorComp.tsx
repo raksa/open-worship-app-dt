@@ -1,7 +1,7 @@
 import { lazy, useState } from 'react';
 
 import { resizeSettingNames } from '../resize-actor/flexSizeHelpers';
-import ResizeActor from '../resize-actor/ResizeActor';
+import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import CanvasController, {
     CanvasControllerContext,
     defaultRangeSize,
@@ -149,7 +149,7 @@ export default function SlideEditorComp() {
                     });
                 }}
             >
-                <ResizeActor
+                <ResizeActorComp
                     flexSizeName={resizeSettingNames.slideEditor}
                     isHorizontal={false}
                     flexSizeDefault={{

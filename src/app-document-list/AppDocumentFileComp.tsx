@@ -3,7 +3,7 @@ import { use, useState } from 'react';
 import FileItemHandlerComp from '../others/FileItemHandlerComp';
 import FileSource from '../helper/FileSource';
 import AppDocument from './AppDocument';
-import { getIsShowingVaryAppDocumentPreviewer } from '../app-document-presenter/Presenter';
+import { getIsShowingVaryAppDocumentPreviewer } from '../app-document-presenter/PresenterComp';
 import { previewingEventListener } from '../event/PreviewingEventListener';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useAppEffect } from '../helper/debuggerHelpers';

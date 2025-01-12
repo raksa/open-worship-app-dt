@@ -1,4 +1,4 @@
-import { ModalCloseButton } from '../app-modal/Modal';
+import { ModalCloseButton } from '../app-modal/ModalComp';
 import { tran } from '../lang';
 import { closeSlideQuickEdit } from '../app-document-presenter/SlideEditHandlerComp';
 

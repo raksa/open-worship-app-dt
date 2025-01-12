@@ -1,7 +1,7 @@
 import './InputPopupComp.scss';
 
-import PrimitiveModal from '../app-modal/PrimitiveModal';
-import HeaderAlertPopup from './HeaderAlertPopup';
+import PrimitiveModalComp from '../app-modal/PrimitiveModalComp';
+import HeaderAlertPopupComp from './HeaderAlertPopupComp';
 import { closeAlert, InputDataType } from './popupWidgetHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
@@ -26,9 +26,9 @@ export default function ConfirmPopupComp({
         handleOkClicking();
     });
     return (
-        <PrimitiveModal>
+        <PrimitiveModalComp>
             <div id="app-input-popup" className="shadow card">
-                <HeaderAlertPopup
+                <HeaderAlertPopupComp
                     header={
                         <div className="app-ellipsis" title={data.title}>
                             <i className="bi bi-exclamation-circle" />
@@ -65,6 +65,6 @@ export default function ConfirmPopupComp({
                     </div>
                 </div>
             </div>
-        </PrimitiveModal>
+        </PrimitiveModalComp>
     );
 }

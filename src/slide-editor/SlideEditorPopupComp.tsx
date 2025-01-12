@@ -5,7 +5,7 @@ import SlideEditorPopupHeaderComp from './SlideEditorPopupHeaderComp';
 import Slide from '../app-document-list/Slide';
 import SlideEditorComp from './SlideEditorComp';
 import { closeSlideQuickEdit } from '../app-document-presenter/SlideEditHandlerComp';
-import { Modal } from '../app-modal/Modal';
+import { ModalComp } from '../app-modal/ModalComp';
 import { SelectedEditingSlideContext } from '../app-document-list/appDocumentHelpers';
 
 export default function SlideEditorPopupComp({
@@ -15,7 +15,7 @@ export default function SlideEditorPopupComp({
 }>) {
     useKeyboardRegistering([{ key: 'Escape' }], closeSlideQuickEdit);
     return (
-        <Modal>
+        <ModalComp>
             <div id="slide-editor-popup" className="shadow card">
                 <SlideEditorPopupHeaderComp />
                 <div className="body card-body w-100 overflow-hidden">
@@ -29,6 +29,6 @@ export default function SlideEditorPopupComp({
                     </SelectedEditingSlideContext>
                 </div>
             </div>
-        </Modal>
+        </ModalComp>
     );
 }

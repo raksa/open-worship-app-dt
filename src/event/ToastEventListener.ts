@@ -1,5 +1,5 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { SimpleToastType } from '../toast/SimpleToast';
+import { SimpleToastType } from '../toast/SimpleToastComp';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type ToastEventType = 'simple';

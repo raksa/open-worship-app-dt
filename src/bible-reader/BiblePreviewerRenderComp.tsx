@@ -1,14 +1,14 @@
 import { useState } from 'react';
 
 import { useStateSettingNumber } from '../helper/settingHelpers';
-import BibleViewSetting, { defaultRangeSize } from './BibleViewSetting';
+import BibleViewSettingComp, { defaultRangeSize } from './BibleViewSettingComp';
 import { useBIVCUpdateEvent } from './BibleItemViewController';
-import BibleViewRenderer from './BibleViewRenderer';
+import BibleViewRendererComp from './BibleViewRendererComp';
 import {
     BibleViewFontSizeContext,
     DEFAULT_BIBLE_TEXT_FONT_SIZE,
 } from '../helper/bibleViewHelpers';
-import FullScreenBtn from './FullScreenBtn';
+import FullScreenButtonComp from './FullScreenButtonComp';
 import { fontSizeSettingNames } from '../helper/constants';
 import { handleCtrlWheel } from '../others/AppRangeComp';
 import appProvider from '../server/appProvider';
@@ -45,12 +45,12 @@ export default function BiblePreviewerRenderComp() {
             <div className="auto-hide auto-hide-bottom">
                 <div className="d-flex w-100">
                     <div className="flex-fill">
-                        <BibleViewSetting
+                        <BibleViewSettingComp
                             fontSize={fontSize}
                             setFontSize={setFontSize}
                         />
                     </div>
-                    <FullScreenBtn
+                    <FullScreenButtonComp
                         isFulledScreen={isFulledScreen}
                         setIsFullScreen={setIsFulledScreen}
                     />
@@ -62,5 +62,5 @@ export default function BiblePreviewerRenderComp() {
 
 function Render() {
     const nestedBibleItems = useBIVCUpdateEvent();
-    return <BibleViewRenderer nestedBibleItems={nestedBibleItems} />;
+    return <BibleViewRendererComp nestedBibleItems={nestedBibleItems} />;
 }

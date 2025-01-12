@@ -3,7 +3,7 @@ import { useState } from 'react';
 import LyricViewComp from './LyricViewComp';
 import { useLyricSelecting } from '../event/PreviewingEventListener';
 import Lyric from '../lyric-list/Lyric';
-import LyricList from '../lyric-list/LyricList';
+import LyricListComp from '../lyric-list/LyricListComp';
 import LyricItem from '../lyric-list/LyricItem';
 
 export default function LyricPreviewerComp() {
@@ -28,7 +28,7 @@ export default function LyricPreviewerComp() {
         setLyric(newLyric);
     };
     if (!lyric) {
-        return <LyricList />;
+        return <LyricListComp />;
     }
     const lyricItems = lyric.items;
     if (!lyricItems.length) {

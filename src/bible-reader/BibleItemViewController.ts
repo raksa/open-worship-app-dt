@@ -11,12 +11,12 @@ import {
     ContextMenuItemType,
     genContextMenuItemShortcutKey,
 } from '../others/AppContextMenuComp';
-import { showBibleOption } from '../bible-search/BibleSelection';
-import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtons';
+import { showBibleOption } from '../bible-search/BibleSelectionComp';
+import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { attemptAddingHistory } from '../bible-search/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
-import { finalRenderer } from './BibleView';
+import { finalRenderer } from './BibleViewComp';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';

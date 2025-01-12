@@ -1,9 +1,9 @@
-import AppEditor from './AppEditor';
+import AppEditorComp from './AppEditorComp';
 import { main } from './appInitHelpers';
-import AppLayout from './router/AppLayout';
+import AppLayoutComp from './router/AppLayoutComp';
 
 main(
-    <AppLayout>
-        <AppEditor />
-    </AppLayout>,
+    <AppLayoutComp>
+        <AppEditorComp />
+    </AppLayoutComp>,
 );
