@@ -52,12 +52,12 @@ export const defaultRangeSize = {
     step: THUMBNAIL_SCALE_STEP,
 };
 export default function AppDocumentPreviewerFooterComp() {
-    const selectedSlide = useSelectedVaryAppDocumentContext();
+    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
     const setSelectedSlide = useSelectedAppDocumentSetterContext();
     const [thumbnailSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();
     const handleSlideChoosing = async (event: any) => {
-        const slide = await selectSlide(event, selectedSlide.filePath);
+        const slide = await selectSlide(event, selectedVaryAppDocument.filePath);
         if (slide === null) {
             showAppAlert(
                 'No Slide Available',
@@ -79,7 +79,7 @@ export default function AppDocumentPreviewerFooterComp() {
                         defaultSize={defaultRangeSize}
                     />
                     <PathPreviewerComp
-                        dirPath={selectedSlide.filePath}
+                        dirPath={selectedVaryAppDocument.filePath}
                         isShowingNameOnly
                         onClick={handleSlideChoosing}
                     />

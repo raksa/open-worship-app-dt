@@ -95,7 +95,7 @@ export default function AppDocumentFileComp({
     const isSelected =
         selectedContext !== null &&
         selectedContext.selectedVaryAppDocument?.filePath === filePath;
-    const setSelectedSlide = useSelectedAppDocumentSetterContext();
+    const setSelectedAppDocument = useSelectedAppDocumentSetterContext();
     const [varyAppDocument, setVaryAppDocument] =
         useState<VaryAppDocumentDynamicType>(null);
     const handleReloading = () => {
@@ -109,7 +109,7 @@ export default function AppDocumentFileComp({
             previewingEventListener.showVaryAppDocument(varyAppDocument);
             return;
         }
-        setSelectedSlide(varyAppDocument);
+        setSelectedAppDocument(varyAppDocument);
     };
     const handleChildRendering = (varyAppDocument: AppDocumentSourceAbs) => {
         if (AppDocument.checkIsThisType(varyAppDocument)) {
@@ -153,7 +153,7 @@ export default function AppDocumentFileComp({
             renderChild={handleChildRendering}
             contextMenuItems={genContextMenuItems(
                 varyAppDocument,
-                setSelectedSlide,
+                setSelectedAppDocument,
             )}
             onTrashed={handleSlideDeleting}
             isSelected={isSelected}

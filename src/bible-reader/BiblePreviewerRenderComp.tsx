@@ -13,7 +13,7 @@ import { fontSizeSettingNames } from '../helper/constants';
 import { handleCtrlWheel } from '../others/AppRangeComp';
 import appProvider from '../server/appProvider';
 
-export default function BiblePreviewerRender() {
+export default function BiblePreviewerRenderComp() {
     const [isFulledScreen, setIsFulledScreen] = useState(false);
     const fontSizeSettingName = appProvider.isPageReader
         ? fontSizeSettingNames.BIBLE_READING

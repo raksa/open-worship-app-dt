@@ -16,7 +16,7 @@ import {
 import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
 
 const LazyBiblePreviewerRender = lazy(() => {
-    return import('../bible-reader/BiblePreviewerRender');
+    return import('../bible-reader/BiblePreviewerRenderComp');
 });
 
 export default function BibleSearchBodyPreviewer() {

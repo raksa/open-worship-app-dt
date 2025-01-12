@@ -1,7 +1,6 @@
 import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { log } from '../helper/loggerHelpers';
 import { ClipboardInf, toKeyByFilePath } from './appDocumentHelpers';
 
 export type PdfSlideType = {
@@ -92,7 +91,6 @@ export default class PdfSlide
             typeof json.metadata.width !== 'number' ||
             typeof json.metadata.height !== 'number'
         ) {
-            log(json);
             throw new Error('Invalid slide data');
         }
     }

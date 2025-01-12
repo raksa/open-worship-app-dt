@@ -13,7 +13,6 @@ import {
     vAlignmentList,
     VAlignmentType,
 } from './canvasHelpers';
-import { log } from '../../helper/loggerHelpers';
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
@@ -127,7 +126,6 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType>
                 typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
         ) {
-            log(json);
             throw new Error('Invalid canvas item data');
         }
     }

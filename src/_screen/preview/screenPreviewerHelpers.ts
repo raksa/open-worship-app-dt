@@ -14,6 +14,7 @@ import {
 } from '../managers/screenManagerBaseHelpers';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 import { AppDocumentListType } from '../screenHelpers';
+import PdfSlide from '../../app-document-list/PdfSlide';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
     const screenManagers = getAllScreenManagers();
@@ -99,10 +100,12 @@ export function getAppDocumentListOnScreenSetting(): AppDocumentListType {
         }
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
-            if (typeof item.slideFilePath !== 'string') {
+            if (typeof item.filePath !== 'string') {
                 throw new Error('Invalid slide path');
             }
-            Slide.validate(item.itemJson);
+            if (!PdfSlide.tryValidate(item.itemJson)) {
+                Slide.validate(item.itemJson);
+            }
         });
         return getValidOnScreen(json);
     } catch (error) {

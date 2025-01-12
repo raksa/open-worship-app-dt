@@ -4,13 +4,14 @@ import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
 import Canvas from '../slide-editor/canvas/Canvas';
-import { previewingEventListener } from '../event/PreviewingEventListener';
-import { MimetypeNameType } from '../server/fileHelpers';
+import { fsReadFile, MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import EditingHistoryManager from '../others/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
+import { unlocking } from '../server/appHelpers';
+import { handleError } from '../helper/errorHelpers';
 
 export type AppDocumentType = {
     items: SlideType[];
@@ -28,13 +29,61 @@ export type WrongDimensionType = {
     };
 };
 
+class GarbageCacher<T> {
+    private isClearing = false;
+    private readonly _cache: Map<
+        string,
+        {
+            value: T;
+            timeout: number;
+        }
+    >;
+    timeoutSecond: number;
+
+    constructor(timeoutSecond: number) {
+        this.timeoutSecond = timeoutSecond;
+        this._cache = new Map();
+    }
+
+    clear() {
+        if (this.isClearing) {
+            return;
+        }
+        this.isClearing = true;
+        const now = Date.now();
+        for (const [key, item] of this._cache.entries()) {
+            if (item.timeout < now) {
+                this._cache.delete(key);
+            }
+        }
+        if (this._cache.size > 0) {
+            setTimeout(this.clear.bind(this), 1000);
+        }
+        this.isClearing = false;
+    }
+
+    get(key: string) {
+        const item = this._cache.get(key);
+        if (item === undefined || item.timeout < Date.now()) {
+            return null;
+        }
+        return item.value;
+    }
+    set(key: string, value: T) {
+        this._cache.set(key, {
+            value,
+            timeout: Date.now() + this.timeoutSecond * 1000,
+        });
+        this.clear();
+    }
+}
+
 export default class AppDocument
     extends AppDocumentSourceAbs
     implements ItemSourceInf<Slide>
 {
     static readonly mimetypeName: MimetypeNameType = 'slide';
-    static readonly SELECT_SETTING_NAME = 'slide-selected';
-    SELECT_SETTING_NAME = 'slide-selected';
+    private static readonly garbageCacher = new GarbageCacher<AnyObjectType>(2);
 
     constructor(filePath: string) {
         super(filePath);
@@ -48,15 +97,41 @@ export default class AppDocument
         return EditingHistoryManager.getInstance(this.filePath);
     }
 
-    async getJsonData(): Promise<AppDocumentType> {
-        const jsonText = await this.editingHistoryManager.getCurrentHistory();
-        if (jsonText === null) {
-            return {
-                items: [],
-                metadata: {},
-            };
-        }
-        return JSON.parse(jsonText);
+    async getJsonData(): Promise<AppDocumentType | null> {
+        return await unlocking(this.filePath, async () => {
+            const cachedJson = AppDocument.garbageCacher.get(this.filePath);
+            if (cachedJson !== null) {
+                return cachedJson;
+            }
+            let jsonText = await this.editingHistoryManager.getCurrentHistory();
+            if (jsonText === null) {
+                jsonText = await fsReadFile(this.filePath);
+            }
+            if (jsonText === null) {
+                return {
+                    items: [],
+                    metadata: {},
+                };
+            }
+            try {
+                const jsonData = JSON.parse(jsonText);
+                if (
+                    typeof jsonData.metadata !== 'object' ||
+                    (jsonData.items && !(jsonData.items instanceof Array))
+                ) {
+                    throw new Error(`Invalid data ${jsonData}`);
+                }
+                jsonData.items = jsonData.items || [];
+                for (const item of jsonData.items) {
+                    Slide.validate(item);
+                }
+                AppDocument.garbageCacher.set(this.filePath, jsonData);
+                return jsonData;
+            } catch (error) {
+                handleError(error);
+            }
+            return null;
+        });
     }
 
     async setJsonData(jsonData: AppDocumentType) {
@@ -66,18 +141,24 @@ export default class AppDocument
 
     async getMetadata() {
         const jsonData = await this.getJsonData();
-        return jsonData.metadata;
+        return jsonData?.metadata || {};
     }
 
     async setMetadata(metadata: AnyObjectType) {
         const jsonData = await this.getJsonData();
+        if (jsonData === null) {
+            return;
+        }
         jsonData.metadata = metadata;
         await this.setJsonData(jsonData);
     }
 
     async getItems() {
         const jsonData = await this.getJsonData();
-        return jsonData.items.map((json: any) => {
+        if (jsonData === null) {
+            return [];
+        }
+        return jsonData?.items.map((json: any) => {
             try {
                 return Slide.fromJson(json, this.filePath);
             } catch (error: any) {
@@ -89,6 +170,9 @@ export default class AppDocument
 
     async setItems(newItems: Slide[]) {
         const jsonData = await this.getJsonData();
+        if (jsonData === null) {
+            return;
+        }
         jsonData.items = newItems.map((item) => item.toJson());
         await this.setJsonData(jsonData);
     }
@@ -250,25 +334,6 @@ export default class AppDocument
                   ]
                 : []),
         ]);
-    }
-
-    get isSelected() {
-        const selectedFilePath = AppDocument.getSelectedFilePath();
-        return this.filePath === selectedFilePath;
-    }
-
-    set isSelected(isSelected: boolean) {
-        if (this.isSelected === isSelected) {
-            return;
-        }
-        if (isSelected) {
-            AppDocument.setSelectedFileSource(this.filePath);
-            previewingEventListener.showVaryAppDocument(this);
-        } else {
-            AppDocument.setSelectedFileSource(null);
-            previewingEventListener.showVaryAppDocument(null);
-        }
-        this.fileSource.fireSelectEvent(this);
     }
 
     async getItemById(id: number) {

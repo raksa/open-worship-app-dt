@@ -3,9 +3,7 @@ import {
     EventMapper as KBEventMapper,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import EditingHistoryManager, {
-    useEditingHistoryStatus,
-} from '../../others/EditingHistoryManager';
+import { useEditingHistoryStatus } from '../../others/EditingHistoryManager';
 import {
     useSelectedVaryAppDocumentContext,
     useSlideWrongDimension,
@@ -53,13 +51,15 @@ export default function SlidesMenuComp() {
     const { canUndo, canRedo, canSave } = useEditingHistoryStatus(
         selectedVaryAppDocument.filePath,
     );
-    const editingHistoryManager = EditingHistoryManager.getInstance(
-        selectedVaryAppDocument.filePath,
-    );
-
     useKeyboardRegistering([savingEventMapper], () => {
-        editingHistoryManager.save();
+        if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
+            return;
+        }
+        selectedVaryAppDocument.editingHistoryManager.save();
     });
+    if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
+        return null;
+    }
     const wrongDimension = AppDocument.checkIsThisType(selectedVaryAppDocument)
         ? useSlideWrongDimension(selectedVaryAppDocument, screenDisplay)
         : null;
@@ -81,7 +81,7 @@ export default function SlidesMenuComp() {
                     title="Undo"
                     disabled={!canUndo}
                     onClick={() => {
-                        editingHistoryManager.undo();
+                        selectedVaryAppDocument.editingHistoryManager.undo();
                     }}
                 >
                     <i className="bi bi-arrow-90deg-left" />
@@ -92,7 +92,7 @@ export default function SlidesMenuComp() {
                     title="Redo"
                     disabled={canRedo}
                     onClick={() => {
-                        editingHistoryManager.redo();
+                        selectedVaryAppDocument.editingHistoryManager.redo();
                     }}
                 >
                     <i className="bi bi-arrow-90deg-right" />

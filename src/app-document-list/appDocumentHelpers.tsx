@@ -16,6 +16,7 @@ import {
     fsCheckFileExist,
     fsCopyFilePathToPath,
     fsDeleteFile,
+    getFileExtension,
     getFileFullName,
     getFileName,
     mimetypePdf,
@@ -483,7 +484,7 @@ export function setSelectedEditingSlide(slide: Slide | null) {
 }
 
 export function varyAppDocumentFromFilePath(filePath: string) {
-    if (checkIsPdf(filePath)) {
+    if (checkIsPdf(getFileExtension(filePath))) {
         return PdfAppDocument.getInstance(filePath);
     }
     return AppDocument.getInstance(filePath);

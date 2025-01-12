@@ -9,16 +9,16 @@ import { useSelectedVaryAppDocumentContext } from '../../app-document-list/appDo
 import PdfSlide from '../../app-document-list/PdfSlide';
 
 export default function VaryAppDocumentItemsPreviewerComp() {
-    const selectedAppDocument = useSelectedVaryAppDocumentContext();
+    const varyAppDocument = useSelectedVaryAppDocumentContext();
     const [thumbSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();
     const handlePasting = async () => {
-        if (!AppDocument.checkIsThisType(selectedAppDocument)) {
+        if (!AppDocument.checkIsThisType(varyAppDocument)) {
             return;
         }
         const copiedSlides = await AppDocument.getCopiedSlides();
         for (const copiedSlide of copiedSlides) {
-            selectedAppDocument.addSlide(copiedSlide);
+            varyAppDocument.addSlide(copiedSlide);
         }
     };
     return (
@@ -35,11 +35,11 @@ export default function VaryAppDocumentItemsPreviewerComp() {
                 });
             }}
             onContextMenu={(event) => {
-                selectedAppDocument.showContextMenu(event);
+                varyAppDocument.showContextMenu(event);
             }}
             onPaste={handlePasting}
         >
-            {!PdfSlide.checkIsThisType(selectedAppDocument) ? (
+            {!PdfSlide.checkIsThisType(varyAppDocument) ? (
                 <SlidesMenuComp />
             ) : null}
             <AppDocumentItemsComp />

@@ -1,11 +1,6 @@
-import {
-    MimetypeNameType,
-    createNewFileDetail,
-    fsCheckFileExist,
-} from '../server/fileHelpers';
+import { MimetypeNameType, createNewFileDetail } from '../server/fileHelpers';
 import FileSource from './FileSource';
 import { AnyObjectType, validateAppMeta } from './helpers';
-import { setSetting, getSetting } from './settingHelpers';
 
 const cache = new Map<string, AppDocumentSourceAbs>();
 export default abstract class AppDocumentSourceAbs {
@@ -32,31 +27,6 @@ export default abstract class AppDocumentSourceAbs {
         ) {
             throw new Error('Invalid item source data');
         }
-    }
-
-    private static toSettingName(settingName?: string): string {
-        return settingName || this.SELECT_SETTING_NAME;
-    }
-
-    static setSelectedFileSource(
-        filePath: string | null,
-        settingName?: string,
-    ) {
-        settingName = this.toSettingName(settingName);
-        setSetting(settingName, filePath || '');
-    }
-
-    static getSelectedFilePath(settingName?: string) {
-        settingName = this.toSettingName(settingName);
-        const selectedFilePath = getSetting(settingName, '');
-        if (selectedFilePath) {
-            fsCheckFileExist(selectedFilePath).then((isFileExist) => {
-                if (!isFileExist) {
-                    this.setSelectedFileSource(null, settingName);
-                }
-            });
-        }
-        return selectedFilePath || null;
     }
 
     static async create(dir: string, name: string, items: AnyObjectType[]) {

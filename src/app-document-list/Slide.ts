@@ -4,7 +4,6 @@ import Canvas from '../slide-editor/canvas/Canvas';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { log } from '../helper/loggerHelpers';
 import { handleError } from '../helper/errorHelpers';
 import { ClipboardInf, toKeyByFilePath } from './appDocumentHelpers';
 
@@ -148,7 +147,6 @@ export default class Slide
             typeof json.metadata.height !== 'number' ||
             !(json.canvasItems instanceof Array)
         ) {
-            log(json);
             throw new Error('Invalid slide data');
         }
     }
