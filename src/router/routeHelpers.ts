@@ -21,7 +21,7 @@ export const editorTab: TabOptionType = {
     routePath: appProvider.editorHomePage,
     preCheck: async () => {
         const varyAppDocument = getSelectedVaryAppDocument();
-        if (AppDocument.checkIsThisType(varyAppDocument)) {
+        if (!AppDocument.checkIsThisType(varyAppDocument)) {
             return true;
         }
         showAppAlert(
