@@ -1,8 +1,8 @@
 import { useAppEffect } from '../helper/debuggerHelpers';
 import Lyric from '../lyric-list/Lyric';
-import AppDocument from '../slide-list/AppDocument';
+import AppDocument from '../app-document-list/AppDocument';
 import EventHandler, { ListenerType } from './EventHandler';
-import { VaryAppDocumentType } from '../slide-list/appDocumentHelpers';
+import { VaryAppDocumentType } from '../app-document-list/appDocumentHelpers';
 
 export type PreviewingType =
     | 'select-lyric'

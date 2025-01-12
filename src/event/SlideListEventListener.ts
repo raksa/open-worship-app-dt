@@ -4,7 +4,7 @@ import {
     DEFAULT_THUMBNAIL_SIZE_FACTOR,
     THUMBNAIL_WIDTH_SETTING_NAME,
     VaryAppDocumentItemType,
-} from '../slide-list/appDocumentHelpers';
+} from '../app-document-list/appDocumentHelpers';
 import EventHandler, { ListenerType } from './EventHandler';
 
 export type AppDocumentListEventType =

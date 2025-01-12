@@ -4,7 +4,7 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const LazySlideList = lazy(() => {
-    return import('./slide-list/AppDocumentListComp');
+    return import('./app-document-list/AppDocumentListComp');
 });
 const LazyLyricList = lazy(() => {
     return import('./lyric-list/LyricList');

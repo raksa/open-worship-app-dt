@@ -3,11 +3,11 @@ import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
-const LazySlidePreviewer = lazy(() => {
-    return import('./slide-presenter/items/AppDocumentPreviewerComp');
+const LazySlidePreviewerComp = lazy(() => {
+    return import('./app-document-presenter/items/AppDocumentPreviewerComp');
 });
-const LazySlideItemEditorGround = lazy(() => {
-    return import('./slide-editor/SlideItemEditorGround');
+const LazySlideEditorGroundComp = lazy(() => {
+    return import('./slide-editor/SlideEditorGroundComp');
 });
 
 export default function AppEditor() {
@@ -21,12 +21,12 @@ export default function AppEditor() {
             }}
             dataInput={[
                 {
-                    children: LazySlidePreviewer,
+                    children: LazySlidePreviewerComp,
                     key: 'h1',
                     widgetName: 'App Editor Left',
                 },
                 {
-                    children: LazySlideItemEditorGround,
+                    children: LazySlideEditorGroundComp,
                     key: 'h2',
                     widgetName: 'Slide Editor Ground',
                 },

@@ -4,7 +4,7 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const LazyPresenter = lazy(() => {
-    return import('./slide-presenter/Presenter');
+    return import('./app-document-presenter/Presenter');
 });
 const LazyBackground = lazy(() => {
     return import('./background/Background');

@@ -1,5 +1,5 @@
 import { AnyObjectType, toMaxId } from '../../helper/helpers';
-import Slide from '../../slide-list/Slide';
+import Slide from '../../app-document-list/Slide';
 import CanvasItem, { CanvasItemError } from './CanvasItem';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import CanvasItemImage from './CanvasItemImage';
@@ -86,8 +86,8 @@ export default class Canvas {
         });
     }
 
-    static fromSlideItem(slideItem: Slide) {
-        return Canvas.fromJson(slideItem.toJson());
+    static fromSlide(slide: Slide) {
+        return Canvas.fromJson(slide.toJson());
     }
 
     static clipboardDeserializeCanvasItem(json: string) {

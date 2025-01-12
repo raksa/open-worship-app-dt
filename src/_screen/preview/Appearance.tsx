@@ -77,12 +77,12 @@ export default function Appearance() {
                 />
             </div>
             <hr />
-            <PDFAppearanceSetting />
+            <PdfAppearanceSettingComp />
         </div>
     );
 }
 
-function PDFAppearanceSetting() {
+function PdfAppearanceSettingComp() {
     const [isFullWidth, setIsFullWidth] = useState(
         ScreenSlideManager.isPdfFullWidth,
     );

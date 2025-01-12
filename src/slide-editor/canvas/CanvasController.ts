@@ -7,7 +7,7 @@ import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
-import Slide from '../../slide-list/Slide';
+import Slide from '../../app-document-list/Slide';
 import {
     CanvasItemMediaPropsType,
     CanvasControllerEventType,

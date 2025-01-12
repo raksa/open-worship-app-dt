@@ -25,7 +25,7 @@ export function useCanvasControllerEvents(
     }, [canvasController]);
 }
 
-export function useSlideItemCanvasScale() {
+export function useSlideCanvasScale() {
     const canvasController = useCanvasControllerContext();
     const [scale, setScale] = useState(canvasController.scale);
     useAppEffect(() => {

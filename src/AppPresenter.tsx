@@ -5,7 +5,7 @@ import ResizeActor from './resize-actor/ResizeActor';
 import BibleItemViewController, {
     BibleItemViewControllerContext,
 } from './bible-reader/BibleItemViewController';
-import HandleItemSlideEdit from './slide-presenter/HandleItemSlideEdit';
+import SlideEditHandlerComp from './app-document-presenter/SlideEditHandlerComp';
 
 const LazyAppPresenterLeft = lazy(() => {
     return import('./AppPresenterLeft');
@@ -47,7 +47,7 @@ export default function AppPresenter() {
                     },
                 ]}
             />
-            <HandleItemSlideEdit />
+            <SlideEditHandlerComp />
         </BibleItemViewControllerContext>
     );
 }

@@ -2,9 +2,9 @@ import { CSSProperties } from 'react';
 
 import { DroppedDataType } from '../../helper/DragInf';
 import { getSetting, setSetting } from '../../helper/settingHelpers';
-import { SlideItemType } from '../../slide-list/Slide';
-import { genPdfSlide } from '../../slide-presenter/items/PdfSlideRenderContentComp';
-import { genHtmlSlideItem } from '../../slide-presenter/items/SlideItemRenderer';
+import { SlideType } from '../../app-document-list/Slide';
+import { genPdfSlide } from '../../app-document-presenter/items/PdfSlideRenderContentComp';
+import { genHtmlSlide } from '../../app-document-presenter/items/SlideRendererComp';
 import appProviderScreen from '../appProviderScreen';
 import {
     BasicScreenMessageType,
@@ -21,8 +21,8 @@ import {
     toKeyByFilePath,
     VaryAppDocumentItemDataType,
     VaryAppDocumentItemType,
-} from '../../slide-list/appDocumentHelpers';
-import PDFSlide, { PDFSlideType } from '../../slide-list/PDFSlide';
+} from '../../app-document-list/appDocumentHelpers';
+import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 
 export type ScreenSlideManagerEventType = 'update';
 
@@ -131,14 +131,14 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
         });
     }
 
-    applySlideItemSrcWithSyncGroup(
+    applySlideSrcWithSyncGroup(
         varyAppDocumentItemScreenData: VaryAppDocumentItemScreenDataType | null,
     ) {
         ScreenSlideManager.enableSyncGroup(this.screenId);
         this.varyAppDocumentItemData = varyAppDocumentItemScreenData;
     }
 
-    toSlideItemData(
+    toSlideData(
         filePath: string,
         itemJson: VaryAppDocumentItemDataType,
     ): VaryAppDocumentItemScreenDataType {
@@ -151,17 +151,17 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
     ) {
         const { varyAppDocumentItemData } = this;
         const selectedFilePath = varyAppDocumentItemData?.filePath ?? '';
-        const selectedSlideItemId = varyAppDocumentItemData?.itemJson.id ?? '';
+        const selectedSlideId = varyAppDocumentItemData?.itemJson.id ?? '';
         const selected = toKeyByFilePath(
             selectedFilePath,
-            selectedSlideItemId || -1,
+            selectedSlideId || -1,
         );
         const willSelected = toKeyByFilePath(filePath, itemJson.id);
         const newSlideData =
             selected !== willSelected
-                ? this.toSlideItemData(filePath, itemJson)
+                ? this.toSlideData(filePath, itemJson)
                 : null;
-        this.applySlideItemSrcWithSyncGroup(newSlideData);
+        this.applySlideSrcWithSyncGroup(newSlideData);
     }
 
     static async handleSlideSelecting(
@@ -177,7 +177,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
         });
     }
 
-    renderPdf(divHaftScale: HTMLDivElement, pdfImageData: PDFSlideType) {
+    renderPdf(divHaftScale: HTMLDivElement, pdfImageData: PdfSlideType) {
         if (!pdfImageData.imagePreviewSrc) {
             return null;
         }
@@ -211,8 +211,8 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
         });
     }
 
-    renderAppDocument(divHaftScale: HTMLDivElement, itemJson: SlideItemType) {
-        const content = genHtmlSlideItem(itemJson.canvasItems);
+    renderAppDocument(divHaftScale: HTMLDivElement, itemJson: SlideType) {
+        const content = genHtmlSlide(itemJson.canvasItems);
         this.cleanupSlideContent(content);
         const { width, height } = itemJson.metadata;
         Object.assign(divHaftScale.style, {
@@ -247,9 +247,9 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
         divContainer.appendChild(divHaftScale);
         const { itemJson } = this.varyAppDocumentItemData;
 
-        const target = PDFSlide.tryValidate(itemJson)
-            ? this.renderPdf(divHaftScale, itemJson as PDFSlideType)
-            : this.renderAppDocument(divHaftScale, itemJson as SlideItemType);
+        const target = PdfSlide.tryValidate(itemJson)
+            ? this.renderPdf(divHaftScale, itemJson as PdfSlideType)
+            : this.renderAppDocument(divHaftScale, itemJson as SlideType);
         if (target === null) {
             return;
         }
@@ -294,7 +294,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
     }
 
     clear() {
-        this.applySlideItemSrcWithSyncGroup(null);
+        this.applySlideSrcWithSyncGroup(null);
     }
 
     static getInstance(screenId: number) {

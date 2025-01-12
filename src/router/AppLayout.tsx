@@ -19,19 +19,21 @@ import AppPopupWindows from '../app-modal/AppPopupWindows';
 import AppContextMenuComp from '../others/AppContextMenuComp';
 import HandleAlertComp from '../popup-widget/HandleAlertComp';
 import Toast from '../toast/Toast';
-import AppDocument from '../slide-list/AppDocument';
-import Slide from '../slide-list/Slide';
+import AppDocument from '../app-document-list/AppDocument';
+import Slide from '../app-document-list/Slide';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import TopProgressBarComp from '../progress-bar/TopProgressBarComp';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import {
-    SelectedEditingSlideItemContext,
+    SelectedEditingSlideContext,
     SelectedVaryAppDocumentContext,
     getSelectedVaryAppDocument,
     VaryAppDocumentType,
+    getSelectedEditingSlide,
     VaryAppDocumentItemType,
-    getSelectedVaryAppDocumentItem,
-} from '../slide-list/appDocumentHelpers';
+    setSelectedVaryAppDocument,
+    setSelectedEditingSlide,
+} from '../app-document-list/appDocumentHelpers';
 
 const tabs: TabOptionType[] = [];
 if (!appProvider.isPagePresenter) {
@@ -70,82 +72,93 @@ function TabRender() {
 }
 
 function useAppDocumentContextValues() {
-    const [selectedVaryAppDocument, setSelectedVaryAppDocument] =
+    const [varyAppDocument, setVaryAppDocument] =
         useState<VaryAppDocumentType | null>(null);
-    const [selectedVaryAppDocumentItem, setSelectedVaryAppDocumentItem] =
-        useState<VaryAppDocumentItemType | null>(null);
+    const setVaryAppDocument1 = (
+        newVaryAppDocument: VaryAppDocumentType | null,
+    ) => {
+        setVaryAppDocument(newVaryAppDocument);
+        setSelectedVaryAppDocument(newVaryAppDocument);
+    };
+
+    const [slide, setSlide] = useState<Slide | null>(null);
+    const setSlide1 = (newSlide: Slide | null) => {
+        setSlide(newSlide);
+        setSelectedEditingSlide(newSlide);
+    };
+
     useAppEffectAsync(
         async (methodContext) => {
             const varyAppDocument = await getSelectedVaryAppDocument();
-            methodContext.setSelectedVaryAppDocument(varyAppDocument);
-            const varyAppDocumentItem = await getSelectedVaryAppDocumentItem();
-            methodContext.setSelectedVaryAppDocumentItem(varyAppDocumentItem);
+            methodContext.setVaryAppDocument(varyAppDocument);
+            const varyAppDocumentItem = await getSelectedEditingSlide();
+            methodContext.setSlide(varyAppDocumentItem);
         },
         undefined,
         {
-            setSelectedVaryAppDocument,
-            setSelectedVaryAppDocumentItem,
+            setVaryAppDocument,
+            setSlide,
         },
     );
     const varyAppDocumentContextValue = useMemo(() => {
         return {
-            selectedVaryAppDocument,
+            selectedVaryAppDocument: varyAppDocument,
             setSelectedVaryAppDocument: async (
-                newSelectedSlide: AppDocument | null,
+                newVaryAppDocument: VaryAppDocumentType | null,
             ) => {
-                setSelectedVaryAppDocument(newSelectedSlide);
-                if (newSelectedSlide === null) {
-                    setSelectedVaryAppDocumentItem(null);
-                } else {
-                    const slideItems = await newSelectedSlide.getItems();
-                    const firstSlideItem = slideItems[0];
-                    setSelectedVaryAppDocumentItem(firstSlideItem);
+                setVaryAppDocument1(newVaryAppDocument);
+                let selectedSlide: Slide | null = null;
+                if (
+                    newVaryAppDocument !== null &&
+                    AppDocument.checkIsThisType(newVaryAppDocument)
+                ) {
+                    const varyAppDocumentItems =
+                        await newVaryAppDocument.getItems();
+                    selectedSlide = varyAppDocumentItems[0] || null;
                 }
+                setSlide1(selectedSlide);
             },
         };
-    }, [selectedVaryAppDocument, setSelectedVaryAppDocument]);
-    const editingAppDocumentItemContextValue = useMemo(() => {
+    }, [varyAppDocument]);
+    const editingSlideContextValue = useMemo(() => {
         return {
-            selectedVaryAppDocumentItem,
-            setSelectedVaryAppDocumentItem: (newSelectedSlideItem: Slide) => {
-                setSelectedVaryAppDocumentItem(newSelectedSlideItem);
+            selectedSlide: slide,
+            setSelectedSlide: (newSelectedSlide: Slide) => {
+                setSlide1(newSelectedSlide);
             },
         };
-    }, [selectedVaryAppDocumentItem, setSelectedVaryAppDocumentItem]);
+    }, [slide]);
     useFileSourceEvents(
         ['delete'],
-        (deletedSlideItem: Slide) => {
-            setSelectedVaryAppDocumentItem((slideItem) => {
-                if (slideItem?.checkIsSame(deletedSlideItem)) {
-                    return null;
-                }
-                return slideItem;
-            });
+        (deletedSlide: VaryAppDocumentItemType) => {
+            if (slide?.checkIsSame(deletedSlide)) {
+                return;
+            }
+            setSlide1(slide);
         },
-        [selectedVaryAppDocument],
-        selectedVaryAppDocument?.filePath,
+        [varyAppDocument, slide],
+        varyAppDocument?.filePath,
     );
     useFileSourceEvents(
         ['update'],
         async () => {
-            const varyAppDocumentItems = selectedVaryAppDocument
-                ? await selectedVaryAppDocument.getItems()
-                : [];
-            setSelectedVaryAppDocumentItem((oldVaryAppDocumentItem) => {
-                const newVaryAppDocumentItem = oldVaryAppDocumentItem
-                    ? varyAppDocumentItems.find((item) => {
-                          return item.checkIsSame(oldVaryAppDocumentItem);
-                      })
-                    : null;
-                return newVaryAppDocumentItem || oldVaryAppDocumentItem;
-            });
+            const varyAppDocumentItems =
+                varyAppDocument && AppDocument.checkIsThisType(varyAppDocument)
+                    ? await varyAppDocument.getItems()
+                    : [];
+            const newVaryAppDocumentItem = slide
+                ? varyAppDocumentItems.find((item) => {
+                      return item.checkIsSame(slide);
+                  })
+                : null;
+            setSlide1(newVaryAppDocumentItem || slide);
         },
-        [selectedVaryAppDocument],
-        selectedVaryAppDocument?.filePath,
+        [varyAppDocument, slide],
+        varyAppDocument?.filePath,
     );
     return {
         varyAppDocumentContextValue,
-        editingAppDocumentItemContextValue,
+        editingSlideContextValue,
     };
 }
 
@@ -155,7 +168,7 @@ export default function AppLayout({
     children: React.ReactNode;
 }>) {
     const [isBibleSearchShowing, setIsBibleSearchShowing] = useState(false);
-    const { varyAppDocumentContextValue, editingAppDocumentItemContextValue } =
+    const { varyAppDocumentContextValue, editingSlideContextValue } =
         useAppDocumentContextValues();
     return (
         <MultiContextRender
@@ -172,8 +185,8 @@ export default function AppLayout({
                     value: varyAppDocumentContextValue,
                 },
                 {
-                    context: SelectedEditingSlideItemContext,
-                    value: editingAppDocumentItemContextValue,
+                    context: SelectedEditingSlideContext,
+                    value: editingSlideContextValue,
                 },
             ]}
         >

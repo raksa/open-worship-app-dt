@@ -18,7 +18,7 @@ import {
 } from './transitionEffectHelpers';
 import { electronSendAsync, unlocking } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
-import { VaryAppDocumentItemDataType } from '../slide-list/appDocumentHelpers';
+import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = (typeof fullTextDataTypeList)[number];

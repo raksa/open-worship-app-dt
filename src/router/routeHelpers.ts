@@ -1,8 +1,8 @@
 import { OptionalPromise } from '../others/otherHelpers';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
 import appProvider from '../server/appProvider';
-import { getSelectedVaryAppDocument } from '../slide-list/appDocumentHelpers';
-import AppDocument from '../slide-list/AppDocument';
+import { getSelectedVaryAppDocument } from '../app-document-list/appDocumentHelpers';
+import AppDocument from '../app-document-list/AppDocument';
 
 export type TabOptionType = {
     title: string;

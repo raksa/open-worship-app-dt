@@ -6,7 +6,7 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../../others/AppContextMenuComp';
-import Slide from '../../slide-list/Slide';
+import Slide from '../../app-document-list/Slide';
 import ScreenManager from '../managers/ScreenManager';
 import {
     getSelectedScreenManagerBases,

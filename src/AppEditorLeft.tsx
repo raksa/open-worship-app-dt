@@ -4,10 +4,10 @@ import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActor from './resize-actor/ResizeActor';
 
 const LazySlideListComp = lazy(() => {
-    return import('./slide-list/AppDocumentListComp');
+    return import('./app-document-list/AppDocumentListComp');
 });
 const LazyAppDocumentPreviewerComp = lazy(() => {
-    return import('./slide-presenter/items/AppDocumentPreviewerComp');
+    return import('./app-document-presenter/items/AppDocumentPreviewerComp');
 });
 
 export default function AppEditorLeft() {

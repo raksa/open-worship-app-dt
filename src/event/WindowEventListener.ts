@@ -5,7 +5,7 @@ import KeyboardEventListener from './KeyboardEventListener';
 export type AppWidgetType =
     | 'root'
     | 'bible-search'
-    | 'slide-item-edit'
+    | 'slide-edit'
     | 'setting'
     | 'context-menu';
 export type OpenCloseType = 'open' | 'close';

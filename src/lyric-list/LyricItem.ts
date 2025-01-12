@@ -129,7 +129,7 @@ export default class LyricItem
             throw new Error('Invalid lyric item data');
         }
     }
-    
+
     clone(isDuplicateId?: boolean) {
         const lyricItem = LyricItem.fromJson(this.toJson(), this.filePath);
         if (!isDuplicateId) {

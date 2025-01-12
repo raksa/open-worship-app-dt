@@ -9,8 +9,8 @@ import FileSource from './FileSource';
 import {
     appDocumentItemExtractKey,
     appDocumentItemFromKey,
-} from '../slide-list/appDocumentHelpers';
-import PDFSlide from '../slide-list/PDFSlide';
+} from '../app-document-list/appDocumentHelpers';
+import PdfSlide from '../app-document-list/PdfSlide';
 
 export function handleDragStart(
     event: any,
@@ -35,17 +35,17 @@ async function deserializeDragData({
     data,
 }: DragDataType<any>): Promise<DroppedDataType | null> {
     let item: any = null;
-    if (type === DragTypeEnum.SLIDE_ITEM) {
+    if (type === DragTypeEnum.SLIDE) {
         const droppedData = JSON.parse(data);
         item = await appDocumentItemFromKey(droppedData.key);
     } else if (type === DragTypeEnum.PDF_SLIDE) {
         const droppedData = JSON.parse(data);
-        if (PDFSlide.tryValidate(droppedData)) {
+        if (PdfSlide.tryValidate(droppedData)) {
             const extracted = appDocumentItemExtractKey(droppedData.key);
             if (extracted === null) {
                 return null;
             }
-            item = new PDFSlide(extracted.id, extracted.filePath, droppedData);
+            item = new PdfSlide(extracted.id, extracted.filePath, droppedData);
         }
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);
