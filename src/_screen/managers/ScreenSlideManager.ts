@@ -151,11 +151,8 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
     ) {
         const { varyAppDocumentItemData } = this;
         const selectedFilePath = varyAppDocumentItemData?.filePath ?? '';
-        const selectedSlideId = varyAppDocumentItemData?.itemJson.id ?? '';
-        const selected = toKeyByFilePath(
-            selectedFilePath,
-            selectedSlideId || -1,
-        );
+        const selectedSlideId = varyAppDocumentItemData?.itemJson.id ?? -1;
+        const selected = toKeyByFilePath(selectedFilePath, selectedSlideId);
         const willSelected = toKeyByFilePath(filePath, itemJson.id);
         const newSlideData =
             selected !== willSelected

@@ -252,7 +252,7 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
         return this.straightBibleItems.length < 2;
     }
     getColorNote(bibleItem: BibleItem) {
-        return this.colorNoteMap.get(bibleItem) || '';
+        return this.colorNoteMap.get(bibleItem) ?? '';
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
         if (!color) {

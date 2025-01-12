@@ -86,9 +86,6 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             },
         },
     ];
-    if (menuItems.length === 0) {
-        return;
-    }
     showAppContextMenu(event, menuItems);
 }
 

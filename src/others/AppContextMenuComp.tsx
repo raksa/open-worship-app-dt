@@ -77,6 +77,9 @@ export function showAppContextMenu(
     items: ContextMenuItemType[],
 ) {
     event.stopPropagation();
+    if (!items.length) {
+        return Promise.resolve();
+    }
     return new Promise<void>((resolve) => {
         setDataDelegator?.({ event, items });
         const eventName = KeyboardEventListener.toEventMapperKey({

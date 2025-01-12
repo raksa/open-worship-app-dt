@@ -80,7 +80,7 @@ export default function AppDocumentListComp() {
             onNewFile={async (dirPath: string, name: string) => {
                 return !(await AppDocument.create(dirPath, name));
             }}
-            header={<span>Slides</span>}
+            header={<span>Documents</span>}
             bodyHandler={handleBodyRendering}
             fileSelectionOption={{
                 windowTitle: 'Select slide files',
