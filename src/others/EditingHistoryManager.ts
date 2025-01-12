@@ -19,6 +19,7 @@ import {
 } from '../server/fileHelpers';
 import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
+import { OptionalPromise } from './otherHelpers';
 
 const { diffUtils } = appProvider;
 
@@ -240,7 +241,7 @@ export default class EditingHistoryManager {
 
     static registerEventListener(
         filePath: string,
-        listener: () => Promise<void>,
+        listener: () => OptionalPromise<void>,
     ) {
         const eventKey = this.toEventKey(filePath);
         return this.eventHandler.registerEventListener([eventKey], listener);
@@ -331,7 +332,7 @@ export default class EditingHistoryManager {
 
 export function useEditingHistoryEvent(
     filePath: string,
-    listener: () => Promise<void>,
+    listener: () => OptionalPromise<void>,
     deps?: DependencyList,
 ) {
     useAppEffect(() => {

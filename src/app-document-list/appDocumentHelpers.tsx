@@ -353,20 +353,22 @@ export function useSelectedEditingSlideSetterContext() {
 }
 
 export function useSlideWrongDimension(
-    slide: AppDocument,
+    varyAppDocument: VaryAppDocumentType,
     display: DisplayType,
 ) {
-    const [wrongDimension, setWrongDimension] =
-        useState<WrongDimensionType | null>(null);
+    const [wrong, setWrong] = useState<WrongDimensionType | null>(null);
     useEditingHistoryEvent(
-        slide.filePath,
+        varyAppDocument.filePath,
         async () => {
-            const isWrongDimension = await slide.getIsWrongDimension(display);
-            setWrongDimension(isWrongDimension);
+            if (!AppDocument.checkIsThisType(varyAppDocument)) {
+                return;
+            }
+            const wrong = await varyAppDocument.getIsWrongDimension(display);
+            setWrong(wrong);
         },
         [display],
     );
-    return wrongDimension;
+    return wrong;
 }
 
 const KEY_SEPARATOR = '<id>';

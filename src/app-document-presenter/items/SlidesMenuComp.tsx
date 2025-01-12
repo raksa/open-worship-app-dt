@@ -57,12 +57,13 @@ export default function SlidesMenuComp() {
         }
         selectedVaryAppDocument.editingHistoryManager.save();
     });
+    const wrongDimension = useSlideWrongDimension(
+        selectedVaryAppDocument,
+        screenDisplay,
+    );
     if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
         return null;
     }
-    const wrongDimension = AppDocument.checkIsThisType(selectedVaryAppDocument)
-        ? useSlideWrongDimension(selectedVaryAppDocument, screenDisplay)
-        : null;
     if (!canSave && !wrongDimension) {
         return null;
     }
