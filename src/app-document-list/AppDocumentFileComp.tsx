@@ -19,8 +19,70 @@ import {
     varyAppDocumentFromFilePath,
     useSelectedAppDocumentSetterContext,
     SelectedVaryAppDocumentContext,
+    VaryAppDocumentType,
 } from './appDocumentHelpers';
 import PdfAppDocument from './PdfAppDocument';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
+
+function genContextMenuItems(
+    varyAppDocument: VaryAppDocumentDynamicType,
+    setSelectedSlide: (value: VaryAppDocumentType | null) => void,
+): ContextMenuItemType[] {
+    if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
+        return [
+            {
+                menuTitle: 'Preview PDF',
+                onClick: () => {
+                    previewPdf(varyAppDocument.fileSource.src);
+                },
+            },
+            {
+                menuTitle: 'Refresh PDF Images',
+                onClick: async () => {
+                    await removePdfImagesPreview(varyAppDocument.filePath);
+                    varyAppDocument.fileSource.fireUpdateEvent();
+                },
+            },
+        ];
+    }
+    return [
+        {
+            menuTitle: 'Edit',
+            onClick: () => {
+                if (varyAppDocument) {
+                    setSelectedSlide(varyAppDocument);
+                    goToPath(editorTab.routePath);
+                }
+            },
+        },
+    ];
+}
+
+function SlideFilePreviewNormalComp({
+    slide,
+}: Readonly<{ slide: AppDocument }>) {
+    const fileSource = FileSource.getInstance(slide.filePath);
+    const { canSave } = useEditingHistoryStatus(slide.filePath);
+    return (
+        <div className="w-100 h-100 app-ellipsis">
+            <i className="bi bi-file-earmark-slides" />
+            {fileSource.name}
+            {canSave && <span style={{ color: 'red' }}>*</span>}
+        </div>
+    );
+}
+
+function SlideFilePreviewPdfComp({
+    pdfSlide,
+}: Readonly<{ pdfSlide: PdfAppDocument }>) {
+    const fileSource = FileSource.getInstance(pdfSlide.filePath);
+    return (
+        <div className="w-100 h-100 app-ellipsis">
+            <i className="bi bi-filetype-pdf" />
+            {fileSource.name}
+        </div>
+    );
+}
 
 export default function AppDocumentFileComp({
     index,
@@ -30,6 +92,9 @@ export default function AppDocumentFileComp({
     filePath: string;
 }>) {
     const selectedContext = use(SelectedVaryAppDocumentContext);
+    const isSelected =
+        selectedContext !== null &&
+        selectedContext.selectedVaryAppDocument?.filePath === filePath;
     const setSelectedSlide = useSelectedAppDocumentSetterContext();
     const [varyAppDocument, setVaryAppDocument] =
         useState<VaryAppDocumentDynamicType>(null);
@@ -40,24 +105,20 @@ export default function AppDocumentFileComp({
         if (!varyAppDocument) {
             return;
         }
-        if (
-            selectedContext !== null &&
-            varyAppDocument.checkIsSame(
-                selectedContext.selectedVaryAppDocument,
-            ) &&
-            !getIsShowingVaryAppDocumentPreviewer()
-        ) {
+        if (selectedContext && !getIsShowingVaryAppDocumentPreviewer()) {
             previewingEventListener.showVaryAppDocument(varyAppDocument);
             return;
         }
         setSelectedSlide(varyAppDocument);
     };
-    const handleChildRendering = (slide: AppDocument | PdfAppDocument) => {
-        return PdfAppDocument.checkIsThisType(slide) ? (
-            <SlideFilePreviewPdf slide={slide} />
-        ) : (
-            <SlideFilePreviewNormal slide={slide} />
-        );
+    const handleChildRendering = (varyAppDocument: AppDocumentSourceAbs) => {
+        if (AppDocument.checkIsThisType(varyAppDocument)) {
+            return <SlideFilePreviewNormalComp slide={varyAppDocument} />;
+        }
+        if (PdfAppDocument.checkIsThisType(varyAppDocument)) {
+            return <SlideFilePreviewPdfComp pdfSlide={varyAppDocument} />;
+        }
+        return null;
     };
     const handleSlideDeleting = () => {
         EditingHistoryManager.getInstance(filePath).discard();
@@ -80,34 +141,7 @@ export default function AppDocumentFileComp({
         [varyAppDocument],
         filePath,
     );
-    const isPdf = PdfAppDocument.checkIsThisType(varyAppDocument);
-    const menuItems: ContextMenuItemType[] | undefined = isPdf
-        ? [
-              {
-                  menuTitle: 'Preview PDF',
-                  onClick: () => {
-                      previewPdf(varyAppDocument.fileSource.src);
-                  },
-              },
-              {
-                  menuTitle: 'Refresh PDF Images',
-                  onClick: async () => {
-                      await removePdfImagesPreview(varyAppDocument.filePath);
-                      varyAppDocument.fileSource.fireUpdateEvent();
-                  },
-              },
-          ]
-        : [
-              {
-                  menuTitle: 'Edit',
-                  onClick: () => {
-                      if (varyAppDocument) {
-                          setSelectedSlide(varyAppDocument);
-                          goToPath(editorTab.routePath);
-                      }
-                  },
-              },
-          ];
+
     return (
         <FileItemHandlerComp
             index={index}
@@ -117,30 +151,12 @@ export default function AppDocumentFileComp({
             isPointer
             onClick={handleClicking}
             renderChild={handleChildRendering}
-            contextMenuItems={menuItems}
+            contextMenuItems={genContextMenuItems(
+                varyAppDocument,
+                setSelectedSlide,
+            )}
             onTrashed={handleSlideDeleting}
+            isSelected={isSelected}
         />
-    );
-}
-
-function SlideFilePreviewNormal({ slide }: Readonly<{ slide: AppDocument }>) {
-    const fileSource = FileSource.getInstance(slide.filePath);
-    const { canSave } = useEditingHistoryStatus(slide.filePath);
-    return (
-        <div className="w-100 h-100 app-ellipsis">
-            <i className="bi bi-file-earmark-slides" />
-            {fileSource.name}
-            {canSave && <span style={{ color: 'red' }}>*</span>}
-        </div>
-    );
-}
-
-function SlideFilePreviewPdf({ slide }: Readonly<{ slide: PdfAppDocument }>) {
-    const fileSource = FileSource.getInstance(slide.filePath);
-    return (
-        <div className="w-100 h-100 app-ellipsis">
-            <i className="bi bi-filetype-pdf" />
-            {fileSource.name}
-        </div>
     );
 }

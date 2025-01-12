@@ -324,4 +324,8 @@ export default class AppDocument
             return this.filePath === varyAppDocument.filePath;
         }
     }
+
+    toJson(): AnyObjectType {
+        throw new Error('Method not implemented.');
+    }
 }

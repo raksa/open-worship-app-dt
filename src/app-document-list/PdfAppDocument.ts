@@ -81,4 +81,8 @@ export default class PdfAppDocument
             return this.filePath === item.filePath;
         }
     }
+
+    toJson(): AnyObjectType {
+        throw new Error('Method not implemented.');
+    }
 }

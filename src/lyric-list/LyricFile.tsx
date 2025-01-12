@@ -53,6 +53,7 @@ export default function LyricFile({
             isPointer
             onClick={handleClicking}
             renderChild={handleChildRendering}
+            isSelected={!!data?.isSelected}
         />
     );
 }

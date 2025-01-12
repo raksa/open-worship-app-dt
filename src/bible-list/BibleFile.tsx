@@ -96,6 +96,7 @@ export default function BibleFile({
             isDisabledColorNote
             userClassName={`p-0 ${data?.isOpened ? 'flex-fill' : ''}`}
             contextMenuItems={genContextMenu(data)}
+            isSelected={!!data?.isOpened}
         />
     );
 }

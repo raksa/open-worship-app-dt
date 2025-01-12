@@ -109,10 +109,6 @@ export default class Bible
         return Bible.checkIsDefault(this.filePath);
     }
 
-    get isSelected() {
-        return false;
-    }
-
     get isOpened() {
         return this.metadata['isOpened'] === true;
     }

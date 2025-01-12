@@ -18,6 +18,8 @@ export default abstract class AppDocumentSourceAbs {
         this.filePath = filePath;
     }
 
+    abstract toJson(): AnyObjectType;
+
     get fileSource() {
         return FileSource.getInstance(this.filePath);
     }
@@ -76,6 +78,10 @@ export default abstract class AppDocumentSourceAbs {
             return FileSource.getInstance(filePath);
         }
         return null;
+    }
+
+    static deleteCache(filePath: string) {
+        cache.delete(filePath);
     }
 
     static _getInstance<T extends AppDocumentSourceAbs>(

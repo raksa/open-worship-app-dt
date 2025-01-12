@@ -152,7 +152,7 @@ export default class FileSource
         return false;
     }
 
-    async saveDataFromItem(item: AppDocumentSourceAbs<any>) {
+    async saveDataFromItem(item: AppDocumentSourceAbs) {
         const content = JSON.stringify(item.toJson());
         return this.saveData(content);
     }

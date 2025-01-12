@@ -110,8 +110,9 @@ export default function FileItemHandlerComp({
     onTrashed,
     isDisabledColorNote,
     userClassName,
+    isSelected,
 }: Readonly<{
-    data: AppDocumentSourceAbs<any> | null | undefined;
+    data: AppDocumentSourceAbs | null | undefined;
     reload: () => void;
     index: number;
     filePath: string;
@@ -119,11 +120,12 @@ export default function FileItemHandlerComp({
     contextMenuItems?: ContextMenuItemType[];
     onDrop?: (event: any) => void;
     onClick?: () => void;
-    renderChild: (lyric: AppDocumentSourceAbs<any>) => any;
+    renderChild: (data: AppDocumentSourceAbs) => any;
     isPointer?: boolean;
     onTrashed?: () => void;
     isDisabledColorNote?: boolean;
     userClassName?: string;
+    isSelected: boolean;
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
@@ -144,7 +146,7 @@ export default function FileItemHandlerComp({
         return <FileReadErrorComp onContextMenu={handleContextMenuOpening} />;
     }
     const moreClassName =
-        `${data.isSelected ? 'active' : ''} ` + `${className ?? ''}`;
+        `${isSelected ? 'active' : ''} ` + `${className ?? ''}`;
     const fileSource = FileSource.getInstance(filePath);
     return (
         <li
