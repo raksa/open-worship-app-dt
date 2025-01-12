@@ -224,7 +224,7 @@ export default class Bible
         if (!dir) {
             return null;
         }
-        const filePaths = (await fsListFilesWithMimetype(dir, 'bible')) || [];
+        const filePaths = (await fsListFilesWithMimetype(dir, 'bible')) ?? [];
         if (filePaths === null) {
             return null;
         }

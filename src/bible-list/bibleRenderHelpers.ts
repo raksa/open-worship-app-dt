@@ -15,13 +15,13 @@ type CallbackType<T extends string | [string, string][]> = (
 const callbackMapper: Map<string, Array<CallbackType<any>>> = new Map();
 class BibleRenderHelper {
     private pushCallback(key: string, callback: CallbackType<any>) {
-        const callbackList = callbackMapper.get(key) || [];
+        const callbackList = callbackMapper.get(key) ?? [];
         callbackList.push(callback);
         callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
     private fullfilCallback(key: string, result: any) {
-        const callbackList = callbackMapper.get(key) || [];
+        const callbackList = callbackMapper.get(key) ?? [];
         callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(result);

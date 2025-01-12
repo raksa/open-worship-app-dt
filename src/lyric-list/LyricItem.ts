@@ -50,14 +50,14 @@ export default class LyricItem
     }
     get metadata() {
         const json = this.editorCacheManager.getLyricItemById(this.id);
-        return json?.metadata || this._originalJson.metadata;
+        return json?.metadata ?? this._originalJson.metadata;
     }
     get lyricItemJson() {
         const items = this.editorCacheManager.presenterJson.items;
         const lyricItemJson = items.find((item) => {
             return item.id === this.id;
         });
-        return lyricItemJson || this._originalJson;
+        return lyricItemJson ?? this._originalJson;
     }
     get title() {
         return this.lyricItemJson.title;

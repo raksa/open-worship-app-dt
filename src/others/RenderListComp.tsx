@@ -57,8 +57,8 @@ export default function RenderListComp({
     };
     filePaths.forEach((filePath) => {
         const fileSource = FileSource.getInstance(filePath);
-        const colorNote = fileSource.colorNote || UNKNOWN_COLOR_NOTE;
-        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
+        const colorNote = fileSource.colorNote ?? UNKNOWN_COLOR_NOTE;
+        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] ?? [];
         fileSourceColorMap[colorNote].push(filePath);
     });
     if (Object.keys(fileSourceColorMap).length === 1) {

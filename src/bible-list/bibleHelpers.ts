@@ -193,7 +193,7 @@ export async function moveBibleItemTo(
         Bible.getDirSourceSettingName(),
     );
     dirSource.getFilePaths('bible').then((filePaths) => {
-        const targetNames = (filePaths || [])
+        const targetNames = (filePaths ?? [])
             .map((filePath) => {
                 return FileSource.getInstance(filePath).name;
             })

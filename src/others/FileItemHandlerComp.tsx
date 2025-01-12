@@ -162,7 +162,7 @@ export default function FileItemHandlerComp({
             title={filePath}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
-                    ...(contextMenuItems || []),
+                    ...(contextMenuItems ?? []),
                     ...genCommonMenu(filePath),
                     ...selfContextMenu,
                 ]);

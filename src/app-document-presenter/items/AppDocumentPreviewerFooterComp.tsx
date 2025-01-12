@@ -57,7 +57,10 @@ export default function AppDocumentPreviewerFooterComp() {
     const [thumbnailSizeScale, setThumbnailSizeScale] =
         useAppDocumentItemThumbnailSizeScale();
     const handleSlideChoosing = async (event: any) => {
-        const slide = await selectSlide(event, selectedVaryAppDocument.filePath);
+        const slide = await selectSlide(
+            event,
+            selectedVaryAppDocument.filePath,
+        );
         if (slide === null) {
             showAppAlert(
                 'No Slide Available',

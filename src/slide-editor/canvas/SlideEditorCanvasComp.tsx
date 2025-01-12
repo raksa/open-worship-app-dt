@@ -66,9 +66,9 @@ function BodyRendererComp() {
     const handleDropping = async (event: any) => {
         const dragEvent = event as DragEvent;
         dragEvent.preventDefault();
-        const style = (dragEvent.currentTarget as any)?.style || {};
+        const style = (dragEvent.currentTarget as any)?.style ?? {};
         style.opacity = '1';
-        const files = dragEvent.dataTransfer?.files || [];
+        const files = dragEvent.dataTransfer?.files ?? [];
         Array.from(files).forEach((file) => {
             if (!isSupportType(file.type)) {
                 showSimpleToast(

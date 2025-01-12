@@ -16,7 +16,7 @@ type StoreType = {
     timeoutId: any;
 };
 function restore(toKey: string) {
-    const store = storeMapper.get(toKey) || {
+    const store = storeMapper.get(toKey) ?? {
         count: 0,
         timeoutId: 0,
     };
@@ -62,7 +62,7 @@ export function useAppEffectAsync<T extends MethodContextType>(
     const isAllUndefined = deps === undefined && methods === undefined;
     const totalDeps = isAllUndefined
         ? undefined
-        : [...(deps || []), ...Object.values(methods ?? {})];
+        : [...(deps ?? []), ...Object.values(methods ?? {})];
     useEffect(() => {
         const methodContext = { ...(methods ?? {}) } as T;
         checkStore(toKey);

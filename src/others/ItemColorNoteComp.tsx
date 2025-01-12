@@ -39,7 +39,7 @@ export default function ItemColorNoteComp({
             },
             {} as Record<string, string>,
         );
-        return reverseColorMap[colorNote] || 'no color';
+        return reverseColorMap[colorNote] ?? 'no color';
     }, [colorNote]);
     const handleColorSelecting = (event: any) => {
         event.stopPropagation();

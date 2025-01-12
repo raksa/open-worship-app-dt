@@ -74,7 +74,7 @@ export function saveScreenManagersSetting(deletedScreenId?: number) {
             return (
                 newInstanceSetting.find((newItem) => {
                     return newItem.screenId === item.screenId;
-                }) || item
+                }) ?? item
             );
         });
         for (const newItem of newInstanceSetting) {

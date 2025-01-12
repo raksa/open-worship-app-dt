@@ -37,13 +37,13 @@ export default class BibleDataReader {
         this.callbackMapper = new Map();
     }
     private _pushCallback(key: string, callback: CallbackType) {
-        const callbackList = this.callbackMapper.get(key) || [];
+        const callbackList = this.callbackMapper.get(key) ?? [];
         callbackList.push(callback);
         this.callbackMapper.set(key, callbackList);
         return callbackList.length === 1;
     }
     private fullfilCallback(key: string, data: ReaderBibleDataType) {
-        const callbackList = this.callbackMapper.get(key) || [];
+        const callbackList = this.callbackMapper.get(key) ?? [];
         this.callbackMapper.delete(key);
         callbackList.forEach((callback) => {
             callback(data);

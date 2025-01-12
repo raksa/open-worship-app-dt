@@ -664,8 +664,10 @@ export function useBIVCUpdateEvent() {
         const update = () => {
             setNestedBibleItems(viewController.nestedBibleItems);
         };
-        const instanceEvents =
-            viewController.registerEventListener(['update'], update) || [];
+        const instanceEvents = viewController.registerEventListener(
+            ['update'],
+            update,
+        );
         return () => {
             viewController.unregisterEventListener(instanceEvents);
         };

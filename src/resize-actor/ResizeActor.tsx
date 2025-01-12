@@ -80,7 +80,7 @@ export default function ResizeActor({
                         defaultFlexSize={defaultFlexSize}
                         fSizeName={flexSizeName}
                         dataInput={dataInput}
-                        isDisableQuickResize={isDisableQuickResize || false}
+                        isDisableQuickResize={!!isDisableQuickResize}
                         isHorizontal={isHorizontal}
                     />
                 );

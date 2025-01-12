@@ -66,7 +66,7 @@ export default function RenderResizeActorItem({
     };
 
     const { children, key, className = '', extraStyle = {}, widgetName } = data;
-    const flexSizeValue = flexSize[key] || defaultFlexSize[key] || [];
+    const flexSizeValue = flexSize[key] ?? defaultFlexSize[key] ?? [];
     const onHiddenWidgetClick = flexSizeValue[1]
         ? (event: any) => {
               const flexSizeDisabled = flexSizeValue[1] as DisabledType;
@@ -120,7 +120,7 @@ export default function RenderResizeActorItem({
                     data-min-size={50}
                     className={`${className} overflow-hidden`}
                     style={{
-                        flex: flexSizeValue[0] || 1,
+                        flex: flexSizeValue[0] ?? 1,
                         ...extraStyle,
                     }}
                 >

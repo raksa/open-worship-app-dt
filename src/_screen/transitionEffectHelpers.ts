@@ -210,8 +210,10 @@ export function usePTEEvents(
             });
             callback?.();
         };
-        const instanceEvents =
-            screenEffectManager.registerEventListener(events, update) || [];
+        const instanceEvents = screenEffectManager.registerEventListener(
+            events,
+            update,
+        );
         return () => {
             screenEffectManager.unregisterEventListener(instanceEvents);
         };

@@ -137,7 +137,7 @@ export function getFileMetaData(
     fileFullName: string,
     mimetypeList?: AppMimetypeType[],
 ): FileMetadataType | null {
-    mimetypeList = mimetypeList || getAllAppMimetype();
+    mimetypeList = mimetypeList ?? getAllAppMimetype();
     const ext = getFileExtension(fileFullName);
     const foundMT = mimetypeList.find((mt) => {
         return mt.extensions.includes(ext);

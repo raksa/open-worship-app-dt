@@ -141,7 +141,7 @@ function getBibleMap(
     const bookKeyMapElements =
         mapElement === null
             ? []
-            : Array.from(guessElement(mapElement, tags) || []);
+            : Array.from(guessElement(mapElement, tags) ?? []);
     for (const bookKeyMapElement of bookKeyMapElements) {
         const bibleKey = guessValue(bookKeyMapElement, attributesMap.mapKey);
         const value = guessValue(bookKeyMapElement, attributesMap.mapValue);
@@ -267,7 +267,7 @@ function getBibleVerses(chapter: Element): BibleVerseType {
 
 function getBibleChapters(book: Element): BibleBookJsonType {
     const bookJson: BibleBookJsonType = {};
-    const chapters = Array.from(guessElement(book, tagNamesMap.chapter) || []);
+    const chapters = Array.from(guessElement(book, tagNamesMap.chapter) ?? []);
     for (const chapter of chapters) {
         const chapterNumber = guessValue(chapter, attributesMap.index, null);
         if (chapterNumber === null) {
@@ -380,7 +380,7 @@ export async function xmlToJson(xmlText: string) {
     if (bibleInfo === null) {
         return null;
     }
-    const books = Array.from(guessElement(bible, tagNamesMap.book) || []);
+    const books = Array.from(guessElement(bible, tagNamesMap.book) ?? []);
     if (![27, 66].includes(books.length)) {
         return null;
     }

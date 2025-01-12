@@ -41,7 +41,7 @@ class CanvasController extends EventHandler<CanvasControllerEventType> {
             this._scale = defaultData;
         }
         this.slide = slide;
-        this._canvas = slide.canvas || Canvas.genDefaultCanvas();
+        this._canvas = slide.canvas;
     }
     get canvas() {
         return this._canvas;

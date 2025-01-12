@@ -17,7 +17,7 @@ export default function SlideRendererHtmlComp({
         <div
             ref={(div) => {
                 if (div !== null) {
-                    setParentWidth(div.parentElement?.clientWidth || 0);
+                    setParentWidth(div.parentElement?.clientWidth ?? 0);
                 }
             }}
             style={{

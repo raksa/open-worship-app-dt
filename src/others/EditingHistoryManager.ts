@@ -343,7 +343,7 @@ export function useEditingHistoryEvent(
         return () => {
             EditingHistoryManager.unregisterEventListener(registeredEvents);
         };
-    }, [filePath, listener, ...(deps || [])]);
+    }, [filePath, listener, ...(deps ?? [])]);
 }
 
 export function useEditingHistoryStatus(filePath: string) {

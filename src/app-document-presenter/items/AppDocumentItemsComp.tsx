@@ -96,7 +96,7 @@ function useAppDocumentItems() {
             return { key };
         }),
         (event) => {
-            handleArrowing(event, varyAppDocumentItems || []);
+            handleArrowing(event, varyAppDocumentItems ?? []);
         },
         [varyAppDocumentItems],
     );

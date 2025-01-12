@@ -90,13 +90,13 @@ export default class KeyboardEventListener extends EventHandler<string> {
         }
         const { wControlKey, mControlKey, lControlKey, allControlKey } =
             eventMapper;
-        const allControls: string[] = allControlKey || [];
+        const allControls: string[] = allControlKey ?? [];
         if (appProvider.systemUtils.isWindows) {
-            allControls.push(...(wControlKey || []));
+            allControls.push(...(wControlKey ?? []));
         } else if (appProvider.systemUtils.isMac) {
-            allControls.push(...(mControlKey || []));
+            allControls.push(...(mControlKey ?? []));
         } else if (appProvider.systemUtils.isLinux) {
-            allControls.push(...(lControlKey || []));
+            allControls.push(...(lControlKey ?? []));
         }
         if (allControls.length > 0) {
             const sorted = [...allControls].sort((a, b) => {

@@ -74,7 +74,7 @@ export default class AppDocument
                 ) {
                     throw new Error(`Invalid data ${jsonData}`);
                 }
-                jsonData.items = jsonData.items || [];
+                jsonData.items = jsonData.items ?? [];
                 for (const item of jsonData.items) {
                     Slide.validate(item);
                 }
@@ -94,7 +94,7 @@ export default class AppDocument
 
     async getMetadata() {
         const jsonData = await this.getJsonData();
-        return jsonData?.metadata || {};
+        return jsonData?.metadata ?? {};
     }
 
     async setMetadata(metadata: AnyObjectType) {

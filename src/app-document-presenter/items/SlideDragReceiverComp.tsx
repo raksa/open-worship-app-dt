@@ -32,7 +32,7 @@ export default function SlideDragReceiverComp({
                 if (div) {
                     const childrenElements =
                         div.parentElement?.querySelectorAll('.slide-item');
-                    const children = Array.from(childrenElements || []);
+                    const children = Array.from(childrenElements ?? []);
                     const getLeft = (element: Element) => {
                         return element.getBoundingClientRect().left;
                     };

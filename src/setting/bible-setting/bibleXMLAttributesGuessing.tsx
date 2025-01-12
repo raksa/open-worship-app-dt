@@ -109,7 +109,7 @@ function BibleNumbersMapXMLInputComp({
             setInvalidMessage('');
         }
     };
-    const langCode = getLangCode(locale) || 'en';
+    const langCode = getLangCode(locale) ?? 'en';
     return (
         <div className="w-100 h-100">
             <div>Define numbers map</div>
@@ -190,7 +190,7 @@ function BibleBooksMapXMLInputComp({
         innerText = innerText.trim();
         setValue1(innerText);
     };
-    const langCode = getLangCode(locale) || 'en';
+    const langCode = getLangCode(locale) ?? 'en';
     return (
         <div className="w-100 h-100">
             <div>Define books map</div>

@@ -151,7 +151,7 @@ function useAppDocumentContextValues() {
                       return item.checkIsSame(slide);
                   })
                 : null;
-            setSlide1(newVaryAppDocumentItem || slide);
+            setSlide1(newVaryAppDocumentItem ?? slide);
         },
         [varyAppDocument, slide],
         varyAppDocument?.filePath,

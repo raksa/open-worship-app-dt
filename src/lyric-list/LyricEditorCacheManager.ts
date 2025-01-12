@@ -35,8 +35,8 @@ export default class LyricEditorCacheManager extends EditorCacheManager<
             return history.metadata !== undefined;
         })?.items;
         return {
-            items: newItems || this.cloneItems,
-            metadata: newMetadata || this.cloneMetadata,
+            items: newItems ?? this.cloneItems,
+            metadata: newMetadata ?? this.cloneMetadata,
         };
     }
     getLyricItemById(id: number) {
