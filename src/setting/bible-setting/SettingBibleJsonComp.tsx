@@ -18,9 +18,17 @@ export default function SettingBibleJsonComp() {
                 setDownloadedBibleInfoList={setDownloadedBibleInfoList}
             />
             <hr />
-            <h3>
-                Online Bible List (Under development, please use XML instead)
-            </h3>
+            <div>
+                <h4>
+                    Online Bible List
+                </h4>
+                <div style={{
+                    color: 'yellow',
+                    fontStyle: 'italic',
+                }}>
+                    (Under development, please use XML instead)
+                </div>
+            </div>
             <SettingOnlineBibleComp
                 onlineBibleInfoList={onlineBbInfoList}
                 downloadedBibleInfoList={downloadedBibleInfoList}

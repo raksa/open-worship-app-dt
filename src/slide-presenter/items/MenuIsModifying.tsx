@@ -30,7 +30,7 @@ export default function MenuIsModifying({
                     selectedSlide.save();
                 }}
             >
-                <i className="bi bi-check2" />
+                <i className="bi bi-floppy" />
             </button>
         </>
     );

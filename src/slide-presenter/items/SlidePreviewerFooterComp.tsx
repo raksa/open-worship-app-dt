@@ -11,37 +11,56 @@ import {
     THUMBNAIL_SCALE_STEP,
     selectSlide,
 } from '../../slide-list/slideHelpers';
-import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
-import { genSlideItemIds, getPresenterIndex } from './slideItemHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
 import { useSlideItemThumbnailSizeScale } from '../../event/SlideListEventListener';
 import appProvider from '../../server/appProvider';
 import { showAppAlert } from '../../popup-widget/popupWidgetHelpers';
+import SlideItem from '../../slide-list/SlideItem';
+import { useAppEffect } from '../../helper/debuggerHelpers';
+
+export const slidePreviewerMethods = {
+    handleSlideItemSelected: (_viewIndex: number, _slideItem: SlideItem) => {},
+};
 
 function HistoryPreviewerFooter() {
-    const selectedSlide = useSelectedSlideContext();
-    const [history, setHistory] = useState<number[]>([]);
-    useScreenSlideManagerEvents(['update'], undefined, () => {
-        const index = getPresenterIndex(
-            selectedSlide.filePath,
-            genSlideItemIds(selectedSlide.items),
-        );
-        if (index < 0) {
-            return;
-        }
-        setHistory((oldHistory) => {
-            const newHistory = [...oldHistory, index + 1];
-            if (newHistory.length > 3) {
-                newHistory.shift();
-            }
-            return newHistory;
-        });
-    });
+    const [selectedSlideItemHistories, setSelectedSlideItemHistories] =
+        useState<[number, string][]>([]);
+    useAppEffect(() => {
+        slidePreviewerMethods.handleSlideItemSelected = (
+            viewIndex: number,
+            slideItem: SlideItem,
+        ) => {
+            setSelectedSlideItemHistories((oldHistories) => {
+                const newHistories = [
+                    ...oldHistories,
+                    [viewIndex, slideItem.key],
+                ];
+                while (newHistories.length > 3) {
+                    newHistories.shift();
+                }
+                return newHistories as [number, string][];
+            });
+        };
+        return () => {
+            slidePreviewerMethods.handleSlideItemSelected = (
+                _viewIndex,
+                _slideItem,
+            ) => {};
+        };
+    }, []);
     return (
         <div className="history me-1">
-            <span className="badge rounded-pill text-bg-info">
-                {history.join(', ')}
-            </span>
+            {selectedSlideItemHistories.map(([index, key]) => {
+                return (
+                    <span
+                        title={key}
+                        key={key}
+                        className="badge rounded-pill text-bg-info"
+                    >
+                        {index}
+                    </span>
+                );
+            })}
         </div>
     );
 }

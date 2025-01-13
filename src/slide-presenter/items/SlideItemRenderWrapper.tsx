@@ -28,7 +28,12 @@ export default function SlideItemRenderWrapper({
         selectedSlide.moveItem(id, index, isLeft);
     };
     const handleClicking = (event: any) => {
-        handleSlideItemSelecting(setSelectedSlideItem, slideItem, event);
+        handleSlideItemSelecting(
+            event,
+            index + 1,
+            slideItem,
+            setSelectedSlideItem,
+        );
     };
     const handleContextMenuOpening = (event: any) => {
         selectedSlide.openContextMenu(event, slideItem);

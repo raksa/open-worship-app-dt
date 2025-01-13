@@ -13,10 +13,10 @@ import appProvider from '../../server/appProvider';
 import { use } from 'react';
 
 export function RenderInfoComp({
-    index,
+    viewIndex,
     slideItem,
 }: Readonly<{
-    index: number;
+    viewIndex: number;
     slideItem: SlideItem;
 }>) {
     const { selectedList } = toClassNameHighlight(slideItem);
@@ -26,9 +26,9 @@ export function RenderInfoComp({
                 <div>
                     <span
                         className="badge rounded-pill text-bg-info"
-                        title={`Index: ${index + 1}`}
+                        title={`Index: ${viewIndex}`}
                     >
-                        {index + 1}
+                        {viewIndex}
                     </span>
                 </div>
             </div>
@@ -132,7 +132,7 @@ export default function SlideItemRenderComp({
             onCopy={onCopy}
         >
             <div className="card-header d-flex" style={{ height: '35px' }}>
-                <RenderInfoComp index={index} slideItem={slideItem} />
+                <RenderInfoComp viewIndex={index + 1} slideItem={slideItem} />
             </div>
             <div
                 className="card-body overflow-hidden"

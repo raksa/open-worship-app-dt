@@ -1,9 +1,10 @@
 import './SlidePreviewer.scss';
 
+import { use } from 'react';
+
 import SlideItemsPreviewer from './SlideItemsPreviewer';
 import SlidePreviewerFooterComp from './SlidePreviewerFooterComp';
 import { SelectedSlideContext } from '../../slide-list/Slide';
-import { use } from 'react';
 
 export default function SlidePreviewer() {
     const selectedSlideContext = use(SelectedSlideContext);

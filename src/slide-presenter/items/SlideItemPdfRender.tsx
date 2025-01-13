@@ -83,7 +83,7 @@ export default function SlideItemPdfRender({
         >
             <div className="card-header d-flex" style={{ height: '35px' }}>
                 <i className="bi bi-filetype-pdf" />
-                <RenderInfoComp index={index} slideItem={slideItem} />
+                <RenderInfoComp viewIndex={index + 1} slideItem={slideItem} />
             </div>
             {pdfPreviewSrc === null ? (
                 <div className="alert alert-danger">

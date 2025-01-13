@@ -260,6 +260,9 @@ export default class BoxEditorController {
         this.target = null;
     }
     initEvent(editor: HTMLDivElement) {
+        if(this.editor === editor) {
+            return;
+        }
         this.release();
         this.editor = editor;
         this.target = this.editor.firstChild as HTMLDivElement;

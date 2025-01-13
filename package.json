@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.01.07",
+    "version": "2025.01.13",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -104,7 +104,7 @@
         "electron": "^33.2.1",
         "electron-builder": "^25.1.8",
         "env-cmd": "^10.1.0",
-        "eslint": "^8.57.1",
+        "eslint": "^9.18.0",
         "eslint-config-prettier": "^9.1.0",
         "nodemon": "^3.1.7",
         "prettier": "3.4.2",
