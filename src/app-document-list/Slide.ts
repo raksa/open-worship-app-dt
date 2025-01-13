@@ -3,7 +3,6 @@ import { AnyObjectType, cloneJson } from '../helper/helpers';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { handleError } from '../helper/errorHelpers';
 import { ClipboardInf, toKeyByFilePath } from './appDocumentHelpers';
 import { getDefaultScreenDisplay } from '../_screen/managers/screenHelpers';
 
@@ -104,7 +103,7 @@ export default class Slide
         return this.originalJson;
     }
 
-    async checkIsWrongDimension({ bounds }: DisplayType) {
+    checkIsWrongDimension({ bounds }: DisplayType) {
         return bounds.width !== this.width || bounds.height !== this.height;
     }
 
@@ -129,12 +128,11 @@ export default class Slide
     }
 
     dragSerialize() {
-        const dragging: any = {
-            key: toKeyByFilePath(this.filePath, this.id),
-        };
         return {
             type: DragTypeEnum.SLIDE,
-            data: JSON.stringify(dragging),
+            data: JSON.stringify({
+                key: toKeyByFilePath(this.filePath, this.id),
+            }),
         };
     }
 
@@ -169,9 +167,8 @@ export default class Slide
             const { filePath, data } = JSON.parse(json);
             Slide.validate(data);
             return Slide.fromJson(data, filePath);
-        } catch (error) {
-            handleError(error);
-        }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {}
         return null;
     }
 

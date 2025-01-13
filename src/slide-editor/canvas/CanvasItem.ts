@@ -265,8 +265,6 @@ export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
     const [props, setProps] = useOptimistic(cloneJson(canvasItem.props));
     const { startTransaction } = useProgressBarComp();
     useAppEffect(() => {
-        // console.log(canvasItem);
-
         canvasItem.registerEventListener(['edit'], () => {
             startTransaction(() => {
                 setProps(cloneJson(canvasItem.props));

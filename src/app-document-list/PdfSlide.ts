@@ -121,7 +121,10 @@ export default class PdfSlide
     dragSerialize() {
         return {
             type: DragTypeEnum.PDF_SLIDE,
-            data: JSON.stringify(this.toJson()),
+            data: JSON.stringify({
+                key: this.key,
+                data: this.toJson(),
+            }),
         };
     }
 

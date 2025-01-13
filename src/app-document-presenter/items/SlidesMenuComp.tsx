@@ -68,7 +68,7 @@ export default function SlidesMenuComp() {
     if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
         return null;
     }
-    if (!canSave && !wrongDimension) {
+    if (!(canUndo || canRedo || canSave || wrongDimension)) {
         return null;
     }
     return (
@@ -95,7 +95,7 @@ export default function SlidesMenuComp() {
                     type="button"
                     className="btn btn-sm btn-info"
                     title="Redo"
-                    disabled={canRedo}
+                    disabled={!canRedo}
                     onClick={() => {
                         selectedVaryAppDocument.editingHistoryManager.redo();
                     }}

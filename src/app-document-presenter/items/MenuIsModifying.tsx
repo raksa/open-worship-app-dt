@@ -37,7 +37,7 @@ export default function MenuIsModifying({
                     selectedVaryAppDocument.save();
                 }}
             >
-                <i className="bi bi-check2" />
+                <i className="bi bi-floppy" />
             </button>
         </>
     );

@@ -40,12 +40,16 @@ async function deserializeDragData({
         item = await appDocumentItemFromKey(droppedData.key);
     } else if (type === DragTypeEnum.PDF_SLIDE) {
         const droppedData = JSON.parse(data);
-        if (PdfSlide.tryValidate(droppedData)) {
+        if (PdfSlide.tryValidate(droppedData.data)) {
             const extracted = appDocumentItemExtractKey(droppedData.key);
             if (extracted === null) {
                 return null;
             }
-            item = new PdfSlide(extracted.id, extracted.filePath, droppedData);
+            item = new PdfSlide(
+                extracted.id,
+                extracted.filePath,
+                droppedData.data,
+            );
         }
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);

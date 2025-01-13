@@ -354,6 +354,7 @@ export default class EditingHistoryManager {
             return false;
         }
         await fsWriteFile(this.filePath, lastHistory);
+        await this.fileLineHandler.clearHistories();
         this.fireEvent();
         return true;
     }
