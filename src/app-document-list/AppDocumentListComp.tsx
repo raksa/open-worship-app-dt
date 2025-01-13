@@ -1,4 +1,4 @@
-import './SlideList.scss';
+import './AppDocumentListComp.scss';
 
 import FileListHandlerComp from '../others/FileListHandlerComp';
 import AppDocumentFileComp from './AppDocumentFileComp';
@@ -71,7 +71,7 @@ export default function AppDocumentListComp() {
     }
     return (
         <FileListHandlerComp
-            id="slide-list"
+            id="app-document-list"
             mimetypeName="slide"
             defaultFolderName={defaultDataDirNames.SLIDE}
             dirSource={dirSource}

@@ -1,6 +1,6 @@
 @use '../others/variables.scss' as *;
 
-.slide-list {
+.app-document-list {
   .card-body {
     height: calc(100% - $card-header-height);
   }

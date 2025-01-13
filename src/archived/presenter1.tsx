@@ -38,7 +38,7 @@ function HistoryAppComp() {
             setText(text);
         }
     }, [setText, historyManager]);
-    useEditingHistoryEvent(filePath, setTextFromHistory);
+    useEditingHistoryEvent(filePath, setTextFromHistory, [historyManager]);
     useAppEffectAsync(setTextFromHistory, []);
     const handleTextChanging = (newText: string) => {
         setText(newText);

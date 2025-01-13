@@ -3,6 +3,7 @@ import Lyric from '../lyric-list/Lyric';
 import AppDocument from '../app-document-list/AppDocument';
 import EventHandler, { ListenerType } from './EventHandler';
 import { VaryAppDocumentType } from '../app-document-list/appDocumentHelpers';
+import { DependencyList } from 'react';
 
 export type PreviewingType =
     | 'select-lyric'
@@ -28,7 +29,10 @@ class PreviewingEventListener extends EventHandler<PreviewingType> {
 
 export const previewingEventListener = new PreviewingEventListener();
 
-export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
+export function useLyricSelecting(
+    listener: ListenerType<Lyric | null>,
+    deps: DependencyList,
+) {
     useAppEffect(() => {
         const event = previewingEventListener.registerEventListener(
             ['select-lyric'],
@@ -37,7 +41,7 @@ export function useLyricSelecting(listener: ListenerType<Lyric | null>) {
         return () => {
             previewingEventListener.unregisterEventListener(event);
         };
-    }, [listener]);
+    }, deps);
 }
 
 export function useLyricUpdating(listener: ListenerType<Lyric>) {

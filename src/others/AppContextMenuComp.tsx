@@ -159,10 +159,11 @@ export default function AppContextMenuComp() {
             }}
         >
             <div
-                ref={(self) => {
-                    if (self !== null) {
-                        setPositionMenu(self, data.event);
+                ref={(div) => {
+                    if (div === null) {
+                        return;
                     }
+                    setPositionMenu(div, data.event);
                 }}
                 className="app-context-menu"
             >

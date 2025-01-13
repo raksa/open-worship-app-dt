@@ -32,7 +32,7 @@ function FontSize() {
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
         canvasItem.applyTextData({ fontSize });
-        canvasController.fireEditEvent(canvasItem);
+        canvasController.applyEditItem(canvasItem);
     };
     return (
         <div className="d-flex">
@@ -78,7 +78,7 @@ function FontFamily() {
         canvasItem.applyTextData({
             fontFamily: fontFamily || null,
         });
-        canvasController.fireEditEvent(canvasItem);
+        canvasController.applyEditItem(canvasItem);
     };
     if (fontList === null) {
         return <div>Loading Font ...</div>;
@@ -139,7 +139,7 @@ function FontWeight({
         canvasItem.applyTextData({
             fontWeight: newFontWeight || null,
         });
-        canvasController.fireEditEvent(canvasItem);
+        canvasController.applyEditItem(canvasItem);
     };
     return (
         <div>

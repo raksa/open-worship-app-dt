@@ -16,7 +16,7 @@ export default function SlideEditorCanvasComp() {
     const stopAllModes = useStopAllModes();
     const { canvas } = canvasController;
     const scale = useSlideCanvasScale();
-    useKeyboardRegistering([{ key: 'Escape' }], stopAllModes);
+    useKeyboardRegistering([{ key: 'Escape' }], stopAllModes, []);
     return (
         <div className="editor-container w-100 h-100">
             <div

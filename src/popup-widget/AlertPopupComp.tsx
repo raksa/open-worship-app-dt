@@ -14,10 +14,14 @@ export default function AlertPopupComp({
         data.onClose();
         closeAlert();
     };
-    useKeyboardRegistering([{ key: 'Escape' }], (event) => {
-        event.preventDefault();
-        handClose();
-    });
+    useKeyboardRegistering(
+        [{ key: 'Escape' }],
+        (event) => {
+            event.preventDefault();
+            handClose();
+        },
+        [data],
+    );
     return (
         <PrimitiveModalComp>
             <div id="app-alert-popup" className="shadow card">

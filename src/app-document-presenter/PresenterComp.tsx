@@ -43,7 +43,7 @@ export default function PresenterComp() {
         PRESENT_TAB_SETTING_NAME,
         'd',
     );
-    useLyricSelecting(() => setTabType('l'));
+    useLyricSelecting(() => setTabType('l'), []);
     useVaryAppDocumentSelecting(() => setTabType('d'));
     useAppDocumentItemSelecting(() => setTabType('d'));
     return (

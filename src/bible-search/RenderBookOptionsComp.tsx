@@ -66,13 +66,17 @@ function BookOptionsComp({
     const bibleKey = useBibleKeyContext();
     const matches = useBookMatch(bibleKey, guessingBook);
     const useKeyEvent = (key: KeyboardType) => {
-        useKeyboardRegistering([{ key }], (event: KeyboardEvent) => {
-            processSelection(
-                OPTION_CLASS,
-                OPTION_SELECTED_CLASS,
-                event.key as KeyboardType,
-            );
-        });
+        useKeyboardRegistering(
+            [{ key }],
+            (event: KeyboardEvent) => {
+                processSelection(
+                    OPTION_CLASS,
+                    OPTION_SELECTED_CLASS,
+                    event.key as KeyboardType,
+                );
+            },
+            [],
+        );
     };
     allArrows.forEach(useKeyEvent);
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);

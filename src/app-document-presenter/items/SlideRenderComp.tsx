@@ -15,6 +15,26 @@ import {
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 
+function RenderScreenInfoComp({
+    varyAppDocumentItem,
+}: Readonly<{ varyAppDocumentItem: VaryAppDocumentItemType }>) {
+    if (!appProvider.isPagePresenter) {
+        return null;
+    }
+    const { selectedList } = toClassNameHighlight(varyAppDocumentItem);
+    if (selectedList.length === 0) {
+        return null;
+    }
+    return (
+        <div className="d-flex app-border-white-round px-1">
+            {selectedList.map(([key]) => {
+                const screenId = parseInt(key);
+                return <ShowingScreenIcon key={key} screenId={screenId} />;
+            })}
+        </div>
+    );
+}
+
 export function RenderInfoComp({
     index,
     varyAppDocumentItem,
@@ -22,7 +42,6 @@ export function RenderInfoComp({
     index: number;
     varyAppDocumentItem: VaryAppDocumentItemType;
 }>) {
-    const { selectedList } = toClassNameHighlight(varyAppDocumentItem);
     const isChanged = useSlideChanged(varyAppDocumentItem);
     return (
         <div className="d-flex w-100">
@@ -37,19 +56,9 @@ export function RenderInfoComp({
                 </div>
             </div>
             <div className="flex-fill d-flex justify-content-end">
-                {selectedList.length > 0 ? (
-                    <div className="d-flex app-border-white-round px-1">
-                        {selectedList.map(([key]) => {
-                            const screenId = parseInt(key);
-                            return (
-                                <ShowingScreenIcon
-                                    key={key}
-                                    screenId={screenId}
-                                />
-                            );
-                        })}
-                    </div>
-                ) : null}
+                <RenderScreenInfoComp
+                    varyAppDocumentItem={varyAppDocumentItem}
+                />
                 <span
                     title={
                         `width:${varyAppDocumentItem.width}, ` +

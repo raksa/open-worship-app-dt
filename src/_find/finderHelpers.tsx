@@ -14,6 +14,7 @@ export function useHandleFind() {
         () => {
             appProvider.messageUtils.sendData('main:app:open-finder');
         },
+        [],
     );
 }
 

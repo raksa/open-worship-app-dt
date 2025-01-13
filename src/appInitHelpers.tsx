@@ -110,6 +110,7 @@ export function useQuickExitBlock() {
                 }
             });
         },
+        [],
     );
 }
 

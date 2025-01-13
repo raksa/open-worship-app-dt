@@ -18,13 +18,21 @@ export default function ConfirmPopupComp({
         data.onConfirm(true);
         closeAlert();
     };
-    useKeyboardRegistering([{ key: 'Escape' }], (event) => {
-        event.preventDefault();
-        handleClosing();
-    });
-    useKeyboardRegistering([{ key: 'Enter' }], () => {
-        handleOkClicking();
-    });
+    useKeyboardRegistering(
+        [{ key: 'Escape' }],
+        (event) => {
+            event.preventDefault();
+            handleClosing();
+        },
+        [data],
+    );
+    useKeyboardRegistering(
+        [{ key: 'Enter' }],
+        () => {
+            handleOkClicking();
+        },
+        [data],
+    );
     return (
         <PrimitiveModalComp>
             <div id="app-input-popup" className="shadow card">

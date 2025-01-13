@@ -36,25 +36,33 @@ export default function BoxEditorControllingModeComp() {
     const canvasItem = useCanvasItemContext();
     const boxEditorController = useBoxEditorControllerContext();
     const handleCanvasItemEditing = useSetEditingCanvasItem();
-    useKeyboardRegistering([{ key: 'Delete' }], () => {
-        canvasController.deleteItem(canvasItem);
-    });
+    useKeyboardRegistering(
+        [{ key: 'Delete' }],
+        () => {
+            canvasController.deleteItem(canvasItem);
+        },
+        [canvasController, canvasItem],
+    );
     const props = useCanvasItemPropsContext();
     return (
         <div
             className="editor-controller-box-wrapper"
             ref={(div) => {
-                if (div !== null) {
-                    boxEditorController.release();
-                    boxEditorController.initEvent(div);
-                    boxEditorController.onDone = async () => {
-                        const info = boxEditorController.getInfo();
-                        if (info !== null) {
-                            canvasItem.applyProps(info);
-                            canvasController.fireEditEvent(canvasItem);
-                        }
-                    };
+                if (div === null) {
+                    return;
                 }
+                boxEditorController.initEvent(div);
+                boxEditorController.onDone = async () => {
+                    const info = boxEditorController.getInfo();
+                    if (info === null) {
+                        return;
+                    }
+                    canvasItem.applyProps(info);
+                    canvasController.applyEditItem(canvasItem);
+                };
+                return () => {
+                    boxEditorController.release();
+                };
             }}
             style={{
                 width: '0',

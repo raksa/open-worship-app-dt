@@ -22,7 +22,7 @@ function RenderButtonComp({
 }>) {
     const { title, text, btnType, onClick, eventMap, isEnabled } = btnMaps;
     const onClickCallback = isEnabled ? onClick : () => {};
-    useKeyboardRegistering([eventMap], onClickCallback);
+    useKeyboardRegistering([eventMap], onClickCallback, [isEnabled]);
     return (
         <button
             type="button"

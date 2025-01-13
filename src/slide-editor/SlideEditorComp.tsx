@@ -15,7 +15,6 @@ import CanvasItem, {
     SelectedCanvasItemsAndSetterContext,
 } from './canvas/CanvasItem';
 import { useAppEffect } from '../helper/debuggerHelpers';
-import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { useSelectedEditingSlideContext } from '../app-document-list/appDocumentHelpers';
 
 const LazySlideEditorCanvas = lazy(() => {
@@ -26,54 +25,50 @@ const LazySlideEditorTools = lazy(() => {
 });
 
 function useCanvasController() {
-    const selectedVaryAppDocumentItem = useSelectedEditingSlideContext();
+    const slide = useSelectedEditingSlideContext();
     const [canvasController, setCanvasController] = useState(
-        new CanvasController(selectedVaryAppDocumentItem),
+        CanvasController.initInstance(slide),
     );
     useAppEffect(() => {
-        setCanvasController(new CanvasController(selectedVaryAppDocumentItem));
-    }, [selectedVaryAppDocumentItem]);
+        if (canvasController.canvas.slide === slide) {
+            return;
+        }
+        setCanvasController(CanvasController.initInstance(slide));
+    }, [slide]);
     return canvasController;
 }
 
 function useCanvasItemsData(canvasController: CanvasController) {
-    const [canvasItems, setCanvasItems] = useState(
-        canvasController.canvas.newCanvasItems,
-    );
+    const [canvasItems, setCanvasItems] = useState<CanvasItem<any>[]>([]);
     const [selectedCanvasItems, setSelectedCanvasItems] = useState<
         CanvasItem<any>[]
     >([]);
     const [editingCanvasItem, setEditingCanvasItem] =
         useState<CanvasItem<any> | null>(null);
-    const setEditingCanvasItem1 = (canvasItem: CanvasItem<any> | null) => {
-        setEditingCanvasItem(canvasItem);
-        if (canvasItem !== null) {
-            setSelectedCanvasItems([]);
-        }
-    };
-    const refreshData = () => {
-        const newCanvasItems = canvasController.canvas.newCanvasItems;
-        setCanvasItems(newCanvasItems);
+
+    const refreshData = (data?: { canvasItems: CanvasItem<any>[] }) => {
+        const canvasItems =
+            data?.canvasItems ?? canvasController.canvas.canvasItems;
+        setCanvasItems(canvasItems);
         setSelectedCanvasItems((prevSelectedCanvasItems) => {
             return prevSelectedCanvasItems.filter((item) => {
-                return checkCanvasItemsIncludes(newCanvasItems, item);
+                return checkCanvasItemsIncludes(canvasItems, item);
             });
         });
         setEditingCanvasItem((prevEditingCanvasItem) => {
             if (prevEditingCanvasItem === null) {
                 return null;
             }
-            return (
-                newCanvasItems.find((item) => {
-                    return item === prevEditingCanvasItem;
-                }) ?? null
-            );
+            const editingCanvasItem =
+                canvasItems.find((item) => {
+                    return item.checkIsSame(prevEditingCanvasItem);
+                }) ?? null;
+            return editingCanvasItem;
         });
     };
-    useAppEffect(refreshData, [canvasController]);
-    const filePath = canvasController.slide.filePath;
-    useFileSourceEvents(['update'], refreshData, [], filePath);
+
     useAppEffect(() => {
+        refreshData();
         const regEvents = canvasController.itemRegisterEventListener(
             ['update'],
             refreshData,
@@ -82,20 +77,23 @@ function useCanvasItemsData(canvasController: CanvasController) {
             canvasController.unregisterEventListener(regEvents);
         };
     }, [canvasController]);
-    const setSelectedCanvasItems1 = (
-        newSelectedCanvasItems: CanvasItem<any>[],
-    ) => {
-        setSelectedCanvasItems(newSelectedCanvasItems);
-        if (newSelectedCanvasItems.length > 0) {
-            setEditingCanvasItem(null);
-        }
-    };
+
     return {
         canvasItems,
         selectedCanvasItems,
-        setSelectedCanvasItems: setSelectedCanvasItems1,
+        setSelectedCanvasItems: (newSelectedCanvasItems: CanvasItem<any>[]) => {
+            setSelectedCanvasItems(newSelectedCanvasItems);
+            if (newSelectedCanvasItems.length > 0) {
+                setEditingCanvasItem(null);
+            }
+        },
         editingCanvasItem,
-        setEditingCanvasItem: setEditingCanvasItem1,
+        setEditingCanvasItem: (canvasItem: CanvasItem<any> | null) => {
+            setEditingCanvasItem(canvasItem);
+            if (canvasItem !== null) {
+                setSelectedCanvasItems([]);
+            }
+        },
     };
 }
 

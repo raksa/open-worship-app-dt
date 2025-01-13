@@ -154,7 +154,7 @@ export function userEnteringSelected(
     useKeyboardRegistering([{ key: 'Enter' }], () => {
         const selectedElement = getSelectedElement(optionClass, selectedClass);
         selectedElement?.click();
-    });
+    }, [optionClass, selectedClass]);
 }
 
 export const BIBLE_SEARCH_INPUT_ID = 'app-bible-search-input';

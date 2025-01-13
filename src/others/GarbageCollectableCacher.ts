@@ -14,6 +14,10 @@ export default class GarbageCollectableCacher<T> {
         this._cache = new Map();
     }
 
+    delete(key: string) {
+        this._cache.delete(key);
+    }
+
     clear() {
         if (this.isClearing) {
             return;

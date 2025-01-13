@@ -3,20 +3,23 @@ import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
 import { AnyObjectType, toMaxId } from '../helper/helpers';
-import Canvas from '../slide-editor/canvas/Canvas';
-import { fsReadFile, MimetypeNameType } from '../server/fileHelpers';
+import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
 import EditingHistoryManager from '../others/EditingHistoryManager';
 import ItemSourceInf from '../others/ItemSourceInf';
 import { OptionalPromise } from '../others/otherHelpers';
-import { unlocking } from '../server/appHelpers';
 import { handleError } from '../helper/errorHelpers';
-import GarbageCollectableCacher from '../others/GarbageCollectableCacher';
 
+type AppDocumentMetadataType = {
+    app: string;
+    fileVersion: number;
+    initDate: string;
+    lastEditDate?: string;
+};
 export type AppDocumentType = {
     items: SlideType[];
-    metadata: AnyObjectType;
+    metadata: AppDocumentMetadataType;
 };
 
 export type WrongDimensionType = {
@@ -35,8 +38,6 @@ export default class AppDocument
     implements ItemSourceInf<Slide>
 {
     static readonly mimetypeName: MimetypeNameType = 'slide';
-    private static readonly garbageCacher =
-        new GarbageCollectableCacher<AnyObjectType>(2);
 
     constructor(filePath: string) {
         super(filePath);
@@ -50,41 +51,27 @@ export default class AppDocument
         return EditingHistoryManager.getInstance(this.filePath);
     }
 
+    static fromDataText(dataText: string) {
+        try {
+            const jsonData = JSON.parse(dataText);
+            this.validate(jsonData);
+            return jsonData as AppDocumentType;
+        } catch (error) {
+            handleError(error);
+        }
+        return null;
+    }
+
     async getJsonData(): Promise<AppDocumentType | null> {
-        return await unlocking(this.filePath, async () => {
-            const cachedJson = AppDocument.garbageCacher.get(this.filePath);
-            if (cachedJson !== null) {
-                return cachedJson;
-            }
-            let jsonText = await this.editingHistoryManager.getCurrentHistory();
-            if (jsonText === null) {
-                jsonText = await fsReadFile(this.filePath);
-            }
-            if (jsonText === null) {
-                return {
-                    items: [],
-                    metadata: {},
-                };
-            }
-            try {
-                const jsonData = JSON.parse(jsonText);
-                if (
-                    typeof jsonData.metadata !== 'object' ||
-                    (jsonData.items && !(jsonData.items instanceof Array))
-                ) {
-                    throw new Error(`Invalid data ${jsonData}`);
-                }
-                jsonData.items = jsonData.items ?? [];
-                for (const item of jsonData.items) {
-                    Slide.validate(item);
-                }
-                AppDocument.garbageCacher.set(this.filePath, jsonData);
-                return jsonData;
-            } catch (error) {
-                handleError(error);
-            }
+        const jsonText = await this.editingHistoryManager.getCurrentHistory();
+        if (jsonText === null) {
             return null;
-        });
+        }
+        const jsonData = AppDocument.fromDataText(jsonText);
+        if (jsonData === null) {
+            return null;
+        }
+        return jsonData;
     }
 
     async setJsonData(jsonData: AppDocumentType) {
@@ -97,7 +84,7 @@ export default class AppDocument
         return jsonData?.metadata ?? {};
     }
 
-    async setMetadata(metadata: AnyObjectType) {
+    async setMetadata(metadata: AppDocumentMetadataType) {
         const jsonData = await this.getJsonData();
         if (jsonData === null) {
             return;
@@ -115,7 +102,7 @@ export default class AppDocument
             try {
                 return Slide.fromJson(json, this.filePath);
             } catch (error: any) {
-                showSimpleToast('Instantiating Bible Item', error.message);
+                showSimpleToast('Instantiating Slide', error.message);
             }
             return Slide.fromJsonError(json, this.filePath);
         });
@@ -126,7 +113,9 @@ export default class AppDocument
         if (jsonData === null) {
             return;
         }
-        jsonData.items = newItems.map((item) => item.toJson());
+        jsonData.items = newItems.map((item) => {
+            return item.toJson();
+        });
         await this.setJsonData(jsonData);
     }
 
@@ -201,7 +190,7 @@ export default class AppDocument
     async addNewSlide() {
         const maxSlideId = await this.getMaxItemId();
         const slide = Slide.defaultSlideData(maxSlideId + 1);
-        const { width, height } = Canvas.getDefaultDim();
+        const { width, height } = Slide.getDefaultDim();
         const json = {
             id: slide.id,
             metadata: {
@@ -247,16 +236,41 @@ export default class AppDocument
         return null;
     }
 
+    static validate(json: AnyObjectType): void {
+        if (
+            typeof json.items !== 'object' ||
+            !Array.isArray(json.items) ||
+            typeof json.metadata !== 'object' ||
+            typeof json.metadata.app !== 'string' ||
+            typeof json.metadata.fileVersion !== 'number' ||
+            typeof json.metadata.initDate !== 'string' ||
+            (json.metadata.lastEditDate !== undefined &&
+                typeof json.metadata.lastEditDate !== 'string')
+        ) {
+            throw new Error(
+                `Invalid app document data json:${JSON.stringify(json)}`,
+            );
+        }
+        json.items = json.items ?? [];
+        for (const item of json.items) {
+            Slide.validate(item);
+        }
+    }
+
     async fixSlideDimension(display: DisplayType) {
         const slides = await this.getItems();
-        const newSlidesJson = slides.map((slide) => {
-            const json = slide.toJson();
-            if (slide.checkIsWrongDimension(display)) {
-                json.metadata.width = display.bounds.width;
-                json.metadata.height = display.bounds.height;
-            }
-            return json;
-        });
+        const newSlidesJson = await Promise.all(
+            slides.map((slide) => {
+                return (async () => {
+                    const json = slide.toJson();
+                    if (await slide.checkIsWrongDimension(display)) {
+                        json.metadata.width = display.bounds.width;
+                        json.metadata.height = display.bounds.height;
+                    }
+                    return json;
+                })();
+            }),
+        );
         const jsonString = AppDocument.toJsonString(newSlidesJson);
         this.editingHistoryManager.addHistory(jsonString);
     }
@@ -337,6 +351,19 @@ export default class AppDocument
         return varyAppDocument instanceof this;
     }
 
+    async setSlide(slide: Slide) {
+        const slides = await this.getItems();
+        const index = slides.findIndex((item) => {
+            return item.id === slide.id;
+        });
+        if (index === -1) {
+            showSimpleToast('Set Slide', 'Unable to find a slide');
+            return;
+        }
+        slides[index] = slide;
+        await this.setItems(slides);
+    }
+
     checkIsSame(varyAppDocument: any) {
         if (AppDocument.checkIsThisType(varyAppDocument)) {
             return this.filePath === varyAppDocument.filePath;
@@ -345,5 +372,16 @@ export default class AppDocument
 
     toJson(): AnyObjectType {
         throw new Error('Method not implemented.');
+    }
+
+    async save() {
+        return await this.editingHistoryManager.save((dataText) => {
+            const jsonData = AppDocument.fromDataText(dataText);
+            if (jsonData === null) {
+                return null;
+            }
+            jsonData.metadata.lastEditDate = new Date().toISOString();
+            return AppDocument.toJsonString(jsonData);
+        });
     }
 }

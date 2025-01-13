@@ -310,13 +310,17 @@ export function useSelectedAppDocumentSetterContext() {
 
 export function useSlideChanged(varyAppDocumentItem: VaryAppDocumentItemType) {
     const [isChanged, setIsChanged] = useState(false);
-    useEditingHistoryEvent(varyAppDocumentItem.filePath, async () => {
-        const slide = AppDocument.getInstance(varyAppDocumentItem.filePath);
-        const isChanged =
-            varyAppDocumentItem instanceof Slide &&
-            (await slide.checkIsSlideChanged(varyAppDocumentItem.id));
-        setIsChanged(isChanged);
-    });
+    useEditingHistoryEvent(
+        varyAppDocumentItem.filePath,
+        async () => {
+            const slide = AppDocument.getInstance(varyAppDocumentItem.filePath);
+            const isChanged =
+                varyAppDocumentItem instanceof Slide &&
+                (await slide.checkIsSlideChanged(varyAppDocumentItem.id));
+            setIsChanged(isChanged);
+        },
+        [varyAppDocumentItem],
+    );
     return isChanged;
 }
 
@@ -366,7 +370,7 @@ export function useSlideWrongDimension(
             const wrong = await varyAppDocument.getIsWrongDimension(display);
             setWrong(wrong);
         },
-        [display],
+        [varyAppDocument, display],
     );
     return wrong;
 }

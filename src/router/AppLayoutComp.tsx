@@ -94,7 +94,7 @@ function useAppDocumentContextValues() {
             const varyAppDocumentItem = await getSelectedEditingSlide();
             methodContext.setSlide(varyAppDocumentItem);
         },
-        undefined,
+        [],
         {
             setVaryAppDocument,
             setSlide,

@@ -20,6 +20,7 @@ import {
 import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { OptionalPromise } from './otherHelpers';
+import GarbageCollectableCacher from './GarbageCollectableCacher';
 
 const { diffUtils } = appProvider;
 
@@ -138,7 +139,7 @@ class FileLineHandler {
     }
 
     async changeCurrent(fileFullPath: string) {
-        return await unlocking(this.dirPath, async () => {
+        return await unlocking(`change-current-${this.filePath}`, async () => {
             let lastFilePath = await this.getCurrentFileFullPath();
             if (lastFilePath !== null) {
                 const lastFileIndex = this.toFileIndex(lastFilePath);
@@ -167,35 +168,40 @@ class FileLineHandler {
     }
 
     async appendHistory(text: string) {
-        try {
-            let currentFilePath = await this.getCurrentFileFullPath();
-            if (currentFilePath === null) {
-                return false;
+        return await unlocking(`append-history-${this.filePath}`, async () => {
+            try {
+                let currentFilePath = await this.getCurrentFileFullPath();
+                if (currentFilePath === null) {
+                    return false;
+                }
+                const currentFileIndex = this.toFileIndex(currentFilePath);
+                await this.clearNextHistories(currentFileIndex);
+                currentFilePath = this.toFileFullPath(currentFileIndex + 1);
+                await fsWriteFile(currentFilePath, text);
+                await this.changeCurrent(currentFilePath);
+                return true;
+            } catch (error) {
+                handleError(error);
             }
-            const currentFileIndex = this.toFileIndex(currentFilePath);
-            await this.clearNextHistories(currentFileIndex);
-            currentFilePath = this.toFileFullPath(currentFileIndex + 1);
-            await fsWriteFile(currentFilePath, text);
-            await this.changeCurrent(currentFilePath);
-            return true;
-        } catch (error) {
-            handleError(error);
-        }
-        return false;
+            return false;
+        });
     }
 
     async ensureHistoriesDir() {
         if (!(await fsCheckDirExist(this.dirPath))) {
             await fsCreateDir(this.dirPath);
         }
-        const fileNames = await fsListFiles(this.dirPath);
-        if (fileNames.length === 0) {
-            if (!(await fsCheckFileExist(this.filePath))) {
-                throw new Error(`File ${this.filePath} does not exist`);
-            }
-            const currentFilePath = this.toCurrentFileFullPath(0);
-            await fsCloneFile(this.filePath, currentFilePath);
+        let currentFilePath = await this.getCurrentFileFullPath();
+        if (currentFilePath !== null) {
+            return;
         }
+        await this.clearHistories();
+        await fsCreateDir(this.dirPath);
+        if (!(await fsCheckFileExist(this.filePath))) {
+            throw new Error(`File ${this.filePath} does not exist`);
+        }
+        currentFilePath = this.toCurrentFileFullPath(0);
+        await fsCloneFile(this.filePath, currentFilePath);
     }
 
     clearHistories() {
@@ -221,6 +227,8 @@ export default class EditingHistoryManager {
     public static readonly eventHandler = new EventHandler<any>();
     filePath: string;
     fileLineHandler: FileLineHandler;
+    private static readonly garbageCacher =
+        new GarbageCollectableCacher<string>(60);
 
     constructor(filePath: string) {
         this.filePath = filePath;
@@ -232,6 +240,7 @@ export default class EditingHistoryManager {
     }
 
     fireEvent() {
+        EditingHistoryManager.garbageCacher.delete(this.filePath);
         EditingHistoryManager.fireEvent(this.filePath);
     }
 
@@ -294,12 +303,32 @@ export default class EditingHistoryManager {
     }
 
     async getCurrentHistory() {
-        const currentFilePath =
-            await this.fileLineHandler.getCurrentFileFullPath();
-        if (currentFilePath === null) {
-            return null;
+        const dataText = EditingHistoryManager.garbageCacher.get(this.filePath);
+        if (dataText !== null) {
+            return dataText;
         }
-        return await fsReadFile(currentFilePath);
+        return await unlocking(
+            `get-current-history-${this.filePath}`,
+            async () => {
+                let dataText = EditingHistoryManager.garbageCacher.get(
+                    this.filePath,
+                );
+                if (dataText !== null) {
+                    return dataText;
+                }
+                const currentFilePath =
+                    await this.fileLineHandler.getCurrentFileFullPath();
+                dataText = await fsReadFile(currentFilePath ?? this.filePath);
+                if (dataText === null) {
+                    return null;
+                }
+                EditingHistoryManager.garbageCacher.set(
+                    this.filePath,
+                    dataText,
+                );
+                return dataText;
+            },
+        );
     }
 
     async discard() {
@@ -313,13 +342,20 @@ export default class EditingHistoryManager {
         return false;
     }
 
-    async save() {
-        const lastHistory = await this.getCurrentHistory();
+    async save(sanitizeData?: (data: string) => string | null) {
+        let lastHistory = await this.getCurrentHistory();
+        if (lastHistory === null) {
+            return false;
+        }
+        if (sanitizeData !== undefined) {
+            lastHistory = sanitizeData(lastHistory);
+        }
         if (lastHistory === null) {
             return false;
         }
         await fsWriteFile(this.filePath, lastHistory);
         this.fireEvent();
+        return true;
     }
 
     static getInstance(filePath: string) {
@@ -333,7 +369,7 @@ export default class EditingHistoryManager {
 export function useEditingHistoryEvent(
     filePath: string,
     listener: () => OptionalPromise<void>,
-    deps?: DependencyList,
+    deps: DependencyList,
 ) {
     useAppEffect(() => {
         const registeredEvents = EditingHistoryManager.registerEventListener(
@@ -343,7 +379,7 @@ export function useEditingHistoryEvent(
         return () => {
             EditingHistoryManager.unregisterEventListener(registeredEvents);
         };
-    }, [filePath, listener, ...(deps ?? [])]);
+    }, [filePath, ...deps]);
 }
 
 export function useEditingHistoryStatus(filePath: string) {
@@ -361,7 +397,7 @@ export function useEditingHistoryStatus(filePath: string) {
         const canSave = historyText !== null && historyText !== text;
         setStatus({ canUndo, canRedo, canSave });
     };
-    useEditingHistoryEvent(filePath, update);
+    useEditingHistoryEvent(filePath, update, []);
     useAppEffect(() => {
         update();
     }, [filePath]);

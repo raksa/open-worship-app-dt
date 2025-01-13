@@ -108,18 +108,26 @@ export function useFoundActionKeyboard(bibleItem: BibleItem) {
             ? hideBibleSearchPopup
             : () => false;
     SearchBibleItemViewController.getInstance().onSearchAddBibleItem = onDone;
-    useKeyboardRegistering([addListEventMapper], async () => {
-        const addedBibleItem = await addBibleItem(bibleItem, onDone);
-        if (addedBibleItem === null) {
-            showAddingBibleItemFail();
-        }
-    });
-    useKeyboardRegistering([presenterEventMapper], (event) => {
-        if (!appProvider.isPagePresenter) {
-            return;
-        }
-        addBibleItemAndPresent(event, bibleItem, onDone);
-    });
+    useKeyboardRegistering(
+        [addListEventMapper],
+        async () => {
+            const addedBibleItem = await addBibleItem(bibleItem, onDone);
+            if (addedBibleItem === null) {
+                showAddingBibleItemFail();
+            }
+        },
+        [bibleItem, onDone],
+    );
+    useKeyboardRegistering(
+        [presenterEventMapper],
+        (event) => {
+            if (!appProvider.isPagePresenter) {
+                return;
+            }
+            addBibleItemAndPresent(event, bibleItem, onDone);
+        },
+        [bibleItem, onDone],
+    );
 }
 
 export function genFoundBibleItemContextMenu(

@@ -1,16 +1,19 @@
 import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
-import Canvas from '../slide-editor/canvas/Canvas';
 import { CanvasItemPropsType } from '../slide-editor/canvas/CanvasItem';
 import { DisplayType } from '../_screen/screenHelpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import { ClipboardInf, toKeyByFilePath } from './appDocumentHelpers';
+import { getDefaultScreenDisplay } from '../_screen/managers/screenHelpers';
 
 export type SlideType = {
     id: number;
     canvasItems: CanvasItemPropsType[];
-    metadata: AnyObjectType;
+    metadata: {
+        width: number;
+        height: number;
+    };
 };
 
 export default class Slide
@@ -18,7 +21,6 @@ export default class Slide
     implements DragInf<string>, ClipboardInf
 {
     private _originalJson: SlideType;
-    static readonly SELECT_SETTING_NAME = 'slide-selected';
     id: number;
     filePath: string;
 
@@ -29,10 +31,6 @@ export default class Slide
         this.filePath = filePath;
     }
 
-    get key() {
-        return toKeyByFilePath(this.filePath, this.id);
-    }
-
     get originalJson() {
         return this._originalJson;
     }
@@ -41,38 +39,14 @@ export default class Slide
         this._originalJson = json;
     }
 
-    static checkIsThisType(anyAppDocumentItem: any): boolean {
-        return anyAppDocumentItem instanceof Slide;
-    }
-
-    checkIsSame(item: ItemBase) {
-        if (Slide.checkIsThisType(item)) {
-            return super.checkIsSame(item);
-        }
-        return false;
-    }
-
     get metadata() {
         return this.originalJson.metadata;
     }
 
-    set metadata(metadata: AnyObjectType) {
+    set metadata(metadata: { width: number; height: number }) {
         const json = cloneJson(this.originalJson);
         json.metadata = metadata;
         this.originalJson = json;
-    }
-
-    get canvas() {
-        return Canvas.fromJson({
-            metadata: this.metadata,
-            canvasItems: this.canvasItemsJson,
-        });
-    }
-
-    set canvas(canvas: Canvas) {
-        this.canvasItemsJson = canvas.canvasItems.map((item) => {
-            return item.toJson();
-        });
     }
 
     get canvasItemsJson() {
@@ -105,8 +79,14 @@ export default class Slide
         this.metadata = metadata;
     }
 
+    static getDefaultDim() {
+        const display = getDefaultScreenDisplay();
+        const { width, height } = display.bounds;
+        return { width, height };
+    }
+
     static defaultSlideData(id: number) {
-        const { width, height } = Canvas.getDefaultDim();
+        const { width, height } = this.getDefaultDim();
         return {
             id,
             metadata: {
@@ -117,26 +97,15 @@ export default class Slide
         };
     }
 
-    static fromJson(json: SlideType, filePath: string) {
-        return new Slide(json.id, filePath, json);
-    }
-
-    static fromJsonError(json: AnyObjectType, filePath: string) {
-        const newJson = {
-            id: -1,
-            metadata: {},
-            canvasItems: [],
-        };
-        const slide = new Slide(-1, filePath, newJson);
-        slide.jsonError = json;
-        return slide;
-    }
-
     toJson(): SlideType {
         if (this.isError) {
             return this.jsonError;
         }
         return this.originalJson;
+    }
+
+    async checkIsWrongDimension({ bounds }: DisplayType) {
+        return bounds.width !== this.width || bounds.height !== this.height;
     }
 
     static validate(json: AnyObjectType) {
@@ -147,7 +116,7 @@ export default class Slide
             typeof json.metadata.height !== 'number' ||
             !(json.canvasItems instanceof Array)
         ) {
-            throw new Error('Invalid slide data');
+            throw new Error(`Invalid slide data json:${JSON.stringify(json)}`);
         }
     }
 
@@ -159,13 +128,9 @@ export default class Slide
         return slide;
     }
 
-    checkIsWrongDimension({ bounds }: DisplayType) {
-        return bounds.width !== this.width || bounds.height !== this.height;
-    }
-
     dragSerialize() {
         const dragging: any = {
-            key: this.key,
+            key: toKeyByFilePath(this.filePath, this.id),
         };
         return {
             type: DragTypeEnum.SLIDE,
@@ -208,5 +173,34 @@ export default class Slide
             handleError(error);
         }
         return null;
+    }
+
+    static fromJson(json: SlideType, filePath: string) {
+        return new Slide(json.id, filePath, json);
+    }
+
+    static fromJsonError(json: AnyObjectType, filePath: string) {
+        const newJson = {
+            id: -1,
+            metadata: {
+                width: 0,
+                height: 0,
+            },
+            canvasItems: [],
+        };
+        const slide = new Slide(-1, filePath, newJson);
+        slide.jsonError = json;
+        return slide;
+    }
+
+    static checkIsThisType(anyAppDocumentItem: any): boolean {
+        return anyAppDocumentItem instanceof Slide;
+    }
+
+    checkIsSame(item: ItemBase) {
+        if (Slide.checkIsThisType(item)) {
+            return super.checkIsSame(item);
+        }
+        return false;
     }
 }

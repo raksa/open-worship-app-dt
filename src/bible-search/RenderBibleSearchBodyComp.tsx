@@ -82,28 +82,34 @@ function useMethods(
     inputText: string,
     setInputText: (text: string) => void,
 ) {
-    useKeyboardRegistering([{ key: 'Tab' }], async (event) => {
-        const { bookKey, guessingChapter, bibleItem } = extractedInput;
-        if (bibleItem === null) {
-            if (bookKey !== null && guessingChapter !== null) {
-                const chapter = await parseChapterFromGuessing(
-                    bibleKey,
-                    bookKey,
-                    guessingChapter,
-                );
-                if (chapter === null) {
-                    return;
+    useKeyboardRegistering(
+        [{ key: 'Tab' }],
+        async (event) => {
+            const { bookKey, guessingChapter, bibleItem } = extractedInput;
+            if (bibleItem === null) {
+                if (bookKey !== null && guessingChapter !== null) {
+                    const chapter = await parseChapterFromGuessing(
+                        bibleKey,
+                        bookKey,
+                        guessingChapter,
+                    );
+                    if (chapter === null) {
+                        return;
+                    }
+                    event.stopPropagation();
+                    event.preventDefault();
+                    setInputText(`${inputText}:`);
                 }
+            } else if (
+                bibleItem.target.verseStart === bibleItem.target.verseEnd
+            ) {
                 event.stopPropagation();
                 event.preventDefault();
-                setInputText(`${inputText}:`);
+                setInputText(`${inputText}-`);
             }
-        } else if (bibleItem.target.verseStart === bibleItem.target.verseEnd) {
-            event.stopPropagation();
-            event.preventDefault();
-            setInputText(`${inputText}-`);
-        }
-    });
+        },
+        [bibleKey, extractedInput, inputText, setInputText],
+    );
     const handleBookSelecting = async (_: string, newBook: string) => {
         const newText = await toInputText(bibleKey, newBook);
         setInputText(newText);

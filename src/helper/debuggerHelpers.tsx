@@ -52,7 +52,7 @@ function checkStore(toKey: string) {
 type MethodContextType = { [key: string]: any };
 export function useAppEffectAsync<T extends MethodContextType>(
     effectMethod: (methodContext: T) => Promise<(() => void) | void>,
-    deps?: DependencyList,
+    deps: DependencyList,
     methods?: T,
     key?: string,
 ) {
@@ -82,7 +82,7 @@ export function useAppEffectAsync<T extends MethodContextType>(
 
 export function useAppEffect(
     effect: EffectCallback,
-    deps?: DependencyList,
+    deps: DependencyList,
     key?: string,
 ) {
     const toKey = useMemo(() => {

@@ -12,22 +12,6 @@ export default function FinderAppComp({
 }>) {
     const [searchingText, setSearchingText] = useState('');
     const [isMatchCase, setIsMatchCase] = useState(false);
-    useKeyboardRegistering([{ key: 'Escape' }], () => {
-        if (!searchingText) {
-            onClose();
-            return;
-        }
-        setSearchingText1('');
-    });
-    useKeyboardRegistering([{ key: 'Enter' }], () => {
-        if (!searchingText) {
-            return;
-        }
-        setSearchingText1(searchingText, {
-            forward: true,
-            findNext: true,
-        });
-    });
     const setSearchingText1 = (
         text: string,
         options: SearchingOptions = {},
@@ -38,6 +22,31 @@ export default function FinderAppComp({
             ...options,
         });
     };
+    useKeyboardRegistering(
+        [{ key: 'Escape' }],
+        () => {
+            if (!searchingText) {
+                onClose();
+                return;
+            }
+            setSearchingText1('');
+        },
+        [isMatchCase],
+    );
+    useKeyboardRegistering(
+        [{ key: 'Enter' }],
+        () => {
+            if (!searchingText) {
+                return;
+            }
+            setSearchingText1(searchingText, {
+                forward: true,
+                findNext: true,
+            });
+        },
+        [searchingText, isMatchCase],
+    );
+
     return (
         <div className="finder-container card w-100 h-100" data-bs-theme="dark">
             <div className="card-body">

@@ -34,7 +34,7 @@ export default function MenuIsModifying({
                 disabled={!canSave}
                 title={`Save [${toShortcutKey(eventMapper)}]`}
                 onClick={() => {
-                    selectedVaryAppDocument.editingHistoryManager.save();
+                    selectedVaryAppDocument.save();
                 }}
             >
                 <i className="bi bi-check2" />

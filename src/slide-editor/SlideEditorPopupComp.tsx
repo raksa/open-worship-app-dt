@@ -13,7 +13,7 @@ export default function SlideEditorPopupComp({
 }: Readonly<{
     slide: Slide;
 }>) {
-    useKeyboardRegistering([{ key: 'Escape' }], closeSlideQuickEdit);
+    useKeyboardRegistering([{ key: 'Escape' }], closeSlideQuickEdit, []);
     return (
         <ModalComp>
             <div id="slide-editor-popup" className="shadow card">

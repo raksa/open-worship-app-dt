@@ -51,12 +51,16 @@ export default function SlidesMenuComp() {
     const { canUndo, canRedo, canSave } = useEditingHistoryStatus(
         selectedVaryAppDocument.filePath,
     );
-    useKeyboardRegistering([savingEventMapper], () => {
-        if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
-            return;
-        }
-        selectedVaryAppDocument.editingHistoryManager.save();
-    });
+    useKeyboardRegistering(
+        [savingEventMapper],
+        () => {
+            if (!AppDocument.checkIsThisType(selectedVaryAppDocument)) {
+                return;
+            }
+            selectedVaryAppDocument.save();
+        },
+        [selectedVaryAppDocument],
+    );
     const wrongDimension = useSlideWrongDimension(
         selectedVaryAppDocument,
         screenDisplay,

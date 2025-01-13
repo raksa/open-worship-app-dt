@@ -109,7 +109,7 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
     set fullTextItemData(ftItemData: FullTextItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
-        unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+        unlocking(`set-${screenManagerSettingNames.FULL_TEXT}`, () => {
             const allFTList = getFullTextListOnScreenSetting();
             if (ftItemData === null) {
                 delete allFTList[this.key];
@@ -127,12 +127,15 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
             if (!appProviderScreen.isScreen) {
-                unlocking(screenManagerSettingNames.FULL_TEXT, () => {
-                    const allFTList = getFullTextListOnScreenSetting();
-                    allFTList[this.key] = this._ftItemData as any;
-                    const string = JSON.stringify(allFTList);
-                    setSetting(screenManagerSettingNames.FULL_TEXT, string);
-                });
+                unlocking(
+                    `set-meta-${screenManagerSettingNames.FULL_TEXT}`,
+                    () => {
+                        const allFTList = getFullTextListOnScreenSetting();
+                        allFTList[this.key] = this._ftItemData as any;
+                        const string = JSON.stringify(allFTList);
+                        setSetting(screenManagerSettingNames.FULL_TEXT, string);
+                    },
+                );
             }
         }
     }

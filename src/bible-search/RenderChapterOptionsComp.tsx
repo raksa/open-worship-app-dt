@@ -56,6 +56,7 @@ function ChapterOptions({
             return { key };
         }),
         arrowListener,
+        [],
     );
     userEnteringSelected(OPTION_CLASS, OPTION_SELECTED_CLASS);
     if (matches === null) {

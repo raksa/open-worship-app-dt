@@ -24,7 +24,7 @@ export default function BoxEditorNormalTextEditModeComp({
         timeoutId = setTimeout(() => {
             timeoutId = null;
             canvasItem.applyProps({ text });
-            canvasController.fireEditEvent(canvasItem);
+            canvasController.applyEditItem(canvasItem);
         }, 1e3);
     };
     const props = useCanvasItemPropsContext<CanvasItemTextPropsType>();

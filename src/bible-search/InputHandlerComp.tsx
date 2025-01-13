@@ -48,19 +48,23 @@ export default function InputHandlerComp({
         1,
         2,
     );
-    useKeyboardRegistering([{ key: 'Escape' }], () => {
-        if (!checkIsBibleSearchInputFocused()) {
-            setBibleSearchInputFocus();
-            return;
-        }
-        const arr = inputText.split(' ').filter((str) => str !== '');
-        if (arr.length === 1) {
-            setInputText('');
-            return;
-        }
-        arr.pop();
-        setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
-    });
+    useKeyboardRegistering(
+        [{ key: 'Escape' }],
+        () => {
+            if (!checkIsBibleSearchInputFocused()) {
+                setBibleSearchInputFocus();
+                return;
+            }
+            const arr = inputText.split(' ').filter((str) => str !== '');
+            if (arr.length === 1) {
+                setInputText('');
+                return;
+            }
+            arr.pop();
+            setInputText(arr.join(' ') + (arr.length > 0 ? ' ' : ''));
+        },
+        [inputText],
+    );
     return (
         <Fragment>
             <BibleSelectionComp
