@@ -58,11 +58,11 @@ function HistoryPreviewerFooterComp() {
     }, []);
     return (
         <div className="history me-1">
-            {selectedSlideItemHistories.map(([index, key]) => {
+            {selectedSlideItemHistories.map(([index, key], i) => {
                 return (
                     <span
                         title={key}
-                        key={key}
+                        key={key + i}
                         className="badge rounded-pill text-bg-info"
                     >
                         {index}
