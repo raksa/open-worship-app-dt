@@ -128,7 +128,7 @@ export function useKeyboardRegistering(
         return () => {
             KeyboardEventListener.unregisterEventListener(registeredEvents);
         };
-    }, deps);
+    }, [listener, ...deps]);
 }
 
 document.onkeydown = function (event) {

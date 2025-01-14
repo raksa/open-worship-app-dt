@@ -35,6 +35,7 @@ const easingFunctions = {
         return 0.5 * (Math.sin((k - 0.5) * Math.PI) + 1);
     },
 };
+
 export type EasingFuncType = keyof typeof easingFunctions;
 
 export type GenAnimPropsType = {
@@ -43,6 +44,7 @@ export type GenAnimPropsType = {
     width?: number;
     height?: number;
 };
+
 function none(): StyleAnimType {
     return {
         style: '',
@@ -51,6 +53,7 @@ function none(): StyleAnimType {
         duration: 0,
     };
 }
+
 function fade(target: TargetType): StyleAnimType {
     const duration = 1000;
     const cssProps = {
@@ -99,6 +102,7 @@ function fade(target: TargetType): StyleAnimType {
         duration,
     };
 }
+
 function move(): StyleAnimType {
     const duration = 500;
     const movingMaker = ({
@@ -184,6 +188,7 @@ function move(): StyleAnimType {
         duration,
     };
 }
+
 function zoom(): StyleAnimType {
     return none();
 }
@@ -197,7 +202,7 @@ export const styleAnimList: {
     zoom,
 };
 
-export function usePTEEvents(
+export function useScreenEffectEvents(
     events: PTFEventType[],
     screenEffectManager: ScreenEffectManager,
     callback?: () => void,
@@ -217,6 +222,6 @@ export function usePTEEvents(
         return () => {
             screenEffectManager.unregisterEventListener(instanceEvents);
         };
-    }, [screenEffectManager]);
+    }, [screenEffectManager, callback]);
     return n;
 }

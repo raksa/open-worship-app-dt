@@ -63,5 +63,5 @@ export function useFileSourceEvents<T>(
         return () => {
             FileSource.unregisterEventListener(staticEvents);
         };
-    }, [filePath, ...(deps ?? [])]);
+    }, [callback, filePath, ...(deps ?? [])]);
 }

@@ -3,7 +3,7 @@ import ScreenEffectManager from './managers/ScreenEffectManager';
 import {
     ScreenTransitionEffectType,
     transitionEffect,
-    usePTEEvents,
+    useScreenEffectEvents,
 } from './transitionEffectHelpers';
 
 function openContextMenu(event: any, screenEffectManager: ScreenEffectManager) {
@@ -35,7 +35,7 @@ export default function RenderTransitionEffectComp({
     title: string;
     screenEffectManager: ScreenEffectManager;
 }>) {
-    usePTEEvents(['update'], screenEffectManager);
+    useScreenEffectEvents(['update'], screenEffectManager);
     const selected = transitionEffect[screenEffectManager.effectType];
     return (
         <button
@@ -56,6 +56,6 @@ export function RendStyle({
 }: Readonly<{
     screenEffectManager: ScreenEffectManager;
 }>) {
-    usePTEEvents(['update'], screenEffectManager);
+    useScreenEffectEvents(['update'], screenEffectManager);
     return <style>{screenEffectManager.style}</style>;
 }

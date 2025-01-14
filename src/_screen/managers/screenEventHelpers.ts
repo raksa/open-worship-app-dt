@@ -33,7 +33,7 @@ export function useScreenEvents<T extends string>(
             eventHandler?.unregisterEventListener(registeredEvents) ??
                 Class.unregisterEventListener(registeredEvents);
         };
-    }, [eventHandler]);
+    }, [eventHandler, callback]);
     return n;
 }
 
