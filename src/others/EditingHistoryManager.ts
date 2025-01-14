@@ -12,8 +12,6 @@ import {
     fsDeleteFile,
     fsListFiles,
     fsMoveFile,
-    fsReadFile,
-    fsWriteFile,
     pathBasename,
     pathJoin,
 } from '../server/fileHelpers';
@@ -21,6 +19,7 @@ import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
 import { OptionalPromise } from './otherHelpers';
 import GarbageCollectableCacher from './GarbageCollectableCacher';
+import FileSource from '../helper/FileSource';
 
 const { diffUtils } = appProvider;
 
@@ -32,6 +31,10 @@ class FileLineHandler {
     constructor(filePath: string) {
         this.filePath = filePath;
         this.dirPath = `${this.filePath}.histories`;
+    }
+
+    get fileSource() {
+        return FileSource.getInstance(this.filePath);
     }
 
     private async getAllHistoryFiles() {
@@ -123,8 +126,14 @@ class FileLineHandler {
         if (currentFilePath === null) {
             return false;
         }
-        const currentContent = await fsReadFile(currentFilePath);
-        const patchedText = await fsReadFile(filePath);
+        const currentContent = await FileSource.readFileData(currentFilePath);
+        if (currentContent === null) {
+            return false;
+        }
+        const patchedText = await FileSource.readFileData(filePath);
+        if (patchedText === null) {
+            return false;
+        }
         const patcher = diffUtils.parsePatch(patchedText);
         const reversePatcher = diffUtils.reversePatch(patcher);
         const originalContent = diffUtils.applyPatch(
@@ -134,8 +143,7 @@ class FileLineHandler {
         if (originalContent === false) {
             return false;
         }
-        await fsWriteFile(filePath, originalContent);
-        return true;
+        return await FileSource.saveFileData(filePath, originalContent);
     }
 
     async changeCurrent(fileFullPath: string) {
@@ -153,17 +161,24 @@ class FileLineHandler {
                 fileFullPath,
                 this.toCurrentFileFullPath(fileIndex),
             );
-            if (lastFilePath !== null) {
-                const lastContent = await fsReadFile(lastFilePath);
-                const currentContent = await fsReadFile(currentFilePath);
-                const patchedText = diffUtils.createPatch(
-                    this.filePath,
-                    lastContent,
-                    currentContent,
-                );
-                await fsWriteFile(lastFilePath, patchedText);
+            if (lastFilePath === null) {
+                return false;
             }
-            return true;
+            const lastContent = await FileSource.readFileData(lastFilePath);
+            if (lastContent === null) {
+                return false;
+            }
+            const currentContent =
+                await FileSource.readFileData(currentFilePath);
+            if (currentContent === null) {
+                return false;
+            }
+            const patchedText = diffUtils.createPatch(
+                this.filePath,
+                lastContent,
+                currentContent,
+            );
+            return await FileSource.saveFileData(lastFilePath, patchedText);
         });
     }
 
@@ -177,9 +192,14 @@ class FileLineHandler {
                 const currentFileIndex = this.toFileIndex(currentFilePath);
                 await this.clearNextHistories(currentFileIndex);
                 currentFilePath = this.toFileFullPath(currentFileIndex + 1);
-                await fsWriteFile(currentFilePath, text);
-                await this.changeCurrent(currentFilePath);
-                return true;
+                const isSuccess = await FileSource.saveFileData(
+                    currentFilePath,
+                    text,
+                );
+                if (isSuccess) {
+                    await this.changeCurrent(currentFilePath);
+                    return true;
+                }
             } catch (error) {
                 handleError(error);
             }
@@ -228,7 +248,7 @@ export default class EditingHistoryManager {
     filePath: string;
     fileLineHandler: FileLineHandler;
     private static readonly garbageCacher =
-        new GarbageCollectableCacher<string>(60);
+        new GarbageCollectableCacher<string>(3);
 
     constructor(filePath: string) {
         this.filePath = filePath;
@@ -318,7 +338,9 @@ export default class EditingHistoryManager {
                 }
                 const currentFilePath =
                     await this.fileLineHandler.getCurrentFileFullPath();
-                dataText = await fsReadFile(currentFilePath ?? this.filePath);
+                dataText = await FileSource.readFileData(
+                    currentFilePath ?? this.filePath,
+                );
                 if (dataText === null) {
                     return null;
                 }
@@ -353,7 +375,11 @@ export default class EditingHistoryManager {
         if (lastHistory === null) {
             return false;
         }
-        await fsWriteFile(this.filePath, lastHistory);
+        const isSuccess =
+            await this.fileLineHandler.fileSource.saveFileData(lastHistory);
+        if (!isSuccess) {
+            return false;
+        }
         await this.fileLineHandler.clearHistories();
         this.fireEvent();
         return true;
@@ -394,7 +420,7 @@ export function useEditingHistoryStatus(filePath: string) {
         const canUndo = await editingHistoryManager.checkCanUndo();
         const canRedo = await editingHistoryManager.checkCanRedo();
         const historyText = await editingHistoryManager.getCurrentHistory();
-        const text = await fsReadFile(filePath);
+        const text = await FileSource.readFileData(filePath);
         const canSave = historyText !== null && historyText !== text;
         setStatus({ canUndo, canRedo, canSave });
     };

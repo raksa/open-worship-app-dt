@@ -3,30 +3,21 @@ import appProvider from '../../server/appProvider';
 import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
 import { VaryAppDocumentItemType } from '../../app-document-list/appDocumentHelpers';
+import { slidePreviewerMethods } from './AppDocumentPreviewerFooterComp';
 
-export function getPresenterIndex(filePath: string, slideIds: number[]) {
-    if (slideIds.length === 0) {
-        return -1;
-    }
-    for (let i = 0; i < slideIds.length; i++) {
-        const selectedList = ScreenSlideManager.getDataList(
-            filePath,
-            slideIds[i],
-        );
-        if (selectedList.length > 0) {
-            return i;
-        }
-    }
-    return -1;
-}
 export function handleAppDocumentItemSelecting(
-    selectSelectedSlide: (varyAppDocumentItem: VaryAppDocumentItemType) => void,
-    varyAppDocumentItem: VaryAppDocumentItemType,
     event: any,
+    viewIndex: number,
+    varyAppDocumentItem: VaryAppDocumentItemType,
+    selectSelectedSlide: (varyAppDocumentItem: VaryAppDocumentItemType) => void,
 ) {
     if (appProvider.isPageEditor) {
         selectSelectedSlide(varyAppDocumentItem);
     } else {
+        slidePreviewerMethods.handleSlideItemSelected(
+            viewIndex,
+            varyAppDocumentItem,
+        );
         ScreenSlideManager.handleSlideSelecting(
             event,
             varyAppDocumentItem.filePath,

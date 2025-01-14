@@ -86,13 +86,13 @@ function PdfAppearanceSettingComp() {
     const [isFullWidth, setIsFullWidth] = useState(
         ScreenSlideManager.isPdfFullWidth,
     );
-    const setIsFullWidth1 = (b: boolean) => {
-        ScreenSlideManager.isPdfFullWidth = b;
+    const setIsFullWidth1 = (isFullWidth: boolean) => {
+        ScreenSlideManager.isPdfFullWidth = isFullWidth;
         for (const { screenSlideManager } of getAllScreenManagers()) {
             screenSlideManager.render();
             screenSlideManager.sendSyncScreen();
         }
-        setIsFullWidth(b);
+        setIsFullWidth(isFullWidth);
     };
     return (
         <div className="d-flex">

@@ -8,39 +8,67 @@ import {
     selectSlide,
     useSelectedVaryAppDocumentContext,
     useSelectedAppDocumentSetterContext,
+    VaryAppDocumentItemType,
+    toKeyByFilePath,
 } from '../../app-document-list/appDocumentHelpers';
-import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
-import { genSlideIds, getPresenterIndex } from './slideHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
 import { useAppDocumentItemThumbnailSizeScale } from '../../event/SlideListEventListener';
 import appProvider from '../../server/appProvider';
 import { showAppAlert } from '../../popup-widget/popupWidgetHelpers';
+import { useAppEffect } from '../../helper/debuggerHelpers';
+
+export const slidePreviewerMethods = {
+    handleSlideItemSelected: (
+        _viewIndex: number,
+        _varyAppDocumentItem: VaryAppDocumentItemType,
+    ) => {},
+};
 
 function HistoryPreviewerFooterComp() {
-    const selectedVaryAppDocument = useSelectedVaryAppDocumentContext();
-    const [history, setHistory] = useState<number[]>([]);
-    useScreenSlideManagerEvents(['update'], undefined, async () => {
-        const appVaryDocumentItems = await selectedVaryAppDocument.getItems();
-        const index = getPresenterIndex(
-            selectedVaryAppDocument.filePath,
-            genSlideIds(appVaryDocumentItems),
-        );
-        if (index < 0) {
-            return;
-        }
-        setHistory((oldHistory) => {
-            const newHistory = [...oldHistory, index + 1];
-            if (newHistory.length > 3) {
-                newHistory.shift();
-            }
-            return newHistory;
-        });
-    });
+    const [selectedSlideItemHistories, setSelectedSlideItemHistories] =
+        useState<[number, string][]>([]);
+    useAppEffect(() => {
+        slidePreviewerMethods.handleSlideItemSelected = (
+            viewIndex: number,
+            varyAppDocumentItem: VaryAppDocumentItemType,
+        ) => {
+            setSelectedSlideItemHistories((oldHistories) => {
+                const newHistories = [
+                    ...oldHistories,
+                    [
+                        viewIndex,
+                        toKeyByFilePath(
+                            varyAppDocumentItem.filePath,
+                            varyAppDocumentItem.id,
+                        ),
+                    ],
+                ];
+                while (newHistories.length > 3) {
+                    newHistories.shift();
+                }
+                return newHistories as [number, string][];
+            });
+        };
+        return () => {
+            slidePreviewerMethods.handleSlideItemSelected = (
+                _viewIndex,
+                _varyAppDocumentItem,
+            ) => {};
+        };
+    }, []);
     return (
         <div className="history me-1">
-            <span className="badge rounded-pill text-bg-info">
-                {history.join(', ')}
-            </span>
+            {selectedSlideItemHistories.map(([index, key]) => {
+                return (
+                    <span
+                        title={key}
+                        key={key}
+                        className="badge rounded-pill text-bg-info"
+                    >
+                        {index}
+                    </span>
+                );
+            })}
         </div>
     );
 }
@@ -67,7 +95,6 @@ export default function AppDocumentPreviewerFooterComp() {
                 'No other slide found in the slide directory',
             );
         } else {
-            slide.isSelected = true;
             setSelectedSlide(slide);
         }
     };

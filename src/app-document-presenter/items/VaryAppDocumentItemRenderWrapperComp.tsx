@@ -37,13 +37,14 @@ export default function VaryAppDocumentItemRenderWrapperComp({
     };
     const handleClicking = (event: any) => {
         handleAppDocumentItemSelecting(
+            event,
+            index + 1,
+            varyAppDocumentItem,
             (selectedVaryAppDocumentItem) => {
                 if (selectedVaryAppDocumentItem instanceof Slide) {
                     setSelectedAppDocumentItem(selectedVaryAppDocumentItem);
                 }
             },
-            varyAppDocumentItem,
-            event,
         );
     };
     const handleContextMenuOpening = (event: any) => {

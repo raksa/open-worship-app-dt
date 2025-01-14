@@ -36,10 +36,10 @@ function RenderScreenInfoComp({
 }
 
 export function RenderInfoComp({
-    index,
+    viewIndex,
     varyAppDocumentItem,
 }: Readonly<{
-    index: number;
+    viewIndex: number;
     varyAppDocumentItem: VaryAppDocumentItemType;
 }>) {
     const isChanged = useSlideChanged(varyAppDocumentItem);
@@ -49,9 +49,9 @@ export function RenderInfoComp({
                 <div>
                     <span
                         className="badge rounded-pill text-bg-info"
-                        title={`Index: ${index + 1}`}
+                        title={`Index: ${viewIndex}`}
                     >
-                        {index + 1}
+                        {viewIndex}
                     </span>
                 </div>
             </div>
@@ -148,7 +148,10 @@ export default function SlideRenderComp({
             onCopy={onCopy}
         >
             <div className="card-header d-flex" style={{ height: '35px' }}>
-                <RenderInfoComp index={index} varyAppDocumentItem={slide} />
+                <RenderInfoComp
+                    viewIndex={index + 1}
+                    varyAppDocumentItem={slide}
+                />
             </div>
             <div
                 className="card-body overflow-hidden"

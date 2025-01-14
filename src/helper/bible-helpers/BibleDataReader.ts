@@ -1,5 +1,5 @@
 import appProvider from '../../server/appProvider';
-import { fsCreateDir, fsReadFile, pathJoin } from '../../server/fileHelpers';
+import { fsCreateDir, pathJoin } from '../../server/fileHelpers';
 import { LocaleType } from '../../lang';
 import { getUserWritablePath } from '../../server/appHelpers';
 import { is_dev, decrypt } from '../../_owa-crypto';
@@ -9,6 +9,8 @@ import {
     showProgressBard,
 } from '../../progress-bar/progressBarHelpers';
 import BibleDatabaseController from './BibleDatabaseController';
+import FileSource from '../FileSource';
+import { AnyObjectType } from '../helpers';
 
 const { base64Decode } = appProvider.appUtils;
 
@@ -66,7 +68,10 @@ export default class BibleDataReader {
             if (record !== null) {
                 b64Data = record.data;
             } else {
-                const fileData = await fsReadFile(filePath);
+                const fileData = await FileSource.readFileData(filePath);
+                if (fileData === null) {
+                    return null;
+                }
                 b64Data = decrypt(fileData);
                 await databaseController.addItem({
                     id: filePath,
@@ -84,7 +89,7 @@ export default class BibleDataReader {
         } finally {
             hideProgressBard(progressKey);
         }
-        return data;
+        return data as AnyObjectType | null;
     }
     async _genBibleData(bibleKey: string, key: string, callback: CallbackType) {
         const biblePath = await this.toBiblePath(bibleKey);
@@ -97,7 +102,7 @@ export default class BibleDataReader {
             return;
         }
         const data = await this._readBibleData(filePath, bibleKey);
-        this.fullfilCallback(filePath, data);
+        this.fullfilCallback(filePath, data as ReaderBibleDataType);
     }
     readBibleData(bibleKey: string, key: string) {
         return new Promise<ReaderBibleDataType>((resolve) => {

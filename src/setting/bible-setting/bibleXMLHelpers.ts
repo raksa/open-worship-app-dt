@@ -7,12 +7,7 @@ import {
     showExplorer,
     trashFile,
 } from '../../server/appHelpers';
-import {
-    fsDeleteFile,
-    fsReadFile,
-    fsWriteFile,
-    pathJoin,
-} from '../../server/fileHelpers';
+import { fsDeleteFile, pathJoin } from '../../server/fileHelpers';
 import { allLocalesMap } from '../../lang';
 import { showAppInput } from '../../popup-widget/popupWidgetHelpers';
 import {
@@ -42,6 +37,7 @@ import {
     bibleDataReader,
     BibleInfoType,
 } from '../../helper/bible-helpers/BibleDataReader';
+import FileSource from '../../helper/FileSource';
 
 type MessageCallbackType = (message: string | null) => void;
 
@@ -166,7 +162,7 @@ export async function readFromUrl(
         );
         await downloadXMLToFile(filePath, response, messageCallback);
         messageCallback('Reading file...');
-        const xmlText = await fsReadFile(filePath);
+        const xmlText = await FileSource.readFileData(filePath);
         messageCallback('Deleting file...');
         await fsDeleteFile(filePath);
         messageCallback(null);
@@ -195,7 +191,10 @@ export function checkIsValidUrl(urlText: string) {
 
 export async function getBibleXMLInfo(bibleKey: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
-    const xmlText = await fsReadFile(filePath);
+    const xmlText = await FileSource.readFileData(filePath);
+    if (xmlText === null) {
+        return null;
+    }
     const bible = xmlTextToBibleElement(xmlText);
     if (!bible) {
         return null;
@@ -217,7 +216,8 @@ export async function getBibleXMLCacheInfoList() {
 
 export async function saveXMLText(bibleKey: string, xmlText: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
-    await fsWriteFile(filePath, xmlText);
+    const fileSource = FileSource.getInstance(filePath);
+    return await fileSource.saveFileData(xmlText);
 }
 
 export function handBibleKeyContextMenuOpening(bibleKey: string, event: any) {
@@ -393,7 +393,10 @@ export async function deleteBibleXML(bibleKey: string) {
 
 export async function getBibleXMLDataFromKey(bibleKey: string) {
     const filePath = await bibleKeyToFilePath(bibleKey);
-    const xmlText = await fsReadFile(filePath);
+    const xmlText = await FileSource.readFileData(filePath);
+    if (xmlText === null) {
+        return null;
+    }
     return await xmlToJson(xmlText);
 }
 

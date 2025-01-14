@@ -120,23 +120,41 @@ export default class FileSource
         this.fireDeleteCacheEvent();
     }
 
-    async readFileToJsonData() {
+    static async readFileData(filePath: string) {
         try {
-            const str = await fsReadFile(this.filePath);
-            if (isValidJson(str)) {
-                return JSON.parse(str) as AnyObjectType;
-            }
+            const dataText = await fsReadFile(filePath);
+            return dataText;
         } catch (error: any) {
             showSimpleToast(
                 'Reader File Data',
                 'Error occurred during reading ' +
-                    `file: "${this.filePath}", error: ${error.message}`,
+                    `file: "${filePath}", error: ${error.message}`,
             );
         }
         return null;
     }
 
-    async saveData(data: string) {
+    async readFileData() {
+        return await FileSource.readFileData(this.filePath);
+    }
+
+    async readFileJsonData() {
+        try {
+            const dataText = await this.readFileData();
+            if (dataText !== null && isValidJson(dataText)) {
+                return JSON.parse(dataText) as AnyObjectType;
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {}
+        return null;
+    }
+
+    static async saveFileData(filePath: string, data: string) {
+        const fileSource = this.getInstance(filePath);
+        return await fileSource.saveFileData(data);
+    }
+
+    async saveFileData(data: string) {
         try {
             const isFileExist = await fsCheckFileExist(this.filePath);
             if (isFileExist) {
@@ -154,7 +172,7 @@ export default class FileSource
 
     async saveDataFromItem(item: AppDocumentSourceAbs) {
         const content = JSON.stringify(item.toJson());
-        return this.saveData(content);
+        return this.saveFileData(content);
     }
 
     async delete() {
@@ -245,7 +263,7 @@ export default class FileSource
             i++;
         }
         const newFilePath = pathJoin(this.basePath, newName + this.extension);
-        const data = await this.readFileToJsonData();
+        const data = await this.readFileJsonData();
         if (data !== null) {
             await fsCreateFile(newFilePath, JSON.stringify(data));
         }

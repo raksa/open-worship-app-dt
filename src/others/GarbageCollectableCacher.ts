@@ -30,7 +30,7 @@ export default class GarbageCollectableCacher<T> {
             }
         }
         if (this._cache.size > 0) {
-            setTimeout(this.clear.bind(this), 1000);
+            setTimeout(this.clear.bind(this), this.timeoutSecond * 1000);
         }
         this.isClearing = false;
     }

@@ -127,7 +127,7 @@ export function useReadFileToData<T extends AppDocumentSourceAbs>(
     useAppEffect(() => {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
-            fileSource.readFileToJsonData().then((itemSource: any) => {
+            fileSource.readFileJsonData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }

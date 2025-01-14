@@ -1,7 +1,5 @@
 import {
     fsListFilesWithMimetype,
-    fsReadFile,
-    fsWriteFile,
     MimetypeNameType,
 } from '../server/fileHelpers';
 import FileSource from '../helper/FileSource';
@@ -65,7 +63,7 @@ export default class Bible
 
     static fromJson(filePath: string, json: any) {
         this.validate(json);
-        return new Bible(filePath, json);
+        return new this(filePath, json);
     }
 
     get metadata() {
@@ -102,7 +100,7 @@ export default class Bible
 
     static checkIsDefault(filePath: string) {
         const fileSource = FileSource.getInstance(filePath);
-        return fileSource.name === Bible.DEFAULT_FILE_NAME;
+        return fileSource.name === this.DEFAULT_FILE_NAME;
     }
 
     get isDefault() {
@@ -113,9 +111,9 @@ export default class Bible
         return this.metadata['isOpened'] === true;
     }
 
-    async setIsOpened(b: boolean) {
-        this.metadata['isOpened'] = b;
-        this.save();
+    async setIsOpened(isOpened: boolean) {
+        this.metadata['isOpened'] = isOpened;
+        await this.save();
     }
 
     getItemByIndex(index: number): BibleItem | null {
@@ -138,7 +136,7 @@ export default class Bible
     }
 
     static async addBibleItemToDefault(bibleItem: BibleItem) {
-        const bible = await Bible.getDefault();
+        const bible = await this.getDefault();
         if (bible !== null) {
             bible.addBibleItem(bibleItem);
             if (await bible.save()) {
@@ -268,17 +266,11 @@ export default class Bible
     async save() {
         const jsonData = this.toJson();
         const jsonString = JSON.stringify(jsonData);
-        try {
-            await fsWriteFile(this.filePath, jsonString);
-            return true;
-        } catch (error) {
-            handleError(error);
-        }
-        return false;
+        return await this.fileSource.saveFileData(jsonString);
     }
 
     static async fromFilePath(filePath: string) {
-        const jsonString = await fsReadFile(filePath);
+        const jsonString = await FileSource.readFileData(filePath);
         if (!jsonString) {
             return null;
         }
