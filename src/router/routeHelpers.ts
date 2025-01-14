@@ -20,15 +20,15 @@ export const editorTab: TabOptionType = {
     title: 'Editor↗️',
     routePath: appProvider.editorHomePage,
     preCheck: async () => {
-        const varyAppDocument = getSelectedVaryAppDocument();
+        const varyAppDocument = await getSelectedVaryAppDocument();
         if (!AppDocument.checkIsThisType(varyAppDocument)) {
-            return true;
+            showAppAlert(
+                'No slide selected',
+                'Please select an Open Worship slide first',
+            );
+            return false;
         }
-        showAppAlert(
-            'No slide selected',
-            'Please select an Open Worship slide first',
-        );
-        return false;
+        return true;
     },
 };
 export const presenterTab: TabOptionType = {
