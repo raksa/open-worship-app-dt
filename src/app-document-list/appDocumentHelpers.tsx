@@ -4,7 +4,7 @@ import {
     showAppAlert,
     showAppConfirm,
 } from '../popup-widget/popupWidgetHelpers';
-import AppDocumentListEventListener from '../event/SlideListEventListener';
+import AppDocumentListEventListener from '../event/VaryAppDocumentEventListener';
 import DirSource from '../helper/DirSource';
 import { handleError } from '../helper/errorHelpers';
 import {
@@ -34,7 +34,7 @@ import {
 import { convertToPdf, getTempPath } from '../server/appHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
 import { genShowOnScreensContextMenu } from '../others/FileItemHandlerComp';
-import ScreenSlideManager from '../_screen/managers/ScreenSlideManager';
+import ScreenVaryAppDocumentManager from '../_screen/managers/ScreenVaryAppDocumentManager';
 import PdfAppDocument from './PdfAppDocument';
 import { createContext, use, useState } from 'react';
 import { DisplayType } from '../_screen/screenHelpers';
@@ -60,7 +60,7 @@ export interface ClipboardInf {
 
 export function showPdfDocumentContextMenu(event: any, pdfSlide: PdfSlide) {
     const menuItemOnScreens = genShowOnScreensContextMenu((event) => {
-        ScreenSlideManager.handleSlideSelecting(
+        ScreenVaryAppDocumentManager.handleSlideSelecting(
             event,
             pdfSlide.filePath,
             pdfSlide.toJson(),
@@ -76,7 +76,7 @@ export function showAppDocumentContextMenu(
     slide: Slide,
 ) {
     const menuItemOnScreens = genShowOnScreensContextMenu((event) => {
-        ScreenSlideManager.handleSlideSelecting(
+        ScreenVaryAppDocumentManager.handleSlideSelecting(
             event,
             slide.filePath,
             slide.toJson(),

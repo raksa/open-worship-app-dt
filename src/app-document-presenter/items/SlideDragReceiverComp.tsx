@@ -26,14 +26,14 @@ export default function SlideDragReceiverComp({
           };
     return (
         <div
-            className="slide-item-drag-receiver"
+            className="slide-drag-receiver"
             style={style}
             ref={(div) => {
                 if (div === null) {
                     return;
                 }
                 const childrenElements =
-                    div.parentElement?.querySelectorAll('.slide-item');
+                    div.parentElement?.querySelectorAll('.slide');
                 const children = Array.from(childrenElements ?? []);
                 const getLeft = (element: Element) => {
                     return element.getBoundingClientRect().left;

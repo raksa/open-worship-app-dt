@@ -87,7 +87,7 @@ export type AllDisplayType = {
 
 export const screenTypeList = [
     'background',
-    'slide',
+    'vary-app-document',
     'full-text',
     'full-text-scroll',
     'full-text-text-style',

@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
 
-const LazySlidePreviewerComp = lazy(() => {
+const LazyAppDocumentPreviewerComp = lazy(() => {
     return import('./app-document-presenter/items/AppDocumentPreviewerComp');
 });
 const LazySlideEditorGroundComp = lazy(() => {
@@ -21,7 +21,7 @@ export default function AppEditorComp() {
             }}
             dataInput={[
                 {
-                    children: LazySlidePreviewerComp,
+                    children: LazyAppDocumentPreviewerComp,
                     key: 'h1',
                     widgetName: 'App Editor Left',
                 },

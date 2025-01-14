@@ -9,16 +9,20 @@ import {
 export default function ScreenSlideComp() {
     const screenManager = useScreenManagerContext();
     useScreenManagerEvents(['resize'], screenManager, () => {
-        screenManager.screenSlideManager.render();
+        screenManager.screenVaryAppDocumentManager.render();
     });
     const div = useRef<HTMLDivElement>(null);
-    const { screenSlideManager } = screenManager;
+    const { screenVaryAppDocumentManager } = screenManager;
     useAppEffect(() => {
         if (div.current) {
-            screenSlideManager.div = div.current;
+            screenVaryAppDocumentManager.div = div.current;
         }
     }, [div.current]);
     return (
-        <div id="slide" ref={div} style={screenSlideManager.containerStyle} />
+        <div
+            id="slide"
+            ref={div}
+            style={screenVaryAppDocumentManager.containerStyle}
+        />
     );
 }

@@ -1,10 +1,10 @@
-import './SlideRenderComp.scss';
+import './VaryAppDocumentItem.scss';
 
 import { ContextMenuEventType } from '../../others/AppContextMenuComp';
 import Slide from '../../app-document-list/Slide';
 import SlideRendererHtmlComp from './SlideRendererHtmlComp';
-import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
-import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
+import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
+import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
 import { handleDragStart } from '../../helper/dragHelpers';
 import ShowingScreenIcon from '../../_screen/preview/ShowingScreenIcon';
 import appProvider from '../../server/appProvider';
@@ -85,7 +85,7 @@ export function toClassNameHighlight(
         varyAppDocumentItem.checkIsSame(selectedVaryAppDocumentItem)
             ? 'active'
             : '';
-    const selectedList = ScreenSlideManager.getDataList(
+    const selectedList = ScreenVaryAppDocumentManager.getDataList(
         varyAppDocumentItem.filePath,
         varyAppDocumentItem.id,
     );
@@ -121,15 +121,15 @@ export default function SlideRenderComp({
 }>) {
     const selectedSlide =
         use(SelectedEditingSlideContext)?.selectedSlide ?? null;
-    useScreenSlideManagerEvents(['update']);
+    useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(
         slide,
         selectedSlide,
     );
     return (
         <div
-            className={`slide-item card pointer ${activeCN} ${presenterCN}`}
-            data-app-document-item-id={slide.id}
+            className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
+            data-vary-app-document-item-id={slide.id}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, slide);

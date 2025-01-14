@@ -38,13 +38,13 @@ function RenderButtonComp({
 function genBtnMaps(screenManager: ScreenManager) {
     const {
         screenBackgroundManager,
-        screenSlideManager,
+        screenVaryAppDocumentManager,
         screenFullTextManager,
         screenAlertManager,
     } = screenManager;
 
     const isShowingBackground = screenBackgroundManager.isShowing;
-    const isShowingFG = screenSlideManager.isShowing;
+    const isShowingFG = screenVaryAppDocumentManager.isShowing;
     const isShowingFullText = screenFullTextManager.isShowing;
     const isShowingAlert = screenAlertManager.isShowing;
     const isShowing =
@@ -80,7 +80,7 @@ function genBtnMaps(screenManager: ScreenManager) {
             isEnabled: isShowingFG,
             eventMap: { key: 'F8' },
             onClick: () => {
-                screenSlideManager.clear();
+                screenVaryAppDocumentManager.clear();
             },
         },
         {

@@ -5,7 +5,7 @@ export default function SlideGhostComp({
 }>) {
     return (
         <div
-            className="slide-item"
+            className="slide"
             style={{
                 width: `${width}px`,
                 visibility: 'hidden',

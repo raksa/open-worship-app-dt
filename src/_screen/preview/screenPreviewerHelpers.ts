@@ -90,7 +90,7 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
 }
 
 export function getAppDocumentListOnScreenSetting(): AppDocumentListType {
-    const str = getSetting(screenManagerSettingNames.SLIDE, '');
+    const str = getSetting(screenManagerSettingNames.VARY_APP_DOCUMENT, '');
     try {
         if (!isValidJson(str, true)) {
             return {};

@@ -18,7 +18,7 @@ export const transitionEffect = {
 } as const;
 export type ScreenTransitionEffectType = keyof typeof transitionEffect;
 export type PTFEventType = 'update';
-export const targetList = ['background', 'slide'] as const;
+export const targetList = ['background', 'vary-app-document'] as const;
 export type TargetType = (typeof targetList)[number];
 
 const easingFunctions = {

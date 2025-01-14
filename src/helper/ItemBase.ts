@@ -69,19 +69,4 @@ export abstract class ItemBase implements ColorNoteInf {
     static validate(_json: AnyObjectType) {
         throw new Error('Method not implemented.');
     }
-
-    showInViewport() {
-        setTimeout(() => {
-            const querySelector = `[data-app-document-item-id="${this.id}"]`;
-            const element = document.querySelector(querySelector);
-            if (element === null) {
-                return;
-            }
-            element.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'center',
-            });
-        }, 0);
-    }
 }

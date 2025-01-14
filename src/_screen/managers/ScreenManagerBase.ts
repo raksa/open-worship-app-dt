@@ -13,7 +13,7 @@ import {
     showScreen,
 } from '../screenHelpers';
 import ScreenManagerInf from '../preview/ScreenManagerInf';
-import ScreenSlideManager from './ScreenSlideManager';
+import ScreenVaryAppDocumentManager from './ScreenVaryAppDocumentManager';
 import ColorNoteInf from '../../helper/ColorNoteInf';
 import {
     getDisplayIdByScreenId,
@@ -81,7 +81,7 @@ export default class ScreenManagerBase
     async setColorNote(color: string | null) {
         this.colorNote = color;
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
-        ScreenSlideManager.enableSyncGroup(this.screenId);
+        ScreenVaryAppDocumentManager.enableSyncGroup(this.screenId);
         ScreenFullTextManager.enableSyncGroup(this.screenId);
         ScreenAlertManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();

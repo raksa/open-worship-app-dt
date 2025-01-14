@@ -5,7 +5,7 @@ import ScreenManagerBase, { ScreenManagerEventType } from './ScreenManagerBase';
 import {
     useScreenEvents,
     useScreenBackgroundManagerEvents,
-    useScreenSlideManagerEvents,
+    useScreenVaryAppDocumentManagerEvents,
     useScreenFullTextManagerEvents,
     useScreenAlertManagerEvents,
 } from './screenEventHelpers';
@@ -40,7 +40,7 @@ export function useScreenManagerEvents(
 ) {
     useScreenEvents(events, ScreenManager as any, screenManagerBase, callback);
     useScreenBackgroundManagerEvents(['update']);
-    useScreenSlideManagerEvents(['update']);
+    useScreenVaryAppDocumentManagerEvents(['update']);
     useScreenFullTextManagerEvents(['update']);
     useScreenAlertManagerEvents(['update']);
 }

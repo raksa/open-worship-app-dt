@@ -6,7 +6,7 @@ import {
     useLyricSelecting,
     useVaryAppDocumentSelecting,
 } from '../event/PreviewingEventListener';
-import { useAppDocumentItemSelecting } from '../event/SlideListEventListener';
+import { useAppDocumentItemSelecting } from '../event/VaryAppDocumentEventListener';
 import { getSetting, useStateSettingString } from '../helper/settingHelpers';
 import TabRenderComp, { genTabBody } from '../others/TabRenderComp';
 

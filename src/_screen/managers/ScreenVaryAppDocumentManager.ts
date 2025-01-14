@@ -24,7 +24,7 @@ import {
 } from '../../app-document-list/appDocumentHelpers';
 import PdfSlide, { PdfSlideType } from '../../app-document-list/PdfSlide';
 
-export type ScreenSlideManagerEventType = 'update';
+export type ScreenVaryAppDocumentManagerEventType = 'update';
 
 const PDF_FULL_WIDTH_SETTING_NAME = 'pdf-full-width';
 
@@ -36,8 +36,8 @@ export function setIsPdfFullWidth(isPdfFullWidth: boolean) {
     setSetting(PDF_FULL_WIDTH_SETTING_NAME, `${isPdfFullWidth}`);
 }
 
-class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType> {
-    static readonly eventNamePrefix: string = 'screen-slide-m';
+class ScreenVaryAppDocumentManager extends ScreenEventHandler<ScreenVaryAppDocumentManagerEventType> {
+    static readonly eventNamePrefix: string = 'screen-vary-app-document-m';
     private _varyAppDocumentItemData: VaryAppDocumentItemScreenDataType | null =
         null;
     private _div: HTMLDivElement | null = null;
@@ -84,7 +84,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
         appDocumentItemData: VaryAppDocumentItemScreenDataType | null,
     ) {
         this._varyAppDocumentItemData = appDocumentItemData;
-        unlocking(screenManagerSettingNames.SLIDE, () => {
+        unlocking(screenManagerSettingNames.VARY_APP_DOCUMENT, () => {
             const allSlideList = getAppDocumentListOnScreenSetting();
             if (appDocumentItemData === null) {
                 delete allSlideList[this.key];
@@ -92,7 +92,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
                 allSlideList[this.key] = appDocumentItemData;
             }
             const string = JSON.stringify(allSlideList);
-            setSetting(screenManagerSettingNames.SLIDE, string);
+            setSetting(screenManagerSettingNames.VARY_APP_DOCUMENT, string);
         });
         this.render();
         this.sendSyncScreen();
@@ -101,7 +101,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
 
     toSyncMessage() {
         return {
-            type: 'slide',
+            type: 'vary-app-document',
             data: this.varyAppDocumentItemData,
         } as BasicScreenMessageType;
     }
@@ -112,7 +112,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
 
     fireUpdateEvent() {
         super.fireUpdateEvent();
-        ScreenSlideManager.fireUpdateEvent();
+        ScreenVaryAppDocumentManager.fireUpdateEvent();
     }
 
     static getDataList(filePath?: string, varyAppDocumentItemId?: number) {
@@ -134,7 +134,7 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
     applySlideSrcWithSyncGroup(
         varyAppDocumentItemScreenData: VaryAppDocumentItemScreenDataType | null,
     ) {
-        ScreenSlideManager.enableSyncGroup(this.screenId);
+        ScreenVaryAppDocumentManager.enableSyncGroup(this.screenId);
         this.varyAppDocumentItemData = varyAppDocumentItemScreenData;
     }
 
@@ -169,8 +169,11 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
     ) {
         const screenIds = await this.chooseScreenIds(event, isForceChoosing);
         screenIds.forEach((screenId) => {
-            const screenSlideManager = this.getInstance(screenId);
-            screenSlideManager.handleSlideSelecting(filePath, itemJson);
+            const screenVaryAppDocumentManager = this.getInstance(screenId);
+            screenVaryAppDocumentManager.handleSlideSelecting(
+                filePath,
+                itemJson,
+            );
         });
     }
 
@@ -286,8 +289,8 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
 
     static receiveSyncScreen(message: ScreenMessageType) {
         const { screenId } = message;
-        const screenSlideManager = this.getInstance(screenId);
-        screenSlideManager.receiveSyncScreen(message);
+        const screenVaryAppDocumentManager = this.getInstance(screenId);
+        screenVaryAppDocumentManager.receiveSyncScreen(message);
     }
 
     clear() {
@@ -295,8 +298,8 @@ class ScreenSlideManager extends ScreenEventHandler<ScreenSlideManagerEventType>
     }
 
     static getInstance(screenId: number) {
-        return super.getInstanceBase<ScreenSlideManager>(screenId);
+        return super.getInstanceBase<ScreenVaryAppDocumentManager>(screenId);
     }
 }
 
-export default ScreenSlideManager;
+export default ScreenVaryAppDocumentManager;

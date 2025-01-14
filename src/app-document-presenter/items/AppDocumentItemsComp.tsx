@@ -4,9 +4,12 @@ import {
     KeyboardType,
     useKeyboardRegistering,
 } from '../../event/KeyboardEventListener';
-import { useAppDocumentItemThumbnailSizeScale } from '../../event/SlideListEventListener';
+import { useAppDocumentItemThumbnailSizeScale } from '../../event/VaryAppDocumentEventListener';
 import SlideGhostComp from './SlideGhostComp';
-import { handleArrowing } from './slideHelpers';
+import {
+    handleArrowing,
+    showVaryAppDocumentItemInViewport,
+} from './varyAppDocumentHelpers';
 import VaryAppDocumentItemRenderWrapperComp from './VaryAppDocumentItemRenderWrapperComp';
 import Slide from '../../app-document-list/Slide';
 import { useAppEffect } from '../../helper/debuggerHelpers';
@@ -107,7 +110,7 @@ function useAppDocumentItems() {
             return;
         }
         varyAppDocumentItems.forEach((varyAppDocumentItem) => {
-            varyAppDocumentItem.showInViewport();
+            showVaryAppDocumentItemInViewport(varyAppDocumentItem.id);
         });
         Object.keys(varyAppDocumentItemsToView).forEach((key) => {
             delete varyAppDocumentItemsToView[key];

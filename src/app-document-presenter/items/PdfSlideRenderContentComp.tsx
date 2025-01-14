@@ -1,6 +1,6 @@
-import './SlideRenderComp.scss';
+import './VaryAppDocumentItem.scss';
 
-import { useScreenSlideManagerEvents } from '../../_screen/managers/screenEventHelpers';
+import { useScreenVaryAppDocumentManagerEvents } from '../../_screen/managers/screenEventHelpers';
 import { RenderInfoComp, toClassNameHighlight } from './SlideRenderComp';
 import ReactDOMServer from 'react-dom/server';
 import { getHTMLChild } from '../../helper/helpers';
@@ -62,14 +62,14 @@ export default function PdfSlideRenderComp({
     onDragStart: (event: React.DragEvent<HTMLDivElement>) => void;
     onDragEnd: (event: React.DragEvent<HTMLDivElement>) => void;
 }>) {
-    useScreenSlideManagerEvents(['update']);
+    useScreenVaryAppDocumentManagerEvents(['update']);
     const { activeCN, presenterCN } = toClassNameHighlight(pdfSlide);
     const pdfPreviewSrc = pdfSlide.pdfPreviewSrc;
     return (
         <div
-            className={`slide-item card pointer ${activeCN} ${presenterCN}`}
+            className={`data-vary-app-document-item card pointer ${activeCN} ${presenterCN}`}
             style={{ width: `${width}px` }}
-            data-app-document-item-id={pdfSlide.id}
+            data-vary-app-document-item-id={pdfSlide.id}
             draggable
             onDragStart={(event) => {
                 handleDragStart(event, pdfSlide);

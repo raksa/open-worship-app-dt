@@ -136,21 +136,6 @@ export default class Slide
         };
     }
 
-    showInViewport() {
-        setTimeout(() => {
-            const querySelector = `[data-app-document-item-id="${this.id}"]`;
-            const element = document.querySelector(querySelector);
-            if (element === null) {
-                return;
-            }
-            element.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'center',
-            });
-        }, 0);
-    }
-
     clipboardSerialize() {
         const json = this.toJson();
         return JSON.stringify({

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { AppColorType } from '../../others/color/colorHelpers';
 import { useScreenFullTextManagerEvents } from '../managers/screenEventHelpers';
 import ScreenFullTextManager from '../managers/ScreenFullTextManager';
-import ScreenSlideManager from '../managers/ScreenSlideManager';
+import ScreenVaryAppDocumentManager from '../managers/ScreenVaryAppDocumentManager';
 import AppRangeComp from '../../others/AppRangeComp';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
 
@@ -84,13 +84,13 @@ export default function Appearance() {
 
 function PdfAppearanceSettingComp() {
     const [isFullWidth, setIsFullWidth] = useState(
-        ScreenSlideManager.isPdfFullWidth,
+        ScreenVaryAppDocumentManager.isPdfFullWidth,
     );
     const setIsFullWidth1 = (isFullWidth: boolean) => {
-        ScreenSlideManager.isPdfFullWidth = isFullWidth;
-        for (const { screenSlideManager } of getAllScreenManagers()) {
-            screenSlideManager.render();
-            screenSlideManager.sendSyncScreen();
+        ScreenVaryAppDocumentManager.isPdfFullWidth = isFullWidth;
+        for (const { screenVaryAppDocumentManager } of getAllScreenManagers()) {
+            screenVaryAppDocumentManager.render();
+            screenVaryAppDocumentManager.sendSyncScreen();
         }
         setIsFullWidth(isFullWidth);
     };

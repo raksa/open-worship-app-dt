@@ -12,7 +12,7 @@ import {
     toKeyByFilePath,
 } from '../../app-document-list/appDocumentHelpers';
 import AppRangeComp from '../../others/AppRangeComp';
-import { useAppDocumentItemThumbnailSizeScale } from '../../event/SlideListEventListener';
+import { useAppDocumentItemThumbnailSizeScale } from '../../event/VaryAppDocumentEventListener';
 import appProvider from '../../server/appProvider';
 import { showAppAlert } from '../../popup-widget/popupWidgetHelpers';
 import { useAppEffect } from '../../helper/debuggerHelpers';

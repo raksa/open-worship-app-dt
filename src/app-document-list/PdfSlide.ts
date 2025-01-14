@@ -15,7 +15,7 @@ export default class PdfSlide
     implements DragInf<string>, ClipboardInf
 {
     private _originalJson: PdfSlideType;
-    static readonly SELECT_SETTING_NAME = 'slide-item-selected';
+    static readonly SELECT_SETTING_NAME = 'slide-selected';
     id: number;
     filePath: string;
 

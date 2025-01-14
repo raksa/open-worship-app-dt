@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import { resizeSettingNames } from './resize-actor/flexSizeHelpers';
 import ResizeActorComp from './resize-actor/ResizeActorComp';
 
-const LazySlideList = lazy(() => {
+const LazyAppDocumentListComp = lazy(() => {
     return import('./app-document-list/AppDocumentListComp');
 });
 const LazyLyricList = lazy(() => {
@@ -25,7 +25,7 @@ export default function AppPresenterLeftComp() {
             }}
             dataInput={[
                 {
-                    children: LazySlideList,
+                    children: LazyAppDocumentListComp,
                     key: 'v1',
                     widgetName: 'Document List',
                     className: 'flex-item',

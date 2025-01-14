@@ -1,7 +1,7 @@
 import FileReadErrorComp from '../others/FileReadErrorComp';
 import PlaylistItem from './PlaylistItem';
 import SlideRendererHtmlComp from '../app-document-presenter/items/SlideRendererHtmlComp';
-import AppDocumentListEventListener from '../event/SlideListEventListener';
+import AppDocumentListEventListener from '../event/VaryAppDocumentEventListener';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function PlaylistSlideItemComp({}: Readonly<{

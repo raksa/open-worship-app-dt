@@ -1,4 +1,4 @@
-import ScreenSlideManager from '../../_screen/managers/ScreenSlideManager';
+import ScreenVaryAppDocumentManager from '../../_screen/managers/ScreenVaryAppDocumentManager';
 import appProvider from '../../server/appProvider';
 import { getScreenManagerBase } from '../../_screen/managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../../_screen/managers/screenManagerHelpers';
@@ -18,7 +18,7 @@ export function handleAppDocumentItemSelecting(
             viewIndex,
             varyAppDocumentItem,
         );
-        ScreenSlideManager.handleSlideSelecting(
+        ScreenVaryAppDocumentManager.handleSlideSelecting(
             event,
             varyAppDocumentItem.filePath,
             varyAppDocumentItem.toJson(),
@@ -32,7 +32,23 @@ export function genSlideIds(varyAppDocumentItems: VaryAppDocumentItemType[]) {
     });
 }
 
-export const DIV_CLASS_NAME = 'app-slide-items-comp';
+export const DIV_CLASS_NAME = 'app-slides-comp';
+export const DATA_QUERY_KEY = 'data-vary-app-document-item-id';
+
+export function showVaryAppDocumentItemInViewport(id: number) {
+    setTimeout(() => {
+        const querySelector = `[data-vary-app-document-item-id="${id}"]`;
+        const element = document.querySelector(querySelector);
+        if (element === null) {
+            return;
+        }
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center',
+        });
+    }, 0);
+}
 
 function findNextSlide(
     isLeft: boolean,
@@ -56,7 +72,7 @@ function findNextSlide(
             targetItem === null
                 ? null
                 : (divContainer.querySelector(
-                      `[data-app-document-item-id="${targetItem.id}"]`,
+                      `[${DATA_QUERY_KEY}="${targetItem.id}"]`,
                   ) as HTMLDivElement),
     };
 }
@@ -72,7 +88,7 @@ export function handleArrowing(
     }
     const isLeft = event.key === 'ArrowLeft';
     const divSelectedList = document.activeElement.querySelectorAll(
-        '[data-slide-item-id].highlight-selected',
+        `[${DATA_QUERY_KEY}].highlight-selected`,
     );
     const foundList = Array.from(divSelectedList).reduce(
         (
@@ -84,7 +100,7 @@ export function handleArrowing(
             divSelected,
         ) => {
             const itemId = parseInt(
-                divSelected?.getAttribute('data-slide-item-id') ?? '',
+                divSelected?.getAttribute(DATA_QUERY_KEY) ?? '',
             );
             const screenIds = Array.from(
                 divSelected.querySelectorAll('[data-screen-id]'),
@@ -121,9 +137,12 @@ export function handleArrowing(
             continue;
         }
         setTimeout(() => {
-            const { screenSlideManager } = screenManager;
-            screenSlideManager.varyAppDocumentItemData =
-                screenSlideManager.toSlideData(item.filePath, item.toJson());
+            const { screenVaryAppDocumentManager } = screenManager;
+            screenVaryAppDocumentManager.varyAppDocumentItemData =
+                screenVaryAppDocumentManager.toSlideData(
+                    item.filePath,
+                    item.toJson(),
+                );
             targetDiv.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center',
