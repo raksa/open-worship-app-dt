@@ -1,4 +1,4 @@
-import { useState, useTransition } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
     KeyboardType,
@@ -11,8 +11,7 @@ import {
     showVaryAppDocumentItemInViewport,
 } from './varyAppDocumentHelpers';
 import VaryAppDocumentItemRenderWrapperComp from './VaryAppDocumentItemRenderWrapperComp';
-import Slide from '../../app-document-list/Slide';
-import { useAppEffect } from '../../helper/debuggerHelpers';
+import { useAppEffect, useAppStateAsync } from '../../helper/debuggerHelpers';
 import { useFileSourceEvents } from '../../helper/dirSourceHelpers';
 import LoadingComp from '../../others/LoadingComp';
 import {
@@ -23,73 +22,26 @@ import {
 
 const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
     {};
+
 function useAppDocumentItems() {
     const selectedAppDocument = useSelectedVaryAppDocumentContext();
-    const [varyAppDocumentItems, setVaryAppDocumentItems] = useState<
-        VaryAppDocumentItemType[] | null
-    >(null);
-    const [isPending, startTransition] = useTransition();
-    const startLoading = () => {
-        startTransition(async () => {
-            const newVaryAppDocumentItems =
-                await selectedAppDocument.getItems();
-            setVaryAppDocumentItems(newVaryAppDocumentItems);
-        });
+    const {
+        isPending,
+        value: varyAppDocumentItems,
+        setValue: setVaryAppDocumentItems,
+    } = useAppStateAsync<VaryAppDocumentItemType[]>(
+        useMemo(() => selectedAppDocument.getItems(), [selectedAppDocument]),
+    );
+
+    const startLoading = async () => {
+        const newVaryAppDocumentItems = await selectedAppDocument.getItems();
+        setVaryAppDocumentItems(newVaryAppDocumentItems);
     };
-    useAppEffect(startLoading, [selectedAppDocument]);
 
     useFileSourceEvents(
-        ['new'],
-        async (newVaryAppDocumentItem: VaryAppDocumentItemType) => {
-            let newVaryAppDocumentItems: VaryAppDocumentItemType[] =
-                await selectedAppDocument.getItems();
-            if (newVaryAppDocumentItems === null) {
-                setVaryAppDocumentItems(null);
-                return;
-            }
-            newVaryAppDocumentItems = newVaryAppDocumentItems.map(
-                (varyAppDocumentItem) => {
-                    if (
-                        varyAppDocumentItem.checkIsSame(newVaryAppDocumentItem)
-                    ) {
-                        varyAppDocumentItemsToView[newVaryAppDocumentItem.id] =
-                            newVaryAppDocumentItem;
-                        return newVaryAppDocumentItem;
-                    } else {
-                        return varyAppDocumentItem;
-                    }
-                },
-            );
-            setVaryAppDocumentItems(newVaryAppDocumentItems);
-        },
-        [selectedAppDocument],
-        selectedAppDocument.filePath,
-    );
-    useFileSourceEvents(
-        ['edit'],
-        (editingAppDocumentItem: any) => {
-            if (
-                !(editingAppDocumentItem instanceof Slide) ||
-                varyAppDocumentItems === null
-            ) {
-                return;
-            }
-            const newVaryAppDocumentItems = varyAppDocumentItems.map((item) => {
-                if (item.checkIsSame(editingAppDocumentItem)) {
-                    return editingAppDocumentItem;
-                } else {
-                    return item;
-                }
-            });
-            setVaryAppDocumentItems(newVaryAppDocumentItems);
-        },
-        [varyAppDocumentItems],
-        selectedAppDocument.filePath,
-    );
-    useFileSourceEvents(
-        ['update', 'delete'],
+        ['update'],
         startLoading,
-        undefined,
+        [],
         selectedAppDocument.filePath,
     );
 

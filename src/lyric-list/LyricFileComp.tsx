@@ -37,7 +37,7 @@ export default function LyricFileComp({
         }
     }, [data]);
     useFileSourceEvents(
-        ['update', 'history-update', 'edit'],
+        ['update'],
         () => {
             setData(null);
         },

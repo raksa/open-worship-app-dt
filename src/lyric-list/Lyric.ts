@@ -1,4 +1,3 @@
-import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { AnyObjectType } from '../helper/helpers';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
@@ -58,21 +57,10 @@ export default class Lyric
         return 0;
     }
     get isSelected() {
-        const selectedFilePath = Lyric.getSelectedFilePath();
-        return this.filePath === selectedFilePath;
+        return false;
     }
-    set isSelected(isSelected: boolean) {
-        if (this.isSelected === isSelected) {
-            return;
-        }
-        if (isSelected) {
-            Lyric.setSelectedFileSource(this.filePath);
-            previewingEventListener.selectLyric(this);
-        } else {
-            Lyric.setSelectedFileSource(null);
-            previewingEventListener.selectLyric(null);
-        }
-        this.fileSource.fireSelectEvent();
+    set isSelected(_isSelected: boolean) {
+        throw new Error('Method not implemented.');
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);

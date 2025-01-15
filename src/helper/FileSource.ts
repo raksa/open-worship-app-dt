@@ -4,7 +4,6 @@ import {
     getFileExtension,
     fsCheckFileExist,
     fsCreateFile,
-    fsDeleteFile,
     fsReadFile,
     fsRenameFile,
     fsWriteFile,
@@ -27,14 +26,7 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FileSourceEventType =
-    | 'select'
-    | 'update'
-    | 'new'
-    | 'history-update'
-    | 'edit'
-    | 'delete'
-    | 'delete-cache';
+export type FileSourceEventType = 'select' | 'update';
 
 const cache = new Map<string, FileSource>();
 export default class FileSource
@@ -114,12 +106,6 @@ export default class FileSource
         return DirSource.getInstanceByDirPath(this.basePath);
     }
 
-    deleteCache() {
-        cache.delete(this.filePath);
-        AppDocumentSourceAbs.deleteCache(this.filePath);
-        this.fireDeleteCacheEvent();
-    }
-
     static async readFileData(filePath: string) {
         try {
             const dataText = await fsReadFile(filePath);
@@ -173,18 +159,6 @@ export default class FileSource
     async saveDataFromItem(item: AppDocumentSourceAbs) {
         const content = JSON.stringify(item.toJson());
         return this.saveFileData(content);
-    }
-
-    async delete() {
-        try {
-            await fsDeleteFile(this.filePath);
-            this.fireDeleteEvent();
-            this.deleteCache();
-            return true;
-        } catch (error: any) {
-            showSimpleToast('Saving File', error.message);
-        }
-        return false;
     }
 
     static getInstanceNoCache(filePath: string, fileFullName?: string) {
@@ -303,31 +277,7 @@ export default class FileSource
         FileSource.addFileSourcePropEvent('select', this.filePath, data);
     }
 
-    fireHistoryUpdateEvent(data?: any) {
-        FileSource.addFileSourcePropEvent(
-            'history-update',
-            this.filePath,
-            data,
-        );
-    }
-
     fireUpdateEvent(data?: any) {
         FileSource.addFileSourcePropEvent('update', this.filePath, data);
-    }
-
-    fireNewEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('new', this.filePath, data);
-    }
-
-    fireEditEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('edit', this.filePath, data);
-    }
-
-    fireDeleteEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('delete', this.filePath, data);
-    }
-
-    fireDeleteCacheEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('delete-cache', this.filePath, data);
     }
 }

@@ -38,10 +38,10 @@ import ScreenVaryAppDocumentManager from '../_screen/managers/ScreenVaryAppDocum
 import PdfAppDocument from './PdfAppDocument';
 import { createContext, use, useState } from 'react';
 import { DisplayType } from '../_screen/screenHelpers';
-import { useEditingHistoryEvent } from '../others/EditingHistoryManager';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import PdfSlide, { PdfSlideType } from './PdfSlide';
 import { OptionalPromise } from '../others/otherHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 export const MIN_THUMBNAIL_SCALE = 1;
 export const THUMBNAIL_SCALE_STEP = 1;
@@ -308,22 +308,6 @@ export function useSelectedAppDocumentSetterContext() {
     return context.setSelectedVaryAppDocument;
 }
 
-export function useSlideChanged(varyAppDocumentItem: VaryAppDocumentItemType) {
-    const [isChanged, setIsChanged] = useState(false);
-    useEditingHistoryEvent(
-        varyAppDocumentItem.filePath,
-        async () => {
-            const slide = AppDocument.getInstance(varyAppDocumentItem.filePath);
-            const isChanged =
-                varyAppDocumentItem instanceof Slide &&
-                (await slide.checkIsSlideChanged(varyAppDocumentItem.id));
-            setIsChanged(isChanged);
-        },
-        [varyAppDocumentItem],
-    );
-    return isChanged;
-}
-
 export const SelectedEditingSlideContext = createContext<{
     selectedSlide: Slide | null;
     setSelectedSlide: (newSlide: Slide | null) => void;
@@ -361,8 +345,8 @@ export function useSlideWrongDimension(
     display: DisplayType,
 ) {
     const [wrong, setWrong] = useState<WrongDimensionType | null>(null);
-    useEditingHistoryEvent(
-        varyAppDocument.filePath,
+    useFileSourceEvents(
+        ['update'],
         async () => {
             if (!AppDocument.checkIsThisType(varyAppDocument)) {
                 return;
@@ -371,6 +355,7 @@ export function useSlideWrongDimension(
             setWrong(wrong);
         },
         [varyAppDocument, display],
+        varyAppDocument.filePath,
     );
     return wrong;
 }

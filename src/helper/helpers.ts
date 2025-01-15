@@ -223,3 +223,34 @@ export function getHTMLChild<T extends HTMLElement>(
     }
     return child as T;
 }
+
+export function checkIsSameArray(arr1: any[], arr2: any[]) {
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+export function checkIsSameJson(json1: AnyObjectType, json2: AnyObjectType) {
+    for (const [key, value] of Object.entries(json1)) {
+        if (Array.isArray(value)) {
+            if (!checkIsSameArray(value, json2[key])) {
+                return false;
+            }
+        }
+        if (value instanceof Object) {
+            if (!checkIsSameJson(value, json2[key])) {
+                return false;
+            }
+        }
+        if (value !== json2[key]) {
+            return false;
+        }
+    }
+    return true;
+}

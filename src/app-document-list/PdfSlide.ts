@@ -1,7 +1,7 @@
 import { ItemBase } from '../helper/ItemBase';
 import { AnyObjectType, cloneJson } from '../helper/helpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
-import { ClipboardInf, toKeyByFilePath } from './appDocumentHelpers';
+import { ClipboardInf } from './appDocumentHelpers';
 
 export type PdfSlideType = {
     id: number;
@@ -16,14 +16,22 @@ export default class PdfSlide
 {
     private _originalJson: PdfSlideType;
     static readonly SELECT_SETTING_NAME = 'slide-selected';
-    id: number;
     filePath: string;
 
-    constructor(id: number, filePath: string, json: PdfSlideType) {
+    constructor(filePath: string, json: PdfSlideType) {
         super();
-        this.id = id;
         this._originalJson = cloneJson(json);
         this.filePath = filePath;
+    }
+
+    get id() {
+        return this.originalJson.id;
+    }
+
+    set id(id: number) {
+        const json = cloneJson(this.originalJson);
+        json.id = id;
+        this.originalJson = json;
     }
 
     clone(): ItemBase {
@@ -32,10 +40,6 @@ export default class PdfSlide
 
     get pdfPreviewSrc() {
         return this.originalJson.imagePreviewSrc ?? null;
-    }
-
-    get key() {
-        return toKeyByFilePath(this.filePath, this.id);
     }
 
     get originalJson() {
@@ -66,7 +70,7 @@ export default class PdfSlide
     }
 
     static fromJson(json: PdfSlideType, filePath: string) {
-        return new PdfSlide(json.id, filePath, json);
+        return new PdfSlide(filePath, json);
     }
 
     toJson(): PdfSlideType {
@@ -122,7 +126,7 @@ export default class PdfSlide
         return {
             type: DragTypeEnum.PDF_SLIDE,
             data: JSON.stringify({
-                key: this.key,
+                filePath: this.filePath,
                 data: this.toJson(),
             }),
         };

@@ -2,7 +2,7 @@ import Slide, { SlideType } from './Slide';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
-import { AnyObjectType, toMaxId } from '../helper/helpers';
+import { AnyObjectType, checkIsSameJson, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -62,8 +62,10 @@ export default class AppDocument
         return null;
     }
 
-    async getJsonData(): Promise<AppDocumentType | null> {
-        const jsonText = await this.editingHistoryManager.getCurrentHistory();
+    async getJsonData(isOriginal = false): Promise<AppDocumentType | null> {
+        const jsonText = isOriginal
+            ? await this.editingHistoryManager.getOriginalData()
+            : await this.editingHistoryManager.getCurrentHistory();
         if (jsonText === null) {
             return null;
         }
@@ -93,12 +95,23 @@ export default class AppDocument
         await this.setJsonData(jsonData);
     }
 
+    async checkSlideIsChanged(
+        index: number,
+        slide: Slide,
+        jsonItems: SlideType[],
+    ) {
+        const originalSlide = jsonItems[index];
+        slide.isChanged =
+            originalSlide === undefined ||
+            checkIsSameJson(slide.toJson(), originalSlide);
+    }
+
     async getItems() {
-        const jsonData = await this.getJsonData();
+        let jsonData = await this.getJsonData();
         if (jsonData === null) {
             return [];
         }
-        return jsonData?.items.map((json: any) => {
+        const slides = jsonData.items.map((json: any) => {
             try {
                 return Slide.fromJson(json, this.filePath);
             } catch (error: any) {
@@ -106,6 +119,13 @@ export default class AppDocument
             }
             return Slide.fromJsonError(json, this.filePath);
         });
+        jsonData = await this.getJsonData(true);
+        if (jsonData !== null) {
+            slides.forEach((slide, index) => {
+                this.checkSlideIsChanged(index, slide, jsonData.items);
+            });
+        }
+        return slides;
     }
 
     async setItems(newItems: Slide[]) {
@@ -135,15 +155,6 @@ export default class AppDocument
         return slides[index] ?? null;
     }
 
-    async checkIsSlideChanged(id: number) {
-        const newSlide = await this.getItemById(id);
-        const slides = await this.getItems();
-        const originalSlide = slides.find((slide) => {
-            return slide.id === id;
-        });
-        return JSON.stringify(newSlide) !== JSON.stringify(originalSlide);
-    }
-
     async duplicateSlide(slide: Slide) {
         const slides = await this.getItems();
         const index = slides.findIndex((slide) => {
@@ -159,7 +170,6 @@ export default class AppDocument
             newSlide.id = maxSlideId + 1;
             slides.splice(index + 1, 0, newSlide);
             await this.setItems(slides);
-            this.fileSource.fireNewEvent(newSlide);
         }
     }
 
@@ -184,7 +194,6 @@ export default class AppDocument
         slide.filePath = this.filePath;
         slides.push(slide);
         await this.setItems(slides);
-        this.fileSource.fireNewEvent(slide);
     }
 
     async addNewSlide() {
@@ -199,7 +208,7 @@ export default class AppDocument
             },
             canvasItems: [], // TODO: add default canvas item
         };
-        const newSlide = new Slide(slide.id, this.filePath, json);
+        const newSlide = new Slide(this.filePath, json);
         await this.addSlide(newSlide);
     }
 
@@ -209,7 +218,6 @@ export default class AppDocument
             return newSlide.id !== slide.id;
         });
         await this.setItems(newSlides);
-        this.fileSource.fireDeleteEvent(slide);
     }
 
     static toWrongDimensionString({ slide, display }: WrongDimensionType) {

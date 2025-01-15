@@ -30,7 +30,6 @@ import {
     getSelectedVaryAppDocument,
     VaryAppDocumentType,
     getSelectedEditingSlide,
-    VaryAppDocumentItemType,
     setSelectedVaryAppDocument,
     setSelectedEditingSlide,
 } from '../app-document-list/appDocumentHelpers';
@@ -129,29 +128,22 @@ function useAppDocumentContextValues() {
         };
     }, [slide]);
     useFileSourceEvents(
-        ['delete'],
-        (deletedSlide: VaryAppDocumentItemType) => {
-            if (slide?.checkIsSame(deletedSlide)) {
-                return;
-            }
-            setSlide1(slide);
-        },
-        [varyAppDocument, slide],
-        varyAppDocument?.filePath,
-    );
-    useFileSourceEvents(
         ['update'],
         async () => {
-            const varyAppDocumentItems =
-                varyAppDocument && AppDocument.checkIsThisType(varyAppDocument)
-                    ? await varyAppDocument.getItems()
-                    : [];
-            const newVaryAppDocumentItem = slide
-                ? varyAppDocumentItems.find((item) => {
-                      return item.checkIsSame(slide);
-                  })
-                : null;
-            setSlide1(newVaryAppDocumentItem ?? slide);
+            if (
+                varyAppDocument === null ||
+                !AppDocument.checkIsThisType(varyAppDocument)
+            ) {
+                return;
+            }
+            const slides = await varyAppDocument.getItems();
+            const newSlide =
+                slides.find((item) => {
+                    return slide !== null && item.checkIsSame(slide);
+                }) ??
+                slides[0] ??
+                null;
+            setSlide1(newSlide);
         },
         [varyAppDocument, slide],
         varyAppDocument?.filePath,

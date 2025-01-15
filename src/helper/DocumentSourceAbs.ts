@@ -50,10 +50,6 @@ export default abstract class AppDocumentSourceAbs {
         return null;
     }
 
-    static deleteCache(filePath: string) {
-        cache.delete(filePath);
-    }
-
     static _getInstance<T extends AppDocumentSourceAbs>(
         filePath: string,
         createInstance: () => T,

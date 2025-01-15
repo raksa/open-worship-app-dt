@@ -45,7 +45,7 @@ export default class PdfAppDocument
             return [];
         }
         return imageFileInfoList.map(({ src, pageNumber, width, height }) => {
-            return new PdfSlide(pageNumber, this.filePath, {
+            return new PdfSlide(this.filePath, {
                 id: pageNumber,
                 imagePreviewSrc: src,
                 pdfPageNumber: pageNumber,

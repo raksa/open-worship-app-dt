@@ -11,7 +11,6 @@ import appProvider from '../../server/appProvider';
 import { use } from 'react';
 import {
     SelectedEditingSlideContext,
-    useSlideChanged,
     VaryAppDocumentItemType,
 } from '../../app-document-list/appDocumentHelpers';
 
@@ -42,7 +41,9 @@ export function RenderInfoComp({
     viewIndex: number;
     varyAppDocumentItem: VaryAppDocumentItemType;
 }>) {
-    const isChanged = useSlideChanged(varyAppDocumentItem);
+    const isChanged =
+        Slide.checkIsThisType(varyAppDocumentItem) &&
+        (varyAppDocumentItem as Slide).isChanged;
     return (
         <div className="d-flex w-100">
             <div className="flex-fill d-flex">

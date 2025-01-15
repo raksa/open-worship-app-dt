@@ -6,10 +6,7 @@ import DragInf, {
     DroppedDataType,
 } from './DragInf';
 import FileSource from './FileSource';
-import {
-    appDocumentItemExtractKey,
-    appDocumentItemFromKey,
-} from '../app-document-list/appDocumentHelpers';
+import { appDocumentItemFromKey } from '../app-document-list/appDocumentHelpers';
 import PdfSlide from '../app-document-list/PdfSlide';
 
 export function handleDragStart(
@@ -41,15 +38,7 @@ async function deserializeDragData({
     } else if (type === DragTypeEnum.PDF_SLIDE) {
         const droppedData = JSON.parse(data);
         if (PdfSlide.tryValidate(droppedData.data)) {
-            const extracted = appDocumentItemExtractKey(droppedData.key);
-            if (extracted === null) {
-                return null;
-            }
-            item = new PdfSlide(
-                extracted.id,
-                extracted.filePath,
-                droppedData.data,
-            );
+            item = new PdfSlide(droppedData.filePath, droppedData.data);
         }
     } else if (type === DragTypeEnum.BIBLE_ITEM) {
         item = BibleItem.dragDeserialize(data);

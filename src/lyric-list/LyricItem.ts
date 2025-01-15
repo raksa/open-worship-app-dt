@@ -1,6 +1,5 @@
 import { ItemBase } from '../helper/ItemBase';
-import { AnyObjectType, cloneJson } from '../helper/helpers';
-import LyricEditorCacheManager from './LyricEditorCacheManager';
+import { AnyObjectType } from '../helper/helpers';
 import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import * as loggerHelpers from '../helper/loggerHelpers';
 
@@ -15,101 +14,51 @@ export default class LyricItem
     extends ItemBase
     implements DragInf<LyricItemType>
 {
-    private readonly _originalJson: Readonly<LyricItemType>;
     static readonly SELECT_SETTING_NAME = 'lyric-item-selected';
     id: number;
     filePath: string;
     isCopied: boolean;
     showingType: 'solo' | 'merge' = 'solo'; // TODO: implement this
     // TODO: implement copying elements
-    editorCacheManager: LyricEditorCacheManager;
     static readonly KEY_SEPARATOR = '<liid>';
-    constructor(
-        id: number,
-        filePath: string,
-        json: LyricItemType,
-        editorCacheManager?: LyricEditorCacheManager,
-    ) {
+    constructor(id: number, filePath: string, _json: LyricItemType) {
         super();
         this.id = id;
-        this._originalJson = Object.freeze(cloneJson(json));
         this.filePath = filePath;
-        if (editorCacheManager !== undefined) {
-            this.editorCacheManager = editorCacheManager;
-        } else {
-            this.editorCacheManager = new LyricEditorCacheManager(
-                this.filePath,
-                {
-                    items: [json],
-                    metadata: {},
-                },
-            );
-            this.editorCacheManager.isUsingHistory = false;
-        }
         this.isCopied = false;
     }
     get metadata() {
-        const json = this.editorCacheManager.getLyricItemById(this.id);
-        return json?.metadata ?? this._originalJson.metadata;
+        return {};
     }
     get lyricItemJson() {
-        const items = this.editorCacheManager.presenterJson.items;
-        const lyricItemJson = items.find((item) => {
-            return item.id === this.id;
-        });
-        return lyricItemJson ?? this._originalJson;
+        return [];
     }
     get title() {
-        return this.lyricItemJson.title;
+        return '';
     }
-    set title(title: string) {
-        const items = this.editorCacheManager.presenterJson.items;
-        items.forEach((item) => {
-            if (item.id === this.id) {
-                item.title = title;
-            }
-        });
-        this.editorCacheManager.pushLyricItems(items);
+    set title(_title: string) {
+        throw new Error('Not implemented');
     }
     get content() {
-        return this.lyricItemJson.content;
+        throw new Error('Not implemented');
     }
-    set content(content: string) {
-        const items = this.editorCacheManager.presenterJson.items;
-        items.forEach((item) => {
-            if (item.id === this.id) {
-                item.content = content;
-            }
-        });
-        this.editorCacheManager.pushLyricItems(items);
+    set content(_content: string) {
+        throw new Error('Not implemented');
     }
     get isChanged() {
-        return this.editorCacheManager.checkIsLyricItemChanged(this.id);
+        return false;
     }
-    static fromJson(
-        json: LyricItemType,
-        filePath: string,
-        editorCacheManager?: LyricEditorCacheManager,
-    ) {
+    static fromJson(json: LyricItemType, filePath: string) {
         this.validate(json);
-        return new LyricItem(json.id, filePath, json, editorCacheManager);
+        return new LyricItem(json.id, filePath, json);
     }
-    static fromJsonError(
-        json: AnyObjectType,
-        filePath: string,
-        editorCacheManager?: LyricEditorCacheManager,
-    ) {
-        const item = new LyricItem(
-            -1,
-            filePath,
-            {
-                id: -1,
-                metadata: {},
-                title: 'Error',
-                content: 'Error',
-            },
-            editorCacheManager,
-        );
+    static fromJsonError(json: AnyObjectType, filePath: string) {
+        const item = new LyricItem(-1, filePath, {
+            id: -1,
+            metadata: {},
+            title: 'Error',
+            content: 'Error',
+        });
         item.jsonError = json;
         return item;
     }

@@ -20,14 +20,23 @@ export default class Slide
     implements DragInf<string>, ClipboardInf
 {
     private _originalJson: SlideType;
-    id: number;
     filePath: string;
+    isChanged = false;
 
-    constructor(id: number, filePath: string, json: SlideType) {
+    constructor(filePath: string, json: SlideType) {
         super();
-        this.id = id;
         this._originalJson = cloneJson(json);
         this.filePath = filePath;
+    }
+
+    get id() {
+        return this.originalJson.id;
+    }
+
+    set id(id: number) {
+        const json = cloneJson(this.originalJson);
+        json.id = id;
+        this.originalJson = json;
     }
 
     get originalJson() {
@@ -35,6 +44,7 @@ export default class Slide
     }
 
     set originalJson(json: SlideType) {
+        this.isChanged = true;
         this._originalJson = json;
     }
 
@@ -158,7 +168,7 @@ export default class Slide
     }
 
     static fromJson(json: SlideType, filePath: string) {
-        return new Slide(json.id, filePath, json);
+        return new Slide(filePath, json);
     }
 
     static fromJsonError(json: AnyObjectType, filePath: string) {
@@ -170,7 +180,7 @@ export default class Slide
             },
             canvasItems: [],
         };
-        const slide = new Slide(-1, filePath, newJson);
+        const slide = new Slide(filePath, newJson);
         slide.jsonError = json;
         return slide;
     }

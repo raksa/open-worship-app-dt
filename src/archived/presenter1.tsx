@@ -8,11 +8,11 @@ import {
 } from '../server/fileHelpers';
 import { getUserWritablePath } from '../server/appHelpers';
 import EditingHistoryManager, {
-    useEditingHistoryEvent,
     useEditingHistoryStatus,
 } from '../others/EditingHistoryManager';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 const container = getRootElement<HTMLDivElement>();
 const root = createRoot(container);
@@ -38,7 +38,12 @@ function HistoryAppComp() {
             setText(text);
         }
     }, [setText, historyManager]);
-    useEditingHistoryEvent(filePath, setTextFromHistory, [historyManager]);
+    useFileSourceEvents(
+        ['update'],
+        setTextFromHistory,
+        [historyManager],
+        filePath,
+    );
     useAppEffectAsync(setTextFromHistory, []);
     const handleTextChanging = (newText: string) => {
         setText(newText);

@@ -11,19 +11,14 @@ import { showSimpleToast } from '../toast/toastHelpers';
 import { BibleItemType } from './bibleItemHelpers';
 import { dirSourceSettingNames } from '../helper/constants';
 import appProvider from '../server/appProvider';
-import ItemSourceInf from '../others/ItemSourceInf';
 import DocumentInf from '../others/DocumentInf';
 import { handleError } from '../helper/errorHelpers';
-import { OptionalPromise } from '../others/otherHelpers';
 
 export type BibleType = {
     items: BibleItemType[];
     metadata: AnyObjectType;
 };
-export default class Bible
-    extends AppDocumentSourceAbs
-    implements ItemSourceInf<BibleItem>, DocumentInf
-{
+export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
     static readonly mimetypeName: MimetypeNameType = 'bible';
     static readonly DEFAULT_FILE_NAME = 'Default';
     private readonly originalJson: BibleType;
@@ -31,27 +26,6 @@ export default class Bible
     constructor(filePath: string, json: BibleType) {
         super(filePath);
         this.originalJson = cloneJson(json);
-    }
-    showContextMenu(_event: any): OptionalPromise<void> {
-        throw new Error('Method not implemented.');
-    }
-    showItemContextMenu(_event: any, _item: BibleItem): OptionalPromise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    setMetadata(_metaData: AnyObjectType): OptionalPromise<void> {
-        throw new Error('Method not implemented.');
-    }
-    setItems(_items: BibleItem[]): OptionalPromise<void> {
-        throw new Error('Method not implemented.');
-    }
-
-    getMetadata() {
-        return this.originalJson.metadata;
-    }
-
-    getItems() {
-        return this.items;
     }
 
     static getDirSourceSettingName() {
@@ -114,25 +88,6 @@ export default class Bible
     async setIsOpened(isOpened: boolean) {
         this.metadata['isOpened'] = isOpened;
         await this.save();
-    }
-
-    getItemByIndex(index: number): BibleItem | null {
-        return this.items[index] ?? null;
-    }
-
-    getItemById(id: number): BibleItem | null {
-        return this.items.find((item) => item.id === id) ?? null;
-    }
-
-    setItemById(id: number, bibleItem: BibleItem) {
-        const bibleItems = this.items;
-        const newItems = bibleItems.map((item1) => {
-            if (item1.id === id) {
-                return bibleItem;
-            }
-            return item1;
-        });
-        this.items = newItems;
     }
 
     static async addBibleItemToDefault(bibleItem: BibleItem) {

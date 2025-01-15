@@ -1,7 +1,6 @@
-import { DependencyList, useState } from 'react';
+import { useState } from 'react';
 
 import { handleError } from '../helper/errorHelpers';
-import EventHandler, { RegisteredEventType } from '../event/EventHandler';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     fsCheckDirExist,
@@ -17,9 +16,9 @@ import {
 } from '../server/fileHelpers';
 import { unlocking } from '../server/appHelpers';
 import appProvider from '../server/appProvider';
-import { OptionalPromise } from './otherHelpers';
 import GarbageCollectableCacher from './GarbageCollectableCacher';
 import FileSource from '../helper/FileSource';
+import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 const { diffUtils } = appProvider;
 
@@ -41,7 +40,11 @@ class FileLineHandler {
         if (!(await fsCheckDirExist(this.dirPath))) {
             return [];
         }
-        return await fsListFiles(this.dirPath);
+        try {
+            return await fsListFiles(this.dirPath);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {}
+        return [];
     }
 
     private toFileIndex(fileFullPath: string) {
@@ -182,7 +185,7 @@ class FileLineHandler {
         });
     }
 
-    async appendHistory(text: string) {
+    async appendHistory(dataText: string) {
         return await unlocking(`append-history-${this.filePath}`, async () => {
             try {
                 let currentFilePath = await this.getCurrentFileFullPath();
@@ -194,7 +197,7 @@ class FileLineHandler {
                 currentFilePath = this.toFileFullPath(currentFileIndex + 1);
                 const isSuccess = await FileSource.saveFileData(
                     currentFilePath,
-                    text,
+                    dataText,
                 );
                 if (isSuccess) {
                     await this.changeCurrent(currentFilePath);
@@ -243,8 +246,6 @@ class FileLineHandler {
 
 const cache = new Map<string, EditingHistoryManager>();
 export default class EditingHistoryManager {
-    private static readonly _eventPrefix = 'editing';
-    public static readonly eventHandler = new EventHandler<any>();
     filePath: string;
     fileLineHandler: FileLineHandler;
     private static readonly garbageCacher =
@@ -255,31 +256,9 @@ export default class EditingHistoryManager {
         this.fileLineHandler = new FileLineHandler(this.filePath);
     }
 
-    private static toEventKey(filePath: string) {
-        return `${this._eventPrefix}:${filePath}`;
-    }
-
     fireEvent() {
         EditingHistoryManager.garbageCacher.delete(this.filePath);
-        EditingHistoryManager.fireEvent(this.filePath);
-    }
-
-    static fireEvent(filePath: string) {
-        this.eventHandler.addPropEvent(this.toEventKey(filePath));
-    }
-
-    static registerEventListener(
-        filePath: string,
-        listener: () => OptionalPromise<void>,
-    ) {
-        const eventKey = this.toEventKey(filePath);
-        return this.eventHandler.registerEventListener([eventKey], listener);
-    }
-
-    static unregisterEventListener(
-        registeredEvents: RegisteredEventType<any, any>[],
-    ) {
-        this.eventHandler.unregisterEventListener(registeredEvents);
+        this.fileLineHandler.fileSource.fireUpdateEvent();
     }
 
     async checkCanUndo() {
@@ -316,10 +295,14 @@ export default class EditingHistoryManager {
         return await this.moveHistory(filePath);
     }
 
-    async addHistory(text: string) {
+    async addHistory(dataText: string) {
         await this.fileLineHandler.ensureHistoriesDir();
-        await this.fileLineHandler.appendHistory(text);
+        await this.fileLineHandler.appendHistory(dataText);
         this.fireEvent();
+    }
+
+    async getOriginalData() {
+        return await this.fileLineHandler.fileSource.readFileData();
     }
 
     async getCurrentHistory() {
@@ -338,12 +321,14 @@ export default class EditingHistoryManager {
                 }
                 const currentFilePath =
                     await this.fileLineHandler.getCurrentFileFullPath();
-                dataText = await FileSource.readFileData(
-                    currentFilePath ?? this.filePath,
-                );
+                dataText =
+                    currentFilePath !== null
+                        ? await FileSource.readFileData(currentFilePath)
+                        : await this.getOriginalData();
                 if (dataText === null) {
                     return null;
                 }
+
                 EditingHistoryManager.garbageCacher.set(
                     this.filePath,
                     dataText,
@@ -393,22 +378,6 @@ export default class EditingHistoryManager {
     }
 }
 
-export function useEditingHistoryEvent(
-    filePath: string,
-    listener: () => OptionalPromise<void>,
-    deps: DependencyList,
-) {
-    useAppEffect(() => {
-        const registeredEvents = EditingHistoryManager.registerEventListener(
-            filePath,
-            listener,
-        );
-        return () => {
-            EditingHistoryManager.unregisterEventListener(registeredEvents);
-        };
-    }, [filePath, ...deps]);
-}
-
 export function useEditingHistoryStatus(filePath: string) {
     const [status, setStatus] = useState({
         canUndo: false,
@@ -420,11 +389,11 @@ export function useEditingHistoryStatus(filePath: string) {
         const canUndo = await editingHistoryManager.checkCanUndo();
         const canRedo = await editingHistoryManager.checkCanRedo();
         const historyText = await editingHistoryManager.getCurrentHistory();
-        const text = await FileSource.readFileData(filePath);
+        const text = await editingHistoryManager.getOriginalData();
         const canSave = historyText !== null && historyText !== text;
         setStatus({ canUndo, canRedo, canSave });
     };
-    useEditingHistoryEvent(filePath, update, []);
+    useFileSourceEvents(['update'], update, [], filePath);
     useAppEffect(() => {
         update();
     }, [filePath]);

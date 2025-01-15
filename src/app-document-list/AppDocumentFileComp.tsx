@@ -134,7 +134,7 @@ export default function AppDocumentFileComp({
         setVaryAppDocument(newVaryAppDocument);
     }, [varyAppDocument]);
     useFileSourceEvents(
-        ['update', 'history-update', 'edit'],
+        ['update'],
         () => {
             setVaryAppDocument(null);
         },
