@@ -1,4 +1,6 @@
-export type ListenerType<T> = (data: T) => void | Promise<void>;
+import { OptionalPromise } from '../others/otherHelpers';
+
+export type ListenerType<T> = (data: T) => OptionalPromise<void>;
 
 export type RegisteredEventType<T, F> = {
     eventName: T;

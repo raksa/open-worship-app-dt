@@ -51,15 +51,14 @@ export default function BoxEditorControllingModeComp() {
                 if (div === null) {
                     return;
                 }
-                boxEditorController.initEvent(div);
-                boxEditorController.onDone = async () => {
+                boxEditorController.initEvent(div, async () => {
                     const info = boxEditorController.getInfo();
                     if (info === null) {
                         return;
                     }
                     canvasItem.applyProps(info);
                     canvasController.applyEditItem(canvasItem);
-                };
+                });
                 return () => {
                     boxEditorController.release();
                 };

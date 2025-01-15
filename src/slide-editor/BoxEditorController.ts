@@ -1,5 +1,6 @@
 import { createContext, use } from 'react';
 import { getRotationDeg, removePX } from '../helper/helpers';
+import { OptionalPromise } from '../others/otherHelpers';
 
 type ResizeType = {
     left: boolean;
@@ -171,8 +172,8 @@ function calcBoxProps(options: CalcBoxPropsType) {
 }
 
 export default class BoxEditorController {
-    onDone: () => void | Promise<void> = () => {};
-    onClick: (event: any) => void | Promise<void> = () => {};
+    onDone: () => OptionalPromise<void> = () => {};
+    onClick: (event: any) => OptionalPromise<void> = () => {};
     editor: HTMLDivElement | null = null;
     target: HTMLDivElement | null = null;
     minWidth = 40;
@@ -247,6 +248,7 @@ export default class BoxEditorController {
         this.listened.push(listenerEvent);
     }
     release() {
+        this.onDone = () => {};
         while (this.listened.length) {
             const obj = this.listened.shift();
             obj?.target.removeEventListener(obj.eventName, obj.listener as any);
@@ -254,11 +256,9 @@ export default class BoxEditorController {
         this.editor = null;
         this.target = null;
     }
-    initEvent(editor: HTMLDivElement) {
-        if (this.editor === editor) {
-            return;
-        }
+    initEvent(editor: HTMLDivElement, onDone: () => OptionalPromise<void>) {
         this.release();
+        this.onDone = onDone;
         this.editor = editor;
         this.target = this.editor.firstChild as HTMLDivElement;
         // drag support
