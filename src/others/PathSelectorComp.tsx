@@ -30,6 +30,7 @@ export default function PathSelectorComp({
         <div className="path-selector w-100">
             <div
                 className="d-flex path-previewer pointer"
+                title={(isShowingEditor ? 'Hide' : 'Show') + ' path editor'}
                 onClick={() => {
                     setShowing(!showing);
                 }}
@@ -67,6 +68,7 @@ function RenderTitle({
             <PathPreviewerComp dirPath={dirSource.dirPath} />
             <div
                 className="ps-2"
+                title="Reload"
                 onClick={(event) => {
                     event.stopPropagation();
                     dirSource.fireReloadEvent();
@@ -77,6 +79,7 @@ function RenderTitle({
             {addItems !== undefined ? (
                 <div
                     className="app-add-items-button px-1"
+                    title="Add items"
                     onClick={(event) => {
                         event.stopPropagation();
                         addItems();

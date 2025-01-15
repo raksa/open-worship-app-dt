@@ -4,7 +4,6 @@ import {
     useEffect,
     useMemo,
     useState,
-    useTransition,
 } from 'react';
 
 import { warn } from './loggerHelpers';
@@ -128,15 +127,20 @@ function TestInfinite() {
 
 export function useAppStateAsync<T>(
     promise: Promise<T>,
-    defaultValue: T | null = null,
+    deps: DependencyList = [],
+    defaultValue?: T | null,
 ) {
-    const [value, setValue] = useState<T | null>(defaultValue);
-    const [isPending, startTransition] = useTransition();
-    useAppEffect(() => {
-        startTransition(async () => {
+    const [value, setValue] = useState<T | null | undefined>(defaultValue);
+    useAppEffectAsync(
+        async (contextMethods) => {
             const newValue = await promise;
-            setValue(newValue);
-        });
-    }, []);
-    return { isPending, value, setValue };
+            contextMethods.setValue(newValue);
+        },
+        deps,
+        { setValue },
+    );
+    return {
+        value,
+        setValue,
+    };
 }

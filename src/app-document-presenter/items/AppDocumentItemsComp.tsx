@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import {
     KeyboardType,
@@ -25,13 +25,11 @@ const varyAppDocumentItemsToView: { [key: string]: VaryAppDocumentItemType } =
 
 function useAppDocumentItems() {
     const selectedAppDocument = useSelectedVaryAppDocumentContext();
-    const {
-        isPending,
-        value: varyAppDocumentItems,
-        setValue: setVaryAppDocumentItems,
-    } = useAppStateAsync<VaryAppDocumentItemType[]>(
-        useMemo(() => selectedAppDocument.getItems(), [selectedAppDocument]),
-    );
+    const { value: varyAppDocumentItems, setValue: setVaryAppDocumentItems } =
+        useAppStateAsync<VaryAppDocumentItemType[]>(
+            selectedAppDocument.getItems(),
+            [selectedAppDocument],
+        );
 
     const startLoading = async () => {
         const newVaryAppDocumentItems = await selectedAppDocument.getItems();
@@ -69,17 +67,16 @@ function useAppDocumentItems() {
         });
     }, [varyAppDocumentItems]);
 
-    return { varyAppDocumentItems, isPending, startLoading };
+    return { varyAppDocumentItems, startLoading };
 }
 
 export default function AppDocumentItemsComp() {
     const [thumbSizeScale] = useAppDocumentItemThumbnailSizeScale();
     const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-    const { varyAppDocumentItems, isPending, startLoading } =
-        useAppDocumentItems();
+    const { varyAppDocumentItems, startLoading } = useAppDocumentItems();
     const appDocumentItemThumbnailSize =
         thumbSizeScale * DEFAULT_THUMBNAIL_SIZE_FACTOR;
-    if (isPending) {
+    if (varyAppDocumentItems === undefined) {
         return <LoadingComp />;
     }
     if (varyAppDocumentItems === null) {

@@ -128,15 +128,32 @@ export function checkIsPdf(ext: string) {
     return mimetypePdf.extensions.includes(ext.toLocaleLowerCase());
 }
 
-export const supportOfficeFileExtensions = [
-    '.doc',
-    '.docx',
-    '.xls',
-    '.xlsx',
-    '.ppt',
-    '.pptx',
-    '.odp',
-];
+const docFileInfo = {
+    // Writer (Word Processor)
+    '.odt': 'OpenDocument Text',
+    '.ott': 'OpenDocument Text Template',
+    '.sxw': 'OpenOffice.org 1.x Text Document',
+    '.stw': 'OpenOffice.org 1.x Text Template',
+    '.doc': 'Microsoft Word 97/2000/XP/2003',
+    '.docx': 'Microsoft Word 2007/2010/2013/2016',
+    // Impress (Presentation)
+    '.odp': 'OpenDocument Presentation',
+    '.otp': 'OpenDocument Presentation Template',
+    '.sxi': 'OpenOffice.org 1.x Presentation',
+    '.sti': 'OpenOffice.org 1.x Presentation Template',
+    '.ppt': 'Microsoft PowerPoint 97/2000/XP/2003',
+    '.pptx': 'Microsoft PowerPoint 2007/2010/2013/2016',
+    // Draw (Drawing)
+    '.odg': 'OpenDocument Drawing',
+    '.otg': 'OpenDocument Drawing Template',
+    '.svg': 'Scalable Vector Graphics',
+    '.svgz': 'Compressed Scalable Vector Graphics',
+    // Math (Formula Editor)
+    '.odf': 'OpenDocument Formula Template',
+    '.smf': 'StarMath Formula',
+};
+
+export const supportOfficeFileExtensions = Object.keys(docFileInfo);
 
 const alertMessage = ReactDOMServer.renderToStaticMarkup(
     <div>

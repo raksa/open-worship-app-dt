@@ -17,10 +17,10 @@ import CanvasItem, {
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { useSelectedEditingSlideContext } from '../app-document-list/appDocumentHelpers';
 
-const LazySlideEditorCanvas = lazy(() => {
+const LazySlideEditorCanvasComp = lazy(() => {
     return import('./canvas/SlideEditorCanvasComp');
 });
-const LazySlideEditorTools = lazy(() => {
+const LazySlideEditorToolsComp = lazy(() => {
     return import('./canvas/tools/SlideEditorToolsComp');
 });
 
@@ -51,9 +51,10 @@ function useCanvasItemsData(canvasController: CanvasController) {
             data?.canvasItems ?? canvasController.canvas.canvasItems;
         setCanvasItems(canvasItems);
         setSelectedCanvasItems((prevSelectedCanvasItems) => {
-            return prevSelectedCanvasItems.filter((item) => {
-                return checkCanvasItemsIncludes(canvasItems, item);
+            const selectedCanvasItems = canvasItems.filter((item) => {
+                return checkCanvasItemsIncludes(prevSelectedCanvasItems, item);
             });
+            return selectedCanvasItems;
         });
         setEditingCanvasItem((prevEditingCanvasItem) => {
             if (prevEditingCanvasItem === null) {
@@ -156,13 +157,13 @@ export default function SlideEditorComp() {
                     }}
                     dataInput={[
                         {
-                            children: LazySlideEditorCanvas,
+                            children: LazySlideEditorCanvasComp,
                             key: 'v1',
                             widgetName: 'Slide Editor Canvas',
                             className: 'flex-item',
                         },
                         {
-                            children: LazySlideEditorTools,
+                            children: LazySlideEditorToolsComp,
                             key: 'v2',
                             widgetName: 'Tools',
                             className: 'flex-item',

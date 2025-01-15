@@ -26,7 +26,7 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FileSourceEventType = 'select' | 'update';
+export type FileSourceEventType = 'select' | 'update' | 'delete';
 
 const cache = new Map<string, FileSource>();
 export default class FileSource
@@ -279,5 +279,9 @@ export default class FileSource
 
     fireUpdateEvent(data?: any) {
         FileSource.addFileSourcePropEvent('update', this.filePath, data);
+    }
+
+    fireDeleteEvent() {
+        FileSource.addFileSourcePropEvent('delete', this.filePath);
     }
 }

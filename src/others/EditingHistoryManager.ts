@@ -22,7 +22,7 @@ import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
 const { diffUtils } = appProvider;
 
-const CURRENT_FILE_SIGN = '-*';
+const CURRENT_FILE_SIGN = '-head';
 class FileLineHandler {
     filePath: string;
     dirPath: string;

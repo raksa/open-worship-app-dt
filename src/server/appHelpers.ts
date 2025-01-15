@@ -1,6 +1,7 @@
 import appProvider, { FontListType } from './appProvider';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { OptionalPromise } from '../others/otherHelpers';
+import FileSource from '../helper/FileSource';
 
 export function getFontListByNodeFont() {
     appProvider.messageUtils.sendData('main:app:get-font-list');
@@ -34,8 +35,9 @@ export function showExplorer(dir: string) {
     appProvider.messageUtils.sendData('main:app:reveal-path', dir);
 }
 
-export function trashFile(filePath: string) {
-    return electronSendAsync<void>('main:app:trash-path', { path: filePath });
+export async function trashFile(filePath: string) {
+    await electronSendAsync<void>('main:app:trash-path', { path: filePath });
+    FileSource.getInstance(filePath).fireDeleteEvent();
 }
 
 export function previewPdf(src: string) {

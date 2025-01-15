@@ -258,7 +258,7 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
     }
 
     render() {
-        console.log('render');
+        throw new Error('Method not implemented.');
     }
 
     clear() {

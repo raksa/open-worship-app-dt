@@ -85,11 +85,15 @@ export default function AppDocumentListComp() {
             fileSelectionOption={{
                 windowTitle: 'Select slide files',
                 dirPath: dirSource.dirPath,
-                extensions: [
-                    ...getMimetypeExtensions('slide'),
-                    ...getMimetypeExtensions('pdf'),
-                    ...supportOfficeFileExtensions,
-                ],
+                extensions: Array.from(
+                    new Set([
+                        ...getMimetypeExtensions('slide'),
+                        ...getMimetypeExtensions('pdf'),
+                        ...supportOfficeFileExtensions.map((ext) => {
+                            return ext.slice(1);
+                        }),
+                    ]),
+                ),
                 takeSelectedFile: handleFileTaking,
             }}
         />
