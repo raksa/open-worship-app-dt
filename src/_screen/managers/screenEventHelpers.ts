@@ -6,9 +6,9 @@ import ScreenBackgroundManager, {
 } from './ScreenBackgroundManager';
 import { ScreenFTManagerEventType } from '../screenFullTextHelpers';
 import ScreenFullTextManager from './ScreenFullTextManager';
-import ScreenSlideManager, {
-    ScreenSlideManagerEventType,
-} from './ScreenSlideManager';
+import ScreenVaryAppDocumentManager, {
+    ScreenVaryAppDocumentManagerEventType,
+} from './ScreenVaryAppDocumentManager';
 import EventHandler from '../../event/EventHandler';
 import ScreenAlertManager, { ScreenAlertEventType } from './ScreenAlertManager';
 
@@ -33,7 +33,7 @@ export function useScreenEvents<T extends string>(
             eventHandler?.unregisterEventListener(registeredEvents) ??
                 Class.unregisterEventListener(registeredEvents);
         };
-    }, [eventHandler]);
+    }, [eventHandler, callback]);
     return n;
 }
 
@@ -50,15 +50,15 @@ export function useScreenBackgroundManagerEvents(
     );
 }
 
-export function useScreenSlideManagerEvents(
-    events: ScreenSlideManagerEventType[],
-    screenSlideManager?: ScreenSlideManager,
+export function useScreenVaryAppDocumentManagerEvents(
+    events: ScreenVaryAppDocumentManagerEventType[],
+    screenVaryAppDocumentManager?: ScreenVaryAppDocumentManager,
     callback?: () => void,
 ) {
     useScreenEvents(
         events,
-        ScreenSlideManager as any,
-        screenSlideManager,
+        ScreenVaryAppDocumentManager as any,
+        screenVaryAppDocumentManager,
         callback,
     );
 }

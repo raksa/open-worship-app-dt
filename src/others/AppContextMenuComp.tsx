@@ -9,13 +9,14 @@ import KeyboardEventListener, {
 import { getWindowDim } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { OptionalPromise } from './otherHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
     id?: string;
     menuTitle: string;
     title?: string;
-    onClick?: (event: MouseEvent, data?: any) => void | Promise<void>;
+    onClick?: (event: MouseEvent, data?: any) => OptionalPromise<void>;
     disabled?: boolean;
     otherChild?: ReactElement;
 };
@@ -77,6 +78,9 @@ export function showAppContextMenu(
     items: ContextMenuItemType[],
 ) {
     event.stopPropagation();
+    if (!items.length) {
+        return Promise.resolve();
+    }
     return new Promise<void>((resolve) => {
         setDataDelegator?.({ event, items });
         const eventName = KeyboardEventListener.toEventMapperKey({
@@ -156,10 +160,11 @@ export default function AppContextMenuComp() {
             }}
         >
             <div
-                ref={(self) => {
-                    if (self !== null) {
-                        setPositionMenu(self, data.event);
+                ref={(div) => {
+                    if (div === null) {
+                        return;
                     }
+                    setPositionMenu(div, data.event);
                 }}
                 className="app-context-menu"
             >

@@ -175,7 +175,7 @@ export async function getDownloadedBibleInfoList() {
 }
 
 export async function getAllLocalBibleInfoList() {
-    const downloadedBibleInfoList = (await getDownloadedBibleInfoList()) || [];
+    const downloadedBibleInfoList = (await getDownloadedBibleInfoList()) ?? [];
     const bibleXMLInfoList = await getBibleXMLCacheInfoList();
     downloadedBibleInfoList.push(
         ...bibleXMLInfoList.map((info) => {

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppEffect } from './debuggerHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
-import ItemSource from './ItemSource';
+import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { trace } from './loggerHelpers';
 
 export type AnyObjectType = {
@@ -120,14 +120,14 @@ export function validateAppMeta(meta: any) {
     }
     return false;
 }
-export function useReadFileToData<T extends ItemSource<any>>(
+export function useReadFileToData<T extends AppDocumentSourceAbs>(
     filePath: string | null,
 ) {
     const [data, setData] = useState<T | null | undefined>(null);
     useAppEffect(() => {
         if (filePath !== null) {
             const fileSource = FileSource.getInstance(filePath);
-            fileSource.readFileToJsonData().then((itemSource: any) => {
+            fileSource.readFileJsonData().then((itemSource: any) => {
                 setData(itemSource);
             });
         }
@@ -136,7 +136,7 @@ export function useReadFileToData<T extends ItemSource<any>>(
 }
 
 export function getLastItem<T>(arr: T[]) {
-    return arr[arr.length - 1] || null;
+    return arr[arr.length - 1] ?? null;
 }
 
 export function getImageDim(src: string) {
@@ -222,4 +222,35 @@ export function getHTMLChild<T extends HTMLElement>(
         throw new Error('Invalid child');
     }
     return child as T;
+}
+
+export function checkIsSameArray(arr1: any[], arr2: any[]) {
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+export function checkIsSameJson(json1: AnyObjectType, json2: AnyObjectType) {
+    for (const [key, value] of Object.entries(json1)) {
+        if (Array.isArray(value)) {
+            if (!checkIsSameArray(value, json2[key])) {
+                return false;
+            }
+        }
+        if (value instanceof Object) {
+            if (!checkIsSameJson(value, json2[key])) {
+                return false;
+            }
+        }
+        if (value !== json2[key]) {
+            return false;
+        }
+    }
+    return true;
 }

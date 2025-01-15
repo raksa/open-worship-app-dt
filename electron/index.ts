@@ -2,18 +2,18 @@ import { app, protocol } from 'electron';
 
 import {
     customScheme, initCustomSchemeHandler, schemePrivileges,
-} from './fsServe.js';
+} from './fsServe';
 protocol.registerSchemesAsPrivileged([{
     scheme: customScheme, privileges: schemePrivileges,
 }]);
 
-import ElectronAppController from './ElectronAppController.js';
+import ElectronAppController from './ElectronAppController';
 import {
     initEventFinder, initEventListenerApp, initEventOther, initEventScreen,
-} from './electronEventListener.js';
-import { initMenu } from './electronMenu.js';
-import { initDevtools } from './devtools.js';
-import { isDev } from './electronHelpers.js';
+} from './electronEventListener';
+import { initMenu } from './electronMenu';
+import { initDevtools } from './devtools';
+import { isDev } from './electronHelpers';
 
 async function main() {
     if (isDev) {

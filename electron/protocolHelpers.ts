@@ -3,8 +3,8 @@ import { BrowserWindow } from 'electron';
 
 import {
     rootUrl as fsServeRootUrl, preloadFileMap, toTitleCase,
-} from './fsServe.js';
-import { isDev } from './electronHelpers.js';
+} from './fsServe';
+import { isDev } from './electronHelpers';
 
 function getPreloadFilePath(htmlFileFullName: string) {
     const preloadName = (

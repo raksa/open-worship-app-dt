@@ -5,9 +5,10 @@ import DragInf, { DragTypeEnum } from '../helper/DragInf';
 import { handleError } from '../helper/errorHelpers';
 import * as loggerHelpers from '../helper/loggerHelpers';
 import { BibleTargetType, bibleRenderHelper } from './bibleRenderHelpers';
-import ItemSource from '../helper/ItemSource';
 import { BibleItemType } from './bibleItemHelpers';
 import { copyToClipboard } from '../server/appHelpers';
+import ItemSourceInf from '../others/ItemSourceInf';
+import DocumentInf from '../others/DocumentInf';
 
 const BIBLE_PRESENT_SETTING_NAME = 'bible-presenter';
 
@@ -132,7 +133,7 @@ export default class BibleItem
         }
         return bibleItem;
     }
-    async save(bible: ItemSource<any>) {
+    async save(bible: ItemSourceInf<BibleItem> & DocumentInf) {
         if (this.filePath === null) {
             return false;
         }
@@ -245,7 +246,7 @@ export default class BibleItem
         return BibleItem.fromJson(json, json.filePath);
     }
     static saveFromBibleSearch(
-        bible: ItemSource<any>,
+        bible: ItemSourceInf<BibleItem> & DocumentInf,
         oldBibleItem: BibleItem,
         newBibleItem: BibleItem,
     ) {

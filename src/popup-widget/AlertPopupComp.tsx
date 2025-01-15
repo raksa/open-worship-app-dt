@@ -1,7 +1,7 @@
 import './AlertPopupComp.scss';
 
-import PrimitiveModal from '../app-modal/PrimitiveModal';
-import HeaderAlertPopup from './HeaderAlertPopup';
+import PrimitiveModalComp from '../app-modal/PrimitiveModalComp';
+import HeaderAlertPopupComp from './HeaderAlertPopupComp';
 import { AlertDataType, closeAlert } from './popupWidgetHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
@@ -14,14 +14,18 @@ export default function AlertPopupComp({
         data.onClose();
         closeAlert();
     };
-    useKeyboardRegistering([{ key: 'Escape' }], (event) => {
-        event.preventDefault();
-        handClose();
-    });
+    useKeyboardRegistering(
+        [{ key: 'Escape' }],
+        (event) => {
+            event.preventDefault();
+            handClose();
+        },
+        [data],
+    );
     return (
-        <PrimitiveModal>
+        <PrimitiveModalComp>
             <div id="app-alert-popup" className="shadow card">
-                <HeaderAlertPopup
+                <HeaderAlertPopupComp
                     header={
                         <>
                             <i className="bi bi-exclamation-circle" />
@@ -39,6 +43,6 @@ export default function AlertPopupComp({
                     />
                 </div>
             </div>
-        </PrimitiveModal>
+        </PrimitiveModalComp>
     );
 }

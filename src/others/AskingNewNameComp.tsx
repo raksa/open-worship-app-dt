@@ -11,7 +11,7 @@ export default function AskingNewNameComp({
     customIcon?: React.ReactNode;
     applyName: (newName: string | null) => void;
 }>) {
-    const [creatingNewName, setCreatingNewName] = useState(defaultName || '');
+    const [creatingNewName, setCreatingNewName] = useState(defaultName ?? '');
     const isValid = /^[^\\\/:\*\?"<>\|]+$/.test(creatingNewName);
     return (
         <div

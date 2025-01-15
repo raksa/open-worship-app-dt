@@ -1,13 +1,12 @@
 import ScreenAlertComp from '../ScreenAlertComp';
 import ScreenBackgroundComp from '../ScreenBackgroundComp';
-import ScreenSlideComp from '../ScreenSlideComp';
+import ScreenSlideComp from '../ScreenVaryAppDocumentComp';
 import ScreenFullTextComp from '../ScreenFullTextComp';
 import { RendStyle } from '../RenderTransitionEffectComp';
 import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
 import { screenManagerFromBase } from '../managers/screenManagerHelpers';
 import { ScreenManagerBaseContext } from '../managers/screenManagerHooks';
 
-// eslint-disable-next-line max-len
 const IMAGE_BACKGROUND = `linear-gradient(45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(-45deg, var(--bs-gray-700) 25%, var(--bs-gray-800) 25%),
 linear-gradient(45deg, var(--bs-gray-800) 75%, var(--bs-gray-700) 75%),
@@ -22,7 +21,10 @@ export default function MiniScreenAppComp({
     if (screenManager === null) {
         return null;
     }
-    const { slideEffectManager, backgroundEffectManager } = screenManager;
+    const {
+        varyAppDocumentEffectManager: slideEffectManager,
+        backgroundEffectManager,
+    } = screenManager;
     return (
         <ScreenManagerBaseContext value={screenManager}>
             <RendStyle screenEffectManager={slideEffectManager} />

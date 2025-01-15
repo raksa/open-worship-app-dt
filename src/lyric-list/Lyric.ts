@@ -1,10 +1,9 @@
-import { previewingEventListener } from '../event/PreviewingEventListener';
 import { MimetypeNameType } from '../server/fileHelpers';
-import { AnyObjectType, toMaxId } from '../helper/helpers';
-import ItemSource from '../helper/ItemSource';
-import LyricEditorCacheManager from './LyricEditorCacheManager';
+import { AnyObjectType } from '../helper/helpers';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import LyricItem, { LyricItemType } from './LyricItem';
-import { showSimpleToast } from '../toast/toastHelpers';
+import ItemSourceInf from '../others/ItemSourceInf';
+import { OptionalPromise } from '../others/otherHelpers';
 
 export type LyricEditorHistoryType = {
     items?: LyricItemType[];
@@ -15,110 +14,76 @@ export type LyricType = {
     items: LyricItemType[];
     metadata: AnyObjectType;
 };
-export default class Lyric extends ItemSource<LyricItem> {
+export default class Lyric
+    extends AppDocumentSourceAbs
+    implements ItemSourceInf<LyricItem>
+{
     static readonly mimetypeName: MimetypeNameType = 'lyric';
     static readonly SELECT_SETTING_NAME = 'lyric-selected';
     SELECT_SETTING_NAME = 'lyric-selected';
-    editorCacheManager: LyricEditorCacheManager;
-    constructor(filePath: string, json: LyricType) {
+    constructor(filePath: string) {
         super(filePath);
-        this.editorCacheManager = new LyricEditorCacheManager(
-            this.filePath,
-            json,
-        );
     }
-    get isChanged() {
-        return this.editorCacheManager.isChanged;
+    getMetadata(): OptionalPromise<AnyObjectType> {
+        throw new Error('Method not implemented.');
     }
-    get metadata() {
-        return this.editorCacheManager.presenterJson.metadata;
+    setMetadata(_metaData: AnyObjectType): OptionalPromise<void> {
+        throw new Error('Method not implemented.');
     }
-    get items() {
-        const latestHistory = this.editorCacheManager.presenterJson;
-        return latestHistory.items.map((json) => {
-            try {
-                return LyricItem.fromJson(
-                    json as any,
-                    this.filePath,
-                    this.editorCacheManager,
-                );
-            } catch (error: any) {
-                showSimpleToast('Instantiating Bible Item', error.message);
-            }
-            return LyricItem.fromJsonError(
-                json,
-                this.filePath,
-                this.editorCacheManager,
-            );
-        });
+    setItems(_items: LyricItem[]): OptionalPromise<void> {
+        throw new Error('Method not implemented.');
     }
-    set items(newItems: LyricItem[]) {
-        const lyricItems = newItems.map((item) => item.toJson());
-        this.editorCacheManager.pushLyricItems(lyricItems);
+    getItemByIndex(_index: number): OptionalPromise<LyricItem | null> {
+        throw new Error('Method not implemented.');
     }
-    get maxItemId() {
-        if (this.items.length) {
-            const ids = this.items.map((item) => item.id);
-            return toMaxId(ids);
-        }
+    getItemById(_id: number): OptionalPromise<LyricItem | null> {
+        throw new Error('Method not implemented.');
+    }
+    setItemById(_id: number, _item: LyricItem): OptionalPromise<void> {
+        throw new Error('Method not implemented.');
+    }
+    showContextMenu(_event: any): OptionalPromise<void> {
+        throw new Error('Method not implemented.');
+    }
+    showItemContextMenu(_event: any, _item: LyricItem): OptionalPromise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    async getItems() {
+        return [];
+    }
+
+    async getMaxItemId() {
         return 0;
     }
     get isSelected() {
-        const selectedFilePath = Lyric.getSelectedFilePath();
-        return this.filePath === selectedFilePath;
+        return false;
     }
-    set isSelected(isSelected: boolean) {
-        if (this.isSelected === isSelected) {
-            return;
-        }
-        if (isSelected) {
-            Lyric.setSelectedFileSource(this.filePath);
-            previewingEventListener.selectLyric(this);
-        } else {
-            Lyric.setSelectedFileSource(null);
-            previewingEventListener.selectLyric(null);
-        }
-        this.fileSource.fireSelectEvent();
+    set isSelected(_isSelected: boolean) {
+        throw new Error('Method not implemented.');
     }
     static fromJson(filePath: string, json: any) {
         this.validate(json);
-        return new Lyric(filePath, json);
+        return new Lyric(filePath);
     }
-    static async readFileToDataNoCache(filePath: string | null) {
-        return super.readFileToDataNoCache(filePath) as Promise<
-            Lyric | null | undefined
-        >;
-    }
-    static async readFileToData(
-        filePath: string | null,
-        isForceCache?: boolean,
-    ) {
-        return super.readFileToData(filePath, isForceCache) as Promise<
-            Lyric | null | undefined
-        >;
-    }
+
     static async create(dir: string, name: string) {
         return super.create(dir, name, [LyricItem.genDefaultLyric(name)]);
     }
-    addItem(lyricItem: LyricItem) {
-        const items = this.items;
-        lyricItem.id = this.maxItemId + 1;
-        items.push(lyricItem);
-        this.items = items;
+    addItem(_lyricItem: LyricItem) {
+        throw new Error('Method not implemented.');
     }
-    deleteItem(lyricItem: LyricItem) {
-        const newItems = this.items.filter((item) => {
-            return item.id !== lyricItem.id;
-        });
-        this.items = newItems;
+    deleteItem(_lyricItem: LyricItem) {
+        throw new Error('Method not implemented.');
     }
     async save(): Promise<boolean> {
-        const isSuccess = await super.save();
-        if (isSuccess) {
-            this.editorCacheManager.save();
-        }
-        return isSuccess;
+        return false;
     }
+
+    toJson(): LyricType {
+        throw new Error('Method not implemented.');
+    }
+
     clone() {
         return Lyric.fromJson(this.filePath, this.toJson());
     }

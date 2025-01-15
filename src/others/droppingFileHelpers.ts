@@ -161,7 +161,7 @@ export async function handleFilesSelectionMenuItem(
             {
                 checkIsValidFile: () => true,
                 takeFile: () => {
-                    return takeSelectedFile?.(filePath) || false;
+                    return !!takeSelectedFile?.(filePath);
                 },
             },
             dirPath,
@@ -179,7 +179,7 @@ export function genOnContextMenu(
     addItems?: () => void,
 ) {
     return (event: React.MouseEvent<any>) => {
-        const menuItems: ContextMenuItemType[] = [...(contextMenu || [])];
+        const menuItems: ContextMenuItemType[] = [...(contextMenu ?? [])];
         if (addItems !== undefined) {
             menuItems.push({
                 menuTitle: 'Add Items',

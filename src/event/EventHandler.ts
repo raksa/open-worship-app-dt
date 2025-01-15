@@ -1,4 +1,6 @@
-export type ListenerType<T> = (data: T) => void | Promise<void>;
+import { OptionalPromise } from '../others/otherHelpers';
+
+export type ListenerType<T> = (data: T) => OptionalPromise<void>;
 
 export type RegisteredEventType<T, F> = {
     eventName: T;
@@ -39,14 +41,14 @@ export class BasicEventHandler<T extends string> {
 
     addOnEventListener(eventName: T, listener: ListenerType<any>) {
         this.guardEventName(eventName);
-        const listeners = this.eventListenersMapper.get(eventName) || [];
+        const listeners = this.eventListenersMapper.get(eventName) ?? [];
         listeners.push(listener);
         this.eventListenersMapper.set(eventName, listeners);
     }
 
     removeOnEventListener(eventName: T, listener: ListenerType<any>) {
         this.guardEventName(eventName);
-        const listeners = this.eventListenersMapper.get(eventName) || [];
+        const listeners = this.eventListenersMapper.get(eventName) ?? [];
         const index = listeners.indexOf(listener);
         if (index > -1) {
             listeners.splice(index, 1);
@@ -62,7 +64,7 @@ export class BasicEventHandler<T extends string> {
     private checkOnEvent(eventName: T, data?: any) {
         this.guardEventName(eventName);
         const listeners = [
-            ...(this.eventListenersMapper.get(eventName) || []),
+            ...(this.eventListenersMapper.get(eventName) ?? []),
         ].reverse();
         for (const listener of listeners) {
             listener(data);

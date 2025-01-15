@@ -11,11 +11,15 @@ import ShowingScreenIcon from './ShowingScreenIcon';
 const showingScreenEventMap = { key: 'F5' };
 export default function ShowHideScreen() {
     const screenManagerBase = useScreenManagerBaseContext();
-    useKeyboardRegistering([showingScreenEventMap], () => {
-        screenManagerBase.isShowing = !isShowing;
-    });
-    useScreenManagerEvents(['visible'], screenManagerBase);
+    useKeyboardRegistering(
+        [showingScreenEventMap],
+        () => {
+            screenManagerBase.isShowing = !screenManagerBase.isShowing;
+        },
+        [screenManagerBase],
+    );
     const isShowing = screenManagerBase.isShowing;
+    useScreenManagerEvents(['visible'], screenManagerBase);
     return (
         <div
             className={`d-flex show-hide pointer ${isShowing ? 'show' : ''}`}

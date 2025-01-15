@@ -6,14 +6,15 @@ import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../../others/AppContextMenuComp';
-import SlideItem from '../../slide-list/SlideItem';
+import Slide from '../../app-document-list/Slide';
 import ScreenManager from '../managers/ScreenManager';
 import {
     getSelectedScreenManagerBases,
     getValidOnScreen,
 } from '../managers/screenManagerBaseHelpers';
 import { getAllScreenManagers } from '../managers/screenManagerHelpers';
-import { SlideListType } from '../screenHelpers';
+import { AppDocumentListType } from '../screenHelpers';
+import PdfSlide from '../../app-document-list/PdfSlide';
 
 export function openContextMenu(event: any, screenManager: ScreenManager) {
     const screenManagers = getAllScreenManagers();
@@ -85,24 +86,23 @@ export function openContextMenu(event: any, screenManager: ScreenManager) {
             },
         },
     ];
-    if (menuItems.length === 0) {
-        return;
-    }
     showAppContextMenu(event, menuItems);
 }
 
-export function getSlideListOnScreenSetting(): SlideListType {
-    const str = getSetting(screenManagerSettingNames.SLIDE, '');
+export function getAppDocumentListOnScreenSetting(): AppDocumentListType {
+    const str = getSetting(screenManagerSettingNames.VARY_APP_DOCUMENT, '');
     try {
         if (!isValidJson(str, true)) {
             return {};
         }
         const json = JSON.parse(str);
         Object.values(json).forEach((item: any) => {
-            if (typeof item.slideFilePath !== 'string') {
+            if (typeof item.filePath !== 'string') {
                 throw new Error('Invalid slide path');
             }
-            SlideItem.validate(item.slideItemJson);
+            if (!PdfSlide.tryValidate(item.itemJson)) {
+                Slide.validate(item.itemJson);
+            }
         });
         return getValidOnScreen(json);
     } catch (error) {

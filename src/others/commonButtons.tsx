@@ -1,6 +1,10 @@
 import { createContext, use } from 'react';
 
-import { EventMapper, toShortcutKey } from '../event/KeyboardEventListener';
+import {
+    EventMapper,
+    toShortcutKey,
+    useKeyboardRegistering,
+} from '../event/KeyboardEventListener';
 import { tran } from '../lang';
 import { goToPath } from '../router/routeHelpers';
 import appProvider from '../server/appProvider';
@@ -79,6 +83,13 @@ export function useShowBibleSearchContext(isShowing = true) {
 export function BibleSearchButtonComp() {
     const { setIsShowing: setIsBibleSearchShowing } =
         useBibleSearchShowingContext();
+    useKeyboardRegistering(
+        [openBibleEventMap],
+        () => {
+            setIsBibleSearchShowing(true);
+        },
+        [],
+    );
     return (
         <button
             className="btn btn-labeled btn-primary"

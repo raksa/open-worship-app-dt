@@ -4,7 +4,7 @@ import FileReadErrorComp from './FileReadErrorComp';
 import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
 import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
@@ -110,8 +110,9 @@ export default function FileItemHandlerComp({
     onTrashed,
     isDisabledColorNote,
     userClassName,
+    isSelected,
 }: Readonly<{
-    data: ItemSource<any> | null | undefined;
+    data: AppDocumentSourceAbs | null | undefined;
     reload: () => void;
     index: number;
     filePath: string;
@@ -119,11 +120,12 @@ export default function FileItemHandlerComp({
     contextMenuItems?: ContextMenuItemType[];
     onDrop?: (event: any) => void;
     onClick?: () => void;
-    renderChild: (lyric: ItemSource<any>) => any;
+    renderChild: (data: AppDocumentSourceAbs) => any;
     isPointer?: boolean;
     onTrashed?: () => void;
     isDisabledColorNote?: boolean;
     userClassName?: string;
+    isSelected: boolean;
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
@@ -144,7 +146,7 @@ export default function FileItemHandlerComp({
         return <FileReadErrorComp onContextMenu={handleContextMenuOpening} />;
     }
     const moreClassName =
-        `${data.isSelected ? 'active' : ''} ` + `${className ?? ''}`;
+        `${isSelected ? 'active' : ''} ` + `${className ?? ''}`;
     const fileSource = FileSource.getInstance(filePath);
     return (
         <li
@@ -160,7 +162,7 @@ export default function FileItemHandlerComp({
             title={filePath}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
-                    ...(contextMenuItems || []),
+                    ...(contextMenuItems ?? []),
                     ...genCommonMenu(filePath),
                     ...selfContextMenu,
                 ]);

@@ -13,7 +13,6 @@ import {
     VAlignmentType,
 } from './canvasHelpers';
 import CanvasItem, { CanvasItemError, CanvasItemPropsType } from './CanvasItem';
-import { log } from '../../helper/loggerHelpers';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
@@ -44,7 +43,7 @@ export type ToolingTextType = {
     textHorizontalAlignment?: HAlignmentType;
     textVerticalAlignment?: VAlignmentType;
 };
-export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
+class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
     get type(): CanvasItemKindType {
         return 'text';
     }
@@ -99,8 +98,9 @@ export default class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> 
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment)
         ) {
-            log(json);
             throw new Error('Invalid canvas item text data');
         }
     }
 }
+
+export default CanvasItemText;

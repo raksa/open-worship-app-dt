@@ -86,13 +86,13 @@ export class SettingManager<T> {
     }) {
         this.settingName = settingName;
         this.defaultValue = defaultValue;
-        this.isErrorToDefault = isErrorToDefault || false;
-        this.validate = validate || (() => true);
-        this.serialize = serialize || ((value) => value);
-        this.deserialize = deserialize || ((value) => value);
+        this.isErrorToDefault = isErrorToDefault ?? false;
+        this.validate = validate ?? (() => true);
+        this.serialize = serialize ?? ((value) => value);
+        this.deserialize = deserialize ?? ((value) => value);
     }
     getSetting(defaultValue?: T): T {
-        defaultValue = defaultValue || this.defaultValue;
+        defaultValue = defaultValue ?? this.defaultValue;
         const value = getSetting(
             this.settingName,
             this.serialize(defaultValue),

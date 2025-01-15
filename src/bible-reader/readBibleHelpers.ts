@@ -136,10 +136,14 @@ export function useNextEditingBibleItem() {
     ].map((key) => {
         return { ...ctrlShiftMetaKeys, key };
     });
-    useKeyboardRegistering(eventMapperList, (event) => {
-        event.preventDefault();
-        changeEditingBibleItem(event.key as any);
-    });
+    useKeyboardRegistering(
+        eventMapperList,
+        (event) => {
+            event.preventDefault();
+            changeEditingBibleItem(event.key as any);
+        },
+        [],
+    );
 }
 
 export function useSplitBibleItemRenderer() {
@@ -156,6 +160,7 @@ export function useSplitBibleItemRenderer() {
                 viewController.addBibleItemBottom(bibleItem, bibleItem);
             }
         },
+        [],
     );
 }
 
@@ -169,8 +174,12 @@ export function closeCurrentEditingBibleItem() {
 }
 
 export function useCloseBibleItemRenderer() {
-    useKeyboardRegistering([closeEventMapper], (event) => {
-        event.preventDefault();
-        closeCurrentEditingBibleItem();
-    });
+    useKeyboardRegistering(
+        [closeEventMapper],
+        (event) => {
+            event.preventDefault();
+            closeCurrentEditingBibleItem();
+        },
+        [],
+    );
 }

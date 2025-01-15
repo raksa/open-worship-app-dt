@@ -31,8 +31,6 @@ export default function ColorPicker({
         if (newColor === null) {
             onNoColor?.(defaultColor, event);
             return;
-        } else {
-            onColorChange?.(newColor, event);
         }
         const hex =
             localColor === null

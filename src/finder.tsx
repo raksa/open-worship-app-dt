@@ -6,14 +6,14 @@ import { StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
 import appProviderScreen from './_screen/appProviderScreen';
-import FinderApp from './_find/FinderApp';
+import FinderAppComp from './_find/FinderAppComp';
 
 const container = document.getElementById('root');
 if (container !== null) {
     const root = createRoot(container);
     root.render(
         <StrictMode>
-            <FinderApp
+            <FinderAppComp
                 onClose={() => {
                     appProviderScreen.messageUtils.sendData(
                         'finder:app:close-finder',

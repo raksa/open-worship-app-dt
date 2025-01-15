@@ -28,7 +28,7 @@ import ScreenManagerBase from './ScreenManagerBase';
 import { getAllScreenManagerBases } from './screenManagerBaseHelpers';
 
 let textStyle: AnyObjectType = {};
-export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
+class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-ft-m';
     private _ftItemData: FullTextItemDataType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -39,7 +39,7 @@ export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTMa
         super(screenManagerBase);
         if (appProviderScreen.isPagePresenter) {
             const allFTList = getFullTextListOnScreenSetting();
-            this._ftItemData = allFTList[this.key] || null;
+            this._ftItemData = allFTList[this.key] ?? null;
 
             const str = getSetting(
                 `${SCREEN_FT_SETTING_PREFIX}-style-text`,
@@ -86,7 +86,7 @@ export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTMa
     }
 
     get div() {
-        return this._div || null;
+        return this._div;
     }
 
     set div(div: HTMLDivElement | null) {
@@ -109,7 +109,7 @@ export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTMa
     set fullTextItemData(ftItemData: FullTextItemDataType | null) {
         this._ftItemData = ftItemData;
         this.render();
-        unlocking(screenManagerSettingNames.FULL_TEXT, () => {
+        unlocking(`set-${screenManagerSettingNames.FULL_TEXT}`, () => {
             const allFTList = getFullTextListOnScreenSetting();
             if (ftItemData === null) {
                 delete allFTList[this.key];
@@ -127,12 +127,15 @@ export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTMa
         if (this._ftItemData !== null) {
             (this._ftItemData as any)[key] = value;
             if (!appProviderScreen.isScreen) {
-                unlocking(screenManagerSettingNames.FULL_TEXT, () => {
-                    const allFTList = getFullTextListOnScreenSetting();
-                    allFTList[this.key] = this._ftItemData as any;
-                    const string = JSON.stringify(allFTList);
-                    setSetting(screenManagerSettingNames.FULL_TEXT, string);
-                });
+                unlocking(
+                    `set-meta-${screenManagerSettingNames.FULL_TEXT}`,
+                    () => {
+                        const allFTList = getFullTextListOnScreenSetting();
+                        allFTList[this.key] = this._ftItemData as any;
+                        const string = JSON.stringify(allFTList);
+                        setSetting(screenManagerSettingNames.FULL_TEXT, string);
+                    },
+                );
             }
         }
     }
@@ -408,3 +411,5 @@ export default class ScreenFullTextManager extends ScreenEventHandler<ScreenFTMa
         return super.getInstanceBase<ScreenFullTextManager>(screenId);
     }
 }
+
+export default ScreenFullTextManager;

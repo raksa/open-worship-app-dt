@@ -1,9 +1,9 @@
 import { BrowserWindow } from 'electron';
 
-import { AnyObjectType, channels } from './electronEventListener.js';
-import { genRoutProps } from './protocolHelpers.js';
-import { htmlFiles } from './fsServe.js';
-import { isSecured } from './electronHelpers.js';
+import { AnyObjectType, channels } from './electronEventListener';
+import { genRoutProps } from './protocolHelpers';
+import { htmlFiles } from './fsServe';
+import { isSecured } from './electronHelpers';
 
 const routeProps = genRoutProps(htmlFiles.screen);
 const cache = new Map<string, ElectronScreenController>();

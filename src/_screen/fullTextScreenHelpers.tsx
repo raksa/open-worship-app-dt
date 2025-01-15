@@ -4,7 +4,6 @@ import {
     getBibleLocale,
     toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
 import appProviderScreen from './appProviderScreen';
 import {
@@ -178,20 +177,6 @@ const fullTextScreenHelper = {
                 });
             }),
         );
-    },
-    genLyricRenderList(lyric: Lyric) {
-        return lyric.items.map(({ title, content }): LyricRenderedType => {
-            const items = content.split('===').map((text, i) => {
-                return {
-                    num: i,
-                    text: text.trim().replace(/\n/g, '<br/>'),
-                };
-            });
-            return {
-                title,
-                items,
-            };
-        });
     },
 };
 

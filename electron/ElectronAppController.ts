@@ -1,9 +1,9 @@
 import { app, BrowserWindow } from 'electron';
 
-import ElectronFinderController from './ElectronFinderController.js';
-import ElectronMainController from './ElectronMainController.js';
-import ElectronSettingController from './ElectronSettingController.js';
-import { getCurrent } from './fsServe.js';
+import ElectronFinderController from './ElectronFinderController';
+import ElectronMainController from './ElectronMainController';
+import ElectronSettingController from './ElectronSettingController';
+import { getCurrent } from './fsServe';
 
 let instance: ElectronAppController | null = null;
 let settingController: ElectronSettingController | null = null;

@@ -8,13 +8,14 @@ import {
 } from '../../server/fileHelpers';
 import { WriteStream } from 'node:fs';
 import appProvider from '../../server/appProvider';
+import { OptionalPromise } from '../../others/otherHelpers';
 
 export const BIBLE_DOWNLOAD_TOAST_TITLE = 'Bible Download';
 
 export type DownloadOptionsType = {
-    onStart: (fileSize: number) => Promise<void> | void;
-    onProgress: (percentage: number) => Promise<void> | void;
-    onDone: (error: Error | null, filePath?: string) => Promise<void> | void;
+    onStart: (fileSize: number) => OptionalPromise<void>;
+    onProgress: (percentage: number) => OptionalPromise<void>;
+    onDone: (error: Error | null, filePath?: string) => OptionalPromise<void>;
 };
 export async function writeStreamToFile(
     filePath: string,

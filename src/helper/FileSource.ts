@@ -4,7 +4,6 @@ import {
     getFileExtension,
     fsCheckFileExist,
     fsCreateFile,
-    fsDeleteFile,
     fsReadFile,
     fsRenameFile,
     fsWriteFile,
@@ -15,7 +14,7 @@ import {
     getFileName,
 } from '../server/fileHelpers';
 import { AnyObjectType, isValidJson } from './helpers';
-import ItemSource from './ItemSource';
+import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { pathToFileURL } from '../server/helpers';
 import EventHandler from '../event/EventHandler';
 import appProvider from '../server/appProvider';
@@ -27,14 +26,7 @@ import ColorNoteInf from './ColorNoteInf';
 
 export type SrcData = `data:${string}`;
 
-export type FileSourceEventType =
-    | 'select'
-    | 'update'
-    | 'new'
-    | 'history-update'
-    | 'edit'
-    | 'delete'
-    | 'delete-cache';
+export type FileSourceEventType = 'select' | 'update' | 'delete';
 
 const cache = new Map<string, FileSource>();
 export default class FileSource
@@ -114,29 +106,41 @@ export default class FileSource
         return DirSource.getInstanceByDirPath(this.basePath);
     }
 
-    deleteCache() {
-        cache.delete(this.filePath);
-        ItemSource.deleteCache(this.filePath);
-        this.fireDeleteCacheEvent();
-    }
-
-    async readFileToJsonData() {
+    static async readFileData(filePath: string) {
         try {
-            const str = await fsReadFile(this.filePath);
-            if (isValidJson(str)) {
-                return JSON.parse(str) as AnyObjectType;
-            }
+            const dataText = await fsReadFile(filePath);
+            return dataText;
         } catch (error: any) {
             showSimpleToast(
                 'Reader File Data',
                 'Error occurred during reading ' +
-                    `file: "${this.filePath}", error: ${error.message}`,
+                    `file: "${filePath}", error: ${error.message}`,
             );
         }
         return null;
     }
 
-    async saveData(data: string) {
+    async readFileData() {
+        return await FileSource.readFileData(this.filePath);
+    }
+
+    async readFileJsonData() {
+        try {
+            const dataText = await this.readFileData();
+            if (dataText !== null && isValidJson(dataText)) {
+                return JSON.parse(dataText) as AnyObjectType;
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {}
+        return null;
+    }
+
+    static async saveFileData(filePath: string, data: string) {
+        const fileSource = this.getInstance(filePath);
+        return await fileSource.saveFileData(data);
+    }
+
+    async saveFileData(data: string) {
         try {
             const isFileExist = await fsCheckFileExist(this.filePath);
             if (isFileExist) {
@@ -152,21 +156,9 @@ export default class FileSource
         return false;
     }
 
-    async saveDataFromItem(item: ItemSource<any>) {
+    async saveDataFromItem(item: AppDocumentSourceAbs) {
         const content = JSON.stringify(item.toJson());
-        return this.saveData(content);
-    }
-
-    async delete() {
-        try {
-            await fsDeleteFile(this.filePath);
-            this.fireDeleteEvent();
-            this.deleteCache();
-            return true;
-        } catch (error: any) {
-            showSimpleToast('Saving File', error.message);
-        }
-        return false;
+        return this.saveFileData(content);
     }
 
     static getInstanceNoCache(filePath: string, fileFullName?: string) {
@@ -245,7 +237,7 @@ export default class FileSource
             i++;
         }
         const newFilePath = pathJoin(this.basePath, newName + this.extension);
-        const data = await this.readFileToJsonData();
+        const data = await this.readFileJsonData();
         if (data !== null) {
             await fsCreateFile(newFilePath, JSON.stringify(data));
         }
@@ -285,31 +277,11 @@ export default class FileSource
         FileSource.addFileSourcePropEvent('select', this.filePath, data);
     }
 
-    fireHistoryUpdateEvent(data?: any) {
-        FileSource.addFileSourcePropEvent(
-            'history-update',
-            this.filePath,
-            data,
-        );
-    }
-
     fireUpdateEvent(data?: any) {
         FileSource.addFileSourcePropEvent('update', this.filePath, data);
     }
 
-    fireNewEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('new', this.filePath, data);
-    }
-
-    fireEditEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('edit', this.filePath, data);
-    }
-
-    fireDeleteEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('delete', this.filePath, data);
-    }
-
-    fireDeleteCacheEvent(data?: any) {
-        FileSource.addFileSourcePropEvent('delete-cache', this.filePath, data);
+    fireDeleteEvent() {
+        FileSource.addFileSourcePropEvent('delete', this.filePath);
     }
 }

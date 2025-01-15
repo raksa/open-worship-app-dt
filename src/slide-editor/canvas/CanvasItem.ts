@@ -13,10 +13,10 @@ import {
     vAlignmentList,
     VAlignmentType,
 } from './canvasHelpers';
-import { log } from '../../helper/loggerHelpers';
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
+import { ClipboardInf } from '../../app-document-list/appDocumentHelpers';
 
 export type CanvasItemPropsType = {
     id: number;
@@ -33,24 +33,30 @@ export type CanvasItemPropsType = {
 
 export type CanvasItemEventType = 'edit';
 
-export default abstract class CanvasItem<
-    T extends CanvasItemPropsType,
-> extends EventHandler<CanvasItemEventType> {
+export default abstract class CanvasItem<T extends CanvasItemPropsType>
+    extends EventHandler<CanvasItemEventType>
+    implements ClipboardInf
+{
     props: T;
     constructor(props: T) {
         super();
         this.props = cloneJson(props);
     }
+
     get id() {
         return this.props.id;
     }
+
     get type(): CanvasItemKindType {
         return this.props.type;
     }
+
     static genStyle(_props: CanvasItemPropsType) {
         throw new Error('Method not implemented.');
     }
+
     abstract getStyle(): CSSProperties;
+
     static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
         const style: CSSProperties = {
             display: 'flex',
@@ -64,12 +70,15 @@ export default abstract class CanvasItem<
         };
         return style;
     }
+
     getBoxStyle(): CSSProperties {
         return CanvasItem.genBoxStyle(this.props);
     }
+
     static fromJson(_json: object): CanvasItem<any> {
         throw new Error('Method not implemented.');
     }
+
     applyBoxData(
         parentDim: {
             parentWidth: number;
@@ -95,12 +104,14 @@ export default abstract class CanvasItem<
         }
         this.applyProps(newProps);
     }
+
     applyProps(props: AnyObjectType) {
         const propsAny = this.props as any;
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
     }
+
     clone() {
         const newItem = (this.constructor as typeof CanvasItem<any>).fromJson(
             this.toJson(),
@@ -108,9 +119,11 @@ export default abstract class CanvasItem<
         newItem.props.id = -1;
         return newItem;
     }
+
     toJson(): CanvasItemPropsType {
         return this.props;
     }
+
     static validate(json: AnyObjectType) {
         if (
             typeof json.id !== 'number' ||
@@ -125,7 +138,6 @@ export default abstract class CanvasItem<
                 typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
         ) {
-            log(json);
             throw new Error('Invalid canvas item data');
         }
     }
@@ -136,6 +148,10 @@ export default abstract class CanvasItem<
 
     clipboardSerialize() {
         return JSON.stringify(this.toJson());
+    }
+
+    checkIsSame(canvasItem: CanvasItem<any>) {
+        return this.id === canvasItem.id;
     }
 }
 
@@ -188,7 +204,12 @@ export function checkCanvasItemsIncludes(
     canvasItems: CanvasItem<any>[],
     targetCanvasItem: CanvasItem<any>,
 ) {
-    return canvasItems.includes(targetCanvasItem);
+    for (const item of canvasItems) {
+        if (item.checkIsSame(targetCanvasItem)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export function useSetSelectedCanvasItems() {
@@ -249,7 +270,7 @@ export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
                 setProps(cloneJson(canvasItem.props));
             });
         });
-    }, []);
+    }, [canvasItem]);
     return props as T;
 }
 

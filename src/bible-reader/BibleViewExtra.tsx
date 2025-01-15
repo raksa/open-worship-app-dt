@@ -1,8 +1,8 @@
 import { createContext, Fragment, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import { BibleSelectionMini } from '../bible-search/BibleSelection';
-import { useGetBibleRef } from '../bible-refs/bibleRefsHelpers';
+import { BibleSelectionMini } from '../bible-search/BibleSelectionComp';
+import { useGetBibleRef } from '../others/bibleRefsHelpers';
 import {
     useBibleItemRenderTitle,
     useBibleItemVerseTextList,
@@ -16,7 +16,7 @@ import ColorNoteInf from '../helper/ColorNoteInf';
 import { useBibleItemViewControllerContext } from './BibleItemViewController';
 import { useBibleItemContext } from './BibleItemContext';
 
-export function RenderTitleMaterial({
+export function RenderTitleMaterialComp({
     editingBibleItem,
     onBibleKeyChange,
 }: Readonly<{
@@ -46,14 +46,14 @@ export function RenderTitleMaterial({
                     </div>
                 </div>
                 <div className="flex-item">
-                    <BibleViewTitle />
+                    <BibleViewTitleComp />
                 </div>
             </div>
         </div>
     );
 }
 
-export function RenderHeader({
+export function RenderHeaderComp({
     onChange,
     onClose,
 }: Readonly<{
@@ -67,7 +67,7 @@ export function RenderHeader({
             className="card-header d-flex"
             style={fontSizeToHeightStyle(fontSize)}
         >
-            <RenderTitleMaterial onBibleKeyChange={onChange} />
+            <RenderTitleMaterialComp onBibleKeyChange={onChange} />
             <div>
                 <button
                     className="btn-close"
@@ -84,7 +84,7 @@ export const BibleViewTitleMaterialContext = createContext<{
     onDBClick: (bibleItem: BibleItem) => void;
 } | null>(null);
 
-export function BibleViewTitle() {
+export function BibleViewTitleComp() {
     const bibleItem = useBibleItemContext();
     const materialContext = use(BibleViewTitleMaterialContext);
     const title = useBibleItemRenderTitle(bibleItem);
@@ -107,7 +107,7 @@ export function BibleViewTitle() {
     );
 }
 
-export function BibleViewText() {
+export function BibleViewTextComp() {
     const bibleItem = useBibleItemContext();
     const fontSize = useBibleViewFontSizeContext();
     const result = useBibleItemVerseTextList(bibleItem);
@@ -150,29 +150,7 @@ export function BibleViewText() {
     );
 }
 
-export function RefRenderer() {
-    const bibleItem = useBibleItemContext();
-    const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
-    const arr: number[] = [];
-    for (let i = verseStart; i <= verseEnd; i++) {
-        arr.push(i);
-    }
-    return (
-        <>
-            {arr.map((verse) => {
-                return (
-                    <RefItemRenderer
-                        key={verse}
-                        bookKey={book}
-                        chapter={chapter}
-                        verse={verse}
-                    />
-                );
-            })}
-        </>
-    );
-}
-function RefItemRenderer({
+function RefItemRendererComp({
     bookKey,
     chapter,
     verse,
@@ -187,5 +165,28 @@ function RefItemRenderer({
             <hr />
             {bibleRef !== null && <code>{JSON.stringify(bibleRef)}</code>}
         </div>
+    );
+}
+
+export function RefRendererComp() {
+    const bibleItem = useBibleItemContext();
+    const { bookKey: book, chapter, verseStart, verseEnd } = bibleItem.target;
+    const arr: number[] = [];
+    for (let i = verseStart; i <= verseEnd; i++) {
+        arr.push(i);
+    }
+    return (
+        <>
+            {arr.map((verse) => {
+                return (
+                    <RefItemRendererComp
+                        key={verse}
+                        bookKey={book}
+                        chapter={chapter}
+                        verse={verse}
+                    />
+                );
+            })}
+        </>
     );
 }

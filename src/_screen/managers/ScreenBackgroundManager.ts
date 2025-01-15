@@ -21,7 +21,7 @@ import ScreenEffectManager from './ScreenEffectManager';
 
 export type ScreenBackgroundManagerEventType = 'update';
 
-export default class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManagerEventType> {
+class ScreenBackgroundManager extends ScreenEventHandler<ScreenBackgroundManagerEventType> {
     static readonly eventNamePrefix: string = 'screen-bg-m';
     private _backgroundSrc: BackgroundSrcType | null = null;
     private _div: HTMLDivElement | null = null;
@@ -35,7 +35,7 @@ export default class ScreenBackgroundManager extends ScreenEventHandler<ScreenBa
         this.backgroundEffectManager = backgroundEffectManager;
         if (appProviderScreen.isPagePresenter) {
             const allBackgroundSrcList = getBackgroundSrcListOnScreenSetting();
-            this._backgroundSrc = allBackgroundSrcList[this.key] || null;
+            this._backgroundSrc = allBackgroundSrcList[this.key] ?? null;
         }
     }
 
@@ -242,3 +242,5 @@ export default class ScreenBackgroundManager extends ScreenEventHandler<ScreenBa
         return super.getInstanceBase<ScreenBackgroundManager>(screenId);
     }
 }
+
+export default ScreenBackgroundManager;

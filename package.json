@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.01.07",
+    "version": "2025.01.13",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -24,7 +24,8 @@
         "postinstall": "install-app-deps",
         "vite:dev": "vite",
         "vite:build": "vite build",
-        "react-devtools": "react-devtools"
+        "react-devtools": "react-devtools",
+        "lint": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\" && eslint \"src/**/*.ts*\" && npm run build"
     },
     "browserslist": {
         "production": [
@@ -94,8 +95,8 @@
         "@types/react": "^19.0.1",
         "@types/react-dom": "^19.0.1",
         "@types/tar": "^6.1.13",
-        "@typescript-eslint/eslint-plugin": "^8.16.0",
-        "@typescript-eslint/parser": "^8.16.0",
+        "@typescript-eslint/eslint-plugin": "^8.20.0",
+        "@typescript-eslint/parser": "^8.20.0",
         "@vitejs/plugin-basic-ssl": "^1.2.0",
         "@vitejs/plugin-react-swc": "^3.7.2",
         "bootstrap": "^5.3.3",

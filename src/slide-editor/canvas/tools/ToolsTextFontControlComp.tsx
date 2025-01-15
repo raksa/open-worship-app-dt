@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import SlideItemEditorToolTitleComp from './SlideItemEditorToolTitleComp';
+import SlideEditorToolTitleComp from './SlideEditorToolTitleComp';
 import CanvasItemText, { CanvasItemTextPropsType } from '../CanvasItemText';
 import { useFontList } from '../../../server/fontHelpers';
 import { FontListType } from '../../../server/appProvider';
@@ -10,7 +10,7 @@ import { useCanvasItemContext, useCanvasItemPropsContext } from '../CanvasItem';
 
 export default function ToolsTextFontControlComp() {
     return (
-        <SlideItemEditorToolTitleComp title="Font Size">
+        <SlideEditorToolTitleComp title="Font Size">
             <div className="d-flex">
                 <FontSize />
             </div>
@@ -18,7 +18,7 @@ export default function ToolsTextFontControlComp() {
             <div className="d-flex">
                 <FontFamily />
             </div>
-        </SlideItemEditorToolTitleComp>
+        </SlideEditorToolTitleComp>
     );
 }
 function FontSize() {
@@ -32,7 +32,7 @@ function FontSize() {
     const applyFontSize = (fontSize: number) => {
         setLocalFontSize(fontSize);
         canvasItem.applyTextData({ fontSize });
-        canvasController.fireEditEvent(canvasItem);
+        canvasController.applyEditItem(canvasItem);
     };
     return (
         <div className="d-flex">
@@ -78,7 +78,7 @@ function FontFamily() {
         canvasItem.applyTextData({
             fontFamily: fontFamily || null,
         });
-        canvasController.fireEditEvent(canvasItem);
+        canvasController.applyEditItem(canvasItem);
     };
     if (fontList === null) {
         return <div>Loading Font ...</div>;
@@ -139,7 +139,7 @@ function FontWeight({
         canvasItem.applyTextData({
             fontWeight: newFontWeight || null,
         });
-        canvasController.fireEditEvent(canvasItem);
+        canvasController.applyEditItem(canvasItem);
     };
     return (
         <div>

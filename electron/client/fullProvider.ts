@@ -1,13 +1,13 @@
-import browserUtils from './browserUtils.js';
-import cryptoUtils from './cryptoUtils.js';
-import fileUtils from './fileUtils.js';
+import browserUtils from './browserUtils';
+import cryptoUtils from './cryptoUtils';
+import fileUtils from './fileUtils';
 import diffUtils from './diffUtils';
-import httpUtils from './httpUtils.js';
-import messageUtils from './messageUtils.js';
-import systemUtils from './systemUtils.js';
-import pathUtils from './pathUtils.js';
-import fontUtils from './fontUtils.js';
-import appUtils from './appUtils.js';
+import httpUtils from './httpUtils';
+import messageUtils from './messageUtils';
+import systemUtils from './systemUtils';
+import pathUtils from './pathUtils';
+import fontUtils from './fontUtils';
+import appUtils from './appUtils';
 
 import appInfo from '../../package.json';
 

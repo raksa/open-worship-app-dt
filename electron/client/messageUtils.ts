@@ -1,6 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 
-import { channels } from '../electronEventListener.js';
+import { channels } from '../electronEventListener';
 
 const messageUtils = {
     channels,

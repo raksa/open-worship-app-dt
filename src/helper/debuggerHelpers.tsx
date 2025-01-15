@@ -16,7 +16,7 @@ type StoreType = {
     timeoutId: any;
 };
 function restore(toKey: string) {
-    const store = storeMapper.get(toKey) || {
+    const store = storeMapper.get(toKey) ?? {
         count: 0,
         timeoutId: 0,
     };
@@ -52,7 +52,7 @@ function checkStore(toKey: string) {
 type MethodContextType = { [key: string]: any };
 export function useAppEffectAsync<T extends MethodContextType>(
     effectMethod: (methodContext: T) => Promise<(() => void) | void>,
-    deps?: DependencyList,
+    deps: DependencyList,
     methods?: T,
     key?: string,
 ) {
@@ -62,7 +62,7 @@ export function useAppEffectAsync<T extends MethodContextType>(
     const isAllUndefined = deps === undefined && methods === undefined;
     const totalDeps = isAllUndefined
         ? undefined
-        : [...(deps || []), ...Object.values(methods ?? {})];
+        : [...(deps ?? []), ...Object.values(methods ?? {})];
     useEffect(() => {
         const methodContext = { ...(methods ?? {}) } as T;
         checkStore(toKey);
@@ -82,7 +82,7 @@ export function useAppEffectAsync<T extends MethodContextType>(
 
 export function useAppEffect(
     effect: EffectCallback,
-    deps?: DependencyList,
+    deps: DependencyList,
     key?: string,
 ) {
     const toKey = useMemo(() => {
@@ -123,4 +123,24 @@ function TestInfinite() {
             Count: {count}
         </h2>
     );
+}
+
+export function useAppStateAsync<T>(
+    promise: Promise<T>,
+    deps: DependencyList = [],
+    defaultValue?: T | null,
+) {
+    const [value, setValue] = useState<T | null | undefined>(defaultValue);
+    useAppEffectAsync(
+        async (contextMethods) => {
+            const newValue = await promise;
+            contextMethods.setValue(newValue);
+        },
+        deps,
+        { setValue },
+    );
+    return {
+        value,
+        setValue,
+    };
 }

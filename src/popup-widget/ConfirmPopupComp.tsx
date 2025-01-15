@@ -1,7 +1,7 @@
 import './ConfirmPopupComp.scss';
 
-import PrimitiveModal from '../app-modal/PrimitiveModal';
-import HeaderAlertPopup from './HeaderAlertPopup';
+import PrimitiveModalComp from '../app-modal/PrimitiveModalComp';
+import HeaderAlertPopupComp from './HeaderAlertPopupComp';
 import { closeAlert, ConfirmDataType } from './popupWidgetHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 
@@ -18,17 +18,25 @@ export default function ConfirmPopupComp({
         data.onConfirm(true);
         closeAlert();
     };
-    useKeyboardRegistering([{ key: 'Escape' }], (event) => {
-        event.preventDefault();
-        handleClosing();
-    });
-    useKeyboardRegistering([{ key: 'Enter' }], () => {
-        handleOkClicking();
-    });
+    useKeyboardRegistering(
+        [{ key: 'Escape' }],
+        (event) => {
+            event.preventDefault();
+            handleClosing();
+        },
+        [data],
+    );
+    useKeyboardRegistering(
+        [{ key: 'Enter' }],
+        () => {
+            handleOkClicking();
+        },
+        [data],
+    );
     return (
-        <PrimitiveModal>
+        <PrimitiveModalComp>
             <div id="app-confirm-popup" className="shadow card">
-                <HeaderAlertPopup
+                <HeaderAlertPopupComp
                     header={
                         <div className="app-ellipsis" title={data.title}>
                             <i className="bi bi-exclamation-circle" />
@@ -62,6 +70,6 @@ export default function ConfirmPopupComp({
                     </div>
                 </div>
             </div>
-        </PrimitiveModal>
+        </PrimitiveModalComp>
     );
 }

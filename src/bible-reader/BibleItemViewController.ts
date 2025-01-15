@@ -11,12 +11,12 @@ import {
     ContextMenuItemType,
     genContextMenuItemShortcutKey,
 } from '../others/AppContextMenuComp';
-import { showBibleOption } from '../bible-search/BibleSelection';
-import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtons';
+import { showBibleOption } from '../bible-search/BibleSelectionComp';
+import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import { attemptAddingHistory } from '../bible-search/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
-import { finalRenderer } from './BibleView';
+import { finalRenderer } from './BibleViewComp';
 
 export type UpdateEventType = 'update';
 export const RESIZE_SETTING_NAME = 'bible-previewer-render';
@@ -207,7 +207,7 @@ const movingPosition: { [key: string]: [boolean, boolean] } = {
 export type MovingPositionType = keyof typeof movingPosition;
 
 const BIBLE_ITEMS_PREVIEW_SETTING = 'bible-items-preview';
-export default class BibleItemViewController extends EventHandler<UpdateEventType> {
+class BibleItemViewController extends EventHandler<UpdateEventType> {
     private readonly _settingNameSuffix: string;
     readonly colorNoteMap: WeakMap<BibleItem, string> = new WeakMap();
     constructor(settingNameSuffix: string) {
@@ -252,7 +252,7 @@ export default class BibleItemViewController extends EventHandler<UpdateEventTyp
         return this.straightBibleItems.length < 2;
     }
     getColorNote(bibleItem: BibleItem) {
-        return this.colorNoteMap.get(bibleItem) || '';
+        return this.colorNoteMap.get(bibleItem) ?? '';
     }
     setColorNote(bibleItem: BibleItem, color: string | null) {
         if (!color) {
@@ -664,11 +664,15 @@ export function useBIVCUpdateEvent() {
         const update = () => {
             setNestedBibleItems(viewController.nestedBibleItems);
         };
-        const instanceEvents =
-            viewController.registerEventListener(['update'], update) || [];
+        const instanceEvents = viewController.registerEventListener(
+            ['update'],
+            update,
+        );
         return () => {
             viewController.unregisterEventListener(instanceEvents);
         };
     }, [viewController]);
     return nestedBibleItems;
 }
+
+export default BibleItemViewController;

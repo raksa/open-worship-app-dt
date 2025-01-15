@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
 import colorList from './color-list.json';
 import ColorNoteInf from '../helper/ColorNoteInf';
-import { useAppEffect } from '../helper/debuggerHelpers';
+import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { freezeObject } from '../helper/helpers';
 
 freezeObject(colorList);
@@ -16,13 +16,16 @@ export default function ItemColorNoteComp({
     item: ColorNoteInf;
 }>) {
     const [colorNote, setColorNote] = useState('');
-    useAppEffect(() => {
-        item.getColorNote().then((colorNote) => {
-            setColorNote(colorNote || '');
-        });
-    }, [item]);
+    useAppEffectAsync(
+        async (contextMethods) => {
+            const colorNote = await item.getColorNote();
+            contextMethods.setColorNote(colorNote ?? '');
+        },
+        [item],
+        { setColorNote },
+    );
     const setColorNote1 = (colorNote: string | null) => {
-        setColorNote(colorNote || '');
+        setColorNote(colorNote ?? '');
         item.setColorNote(colorNote);
     };
     const title = useMemo(() => {
@@ -36,7 +39,7 @@ export default function ItemColorNoteComp({
             },
             {} as Record<string, string>,
         );
-        return reverseColorMap[colorNote] || 'no color';
+        return reverseColorMap[colorNote] ?? 'no color';
     }, [colorNote]);
     const handleColorSelecting = (event: any) => {
         event.stopPropagation();

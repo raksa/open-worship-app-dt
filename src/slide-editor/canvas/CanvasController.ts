@@ -7,7 +7,6 @@ import CanvasItemText from './CanvasItemText';
 import CanvasItemImage from './CanvasItemImage';
 import CanvasItemBibleItem from './CanvasItemBibleItem';
 import BibleItem from '../../bible-list/BibleItem';
-import SlideItem from '../../slide-list/SlideItem';
 import {
     CanvasItemMediaPropsType,
     CanvasControllerEventType,
@@ -17,6 +16,8 @@ import { showSimpleToast } from '../../toast/toastHelpers';
 import { handleError } from '../../helper/errorHelpers';
 import { createContext, use } from 'react';
 import { showCanvasItemContextMenu } from './canvasContextMenuHelpers';
+import AppDocument from '../../app-document-list/AppDocument';
+import Slide from '../../app-document-list/Slide';
 
 const EDITOR_SCALE_SETTING_NAME = 'canvas-editor-scale';
 export const defaultRangeSize = {
@@ -28,48 +29,59 @@ export const defaultRangeSize = {
 
 export type CanvasItemEventDataType = { canvasItems: CanvasItem<any>[] };
 
-export default class CanvasController extends EventHandler<CanvasControllerEventType> {
+class CanvasController extends EventHandler<CanvasControllerEventType> {
     static readonly eventNamePrefix: string = 'canvas-c';
-    private readonly _canvas: Canvas;
-    readonly slideItem: SlideItem;
     private _scale: number = 1;
-    constructor(slideItem: SlideItem) {
+    readonly appDocument: AppDocument;
+    readonly canvas: Canvas;
+
+    constructor(appDocument: AppDocument, canvas: Canvas) {
         super();
-        this._canvas = Canvas.genDefaultCanvas();
         const defaultData = parseFloat(getSetting(EDITOR_SCALE_SETTING_NAME));
         if (!isNaN(defaultData)) {
             this._scale = defaultData;
         }
-        this.slideItem = slideItem;
-        this._canvas = slideItem.canvas || Canvas.genDefaultCanvas();
+        this.appDocument = appDocument;
+        this.canvas = canvas;
     }
-    get canvas() {
-        return this._canvas;
-    }
+
     get scale() {
         return this._scale;
     }
+
     set scale(newScale: number) {
         this._scale = newScale;
         setSetting(EDITOR_SCALE_SETTING_NAME, this._scale.toString());
-        this.addPropEvent('scale', { canvasItems: this.canvas.newCanvasItems });
+        this.addPropEvent('scale', { canvasItems: this.canvas.canvasItems });
     }
+
     addPropEvent(
         eventName: CanvasControllerEventType,
         data: CanvasItemEventDataType,
     ): void {
         super.addPropEvent(eventName, data);
     }
-    fireEditEvent(canvasItem: CanvasItem<any>) {
-        this.slideItem.canvas = this.canvas;
+
+    applyEditItem(canvasItem: CanvasItem<any>) {
+        const canvasItems = this.canvas.canvasItems;
+        const index = canvasItems.findIndex((item) => {
+            return item.checkIsSame(canvasItem);
+        });
+        if (index === -1) {
+            showSimpleToast('Edit Canvas Item', 'Canvas item not found');
+            return;
+        }
+        canvasItems[index] = canvasItem;
+        this.setCanvasItems(canvasItems);
         canvasItem.fireEditEvent();
     }
+
     fireUpdateEvent() {
-        this.slideItem.canvas = this.canvas;
         this.addPropEvent('update', {
-            canvasItems: this.canvas.newCanvasItems,
+            canvasItems: this.canvas.canvasItems,
         });
     }
+
     async cloneItem(canvasItem: CanvasItem<any>) {
         const newCanvasItem = canvasItem.clone();
         newCanvasItem.props.top += 20;
@@ -77,8 +89,9 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         newCanvasItem.props.id = this.canvas.maxItemId + 1;
         return newCanvasItem;
     }
+
     async duplicate(canvasItem: CanvasItem<any>) {
-        const newCanvasItems = this.canvas.newCanvasItems;
+        const newCanvasItems = this.canvas.canvasItems;
         const newCanvasItem = await this.cloneItem(canvasItem);
         if (newCanvasItem === null) {
             return;
@@ -87,28 +100,39 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         newCanvasItems.splice(index + 1, 0, newCanvasItem);
         this.setCanvasItems(newCanvasItems);
     }
+
     deleteItem(canvasItem: CanvasItem<any>) {
-        const newCanvasItems = this.canvas.canvasItems.filter((item) => {
-            return item !== canvasItem;
+        const canvasItems = this.canvas.canvasItems;
+        const index = canvasItems.findIndex((item) => {
+            return item.checkIsSame(canvasItem);
         });
-        this.setCanvasItems(newCanvasItems);
+        if (index === -1) {
+            showSimpleToast('Delete Canvas Item', 'Canvas item not found');
+            return;
+        }
+        canvasItems.splice(index, 1);
+        this.setCanvasItems(canvasItems);
     }
+
     addNewItem(canvasItem: CanvasItem<any>) {
-        const newCanvasItems = this.canvas.newCanvasItems;
+        const newCanvasItems = this.canvas.canvasItems;
         canvasItem.props.id = this.canvas.maxItemId + 1;
         newCanvasItems.push(canvasItem);
         this.setCanvasItems(newCanvasItems);
     }
+
     async addNewTextItem() {
         const newItem = CanvasItemText.genDefaultItem();
         this.addNewItem(newItem);
     }
+
     getMousePosition(event: any) {
         const rect = (event.target as HTMLDivElement).getBoundingClientRect();
         const x = Math.floor((event.clientX - rect.left) / this.scale);
         const y = Math.floor((event.clientY - rect.top) / this.scale);
         return { x, y };
     }
+
     async genNewMediaItemFromFilePath(filePath: string, event: any) {
         try {
             const fileSource = FileSource.getInstance(filePath);
@@ -131,6 +155,7 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         }
         showSimpleToast('Insert Image or Video', 'Fail to insert medias');
     }
+
     async genNewImageItemFromBlob(blob: Blob, event: any) {
         try {
             const { x, y } = this.getMousePosition(event);
@@ -141,14 +166,16 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         }
         showSimpleToast('Pasting Image', 'Fail to insert image');
     }
+
     async addNewBibleItem(bibleItem: BibleItem) {
         const id = this.canvas.maxItemId + 1;
         const newItem = await CanvasItemBibleItem.fromBibleItem(id, bibleItem);
         this.addNewItem(newItem);
     }
+
     applyOrderingData(canvasItem: CanvasItem<any>, isBack: boolean) {
         // move canvasItem to next if isBack is false else move to previous
-        const newCanvasItems = this.canvas.newCanvasItems;
+        const newCanvasItems = this.canvas.canvasItems;
         const index = newCanvasItems.indexOf(canvasItem);
         if (index === -1) {
             return;
@@ -168,6 +195,7 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
         }
         this.setCanvasItems(newCanvasItems);
     }
+
     scaleCanvasItemToSize(
         canvasItem: CanvasItem<any>,
         targetWidth: number,
@@ -187,8 +215,9 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
             horizontalAlignment: 'center',
             verticalAlignment: 'center',
         });
-        this.fireEditEvent(canvasItem);
+        this.applyEditItem(canvasItem);
     }
+
     applyCanvasItemFully(canvasItem: CanvasItem<any>) {
         const props = canvasItem.props as CanvasItemPropsType;
         let width = props.width;
@@ -208,6 +237,7 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
             height,
         );
     }
+
     applyCanvasItemMediaStrip(canvasItem: CanvasItem<any>) {
         if (!['image', 'video'].includes(canvasItem.type)) {
             return;
@@ -226,10 +256,13 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
             height,
         );
     }
+
     setCanvasItems(canvasItems: CanvasItem<any>[]) {
         this.canvas.canvasItems = canvasItems;
+        this.appDocument.setSlide(this.canvas.slide);
         this.fireUpdateEvent();
     }
+
     genHandleContextMenuOpening(
         canvasItem: CanvasItem<any>,
         handleCanvasItemEditing: () => void,
@@ -254,7 +287,14 @@ export default class CanvasController extends EventHandler<CanvasControllerEvent
             listener,
         );
     }
+
+    static initInstance(slide: Slide) {
+        const appDocument = AppDocument.getInstance(slide.filePath);
+        return new this(appDocument, new Canvas(slide));
+    }
 }
+
+export default CanvasController;
 
 export const CanvasControllerContext = createContext<CanvasController | null>(
     null,

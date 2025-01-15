@@ -120,8 +120,8 @@ export async function updateBibleItem(bibleItem: BibleItem, data: string) {
         showSimpleToast(messageTitle, 'Invalid bible item data');
         return null;
     }
-    const bible = await Bible.readFileToData(oldBibleItem.filePath);
-    if (!bible) {
+    const bible = await Bible.fromFilePath(oldBibleItem.filePath);
+    if (bible === null) {
         showSimpleToast(messageTitle, 'Fail to read bible file');
         return null;
     }
@@ -193,7 +193,7 @@ export async function moveBibleItemTo(
         Bible.getDirSourceSettingName(),
     );
     dirSource.getFilePaths('bible').then((filePaths) => {
-        const targetNames = (filePaths || [])
+        const targetNames = (filePaths ?? [])
             .map((filePath) => {
                 return FileSource.getInstance(filePath).name;
             })
@@ -219,7 +219,7 @@ export async function moveBibleItemTo(
                             basePath,
                             addExtension(name, extension),
                         );
-                        const targetBible = await Bible.readFileToData(
+                        const targetBible = await Bible.fromFilePath(
                             fileSource.filePath,
                         );
                         if (!targetBible) {

@@ -119,8 +119,8 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
     ) {
         if (
             !checkIsCountdownDatesEq(
-                countdownData?.dateTime || null,
-                this.alertData.countdownData?.dateTime || null,
+                countdownData?.dateTime ?? null,
+                this.alertData.countdownData?.dateTime ?? null,
             )
         ) {
             this.cleanRender(this.divCountdown);
@@ -258,7 +258,7 @@ export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEv
     }
 
     render() {
-        console.log('render');
+        throw new Error('Method not implemented.');
     }
 
     clear() {

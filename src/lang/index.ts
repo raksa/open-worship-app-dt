@@ -241,8 +241,8 @@ export const reversedLocalesMap: { [key: string]: string } = Object.fromEntries(
     Object.entries(allLocalesMap).map(([key, value]) => [value, key]),
 );
 
-export function getLangCode(locale: string) {
-    return (allLocalesMap as any)[locale] || null;
+export function getLangCode(locale: string): string | null {
+    return (allLocalesMap as any)[locale] ?? null;
 }
 
 export const langDataMap: { [key: string]: LanguageType } = {
@@ -283,7 +283,7 @@ const cache = new Map<string, LanguageType>();
 export function getLang(langCodeOrLocal: string) {
     // TODO: change to completely locale
     const langCode = getLangCode(langCodeOrLocal);
-    return cache.get(langCode || langCodeOrLocal) || null;
+    return cache.get(langCode ?? langCodeOrLocal) ?? null;
 }
 
 export async function getLangAsync(locale: string) {

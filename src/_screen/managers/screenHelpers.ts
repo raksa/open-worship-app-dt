@@ -8,7 +8,7 @@ export function getDefaultScreenDisplay() {
     return (
         displays.find((display) => {
             return display.id !== primaryDisplay.id;
-        }) || primaryDisplay
+        }) ?? primaryDisplay
     );
 }
 
@@ -27,7 +27,7 @@ export function getDisplayByScreenId(screenId: number) {
     return (
         displays.find((display) => {
             return display.id === displayId;
-        }) || getDefaultScreenDisplay()
+        }) ?? getDefaultScreenDisplay()
     );
 }
 

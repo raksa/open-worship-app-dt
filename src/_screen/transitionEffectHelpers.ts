@@ -18,7 +18,7 @@ export const transitionEffect = {
 } as const;
 export type ScreenTransitionEffectType = keyof typeof transitionEffect;
 export type PTFEventType = 'update';
-export const targetList = ['background', 'slide'] as const;
+export const targetList = ['background', 'vary-app-document'] as const;
 export type TargetType = (typeof targetList)[number];
 
 const easingFunctions = {
@@ -35,6 +35,7 @@ const easingFunctions = {
         return 0.5 * (Math.sin((k - 0.5) * Math.PI) + 1);
     },
 };
+
 export type EasingFuncType = keyof typeof easingFunctions;
 
 export type GenAnimPropsType = {
@@ -43,6 +44,7 @@ export type GenAnimPropsType = {
     width?: number;
     height?: number;
 };
+
 function none(): StyleAnimType {
     return {
         style: '',
@@ -51,6 +53,7 @@ function none(): StyleAnimType {
         duration: 0,
     };
 }
+
 function fade(target: TargetType): StyleAnimType {
     const duration = 1000;
     const cssProps = {
@@ -99,6 +102,7 @@ function fade(target: TargetType): StyleAnimType {
         duration,
     };
 }
+
 function move(): StyleAnimType {
     const duration = 500;
     const movingMaker = ({
@@ -115,7 +119,7 @@ function move(): StyleAnimType {
         callback: (n: number, isDone?: boolean) => void;
     }) => {
         const distDiff = to - from;
-        const easeFn = easingFunctions[easing || 'ease-in'];
+        const easeFn = easingFunctions[easing ?? 'ease-in'];
         const startTime = Date.now();
         const step = () => {
             const timeNow = Date.now();
@@ -142,7 +146,7 @@ function move(): StyleAnimType {
                     targetElement.parentElement.getBoundingClientRect();
                 const from = -rect.width;
                 const styleLst = (targetElement.previousSibling as HTMLElement)
-                    ?.style || {
+                    ?.style ?? {
                     left: '0px',
                 };
                 const styleTarget = targetElement.style;
@@ -184,6 +188,7 @@ function move(): StyleAnimType {
         duration,
     };
 }
+
 function zoom(): StyleAnimType {
     return none();
 }
@@ -197,7 +202,7 @@ export const styleAnimList: {
     zoom,
 };
 
-export function usePTEEvents(
+export function useScreenEffectEvents(
     events: PTFEventType[],
     screenEffectManager: ScreenEffectManager,
     callback?: () => void,
@@ -210,11 +215,13 @@ export function usePTEEvents(
             });
             callback?.();
         };
-        const instanceEvents =
-            screenEffectManager.registerEventListener(events, update) || [];
+        const instanceEvents = screenEffectManager.registerEventListener(
+            events,
+            update,
+        );
         return () => {
             screenEffectManager.unregisterEventListener(instanceEvents);
         };
-    }, [screenEffectManager]);
+    }, [screenEffectManager, callback]);
     return n;
 }

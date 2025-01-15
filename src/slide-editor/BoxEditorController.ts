@@ -1,5 +1,6 @@
 import { createContext, use } from 'react';
 import { getRotationDeg, removePX } from '../helper/helpers';
+import { OptionalPromise } from '../others/otherHelpers';
 
 type ResizeType = {
     left: boolean;
@@ -171,8 +172,8 @@ function calcBoxProps(options: CalcBoxPropsType) {
 }
 
 export default class BoxEditorController {
-    onDone: () => void | Promise<void> = () => {};
-    onClick: (event: any) => void | Promise<void> = () => {};
+    onDone: () => OptionalPromise<void> = () => {};
+    onClick: (event: any) => OptionalPromise<void> = () => {};
     editor: HTMLDivElement | null = null;
     target: HTMLDivElement | null = null;
     minWidth = 40;
@@ -243,54 +244,52 @@ export default class BoxEditorController {
         listenerEvent.target.addEventListener(
             listenerEvent.eventName,
             listenerEvent.listener,
-            false,
         );
         this.listened.push(listenerEvent);
     }
     release() {
+        this.onDone = () => {};
         while (this.listened.length) {
             const obj = this.listened.shift();
-            obj?.target.removeEventListener(
-                obj.eventName,
-                obj.listener as any,
-                false,
-            );
+            obj?.target.removeEventListener(obj.eventName, obj.listener as any);
         }
         this.editor = null;
         this.target = null;
     }
-    initEvent(editor: HTMLDivElement) {
+    initEvent(editor: HTMLDivElement, onDone: () => OptionalPromise<void>) {
         this.release();
+        this.onDone = onDone;
         this.editor = editor;
         this.target = this.editor.firstChild as HTMLDivElement;
         // drag support
-        const moveHandler = (event: MouseEvent) => this.moveHandler(event);
         this.addEvent({
             eventName: 'mousedown',
             target: this.target,
-            listener: moveHandler,
+            listener: (event: MouseEvent) => {
+                this.moveHandler(event);
+            },
         });
         // handle resize
         for (const [key, value] of Object.entries(this.resizeActorList)) {
             const ele = this.target.querySelector(`.${key}`) as HTMLDivElement;
-            const resizeHandler = (event: MouseEvent) => {
-                return this.resizeHandler(event, value);
-            };
             this.addEvent({
                 eventName: 'mousedown',
                 target: ele,
-                listener: resizeHandler,
+                listener: (event: MouseEvent) => {
+                    return this.resizeHandler(event, value);
+                },
             });
         }
         // handle rotation
         const rotator = this.target.querySelector(
             `.${this.rotatorCN}`,
         ) as HTMLDivElement;
-        const rotateHandler = (event: MouseEvent) => this.rotateHandler(event);
         this.addEvent({
             eventName: 'mousedown',
             target: rotator,
-            listener: rotateHandler,
+            listener: (event: MouseEvent) => {
+                this.rotateHandler(event);
+            },
         });
     }
     moveHandler(event: MouseEvent) {
@@ -327,20 +326,16 @@ export default class BoxEditorController {
                 return;
             }
             this.blockMouseEvent(event);
-            window.removeEventListener(
-                'mousemove',
-                eventMouseMoveHandler,
-                false,
-            );
-            window.removeEventListener('mouseup', eventMouseUpHandler, false);
+            window.removeEventListener('mousemove', eventMouseMoveHandler);
+            window.removeEventListener('mouseup', eventMouseUpHandler);
             if (isMoving) {
                 this.onDone();
             } else {
                 this.onClick(event);
             }
         };
-        window.addEventListener('mousemove', eventMouseMoveHandler, false);
-        window.addEventListener('mouseup', eventMouseUpHandler, false);
+        window.addEventListener('mousemove', eventMouseMoveHandler);
+        window.addEventListener('mouseup', eventMouseUpHandler);
     }
     rotationFromStyle(style: CSSStyleDeclaration) {
         const transform = style.getPropertyValue('transform');
@@ -407,12 +402,12 @@ export default class BoxEditorController {
         };
         const eventEndHandler = (event: MouseEvent) => {
             this.blockMouseEvent(event);
-            window.removeEventListener('mousemove', eventMoveHandler, false);
-            window.removeEventListener('mouseup', eventEndHandler, false);
+            window.removeEventListener('mousemove', eventMoveHandler);
+            window.removeEventListener('mouseup', eventEndHandler);
             this.onDone();
         };
-        window.addEventListener('mousemove', eventMoveHandler, false);
-        window.addEventListener('mouseup', eventEndHandler, false);
+        window.addEventListener('mousemove', eventMoveHandler);
+        window.addEventListener('mouseup', eventEndHandler);
     }
     resizeHandler(event: MouseEvent, options: ResizeType) {
         if (this.editor === null || this.target === null) {
@@ -432,7 +427,7 @@ export default class BoxEditorController {
         const initRadians = (initRotate * Math.PI) / 180;
         const cosFraction = Math.cos(initRadians);
         const sinFraction = Math.sin(initRadians);
-        const mMoveHandler = (event: MouseEvent) => {
+        const mouseMoveHandler = (event: MouseEvent) => {
             this.blockMouseEvent(event);
             const { newW, newH, newX, newY } = calcBoxProps({
                 left,
@@ -452,12 +447,12 @@ export default class BoxEditorController {
 
         const eventMouseUpHandler = (event: MouseEvent) => {
             this.blockMouseEvent(event);
-            window.removeEventListener('mousemove', mMoveHandler, false);
-            window.removeEventListener('mouseup', eventMouseUpHandler, false);
+            window.removeEventListener('mousemove', mouseMoveHandler);
+            window.removeEventListener('mouseup', eventMouseUpHandler);
             this.onDone();
         };
-        window.addEventListener('mousemove', mMoveHandler, false);
-        window.addEventListener('mouseup', eventMouseUpHandler, false);
+        window.addEventListener('mousemove', mouseMoveHandler);
+        window.addEventListener('mouseup', eventMouseUpHandler);
     }
     getInfo(): BoxInfoType | null {
         if (this.editor === null || this.target === null) {

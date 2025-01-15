@@ -8,7 +8,7 @@ import { SettingManager } from './settingHelpers';
 
 async function readJsonData(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
-    const json = await fileSource.readFileToJsonData();
+    const json = await fileSource.readFileJsonData();
     if (json === null) {
         appProvider.appUtils.handleError(
             new Error(`Unable to read file from ${filePath}}`),
@@ -84,9 +84,9 @@ export default class FileSourceMetaManager {
         if (json === null) {
             return;
         }
-        json.metadata = json.metadata || {};
+        json.metadata = json.metadata ?? {};
         json.metadata.colorNote = color;
-        return fileSource.saveData(JSON.stringify(json));
+        return fileSource.saveFileData(JSON.stringify(json));
     }
     static unsetColorNote(filePath: string, isSetting = false) {
         if (isSetting) {

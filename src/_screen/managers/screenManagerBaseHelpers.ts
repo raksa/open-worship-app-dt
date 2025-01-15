@@ -10,12 +10,12 @@ export type TypeScreenManagerSettingType = {
     colorNote: string | null;
 };
 
-export const screenManagerBaseCache = new Map<string, ScreenManagerBase>();
+export const cache = new Map<string, ScreenManagerBase>();
 
 export function setScreenManagerBaseCache(
     screenManagerBase: ScreenManagerBase,
 ) {
-    screenManagerBaseCache.set(screenManagerBase.key, screenManagerBase);
+    cache.set(screenManagerBase.key, screenManagerBase);
 }
 
 export function getScreenManagersInstanceSetting(): {
@@ -74,7 +74,7 @@ export function saveScreenManagersSetting(deletedScreenId?: number) {
             return (
                 newInstanceSetting.find((newItem) => {
                     return newItem.screenId === item.screenId;
-                }) || item
+                }) ?? item
             );
         });
         for (const newItem of newInstanceSetting) {
@@ -99,11 +99,9 @@ export function saveScreenManagersSetting(deletedScreenId?: number) {
 }
 
 export function getSelectedScreenManagerBases() {
-    return Array.from(screenManagerBaseCache.values()).filter(
-        (screenManagerBase) => {
-            return screenManagerBase.isSelected;
-        },
-    );
+    return Array.from(cache.values()).filter((screenManagerBase) => {
+        return screenManagerBase.isSelected;
+    });
 }
 
 export function getScreenManagerBaseByKey(key: string) {
@@ -113,16 +111,16 @@ export function getScreenManagerBaseByKey(key: string) {
 
 export function getScreenManagerBase(screenId: number) {
     const key = screenId.toString();
-    if (screenManagerBaseCache.has(key)) {
-        return screenManagerBaseCache.get(key) ?? null;
+    if (cache.has(key)) {
+        return cache.get(key) ?? null;
     }
     return null;
 }
 
 export function deleteScreenManagerBaseCache(key: string) {
-    screenManagerBaseCache.delete(key);
+    cache.delete(key);
 }
 
 export function getAllScreenManagerBases(): ScreenManagerBase[] {
-    return Array.from(screenManagerBaseCache.values());
+    return Array.from(cache.values());
 }

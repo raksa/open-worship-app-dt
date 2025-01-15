@@ -7,7 +7,6 @@ import { isValidJson } from '../helper/helpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { checkIsValidLocale } from '../lang';
 import { createMouseEvent } from '../others/AppContextMenuComp';
-import { SlideItemType } from '../slide-list/SlideItem';
 import appProviderScreen from './appProviderScreen';
 import {
     BibleItemRenderedType,
@@ -19,6 +18,7 @@ import {
 } from './transitionEffectHelpers';
 import { electronSendAsync, unlocking } from '../server/appHelpers';
 import { getValidOnScreen } from './managers/screenManagerBaseHelpers';
+import { VaryAppDocumentItemDataType } from '../app-document-list/appDocumentHelpers';
 
 export const fullTextDataTypeList = ['bible-item', 'lyric'] as const;
 export type FullTextDataType = (typeof fullTextDataTypeList)[number];
@@ -62,12 +62,12 @@ export type AlertSrcListType = {
     [key: string]: AlertDataType;
 };
 
-export type SlideItemDataType = {
-    slideFilePath: string;
-    slideItemJson: SlideItemType;
+export type VaryAppDocumentItemScreenDataType = {
+    filePath: string;
+    itemJson: VaryAppDocumentItemDataType;
 };
-export type SlideListType = {
-    [key: string]: SlideItemDataType;
+export type AppDocumentListType = {
+    [key: string]: VaryAppDocumentItemScreenDataType;
 };
 
 export type BoundsType = {
@@ -87,7 +87,7 @@ export type AllDisplayType = {
 
 export const screenTypeList = [
     'background',
-    'slide',
+    'vary-app-document',
     'full-text',
     'full-text-scroll',
     'full-text-text-style',
