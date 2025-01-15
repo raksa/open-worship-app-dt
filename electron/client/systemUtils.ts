@@ -1,6 +1,6 @@
 import {
     isDev, isWindows, isMac, isLinux,
-} from '../electronHelpers.js';
+} from '../electronHelpers';
 
 const systemUtils = {
     isDev, isWindows, isMac, isLinux,

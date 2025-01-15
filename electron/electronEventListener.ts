@@ -1,11 +1,11 @@
 import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
 
-import ElectronAppController from './ElectronAppController.js';
-import { tarExtract } from './electronHelpers.js';
-import ElectronScreenController from './ElectronScreenController.js';
-import { officeFileToPdf } from './electronOfficeHelpers.js';
-import { pdfToImages } from './pdfToImagesHelpers.js';
+import ElectronAppController from './ElectronAppController';
+import { tarExtract } from './electronHelpers';
+import ElectronScreenController from './ElectronScreenController';
+import { officeFileToPdf } from './electronOfficeHelpers';
+import { pdfToImages } from './pdfToImagesHelpers';
 
 const { dialog, ipcMain, app } = electron;
 const cache: { [key: string]: any } = {

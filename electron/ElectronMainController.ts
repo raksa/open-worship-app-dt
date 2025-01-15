@@ -1,9 +1,9 @@
 import { BrowserWindow, shell } from 'electron';
 
-import { channels, ScreenMessageType } from './electronEventListener.js';
-import { genRoutProps } from './protocolHelpers.js';
-import ElectronSettingController from './ElectronSettingController.js';
-import { isSecured } from './electronHelpers.js';
+import { channels, ScreenMessageType } from './electronEventListener';
+import { genRoutProps } from './protocolHelpers';
+import ElectronSettingController from './ElectronSettingController';
+import { isSecured } from './electronHelpers';
 
 let instance: ElectronMainController | null = null;
 export default class ElectronMainController {
