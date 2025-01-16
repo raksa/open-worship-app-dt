@@ -91,6 +91,8 @@ export type PagePropsType = {
     screenHomePage: string;
     isPageSetting: boolean;
     settingHomePage: string;
+    isPageExperiment: boolean;
+    experimentHomePage: string;
 };
 
 const appProvider = (window as any).provider as Readonly<

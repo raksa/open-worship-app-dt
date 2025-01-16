@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import {
     TabOptionType,
     editorTab,
+    experimentTab,
     goToPath,
     presenterTab,
     readerTab,
@@ -41,6 +42,9 @@ if (!appProvider.isPagePresenter) {
     tabs.push(editorTab);
 }
 tabs.push(readerTab);
+if (appProvider.systemUtils.isDev) {
+    tabs.push(experimentTab);
+}
 
 function TabRenderComp() {
     const handleClicking = async (tab: TabOptionType) => {

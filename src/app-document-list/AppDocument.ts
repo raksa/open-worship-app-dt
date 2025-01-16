@@ -102,7 +102,7 @@ export default class AppDocument
     ) {
         const originalSlide = jsonItems[index];
         slide.isChanged =
-            (originalSlide === undefined) ||
+            originalSlide === undefined ||
             !checkIsSameValues(slide.toJson(), originalSlide);
     }
 

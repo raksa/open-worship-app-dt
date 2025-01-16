@@ -39,6 +39,10 @@ export const readerTab: TabOptionType = {
     title: 'Reader↗️',
     routePath: appProvider.readerHomePage,
 };
+export const experimentTab: TabOptionType = {
+    title: '(dev)Experiment↗️',
+    routePath: appProvider.experimentHomePage,
+};
 
 export function goToPath(pathname: string) {
     const url = new URL(window.location.href);
