@@ -9,7 +9,6 @@ let instance: ElectronAppController | null = null;
 let settingController: ElectronSettingController | null = null;
 let finderController: ElectronFinderController | null = null;
 export default class ElectronAppController {
-
     constructor() {
         this.settingController.syncMainWindow(this.mainWin);
         app.on('activate', () => {

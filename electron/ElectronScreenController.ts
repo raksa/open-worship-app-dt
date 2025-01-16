@@ -8,7 +8,6 @@ import { isSecured } from './electronHelpers';
 const routeProps = genRoutProps(htmlFiles.screen);
 const cache = new Map<string, ElectronScreenController>();
 export default class ElectronScreenController {
-
     win: BrowserWindow;
     screenId: number;
 
@@ -22,7 +21,8 @@ export default class ElectronScreenController {
         const isScreenCanFullScreen = isWin32;
         const screenWin = new BrowserWindow({
             transparent: true,
-            x: 0, y: 0,
+            x: 0,
+            y: 0,
             frame: false,
             webPreferences: {
                 webSecurity: isSecured,
@@ -70,15 +70,15 @@ export default class ElectronScreenController {
     }
 
     sendMessage(type: string, data: AnyObjectType) {
-        this.win.webContents.send(
-            channels.screenMessageChannel, {
+        this.win.webContents.send(channels.screenMessageChannel, {
             screenId: this.screenId,
-            type, data,
+            type,
+            data,
         });
     }
 
     static getAllIds(): number[] {
-        return Array.from(cache.keys()).map(key => {
+        return Array.from(cache.keys()).map((key) => {
             return +key;
         });
     }

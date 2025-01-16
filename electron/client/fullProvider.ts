@@ -11,9 +11,9 @@ import appUtils from './appUtils';
 import appInfo from '../../package.json';
 
 function toVersionNumber(version: string) {
-    const [major, minor, patch] = (
-        version.split('.').map((str) => parseInt(str, 10))
-    );
+    const [major, minor, patch] = version
+        .split('.')
+        .map((str) => parseInt(str, 10));
     return major * 10000 + minor * 100 + patch;
 }
 

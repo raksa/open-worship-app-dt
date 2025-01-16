@@ -1,15 +1,23 @@
 import { app, protocol } from 'electron';
 
 import {
-    customScheme, initCustomSchemeHandler, schemePrivileges,
+    customScheme,
+    initCustomSchemeHandler,
+    schemePrivileges,
 } from './fsServe';
-protocol.registerSchemesAsPrivileged([{
-    scheme: customScheme, privileges: schemePrivileges,
-}]);
+protocol.registerSchemesAsPrivileged([
+    {
+        scheme: customScheme,
+        privileges: schemePrivileges,
+    },
+]);
 
 import ElectronAppController from './ElectronAppController';
 import {
-    initEventFinder, initEventListenerApp, initEventOther, initEventScreen,
+    initEventFinder,
+    initEventListenerApp,
+    initEventOther,
+    initEventScreen,
 } from './electronEventListener';
 import { initMenu } from './electronMenu';
 import { initDevtools } from './devtools';

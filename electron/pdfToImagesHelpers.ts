@@ -4,9 +4,7 @@ import { resolve as fsResolve } from 'node:path';
 import { isDev } from './electronHelpers';
 
 const lockSet = new Set<string>();
-async function unlocking<T>(
-    key: string, callback: () => (Promise<T> | T)
-) {
+async function unlocking<T>(key: string, callback: () => Promise<T> | T) {
     if (lockSet.has(key)) {
         await new Promise((resolve) => {
             setTimeout(resolve, 100);
@@ -20,14 +18,17 @@ async function unlocking<T>(
 }
 
 type PdfImagePreviewDataType = {
-    isSuccessful: boolean, message?: string,
-    filePaths?: string[],
+    isSuccessful: boolean;
+    message?: string;
+    filePaths?: string[];
 };
 
 function genImage(filePath: string, outDir: string) {
     return new Promise<PdfImagePreviewDataType>((resolve) => {
         const scriptPath = fsResolve(
-            app.getAppPath(), isDev ? 'public' : 'dist', 'js',
+            app.getAppPath(),
+            isDev ? 'public' : 'dist',
+            'js',
             'pdf-to-images.mjs',
         );
         const forkedProcess = fork(scriptPath);
@@ -41,7 +42,9 @@ function genImage(filePath: string, outDir: string) {
 
 const dataMap = new Map<string, PdfImagePreviewDataType>();
 export function pdfToImages(
-    filePath: string, outDir: string, isForce: boolean,
+    filePath: string,
+    outDir: string,
+    isForce: boolean,
 ) {
     return unlocking<PdfImagePreviewDataType>(filePath, async () => {
         if (isForce) {

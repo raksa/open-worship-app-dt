@@ -9,13 +9,16 @@ export const htmlFiles = {
     reader: 'reader.html',
     setting: 'setting.html',
     finder: 'finder.html',
+    experiment: 'experiment.html',
 };
 export const preloadFileMap = {
-    'full': [
-        htmlFiles.editor, htmlFiles.presenter, htmlFiles.reader,
+    full: [
+        htmlFiles.editor,
+        htmlFiles.presenter,
+        htmlFiles.reader,
         htmlFiles.setting,
     ],
-    'minimal': [htmlFiles.screen, htmlFiles.finder],
+    minimal: [htmlFiles.screen, htmlFiles.finder],
 };
 export const customScheme = 'owa';
 export const schemePrivileges = {
@@ -27,7 +30,6 @@ export const schemePrivileges = {
     stream: true,
 };
 
-
 export const rootUrl = `${customScheme}://local`;
 export const rootUrlAccess = `${customScheme}://access`;
 
@@ -37,16 +39,16 @@ function toFileFullPath(filePath: string) {
         if (result.isFile()) {
             return filePath;
         }
-    } catch (_) { }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {}
     return null;
 }
 
 function genFilePathUrl(dirPath: string, url: string) {
-    url = decodeURIComponent((new URL(url)).pathname);
+    url = decodeURIComponent(new URL(url).pathname);
     let filePath = path.join(dirPath, url);
-    filePath = toFileFullPath(filePath) ?? path.join(
-        dirPath, htmlFiles.presenter,
-    );
+    filePath =
+        toFileFullPath(filePath) ?? path.join(dirPath, htmlFiles.presenter);
     return `file://${filePath}`;
 }
 
@@ -56,8 +58,7 @@ function handlerLocal(dirPath: string, url: string) {
         urlPath = genFilePathUrl(dirPath, url);
     }
     return net.fetch(urlPath);
-};
-
+}
 
 export function initCustomSchemeHandler() {
     const dirPath = path.resolve(app.getAppPath(), 'dist');
@@ -72,19 +73,19 @@ export function initCustomSchemeHandler() {
 
     const webRequest = session.defaultSession.webRequest;
     webRequest.onHeadersReceived(
-        { urls: ['https://*/*'] }, (details, callback) => {
+        { urls: ['https://*/*'] },
+        (details, callback) => {
             if (details.responseHeaders) {
                 details.responseHeaders['access-control-allow-headers'] = [
-                    'x-api-key', 'content-type',
+                    'x-api-key',
+                    'content-type',
                 ];
-                details.responseHeaders['access-control-allow-origin'] = [
-                    '*',
-                ];
+                details.responseHeaders['access-control-allow-origin'] = ['*'];
             }
             callback({ responseHeaders: details.responseHeaders });
-        }
+        },
     );
-};
+}
 
 export function toTitleCase(str: string) {
     return str[0].toUpperCase() + str.slice(1);
@@ -92,16 +93,16 @@ export function toTitleCase(str: string) {
 
 export function getCurrent(webContents: WebContents) {
     const url = new URL(webContents.getURL());
-    const htmlFileFullName = (
-        url.pathname.substring(1).split('.html')[0] + '.html'
-    );
+    const htmlFileFullName =
+        url.pathname.substring(1).split('.html')[0] + '.html';
     const validHtmlFiles = [
-        htmlFiles.editor, htmlFiles.presenter, htmlFiles.reader,
+        htmlFiles.editor,
+        htmlFiles.presenter,
+        htmlFiles.reader,
         htmlFiles.setting,
     ];
-    const currentHtmlPath = (
-        validHtmlFiles.includes(htmlFileFullName) ?
-            htmlFileFullName : htmlFiles.presenter
-    );
+    const currentHtmlPath = validHtmlFiles.includes(htmlFileFullName)
+        ? htmlFileFullName
+        : htmlFiles.presenter;
     return currentHtmlPath;
 }

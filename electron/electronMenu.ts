@@ -7,26 +7,28 @@ export function initMenu(appController: ElectronAppController) {
 
     const template: any[] = [
         // { role: 'appMenu' }
-        ...(isMac ? [{
-            label: app.name,
-            submenu: [
-                { role: 'about' },
-                { type: 'separator' },
-                { role: 'services' },
-                { type: 'separator' },
-                { role: 'hide' },
-                { role: 'hideOthers' },
-                { role: 'unhide' },
-                { type: 'separator' },
-                { role: 'quit' },
-            ],
-        }] : []),
+        ...(isMac
+            ? [
+                  {
+                      label: app.name,
+                      submenu: [
+                          { role: 'about' },
+                          { type: 'separator' },
+                          { role: 'services' },
+                          { type: 'separator' },
+                          { role: 'hide' },
+                          { role: 'hideOthers' },
+                          { role: 'unhide' },
+                          { type: 'separator' },
+                          { role: 'quit' },
+                      ],
+                  },
+              ]
+            : []),
         // { role: 'fileMenu' }
         {
             label: 'File',
-            submenu: [
-                isMac ? { role: 'close' } : { role: 'quit' },
-            ],
+            submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
         },
         // { role: 'editMenu' }
         {
@@ -39,32 +41,36 @@ export function initMenu(appController: ElectronAppController) {
                 { role: 'copy' },
                 { role: 'paste' },
                 {
-                    label: 'find (Ctrl + F)', click: () => {
-                        appController.mainController.win.webContents
-                            .sendInputEvent({
+                    label: 'find (Ctrl + F)',
+                    click: () => {
+                        appController.mainController.win.webContents.sendInputEvent(
+                            {
                                 type: 'keyDown',
                                 keyCode: 'F',
                                 modifiers: ['control'],
-                            });
+                            },
+                        );
                     },
                 },
-                ...(isMac ? [
-                    { role: 'pasteAndMatchStyle' },
-                    { role: 'delete' },
-                    { role: 'selectAll' },
-                    { type: 'separator' },
-                    {
-                        label: 'Speech',
-                        submenu: [
-                            { role: 'startSpeaking' },
-                            { role: 'stopSpeaking' },
-                        ],
-                    },
-                ] : [
-                    { role: 'delete' },
-                    { type: 'separator' },
-                    { role: 'selectAll' },
-                ]),
+                ...(isMac
+                    ? [
+                          { role: 'pasteAndMatchStyle' },
+                          { role: 'delete' },
+                          { role: 'selectAll' },
+                          { type: 'separator' },
+                          {
+                              label: 'Speech',
+                              submenu: [
+                                  { role: 'startSpeaking' },
+                                  { role: 'stopSpeaking' },
+                              ],
+                          },
+                      ]
+                    : [
+                          { role: 'delete' },
+                          { type: 'separator' },
+                          { role: 'selectAll' },
+                      ]),
             ],
         },
         // { role: 'viewMenu' }
@@ -88,14 +94,14 @@ export function initMenu(appController: ElectronAppController) {
             submenu: [
                 { role: 'minimize' },
                 { role: 'zoom' },
-                ...(isMac ? [
-                    { type: 'separator' },
-                    { role: 'front' },
-                    { type: 'separator' },
-                    { role: 'window' },
-                ] : [
-                    { role: 'close' },
-                ]),
+                ...(isMac
+                    ? [
+                          { type: 'separator' },
+                          { role: 'front' },
+                          { type: 'separator' },
+                          { role: 'window' },
+                      ]
+                    : [{ role: 'close' }]),
                 {
                     label: 'Reset Position and Size',
                     click: () => {
@@ -112,14 +118,10 @@ export function initMenu(appController: ElectronAppController) {
                 {
                     label: 'Learn More',
                     click: () => {
-                        shell.openExternal(
-                            'https://www.openworship.app/',
-                        );
+                        shell.openExternal('https://www.openworship.app/');
                     },
                 },
-                ...(isMac ? [] : [
-                    { role: 'about' },
-                ]),
+                ...(isMac ? [] : [{ role: 'about' }]),
             ],
         },
     ];
