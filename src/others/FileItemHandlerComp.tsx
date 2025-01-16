@@ -9,6 +9,7 @@ import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
+import { menuTitleRealFile } from '../helper/helpers';
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenamingComp');
 });
@@ -22,9 +23,7 @@ export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
             },
         },
         {
-            menuTitle: `Reveal in ${
-                appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
-            }`,
+            menuTitle: menuTitleRealFile,
             onClick: () => {
                 showExplorer(filePath);
             },

@@ -2,7 +2,7 @@ import Slide, { SlideType } from './Slide';
 import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { showAppDocumentContextMenu } from './appDocumentHelpers';
-import { AnyObjectType, checkIsSameJson, toMaxId } from '../helper/helpers';
+import { AnyObjectType, checkIsSameValues, toMaxId } from '../helper/helpers';
 import { MimetypeNameType } from '../server/fileHelpers';
 import { DisplayType } from '../_screen/screenHelpers';
 import { showSimpleToast } from '../toast/toastHelpers';
@@ -102,8 +102,8 @@ export default class AppDocument
     ) {
         const originalSlide = jsonItems[index];
         slide.isChanged =
-            originalSlide === undefined ||
-            checkIsSameJson(slide.toJson(), originalSlide);
+            (originalSlide === undefined) ||
+            !checkIsSameValues(slide.toJson(), originalSlide);
     }
 
     async getItems() {

@@ -1,5 +1,5 @@
+import { menuTitleRealFile } from '../helper/helpers';
 import { copyToClipboard, showExplorer } from '../server/appHelpers';
-import appProvider from '../server/appProvider';
 import { pathBasename } from '../server/fileHelpers';
 import { showAppContextMenu } from './AppContextMenuComp';
 
@@ -19,9 +19,7 @@ function openContextMenu(dirPath: string, event: any) {
             },
         },
         {
-            menuTitle: `Reveal in ${
-                appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
-            }`,
+            menuTitle: menuTitleRealFile,
             onClick: () => {
                 showExplorer(dirPath);
             },
@@ -53,7 +51,7 @@ export function PathPreviewerComp({
                 'app-ellipsis-left app-border-white-round px-1 flex-fill' +
                 ` ${onClick ? 'pointer' : ''}`
             }
-            onContextMenu={openContextMenu.bind(null, cleanedPath)}
+            onContextMenu={openContextMenu.bind(null, dirPath)}
             onClick={onClick}
             title={cleanedPath}
         >

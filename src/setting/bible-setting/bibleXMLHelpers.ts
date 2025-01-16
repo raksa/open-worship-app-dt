@@ -38,6 +38,7 @@ import {
     BibleInfoType,
 } from '../../helper/bible-helpers/BibleDataReader';
 import FileSource from '../../helper/FileSource';
+import { menuTitleRealFile } from '../../helper/helpers';
 
 type MessageCallbackType = (message: string | null) => void;
 
@@ -223,9 +224,7 @@ export async function saveXMLText(bibleKey: string, xmlText: string) {
 export function handBibleKeyContextMenuOpening(bibleKey: string, event: any) {
     const contextMenuItems: ContextMenuItemType[] = [
         {
-            menuTitle: `Reveal in ${
-                appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
-            }`,
+            menuTitle: menuTitleRealFile,
             onClick: async () => {
                 const filePath = await bibleKeyToFilePath(bibleKey);
                 showExplorer(filePath);

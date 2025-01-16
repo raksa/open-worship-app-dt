@@ -5,6 +5,7 @@ import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { trace } from './loggerHelpers';
+import appProvider from '../server/appProvider';
 
 export type AnyObjectType = {
     [key: string]: any;
@@ -224,33 +225,52 @@ export function getHTMLChild<T extends HTMLElement>(
     return child as T;
 }
 
-export function checkIsSameArray(arr1: any[], arr2: any[]) {
+export function checkIsSameArrays(arr1: any, arr2: any) {
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+        return false;
+    }
     if (arr1.length !== arr2.length) {
         return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i] !== arr2[i]) {
+        if (!checkIsSameObjects(arr1[i], arr2[i])) {
             return false;
         }
     }
     return true;
 }
 
-export function checkIsSameJson(json1: AnyObjectType, json2: AnyObjectType) {
-    for (const [key, value] of Object.entries(json1)) {
-        if (Array.isArray(value)) {
-            if (!checkIsSameArray(value, json2[key])) {
+export function checkIsSameObjects(json1: any, json2: any) {
+    if (!(json1 instanceof Object && json2 instanceof Object)) {
+        return false;
+    }
+    for (const [key, value1] of Object.entries(json1)) {
+        const value2 = json2[key];
+        if (Array.isArray(value1)) {
+            if (!checkIsSameArrays(value1, value2)) {
                 return false;
             }
-        }
-        if (value instanceof Object) {
-            if (!checkIsSameJson(value, json2[key])) {
+        } else if (value1 instanceof Object) {
+            if (!checkIsSameObjects(value1, value2)) {
                 return false;
             }
-        }
-        if (value !== json2[key]) {
+        } else if (value1 !== value2) {
             return false;
         }
     }
     return true;
 }
+
+export function checkIsSameValues(value1: any, value2: any) {
+    if (Array.isArray(value1)) {
+        return checkIsSameArrays(value1, value2);
+    }
+    if (value1 instanceof Object) {
+        return checkIsSameObjects(value1, value2);
+    }
+    return value1 === value2;
+}
+
+export const menuTitleRealFile = `Reveal in ${
+    appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
+}`;

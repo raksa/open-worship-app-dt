@@ -15,12 +15,10 @@ import {
     pathJoin,
 } from '../server/fileHelpers';
 import { unlocking } from '../server/appHelpers';
-import appProvider from '../server/appProvider';
 import GarbageCollectableCacher from './GarbageCollectableCacher';
 import FileSource from '../helper/FileSource';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
-
-const { diffUtils } = appProvider;
+import { parsePatch, reversePatch, applyPatch, createPatch } from 'diff';
 
 const CURRENT_FILE_SIGN = '-head';
 class FileLineHandler {
@@ -137,12 +135,9 @@ class FileLineHandler {
         if (patchedText === null) {
             return false;
         }
-        const patcher = diffUtils.parsePatch(patchedText);
-        const reversePatcher = diffUtils.reversePatch(patcher);
-        const originalContent = diffUtils.applyPatch(
-            currentContent,
-            reversePatcher,
-        );
+        const patcher = parsePatch(patchedText);
+        const reversePatcher = reversePatch(patcher);
+        const originalContent = applyPatch(currentContent, reversePatcher);
         if (originalContent === false) {
             return false;
         }
@@ -176,7 +171,7 @@ class FileLineHandler {
             if (currentContent === null) {
                 return false;
             }
-            const patchedText = diffUtils.createPatch(
+            const patchedText = createPatch(
                 this.filePath,
                 lastContent,
                 currentContent,
@@ -365,7 +360,6 @@ export default class EditingHistoryManager {
         if (!isSuccess) {
             return false;
         }
-        await this.fileLineHandler.clearHistories();
         this.fireEvent();
         return true;
     }
