@@ -11,18 +11,19 @@ const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 type CustomEvents<K extends string> = {
     [key in K]: (event: CustomEvent) => void;
 };
-type CustomElement<T, K extends string> = Partial<T & DOMAttributes<T> & {
-    children: any,
-} & CustomEvents<`on${K}`>>;
+type CustomElement<T, K extends string> = Partial<
+    T &
+        DOMAttributes<T> & {
+            children: any;
+        } & CustomEvents<`on${K}`>
+>;
 declare global {
     namespace React.JSX {
         interface IntrinsicElements {
-            [HTML_TAG_NAME]: (
-                CustomElement<
-                    CustomHTMLScreenPreviewer, 'FTScroll' | 'VerseHover' |
-                    'VerseSelect'
-                >
-            );
+            [HTML_TAG_NAME]: CustomElement<
+                CustomHTMLScreenPreviewer,
+                'FTScroll' | 'VerseHover' | 'VerseSelect'
+            >;
         }
     }
 }
@@ -46,9 +47,7 @@ export default class CustomHTMLScreenPreviewer extends HTMLElement {
             this.mountPoint.style.width = `${width}px`;
             this.mountPoint.style.height = `${height}px`;
             if (this.screenId > -1) {
-                const screenManagerBase = getScreenManagerBase(
-                    this.screenId,
-                );
+                const screenManagerBase = getScreenManagerBase(this.screenId);
                 if (screenManagerBase === null) {
                     return;
                 }

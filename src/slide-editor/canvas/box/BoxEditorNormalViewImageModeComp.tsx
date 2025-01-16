@@ -7,8 +7,10 @@ import { handleError } from '../../../helper/errorHelpers';
 import { useCanvasItemPropsContext } from '../CanvasItem';
 import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
 
-export default function BoxEditorNormalViewImageModeComp({ style }: Readonly<{
-    style: CSSProperties
+export default function BoxEditorNormalViewImageModeComp({
+    style,
+}: Readonly<{
+    style: CSSProperties;
 }>) {
     return (
         <BoxEditorNormalWrapperComp style={style}>
@@ -23,9 +25,7 @@ export function BoxEditorNormalImageRender() {
         CanvasItemImage.validate(props);
     } catch (error) {
         handleError(error);
-        return (
-            <BENViewErrorRender />
-        );
+        return <BENViewErrorRender />;
     }
     const pWidth = props.width;
     const pHeight = props.height;
@@ -34,14 +34,18 @@ export function BoxEditorNormalImageRender() {
     const mR = Math.min(rWidth, rHeight);
     const width = mR * props.mediaWidth;
     return (
-        <div style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-        }}>
-            <img alt='' className='align-self-center'
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <img
+                alt=""
+                className="align-self-center"
                 width={width}
                 style={{
                     pointerEvents: 'none',

@@ -4,47 +4,55 @@ import { LocaleType } from '../lang';
 import { getFontFace, getFontFamilyByLocal } from '../server/fontHelpers';
 
 export type BibleRenderVerseType = {
-    num: string,
-    text: string,
+    num: string;
+    text: string;
 };
 export type BibleItemRenderedType = {
-    locale: LocaleType,
-    bibleKey: string,
-    title: string,
-    verses: BibleRenderVerseType[]
+    locale: LocaleType;
+    bibleKey: string;
+    title: string;
+    verses: BibleRenderVerseType[];
 };
 export type LyricRenderedType = {
-    title: string,
+    title: string;
     items: {
-        num: number,
-        text: string,
-    }[]
+        num: number;
+        text: string;
+    }[];
 };
 
 export function FTBibleTable({
-    bibleRenderedList, isLineSync, versesCount,
+    bibleRenderedList,
+    isLineSync,
+    versesCount,
 }: Readonly<{
-    bibleRenderedList: BibleItemRenderedType[],
-    isLineSync: boolean,
-    versesCount: number,
+    bibleRenderedList: BibleItemRenderedType[];
+    isLineSync: boolean;
+    versesCount: number;
 }>) {
     const fontFaceList = bibleRenderedList.map(({ locale }) => {
         return getFontFace(locale);
     });
     const rendThHeader = (
-        { locale, bibleKey, title }: BibleItemRenderedType, i: number,
+        { locale, bibleKey, title }: BibleItemRenderedType,
+        i: number,
     ) => {
         return (
-            <th key={title} className='header'
+            <th
+                key={title}
+                className="header"
                 style={{
                     fontFamily: getFontFamilyByLocal(locale),
-                }}>
+                }}
+            >
                 <div style={{ display: 'flex' }}>
-                    <div className='bible highlight bible-name bible-key'
-                        data-index={i}>
+                    <div
+                        className="bible highlight bible-name bible-key"
+                        data-index={i}
+                    >
                         {bibleKey}
                     </div>
-                    <div className='title'>{title}</div>
+                    <div className="title">{title}</div>
                 </div>
             </th>
         );
@@ -55,15 +63,15 @@ export function FTBibleTable({
                 {bibleRenderedList.map(({ locale, verses }, j) => {
                     const { num, text } = verses[i];
                     return (
-                        <td key={j}
+                        <td
+                            key={j}
                             style={{
                                 fontFamily: getFontFamilyByLocal(locale),
-                            }}>
-                            <span className='highlight'
-                                data-highlight={i}>
-                                <div className='verse-number'>
-                                    {num}
-                                </div>{text}
+                            }}
+                        >
+                            <span className="highlight" data-highlight={i}>
+                                <div className="verse-number">{num}</div>
+                                {text}
                             </span>
                         </td>
                     );
@@ -72,21 +80,23 @@ export function FTBibleTable({
         );
     };
     const renderTdBody = (
-        { locale, verses }: BibleItemRenderedType, i: number,
+        { locale, verses }: BibleItemRenderedType,
+        i: number,
     ) => {
         return (
             <td key={i}>
                 {verses.map(({ num, text }, j) => {
                     return (
-                        <span key={j}
-                            className='highlight'
+                        <span
+                            key={j}
+                            className="highlight"
                             style={{
                                 fontFamily: getFontFamilyByLocal(locale),
                             }}
-                            data-highlight={j}>
-                            <div className='verse-number'>
-                                {num}
-                            </div>{text}
+                            data-highlight={j}
+                        >
+                            <div className="verse-number">{num}</div>
+                            {text}
                         </span>
                     );
                 })}
@@ -95,20 +105,21 @@ export function FTBibleTable({
     };
     return (
         <div>
-            <style dangerouslySetInnerHTML={{
-                __html: fontFaceList.join('\n'),
-            }} />
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: fontFaceList.join('\n'),
+                }}
+            />
             <table>
                 <thead>
-                    <tr>
-                        {bibleRenderedList.map(rendThHeader)}
-                    </tr>
+                    <tr>{bibleRenderedList.map(rendThHeader)}</tr>
                 </thead>
                 <tbody>
-                    {isLineSync ?
-                        Array.from({ length: versesCount }).map(renderTrBody) :
+                    {isLineSync ? (
+                        Array.from({ length: versesCount }).map(renderTrBody)
+                    ) : (
                         <tr>{bibleRenderedList.map(renderTdBody)}</tr>
-                    }
+                    )}
                 </tbody>
             </table>
         </div>
@@ -116,11 +127,13 @@ export function FTBibleTable({
 }
 
 export function FTLyricItem({
-    lyricRenderedList, isLineSync, itemsCount,
+    lyricRenderedList,
+    isLineSync,
+    itemsCount,
 }: Readonly<{
-    lyricRenderedList: LyricRenderedType[],
-    isLineSync: boolean,
-    itemsCount: number,
+    lyricRenderedList: LyricRenderedType[];
+    isLineSync: boolean;
+    itemsCount: number;
 }>) {
     return (
         <table>
@@ -129,49 +142,56 @@ export function FTLyricItem({
                     {lyricRenderedList.map(({ title }) => {
                         return (
                             <th key={title}>
-                                <span className='title'>{title}</span >
+                                <span className="title">{title}</span>
                             </th>
                         );
                     })}
                 </tr>
             </thead>
             <tbody>
-                {isLineSync ? Array.from({ length: itemsCount }).map((_, i) => {
-                    return (
-                        <tr key={i}>
-                            {lyricRenderedList.map(({ items }, j) => {
-                                const { num, text } = items[i];
-                                return (
-                                    <td key={j}>
-                                        <span data-highlight={num}>
-                                            {text}
-                                        </span>
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    );
-                }) : <tr>
-                    {lyricRenderedList.map(({ items }, i) => {
+                {isLineSync ? (
+                    Array.from({ length: itemsCount }).map((_, i) => {
                         return (
-                            <td key={i}>
-                                {items.map(({ num, text }, j) => {
+                            <tr key={i}>
+                                {lyricRenderedList.map(({ items }, j) => {
+                                    const { num, text } = items[i];
                                     return (
-                                        <Fragment key={j}>
-                                            <span className='highlight'
-                                                data-highlight={j}>
-                                                <div className='verse-number'>
-                                                    {num}
-                                                </div>{text}
+                                        <td key={j}>
+                                            <span data-highlight={num}>
+                                                {text}
                                             </span>
-                                            <br />
-                                        </Fragment>
+                                        </td>
                                     );
                                 })}
-                            </td>
+                            </tr>
                         );
-                    })}
-                </tr>}
+                    })
+                ) : (
+                    <tr>
+                        {lyricRenderedList.map(({ items }, i) => {
+                            return (
+                                <td key={i}>
+                                    {items.map(({ num, text }, j) => {
+                                        return (
+                                            <Fragment key={j}>
+                                                <span
+                                                    className="highlight"
+                                                    data-highlight={j}
+                                                >
+                                                    <div className="verse-number">
+                                                        {num}
+                                                    </div>
+                                                    {text}
+                                                </span>
+                                                <br />
+                                            </Fragment>
+                                        );
+                                    })}
+                                </td>
+                            );
+                        })}
+                    </tr>
+                )}
             </tbody>
         </table>
     );

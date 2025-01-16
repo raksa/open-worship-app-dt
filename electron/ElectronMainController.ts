@@ -1,9 +1,9 @@
 import { BrowserWindow, shell } from 'electron';
 
-import { channels, ScreenMessageType } from './electronEventListener.js';
-import { genRoutProps } from './protocolHelpers.js';
-import ElectronSettingController from './ElectronSettingController.js';
-import { isSecured } from './electronHelpers.js';
+import { channels, ScreenMessageType } from './electronEventListener';
+import { genRoutProps } from './protocolHelpers';
+import ElectronSettingController from './ElectronSettingController';
+import { isSecured } from './electronHelpers';
 
 let instance: ElectronMainController | null = null;
 export default class ElectronMainController {
@@ -25,7 +25,8 @@ export default class ElectronMainController {
         const routeProps = genRoutProps(settingController.mainHtmlPath);
         const win = new BrowserWindow({
             backgroundColor: '#000000',
-            x: 0, y: 0,
+            x: 0,
+            y: 0,
             webPreferences: {
                 webSecurity: isSecured,
                 nodeIntegration: true,
@@ -54,8 +55,7 @@ export default class ElectronMainController {
     }
 
     sendMessage(message: ScreenMessageType) {
-        this.win.webContents.send(
-            channels.screenMessageChannel, message);
+        this.win.webContents.send(channels.screenMessageChannel, message);
     }
 
     changeBible(isNext: boolean) {

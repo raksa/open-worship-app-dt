@@ -1,16 +1,13 @@
 import BibleItem from '../bible-list/BibleItem';
 import {
-    ContextMenuItemType, showAppContextMenu,
+    ContextMenuItemType,
+    showAppContextMenu,
 } from '../others/AppContextMenuComp';
-import {
-    BibleItemRenderedType,
-} from './fullTextScreenComps';
+import { BibleItemRenderedType } from './fullTextScreenComps';
 import fullTextScreenHelper from './fullTextScreenHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
 import { showAppAlert } from '../popup-widget/popupWidgetHelpers';
-import {
-    getAllLocalBibleInfoList,
-} from '../helper/bible-helpers/bibleDownloadHelpers';
+import { getAllLocalBibleInfoList } from '../helper/bible-helpers/bibleDownloadHelpers';
 import { FullTextItemDataType } from './screenHelpers';
 import { getDisplayByScreenId } from './managers/screenHelpers';
 
@@ -19,18 +16,20 @@ export type ScreenFTManagerEventType = 'update' | 'text-style';
 export const SCREEN_FT_SETTING_PREFIX = 'screen-ft-';
 
 function onSelectIndex(
-    screenFTManager: ScreenFullTextManager, selectedIndex: number | null,
+    screenFTManager: ScreenFullTextManager,
+    selectedIndex: number | null,
 ) {
     screenFTManager.selectedIndex = selectedIndex;
     screenFTManager.sendSyncSelectedIndex();
 }
 async function onBibleSelect(
-    screenFTManager: ScreenFullTextManager, event: any, index: number,
+    screenFTManager: ScreenFullTextManager,
+    event: any,
+    index: number,
     ftItemData: FullTextItemDataType,
 ) {
-    const bibleRenderedList = (
-        ftItemData.bibleItemData?.renderedList as BibleItemRenderedType[]
-    );
+    const bibleRenderedList = ftItemData.bibleItemData
+        ?.renderedList as BibleItemRenderedType[];
     const bibleItemingList = bibleRenderedList.map(({ bibleKey }) => {
         return bibleKey;
     });
@@ -39,7 +38,7 @@ async function onBibleSelect(
         showAppAlert(
             'Unable to get bible info list',
             'We were sorry, but we are unable to get bible list at the moment' +
-            ' please try again later'
+                ' please try again later',
         );
         return;
     }
@@ -52,7 +51,7 @@ async function onBibleSelect(
             showAppAlert(
                 'Fail to get bible item data',
                 'We were sorry, but we are unable to get bible item data at ' +
-                'the moment please try again later',
+                    'the moment please try again later',
             );
             return;
         }
@@ -65,19 +64,29 @@ async function onBibleSelect(
         screenFTManager.fullTextItemData = newFtItemData;
     };
     const menuItems: ContextMenuItemType[] = [
-        ...bibleRenderedList.length > 1 ? [{
-            menuTitle: 'Remove(' + bibleRenderedList[index].bibleKey + ')',
-            onClick: async () => {
-                bibleItemingList.splice(index, 1);
-                applyBibleItems(bibleItemingList);
-            },
-            otherChild: (<i className='bi bi-x-lg'
-                style={{ color: 'red' }} />),
-        }] : [],
-        ...bibleListFiltered.length > 0 ? [{
-            menuTitle: 'Shift Click to Add',
-            disabled: true,
-        }] : [],
+        ...(bibleRenderedList.length > 1
+            ? [
+                  {
+                      menuTitle:
+                          'Remove(' + bibleRenderedList[index].bibleKey + ')',
+                      onClick: async () => {
+                          bibleItemingList.splice(index, 1);
+                          applyBibleItems(bibleItemingList);
+                      },
+                      otherChild: (
+                          <i className="bi bi-x-lg" style={{ color: 'red' }} />
+                      ),
+                  },
+              ]
+            : []),
+        ...(bibleListFiltered.length > 0
+            ? [
+                  {
+                      menuTitle: 'Shift Click to Add',
+                      disabled: true,
+                  },
+              ]
+            : []),
         ...bibleListFiltered.map((bibleInfo) => {
             const bibleKey = bibleInfo.key;
             return {
@@ -105,9 +114,8 @@ export function renderScreenFullTextManager(
     const ftItemData = screenFullTextManager.fullTextItemData;
     if (ftItemData === null) {
         if (screenFullTextManager.div.lastChild !== null) {
-            const targetDiv = (
-                screenFullTextManager.div.lastChild as HTMLDivElement
-            );
+            const targetDiv = screenFullTextManager.div
+                .lastChild as HTMLDivElement;
             targetDiv.remove();
         }
         screenFullTextManager.div.style.pointerEvents = 'none';
@@ -123,10 +131,13 @@ export function renderScreenFullTextManager(
             ftItemData.bibleItemData.renderedList,
             screenFullTextManager.isLineSync,
         );
-    } else if (ftItemData.type === 'lyric' &&
-        ftItemData.lyricData !== undefined) {
+    } else if (
+        ftItemData.type === 'lyric' &&
+        ftItemData.lyricData !== undefined
+    ) {
         newDiv = fullTextScreenHelper.genHtmlFromFtLyric(
-            ftItemData.lyricData.renderedList, screenFullTextManager.isLineSync,
+            ftItemData.lyricData.renderedList,
+            screenFullTextManager.isLineSync,
         );
     }
     if (newDiv === null) {
@@ -171,9 +182,8 @@ export function renderScreenFullTextManager(
 }
 
 export async function bibleItemToFtData(bibleItems: BibleItem[]) {
-    const bibleRenderedList = (
-        await fullTextScreenHelper.genBibleItemRenderList(bibleItems)
-    );
+    const bibleRenderedList =
+        await fullTextScreenHelper.genBibleItemRenderList(bibleItems);
     return {
         type: 'bible-item',
         bibleItemData: {

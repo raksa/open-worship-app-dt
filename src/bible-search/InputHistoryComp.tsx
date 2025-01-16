@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
-import {
-    SearchBibleItemViewController,
-} from '../bible-reader/BibleItemViewController';
+import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
 
-let addHistory: (text: string) => void = () => { };
+let addHistory: (text: string) => void = () => {};
 let timeoutId: any = null;
 export function attemptAddingHistory(
-    bibleKey: string, text: string, isQuick = false,
+    bibleKey: string,
+    text: string,
+    isQuick = false,
 ) {
     const newText = `(${bibleKey}) ${text}`;
     if (isQuick) {
@@ -29,7 +29,8 @@ export function attemptAddingHistory(
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
 function useHistoryTextList(maxHistoryCount: number) {
     const historyTextListJson = getSetting(
-        HISTORY_TEXT_LIST_SETTING_NAME, '[]'
+        HISTORY_TEXT_LIST_SETTING_NAME,
+        '[]',
     );
     const defaultHistoryTextList = JSON.parse(historyTextListJson) as string[];
     const [historyTextList, setHistoryTextList] = useState<string[]>(
@@ -38,7 +39,8 @@ function useHistoryTextList(maxHistoryCount: number) {
     const setHistoryTextList1 = (newHistoryTextList: string[]) => {
         setHistoryTextList(newHistoryTextList);
         setSetting(
-            HISTORY_TEXT_LIST_SETTING_NAME, JSON.stringify(newHistoryTextList),
+            HISTORY_TEXT_LIST_SETTING_NAME,
+            JSON.stringify(newHistoryTextList),
         );
     };
     useAppEffect(() => {
@@ -51,18 +53,19 @@ function useHistoryTextList(maxHistoryCount: number) {
             setHistoryTextList1(newHistory);
         };
         return () => {
-            addHistory = () => { };
+            addHistory = () => {};
         };
     }, [historyTextList]);
     return [historyTextList, setHistoryTextList1] as const;
 }
 
-export default function InputHistoryComp({ maxHistoryCount = 20 }: Readonly<{
-    maxHistoryCount?: number,
+export default function InputHistoryComp({
+    maxHistoryCount = 20,
+}: Readonly<{
+    maxHistoryCount?: number;
 }>) {
-    const [historyTextList, setHistoryTextList] = useHistoryTextList(
-        maxHistoryCount,
-    );
+    const [historyTextList, setHistoryTextList] =
+        useHistoryTextList(maxHistoryCount);
     const handleHistoryRemoving = (historyText: string) => {
         const newHistoryTextList = historyTextList.filter((h) => {
             return h !== historyText;
@@ -92,30 +95,37 @@ export default function InputHistoryComp({ maxHistoryCount = 20 }: Readonly<{
         viewController.setSearchingContentFromBibleItem(result.bibleItem);
     };
     return (
-        <div className='d-flex shadow-sm rounded px-1 me-1' style={{
-            overflowX: 'auto',
-            overflowY: 'hidden',
-            minWidth: '150px',
-        }}>
+        <div
+            className="d-flex shadow-sm rounded px-1 me-1"
+            style={{
+                overflowX: 'auto',
+                overflowY: 'hidden',
+                minWidth: '150px',
+            }}
+        >
             {historyTextList.map((historyText) => {
                 return (
-                    <button key={historyText}
+                    <button
+                        key={historyText}
                         title={
                             'Double click to put back, shift double click to ' +
                             'put back split'
                         }
-                        className='btn btn-sm d-flex app-border-white-round'
+                        className="btn btn-sm d-flex app-border-white-round"
                         style={{ height: '25px' }}
                         onDoubleClick={(event) => {
                             handleDoubleClicking(event, historyText);
-                        }}>
-                        <small className='flex-fill'>{historyText}</small>
-                        <small title='Remove'
+                        }}
+                    >
+                        <small className="flex-fill">{historyText}</small>
+                        <small
+                            title="Remove"
                             style={{ color: 'red' }}
                             onClick={() => {
                                 handleHistoryRemoving(historyText);
-                            }}>
-                            <i className='bi bi-x' />
+                            }}
+                        >
+                            <i className="bi bi-x" />
                         </small>
                     </button>
                 );

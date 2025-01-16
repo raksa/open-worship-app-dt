@@ -1,13 +1,18 @@
+/* eslint-disable max-len */
 import { useState } from 'react';
 
 import { getLangCode } from '../../lang';
 
 function BibleKeyXMLInputComp({
-    defaultVale, onChange, guessingKeys, takenBibleKeys,
+    defaultVale,
+    onChange,
+    guessingKeys,
+    takenBibleKeys,
 }: Readonly<{
-    defaultVale: string, onChange: (key: string) => void,
-    guessingKeys?: string[],
-    takenBibleKeys: string[],
+    defaultVale: string;
+    onChange: (key: string) => void;
+    guessingKeys?: string[];
+    takenBibleKeys: string[];
 }>) {
     const [value, setValue] = useState(defaultVale);
     const [invalidMessage, setInvalidMessage] = useState<string>('');
@@ -21,38 +26,42 @@ function BibleKeyXMLInputComp({
         }
     };
     return (
-        <div className='w-100 h-100'>
+        <div className="w-100 h-100">
             <div>Define a Bible key</div>
-            <div className='input-group'
-                title={invalidMessage}>
-                <div className='input-group-text'>Key:</div>
-                <input className={
-                    'form-control' + (invalidMessage ? ' is-invalid' : '')
-                }
-                    type='text' value={value}
+            <div className="input-group" title={invalidMessage}>
+                <div className="input-group-text">Key:</div>
+                <input
+                    className={
+                        'form-control' + (invalidMessage ? ' is-invalid' : '')
+                    }
+                    type="text"
+                    value={value}
                     onChange={(e) => {
                         setValue1(e.target.value);
                     }}
                 />
             </div>
             {guessingKeys !== undefined && guessingKeys.length > 0 ? (
-                <div className='w-100'>
+                <div className="w-100">
                     <div>Guessing keys:</div>
                     <div>
                         {guessingKeys.map((guessingKey) => {
                             if (
                                 takenBibleKeys.includes(
                                     guessingKey.toLowerCase(),
-                                ) || guessingKey === value
+                                ) ||
+                                guessingKey === value
                             ) {
                                 return null;
                             }
                             return (
-                                <button key={guessingKey}
-                                    className='btn btn-sm btn-outline-info m-1'
+                                <button
+                                    key={guessingKey}
+                                    className="btn btn-sm btn-outline-info m-1"
                                     onClick={() => {
                                         setValue1(guessingKey);
-                                    }}>
+                                    }}
+                                >
                                     {guessingKey}
                                 </button>
                             );
@@ -65,24 +74,29 @@ function BibleKeyXMLInputComp({
 }
 
 export function genBibleKeyXMLInput(
-    key: string, onChange: (key: string) => void,
+    key: string,
+    onChange: (key: string) => void,
     takenBibleKeys: string[],
     guessingKeys?: string[],
 ) {
     return (
         <BibleKeyXMLInputComp
             takenBibleKeys={takenBibleKeys}
-            defaultVale={key} onChange={onChange}
+            defaultVale={key}
+            onChange={onChange}
             guessingKeys={guessingKeys}
         />
     );
 }
 
 function BibleNumbersMapXMLInputComp({
-    defaultVale, onChange, locale,
+    defaultVale,
+    onChange,
+    locale,
 }: Readonly<{
-    defaultVale: string, onChange: (key: string) => void,
-    locale: string,
+    defaultVale: string;
+    onChange: (key: string) => void;
+    locale: string;
 }>) {
     const [value, setValue] = useState(defaultVale);
     const [invalidMessage, setInvalidMessage] = useState<string>('');
@@ -95,27 +109,32 @@ function BibleNumbersMapXMLInputComp({
             setInvalidMessage('');
         }
     };
-    const langCode = getLangCode(locale) || 'en';
+    const langCode = getLangCode(locale) ?? 'en';
     return (
-        <div className='w-100 h-100'>
+        <div className="w-100 h-100">
             <div>Define numbers map</div>
-            <div className='input-group'
-                title={invalidMessage}>
-                <div className='input-group-text'>Key:</div>
-                <input className={
-                    'form-control' + (invalidMessage ? ' is-invalid' : '')
-                }
-                    type='text' value={value}
+            <div className="input-group" title={invalidMessage}>
+                <div className="input-group-text">Key:</div>
+                <input
+                    className={
+                        'form-control' + (invalidMessage ? ' is-invalid' : '')
+                    }
+                    type="text"
+                    value={value}
                     onChange={(e) => {
                         setValue1(e.target.value);
                     }}
                 />
             </div>
-            <div className='w-100'>
-                <a className='btn btn-secondary ms-2' href={
-                    `https://translate.google.com/?sl=en&tl=${langCode}&` +
-                    'text=0%201%202%203%204%205%206%207%208%209&op=translate'
-                } target='_blank'>
+            <div className="w-100">
+                <a
+                    className="btn btn-secondary ms-2"
+                    href={
+                        `https://translate.google.com/?sl=en&tl=${langCode}&` +
+                        'text=0%201%202%203%204%205%206%207%208%209&op=translate'
+                    }
+                    target="_blank"
+                >
                     Translate ({langCode})
                 </a>
             </div>
@@ -124,7 +143,9 @@ function BibleNumbersMapXMLInputComp({
 }
 
 export function genBibleNumbersMapXMLInput(
-    numbers: string[], locale: string, onChange: (numbers: string[]) => void,
+    numbers: string[],
+    locale: string,
+    onChange: (numbers: string[]) => void,
 ) {
     return (
         <BibleNumbersMapXMLInputComp
@@ -138,10 +159,13 @@ export function genBibleNumbersMapXMLInput(
 }
 
 function BibleBooksMapXMLInputComp({
-    defaultVale, onChange, locale,
+    defaultVale,
+    onChange,
+    locale,
 }: Readonly<{
-    defaultVale: string, onChange: (key: string) => void,
-    locale: string,
+    defaultVale: string;
+    onChange: (key: string) => void;
+    locale: string;
 }>) {
     const [value, setValue] = useState(defaultVale);
     const [invalidMessage, setInvalidMessage] = useState<string>('');
@@ -166,49 +190,57 @@ function BibleBooksMapXMLInputComp({
         innerText = innerText.trim();
         setValue1(innerText);
     };
-    const langCode = getLangCode(locale) || 'en';
+    const langCode = getLangCode(locale) ?? 'en';
     return (
-        <div className='w-100 h-100'>
+        <div className="w-100 h-100">
             <div>Define books map</div>
-            <div className='input-group'
-                title={invalidMessage}>
-                <textarea style={{
-                    width: '100%',
-                    height: '400px',
-                }} className={
-                    'form-control' + (invalidMessage ? ' is-invalid' : '')
-                } value={value}
+            <div className="input-group" title={invalidMessage}>
+                <textarea
+                    style={{
+                        width: '100%',
+                        height: '400px',
+                    }}
+                    className={
+                        'form-control' + (invalidMessage ? ' is-invalid' : '')
+                    }
+                    value={value}
                     onChange={(e) => {
                         setValue1(e.target.value);
                     }}
                 />
             </div>
-            <div className='w-100'>
-                <a className='btn btn-secondary ms-2' href={
-                    `https://translate.google.com/?sl=en&tl=${langCode}&` +
-                    'text=GENESIS%0AEXODUS%0ALEVITICUS%0ANUMBERS%0ADEUTERONO' +
-                    'MY%0AJOSHUA%0AJUDGES%0ARUTH%0A1%20SAMUEL%0A2%20SAMUEL%0A' +
-                    '1%20KINGS%0A2%20KINGS%0A1%20CHRONICLES%0A2%20CHRONICLES%' +
-                    '0AEZRA%0ANEHEMIAH%0AESTHER%0AJOB%0APSALM%0APROVERBS%0AEC' +
-                    'CLESIASTES%0ASONG%20OF%20SOLOMON%0AISAIAH%0AJEREMIAH%0A' +
-                    'LAMENTATIONS%0AEZEKIEL%0ADANIEL%0AHOSEA%0AJOEL%0AAMOS%0' +
-                    'AOBADIAH%0AJONAH%0AMICAH%0ANAHUM%0AHABAKKUK%0AZEPHANIAH' +
-                    '%0AHAGGAI%0AZECHARIAH%0AMALACHI%0AMATTHEW%0AMARK%0ALUKE' +
-                    '%0AJOHN%0AACTS%0AROMANS%0A1%20CORINTHIANS%0A2%20CORINTH' +
-                    'IANS%0AGALATIANS%0AEPHESIANS%0APHILIPPIANS%0ACOLOSSIANS' +
-                    '%0A1%20THESSALONIANS%0A2%20THESSALONIANS%0A1%20TIMOTHY%' +
-                    '0A2%20TIMOTHY%0ATITUS%0APHILEMON%0AHEBREWS%0AJAMES%0A1%' +
-                    '20PETER%0A2%20PETER%0A1%20JOHN%0A2%20JOHN%0A3%20JOHN%0A' +
-                    'JUDE%0AREVELATION&op=translate'
-                } target='_blank'>
+            <div className="w-100">
+                <a
+                    className="btn btn-secondary ms-2"
+                    href={
+                        `https://translate.google.com/?sl=en&tl=${langCode}&` +
+                        'text=GENESIS%0AEXODUS%0ALEVITICUS%0ANUMBERS%0ADEUTERONO' +
+                        'MY%0AJOSHUA%0AJUDGES%0ARUTH%0A1%20SAMUEL%0A2%20SAMUEL%0A' +
+                        '1%20KINGS%0A2%20KINGS%0A1%20CHRONICLES%0A2%20CHRONICLES%' +
+                        '0AEZRA%0ANEHEMIAH%0AESTHER%0AJOB%0APSALM%0APROVERBS%0AEC' +
+                        'CLESIASTES%0ASONG%20OF%20SOLOMON%0AISAIAH%0AJEREMIAH%0A' +
+                        'LAMENTATIONS%0AEZEKIEL%0ADANIEL%0AHOSEA%0AJOEL%0AAMOS%0' +
+                        'AOBADIAH%0AJONAH%0AMICAH%0ANAHUM%0AHABAKKUK%0AZEPHANIAH' +
+                        '%0AHAGGAI%0AZECHARIAH%0AMALACHI%0AMATTHEW%0AMARK%0ALUKE' +
+                        '%0AJOHN%0AACTS%0AROMANS%0A1%20CORINTHIANS%0A2%20CORINTH' +
+                        'IANS%0AGALATIANS%0AEPHESIANS%0APHILIPPIANS%0ACOLOSSIANS' +
+                        '%0A1%20THESSALONIANS%0A2%20THESSALONIANS%0A1%20TIMOTHY%' +
+                        '0A2%20TIMOTHY%0ATITUS%0APHILEMON%0AHEBREWS%0AJAMES%0A1%' +
+                        '20PETER%0A2%20PETER%0A1%20JOHN%0A2%20JOHN%0A3%20JOHN%0A' +
+                        'JUDE%0AREVELATION&op=translate'
+                    }
+                    target="_blank"
+                >
                     Translate ({langCode})
                 </a>
                 {value.includes('<') ? (
-                    <button className='btn btn-info'
+                    <button
+                        className="btn btn-info"
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMarkupStringParsing(value);
-                        }}>
+                        }}
+                    >
                         Parse Markup String
                     </button>
                 ) : null}
@@ -218,7 +250,9 @@ function BibleBooksMapXMLInputComp({
 }
 
 export function genBibleBooksMapXMLInput(
-    numbers: string[], locale: string, onChange: (numbers: string[]) => void,
+    numbers: string[],
+    locale: string,
+    onChange: (numbers: string[]) => void,
 ) {
     return (
         <BibleBooksMapXMLInputComp
@@ -334,7 +368,6 @@ export const xmlFormatExample = `<?xml version="1.0" encoding="UTF-8"?>
     <testament name="Old">
         <book number="1">
             <chapter number="1">
-                // eslint-disable-next-line max-len
                 <verse number="1">
                     This is verse text number 1 of chapter 1 in book Genesis
                 </verse>

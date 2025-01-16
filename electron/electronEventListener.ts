@@ -1,11 +1,11 @@
 import electron, { FileFilter, shell } from 'electron';
 import fontList from 'font-list';
 
-import ElectronAppController from './ElectronAppController.js';
-import { tarExtract } from './electronHelpers.js';
-import ElectronScreenController from './ElectronScreenController.js';
-import { officeFileToPdf } from './electronOfficeHelpers.js';
-import { pdfToImages } from './pdfToImagesHelpers.js';
+import ElectronAppController from './ElectronAppController';
+import { tarExtract } from './electronHelpers';
+import ElectronScreenController from './ElectronScreenController';
+import { officeFileToPdf } from './electronOfficeHelpers';
+import { pdfToImages } from './pdfToImagesHelpers';
 
 const { dialog, ipcMain, app } = electron;
 const cache: { [key: string]: any } = {
@@ -17,14 +17,14 @@ export type AnyObjectType = {
 };
 
 export type ScreenMessageType = {
-    screenId: number,
-    type: string,
-    data: AnyObjectType,
+    screenId: number;
+    type: string;
+    data: AnyObjectType;
 };
 type ShowScreenDataType = {
-    screenId: number,
-    displayId: number,
-    replyEventName: string,
+    screenId: number;
+    displayId: number;
+    replyEventName: string;
 };
 
 export const channels = {
@@ -51,16 +51,16 @@ export function initEventListenerApp(appController: ElectronAppController) {
         event.returnValue = result.filePaths;
     });
 
-    ipcMain.on('main:app:select-files', async (
-        event, filters?: FileFilter[],
-    ) => {
-        const result = await dialog.showOpenDialog(appController.mainWin, {
-            properties: ['openFile', 'multiSelections'],
-            filters,
-        });
-        event.returnValue = result.filePaths;
-    });
-
+    ipcMain.on(
+        'main:app:select-files',
+        async (event, filters?: FileFilter[]) => {
+            const result = await dialog.showOpenDialog(appController.mainWin, {
+                properties: ['openFile', 'multiSelections'],
+                filters,
+            });
+            event.returnValue = result.filePaths;
+        },
+    );
 }
 
 export function initEventScreen(appController: ElectronAppController) {
@@ -77,11 +77,11 @@ export function initEventScreen(appController: ElectronAppController) {
 
     // TODO: use shareProps.mainWin.on or shareProps.screenWin.on
     ipcMain.on('main:app:show-screen', (event, data: ShowScreenDataType) => {
-        const screenController = (
-            ElectronScreenController.createInstance(data.screenId)
+        const screenController = ElectronScreenController.createInstance(
+            data.screenId,
         );
-        const display = (
-            appController.settingController.getDisplayById(data.displayId)
+        const display = appController.settingController.getDisplayById(
+            data.displayId,
         );
         if (display !== undefined) {
             screenController.listenLoading().then(() => {
@@ -98,8 +98,7 @@ export function initEventScreen(appController: ElectronAppController) {
     });
 
     ipcMain.on('app:hide-screen', (_, screenId: number) => {
-        const screenController = ElectronScreenController
-            .getInstance(screenId);
+        const screenController = ElectronScreenController.getInstance(screenId);
         if (screenController === null) {
             return;
         }
@@ -107,33 +106,48 @@ export function initEventScreen(appController: ElectronAppController) {
         screenController.destroyInstance();
     });
 
-    ipcMain.on('main:app:set-screen-display', (event, { screenId, displayId }: {
-        screenId: number, displayId: number,
-    }) => {
-        const display = (
-            appController.settingController.getDisplayById(displayId)
-        );
-        const screenController = (
-            ElectronScreenController.getInstance(screenId)
-        );
-        if (display !== undefined && screenController !== null) {
-            screenController.setDisplay(display);
-        }
-    });
+    ipcMain.on(
+        'main:app:set-screen-display',
+        (
+            event,
+            {
+                screenId,
+                displayId,
+            }: {
+                screenId: number;
+                displayId: number;
+            },
+        ) => {
+            const display =
+                appController.settingController.getDisplayById(displayId);
+            const screenController =
+                ElectronScreenController.getInstance(screenId);
+            if (display !== undefined && screenController !== null) {
+                screenController.setDisplay(display);
+            }
+        },
+    );
 
     ipcMain.on(
         channels.screenMessageChannel,
-        async (event, { type, screenId, isScreen, data }:
-            ScreenMessageType & { isScreen: boolean }
+        async (
+            event,
+            {
+                type,
+                screenId,
+                isScreen,
+                data,
+            }: ScreenMessageType & { isScreen: boolean },
         ) => {
             if (isScreen) {
                 appController.mainController.sendMessage({
-                    screenId, type, data,
+                    screenId,
+                    type,
+                    data,
                 });
             } else {
-                const screenController = (
-                    ElectronScreenController.getInstance(screenId)
-                );
+                const screenController =
+                    ElectronScreenController.getInstance(screenId);
                 if (screenController !== null) {
                     screenController.sendMessage(type, data);
                 }
@@ -160,33 +174,53 @@ export function initEventFinder(appController: ElectronAppController) {
     });
 
     const mainWinWebContents = appController.mainWin.webContents;
-    ipcMain.on('finder:app:search-in-page',
-        (event, searchText: string, options: {
-            forward?: boolean;
-            findNext?: boolean;
-            matchCase?: boolean;
-        } = {}) => {
+    ipcMain.on(
+        'finder:app:search-in-page',
+        (
+            event,
+            searchText: string,
+            options: {
+                forward?: boolean;
+                findNext?: boolean;
+                matchCase?: boolean;
+            } = {},
+        ) => {
             event.returnValue = mainWinWebContents.findInPage(
-                searchText, options,
+                searchText,
+                options,
             );
         },
     );
-    ipcMain.on('finder:app:stop-search-in-page', (
-        _, action: 'clearSelection' | 'keepSelection' | 'activateSelection',
-    ) => {
-        mainWinWebContents.stopFindInPage(action);
-    });
+    ipcMain.on(
+        'finder:app:stop-search-in-page',
+        (
+            _,
+            action: 'clearSelection' | 'keepSelection' | 'activateSelection',
+        ) => {
+            mainWinWebContents.stopFindInPage(action);
+        },
+    );
 }
 
 export function initEventOther(appController: ElectronAppController) {
-    ipcMain.on('main:app:tar-extract', async (_, {
-        replyEventName, filePath, outputDir,
-    }: {
-        replyEventName: string, filePath: string, outputDir: string,
-    }) => {
-        await tarExtract(filePath, outputDir);
-        appController.mainController.sendData(replyEventName);
-    });
+    ipcMain.on(
+        'main:app:tar-extract',
+        async (
+            _,
+            {
+                replyEventName,
+                filePath,
+                outputDir,
+            }: {
+                replyEventName: string;
+                filePath: string;
+                outputDir: string;
+            },
+        ) => {
+            await tarExtract(filePath, outputDir);
+            appController.mainController.sendData(replyEventName);
+        },
+    );
 
     ipcMain.on('main:app:get-font-list', async (event) => {
         if (cache.fontsMap !== null) {
@@ -194,9 +228,11 @@ export function initEventOther(appController: ElectronAppController) {
         }
         try {
             const fonts = await fontList.getFonts({ disableQuoting: true });
-            const fontsMap = Object.fromEntries(fonts.map((fontName) => {
-                return [fontName, []];
-            }));
+            const fontsMap = Object.fromEntries(
+                fonts.map((fontName) => {
+                    return [fontName, []];
+                }),
+            );
             event.returnValue = fontsMap;
             cache.fontsMap = fontsMap;
         } catch (error) {
@@ -209,33 +245,60 @@ export function initEventOther(appController: ElectronAppController) {
         shell.showItemInFolder(path);
     });
 
-    ipcMain.on('main:app:trash-path', async (_, data: {
-        path: string,
-        replyEventName: string
-    }) => {
-        await shell.trashItem(data.path);
-        appController.mainController.sendData(data.replyEventName);
-    });
+    ipcMain.on(
+        'main:app:trash-path',
+        async (
+            _,
+            data: {
+                path: string;
+                replyEventName: string;
+            },
+        ) => {
+            await shell.trashItem(data.path);
+            appController.mainController.sendData(data.replyEventName);
+        },
+    );
 
     ipcMain.on('main:app:preview-pdf', (_, pdfFilePath: string) => {
         appController.mainController.previewPdf(pdfFilePath);
     });
-    ipcMain.on('main:app:convert-to-pdf', async (event, {
-        replyEventName, officeFilePath, pdfFilePath,
-    }: {
-        replyEventName: string, officeFilePath: string, pdfFilePath: string,
-    }) => {
-        await officeFileToPdf(officeFilePath, pdfFilePath);
-        appController.mainController.sendData(replyEventName);
-    });
-
-    ipcMain.on('main:app:pdf-to-images', async (
-        _, { replyEventName, filePath, outDir, isForce }: {
-            replyEventName: string, filePath: string, outDir: string,
-            isForce: boolean,
+    ipcMain.on(
+        'main:app:convert-to-pdf',
+        async (
+            event,
+            {
+                replyEventName,
+                officeFilePath,
+                pdfFilePath,
+            }: {
+                replyEventName: string;
+                officeFilePath: string;
+                pdfFilePath: string;
+            },
+        ) => {
+            await officeFileToPdf(officeFilePath, pdfFilePath);
+            appController.mainController.sendData(replyEventName);
         },
-    ) => {
-        const data = await pdfToImages(filePath, outDir, isForce);
-        appController.mainController.sendData(replyEventName, data);
-    });
+    );
+
+    ipcMain.on(
+        'main:app:pdf-to-images',
+        async (
+            _,
+            {
+                replyEventName,
+                filePath,
+                outDir,
+                isForce,
+            }: {
+                replyEventName: string;
+                filePath: string;
+                outDir: string;
+                isForce: boolean;
+            },
+        ) => {
+            const data = await pdfToImages(filePath, outDir, isForce);
+            appController.mainController.sendData(replyEventName, data);
+        },
+    );
 }

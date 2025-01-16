@@ -8,23 +8,28 @@ export default function BoxEditorNormalViewErrorComp() {
     const canvasController = useCanvasControllerContext();
     const canvasItem = useCanvasItemContext();
     return (
-        <BoxEditorNormalWrapperComp style={canvasItem.getBoxStyle()}
+        <BoxEditorNormalWrapperComp
+            style={canvasItem.getBoxStyle()}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                showAppContextMenu(event as any, [{
-                    menuTitle: 'Delete',
-                    onClick: () => {
-                        canvasController.deleteItem(canvasItem);
+                showAppContextMenu(event as any, [
+                    {
+                        menuTitle: 'Delete',
+                        onClick: () => {
+                            canvasController.deleteItem(canvasItem);
+                        },
                     },
-                }, {
-                    menuTitle: 'Copy Error Json',
-                    onClick: () => {
-                        appProvider.browserUtils.copyToClipboard(
-                            JSON.stringify(canvasItem.props),
-                        );
+                    {
+                        menuTitle: 'Copy Error Json',
+                        onClick: () => {
+                            appProvider.browserUtils.copyToClipboard(
+                                JSON.stringify(canvasItem.props),
+                            );
+                        },
                     },
-                }]);
-            }}>
+                ]);
+            }}
+        >
             Error
         </BoxEditorNormalWrapperComp>
     );
@@ -32,15 +37,17 @@ export default function BoxEditorNormalViewErrorComp() {
 
 export function BENViewErrorRender() {
     return (
-        <div style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            fontSize: '5.5rem',
-            color: 'red',
-        }}>
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontSize: '5.5rem',
+                color: 'red',
+            }}
+        >
             Error
         </div>
     );

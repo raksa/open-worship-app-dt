@@ -3,60 +3,42 @@
         "type": "APNG",
         "title": "Animated Portable Network Graphics",
         "mimetypeSignature": "image/apng",
-        "extensions": [
-            ".apng"
-        ]
+        "extensions": [".apng"]
     },
     {
         "type": "AVIF",
         "title": "AV1 Image File Format",
         "mimetypeSignature": "image/avif",
-        "extensions": [
-            ".avif"
-        ]
+        "extensions": [".avif"]
     },
     {
         "type": "GIF",
         "title": "Graphics Interchange Format",
         "mimetypeSignature": "image/gif",
-        "extensions": [
-            ".gif"
-        ]
+        "extensions": [".gif"]
     },
     {
         "type": "JPEG",
         "title": "Joint Photographic Expert Group image",
         "mimetypeSignature": "image/jpeg",
-        "extensions": [
-            ".jpg",
-            ".jpeg",
-            ".jfif",
-            ".pjpeg",
-            ".pjp"
-        ]
+        "extensions": [".jpg", ".jpeg", ".jfif", ".pjpeg", ".pjp"]
     },
     {
         "type": "PNG",
         "title": "Portable Network Graphics",
         "mimetypeSignature": "image/png",
-        "extensions": [
-            ".png"
-        ]
+        "extensions": [".png"]
     },
     {
         "type": "SVG",
         "title": "Scalable Vector Graphics",
         "mimetypeSignature": "image/svg+xml",
-        "extensions": [
-            ".svg"
-        ]
+        "extensions": [".svg"]
     },
     {
         "type": "WebP",
         "title": "Web Picture format",
         "mimetypeSignature": "image/webp",
-        "extensions": [
-            ".webp"
-        ]
+        "extensions": [".webp"]
     }
 ]

@@ -6,24 +6,31 @@ import ScreenAlertManager from './ScreenAlertManager';
 import ScreenBackgroundManager from './ScreenBackgroundManager';
 import ScreenFullTextManager from './ScreenFullTextManager';
 import {
-    getAllShowingScreenIds, hideScreen, ScreenMessageType, setDisplay,
+    getAllShowingScreenIds,
+    hideScreen,
+    ScreenMessageType,
+    setDisplay,
     showScreen,
 } from '../screenHelpers';
 import ScreenManagerInf from '../preview/ScreenManagerInf';
-import ScreenSlideManager from './ScreenSlideManager';
+import ScreenVaryAppDocumentManager from './ScreenVaryAppDocumentManager';
 import ColorNoteInf from '../../helper/ColorNoteInf';
 import {
-    getDisplayIdByScreenId, SCREEN_MANAGER_SETTING_NAME,
+    getDisplayIdByScreenId,
+    SCREEN_MANAGER_SETTING_NAME,
 } from './screenHelpers';
 
-export type ScreenManagerEventType = (
-    'instance' | 'update' | 'visible' | 'display-id' | 'resize'
-);
+export type ScreenManagerEventType =
+    | 'instance'
+    | 'update'
+    | 'visible'
+    | 'display-id'
+    | 'resize';
 
 export default class ScreenManagerBase
     extends EventHandler<ScreenManagerEventType>
-    implements ScreenManagerInf, ColorNoteInf {
-
+    implements ScreenManagerInf, ColorNoteInf
+{
     static readonly eventNamePrefix: string = 'screen-m';
     readonly screenId: number;
     isDeleted: boolean;
@@ -74,7 +81,7 @@ export default class ScreenManagerBase
     async setColorNote(color: string | null) {
         this.colorNote = color;
         ScreenBackgroundManager.enableSyncGroup(this.screenId);
-        ScreenSlideManager.enableSyncGroup(this.screenId);
+        ScreenVaryAppDocumentManager.enableSyncGroup(this.screenId);
         ScreenFullTextManager.enableSyncGroup(this.screenId);
         ScreenAlertManager.enableSyncGroup(this.screenId);
         this.sendSyncScreen();
@@ -92,7 +99,8 @@ export default class ScreenManagerBase
         );
         if (this.isShowing) {
             setDisplay({
-                screenId: this.screenId, displayId: id,
+                screenId: this.screenId,
+                displayId: id,
             });
         }
         const data = {

@@ -3,13 +3,15 @@ import { createContext, use } from 'react';
 import ScreenManager from './ScreenManager';
 import ScreenManagerBase, { ScreenManagerEventType } from './ScreenManagerBase';
 import {
-    useScreenEvents, useScreenBackgroundManagerEvents,
-    useScreenSlideManagerEvents, useScreenFullTextManagerEvents,
+    useScreenEvents,
+    useScreenBackgroundManagerEvents,
+    useScreenVaryAppDocumentManagerEvents,
+    useScreenFullTextManagerEvents,
     useScreenAlertManagerEvents,
 } from './screenEventHelpers';
 
-export const ScreenManagerBaseContext = (
-    createContext<ScreenManagerBase | null>(null)
+export const ScreenManagerBaseContext = createContext<ScreenManagerBase | null>(
+    null,
 );
 
 export function useScreenManagerBaseContext(): ScreenManagerBase {
@@ -17,7 +19,7 @@ export function useScreenManagerBaseContext(): ScreenManagerBase {
     if (screenManagerBase === null) {
         throw new Error(
             'useScreenManager must be used within a ScreenManagerBase ' +
-            'Context Provider',
+                'Context Provider',
         );
     }
     return screenManagerBase;
@@ -32,12 +34,13 @@ export function useScreenManagerContext(): ScreenManager {
 }
 
 export function useScreenManagerEvents(
-    events: ScreenManagerEventType[], screenManagerBase?: ScreenManagerBase,
+    events: ScreenManagerEventType[],
+    screenManagerBase?: ScreenManagerBase,
     callback?: () => void,
 ) {
     useScreenEvents(events, ScreenManager as any, screenManagerBase, callback);
     useScreenBackgroundManagerEvents(['update']);
-    useScreenSlideManagerEvents(['update']);
+    useScreenVaryAppDocumentManagerEvents(['update']);
     useScreenFullTextManagerEvents(['update']);
     useScreenAlertManagerEvents(['update']);
 }

@@ -3,7 +3,7 @@
     "description": "Fully Open-Source and completely free forever for worship service.",
     "author": "Raksa Eng <eng.raksa@gmail.com> (https://www.linkedin.com/in/raks-eng/)",
     "homepage": "https://github.com/OpenWorshipApp/open-worship-app-dt",
-    "version": "2025.01.07",
+    "version": "2025.01.13",
     "type": "commonjs",
     "main": "./electron-build/electron/index.js",
     "scripts": {
@@ -24,7 +24,8 @@
         "postinstall": "install-app-deps",
         "vite:dev": "vite",
         "vite:build": "vite build",
-        "react-devtools": "react-devtools"
+        "react-devtools": "react-devtools",
+        "lint": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md} electron/**/*.ts\" && eslint \"eslint src/**/*.ts* electron/**/*.ts\" && npm run build"
     },
     "browserslist": {
         "production": [
@@ -94,32 +95,33 @@
         "@types/react": "^19.0.1",
         "@types/react-dom": "^19.0.1",
         "@types/tar": "^6.1.13",
-        "@typescript-eslint/eslint-plugin": "^8.16.0",
-        "@typescript-eslint/parser": "^8.16.0",
+        "@typescript-eslint/eslint-plugin": "^8.20.0",
+        "@typescript-eslint/parser": "^8.20.0",
         "@vitejs/plugin-basic-ssl": "^1.2.0",
         "@vitejs/plugin-react-swc": "^3.7.2",
         "bootstrap": "^5.3.3",
         "bootstrap-icons": "^1.11.3",
         "concurrently": "^9.1.0",
-        "electron": "^33.2.1",
+        "diff": "^7.0.0",
+        "electron": "^33.3.1",
         "electron-builder": "^25.1.8",
         "env-cmd": "^10.1.0",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^9.1.0",
+        "monaco-editor": "^0.52.2",
         "nodemon": "^3.1.7",
         "prettier": "3.4.2",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "reveal.js": "^5.1.0",
         "sass": "^1.81.0",
-        "typescript": "^5.7.2",
-        "vite": "^6.0.1"
+        "typescript": "^5.7.3",
+        "vite": "^6.0.7"
     },
     "dependencies": {
-        "diff": "^7.0.0",
         "font-list": "^1.5.1",
         "libreoffice-convert": "^1.6.0",
-        "mupdf": "^1.0.0",
+        "mupdf": "^1.1.0",
         "tar": "^7.4.3"
     }
 }

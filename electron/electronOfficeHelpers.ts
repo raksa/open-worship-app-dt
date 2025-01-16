@@ -3,9 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { convert } from 'libreoffice-convert';
 
 const PDF_EXT = '.pdf';
-export function officeFileToPdf(
-    officeFilePath: string, pdfFilePath: string,
-) {
+export function officeFileToPdf(officeFilePath: string, pdfFilePath: string) {
     return new Promise<void>((resolve, reject) => {
         mkdirSync(parse(pdfFilePath).dir, { recursive: true });
         const docxBuf = readFileSync(officeFilePath);

@@ -5,13 +5,14 @@ import { AnyObjectType } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 import appProvider from '../../server/appProvider';
 import {
-    CanvasItemKindType, genTextDefaultBoxStyle, hAlignmentList, HAlignmentType,
-    vAlignmentList, VAlignmentType,
+    CanvasItemKindType,
+    genTextDefaultBoxStyle,
+    hAlignmentList,
+    HAlignmentType,
+    vAlignmentList,
+    VAlignmentType,
 } from './canvasHelpers';
-import CanvasItem, {
-    CanvasItemError, CanvasItemPropsType,
-} from './CanvasItem';
-import { log } from '../../helper/loggerHelpers';
+import CanvasItem, { CanvasItemError, CanvasItemPropsType } from './CanvasItem';
 
 export function genTextDefaultProps(): TextPropsType {
     return {
@@ -25,25 +26,24 @@ export function genTextDefaultProps(): TextPropsType {
     };
 }
 export type TextPropsType = {
-    text: string,
-    color: AppColorType,
-    fontSize: number,
-    fontFamily: string | null,
-    fontWeight: string | null,
-    textHorizontalAlignment: HAlignmentType,
-    textVerticalAlignment: VAlignmentType,
+    text: string;
+    color: AppColorType;
+    fontSize: number;
+    fontFamily: string | null;
+    fontWeight: string | null;
+    textHorizontalAlignment: HAlignmentType;
+    textVerticalAlignment: VAlignmentType;
 };
 export type CanvasItemTextPropsType = CanvasItemPropsType & TextPropsType;
 export type ToolingTextType = {
-    color?: AppColorType,
-    fontSize?: number,
-    fontFamily?: string | null,
-    fontWeight?: string | null,
-    textHorizontalAlignment?: HAlignmentType,
-    textVerticalAlignment?: VAlignmentType,
+    color?: AppColorType;
+    fontSize?: number;
+    fontFamily?: string | null;
+    fontWeight?: string | null;
+    textHorizontalAlignment?: HAlignmentType;
+    textVerticalAlignment?: VAlignmentType;
 };
-export default class CanvasItemText
-    extends CanvasItem<CanvasItemTextPropsType> {
+class CanvasItemText extends CanvasItem<CanvasItemTextPropsType> {
     get type(): CanvasItemKindType {
         return 'text';
     }
@@ -89,7 +89,8 @@ export default class CanvasItemText
     }
     static validate(json: AnyObjectType) {
         super.validate(json);
-        if (typeof json.text !== 'string' ||
+        if (
+            typeof json.text !== 'string' ||
             typeof json.color !== 'string' ||
             typeof json.fontSize !== 'number' ||
             (json.fontFamily !== null && typeof json.fontFamily !== 'string') ||
@@ -97,8 +98,9 @@ export default class CanvasItemText
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment)
         ) {
-            log(json);
             throw new Error('Invalid canvas item text data');
         }
     }
 }
+
+export default CanvasItemText;

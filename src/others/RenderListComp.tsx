@@ -9,14 +9,16 @@ import LoadingComp from './LoadingComp';
 const UNKNOWN_COLOR_NOTE = 'unknown';
 
 export default function RenderListComp({
-    dirSource, mimetypeName, bodyHandler,
+    dirSource,
+    mimetypeName,
+    bodyHandler,
 }: Readonly<{
-    dirSource: DirSource,
-    mimetypeName: MimetypeNameType,
-    bodyHandler: (_: string[]) => any,
+    dirSource: DirSource;
+    mimetypeName: MimetypeNameType;
+    bodyHandler: (_: string[]) => any;
 }>) {
-    const [filePaths, setFilePaths] = (
-        useState<string[] | null | undefined>(null)
+    const [filePaths, setFilePaths] = useState<string[] | null | undefined>(
+        null,
     );
     const refresh = async () => {
         const newFilePaths = await dirSource.getFilePaths(mimetypeName);
@@ -37,51 +39,58 @@ export default function RenderListComp({
     }, [filePaths]);
     if (filePaths === undefined) {
         return (
-            <div className='alert alert-warning pointer'
+            <div
+                className="alert alert-warning pointer"
                 onClick={() => {
                     dirSource.fireReloadEvent();
-                }}>
+                }}
+            >
                 Fail To Get File List
             </div>
         );
     }
     if (filePaths === null) {
-        return (
-            <LoadingComp />
-        );
-
+        return <LoadingComp />;
     }
     const fileSourceColorMap: { [key: string]: string[] } = {
         [UNKNOWN_COLOR_NOTE]: [],
     };
     filePaths.forEach((filePath) => {
         const fileSource = FileSource.getInstance(filePath);
-        const colorNote = fileSource.colorNote || UNKNOWN_COLOR_NOTE;
-        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] || [];
+        const colorNote = fileSource.colorNote ?? UNKNOWN_COLOR_NOTE;
+        fileSourceColorMap[colorNote] = fileSourceColorMap[colorNote] ?? [];
         fileSourceColorMap[colorNote].push(filePath);
     });
     if (Object.keys(fileSourceColorMap).length === 1) {
         return bodyHandler(filePaths);
     }
-    const keys = Object.keys(fileSourceColorMap).filter((key) => {
-        return key !== UNKNOWN_COLOR_NOTE;
-    }).sort((a, b) => a.localeCompare(b));
+    const keys = Object.keys(fileSourceColorMap)
+        .filter((key) => {
+            return key !== UNKNOWN_COLOR_NOTE;
+        })
+        .sort((a, b) => a.localeCompare(b));
     keys.push(UNKNOWN_COLOR_NOTE);
     return (
-        <>{keys.map((colorNote) => {
-            const subFileSources = fileSourceColorMap[colorNote];
-            return (
-                <div key={colorNote}>
-                    <hr style={colorNote === UNKNOWN_COLOR_NOTE ? {} : {
-                        backgroundColor: colorNote,
-                        height: '1px',
-                        border: 0,
-                    }}
-                    />
-                    {bodyHandler(subFileSources)}
-                </div>
-            );
-        })}
+        <>
+            {keys.map((colorNote) => {
+                const subFileSources = fileSourceColorMap[colorNote];
+                return (
+                    <div key={colorNote}>
+                        <hr
+                            style={
+                                colorNote === UNKNOWN_COLOR_NOTE
+                                    ? {}
+                                    : {
+                                          backgroundColor: colorNote,
+                                          height: '1px',
+                                          border: 0,
+                                      }
+                            }
+                        />
+                        {bodyHandler(subFileSources)}
+                    </div>
+                );
+            })}
         </>
     );
 }

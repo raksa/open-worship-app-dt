@@ -3,24 +3,18 @@
         "type": "MPEG-4",
         "title": "",
         "mimetypeSignature": "video/mp4",
-        "extensions": [
-            ".mp4"
-        ]
+        "extensions": [".mp4"]
     },
     {
         "type": "WebM",
         "title": "",
         "mimetypeSignature": "video/webm",
-        "extensions": [
-            ".webm"
-        ]
+        "extensions": [".webm"]
     },
     {
         "type": "MOV",
         "title": "Apple QuickTime Movie",
         "mimetypeSignature": "video/quicktime",
-        "extensions": [
-            ".mov"
-        ]
+        "extensions": [".mov"]
     }
 ]

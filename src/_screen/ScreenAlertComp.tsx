@@ -4,7 +4,8 @@ import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
 import {
-    useScreenManagerContext, useScreenManagerEvents,
+    useScreenManagerContext,
+    useScreenManagerEvents,
 } from './managers/screenManagerHooks';
 
 export default function ScreenAlertComp() {
@@ -20,11 +21,10 @@ export default function ScreenAlertComp() {
         }
     }, [div.current]);
     return (
-        <div id='alert' ref={div}
-            style={screenAlertManager.containerStyle} >
-            <div id='countdown' />
-            <div id='marquee' />
-            <div id='toast' />
+        <div id="alert" ref={div} style={screenAlertManager.containerStyle}>
+            <div id="countdown" />
+            <div id="marquee" />
+            <div id="toast" />
         </div>
     );
 }

@@ -1,7 +1,10 @@
 import { lazy, useState } from 'react';
 
 import {
-    AlertDataType, popupWidgetManager, ConfirmDataType, InputDataType,
+    AlertDataType,
+    popupWidgetManager,
+    ConfirmDataType,
+    InputDataType,
 } from './popupWidgetHelpers';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 
@@ -18,12 +21,10 @@ const LazyAlertPopup = lazy(() => {
 export type AlertType = 'confirm' | null;
 
 export default function HandleAlertComp() {
-    const [confirmData, setConfirmData] = (
-        useState<ConfirmDataType | null>(null)
+    const [confirmData, setConfirmData] = useState<ConfirmDataType | null>(
+        null,
     );
-    const [inputData, setInputData] = (
-        useState<InputDataType | null>(null)
-    );
+    const [inputData, setInputData] = useState<InputDataType | null>(null);
     const [alertData, setAlertData] = useState<AlertDataType | null>(null);
 
     popupWidgetManager.openConfirm = (newConfirmData) => {

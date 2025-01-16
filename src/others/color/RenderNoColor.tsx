@@ -1,20 +1,26 @@
-export default function RenderNoColor({ isSelected, onClick }: Readonly<{
-    isSelected: boolean,
-    onClick?: (event: MouseEvent) => void,
+export default function RenderNoColor({
+    isSelected,
+    onClick,
+}: Readonly<{
+    isSelected: boolean;
+    onClick?: (event: MouseEvent) => void;
 }>) {
     return (
-        <div title='no color'
-            className='m-1 color-item pointer'
+        <div
+            title="no color"
+            className="m-1 color-item pointer"
             style={{
                 width: '20px',
                 height: '15px',
                 backgroundColor: '#fff',
                 color: 'red',
-                border: isSelected ?
-                    '3px dashed #fff' : '',
+                border: isSelected ? '3px dashed #fff' : '',
             }}
             onClick={(event) => {
                 onClick?.(event as any);
-            }}>x</div>
+            }}
+        >
+            x
+        </div>
     );
 }

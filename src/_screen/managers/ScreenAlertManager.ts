@@ -2,11 +2,16 @@ import { CSSProperties } from 'react';
 
 import { setSetting } from '../../helper/settingHelpers';
 import {
-    AlertType, checkIsCountdownDatesEq, genHtmlAlertCountdown,
-    genHtmlAlertMarquee, removeAlert,
+    AlertType,
+    checkIsCountdownDatesEq,
+    genHtmlAlertCountdown,
+    genHtmlAlertMarquee,
+    removeAlert,
 } from '../screenAlertHelpers';
 import {
-    AlertDataType, BasicScreenMessageType, getAlertDataListOnScreenSetting,
+    AlertDataType,
+    BasicScreenMessageType,
+    getAlertDataListOnScreenSetting,
     ScreenMessageType,
 } from '../screenHelpers';
 import { screenManagerSettingNames } from '../../helper/constants';
@@ -16,9 +21,7 @@ import ScreenManagerBase from './ScreenManagerBase';
 
 export type ScreenAlertEventType = 'update';
 
-export default class ScreenAlertManager
-    extends ScreenEventHandler<ScreenAlertEventType> {
-
+export default class ScreenAlertManager extends ScreenEventHandler<ScreenAlertEventType> {
     static readonly eventNamePrefix: string = 'screen-alert-m';
     private _div: HTMLDivElement | null = null;
     alertData: AlertDataType;
@@ -65,7 +68,8 @@ export default class ScreenAlertManager
     }
 
     applyAlertDataWithSyncGroup(
-        alertData: AlertDataType, isNoSyncGroup = false,
+        alertData: AlertDataType,
+        isNoSyncGroup = false,
     ) {
         if (!isNoSyncGroup) {
             ScreenAlertManager.enableSyncGroup(this.screenId);
@@ -92,31 +96,41 @@ export default class ScreenAlertManager
     }
 
     setMarqueeData(
-        marqueeData: { text: string } | null, isNoSyncGroup = false,
+        marqueeData: { text: string } | null,
+        isNoSyncGroup = false,
     ) {
         if (marqueeData?.text !== this.alertData.marqueeData?.text) {
             this.cleanRender(this.divMarquee);
-            this.applyAlertDataWithSyncGroup({
-                ...this.alertData, marqueeData,
-            }, isNoSyncGroup);
+            this.applyAlertDataWithSyncGroup(
+                {
+                    ...this.alertData,
+                    marqueeData,
+                },
+                isNoSyncGroup,
+            );
             this.renderMarquee();
             this.saveAlertData();
         }
     }
 
     setCountdownData(
-        countdownData: { dateTime: Date } | null, isNoSyncGroup = false,
+        countdownData: { dateTime: Date } | null,
+        isNoSyncGroup = false,
     ) {
         if (
             !checkIsCountdownDatesEq(
-                countdownData?.dateTime || null,
-                this.alertData.countdownData?.dateTime || null,
+                countdownData?.dateTime ?? null,
+                this.alertData.countdownData?.dateTime ?? null,
             )
         ) {
             this.cleanRender(this.divCountdown);
-            this.applyAlertDataWithSyncGroup({
-                ...this.alertData, countdownData,
-            }, isNoSyncGroup);
+            this.applyAlertDataWithSyncGroup(
+                {
+                    ...this.alertData,
+                    countdownData,
+                },
+                isNoSyncGroup,
+            );
             this.renderCountdown();
             this.saveAlertData();
         }
@@ -161,29 +175,40 @@ export default class ScreenAlertManager
     }
 
     static async setMarquee(
-        event: React.MouseEvent<HTMLElement, MouseEvent>, text: string | null,
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        text: string | null,
         isForceChoosing = false,
     ) {
-        this.setData(event, (screenAlertManager) => {
-            const marqueeData = text !== null ? { text } : null;
-            screenAlertManager.setMarqueeData(marqueeData);
-        }, isForceChoosing);
+        this.setData(
+            event,
+            (screenAlertManager) => {
+                const marqueeData = text !== null ? { text } : null;
+                screenAlertManager.setMarqueeData(marqueeData);
+            },
+            isForceChoosing,
+        );
     }
 
     static async setCountdown(
-        event: React.MouseEvent<HTMLElement, MouseEvent>, dateTime: Date | null,
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
+        dateTime: Date | null,
         isForceChoosing = false,
     ) {
-        this.setData(event, (screenAlertManager) => {
-            const countdownData = dateTime !== null ? { dateTime } : null;
-            screenAlertManager.setCountdownData(countdownData);
-        }, isForceChoosing);
+        this.setData(
+            event,
+            (screenAlertManager) => {
+                const countdownData = dateTime !== null ? { dateTime } : null;
+                screenAlertManager.setCountdownData(countdownData);
+            },
+            isForceChoosing,
+        );
     }
 
     renderMarquee() {
         if (this.alertData.marqueeData !== null) {
             const newDiv = genHtmlAlertMarquee(
-                this.alertData.marqueeData, this.screenManagerBase,
+                this.alertData.marqueeData,
+                this.screenManagerBase,
             );
             this.divMarquee.appendChild(newDiv);
             newDiv.querySelectorAll('.marquee').forEach((element: any) => {
@@ -197,7 +222,8 @@ export default class ScreenAlertManager
     renderCountdown() {
         if (this.alertData.countdownData !== null) {
             const newDiv = genHtmlAlertCountdown(
-                this.alertData.countdownData, this.screenManagerBase,
+                this.alertData.countdownData,
+                this.screenManagerBase,
             );
             this.divCountdown.appendChild(newDiv);
         }
@@ -232,7 +258,7 @@ export default class ScreenAlertManager
     }
 
     render() {
-        console.log('render');
+        throw new Error('Method not implemented.');
     }
 
     clear() {
@@ -244,5 +270,4 @@ export default class ScreenAlertManager
     static getInstance(screenId: number) {
         return super.getInstanceBase<ScreenAlertManager>(screenId);
     }
-
 }

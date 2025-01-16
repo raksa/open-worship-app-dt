@@ -4,11 +4,11 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import ScreenEffectManager from './managers/ScreenEffectManager';
 
 export type StyleAnimType = {
-    style: string,
+    style: string;
     animIn: (_: HTMLElement) => Promise<void>;
     animOut: (_: HTMLElement) => Promise<void>;
     duration: number;
-}
+};
 
 export const transitionEffect = {
     none: ['bi bi-asterisk'],
@@ -18,11 +18,11 @@ export const transitionEffect = {
 } as const;
 export type ScreenTransitionEffectType = keyof typeof transitionEffect;
 export type PTFEventType = 'update';
-export const targetList = ['background', 'slide'] as const;
-export type TargetType = typeof targetList[number];
+export const targetList = ['background', 'vary-app-document'] as const;
+export type TargetType = (typeof targetList)[number];
 
 const easingFunctions = {
-    'linear': (k: number) => {
+    linear: (k: number) => {
         return k;
     },
     'ease-in': (k: number) => {
@@ -32,17 +32,19 @@ const easingFunctions = {
         return 1 - Math.pow(1 - k, 1.675);
     },
     'ease-in-out': (k: number) => {
-        return .5 * (Math.sin((k - .5) * Math.PI) + 1);
+        return 0.5 * (Math.sin((k - 0.5) * Math.PI) + 1);
     },
 };
+
 export type EasingFuncType = keyof typeof easingFunctions;
 
 export type GenAnimPropsType = {
-    x?: number,
-    y?: number,
-    width?: number,
-    height?: number,
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
 };
+
 function none(): StyleAnimType {
     return {
         style: '',
@@ -51,6 +53,7 @@ function none(): StyleAnimType {
         duration: 0,
     };
 }
+
 function fade(target: TargetType): StyleAnimType {
     const duration = 1000;
     const cssProps = {
@@ -99,19 +102,24 @@ function fade(target: TargetType): StyleAnimType {
         duration,
     };
 }
+
 function move(): StyleAnimType {
     const duration = 500;
     const movingMaker = ({
-        from, to, durationMil,
-        easing, callback,
+        from,
+        to,
+        durationMil,
+        easing,
+        callback,
     }: {
-        from: number, to: number,
-        durationMil: number,
-        easing?: EasingFuncType,
-        callback: (n: number, isDone?: boolean) => void,
+        from: number;
+        to: number;
+        durationMil: number;
+        easing?: EasingFuncType;
+        callback: (n: number, isDone?: boolean) => void;
     }) => {
         const distDiff = to - from;
-        const easeFn = easingFunctions[easing || 'ease-in'];
+        const easeFn = easingFunctions[easing ?? 'ease-in'];
         const startTime = Date.now();
         const step = () => {
             const timeNow = Date.now();
@@ -121,7 +129,7 @@ function move(): StyleAnimType {
                 callback(to, true);
                 return;
             }
-            const newPos = from + (easeFn(Math.abs(factor)) * distDiff);
+            const newPos = from + easeFn(Math.abs(factor)) * distDiff;
             callback(newPos);
             window.requestAnimationFrame(step);
         };
@@ -134,11 +142,11 @@ function move(): StyleAnimType {
                 if (targetElement.parentElement === null) {
                     return;
                 }
-                const rect = targetElement.parentElement
-                    .getBoundingClientRect();
+                const rect =
+                    targetElement.parentElement.getBoundingClientRect();
                 const from = -rect.width;
-                const styleLst = (targetElement.previousSibling as
-                    HTMLElement)?.style || {
+                const styleLst = (targetElement.previousSibling as HTMLElement)
+                    ?.style ?? {
                     left: '0px',
                 };
                 const styleTarget = targetElement.style;
@@ -162,8 +170,8 @@ function move(): StyleAnimType {
                 if (targetElement.parentElement === null) {
                     return;
                 }
-                const rect = targetElement.parentElement
-                    .getBoundingClientRect();
+                const rect =
+                    targetElement.parentElement.getBoundingClientRect();
                 movingMaker({
                     from: 0,
                     to: rect.width,
@@ -180,12 +188,13 @@ function move(): StyleAnimType {
         duration,
     };
 }
+
 function zoom(): StyleAnimType {
     return none();
 }
 
 export const styleAnimList: {
-    [key: string]: (_: TargetType) => StyleAnimType,
+    [key: string]: (_: TargetType) => StyleAnimType;
 } = {
     none,
     fade,
@@ -193,9 +202,11 @@ export const styleAnimList: {
     zoom,
 };
 
-export function usePTEEvents(events: PTFEventType[],
+export function useScreenEffectEvents(
+    events: PTFEventType[],
     screenEffectManager: ScreenEffectManager,
-    callback?: () => void) {
+    callback?: () => void,
+) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
         const update = () => {
@@ -204,12 +215,13 @@ export function usePTEEvents(events: PTFEventType[],
             });
             callback?.();
         };
-        const instanceEvents = (
-            screenEffectManager.registerEventListener(events, update) || []
+        const instanceEvents = screenEffectManager.registerEventListener(
+            events,
+            update,
         );
         return () => {
             screenEffectManager.unregisterEventListener(instanceEvents);
         };
-    }, [screenEffectManager]);
+    }, [screenEffectManager, callback]);
     return n;
 }

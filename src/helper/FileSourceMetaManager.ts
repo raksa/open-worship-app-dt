@@ -1,20 +1,17 @@
 import ToastEventListener from '../event/ToastEventListener';
 import appProvider from '../server/appProvider';
-import {
-    checkIsAppFile, fsCheckFileExist,
-} from '../server/fileHelpers';
+import { checkIsAppFile, fsCheckFileExist } from '../server/fileHelpers';
 import { handleError } from './errorHelpers';
 import FileSource from './FileSource';
 import { isColor } from './helpers';
 import { SettingManager } from './settingHelpers';
 
-
 async function readJsonData(filePath: string) {
     const fileSource = FileSource.getInstance(filePath);
-    const json = await fileSource.readFileToJsonData();
+    const json = await fileSource.readFileJsonData();
     if (json === null) {
         appProvider.appUtils.handleError(
-            new Error(`Unable to read file from ${filePath}}`)
+            new Error(`Unable to read file from ${filePath}}`),
         );
         ToastEventListener.showSimpleToast({
             title: 'Color Note',
@@ -49,9 +46,7 @@ function getColorNoteSetting(filePath: string): string | null {
     }
     return null;
 }
-function setColorNoteSetting(
-    filePath: string, color: string | null,
-) {
+function setColorNoteSetting(filePath: string, color: string | null) {
     const setting = settingManager.getSetting();
     const key = filePath;
     if (color === null) {
@@ -78,9 +73,7 @@ export default class FileSourceMetaManager {
         }
         return null;
     }
-    static async setColorNote(
-        filePath: string, color: string | null,
-    ) {
+    static async setColorNote(filePath: string, color: string | null) {
         const fileSource = FileSource.getInstance(filePath);
         const isAppFile = checkIsAppFile(fileSource.fileFullName);
         if (!isAppFile) {
@@ -91,9 +84,9 @@ export default class FileSourceMetaManager {
         if (json === null) {
             return;
         }
-        json.metadata = json.metadata || {};
+        json.metadata = json.metadata ?? {};
         json.metadata.colorNote = color;
-        return fileSource.saveData(JSON.stringify(json));
+        return fileSource.saveFileData(JSON.stringify(json));
     }
     static unsetColorNote(filePath: string, isSetting = false) {
         if (isSetting) {

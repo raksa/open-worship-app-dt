@@ -1,4 +1,4 @@
-import { htmlFiles, toTitleCase } from '../fsServe.js';
+import { htmlFiles, toTitleCase } from '../fsServe';
 
 function freezeObject(obj: any) {
     if (!['object', 'array'].includes(typeof obj)) {

@@ -1,6 +1,8 @@
 import BibleItem from '../bible-list/BibleItem';
 import BibleItemViewController, {
-    closeEventMapper, ctrlShiftMetaKeys, SearchBibleItemViewController,
+    closeEventMapper,
+    ctrlShiftMetaKeys,
+    SearchBibleItemViewController,
 } from './BibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
@@ -18,12 +20,11 @@ type DragDropEventType = React.DragEvent<HTMLDivElement>;
 export function genDraggingClass(event: DragDropEventType) {
     const { nativeEvent } = event;
     const { offsetX, offsetY } = nativeEvent;
-    const bc = (event.currentTarget as HTMLDivElement)
-        .getBoundingClientRect();
+    const bc = (event.currentTarget as HTMLDivElement).getBoundingClientRect();
     const isLeft = offsetX < bc.width / 3;
-    const isRight = offsetX > bc.width * 2 / 3;
+    const isRight = offsetX > (bc.width * 2) / 3;
     const isTop = offsetY < bc.height / 3;
-    const isBottom = offsetY > bc.height * 2 / 3;
+    const isBottom = offsetY > (bc.height * 2) / 3;
     let suffix = DraggingPosEnum.CENTER.toString();
     if (isLeft) {
         suffix += DraggingPosEnum.LEFT;
@@ -39,18 +40,21 @@ export function genDraggingClass(event: DragDropEventType) {
 
 export function removeDraggingClass(event: DragDropEventType) {
     const allPos = Object.values(DraggingPosEnum);
-    return allPos.map((suffix) => {
-        const className = `receiving-child${suffix}`;
-        if (event.currentTarget.classList.contains(className)) {
-            event.currentTarget.classList.remove(className);
-            return suffix;
-        }
-        return null;
-    }).filter((suffix) => suffix !== null);
+    return allPos
+        .map((suffix) => {
+            const className = `receiving-child${suffix}`;
+            if (event.currentTarget.classList.contains(className)) {
+                event.currentTarget.classList.remove(className);
+                return suffix;
+            }
+            return null;
+        })
+        .filter((suffix) => suffix !== null);
 }
 
 export function applyDragged(
-    event: DragDropEventType, bibleItemViewCtl: BibleItemViewController,
+    event: DragDropEventType,
+    bibleItemViewCtl: BibleItemViewController,
     bibleItem: BibleItem,
 ) {
     const allPos = removeDraggingClass(event);
@@ -70,7 +74,8 @@ export function applyDragged(
                     bibleItemViewCtl.addBibleItemTop(bibleItem, newBibleItem);
                 } else if (pos === DraggingPosEnum.BOTTOM.toString()) {
                     bibleItemViewCtl.addBibleItemBottom(
-                        bibleItem, newBibleItem,
+                        bibleItem,
+                        newBibleItem,
                     );
                 }
             }
@@ -79,7 +84,6 @@ export function applyDragged(
         handleError(error);
     }
 }
-
 
 function changeEditingBibleItem(
     eventKey: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
@@ -100,7 +104,8 @@ function changeEditingBibleItem(
         ArrowDown: 'bottom',
     };
     const neighborBibleItems = viewController.getNeighborBibleItems(
-        viewController.selectedBibleItem, [arrowPosMap[eventKey]],
+        viewController.selectedBibleItem,
+        [arrowPosMap[eventKey]],
     );
     let targetBibleItem: BibleItem | null = null;
     if (eventKey === 'ArrowUp' || eventKey === 'ArrowDown') {
@@ -124,28 +129,39 @@ function changeEditingBibleItem(
 
 export function useNextEditingBibleItem() {
     const eventMapperList = [
-        'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
     ].map((key) => {
         return { ...ctrlShiftMetaKeys, key };
     });
-    useKeyboardRegistering(eventMapperList, (event) => {
-        event.preventDefault();
-        changeEditingBibleItem(event.key as any);
-    });
+    useKeyboardRegistering(
+        eventMapperList,
+        (event) => {
+            event.preventDefault();
+            changeEditingBibleItem(event.key as any);
+        },
+        [],
+    );
 }
 
 export function useSplitBibleItemRenderer() {
-    useKeyboardRegistering(['s', 'v'].map((key) => {
-        return { ...ctrlShiftMetaKeys, key };
-    }), (event) => {
-        const viewController = SearchBibleItemViewController.getInstance();
-        const bibleItem = viewController.selectedBibleItem;
-        if (event.key.toLowerCase() === 's') {
-            viewController.addBibleItemLeft(bibleItem, bibleItem);
-        } else {
-            viewController.addBibleItemBottom(bibleItem, bibleItem);
-        }
-    });
+    useKeyboardRegistering(
+        ['s', 'v'].map((key) => {
+            return { ...ctrlShiftMetaKeys, key };
+        }),
+        (event) => {
+            const viewController = SearchBibleItemViewController.getInstance();
+            const bibleItem = viewController.selectedBibleItem;
+            if (event.key.toLowerCase() === 's') {
+                viewController.addBibleItemLeft(bibleItem, bibleItem);
+            } else {
+                viewController.addBibleItemBottom(bibleItem, bibleItem);
+            }
+        },
+        [],
+    );
 }
 
 export function closeCurrentEditingBibleItem() {
@@ -158,8 +174,12 @@ export function closeCurrentEditingBibleItem() {
 }
 
 export function useCloseBibleItemRenderer() {
-    useKeyboardRegistering([closeEventMapper], (event) => {
-        event.preventDefault();
-        closeCurrentEditingBibleItem();
-    });
+    useKeyboardRegistering(
+        [closeEventMapper],
+        (event) => {
+            event.preventDefault();
+            closeCurrentEditingBibleItem();
+        },
+        [],
+    );
 }

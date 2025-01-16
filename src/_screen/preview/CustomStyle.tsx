@@ -14,7 +14,7 @@ const LazyTextShadow = lazy(() => {
 
 export default function CustomStyle() {
     return (
-        <div className='custom-style card pointer app-border-white-round mt-1'>
+        <div className="custom-style card pointer app-border-white-round mt-1">
             <Body />
         </div>
     );
@@ -24,24 +24,26 @@ const tabTypeList = [
     ['a', 'Appearance', LazyAppearance],
     ['s', 'Shadow', LazyTextShadow],
 ] as const;
-type TabType = typeof tabTypeList[number][0];
+type TabType = (typeof tabTypeList)[number][0];
 function Body() {
     const [tabType, setTabType] = useStateSettingString<TabType>(
-        'tull-text-screen-custom-style-tab', 'a',
+        'tull-text-screen-custom-style-tab',
+        'a',
     );
 
     return (
-        <div className='card-body'>
-            <div className='d-flex'>
+        <div className="card-body">
+            <div className="d-flex">
                 <TabRenderComp<TabType>
                     tabs={tabTypeList.map(([type, name]) => {
                         return [type, name];
                     })}
                     activeTab={tabType}
                     setActiveTab={setTabType}
-                    className='flex-fill' />
+                    className="flex-fill"
+                />
             </div>
-            <div className='custom-style-body p-2'>
+            <div className="custom-style-body p-2">
                 {tabTypeList.map(([type, _, target]) => {
                     return genTabBody<TabType>(tabType, [type, target]);
                 })}

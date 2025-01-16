@@ -1,20 +1,25 @@
 import ReactDOMServer from 'react-dom/server';
 import { getVerses } from '../helper/bible-helpers/bibleInfoHelpers';
 import {
-    getBibleLocale, toLocaleNumBible,
+    getBibleLocale,
+    toLocaleNumBible,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import Lyric from '../lyric-list/Lyric';
 import BibleItem from '../bible-list/BibleItem';
 import appProviderScreen from './appProviderScreen';
 import {
-    BibleItemRenderedType, FTBibleTable, LyricRenderedType, FTLyricItem,
+    BibleItemRenderedType,
+    FTBibleTable,
+    LyricRenderedType,
+    FTLyricItem,
     BibleRenderVerseType,
 } from './fullTextScreenComps';
 import { getHTMLChild } from '../helper/helpers';
 
 const fullTextScreenHelper = {
-    genHtmlFromFtBibleItem(bibleRenderedList: BibleItemRenderedType[],
-        isLineSync: boolean) {
+    genHtmlFromFtBibleItem(
+        bibleRenderedList: BibleItemRenderedType[],
+        isLineSync: boolean,
+    ) {
         if (bibleRenderedList.length === 0) {
             return document.createElement('table');
         }
@@ -24,14 +29,16 @@ const fullTextScreenHelper = {
                 bibleRenderedList={bibleRenderedList}
                 isLineSync={isLineSync}
                 versesCount={versesCount}
-            />
+            />,
         );
         const div = document.createElement('div');
         div.innerHTML = htmlString;
         return getHTMLChild<HTMLDivElement>(div, 'div');
     },
-    genHtmlFromFtLyric(lyricRenderedList: LyricRenderedType[],
-        isLineSync: boolean) {
+    genHtmlFromFtLyric(
+        lyricRenderedList: LyricRenderedType[],
+        isLineSync: boolean,
+    ) {
         if (lyricRenderedList.length === 0) {
             return document.createElement('table');
         }
@@ -41,7 +48,7 @@ const fullTextScreenHelper = {
                 lyricRenderedList={lyricRenderedList}
                 isLineSync={isLineSync}
                 itemsCount={itemsCount}
-            />
+            />,
         );
         const div = document.createElement('div');
         div.innerHTML = htmlString;
@@ -58,7 +65,9 @@ const fullTextScreenHelper = {
         return arrChildren;
     },
     resetClassName(
-        parent: HTMLElement, className: string, isAdd: boolean,
+        parent: HTMLElement,
+        className: string,
+        isAdd: boolean,
         blockId?: string,
     ) {
         const currentBlocks = parent.querySelectorAll(
@@ -72,16 +81,19 @@ const fullTextScreenHelper = {
             }
         }
     },
-    registerHighlight(div: HTMLDivElement, {
-        onSelectIndex, onBibleSelect,
-    }: {
-        onSelectIndex: (selectedIndex: number | null) => void,
-        onBibleSelect: (event: MouseEvent, index: number) => void,
-    }) {
+    registerHighlight(
+        div: HTMLDivElement,
+        {
+            onSelectIndex,
+            onBibleSelect,
+        }: {
+            onSelectIndex: (selectedIndex: number | null) => void;
+            onBibleSelect: (event: MouseEvent, index: number) => void;
+        },
+    ) {
         if (!appProviderScreen.isScreen) {
-            const divBibleKeys = div.querySelectorAll<HTMLSpanElement>(
-                'div.bible-name',
-            );
+            const divBibleKeys =
+                div.querySelectorAll<HTMLSpanElement>('div.bible-name');
             Array.from(divBibleKeys).forEach((divBibleKey) => {
                 divBibleKey.addEventListener('mouseover', () => {
                     divBibleKey.classList.add('hover');
@@ -90,9 +102,9 @@ const fullTextScreenHelper = {
                     divBibleKey.classList.remove('hover');
                 });
                 divBibleKey.addEventListener('click', (event) => {
-                    const index = Number(divBibleKey.getAttribute(
-                        'data-index',
-                    ));
+                    const index = Number(
+                        divBibleKey.getAttribute('data-index'),
+                    );
                     onBibleSelect(event, index);
                 });
             });
@@ -100,20 +112,22 @@ const fullTextScreenHelper = {
         const spans = div.querySelectorAll<HTMLSpanElement>('span.highlight');
         Array.from(spans).forEach((span) => {
             span.addEventListener('mouseover', () => {
-                this.resetClassName(
-                    div, 'hover', true, span.dataset.highlight,
-                );
+                this.resetClassName(div, 'hover', true, span.dataset.highlight);
             });
             span.addEventListener('mouseout', () => {
                 this.resetClassName(
-                    div, 'hover', false, span.dataset.highlight,
+                    div,
+                    'hover',
+                    false,
+                    span.dataset.highlight,
                 );
             });
             span.addEventListener('click', () => {
                 const arrChildren = this.removeClassName(div, 'selected');
                 if (
-                    !arrChildren.includes(span) && span.dataset.highlight
-                    && !isNaN(parseInt(span.dataset.highlight))
+                    !arrChildren.includes(span) &&
+                    span.dataset.highlight &&
+                    !isNaN(parseInt(span.dataset.highlight))
                 ) {
                     onSelectIndex(parseInt(span.dataset.highlight));
                 } else {
@@ -123,51 +137,46 @@ const fullTextScreenHelper = {
         });
     },
     genBibleItemRenderList(bibleItems: BibleItem[]) {
-        return Promise.all(bibleItems.map((bibleItem) => {
-            return new Promise<BibleItemRenderedType>((resolve, _) => {
-                (async () => {
-                    const bibleTitle = await bibleItem.toTitle();
-                    const verses = await getVerses(bibleItem.bibleKey,
-                        bibleItem.target.bookKey, bibleItem.target.chapter);
-                    const verseList: BibleRenderVerseType[] = [];
-                    if (verses !== null) {
-                        for (let i = bibleItem.target.verseStart;
-                            i <= bibleItem.target.verseEnd; i++) {
-                            const verseNumb = await toLocaleNumBible(
-                                bibleItem.bibleKey, i,
-                            );
-                            if (verseNumb !== null) {
-                                verseList.push({
-                                    num: verseNumb,
-                                    text: verses[`${i}`],
-                                });
+        return Promise.all(
+            bibleItems.map((bibleItem) => {
+                return new Promise<BibleItemRenderedType>((resolve, _) => {
+                    (async () => {
+                        const bibleTitle = await bibleItem.toTitle();
+                        const verses = await getVerses(
+                            bibleItem.bibleKey,
+                            bibleItem.target.bookKey,
+                            bibleItem.target.chapter,
+                        );
+                        const verseList: BibleRenderVerseType[] = [];
+                        if (verses !== null) {
+                            for (
+                                let i = bibleItem.target.verseStart;
+                                i <= bibleItem.target.verseEnd;
+                                i++
+                            ) {
+                                const verseNumb = await toLocaleNumBible(
+                                    bibleItem.bibleKey,
+                                    i,
+                                );
+                                if (verseNumb !== null) {
+                                    verseList.push({
+                                        num: verseNumb,
+                                        text: verses[`${i}`],
+                                    });
+                                }
                             }
                         }
-                    }
-                    const locale = await getBibleLocale(bibleItem.bibleKey);
-                    resolve({
-                        locale,
-                        bibleKey: bibleItem.bibleKey,
-                        title: bibleTitle,
-                        verses: verseList,
-                    });
-                })();
-            });
-        }));
-    },
-    genLyricRenderList(lyric: Lyric) {
-        return lyric.items.map(({ title, content }): LyricRenderedType => {
-            const items = content.split('===').map((text, i) => {
-                return {
-                    num: i,
-                    text: text.trim().replace(/\n/g, '<br/>'),
-                };
-            });
-            return {
-                title,
-                items,
-            };
-        });
+                        const locale = await getBibleLocale(bibleItem.bibleKey);
+                        resolve({
+                            locale,
+                            bibleKey: bibleItem.bibleKey,
+                            title: bibleTitle,
+                            verses: verseList,
+                        });
+                    })();
+                });
+            }),
+        );
     },
 };
 

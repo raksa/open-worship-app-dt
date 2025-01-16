@@ -35,9 +35,10 @@ $ npm run dev
 $ npm run pack:mac
 ```
 
-## Linting
+## Linting and Formatting
 
 ```bash
+npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
 npx eslint src/**/*.ts*
 ```
 

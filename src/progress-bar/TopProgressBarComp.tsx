@@ -3,7 +3,8 @@ import './TopProgressBarComp.scss';
 import { useState } from 'react';
 
 import {
-    useHideProgressBar, useShowProgressBar,
+    useHideProgressBar,
+    useShowProgressBar,
 } from '../event/ProgressBarEventListener';
 import ProgressBarComp from './ProgressBarComp';
 
@@ -27,7 +28,7 @@ export default function TopProgressBarComp() {
         return null;
     }
     return (
-        <div className='app-top-progress-bar'>
+        <div className="app-top-progress-bar">
             <ProgressBarComp title={progressKeys.join(',')} />
         </div>
     );

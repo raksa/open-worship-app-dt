@@ -1,0 +1,7 @@
+@use '../others/variables.scss' as *;
+
+.app-document-list {
+  .card-body {
+    height: calc(100% - $card-header-height);
+  }
+}

@@ -7,14 +7,18 @@ interface DatabaseControllerInterface {
     db: IDBDatabase;
     isDbOpened: boolean;
     createObjectStore: () => void;
-    initCallback: <T>(target: any,
+    initCallback: <T>(
+        target: any,
         resolve: (e: T) => void,
-        reject: (e: string) => void) => void;
-};
+        reject: (e: string) => void,
+    ) => void;
+}
 
 export type ItemParamsType = {
-    id: string, data: any, isForceOverride?: boolean,
-    secondaryId?: string | null,
+    id: string;
+    data: any;
+    isForceOverride?: boolean;
+    secondaryId?: string | null;
 };
 
 type BasicRecordType = {
@@ -30,8 +34,8 @@ export type RecordType = BasicRecordType & {
 class InitDBOpeningQueue {
     request: IDBOpenDBRequest | null = null;
     promises: {
-        resolve: () => void,
-        reject: (reason: any) => void,
+        resolve: () => void;
+        reject: (reason: any) => void;
     }[] = [];
 
     resolve() {
@@ -50,7 +54,8 @@ class InitDBOpeningQueue {
 
     attemptDbOpening(
         dbController: DatabaseControllerInterface,
-        resolve: () => void, reject: (reason: any) => void,
+        resolve: () => void,
+        reject: (reason: any) => void,
     ) {
         this.promises.push({ resolve, reject });
         if (dbController.isDbOpened) {
@@ -61,27 +66,32 @@ class InitDBOpeningQueue {
             return;
         }
         const request = window.indexedDB.open(
-            DB_NAME, appProvider.appInfo.versionNumber,
+            DB_NAME,
+            appProvider.appInfo.versionNumber,
         );
         this.request = request;
         request.onupgradeneeded = (event: any) => {
             dbController.db = event.target.result;
             dbController.createObjectStore();
         };
-        dbController.initCallback<Event>(request, (event: any) => {
-            dbController.db = event.target.result;
-            this.request = null;
-            this.resolve();
-        }, () => {
-            this.request = null;
-            this.reject(request.error);
-        });
+        dbController.initCallback<Event>(
+            request,
+            (event: any) => {
+                dbController.db = event.target.result;
+                this.request = null;
+                this.resolve();
+            },
+            () => {
+                this.request = null;
+                this.reject(request.error);
+            },
+        );
     }
 }
 
-export abstract class IndexedDbController implements
-    DatabaseControllerInterface {
-
+export abstract class IndexedDbController
+    implements DatabaseControllerInterface
+{
     static instance: IndexedDbController | null = null;
 
     abstract get storeName(): string;
@@ -114,9 +124,11 @@ export abstract class IndexedDbController implements
         return this._db as IDBDatabase;
     }
 
-    initCallback<T>(target: any,
+    initCallback<T>(
+        target: any,
         resolve: (e: T) => void,
-        reject: (e: string) => void) {
+        reject: (e: string) => void,
+    ) {
         target.onsuccess = function (event: T) {
             resolve(event);
         };
@@ -153,20 +165,28 @@ export abstract class IndexedDbController implements
         });
     }
 
-    private asyncOperation<T>(mode: IDBTransactionMode,
-        init: (target: IDBObjectStore) => T) {
-
+    private asyncOperation<T>(
+        mode: IDBTransactionMode,
+        init: (target: IDBObjectStore) => T,
+    ) {
         return new Promise<T>((resolve, reject) => {
             const { store } = this.getTransaction(mode);
             const target = init(store);
-            this.initCallback(target, () => {
-                resolve(target);
-            }, reject);
+            this.initCallback(
+                target,
+                () => {
+                    resolve(target);
+                },
+                reject,
+            );
         });
     }
 
     async addItem({
-        id, data, isForceOverride = false, secondaryId = null,
+        id,
+        data,
+        isForceOverride = false,
+        secondaryId = null,
     }: ItemParamsType) {
         const oldData = await this.getItem(id);
         if (oldData !== undefined) {
@@ -177,7 +197,10 @@ export abstract class IndexedDbController implements
         }
         await this.asyncOperation('readwrite', (store) => {
             const newItem: RecordType = {
-                id, secondaryId, data, ...{
+                id,
+                secondaryId,
+                data,
+                ...{
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
@@ -211,7 +234,9 @@ export abstract class IndexedDbController implements
     updateItem(id: string, data: any) {
         return this.asyncOperation('readwrite', (store) => {
             return store.put({
-                id, data, ...{
+                id,
+                data,
+                ...{
                     updatedAt: new Date(),
                 },
             });

@@ -1,12 +1,12 @@
 import AskingNewNameComp from './AskingNewNameComp';
 import FileSource from '../helper/FileSource';
 
-
 export default function RenderRenamingComp({
-    setIsRenaming, filePath,
+    setIsRenaming,
+    filePath,
 }: Readonly<{
-    setIsRenaming: (value: boolean) => void,
-    filePath: string,
+    setIsRenaming: (value: boolean) => void;
+    filePath: string;
 }>) {
     const handleNameApplying = async (name: string | null) => {
         if (name === null) {
@@ -18,6 +18,10 @@ export default function RenderRenamingComp({
         setIsRenaming(!isSuccess);
     };
     const fileSource = FileSource.getInstance(filePath);
-    return <AskingNewNameComp defaultName={fileSource.name}
-        applyName={handleNameApplying} />;
+    return (
+        <AskingNewNameComp
+            defaultName={fileSource.name}
+            applyName={handleNameApplying}
+        />
+    );
 }

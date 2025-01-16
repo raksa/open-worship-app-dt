@@ -6,25 +6,31 @@ import FileSource, { FileSourceEventType } from './FileSource';
 
 export function useGenDirSource(settingName: string) {
     const [dirSource, setDirSource] = useState<DirSource | null>(null);
-    useAppEffectAsync(async (methodContext) => {
-        if (dirSource !== null) {
-            const registeredEvent = dirSource.registerEventListener(
-                ['reload'], () => {
-                    methodContext.setDirSource(null);
-                },
-            );
-            return () => {
-                dirSource.unregisterEventListener(registeredEvent);
-            };
-        }
-        const newDirSource = await DirSource.getInstance(settingName);
-        methodContext.setDirSource(newDirSource);
-    }, [dirSource], { setDirSource });
+    useAppEffectAsync(
+        async (methodContext) => {
+            if (dirSource !== null) {
+                const registeredEvent = dirSource.registerEventListener(
+                    ['reload'],
+                    () => {
+                        methodContext.setDirSource(null);
+                    },
+                );
+                return () => {
+                    dirSource.unregisterEventListener(registeredEvent);
+                };
+            }
+            const newDirSource = await DirSource.getInstance(settingName);
+            methodContext.setDirSource(newDirSource);
+        },
+        [dirSource],
+        { setDirSource },
+    );
     return dirSource;
 }
 
 export function useFileSourceRefreshEvents(
-    events: FileSourceEventType[], filePath?: string,
+    events: FileSourceEventType[],
+    filePath?: string,
 ) {
     const [n, setN] = useState(0);
     useAppEffect(() => {
@@ -32,7 +38,9 @@ export function useFileSourceRefreshEvents(
             setN(n + 1);
         };
         const staticEvents = FileSource.registerFileSourceEventListener(
-            events, update, filePath,
+            events,
+            update,
+            filePath,
         );
         return () => {
             FileSource.unregisterEventListener(staticEvents);
@@ -41,15 +49,19 @@ export function useFileSourceRefreshEvents(
 }
 
 export function useFileSourceEvents<T>(
-    events: FileSourceEventType[], callback: (data: T) => void,
-    deps?: DependencyList, filePath?: string,
+    events: FileSourceEventType[],
+    callback: (data: T) => void,
+    deps?: DependencyList,
+    filePath?: string,
 ) {
     useAppEffect(() => {
         const staticEvents = FileSource.registerFileSourceEventListener(
-            events, callback, filePath,
+            events,
+            callback,
+            filePath,
         );
         return () => {
             FileSource.unregisterEventListener(staticEvents);
         };
-    }, [filePath, ...deps ?? []]);
+    }, [callback, filePath, ...(deps ?? [])]);
 }

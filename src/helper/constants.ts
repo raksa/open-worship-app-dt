@@ -20,14 +20,13 @@ export const defaultDataDirNames = {
     BIBLE_READ: 'bibles-read',
 };
 
-
 export const fontSizeSettingNames = {
     BIBLE_PRESENTER: 'bible-preview-font-size:presenter',
     BIBLE_READING: 'bible-preview-font-size:reader',
 };
 
 export const screenManagerSettingNames = {
-    SLIDE: 'screen-slide-manager',
+    VARY_APP_DOCUMENT: 'screen-vary-app-document-manager',
     ALERT: 'screen-alert-manager',
     BACKGROUND: 'screen-bg-manager',
     FULL_TEXT: 'screen-ft-manager',

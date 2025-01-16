@@ -1,5 +1,5 @@
-@use "sass:string";
-@use "sass:color";
+@use 'sass:string';
+@use 'sass:color';
 
 $base-color: white;
 $box-border: 2px ridge color.adjust($base-color, $lightness: 50%);

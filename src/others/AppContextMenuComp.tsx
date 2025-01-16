@@ -3,20 +3,22 @@ import './AppContextMenuComp.scss';
 import { ReactElement, useState } from 'react';
 
 import KeyboardEventListener, {
-    EventMapper, toShortcutKey,
+    EventMapper,
+    toShortcutKey,
 } from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
 import { useAppEffect } from '../helper/debuggerHelpers';
+import { OptionalPromise } from './otherHelpers';
 
 export type ContextMenuEventType = MouseEvent;
 export type ContextMenuItemType = {
-    id?: string,
-    menuTitle: string,
-    title?: string,
-    onClick?: (event: MouseEvent, data?: any) => (void | Promise<void>),
-    disabled?: boolean,
-    otherChild?: ReactElement,
+    id?: string;
+    menuTitle: string;
+    title?: string;
+    onClick?: (event: MouseEvent, data?: any) => OptionalPromise<void>;
+    disabled?: boolean;
+    otherChild?: ReactElement;
 };
 
 export function createMouseEvent(clientX: number, clientY: number) {
@@ -29,8 +31,7 @@ export function createMouseEvent(clientX: number, clientY: number) {
     });
 }
 
-const setPositionMenu = (menu: HTMLElement,
-    event: MouseEvent) => {
+const setPositionMenu = (menu: HTMLElement, event: MouseEvent) => {
     if (menu !== null) {
         Object.assign(menu.style, {
             display: 'block',
@@ -47,14 +48,14 @@ const setPositionMenu = (menu: HTMLElement,
         const wd = getWindowDim();
         let maxWidth;
         let maxHeight;
-        if (x > wd.width / 2 && (x + bc.width) > wd.width) {
+        if (x > wd.width / 2 && x + bc.width > wd.width) {
             menu.style.right = `${wd.width - x}px`;
             maxWidth = x;
         } else {
             menu.style.left = `${x}px`;
             maxWidth = wd.width - x;
         }
-        if (y > wd.height / 2 && (y + bc.height) > wd.height) {
+        if (y > wd.height / 2 && y + bc.height > wd.height) {
             menu.style.bottom = `${wd.height - y}px`;
             maxHeight = y;
         } else {
@@ -67,8 +68,8 @@ const setPositionMenu = (menu: HTMLElement,
 };
 
 type PropsType = {
-    event: MouseEvent,
-    items: ContextMenuItemType[],
+    event: MouseEvent;
+    items: ContextMenuItemType[];
 };
 let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
@@ -77,13 +78,17 @@ export function showAppContextMenu(
     items: ContextMenuItemType[],
 ) {
     event.stopPropagation();
+    if (!items.length) {
+        return Promise.resolve();
+    }
     return new Promise<void>((resolve) => {
         setDataDelegator?.({ event, items });
         const eventName = KeyboardEventListener.toEventMapperKey({
             key: 'Escape',
         });
         const escEvent = KeyboardEventListener.registerEventListener(
-            [eventName], () => {
+            [eventName],
+            () => {
                 setDataDelegator?.(null);
                 KeyboardEventListener.unregisterEventListener(escEvent);
                 resolve();
@@ -94,8 +99,8 @@ export function showAppContextMenu(
 
 export default function AppContextMenuComp() {
     const [data, setData] = useState<{
-        event: MouseEvent,
-        items: ContextMenuItemType[]
+        event: MouseEvent;
+        items: ContextMenuItemType[];
     } | null>(null);
     const setData1 = (newData: PropsType | null) => {
         WindowEventListener.fireEvent({
@@ -107,7 +112,9 @@ export default function AppContextMenuComp() {
     useAppEffect(() => {
         const listener = (event: KeyboardEvent) => {
             if (
-                event.shiftKey || event.ctrlKey || event.altKey ||
+                event.shiftKey ||
+                event.ctrlKey ||
+                event.altKey ||
                 event.metaKey
             ) {
                 return;
@@ -145,21 +152,25 @@ export default function AppContextMenuComp() {
         return null;
     }
     return (
-        <div id="app-context-menu-container"
+        <div
+            id="app-context-menu-container"
             onClick={(event) => {
                 event.stopPropagation();
                 setDataDelegator?.(null);
-            }}>
-            <div ref={(self) => {
-                if (self !== null) {
-                    setPositionMenu(self, data.event);
-                }
-            }} className='app-context-menu'>
+            }}
+        >
+            <div
+                ref={(div) => {
+                    if (div === null) {
+                        return;
+                    }
+                    setPositionMenu(div, data.event);
+                }}
+                className="app-context-menu"
+            >
                 {data.items.map((item) => {
                     return (
-                        <ContextMenuItemComp key={item.menuTitle}
-                            item={item}
-                        />
+                        <ContextMenuItemComp key={item.menuTitle} item={item} />
                     );
                 })}
             </div>
@@ -167,14 +178,17 @@ export default function AppContextMenuComp() {
     );
 }
 
-function ContextMenuItemComp({ item }: Readonly<{
-    item: ContextMenuItemType,
+function ContextMenuItemComp({
+    item,
+}: Readonly<{
+    item: ContextMenuItemType;
 }>) {
     return (
-        <div className={
-            'app-context-menu-item d-flex w-100 overflow-hidden' +
-            `${item.disabled ? ' disabled' : ''}`
-        }
+        <div
+            className={
+                'app-context-menu-item d-flex w-100 overflow-hidden' +
+                `${item.disabled ? ' disabled' : ''}`
+            }
             title={item.title ?? item.menuTitle}
             onClick={(event) => {
                 if (item.disabled) {
@@ -183,10 +197,9 @@ function ContextMenuItemComp({ item }: Readonly<{
                 setTimeout(() => {
                     item.onClick?.(event as any);
                 }, 0);
-            }}>
-            <div className='app-ellipsis flex-fill'>
-                {item.menuTitle}
-            </div>
+            }}
+        >
+            <div className="app-ellipsis flex-fill">{item.menuTitle}</div>
             {item.otherChild || null}
         </div>
     );
@@ -194,8 +207,8 @@ function ContextMenuItemComp({ item }: Readonly<{
 
 export function genContextMenuItemShortcutKey(eventMapper: EventMapper) {
     return (
-        <div className='align-self-end'>
-            <span className='text-muted badge text-bg-primary'>
+        <div className="align-self-end">
+            <span className="text-muted badge text-bg-primary">
                 {toShortcutKey(eventMapper)}
             </span>
         </div>

@@ -5,9 +5,7 @@ import type { PDFPage } from 'mupdf';
 import type mupdfjs from 'mupdf/mupdfjs';
 
 const lockSet = new Set<string>();
-async function unlocking<T>(
-    key: string, callback: () => (Promise<T> | T)
-) {
+async function unlocking<T>(key: string, callback: () => Promise<T> | T) {
     if (lockSet.has(key)) {
         await new Promise((resolve) => {
             setTimeout(resolve, 100);
@@ -24,12 +22,12 @@ async function loadMupdfJs(): Promise<typeof mupdfjs> {
     return dynamicImport('mupdf/mupdfjs', module);
 }
 
-const cache: Map<string, { doc: any, time: number }> = new Map();
+const cache: Map<string, { doc: any; time: number }> = new Map();
 const expireTime = 1000 * 60 * 5; // 5 minutes
 const recheckingTime = 1000 * 60 * 1; // 5 minutes
 function clearCache() {
     for (const [key, { doc, time }] of cache) {
-        if (doc.countPages() === 0 || ((Date.now() - time) > expireTime)) {
+        if (doc.countPages() === 0 || Date.now() - time > expireTime) {
             cache.delete(key);
         }
     }
@@ -40,7 +38,8 @@ function clearCache() {
 async function getPdfDoc(filePath: string, isForce: boolean) {
     return await unlocking(filePath, async () => {
         if (
-            !isForce && cache.has(filePath) &&
+            !isForce &&
+            cache.has(filePath) &&
             cache.get(filePath)?.doc.countPages() > 0
         ) {
             const { doc } = cache.get(filePath);
@@ -49,7 +48,8 @@ async function getPdfDoc(filePath: string, isForce: boolean) {
         }
         const { PDFDocument } = await loadMupdfJs();
         const doc = PDFDocument.openDocument(
-            readFileSync(filePath), 'application/pdf',
+            readFileSync(filePath),
+            'application/pdf',
         );
         cache.set(filePath, { doc, time: Date.now() });
         clearCache();
@@ -58,7 +58,9 @@ async function getPdfDoc(filePath: string, isForce: boolean) {
 }
 
 export type PdfMiniInfoType = {
-    width: number, height: number, count: number,
+    width: number;
+    height: number;
+    count: number;
 };
 export async function getPdfInfo(filePath: string) {
     const { ColorSpace, Matrix } = await loadMupdfJs();
@@ -71,7 +73,10 @@ export async function getPdfInfo(filePath: string) {
         if (count > 0) {
             const page = doc.loadPage(0);
             const pixmap = page.toPixmap(
-                Matrix.identity, ColorSpace.DeviceRGB, false, true,
+                Matrix.identity,
+                ColorSpace.DeviceRGB,
+                false,
+                true,
             );
             return {
                 page: {
@@ -80,7 +85,7 @@ export async function getPdfInfo(filePath: string) {
                     count,
                 },
             } as {
-                page: PdfMiniInfoType,
+                page: PdfMiniInfoType;
             };
         }
         return { page: { width: 0, height: 0, count } };
@@ -93,12 +98,12 @@ export async function getPdfInfo(filePath: string) {
 type MatrixScaleType = [number, number, number, number, number, number];
 
 async function getPixmap(
-    page: PDFPage, matrixScale: MatrixScaleType, isAlpha: boolean,
+    page: PDFPage,
+    matrixScale: MatrixScaleType,
+    isAlpha: boolean,
 ) {
     const { ColorSpace } = await loadMupdfJs();
-    return page.toPixmap(
-        matrixScale, ColorSpace.DeviceRGB, isAlpha, true,
-    );
+    return page.toPixmap(matrixScale, ColorSpace.DeviceRGB, isAlpha, true);
 }
 
 function toImageData(data: Uint8Array<ArrayBufferLike>, imageType: string) {
@@ -107,14 +112,18 @@ function toImageData(data: Uint8Array<ArrayBufferLike>, imageType: string) {
 }
 
 async function genPdfPagePng(
-    page: PDFPage, matrixScale: MatrixScaleType, isAlpha: boolean,
+    page: PDFPage,
+    matrixScale: MatrixScaleType,
+    isAlpha: boolean,
 ) {
     const pixmap = await getPixmap(page, matrixScale, isAlpha);
     return toImageData(pixmap.asPNG(), 'jpeg');
 }
 
 async function genPdfPageJpeg(
-    page: PDFPage, matrixScale: MatrixScaleType, imageQuality: number,
+    page: PDFPage,
+    matrixScale: MatrixScaleType,
+    imageQuality: number,
 ) {
     const pixmap = await getPixmap(page, matrixScale, false);
     imageQuality = Math.max(0, Math.min(100, imageQuality));
@@ -122,11 +131,15 @@ async function genPdfPageJpeg(
 }
 
 export type PdfImageOptionsType = {
-    width?: number, alpha?: boolean, quality?: number,
-    type?: 'png' | 'jpeg',
+    width?: number;
+    alpha?: boolean;
+    quality?: number;
+    type?: 'png' | 'jpeg';
 };
 export async function getPdfPageImage(
-    filePath: string, pageIndex: number, options: PdfImageOptionsType,
+    filePath: string,
+    pageIndex: number,
+    options: PdfImageOptionsType,
     isNoCache = false,
 ) {
     const { ColorSpace, Matrix } = await loadMupdfJs(isNoCache);
@@ -135,7 +148,10 @@ export async function getPdfPageImage(
         if (pageIndex < 0 || pageIndex > doc.countPages() - 1) {
             if (doc.countPages() === 0) {
                 return await getPdfPageImage(
-                    filePath, pageIndex, options, true,
+                    filePath,
+                    pageIndex,
+                    options,
+                    true,
                 );
             }
             throw new Error(
@@ -143,7 +159,9 @@ export async function getPdfPageImage(
             );
         }
         const {
-            alpha = false, quality: imageQuality = 100, type = 'jpeg',
+            alpha = false,
+            quality: imageQuality = 100,
+            type = 'jpeg',
         } = options;
         if (options.width !== undefined && options.width < 0) {
             throw new Error(
@@ -152,16 +170,18 @@ export async function getPdfPageImage(
         }
         const page = doc.loadPage(pageIndex);
         const pixmap = page.toPixmap(
-            Matrix.identity, ColorSpace.DeviceRGB, false, true,
+            Matrix.identity,
+            ColorSpace.DeviceRGB,
+            false,
+            true,
         );
         const actualWidth = pixmap.getWidth();
         const width = Math.min(options.width ?? actualWidth, actualWidth);
         const scale = width / pixmap.getWidth();
         const matrixScale: MatrixScaleType = [scale, 0, 0, scale, 0, 0];
-        return (
-            type === 'jpeg' ? genPdfPageJpeg(page, matrixScale, imageQuality) :
-                genPdfPagePng(page, matrixScale, alpha)
-        );
+        return type === 'jpeg'
+            ? genPdfPageJpeg(page, matrixScale, imageQuality)
+            : genPdfPagePng(page, matrixScale, alpha);
     } catch (error) {
         console.log(error);
     }

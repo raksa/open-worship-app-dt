@@ -4,7 +4,6 @@ $dragging-color-full: rgb(0, 174, 162);
 $dragging-color: greenyellow;
 
 #app {
-
   // Start: Boootstrap
   .card-header {
     height: $card-header-height;
@@ -38,7 +37,6 @@ $dragging-color: greenyellow;
   }
 
   .list-group-item {
-
     border: 1px solid var(--bs-gray-700);
 
     &:before {
@@ -61,7 +59,6 @@ $dragging-color: greenyellow;
       .color-note.active {
         opacity: 1;
       }
-
     }
 
     .color-note-container {
@@ -91,14 +88,10 @@ $dragging-color: greenyellow;
     cursor: pointer;
   }
 
-
   // End: Boootstrap
-
-
 }
 
 .dark {
-
   .toast-body {
     word-wrap: break-word;
   }

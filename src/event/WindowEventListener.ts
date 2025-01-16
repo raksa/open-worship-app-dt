@@ -2,12 +2,16 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import EventHandler, { ListenerType } from './EventHandler';
 import KeyboardEventListener from './KeyboardEventListener';
 
-export type AppWidgetType = 'root' | 'bible-search' | 'slide-item-edit' |
-    'setting' | 'context-menu';
+export type AppWidgetType =
+    | 'root'
+    | 'bible-search'
+    | 'slide-edit'
+    | 'setting'
+    | 'context-menu';
 export type OpenCloseType = 'open' | 'close';
 export type EventMapper = {
-    widget: AppWidgetType,
-    state: OpenCloseType,
+    widget: AppWidgetType;
+    state: OpenCloseType;
 };
 
 export default class WindowEventListener extends EventHandler<string> {
@@ -26,12 +30,15 @@ export default class WindowEventListener extends EventHandler<string> {
     }
 }
 
-export function useWindowEvent(eventMapper: EventMapper,
-    listener: ListenerType<any>) {
+export function useWindowEvent(
+    eventMapper: EventMapper,
+    listener: ListenerType<any>,
+) {
     useAppEffect(() => {
         const eventName = WindowEventListener.toEventMapperKey(eventMapper);
         const event = WindowEventListener.registerEventListener(
-            [eventName], listener,
+            [eventName],
+            listener,
         );
         return () => {
             WindowEventListener.unregisterEventListener(event);

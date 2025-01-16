@@ -1,51 +1,62 @@
 import { CSSProperties, createContext, use, useOptimistic } from 'react';
 
-import {
-    AnyObjectType, cloneJson,
-} from '../../helper/helpers';
+import { AnyObjectType, cloneJson } from '../../helper/helpers';
 import { AppColorType } from '../../others/color/colorHelpers';
 import {
-    ToolingBoxType, tooling2BoxProps, canvasItemList, genTextDefaultBoxStyle,
-    CanvasItemKindType, hAlignmentList, HAlignmentType, vAlignmentList,
+    ToolingBoxType,
+    tooling2BoxProps,
+    canvasItemList,
+    genTextDefaultBoxStyle,
+    CanvasItemKindType,
+    hAlignmentList,
+    HAlignmentType,
+    vAlignmentList,
     VAlignmentType,
 } from './canvasHelpers';
-import { log } from '../../helper/loggerHelpers';
 import EventHandler from '../../event/EventHandler';
 import { useAppEffect } from '../../helper/debuggerHelpers';
 import { useProgressBarComp } from '../../progress-bar/ProgressBarComp';
+import { ClipboardInf } from '../../app-document-list/appDocumentHelpers';
 
 export type CanvasItemPropsType = {
-    id: number,
-    top: number,
-    left: number,
-    rotate: number,
-    width: number,
-    height: number,
-    horizontalAlignment: HAlignmentType,
-    verticalAlignment: VAlignmentType,
-    backgroundColor: AppColorType | null,
-    type: CanvasItemKindType,
+    id: number;
+    top: number;
+    left: number;
+    rotate: number;
+    width: number;
+    height: number;
+    horizontalAlignment: HAlignmentType;
+    verticalAlignment: VAlignmentType;
+    backgroundColor: AppColorType | null;
+    type: CanvasItemKindType;
 };
 
 export type CanvasItemEventType = 'edit';
 
-export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
-    EventHandler<CanvasItemEventType> {
+export default abstract class CanvasItem<T extends CanvasItemPropsType>
+    extends EventHandler<CanvasItemEventType>
+    implements ClipboardInf
+{
     props: T;
     constructor(props: T) {
         super();
         this.props = cloneJson(props);
     }
+
     get id() {
         return this.props.id;
     }
+
     get type(): CanvasItemKindType {
         return this.props.type;
     }
+
     static genStyle(_props: CanvasItemPropsType) {
         throw new Error('Method not implemented.');
     }
+
     abstract getStyle(): CSSProperties;
+
     static genBoxStyle(props: CanvasItemPropsType): CSSProperties {
         const style: CSSProperties = {
             display: 'flex',
@@ -59,16 +70,22 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
         };
         return style;
     }
+
     getBoxStyle(): CSSProperties {
         return CanvasItem.genBoxStyle(this.props);
     }
+
     static fromJson(_json: object): CanvasItem<any> {
         throw new Error('Method not implemented.');
     }
-    applyBoxData(parentDim: {
-        parentWidth: number,
-        parentHeight: number,
-    }, boxData: ToolingBoxType) {
+
+    applyBoxData(
+        parentDim: {
+            parentWidth: number;
+            parentHeight: number;
+        },
+        boxData: ToolingBoxType,
+    ) {
         const boxProps = tooling2BoxProps(boxData, {
             width: this.props.width,
             height: this.props.height,
@@ -76,7 +93,8 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
             parentHeight: parentDim.parentHeight,
         });
         const newProps = {
-            ...boxData, ...boxProps,
+            ...boxData,
+            ...boxProps,
         };
         if (boxData?.rotate) {
             newProps.rotate = boxData.rotate;
@@ -86,24 +104,29 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
         }
         this.applyProps(newProps);
     }
+
     applyProps(props: AnyObjectType) {
         const propsAny = this.props as any;
         Object.entries(props).forEach(([key, value]) => {
             propsAny[key] = value;
         });
     }
+
     clone() {
-        const newItem = (
-            (this.constructor as typeof CanvasItem<any>).fromJson(this.toJson())
+        const newItem = (this.constructor as typeof CanvasItem<any>).fromJson(
+            this.toJson(),
         );
         newItem.props.id = -1;
         return newItem;
     }
+
     toJson(): CanvasItemPropsType {
         return this.props;
     }
+
     static validate(json: AnyObjectType) {
-        if (typeof json.id !== 'number' ||
+        if (
+            typeof json.id !== 'number' ||
             typeof json.top !== 'number' ||
             typeof json.left !== 'number' ||
             typeof json.rotate !== 'number' ||
@@ -111,11 +134,10 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
             typeof json.height !== 'number' ||
             !hAlignmentList.includes(json.horizontalAlignment) ||
             !vAlignmentList.includes(json.verticalAlignment) ||
-            (json.backgroundColor !== null
-                && typeof json.backgroundColor !== 'string') ||
+            (json.backgroundColor !== null &&
+                typeof json.backgroundColor !== 'string') ||
             !canvasItemList.includes(json.type)
         ) {
-            log(json);
             throw new Error('Invalid canvas item data');
         }
     }
@@ -126,6 +148,10 @@ export default abstract class CanvasItem<T extends CanvasItemPropsType> extends
 
     clipboardSerialize() {
         return JSON.stringify(this.toJson());
+    }
+
+    checkIsSame(canvasItem: CanvasItem<any>) {
+        return this.id === canvasItem.id;
     }
 }
 
@@ -162,12 +188,10 @@ export function useCanvasItemsContext() {
     return context;
 }
 
-export const SelectedCanvasItemsAndSetterContext = (
-    createContext<{
-        canvasItems: CanvasItem<any>[],
-        setCanvasItems: (canvasItems: CanvasItem<any>[]) => void,
-    } | null>(null)
-);
+export const SelectedCanvasItemsAndSetterContext = createContext<{
+    canvasItems: CanvasItem<any>[];
+    setCanvasItems: (canvasItems: CanvasItem<any>[]) => void;
+} | null>(null);
 export function useSelectedCanvasItemsAndSetterContext() {
     const context = use(SelectedCanvasItemsAndSetterContext);
     if (context === null) {
@@ -177,15 +201,20 @@ export function useSelectedCanvasItemsAndSetterContext() {
 }
 
 export function checkCanvasItemsIncludes(
-    canvasItems: CanvasItem<any>[], targetCanvasItem: CanvasItem<any>,
+    canvasItems: CanvasItem<any>[],
+    targetCanvasItem: CanvasItem<any>,
 ) {
-    return canvasItems.includes(targetCanvasItem);
+    for (const item of canvasItems) {
+        if (item.checkIsSame(targetCanvasItem)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export function useSetSelectedCanvasItems() {
-    const {
-        canvasItems, setCanvasItems,
-    } = useSelectedCanvasItemsAndSetterContext();
+    const { canvasItems, setCanvasItems } =
+        useSelectedCanvasItemsAndSetterContext();
     return (targetCanvasItem: CanvasItem<any>, isControlling = true) => {
         let newCanvasItems = [targetCanvasItem];
         if (
@@ -198,12 +227,10 @@ export function useSetSelectedCanvasItems() {
     };
 }
 
-export const EditingCanvasItemAndSetterContext = (
-    createContext<{
-        canvasItem: CanvasItem<any> | null,
-        setCanvasItem: (canvasItem: CanvasItem<any> | null) => void,
-    } | null>(null)
-);
+export const EditingCanvasItemAndSetterContext = createContext<{
+    canvasItem: CanvasItem<any> | null;
+    setCanvasItem: (canvasItem: CanvasItem<any> | null) => void;
+} | null>(null);
 export function useEditingCanvasItemAndSetterContext() {
     const context = use(EditingCanvasItemAndSetterContext);
     if (context === null) {
@@ -213,9 +240,8 @@ export function useEditingCanvasItemAndSetterContext() {
 }
 
 export function useSetEditingCanvasItem() {
-    const {
-        canvasItem, setCanvasItem,
-    } = useEditingCanvasItemAndSetterContext();
+    const { canvasItem, setCanvasItem } =
+        useEditingCanvasItemAndSetterContext();
     return (targetCanvasItem: CanvasItem<any>, isEditing = true) => {
         let newCanvasItem: CanvasItem<any> | null = targetCanvasItem;
         if (!isEditing) {
@@ -244,25 +270,22 @@ export function useCanvasItemPropsContext<T extends CanvasItemPropsType>() {
                 setProps(cloneJson(canvasItem.props));
             });
         });
-    }, []);
+    }, [canvasItem]);
     return props as T;
 }
 
 export function useIsCanvasItemSelected() {
     const canvasItem = useCanvasItemContext();
-    const {
-        canvasItems: selectedCasItems,
-    } = useSelectedCanvasItemsAndSetterContext();
+    const { canvasItems: selectedCasItems } =
+        useSelectedCanvasItemsAndSetterContext();
     return checkCanvasItemsIncludes(selectedCasItems, canvasItem);
 }
 
 export function useStopAllModes() {
-    const {
-        setCanvasItem: setEditingCanvasItem,
-    } = useEditingCanvasItemAndSetterContext();
-    const {
-        setCanvasItems: setSelectedCanvasItems,
-    } = useSelectedCanvasItemsAndSetterContext();
+    const { setCanvasItem: setEditingCanvasItem } =
+        useEditingCanvasItemAndSetterContext();
+    const { setCanvasItems: setSelectedCanvasItems } =
+        useSelectedCanvasItemsAndSetterContext();
     return () => {
         setEditingCanvasItem(null);
         setSelectedCanvasItems([]);

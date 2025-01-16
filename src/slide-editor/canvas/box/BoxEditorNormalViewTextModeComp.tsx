@@ -6,8 +6,10 @@ import { handleError } from '../../../helper/errorHelpers';
 import { useCanvasItemPropsContext } from '../CanvasItem';
 import BoxEditorNormalWrapperComp from './BoxEditorNormalWrapperComp';
 
-export default function BoxEditorNormalViewTextModeComp({ style }: Readonly<{
-    style: CSSProperties
+export default function BoxEditorNormalViewTextModeComp({
+    style,
+}: Readonly<{
+    style: CSSProperties;
 }>) {
     return (
         <BoxEditorNormalWrapperComp style={style}>
@@ -22,13 +24,12 @@ export function BoxEditorNormalTextRender() {
         CanvasItemText.validate(props);
     } catch (error) {
         handleError(error);
-        return (
-            <BENViewErrorRender />
-        );
+        return <BENViewErrorRender />;
     }
     const htmlText = props.text.replace(/\n/g, '<br />');
     return (
-        <div className='w-100 h-100'
+        <div
+            className="w-100 h-100"
             style={CanvasItemText.genStyle(props)}
             dangerouslySetInnerHTML={{
                 __html: htmlText,

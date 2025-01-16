@@ -2,12 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import electron, { BrowserWindow } from 'electron';
 
-import { htmlFiles } from './fsServe.js';
+import { htmlFiles } from './fsServe';
 
 const settingObject: {
-    mainWinBounds: Electron.Rectangle | null,
-    appScreenDisplayId: number | null,
-    mainHtmlPath: string,
+    mainWinBounds: Electron.Rectangle | null;
+    appScreenDisplayId: number | null;
+    mainHtmlPath: string;
 } = {
     mainWinBounds: null,
     appScreenDisplayId: null,
@@ -20,9 +20,8 @@ export default class ElectronSettingController {
             const json = JSON.parse(str);
             settingObject.mainWinBounds = json.mainWinBounds;
             settingObject.appScreenDisplayId = json.appScreenDisplayId;
-            settingObject.mainHtmlPath = (
-                json.mainHtmlPath ?? settingObject.mainHtmlPath
-            );
+            settingObject.mainHtmlPath =
+                json.mainHtmlPath ?? settingObject.mainHtmlPath;
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 this.save();
@@ -67,7 +66,9 @@ export default class ElectronSettingController {
 
     save() {
         fs.writeFileSync(
-            this.fileSettingPath, JSON.stringify(settingObject), 'utf8',
+            this.fileSettingPath,
+            JSON.stringify(settingObject),
+            'utf8',
         );
     }
 

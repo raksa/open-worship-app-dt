@@ -1,12 +1,11 @@
 import { useRef } from 'react';
 
 import { useAppEffect } from '../helper/debuggerHelpers';
-import {
-    useScreenFullTextManagerEvents,
-} from './managers/screenEventHelpers';
+import { useScreenFullTextManagerEvents } from './managers/screenEventHelpers';
 import ScreenFullTextManager from './managers/ScreenFullTextManager';
 import {
-    useScreenManagerContext, useScreenManagerEvents,
+    useScreenManagerContext,
+    useScreenManagerEvents,
 } from './managers/screenManagerHooks';
 
 const styleText = `
@@ -102,8 +101,10 @@ const styleText = `
 }
 
 #full-text .highlight.selected {
-    background: ${'linear-gradient(transparent, transparent, '
-    + 'rgba(255, 0, 157, 0.6), transparent);'}
+    background: ${
+        'linear-gradient(transparent, transparent, ' +
+        'rgba(255, 0, 157, 0.6), transparent);'
+    }
 }`;
 
 export default function ScreenFullTextComp() {
@@ -127,7 +128,9 @@ export default function ScreenFullTextComp() {
                     ${ScreenFullTextManager.textStyleText}
                 }`}
             </style>
-            <div id='full-text' ref={div}
+            <div
+                id="full-text"
+                ref={div}
                 style={screenFullTextManager.containerStyle}
             />
         </>

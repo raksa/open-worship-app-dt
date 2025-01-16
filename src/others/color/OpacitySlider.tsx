@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import AppRangeComp from '../AppRangeComp';
 
-export default function OpacitySlider({ value, onOpacityChanged }: Readonly<{
-    value: number,
-    onOpacityChanged: (value: number, event: MouseEvent) => void,
+export default function OpacitySlider({
+    value,
+    onOpacityChanged,
+}: Readonly<{
+    value: number;
+    onOpacityChanged: (value: number, event: MouseEvent) => void;
 }>) {
     const [localValue, setLocalValue] = useState(value || 1);
     return (
         <AppRangeComp
             value={localValue}
-            title='Opacity'
+            title="Opacity"
             setValue={(newValue) => {
                 setLocalValue(newValue);
                 onOpacityChanged(newValue, {} as any);

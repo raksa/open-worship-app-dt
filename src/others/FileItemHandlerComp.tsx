@@ -1,18 +1,15 @@
 import { lazy, useState } from 'react';
 
 import FileReadErrorComp from './FileReadErrorComp';
-import {
-    ContextMenuItemType, showAppContextMenu,
-} from './AppContextMenuComp';
-import {
-    copyToClipboard, showExplorer, trashFile,
-} from '../server/appHelpers';
+import { ContextMenuItemType, showAppContextMenu } from './AppContextMenuComp';
+import { copyToClipboard, showExplorer, trashFile } from '../server/appHelpers';
 import FileSource from '../helper/FileSource';
-import ItemSource from '../helper/ItemSource';
+import AppDocumentSourceAbs from '../helper/DocumentSourceAbs';
 import appProvider from '../server/appProvider';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { showAppConfirm } from '../popup-widget/popupWidgetHelpers';
 import ItemColorNoteComp from './ItemColorNoteComp';
+import { menuTitleRealFile } from '../helper/helpers';
 const LazyRenderRenaming = lazy(() => {
     return import('./RenderRenamingComp');
 });
@@ -20,15 +17,13 @@ const LazyRenderRenaming = lazy(() => {
 export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
     return [
         {
-            menuTitle: 'Copy Path to Clipboard', onClick: () => {
+            menuTitle: 'Copy Path to Clipboard',
+            onClick: () => {
                 copyToClipboard(filePath);
             },
         },
         {
-            menuTitle: (
-                `Reveal in ${appProvider.systemUtils.isMac ?
-                    'Finder' : 'File Explorer'}`
-            ),
+            menuTitle: menuTitleRealFile,
             onClick: () => {
                 showExplorer(filePath);
             },
@@ -37,9 +32,9 @@ export const genCommonMenu = (filePath: string): ContextMenuItemType[] => {
 };
 
 function genContextMenu(
-    filePath: string, setIsRenaming: (value: boolean) => void,
+    filePath: string,
+    setIsRenaming: (value: boolean) => void,
     reload: () => void,
-
 ): ContextMenuItemType[] {
     return [
         {
@@ -47,12 +42,14 @@ function genContextMenu(
             onClick: () => {
                 FileSource.getInstance(filePath).duplicate();
             },
-        }, {
+        },
+        {
             menuTitle: 'Rename',
             onClick: () => {
                 setIsRenaming(true);
             },
-        }, {
+        },
+        {
             menuTitle: 'Reload',
             onClick: () => {
                 reload();
@@ -62,7 +59,8 @@ function genContextMenu(
 }
 
 export function genTrashContextMenu(
-    filePath: string, onTrashed?: () => void,
+    filePath: string,
+    onTrashed?: () => void,
 ): ContextMenuItemType[] {
     return [
         {
@@ -72,7 +70,7 @@ export function genTrashContextMenu(
                 const isOk = await showAppConfirm(
                     'Moving File to Trash',
                     'Are you sure you want to move ' +
-                    `"${fileSource.fileFullName}" to trash?`,
+                        `"${fileSource.fileFullName}" to trash?`,
                 );
                 if (isOk) {
                     await trashFile(filePath);
@@ -98,24 +96,35 @@ export function genShowOnScreensContextMenu(
 }
 
 export default function FileItemHandlerComp({
-    data, reload, index, filePath, className,
-    contextMenuItems, onDrop, onClick, renderChild,
-    isPointer, onTrashed, isDisabledColorNote,
+    data,
+    reload,
+    index,
+    filePath,
+    className,
+    contextMenuItems,
+    onDrop,
+    onClick,
+    renderChild,
+    isPointer,
+    onTrashed,
+    isDisabledColorNote,
     userClassName,
+    isSelected,
 }: Readonly<{
-    data: ItemSource<any> | null | undefined,
-    reload: () => void,
-    index: number,
-    filePath: string,
-    className?: string
-    contextMenuItems?: ContextMenuItemType[],
-    onDrop?: (event: any) => void,
-    onClick?: () => void,
-    renderChild: (lyric: ItemSource<any>) => any,
-    isPointer?: boolean,
-    onTrashed?: () => void,
-    isDisabledColorNote?: boolean,
-    userClassName?: string,
+    data: AppDocumentSourceAbs | null | undefined;
+    reload: () => void;
+    index: number;
+    filePath: string;
+    className?: string;
+    contextMenuItems?: ContextMenuItemType[];
+    onDrop?: (event: any) => void;
+    onClick?: () => void;
+    renderChild: (data: AppDocumentSourceAbs) => any;
+    isPointer?: boolean;
+    onTrashed?: () => void;
+    isDisabledColorNote?: boolean;
+    userClassName?: string;
+    isSelected: boolean;
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
@@ -123,9 +132,7 @@ export default function FileItemHandlerComp({
         FileSource.getInstance(filePath).fireSelectEvent();
         onClick?.();
     };
-    const selfContextMenu = genContextMenu(
-        filePath, setIsRenaming, reload,
-    );
+    const selfContextMenu = genContextMenu(filePath, setIsRenaming, reload);
     selfContextMenu.push(...genTrashContextMenu(filePath, onTrashed));
 
     const handleContextMenuOpening = (event: any) => {
@@ -137,15 +144,15 @@ export default function FileItemHandlerComp({
     if (data === undefined) {
         return <FileReadErrorComp onContextMenu={handleContextMenuOpening} />;
     }
-    const moreClassName = (
-        `${data.isSelected ? 'active' : ''} ` + `${className ?? ''}`
-    );
+    const moreClassName =
+        `${isSelected ? 'active' : ''} ` + `${className ?? ''}`;
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <li className={
-            `list-group-item m-1 ${moreClassName} ` +
-            `${userClassName ?? ''} ${isPointer ? 'pointer' : ''}`
-        }
+        <li
+            className={
+                `list-group-item m-1 ${moreClassName} ` +
+                `${userClassName ?? ''} ${isPointer ? 'pointer' : ''}`
+            }
             style={{
                 borderRadius: '0.25rem',
             }}
@@ -154,7 +161,7 @@ export default function FileItemHandlerComp({
             title={filePath}
             onContextMenu={(event) => {
                 showAppContextMenu(event as any, [
-                    ...(contextMenuItems || []),
+                    ...(contextMenuItems ?? []),
                     ...genCommonMenu(filePath),
                     ...selfContextMenu,
                 ]);
@@ -176,22 +183,23 @@ export default function FileItemHandlerComp({
                     event.currentTarget.classList.remove('receiving-child');
                     onDrop(event);
                 }
-            }}>
+            }}
+        >
             {isRenaming ? (
                 <LazyRenderRenaming
                     setIsRenaming={setIsRenaming}
                     filePath={filePath}
                 />
-            ) :
+            ) : (
                 <>
                     {renderChild(data)}
                     {!isDisabledColorNote && (
-                        <div className='color-note-container'>
+                        <div className="color-note-container">
                             <ItemColorNoteComp item={fileSource} />
                         </div>
                     )}
                 </>
-            }
+            )}
         </li>
     );
 }

@@ -1,7 +1,7 @@
 import { CSSProperties, createContext, use } from 'react';
 
 export function fontSizeToHeightStyle(fontSize: number): CSSProperties {
-    return { height: fontSize >= 20 ? (fontSize + 30) : undefined };
+    return { height: fontSize >= 20 ? fontSize + 30 : undefined };
 }
 
 export const DEFAULT_BIBLE_TEXT_FONT_SIZE = 16;

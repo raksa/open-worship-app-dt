@@ -5,10 +5,12 @@ export default function ScreenEffectControlComp() {
     const screenManager = useScreenManagerContext();
     return (
         <>
-            <RenderTransitionEffectComp title='slide:'
-                screenEffectManager={screenManager.slideEffectManager}
+            <RenderTransitionEffectComp
+                title="VAD:"
+                screenEffectManager={screenManager.varyAppDocumentEffectManager}
             />
-            <RenderTransitionEffectComp title='bg:'
+            <RenderTransitionEffectComp
+                title="BG:"
                 screenEffectManager={screenManager.backgroundEffectManager}
             />
         </>
