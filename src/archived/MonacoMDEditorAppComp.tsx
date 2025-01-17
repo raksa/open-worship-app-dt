@@ -1,23 +1,29 @@
 import { useState } from 'react';
 
-import { createRoot } from 'react-dom/client';
-import { getRootElement } from '../appInitHelpers';
 import { editor } from 'monaco-editor';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import FileSource from '../helper/FileSource';
 import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 
-const container = getRootElement<HTMLDivElement>();
-const root = createRoot(container);
-
-const VALUE_SETTING_NAME = 'monaco-editor-value';
-function toSettingName(filePath: string) {
+export const VALUE_SETTING_NAME = 'monaco-editor-value';
+export function toSettingName(filePath: string) {
     return VALUE_SETTING_NAME + filePath;
+}
+
+export const defaultMarkdownContent = `## This is Slide 1
+A paragraph with some text and a [link](https://hakim.se).
+---
+## Slide 2
+---
+## Slide 3`;
+
+export function getEditingValue(filePath: string) {
+    return getSetting(toSettingName(filePath)) || defaultMarkdownContent;
 }
 
 function initEditor(div: HTMLDivElement, filePath: string) {
     let myEditor: editor.IStandaloneCodeEditor | null = null;
-    const value = getSetting(toSettingName(filePath)) || '';
+    const value = getEditingValue(filePath);
     const fileSource = FileSource.getInstance(filePath);
     myEditor = editor.create(div, {
         value,
@@ -25,7 +31,7 @@ function initEditor(div: HTMLDivElement, filePath: string) {
         automaticLayout: true,
     });
     myEditor.onDidChangeModelContent(() => {
-        fileSource.fireUpdateEvent();
+        fileSource.fireUpdateEvent(myEditor.getValue());
     });
     return myEditor;
 }
@@ -94,13 +100,13 @@ function EditorComp({
     );
 }
 
-function MonacoMDEditorAppComp() {
+export default function MonacoMDEditorAppComp() {
     const filePath = '/a/b.md';
     return (
         <div
             style={{
                 width: '600px',
-                height: '800px',
+                height: '450px',
                 margin: 'auto',
             }}
         >
@@ -109,5 +115,3 @@ function MonacoMDEditorAppComp() {
         </div>
     );
 }
-
-root.render(<MonacoMDEditorAppComp />);
