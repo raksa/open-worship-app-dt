@@ -58,6 +58,12 @@ export default function RenderBibleDataFoundComp({
 function RenderBibleFoundHeader() {
     const fontSize = useBibleViewFontSizeContext();
     const viewController = SearchBibleItemViewController.getInstance();
+    const handleBibleKeyChanging = (
+        _oldBibleKey: string,
+        newBibleKey: string,
+    ) => {
+        viewController.setBibleKey(newBibleKey);
+    };
     return (
         <div
             className="card-header bg-transparent border-success"
@@ -66,6 +72,7 @@ function RenderBibleFoundHeader() {
             <div className="d-flex w-100 h-100">
                 <RenderTitleMaterialComp
                     editingBibleItem={viewController.selectedBibleItem}
+                    onBibleKeyChange={handleBibleKeyChanging}
                 />
                 <div>
                     <RenderActionButtonsComp />

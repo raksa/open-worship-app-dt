@@ -48,9 +48,12 @@ export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {
     return use(SelectedBibleKeyContext);
 }
+
+const DEFAULT_UNKNOWN_BIBLE_KEY = 'Unknown';
 export function useSelectedBibleKey() {
-    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
-        null,
+    const [isValid, setIsValid] = useState(true);
+    const [bibleKeySelected, setBibleKeySelected] = useState<string>(
+        DEFAULT_UNKNOWN_BIBLE_KEY,
     );
     const setBibleKeySelected1 = (bibleKey: string | null) => {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
@@ -60,10 +63,12 @@ export function useSelectedBibleKey() {
                     return bibleInfo.key === bibleKey;
                 }) === undefined
             ) {
+                setIsValid(false);
                 showSimpleToast('Setting Bible Key', 'Invalid bible key');
-                return;
+            } else {
+                setIsValid(true);
             }
-            setBibleKeySelected(bibleKey);
+            setBibleKeySelected(bibleKey ?? DEFAULT_UNKNOWN_BIBLE_KEY);
         });
     };
     useAppEffectAsync(
@@ -74,7 +79,11 @@ export function useSelectedBibleKey() {
         [],
         { setBibleKeySelected1 },
     );
-    return [bibleKeySelected, setBibleKeySelected1] as const;
+    return {
+        isValid,
+        bibleKey: bibleKeySelected,
+        setBibleKey: setBibleKeySelected1,
+    };
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {

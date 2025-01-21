@@ -24,7 +24,7 @@ export default function RenderBibleSearchComp({
 }>) {
     const [isSearchOnline, setIsSearchOnline] = useState(false);
     const [inputText, setInputText] = useState<string>(editorInputText);
-    const [bibleKey, setBibleKey] = useSelectedBibleKey();
+    const { isValid, bibleKey, setBibleKey } = useSelectedBibleKey();
     const viewController = SearchBibleItemViewController.getInstance();
     if (bibleKey !== null) {
         viewController.selectedBibleItem.bibleKey = bibleKey;
@@ -38,7 +38,7 @@ export default function RenderBibleSearchComp({
         [inputText, setInputText],
     );
 
-    if (bibleKey === null) {
+    if (!isValid) {
         return (
             <div className="w-100 h-100">
                 <div className="d-flex">
@@ -49,7 +49,7 @@ export default function RenderBibleSearchComp({
                     />
                 </div>
                 <div className="flex-fill">
-                    <BibleNotAvailable />
+                    <BibleNotAvailable bibleKey={bibleKey} />
                 </div>
             </div>
         );

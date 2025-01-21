@@ -1,7 +1,12 @@
 import { AnyObjectType } from '../helper/helpers';
 import { OptionalPromise } from './otherHelpers';
 
-export default interface ItemSourceInf<T> {
+export interface ItemSourceInfBasic<T> {
+    getItemById(id: number): OptionalPromise<T | null>;
+    setItemById(id: number, item: T): OptionalPromise<void>;
+}
+
+export default interface ItemSourceInf<T> extends ItemSourceInfBasic<T> {
     getMetadata(): OptionalPromise<AnyObjectType>;
     setMetadata(metaData: AnyObjectType): OptionalPromise<void>;
 
@@ -9,9 +14,6 @@ export default interface ItemSourceInf<T> {
     setItems(items: T[]): OptionalPromise<void>;
 
     getItemByIndex(index: number): OptionalPromise<T | null>;
-
-    getItemById(id: number): OptionalPromise<T | null>;
-    setItemById(id: number, item: T): OptionalPromise<void>;
 
     showContextMenu(event: any): OptionalPromise<void>;
     showItemContextMenu(event: any, item: T): OptionalPromise<void>;
