@@ -4,7 +4,7 @@ import { ExtractedBibleResult } from '../helper/bible-helpers/serverBibleHelpers
 import RenderBibleDataFoundComp from './RenderBibleDataFoundComp';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import { attemptAddingHistory } from './InputHistoryComp';
-import { BibleSelectionMini } from './BibleSelectionComp';
+import { BibleSelectionMiniComp } from './BibleSelectionComp';
 import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
 
 export default function RenderSearchSuggestionComp({
@@ -61,7 +61,7 @@ export default function RenderSearchSuggestionComp({
     );
 }
 
-export function BibleNotAvailable({
+export function BibleNotAvailableComp({
     bibleKey,
 }: Readonly<{
     bibleKey: string;
@@ -79,7 +79,7 @@ export function BibleNotAvailable({
             <div className="body card-body w-100">
                 <h2>Bible key "{bibleKey}" is not available!</h2>
                 Please change bible key here:{' '}
-                <BibleSelectionMini
+                <BibleSelectionMiniComp
                     bibleKey={bibleKey + '??'}
                     onBibleKeyChange={handleBibleKeyChanging}
                 />

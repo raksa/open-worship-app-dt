@@ -1,7 +1,7 @@
 import { createContext, Fragment, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import { BibleSelectionMini } from '../bible-search/BibleSelectionComp';
+import { BibleSelectionMiniComp } from '../bible-search/BibleSelectionComp';
 import { useGetBibleRef } from '../others/bibleRefsHelpers';
 import {
     useBibleItemRenderTitle,
@@ -39,7 +39,7 @@ export function RenderTitleMaterialComp({
             <div className="d-flex flex-fill">
                 <div className="d-flex ps-1">
                     <div style={{ margin: 'auto' }}>
-                        <BibleSelectionMini
+                        <BibleSelectionMiniComp
                             bibleKey={bibleItem.bibleKey}
                             onBibleKeyChange={onBibleKeyChange}
                         />

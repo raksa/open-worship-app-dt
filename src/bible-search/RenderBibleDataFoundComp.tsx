@@ -19,6 +19,7 @@ import {
 import { closeCurrentEditingBibleItem } from '../bible-reader/readBibleHelpers';
 import { toShortcutKey } from '../event/KeyboardEventListener';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
+import { genInputText } from '../bible-list/bibleHelpers';
 
 export default function RenderBibleDataFoundComp({
     onVerseChange,
@@ -58,10 +59,13 @@ export default function RenderBibleDataFoundComp({
 function RenderBibleFoundHeader() {
     const fontSize = useBibleViewFontSizeContext();
     const viewController = SearchBibleItemViewController.getInstance();
-    const handleBibleKeyChanging = (
-        _oldBibleKey: string,
+    const handleBibleKeyChanging = async (
+        oldBibleKey: string,
         newBibleKey: string,
     ) => {
+        const inputText = await viewController.selectedBibleItem?.toTitle();
+        const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
+        viewController.setInputText(newText);
         viewController.setBibleKey(newBibleKey);
     };
     return (

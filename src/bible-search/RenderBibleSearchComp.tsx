@@ -5,7 +5,7 @@ import {
     SelectedBibleKeyContext,
     useSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
-import { BibleNotAvailable } from './RenderSearchSuggestionComp';
+import { BibleNotAvailableComp } from './RenderSearchSuggestionComp';
 import BibleSearchBodyPreviewerComp from './BibleSearchBodyPreviewerComp';
 import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
@@ -49,7 +49,7 @@ export default function RenderBibleSearchComp({
                     />
                 </div>
                 <div className="flex-fill">
-                    <BibleNotAvailable bibleKey={bibleKey} />
+                    <BibleNotAvailableComp bibleKey={bibleKey} />
                 </div>
             </div>
         );
