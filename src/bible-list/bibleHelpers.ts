@@ -2,7 +2,11 @@ import { createContext, use, useState } from 'react';
 
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
-import { getVerses, keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
+import {
+    checkIsBookAvailable,
+    getVerses,
+    keyToBook,
+} from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     extractBibleTitle,
     toInputText,
@@ -103,23 +107,23 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
 
 export async function genInputText(
     oldBibleKey: string,
-    newBibleKey: string,
+    bibleKey: string,
     inputText: string,
 ) {
     const { result } = await extractBibleTitle(oldBibleKey, inputText);
     const { bookKey, chapter, bibleItem } = result;
     const target = bibleItem?.target;
-    if (bookKey !== null) {
-        const newBook = await keyToBook(newBibleKey, bookKey);
+    if (bookKey !== null && (await checkIsBookAvailable(bibleKey, bookKey))) {
+        const newBook = await keyToBook(bibleKey, bookKey);
         return toInputText(
-            newBibleKey,
+            bibleKey,
             newBook,
             chapter,
             target?.verseStart,
             target?.verseEnd,
         );
     }
-    return '';
+    return inputText;
 }
 
 export async function updateBibleItem(bibleItem: BibleItem, data: string) {

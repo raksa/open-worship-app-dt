@@ -8,6 +8,14 @@ import {
     getBibleXMLDataFromKey,
 } from '../../setting/bible-setting/bibleXMLHelpers';
 
+export async function checkIsBookAvailable(bibleKey: string, bookKey: string) {
+    const info = await getBibleInfo(bibleKey);
+    if (info === null) {
+        return false;
+    }
+    return info.booksAvailable.includes(bookKey);
+}
+
 export async function getBookKVList(bibleKey: string) {
     const info = await getBibleInfo(bibleKey);
     if (info === null) {
