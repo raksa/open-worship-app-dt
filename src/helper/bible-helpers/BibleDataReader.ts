@@ -22,6 +22,7 @@ export type BibleInfoType = {
     publisher: string;
     copyRights: string;
     books: { [key: string]: string };
+    booksAvailable: string[];
     numList?: string[];
     version: number;
 };

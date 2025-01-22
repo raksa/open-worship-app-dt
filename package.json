@@ -25,7 +25,9 @@
         "vite:dev": "vite",
         "vite:build": "vite build",
         "react-devtools": "react-devtools",
-        "lint": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md} electron/**/*.ts\" && eslint \"eslint src/**/*.ts* electron/**/*.ts\" && npm run build"
+        "lint:pre": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\" \"electron/**/*.ts\"",
+        "lint:es": "eslint src/**/*.ts* electron/**/*.ts",
+        "lint": "npm run lint:pre && npm run lint:es && npm run build"
     },
     "browserslist": {
         "production": [

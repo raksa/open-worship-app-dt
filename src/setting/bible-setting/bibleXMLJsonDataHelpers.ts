@@ -72,6 +72,7 @@ const tagNamesMap = {
     chapter: ['chapter'],
     verse: ['verse'],
 };
+
 const attributesMap = {
     bibleKey: ['key', 'abbr'],
     locale: ['locale'],
@@ -89,9 +90,11 @@ const attributesMap = {
 export type BibleVerseType = {
     [verseNumber: string]: string;
 };
+
 export type BibleBookJsonType = {
     [chapterNumber: string]: BibleVerseType;
 };
+
 export type BibleJsonInfoType = {
     title: string;
     key: string;
@@ -101,9 +104,11 @@ export type BibleJsonInfoType = {
     publisher: string;
     copyRights: string;
     booksMap: { [booKey: string]: string };
+    booksAvailable: string[];
     numbersMap: { [key: string]: string };
     filePath: string;
 };
+
 export type BibleJsonType = {
     info: BibleJsonInfoType;
     books: { [booKey: string]: BibleBookJsonType };
@@ -122,6 +127,7 @@ function guessValue(
     }
     return defaultValue;
 }
+
 function guessElement(element: Element | Document, tags: string[]) {
     for (const tag of tags) {
         const child = element.getElementsByTagName(tag);
@@ -163,6 +169,7 @@ function toGuessingBibleKeys(value: string) {
             return value1;
         });
 }
+
 function getGuessingBibleKeys(bible: Element) {
     const guessingKeys: string[] = [];
     for (const attribute of Array.from(bible.attributes)) {
@@ -174,20 +181,28 @@ function getGuessingBibleKeys(bible: Element) {
     return Array.from(new Set(guessingKeys));
 }
 
-export async function getBibleInfoJson(bible: Element) {
-    const mapElement = guessElement(bible, tagNamesMap.map)?.[0];
-    const numberKeyMap = getBibleMap(
-        mapElement ?? null,
-        tagNamesMap.numberMap,
-        Object.fromEntries(
-            Array.from({ length: 10 }, (_, i) => [i.toString(), i.toString()]),
-        ),
-    );
-    const bookKeyMap = getBibleMap(
-        mapElement ?? null,
-        tagNamesMap.bookMap,
-        cloneJson(kjvBibleInfo.kjvKeyValue),
-    );
+function getBookKey(book: Element) {
+    const bookKeysOrder = kjvBibleInfo.booksOrder;
+    let bookKey = guessValue(book, attributesMap.bookKey, null);
+    if (bookKey !== null && bookKeysOrder.includes(bookKey)) {
+        return bookKey;
+    }
+    const bookNumberText = guessValue(book, attributesMap.index, null);
+    if (bookNumberText === null) {
+        return null;
+    }
+    const bookIndex = parseInt(bookNumberText);
+    if (isNaN(bookIndex)) {
+        return null;
+    }
+    bookKey = bookKeysOrder[bookIndex - 1];
+    if (bookKey === undefined) {
+        return null;
+    }
+    return bookKey;
+}
+
+async function guessingBibleKey(bible: Element) {
     let bibleKey = guessValue(bible, attributesMap.bibleKey);
     while (bibleKey === null) {
         const downloadedBibleInfoList = await getDownloadedBibleInfoList();
@@ -226,6 +241,39 @@ export async function getBibleInfoJson(bible: Element) {
             bibleKey = null;
         }
     }
+    return bibleKey;
+}
+
+function getAvailableBooks(books: Element[]) {
+    const availableBooks: string[] = [];
+    for (const book of books) {
+        const bookKey = getBookKey(book);
+        if (bookKey !== null) {
+            availableBooks.push(bookKey);
+        }
+    }
+    return availableBooks;
+}
+
+function getBookElements(bible: Element) {
+    return Array.from(guessElement(bible, tagNamesMap.book) ?? []);
+}
+
+export async function getBibleInfoJson(bible: Element) {
+    const mapElement = guessElement(bible, tagNamesMap.map)?.[0];
+    const numberKeyMap = getBibleMap(
+        mapElement ?? null,
+        tagNamesMap.numberMap,
+        Object.fromEntries(
+            Array.from({ length: 10 }, (_, i) => [i.toString(), i.toString()]),
+        ),
+    );
+    const bookKeyMap = getBibleMap(
+        mapElement ?? null,
+        tagNamesMap.bookMap,
+        cloneJson(kjvBibleInfo.kjvKeyValue),
+    );
+    const bibleKey = await guessingBibleKey(bible);
     if (bibleKey === null) {
         return null;
     }
@@ -234,6 +282,8 @@ export async function getBibleInfoJson(bible: Element) {
         return null;
     }
     const filePath = await bibleKeyToFilePath(bibleKey);
+    const books = Array.from(guessElement(bible, tagNamesMap.book) ?? []);
+    const booksAvailable = getAvailableBooks(books);
     return {
         title: guessValue(bible, attributesMap.title) ?? 'Unknown Title',
         key: bibleKey,
@@ -248,6 +298,7 @@ export async function getBibleInfoJson(bible: Element) {
             'Unknown Copy Rights',
         numbersMap: numberKeyMap,
         booksMap: bookKeyMap,
+        booksAvailable,
         filePath,
     } as BibleJsonInfoType;
 }
@@ -278,31 +329,15 @@ function getBibleChapters(book: Element): BibleBookJsonType {
     return bookJson;
 }
 
-function getBibleBooksJson(books: Element[]) {
+function getBibleBooksJson(bible: Element) {
+    const books = getBookElements(bible);
     const booksJson: { [booKey: string]: BibleBookJsonType } = {};
-    const bookKeysOrder = kjvBibleInfo.booksOrder;
     for (const book of books) {
-        let bookKey = guessValue(book, attributesMap.bookKey, null);
-        if (bookKey !== null && bookKeysOrder.includes(bookKey)) {
-            booksJson[bookKey] = getBibleChapters(book);
-            continue;
-        }
-        const bookNumberText = guessValue(book, attributesMap.index, null);
-        if (bookNumberText === null) {
-            continue;
-        }
-        const bookIndex = parseInt(bookNumberText);
-        if (isNaN(bookIndex)) {
-            continue;
-        }
-        bookKey = bookKeysOrder[bookIndex - 1];
-        if (bookKey === undefined) {
+        const bookKey = getBookKey(book);
+        if (bookKey === null) {
             continue;
         }
         booksJson[bookKey] = getBibleChapters(book);
-    }
-    if (![27, 66].includes(Object.keys(booksJson).length)) {
-        return null;
     }
     for (const book of Object.values(booksJson)) {
         if (Object.keys(book).length === 0) {
@@ -380,11 +415,7 @@ export async function xmlToJson(xmlText: string) {
     if (bibleInfo === null) {
         return null;
     }
-    const books = Array.from(guessElement(bible, tagNamesMap.book) ?? []);
-    if (![27, 66].includes(books.length)) {
-        return null;
-    }
-    const bibleBooks = getBibleBooksJson(books);
+    const bibleBooks = getBibleBooksJson(bible);
     if (bibleBooks === null) {
         return null;
     }
