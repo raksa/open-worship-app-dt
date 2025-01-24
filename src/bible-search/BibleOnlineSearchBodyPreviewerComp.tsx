@@ -89,7 +89,10 @@ function BibleOnlineSearchBody({
         setBibleKey(newBibleKey);
     };
 
-    const handleSearching = (searchData: BibleSearchForType) => {
+    const doSearching = async (
+        searchData: BibleSearchForType,
+        isFresh = false,
+    ) => {
         startTransition(async () => {
             const apiDataMap = apiData.mapper[bibleKey];
             if (selectedBook !== null) {
@@ -103,11 +106,25 @@ function BibleOnlineSearchBody({
             if (data !== null) {
                 const { perPage, pages } = calcPaging(data);
                 const pageNumber = findPageNumber(data, perPage, pages);
-                const newAllData = { ...allData, [pageNumber]: data };
+                const newAllData = {
+                    ...(isFresh ? {} : allData),
+                    [pageNumber]: data,
+                };
                 delete newAllData['0'];
                 setAllData(newAllData);
             }
         });
+    };
+    const handleSearching = (isFresh = false) => {
+        if (!inputText) {
+            return;
+        }
+        setSearchingText(inputText);
+        if (isFresh) {
+            setAllData({});
+        }
+        const searchData: BibleSearchForType = { text: inputText };
+        doSearching(searchData, isFresh);
     };
     return (
         <div className="card overflow-hidden w-100 h-100">
@@ -136,12 +153,7 @@ function BibleOnlineSearchBody({
                     className="btn btn-sm"
                     disabled={isSearching || !inputText}
                     onClick={() => {
-                        if (!inputText) {
-                            return;
-                        }
-                        setSearchingText(inputText);
-                        setAllData({});
-                        handleSearching({ text: inputText });
+                        handleSearching(true);
                     }}
                 >
                     <i className="bi bi-search" />
@@ -151,7 +163,7 @@ function BibleOnlineSearchBody({
                 text={searchingText}
                 allData={allData}
                 searchFor={(from: number, to: number) => {
-                    handleSearching({
+                    doSearching({
                         fromLineNumber: from,
                         toLineNumber: to,
                         text: searchingText,
