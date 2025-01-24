@@ -12,17 +12,23 @@ import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleSearchHeaderComp from './RenderBibleSearchHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
+import { useStateSettingBoolean } from '../helper/settingHelpers';
 
 const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewerComp');
 });
+
+const SEARCHING_ONLINE_SETTING_NAME = 'bible-searching-online';
 
 export default function RenderBibleSearchComp({
     editorInputText = '',
 }: Readonly<{
     editorInputText?: string;
 }>) {
-    const [isSearchOnline, setIsSearchOnline] = useState(false);
+    const [isSearchOnline, setIsSearchOnline] = useStateSettingBoolean(
+        SEARCHING_ONLINE_SETTING_NAME,
+        false,
+    );
     const [inputText, setInputText] = useState<string>(editorInputText);
     const { isValid, bibleKey, setBibleKey } = useSelectedBibleKey();
     const viewController = SearchBibleItemViewController.getInstance();

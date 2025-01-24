@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 
 import {
     AllDataType,
@@ -11,7 +11,7 @@ import {
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderDataComp from './BibleOnlineRenderDataComp';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import { useAppEffectAsync } from '../helper/debuggerHelpers';
+import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
 import { handleError } from '../helper/errorHelpers';
 import BibleSelectionComp from './BibleSelectionComp';
@@ -79,37 +79,39 @@ function BibleOnlineSearchBody({
     const [inputText, setInputText] = useState('');
     const [searchingText, setSearchingText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
+    const [isSearching, startTransition] = useTransition();
+    useAppEffect(() => {
+        setBibleKey(selectedBibleKey);
+    }, [selectedBibleKey]);
 
     const setBibleKey1 = (_: string, newBibleKey: string) => {
         setAllData({});
         setBibleKey(newBibleKey);
     };
 
-    const searchOnline1 = (searchData: BibleSearchForType) => {
-        const apiDataMap = apiData.mapper[bibleKey];
-        if (selectedBook !== null) {
-            searchData['bookKey'] = selectedBook[0];
-        }
-        searchOnline(apiDataMap.apiUrl, apiDataMap.apiKey, searchData).then(
-            (data) => {
-                if (data !== null) {
-                    const { perPage, pages } = calcPaging(data);
-                    const pageNumber = findPageNumber(data, perPage, pages);
-                    const newAllData = { ...allData, [pageNumber]: data };
-                    delete newAllData['0'];
-                    setAllData(newAllData);
-                }
-            },
-        );
+    const handleSearching = (searchData: BibleSearchForType) => {
+        startTransition(async () => {
+            const apiDataMap = apiData.mapper[bibleKey];
+            if (selectedBook !== null) {
+                searchData['bookKey'] = selectedBook.bookKey;
+            }
+            const data = await searchOnline(
+                apiDataMap.apiUrl,
+                apiDataMap.apiKey,
+                searchData,
+            );
+            if (data !== null) {
+                const { perPage, pages } = calcPaging(data);
+                const pageNumber = findPageNumber(data, perPage, pages);
+                const newAllData = { ...allData, [pageNumber]: data };
+                delete newAllData['0'];
+                setAllData(newAllData);
+            }
+        });
     };
     return (
         <div className="card overflow-hidden w-100 h-100">
-            <div
-                className="card-header input-group overflow-hidden"
-                style={{
-                    height: 45,
-                }}
-            >
+            <div className="card-header input-group overflow-hidden">
                 <BibleSelectionComp
                     bibleKey={bibleKey}
                     onBibleKeyChange={setBibleKey1}
@@ -132,13 +134,14 @@ function BibleOnlineSearchBody({
                 />
                 <button
                     className="btn btn-sm"
+                    disabled={isSearching || !inputText}
                     onClick={() => {
                         if (!inputText) {
                             return;
                         }
                         setSearchingText(inputText);
                         setAllData({});
-                        searchOnline1({ text: inputText });
+                        handleSearching({ text: inputText });
                     }}
                 >
                     <i className="bi bi-search" />
@@ -148,7 +151,7 @@ function BibleOnlineSearchBody({
                 text={searchingText}
                 allData={allData}
                 searchFor={(from: number, to: number) => {
-                    searchOnline1({
+                    handleSearching({
                         fromLineNumber: from,
                         toLineNumber: to,
                         text: searchingText,
@@ -157,6 +160,7 @@ function BibleOnlineSearchBody({
                 bibleKey={bibleKey}
                 selectedBook={selectedBook}
                 setSelectedBook={setSelectedBook}
+                isSearching={isSearching}
             />
         </div>
     );

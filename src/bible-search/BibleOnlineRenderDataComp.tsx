@@ -1,8 +1,10 @@
 import { genBookMatches } from '../helper/bible-helpers/serverBibleHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import {
     ContextMenuItemType,
     showAppContextMenu,
 } from '../others/AppContextMenuComp';
+import LoadingComp from '../others/LoadingComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     calcPaging,
@@ -30,13 +32,13 @@ async function selectBookKey(
                 setSelectedBook(null);
             },
         },
-        ...bookList.map(([bookKey, localBookName, bookName]) => {
-            const extraName = localBookName !== bookName ? `(${bookName})` : '';
+        ...bookList.map(({ bookKey, book, bookKJV, isAvailable }) => {
+            const extraName = book !== bookKJV ? ` (${bookKJV})` : '';
             return {
-                menuTitle: `${localBookName}${extraName}`,
-                disabled: selectedBook?.[0] === bookKey,
+                menuTitle: `${book}${extraName}`,
+                disabled: !isAvailable || selectedBook?.bookKey === bookKey,
                 onClick: () => {
-                    setSelectedBook([bookKey, localBookName]);
+                    setSelectedBook({ bookKey, book });
                 },
             } as ContextMenuItemType;
         }),
@@ -70,6 +72,67 @@ function RenderPageNumberComp({
     );
 }
 
+function ShowSearchingComp() {
+    return (
+        <div
+            className="d-flex justify-content-center"
+            ref={(element) => {
+                if (element === null) {
+                    return;
+                }
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                });
+            }}
+        >
+            <hr />
+            <LoadingComp />
+        </div>
+    );
+}
+
+function RenderFooterComp({
+    pages,
+    allPageNumberFound,
+    searchFor,
+}: Readonly<{
+    pages: string[];
+    allPageNumberFound: string[];
+    searchFor: (pageNumber: string) => void;
+}>) {
+    if (pages.length === 0) {
+        return null;
+    }
+    return (
+        <div
+            className="card-footer p-0"
+            style={{
+                minHeight: 60,
+                maxHeight: 200,
+                overflowY: 'auto',
+            }}
+        >
+            <nav>
+                <ul className="pagination flex-wrap">
+                    {pages.map((pageNumber) => {
+                        const isActive =
+                            allPageNumberFound.includes(pageNumber);
+                        return (
+                            <RenderPageNumberComp
+                                key={pageNumber}
+                                pageNumber={pageNumber}
+                                isActive={isActive}
+                                handleSearching={searchFor}
+                            />
+                        );
+                    })}
+                </ul>
+            </nav>
+        </div>
+    );
+}
+
 export default function BibleOnlineRenderDataComp({
     text,
     allData,
@@ -77,6 +140,7 @@ export default function BibleOnlineRenderDataComp({
     bibleKey,
     selectedBook,
     setSelectedBook,
+    isSearching,
 }: Readonly<{
     text: string;
     allData: { [key: string]: BibleSearchOnlineType };
@@ -84,85 +148,66 @@ export default function BibleOnlineRenderDataComp({
     bibleKey: string;
     selectedBook: SelectedBookKeyType;
     setSelectedBook: (_: SelectedBookKeyType) => void;
+    isSearching: boolean;
 }>) {
-    const genBookSection = (message: string) => {
-        return (
-            <div className="d-flex w-100">
-                <div className="flex-fill">
-                    <h4>{message}</h4>
-                </div>
-                <div>
-                    <button
-                        className="btn btn-sm btn-info"
-                        onClick={(event) => {
-                            selectBookKey(
-                                event,
-                                bibleKey,
-                                selectedBook,
-                                setSelectedBook,
-                            );
-                        }}
-                    >
-                        {selectedBook === null ? 'all books' : selectedBook[1]}
-                    </button>
-                </div>
-            </div>
-        );
-    };
+    useAppEffect(() => {
+        setSelectedBook(null);
+    }, [bibleKey]);
     const allPageNumberFound = Object.keys(allData);
-    if (allPageNumberFound.length === 0) {
-        return genBookSection('No Data');
-    }
-    const pagingData = calcPaging(allData[allPageNumberFound[0]]);
+    const pagingData = calcPaging(
+        allPageNumberFound.length ? allData[allPageNumberFound[0]] : null,
+    );
     const searchFor1 = (pageNumber: string) => {
         const searchForData = pageNumberToReqData(pagingData, pageNumber);
         searchFor(searchForData.fromLineNumber, searchForData.toLineNumber);
     };
-    const { pages } = pagingData;
     return (
         <>
-            <div className="card-body w-100">
-                {genBookSection(text)}
+            <div className="card-body w-100" style={{ height: 'inherit' }}>
+                <div className="d-flex w-100">
+                    <div className="flex-fill">
+                        {text ? <span>{`Result for :"${text}"`}</span> : null}
+                    </div>
+                    <div>
+                        <button
+                            className="btn btn-sm btn-info"
+                            onClick={(event) => {
+                                selectBookKey(
+                                    event,
+                                    bibleKey,
+                                    selectedBook,
+                                    setSelectedBook,
+                                );
+                            }}
+                        >
+                            {selectedBook === null
+                                ? 'All books'
+                                : selectedBook.book}
+                        </button>
+                    </div>
+                </div>
                 {allPageNumberFound.map((pageNumber) => {
-                    if (!pages.includes(pageNumber)) {
+                    if (!pagingData.pages.includes(pageNumber)) {
                         return null;
                     }
                     const data = allData[pageNumber];
                     return (
                         <BibleOnlineRenderPerPageComp
                             key={pageNumber}
-                            text={text}
+                            searchingText={text}
                             data={data}
                             pageNumber={pageNumber}
                             bibleKey={bibleKey}
                         />
                     );
                 })}
+                {isSearching ? <ShowSearchingComp /> : null}
             </div>
-            <div
-                className="card-footer"
-                style={{
-                    maxHeight: 200,
-                    overflowY: 'auto',
-                }}
-            >
-                <nav>
-                    <ul className="pagination flex-wrap">
-                        {pages.map((pageNumber) => {
-                            const isActive =
-                                allPageNumberFound.includes(pageNumber);
-                            return (
-                                <RenderPageNumberComp
-                                    key={pageNumber}
-                                    pageNumber={pageNumber}
-                                    isActive={isActive}
-                                    handleSearching={searchFor1}
-                                />
-                            );
-                        })}
-                    </ul>
-                </nav>
-            </div>
+            <RenderFooterComp
+                pages={pagingData.pages}
+                allPageNumberFound={allPageNumberFound}
+                searchFor={searchFor1}
+            />
         </>
     );
 }
