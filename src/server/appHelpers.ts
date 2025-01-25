@@ -16,11 +16,14 @@ export function genReturningEventName(eventName: string) {
 }
 
 export function electronSendAsync<T>(eventName: string, data: any = {}) {
-    return new Promise<T>((resolve) => {
+    return new Promise<T>((resolve, reject) => {
         const replyEventName = genReturningEventName(eventName);
         appProvider.messageUtils.listenOnceForData(
             replyEventName,
             (_event, data: T) => {
+                if (data instanceof Error) {
+                    return reject(data);
+                }
                 resolve(data);
             },
         );

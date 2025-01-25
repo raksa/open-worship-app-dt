@@ -106,7 +106,7 @@
         "bootstrap-icons": "^1.11.3",
         "concurrently": "^9.1.0",
         "diff": "^7.0.0",
-        "electron": "^33.3.1",
+        "electron": "^34.0.1",
         "electron-builder": "^25.1.8",
         "env-cmd": "^10.1.0",
         "eslint": "^8.57.1",
