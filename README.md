@@ -33,6 +33,8 @@ $ npm run dev
 
 # for Apple Mac
 $ npm run pack:mac
+# universal package
+$ npm run pack:mac:uni
 ```
 
 ## Linting and Formatting
