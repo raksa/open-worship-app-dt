@@ -36,9 +36,7 @@ export default function RenderBibleSearchHeaderComp({
     ) => {
         const newText = await genInputText(oldBibleKey, newBibleKey, inputText);
         setBibleKey(newBibleKey);
-        if (newText !== null) {
-            setInputText1(newText);
-        }
+        setInputText1(newText);
     };
     const isEditingBibleItem = !!data;
     return (

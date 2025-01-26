@@ -4,7 +4,10 @@ import * as loggerHelpers from '../helper/loggerHelpers';
 import BibleItem from '../bible-list/BibleItem';
 import { BibleItemType } from '../bible-list/bibleItemHelpers';
 
-export type SelectedBookKeyType = [string, string] | null;
+export type SelectedBookKeyType = {
+    bookKey: string;
+    book: string;
+} | null;
 
 export type APIDataType = {
     mapper: {
@@ -19,7 +22,10 @@ export type BibleSearchOnlineType = {
     maxLineNumber: number;
     fromLineNumber: number;
     toLineNumber: number;
-    content: string[];
+    content: {
+        text: string;
+        uniqueKey: string;
+    }[];
 };
 export type BibleSearchForType = {
     bookKey?: string;
@@ -65,7 +71,10 @@ export function calcPerPage(data: BibleSearchOnlineType) {
     return perPage;
 }
 
-export function calcPaging(data: BibleSearchOnlineType): PagingDataTye {
+export function calcPaging(data: BibleSearchOnlineType | null): PagingDataTye {
+    if (data === null) {
+        return { pages: [], currentPage: '0', pageSize: 0, perPage: 0 };
+    }
     const perPage = calcPerPage(data);
     const pageSize = Math.ceil(data.maxLineNumber / perPage);
     const pages = Array.from(Array(pageSize)).map((_, i) => {
@@ -134,6 +143,12 @@ export async function searchOnline(
         });
         const result = await response.json();
         if (result['content']) {
+            result.content = result.content.map((item: string) => {
+                return {
+                    text: item,
+                    uniqueKey: crypto.randomUUID(),
+                };
+            });
             return result as BibleSearchOnlineType;
         }
         loggerHelpers.error(`Invalid bible search online ${result}`);

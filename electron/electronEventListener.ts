@@ -276,8 +276,12 @@ export function initEventOther(appController: ElectronAppController) {
                 pdfFilePath: string;
             },
         ) => {
-            await officeFileToPdf(officeFilePath, pdfFilePath);
-            appController.mainController.sendData(replyEventName);
+            const error = await officeFileToPdf(officeFilePath, pdfFilePath);
+            if (error !== null) {
+                appController.mainController.sendData(replyEventName, error);
+            } else {
+                appController.mainController.sendData(replyEventName);
+            }
         },
     );
 

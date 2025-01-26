@@ -25,7 +25,9 @@
         "vite:dev": "vite",
         "vite:build": "vite build",
         "react-devtools": "react-devtools",
-        "lint": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md} electron/**/*.ts\" && eslint \"eslint src/**/*.ts* electron/**/*.ts\" && npm run build"
+        "lint:pre": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\" \"electron/**/*.ts\"",
+        "lint:es": "eslint src/**/*.ts* electron/**/*.ts",
+        "lint": "npm run lint:pre && npm run lint:es && npm run build"
     },
     "browserslist": {
         "production": [
@@ -94,6 +96,7 @@
         "@types/node": "^22.10.1",
         "@types/react": "^19.0.1",
         "@types/react-dom": "^19.0.1",
+        "@types/reveal.js": "^5.0.4",
         "@types/tar": "^6.1.13",
         "@typescript-eslint/eslint-plugin": "^8.20.0",
         "@typescript-eslint/parser": "^8.20.0",
@@ -103,7 +106,7 @@
         "bootstrap-icons": "^1.11.3",
         "concurrently": "^9.1.0",
         "diff": "^7.0.0",
-        "electron": "^33.3.1",
+        "electron": "^34.0.1",
         "electron-builder": "^25.1.8",
         "env-cmd": "^10.1.0",
         "eslint": "^8.57.1",

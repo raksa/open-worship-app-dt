@@ -5,17 +5,21 @@ import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
 export default function BibleOnlineRenderPerPageComp({
     pageNumber,
     data,
-    text,
+    searchingText,
     bibleKey,
 }: Readonly<{
     pageNumber: string;
     data: BibleSearchOnlineType;
-    text: string;
+    searchingText: string;
     bibleKey: string;
 }>) {
-    const handleClicking = (bibleItem: BibleItem) => {
+    const handleClicking = (event: any, bibleItem: BibleItem) => {
         const viewController = SearchBibleItemViewController.getInstance();
-        viewController.appendBibleItem(bibleItem);
+        if (event.shiftKey) {
+            viewController.appendBibleItem(bibleItem);
+        } else {
+            viewController.setSearchingContentFromBibleItem(bibleItem);
+        }
     };
     return (
         <>
@@ -24,10 +28,10 @@ export default function BibleOnlineRenderPerPageComp({
                 <hr className="w-100" />
             </div>
             <div className="w-100">
-                {data.content.map((item) => {
+                {data.content.map(({ text, uniqueKey }) => {
                     const { newItem, kjvTitle, bibleItem } = breakItem(
+                        searchingText,
                         text,
-                        item,
                         bibleKey,
                     );
                     return (
@@ -36,12 +40,12 @@ export default function BibleOnlineRenderPerPageComp({
                                 'btn btn-sm btn-outline-info ' +
                                 'app-ellipsis w-100 overflow-hidden-x'
                             }
-                            onClick={() => {
-                                handleClicking(bibleItem);
+                            onClick={(event) => {
+                                handleClicking(event, bibleItem);
                             }}
-                            title={item}
+                            title="Shift + Click to append"
                             style={{ textAlign: 'left' }}
-                            key={item.substring(10)}
+                            key={uniqueKey}
                         >
                             <span>{kjvTitle}</span> ...{' '}
                             <span

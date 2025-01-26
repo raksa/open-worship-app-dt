@@ -5,26 +5,32 @@ import {
     SelectedBibleKeyContext,
     useSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
-import { BibleNotAvailable } from './RenderSearchSuggestionComp';
+import { BibleNotAvailableComp } from './RenderSearchSuggestionComp';
 import BibleSearchBodyPreviewerComp from './BibleSearchBodyPreviewerComp';
 import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { MultiContextRender } from '../helper/MultiContextRender';
 import RenderBibleSearchHeaderComp from './RenderBibleSearchHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
+import { useStateSettingBoolean } from '../helper/settingHelpers';
 
 const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
     return import('./BibleOnlineSearchBodyPreviewerComp');
 });
+
+const SEARCHING_ONLINE_SETTING_NAME = 'bible-searching-online';
 
 export default function RenderBibleSearchComp({
     editorInputText = '',
 }: Readonly<{
     editorInputText?: string;
 }>) {
-    const [isSearchOnline, setIsSearchOnline] = useState(false);
+    const [isSearchOnline, setIsSearchOnline] = useStateSettingBoolean(
+        SEARCHING_ONLINE_SETTING_NAME,
+        false,
+    );
     const [inputText, setInputText] = useState<string>(editorInputText);
-    const [bibleKey, setBibleKey] = useSelectedBibleKey();
+    const { isValid, bibleKey, setBibleKey } = useSelectedBibleKey();
     const viewController = SearchBibleItemViewController.getInstance();
     if (bibleKey !== null) {
         viewController.selectedBibleItem.bibleKey = bibleKey;
@@ -38,7 +44,7 @@ export default function RenderBibleSearchComp({
         [inputText, setInputText],
     );
 
-    if (bibleKey === null) {
+    if (!isValid) {
         return (
             <div className="w-100 h-100">
                 <div className="d-flex">
@@ -49,7 +55,7 @@ export default function RenderBibleSearchComp({
                     />
                 </div>
                 <div className="flex-fill">
-                    <BibleNotAvailable />
+                    <BibleNotAvailableComp bibleKey={bibleKey} />
                 </div>
             </div>
         );

@@ -106,16 +106,18 @@ export default class FileSource
         return DirSource.getInstanceByDirPath(this.basePath);
     }
 
-    static async readFileData(filePath: string) {
+    static async readFileData(filePath: string, isSilent?: boolean) {
         try {
             const dataText = await fsReadFile(filePath);
             return dataText;
         } catch (error: any) {
-            showSimpleToast(
-                'Reader File Data',
-                'Error occurred during reading ' +
-                    `file: "${filePath}", error: ${error.message}`,
-            );
+            if (!isSilent) {
+                showSimpleToast(
+                    'Reader File Data',
+                    'Error occurred during reading ' +
+                        `file: "${filePath}", error: ${error.message}`,
+                );
+            }
         }
         return null;
     }

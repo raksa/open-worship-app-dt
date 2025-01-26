@@ -191,6 +191,7 @@ function BibleBooksMapXMLInputComp({
         setValue1(innerText);
     };
     const langCode = getLangCode(locale) ?? 'en';
+    const isHTML = value.includes('<');
     return (
         <div className="w-100 h-100">
             <div>Define books map</div>
@@ -233,17 +234,16 @@ function BibleBooksMapXMLInputComp({
                 >
                     Translate ({langCode})
                 </a>
-                {value.includes('<') ? (
-                    <button
-                        className="btn btn-info"
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            handleMarkupStringParsing(value);
-                        }}
-                    >
-                        Parse Markup String
-                    </button>
-                ) : null}
+                <button
+                    className="btn btn-info"
+                    disabled={!isHTML}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        handleMarkupStringParsing(value);
+                    }}
+                >
+                    Parse Markup String (HTML|XML)
+                </button>
             </div>
         </div>
     );

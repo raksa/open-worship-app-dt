@@ -91,13 +91,13 @@ export default function BibleSelectionComp({
                 handleClickEvent(event, bibleKey, onBibleKeyChange);
             }}
         >
-            <BibleKeyWithTile bibleKey={bibleKey} />
+            <BibleKeyWithTileComp bibleKey={bibleKey} />
             <i className="bi bi-chevron-down" />
         </button>
     );
 }
 
-export function BibleSelectionMini({
+export function BibleSelectionMiniComp({
     bibleKey,
     onBibleKeyChange,
     isMinimal,
@@ -128,12 +128,12 @@ export function BibleSelectionMini({
                     : undefined
             }
         >
-            <BibleKeyWithTile bibleKey={bibleKey} />
+            <BibleKeyWithTileComp bibleKey={bibleKey} />
         </span>
     );
 }
 
-function BibleKeyWithTile({ bibleKey }: Readonly<{ bibleKey: string }>) {
+function BibleKeyWithTileComp({ bibleKey }: Readonly<{ bibleKey: string }>) {
     const [bibleInfoList] = useLocalBibleInfoList();
     const currentBibleInfo = bibleInfoList?.find(
         (bibleInfo) => bibleInfo.key === bibleKey,

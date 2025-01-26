@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
-import { getBibleInfo, getBookKVList } from './bibleInfoHelpers';
+import {
+    checkIsBookAvailable,
+    getBibleInfo,
+    getBookKVList,
+} from './bibleInfoHelpers';
 import bibleJson from './bible.json';
 import { getOnlineBibleInfoList } from './bibleDownloadHelpers';
 import { useAppEffect, useAppEffectAsync } from '../debuggerHelpers';
@@ -88,6 +92,9 @@ export function useChapterMatch(
     const [matches, setMatches] = useState<[number, string][] | null>(null);
     useAppEffectAsync(
         async (methodContext) => {
+            if (!(await checkIsBookAvailable(bibleKey, bookKey))) {
+                return;
+            }
             const chapterNumStrList = await genChapterMatches(
                 bibleKey,
                 bookKey,
@@ -101,11 +108,22 @@ export function useChapterMatch(
     return matches;
 }
 
+type BookMatchDataType = {
+    bookKey: string;
+    book: string;
+    bookKJV: string;
+    isAvailable: boolean;
+};
 export async function genBookMatches(
     bibleKey: string,
     guessingBook: string,
-): Promise<[string, string, string][] | null> {
-    const bookKVList = await getBookKVList(bibleKey);
+): Promise<BookMatchDataType[] | null> {
+    const info = await getBibleInfo(bibleKey);
+    if (info === null) {
+        return null;
+    }
+    const bookKVList = info.books;
+    const booksAvailable = info.booksAvailable;
     if (bookKVList === null) {
         return null;
     }
@@ -132,13 +150,16 @@ export async function genBookMatches(
             return false;
         })
         .map(([bookKey, book]) => {
-            return [bookKey, book, kjvKeyValue[bookKey]];
+            return {
+                bookKey,
+                book,
+                bookKJV: kjvKeyValue[bookKey],
+                isAvailable: booksAvailable.includes(bookKey),
+            };
         });
 }
 export function useBookMatch(bibleKey: string, guessingBook: string) {
-    const [matches, setMatches] = useState<[string, string, string][] | null>(
-        null,
-    );
+    const [matches, setMatches] = useState<BookMatchDataType[] | null>(null);
     useAppEffect(() => {
         genBookMatches(bibleKey, guessingBook).then((bookMatches) => {
             setMatches(bookMatches);

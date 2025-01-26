@@ -64,6 +64,25 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
         this.originalJson.items = bibleItems;
     }
 
+    getItemById(id: number) {
+        return (
+            this.items.find((item) => {
+                return item.id === id;
+            }) || null
+        );
+    }
+
+    setItemById(id: number, item: BibleItem) {
+        const items = this.items;
+        const newItems = items.map((item1) => {
+            if (item1.id === id) {
+                return item;
+            }
+            return item1;
+        });
+        this.items = newItems;
+    }
+
     get maxItemId() {
         if (this.items.length) {
             const ids = this.items.map((item) => item.id);

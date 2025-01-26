@@ -22,6 +22,7 @@ export type BibleInfoType = {
     publisher: string;
     copyRights: string;
     books: { [key: string]: string };
+    booksAvailable: string[];
     numList?: string[];
     version: number;
 };
@@ -68,7 +69,7 @@ export default class BibleDataReader {
             if (record !== null) {
                 b64Data = record.data;
             } else {
-                const fileData = await FileSource.readFileData(filePath);
+                const fileData = await FileSource.readFileData(filePath, true);
                 if (fileData === null) {
                     return null;
                 }

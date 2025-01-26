@@ -22,20 +22,27 @@ function genBookOption({
     bookKey,
     book,
     bookKJV,
+    isAvailable,
 }: {
     onSelect: SelectBookType;
     index: number;
     bookKey: string;
     book: string;
     bookKJV: string;
+    isAvailable: boolean;
 }) {
+    const activeClass = index === 0 && isAvailable ? OPTION_SELECTED_CLASS : '';
     return (
-        <div style={{ margin: '2px' }}>
+        <div
+            style={{ margin: '2px' }}
+            title={isAvailable ? undefined : 'Not available'}
+        >
             <button
                 className={
                     'text-nowrap btn-sm btn btn-outline-success' +
-                    ` ${OPTION_CLASS} ${index === 0 ? OPTION_SELECTED_CLASS : ''}`
+                    ` ${OPTION_CLASS} ${activeClass}`
                 }
+                disabled={!isAvailable}
                 style={{
                     width: '240px',
                     overflowX: 'auto',
@@ -86,7 +93,7 @@ function BookOptionsComp({
     }
     return (
         <>
-            {matches.map(([bookKey, book, bookKJV], i) => {
+            {matches.map(({ bookKey, book, bookKJV, isAvailable }, i) => {
                 return (
                     <Fragment key={bookKey}>
                         {genBookOption({
@@ -95,6 +102,7 @@ function BookOptionsComp({
                             bookKJV,
                             onSelect,
                             index: i,
+                            isAvailable,
                         })}
                     </Fragment>
                 );

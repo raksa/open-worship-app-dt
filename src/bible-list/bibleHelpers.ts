@@ -2,7 +2,11 @@ import { createContext, use, useState } from 'react';
 
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import BibleItem from './BibleItem';
-import { getVerses, keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
+import {
+    checkIsBookAvailable,
+    getVerses,
+    keyToBook,
+} from '../helper/bible-helpers/bibleInfoHelpers';
 import {
     extractBibleTitle,
     toInputText,
@@ -48,9 +52,12 @@ export const SelectedBibleKeyContext = createContext<string>('KJV');
 export function useBibleKeyContext() {
     return use(SelectedBibleKeyContext);
 }
+
+const DEFAULT_UNKNOWN_BIBLE_KEY = 'Unknown';
 export function useSelectedBibleKey() {
-    const [bibleKeySelected, setBibleKeySelected] = useState<string | null>(
-        null,
+    const [isValid, setIsValid] = useState(true);
+    const [bibleKeySelected, setBibleKeySelected] = useState<string>(
+        DEFAULT_UNKNOWN_BIBLE_KEY,
     );
     const setBibleKeySelected1 = (bibleKey: string | null) => {
         setSetting(SELECTED_BIBLE_SETTING_NAME, bibleKey ?? '');
@@ -60,10 +67,12 @@ export function useSelectedBibleKey() {
                     return bibleInfo.key === bibleKey;
                 }) === undefined
             ) {
+                setIsValid(false);
                 showSimpleToast('Setting Bible Key', 'Invalid bible key');
-                return;
+            } else {
+                setIsValid(true);
             }
-            setBibleKeySelected(bibleKey);
+            setBibleKeySelected(bibleKey ?? DEFAULT_UNKNOWN_BIBLE_KEY);
         });
     };
     useAppEffectAsync(
@@ -74,7 +83,11 @@ export function useSelectedBibleKey() {
         [],
         { setBibleKeySelected1 },
     );
-    return [bibleKeySelected, setBibleKeySelected1] as const;
+    return {
+        isValid,
+        bibleKey: bibleKeySelected,
+        setBibleKey: setBibleKeySelected1,
+    };
 }
 
 export function useGetDefaultInputText(bibleItem: BibleItem | null) {
@@ -94,23 +107,23 @@ export function useGetDefaultInputText(bibleItem: BibleItem | null) {
 
 export async function genInputText(
     oldBibleKey: string,
-    newBibleKey: string,
+    bibleKey: string,
     inputText: string,
 ) {
     const { result } = await extractBibleTitle(oldBibleKey, inputText);
     const { bookKey, chapter, bibleItem } = result;
     const target = bibleItem?.target;
-    if (bookKey !== null) {
-        const newBook = await keyToBook(newBibleKey, bookKey);
+    if (bookKey !== null && (await checkIsBookAvailable(bibleKey, bookKey))) {
+        const newBook = await keyToBook(bibleKey, bookKey);
         return toInputText(
-            newBibleKey,
+            bibleKey,
             newBook,
             chapter,
             target?.verseStart,
             target?.verseEnd,
         );
     }
-    return '';
+    return inputText;
 }
 
 export async function updateBibleItem(bibleItem: BibleItem, data: string) {

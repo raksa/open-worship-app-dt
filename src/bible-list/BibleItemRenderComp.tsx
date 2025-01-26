@@ -4,7 +4,7 @@ import ItemReadErrorComp from '../others/ItemReadErrorComp';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { handleDragStart } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
-import { BibleSelectionMini } from '../bible-search/BibleSelectionComp';
+import { BibleSelectionMiniComp } from '../bible-search/BibleSelectionComp';
 import {
     SearchBibleItemViewController,
     useBibleItemViewControllerContext,
@@ -85,7 +85,7 @@ export default function BibleItemRenderComp({
             <div className="d-flex">
                 <ItemColorNoteComp item={bibleItem} />
                 <div className="px-1">
-                    <BibleSelectionMini
+                    <BibleSelectionMiniComp
                         bibleKey={bibleItem.bibleKey}
                         onBibleKeyChange={(_, newValue) => {
                             changeBible(newValue);

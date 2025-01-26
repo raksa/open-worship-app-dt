@@ -32,10 +32,6 @@ function PreviewBibleXMLInfoComp({
     return (
         <div
             className="app-border-white-round p-2"
-            style={{
-                maxHeight: '300px',
-                overflowY: 'auto',
-            }}
             onContextMenu={(event) => {
                 handBibleInfoContextMenuOpening(
                     event,
@@ -60,7 +56,20 @@ function PreviewBibleXMLInfoComp({
             >
                 Save
             </button>
-            <pre className="mt-5">{JSON.stringify(bibleInfo, null, 2)}</pre>
+            <textarea
+                className="w-100 mt-5"
+                style={{
+                    height: '500px',
+                }}
+                value={JSON.stringify(bibleInfo, null, 2)}
+                onChange={(event) => {
+                    try {
+                        setBibleInfo(JSON.parse(event.target.value));
+                        setIsChanged(true);
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    } catch (error) {}
+                }}
+            />
         </div>
     );
 }
