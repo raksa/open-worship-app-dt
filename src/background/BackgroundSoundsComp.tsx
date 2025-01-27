@@ -8,6 +8,11 @@ import {
     dirSourceSettingNames,
 } from '../helper/constants';
 import { BackgroundSrcType } from '../_screen/screenHelpers';
+import {
+    handleAudioPlaying,
+    handleAudioPausing,
+    handleAudioEnding,
+} from './audioBackgroundHelpers';
 
 function rendChild(
     filePath: string,
@@ -30,7 +35,12 @@ function RendBody({
     const fileSource = FileSource.getInstance(filePath);
     return (
         <div className="card-body">
-            <audio controls>
+            <audio
+                controls
+                onPlay={handleAudioPlaying}
+                onPause={handleAudioPausing}
+                onEnded={handleAudioEnding}
+            >
                 <source src={fileSource.src} />
                 <track kind="captions" />
                 Your browser does not support the audio element.
