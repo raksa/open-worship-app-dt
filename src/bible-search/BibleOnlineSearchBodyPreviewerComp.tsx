@@ -8,6 +8,7 @@ import {
     findPageNumber,
     APIDataType,
     SelectedBookKeyType,
+    APIDataMapType,
 } from './bibleOnlineHelpers';
 import BibleOnlineRenderDataComp from './BibleOnlineRenderDataComp';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
@@ -90,11 +91,11 @@ function BibleOnlineSearchBody({
     };
 
     const doSearching = async (
+        apiDataMap: APIDataMapType,
         searchData: BibleSearchForType,
         isFresh = false,
     ) => {
         startTransition(async () => {
-            const apiDataMap = apiData.mapper[bibleKey];
             if (selectedBook !== null) {
                 searchData['bookKey'] = selectedBook.bookKey;
             }
@@ -115,7 +116,7 @@ function BibleOnlineSearchBody({
             }
         });
     };
-    const handleSearching = (isFresh = false) => {
+    const handleSearching = (apiDataMap: APIDataMapType, isFresh = false) => {
         if (!inputText) {
             return;
         }
@@ -124,8 +125,9 @@ function BibleOnlineSearchBody({
             setAllData({});
         }
         const searchData: BibleSearchForType = { text: inputText };
-        doSearching(searchData, isFresh);
+        doSearching(apiDataMap, searchData, isFresh);
     };
+    const apiDataMap = apiData.mapper[bibleKey];
     return (
         <div className="card overflow-hidden w-100 h-100">
             <div className="card-header input-group overflow-hidden">
@@ -133,47 +135,58 @@ function BibleOnlineSearchBody({
                     bibleKey={bibleKey}
                     onBibleKeyChange={setBibleKey1}
                 />
-                <input
-                    type="text"
-                    className="form-control"
-                    value={inputText}
-                    onKeyUp={(event) => {
-                        if (event.key === 'Enter') {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            alert('search');
-                        }
-                    }}
-                    onChange={(event) => {
-                        const value = event.target.value;
-                        setInputText(value);
-                    }}
-                />
-                <button
-                    className="btn btn-sm"
-                    disabled={isSearching || !inputText}
-                    onClick={() => {
-                        handleSearching(true);
-                    }}
-                >
-                    <i className="bi bi-search" />
-                </button>
+                {apiDataMap === undefined ? (
+                    <span className="p-2">
+                        Api data map is not available, please use different
+                        bible key
+                    </span>
+                ) : (
+                    <>
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={inputText}
+                            onKeyUp={(event) => {
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    alert('search');
+                                }
+                            }}
+                            onChange={(event) => {
+                                const value = event.target.value;
+                                setInputText(value);
+                            }}
+                        />
+                        <button
+                            className="btn btn-sm"
+                            disabled={isSearching || !inputText}
+                            onClick={() => {
+                                handleSearching(apiDataMap, true);
+                            }}
+                        >
+                            <i className="bi bi-search" />
+                        </button>
+                    </>
+                )}
             </div>
-            <BibleOnlineRenderDataComp
-                text={searchingText}
-                allData={allData}
-                searchFor={(from: number, to: number) => {
-                    doSearching({
-                        fromLineNumber: from,
-                        toLineNumber: to,
-                        text: searchingText,
-                    });
-                }}
-                bibleKey={bibleKey}
-                selectedBook={selectedBook}
-                setSelectedBook={setSelectedBook}
-                isSearching={isSearching}
-            />
+            {apiDataMap && (
+                <BibleOnlineRenderDataComp
+                    text={searchingText}
+                    allData={allData}
+                    searchFor={(from: number, to: number) => {
+                        doSearching(apiDataMap, {
+                            fromLineNumber: from,
+                            toLineNumber: to,
+                            text: searchingText,
+                        });
+                    }}
+                    bibleKey={bibleKey}
+                    selectedBook={selectedBook}
+                    setSelectedBook={setSelectedBook}
+                    isSearching={isSearching}
+                />
+            )}
         </div>
     );
 }
