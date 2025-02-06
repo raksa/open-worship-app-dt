@@ -9,12 +9,13 @@ export type SelectedBookKeyType = {
     book: string;
 } | null;
 
+export type APIDataMapType = {
+    apiKey: string;
+    apiUrl: string;
+};
 export type APIDataType = {
     mapper: {
-        [key: string]: {
-            apiKey: string;
-            apiUrl: string;
-        };
+        [key: string]: APIDataMapType | undefined;
     };
 };
 

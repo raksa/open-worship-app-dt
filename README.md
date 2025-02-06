@@ -33,13 +33,16 @@ $ npm run dev
 
 # for Apple Mac
 $ npm run pack:mac
+# universal package
+$ npm run pack:mac:uni
 ```
 
 ## Linting and Formatting
 
 ```bash
-npx prettier --write "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
-npx eslint src/**/*.ts*
+npm run lint:pre
+npm run lint:es
+npm run lint
 ```
 
 

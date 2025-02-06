@@ -1,6 +1,6 @@
 import './BackgroundComp.scss';
 
-import { lazy } from 'react';
+import { lazy, useState } from 'react';
 
 import {
     useStateSettingBoolean,
@@ -15,6 +15,8 @@ import {
 } from '../_screen/screenHelpers';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { tran } from '../lang';
+import { useAppEffect } from '../helper/debuggerHelpers';
+import { audioEvent } from './audioBackgroundHelpers';
 
 const LazyBackgroundColors = lazy(() => {
     return import('./BackgroundColorsComp');
@@ -28,6 +30,40 @@ const LazyBackgroundVideos = lazy(() => {
 const LazyBackgroundSounds = lazy(() => {
     return import('./BackgroundSoundsComp');
 });
+
+function RenderSoundTabComp({
+    isSoundActive,
+    setIsSoundActive,
+}: Readonly<{
+    isSoundActive: boolean;
+    setIsSoundActive: (isSoundActive: boolean) => void;
+}>) {
+    const [isPlaying, setIsPlaying] = useState(false);
+    useAppEffect(() => {
+        audioEvent.onChange = setIsPlaying;
+        return () => {
+            audioEvent.onChange = () => {};
+        };
+    }, []);
+    return (
+        <ul className={'nav nav-tabs flex-fill d-flex justify-content-end'}>
+            <li className={'nav-item '}>
+                <button
+                    className={
+                        'btn btn-link nav-link' +
+                        ` ${isSoundActive ? 'active' : ''}` +
+                        ` ${isPlaying ? ' highlight-star' : ''}`
+                    }
+                    onClick={() => {
+                        setIsSoundActive(!isSoundActive);
+                    }}
+                >
+                    ♫{tran('Sound')}♫
+                </button>
+            </li>
+        </ul>
+    );
+}
 
 const tabTypeList = [
     ['color', 'Colors', LazyBackgroundColors],
@@ -65,25 +101,10 @@ export default function BackgroundComp() {
                     activeTab={tabType}
                     setActiveTab={setTabType}
                 />
-                <ul
-                    className={
-                        'nav nav-tabs flex-fill d-flex justify-content-end'
-                    }
-                >
-                    <li className={'nav-item '}>
-                        <button
-                            className={
-                                'btn btn-link nav-link' +
-                                ` ${isSoundActive ? 'active' : ''}`
-                            }
-                            onClick={() => {
-                                setIsSoundActive(!isSoundActive);
-                            }}
-                        >
-                            ♫{tran('Sound')}♫
-                        </button>
-                    </li>
-                </ul>
+                <RenderSoundTabComp
+                    isSoundActive={isSoundActive}
+                    setIsSoundActive={setIsSoundActive}
+                />
             </div>
             <div className="background-body w-100 flex-fill d-flex">
                 {isSoundActive ? (

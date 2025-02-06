@@ -305,4 +305,9 @@
       border: 1px solid var(--bs-primary);
     }
   }
+
+  .highlight-star::after {
+    content: '*';
+    color: $hight-light-color;
+  }
 }
