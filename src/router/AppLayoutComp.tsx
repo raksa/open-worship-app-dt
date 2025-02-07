@@ -154,11 +154,13 @@ function useAppDocumentContextValues() {
     );
     useFileSourceEvents(
         ['delete'],
-        () => {
-            setVaryAppDocument1(null);
-            setSlide1(null);
+        (filePath: string) => {
+            if (varyAppDocument?.filePath === filePath) {
+                setVaryAppDocument1(null);
+                setSlide1(null);
+            }
         },
-        [],
+        [varyAppDocument],
     );
     return {
         varyAppDocumentContextValue,
