@@ -13,11 +13,19 @@ import {
     handleAudioPausing,
     handleAudioEnding,
 } from './audioBackgroundHelpers';
+import { useState } from 'react';
+import { showSimpleToast } from '../toast/toastHelpers';
 
 function rendChild(
+    activeMap: { [key: string]: boolean },
     filePath: string,
     selectedBackgroundSrcList: [string, BackgroundSrcType][],
 ) {
+    if (!activeMap[filePath]) {
+        return (
+            <div data-file-path={filePath} style={{ display: 'none' }}></div>
+        );
+    }
     return (
         <RendBody
             filePath={filePath}
@@ -34,7 +42,7 @@ function RendBody({
 }>) {
     const fileSource = FileSource.getInstance(filePath);
     return (
-        <div className="card-body">
+        <div className="card-body" data-file-path={filePath}>
             <audio
                 controls
                 onPlay={handleAudioPlaying}
@@ -50,14 +58,39 @@ function RendBody({
 }
 
 export default function BackgroundSoundsComp() {
+    const [activeMap, setActiveMap] = useState<{ [key: string]: boolean }>({});
+    const handleItemClicking = (event: any) => {
+        const target = event.target;
+        const parentElement = target.parentElement;
+        // check is audio playing
+        const audioElement = parentElement.querySelector('audio');
+        if (audioElement && !audioElement.paused) {
+            showSimpleToast(
+                'Audio playing',
+                'Please stop the audio before leaving the page.',
+            );
+            return;
+        }
+        const childElement = parentElement.querySelector('[data-file-path]');
+        if (!childElement) {
+            return;
+        }
+        const filePath = childElement.getAttribute('data-file-path');
+        setActiveMap((preActiveMap) => {
+            return {
+                ...preActiveMap,
+                [filePath]: !preActiveMap[filePath],
+            };
+        });
+    };
     return (
         <BackgroundMediaComp
             defaultFolderName={defaultDataDirNames.BACKGROUND_SOUND}
             dragType={DragTypeEnum.BACKGROUND_SOUND}
-            rendChild={rendChild}
+            onClick={handleItemClicking}
+            rendChild={rendChild.bind(null, activeMap)}
             dirSourceSettingName={dirSourceSettingNames.BACKGROUND_SOUND}
             noDraggable={true}
-            noClickable={true}
             isNameOnTop={true}
         />
     );
