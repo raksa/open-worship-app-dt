@@ -1,7 +1,8 @@
 import AppRangeComp from '../../others/AppRangeComp';
 
+export const DEFAULT_PREVIEW_SIZE = 50;
 export const defaultRangeSize = {
-    size: 1,
+    size: 9,
     min: 1,
     max: 20,
     step: 1,
