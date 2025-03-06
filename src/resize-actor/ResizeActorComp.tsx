@@ -34,10 +34,10 @@ export default function ResizeActorComp({
             );
         }
     }
-    const defaultFlexSize = isNotSaveSetting
+    const restoreFlexSize = isNotSaveSetting
         ? flexSizeDefault
         : getFlexSizeSetting(flexSizeName, flexSizeDefault);
-    const [flexSize, setFlexSize] = useState(defaultFlexSize);
+    const [flexSize, setFlexSize] = useState(restoreFlexSize);
     const setFlexSize1 = (newFlexSize: FlexSizeType) => {
         if (!isNotSaveSetting) {
             setFlexSizeSetting(flexSizeName, newFlexSize);
@@ -77,7 +77,8 @@ export default function ResizeActorComp({
                         index={i}
                         flexSize={flexSize}
                         setFlexSize={setFlexSize1}
-                        defaultFlexSize={defaultFlexSize}
+                        restoreFlexSize={restoreFlexSize}
+                        defaultFlexSize={flexSizeDefault}
                         fSizeName={flexSizeName}
                         dataInput={dataInput}
                         isDisableQuickResize={!!isDisableQuickResize}

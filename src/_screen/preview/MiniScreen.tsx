@@ -1,7 +1,10 @@
 import './MiniScreen.scss';
 
 import ScreenPreviewerItemComp from './ScreenPreviewerItemComp';
-import MiniScreenFooter, { defaultRangeSize } from './MiniScreenFooter';
+import MiniScreenFooter, {
+    DEFAULT_PREVIEW_SIZE,
+    defaultRangeSize,
+} from './MiniScreenFooter';
 import {
     useStateSettingBoolean,
     useStateSettingNumber,
@@ -39,16 +42,15 @@ function openContextMenu(event: any) {
     ]);
 }
 
-const DEFAULT_PREVIEW_SIZE = 50;
 ScreenManager.initReceiveScreenMessage();
 export default function MiniScreen() {
     const [isShowingTools, setIsShowingTools] = useStateSettingBoolean(
         'mini-screen-previewer-tool',
-        true,
+        false,
     );
     const [previewScale, setPreviewScale] = useStateSettingNumber(
         'mini-screen-previewer',
-        DEFAULT_PREVIEW_SIZE,
+        defaultRangeSize.size,
     );
     const setPreviewScale1 = (size: number) => {
         setPreviewScale(size);

@@ -65,7 +65,7 @@ export function RenderHeaderComp({
     return (
         <div
             className="card-header d-flex"
-            style={fontSizeToHeightStyle(fontSize)}
+            style={{ ...fontSizeToHeightStyle(fontSize) }}
         >
             <RenderTitleMaterialComp onBibleKeyChange={onChange} />
             <div>
@@ -128,8 +128,8 @@ export function BibleViewTextComp() {
     };
     return (
         <div
-            className="bible-view-text app-selectable-text py-3"
-            style={{ fontSize: `${fontSize}px` }}
+            className="bible-view-text app-selectable-text pt-3"
+            style={{ fontSize: `${fontSize}px`, paddingBottom: '100px' }}
         >
             {result.map(([verse, text]) => {
                 return (

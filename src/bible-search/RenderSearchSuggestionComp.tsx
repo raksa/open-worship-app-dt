@@ -38,7 +38,7 @@ export default function RenderSearchSuggestionComp({
         );
     }
     return (
-        <div className="found w-100 h-100">
+        <div className="found w-100 h-100" style={{ overflowY: 'auto' }}>
             <div
                 className={
                     'w-100  d-flex flex-wrap align-items-start ' +

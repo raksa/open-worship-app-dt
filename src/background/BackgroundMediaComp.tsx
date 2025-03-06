@@ -29,18 +29,18 @@ const backgroundTypeMapper: any = {
 export default function BackgroundMediaComp({
     rendChild,
     dragType,
+    onClick,
     defaultFolderName,
     dirSourceSettingName,
     noDraggable = false,
-    noClickable = false,
     isNameOnTop = false,
 }: Readonly<{
     rendChild: RenderChildType;
     dragType: DragTypeEnum;
+    onClick?: (event: any) => void;
     defaultFolderName: string;
     dirSourceSettingName: string;
     noDraggable?: boolean;
-    noClickable?: boolean;
     isNameOnTop?: boolean;
 }>) {
     const backgroundType = backgroundTypeMapper[dragType];
@@ -50,8 +50,8 @@ export default function BackgroundMediaComp({
             null,
             rendChild,
             dragType,
+            onClick,
             noDraggable,
-            noClickable,
             isNameOnTop,
         );
         return (
@@ -87,8 +87,8 @@ export default function BackgroundMediaComp({
 function genBody(
     rendChild: RenderChildType,
     dragType: DragTypeEnum,
+    onClick: ((event: any) => void) | undefined,
     noDraggable: boolean,
-    noClickable: boolean,
     isNameOnTop: boolean,
     filePath: string,
 ) {
@@ -133,16 +133,18 @@ function genBody(
                         : genTrashContextMenu(fileSource.filePath)),
                 ]);
             }}
-            onClick={
-                noClickable
-                    ? () => {}
-                    : (event) => {
-                          handleSelecting(event);
-                      }
-            }
+            onClick={(event) => {
+                if (onClick) {
+                    onClick(event);
+                } else {
+                    handleSelecting(event);
+                }
+            }}
         >
             {!isNameOnTop ? null : (
-                <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
+                <div className="app-ellipsis-left pe-4">
+                    {fileSource.fileFullName}
+                </div>
             )}
             {rendChild(filePath, selectedBackgroundSrcList)}
             <div
