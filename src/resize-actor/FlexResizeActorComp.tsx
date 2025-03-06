@@ -238,12 +238,14 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
             <div
                 className={`flex-resize-actor ${props.type}`}
                 onDoubleClick={() => {
-                    const prevGrowNew = this.preNode.dataset['fsDefault'] ?? 1;
-                    const nextGrowNew = this.nextNode.dataset['fsDefault'] ?? 1;
-                    this.preNode.style.flex = `${prevGrowNew}`;
+                    const prevDefault =
+                        this.preNode.dataset['fsDefault'] ?? '1';
+                    const nextDefault =
+                        this.nextNode.dataset['fsDefault'] ?? '1';
                     this.preNode.style.flexGrow = '';
-                    this.nextNode.style.flex = `${nextGrowNew}`;
+                    this.preNode.style.flex = prevDefault;
                     this.nextNode.style.flexGrow = '';
+                    this.nextNode.style.flex = nextDefault;
                     props.checkSize();
                 }}
                 ref={this.myRef}

@@ -142,7 +142,9 @@ function genBody(
             }
         >
             {!isNameOnTop ? null : (
-                <FileFullNameRenderer fileFullName={fileSource.fileFullName} />
+                <h5 className="app-ellipsis-left pe-4">
+                    {fileSource.fileFullName}
+                </h5>
             )}
             {rendChild(filePath, selectedBackgroundSrcList)}
             <div

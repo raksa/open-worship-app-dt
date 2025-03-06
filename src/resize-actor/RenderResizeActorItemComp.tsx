@@ -32,6 +32,7 @@ export default function RenderResizeActorItemComp({
     index,
     flexSize,
     setFlexSize,
+    restoreFlexSize,
     defaultFlexSize,
     fSizeName,
     dataInput,
@@ -41,6 +42,7 @@ export default function RenderResizeActorItemComp({
     data: DataInputType;
     index: number;
     flexSize: FlexSizeType;
+    restoreFlexSize: FlexSizeType;
     defaultFlexSize: FlexSizeType;
     fSizeName: string;
     dataInput: DataInputType[];
@@ -54,19 +56,19 @@ export default function RenderResizeActorItemComp({
     ) => {
         const size = setDisablingSetting(
             fSizeName,
-            defaultFlexSize,
+            restoreFlexSize,
             targetDataFSizeKey,
             target,
         );
         setFlexSize(size);
     };
     const handleSizeChecking = () => {
-        const size = genFlexSizeSetting(fSizeName, defaultFlexSize);
+        const size = genFlexSizeSetting(fSizeName, restoreFlexSize);
         setFlexSize(size);
     };
 
     const { children, key, className = '', extraStyle = {}, widgetName } = data;
-    const flexSizeValue = flexSize[key] ?? defaultFlexSize[key] ?? [];
+    const flexSizeValue = flexSize[key] ?? restoreFlexSize[key] ?? [];
     const onHiddenWidgetClick = flexSizeValue[1]
         ? (event: any) => {
               const flexSizeDisabled = flexSizeValue[1] as DisabledType;
@@ -74,7 +76,7 @@ export default function RenderResizeActorItemComp({
                   event,
                   key,
                   fSizeName,
-                  defaultFlexSize,
+                  restoreFlexSize,
                   flexSizeDisabled,
               );
               setFlexSize(size);
@@ -116,11 +118,11 @@ export default function RenderResizeActorItemComp({
             ) : (
                 <div
                     data-fs={keyToDataFSizeKey(fSizeName, key)}
-                    data-fs-default={flexSizeValue[0]}
+                    data-fs-default={defaultFlexSize[key][0]}
                     data-min-size={50}
                     className={`${className} overflow-hidden`}
                     style={{
-                        flex: flexSizeValue[0] ?? 1,
+                        flex: `${flexSizeValue[0] || 1}`,
                         ...extraStyle,
                     }}
                 >
