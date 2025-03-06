@@ -8,7 +8,7 @@ import {
     genDraggingClass,
     removeDraggingClass,
 } from './readBibleHelpers';
-import { BibleViewTextComp, RenderHeaderComp } from './bibleViewExtra';
+import { BibleViewTextComp, RenderHeaderComp } from './BibleViewExtra';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import { BibleItemContext } from './BibleItemContext';
 
