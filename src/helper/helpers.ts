@@ -274,3 +274,17 @@ export function checkIsSameValues(value1: any, value2: any) {
 export const menuTitleRealFile = `Reveal in ${
     appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
 }`;
+
+export function genTimeoutAttempt(timeMilliseconds: number = 1e3) {
+    let timeoutId: any = null;
+    return function (func: () => void) {
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+        timeoutId = setTimeout(() => {
+            timeoutId = null;
+            func();
+        }, timeMilliseconds);
+    };
+}

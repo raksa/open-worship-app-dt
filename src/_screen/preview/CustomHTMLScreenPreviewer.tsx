@@ -3,8 +3,8 @@ import { DOMAttributes } from 'react';
 import { createRoot } from 'react-dom/client';
 import MiniScreenAppComp from './MiniScreenAppComp';
 import { getScreenManagerBase } from '../managers/screenManagerBaseHelpers';
+import { genTimeoutAttempt } from '../../helper/helpers';
 import ScreenManagerBase from '../managers/ScreenManagerBase';
-import { getDefaultScreenDisplay } from '../managers/screenHelpers';
 
 const HTML_TAG_NAME = 'mini-screen-previewer-custom-html';
 
@@ -30,46 +30,47 @@ declare global {
 
 export default class CustomHTMLScreenPreviewer extends HTMLElement {
     mountPoint: HTMLDivElement;
+    attemptTimeout: (func: () => void) => void;
     screenId: number;
     constructor() {
         super();
         this.screenId = -1;
         this.mountPoint = document.createElement('div');
-        this.mountPoint.style.overflow = 'hidden';
+        this.attemptTimeout = genTimeoutAttempt(100);
     }
-    resize() {
-        if (this.parentElement) {
-            const display = getDefaultScreenDisplay();
-            const bounds = display.bounds;
-            const scale = this.parentElement.clientWidth / bounds.width;
-            const width = scale * bounds.width;
-            const height = scale * bounds.height;
-            this.mountPoint.style.width = `${width}px`;
-            this.mountPoint.style.height = `${height}px`;
-            if (this.screenId > -1) {
-                const screenManagerBase = getScreenManagerBase(this.screenId);
-                if (screenManagerBase === null) {
-                    return;
-                }
-                screenManagerBase.width = width;
-                screenManagerBase.height = height;
-            }
-            ScreenManagerBase.fireResizeEvent();
+    setMountPointScale(screenManagerBase: ScreenManagerBase) {
+        const parentElement = this.parentElement;
+        if (parentElement === null) {
+            return;
         }
+        const scale = parentElement.clientWidth / screenManagerBase.width;
+        const div = this.mountPoint;
+        div.style.width = `${screenManagerBase.width}px`;
+        div.style.height = `${screenManagerBase.height}px`;
+        div.style.transform = `scale(${scale})`;
+        div.style.transformOrigin = 'top left';
     }
     connectedCallback() {
+        if (this.screenId === -1) {
+            return;
+        }
+        const div = this.mountPoint;
         this.attachShadow({
             mode: 'open',
-        }).appendChild(this.mountPoint);
-        const root = createRoot(this.mountPoint);
+        }).appendChild(div);
+
+        const root = createRoot(div);
         const screenManagerBase = getScreenManagerBase(this.screenId);
         if (screenManagerBase === null) {
             return;
         }
         screenManagerBase.registerEventListener(['resize'], () => {
-            this.resize();
+            this.setMountPointScale(screenManagerBase);
+            this.attemptTimeout(() => {
+                this.setMountPointScale(screenManagerBase);
+            });
         });
-        this.resize();
+        this.setMountPointScale(screenManagerBase);
         root.render(<MiniScreenAppComp screenId={this.screenId} />);
     }
 }

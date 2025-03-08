@@ -1,5 +1,7 @@
 import './CustomHTMLScreenPreviewer';
 
+import { useState } from 'react';
+
 import ShowHideScreen from './ShowHideScreen';
 import MiniScreenClearControlComp from './MiniScreenClearControlComp';
 import DisplayControl from './DisplayControl';
@@ -11,6 +13,7 @@ import {
     useScreenManagerBaseContext,
     useScreenManagerContext,
 } from '../managers/screenManagerHooks';
+import { useAppEffect } from '../../helper/debuggerHelpers';
 
 function ScreenPreviewerHeaderComp() {
     const screenManagerBase = useScreenManagerBaseContext();
@@ -46,7 +49,29 @@ export default function ScreenPreviewerItemComp({
     width: number;
 }>) {
     const screenManager = useScreenManagerContext();
+    const [screenManagerDim, setScreenManagerDim] = useState({
+        width: screenManager.width,
+        height: screenManager.height,
+    });
+    useAppEffect(() => {
+        const handleResize = () => {
+            setScreenManagerDim({
+                width: screenManager.width,
+                height: screenManager.height,
+            });
+        };
+        const registeredEvent = screenManager.registerEventListener(
+            ['display-id'],
+            handleResize,
+        );
+        return () => {
+            screenManager.unregisterEventListener(registeredEvent);
+        };
+    }, [screenManager]);
     const selectedCN = screenManager.isSelected ? 'highlight-selected' : '';
+    const height = Math.ceil(
+        width * (screenManagerDim.height / screenManagerDim.width),
+    );
     return (
         <div
             key={screenManager.key}
@@ -56,6 +81,7 @@ export default function ScreenPreviewerItemComp({
                 overflow: 'hidden',
                 width: `${width}px`,
                 display: 'inline-block',
+                verticalAlign: 'top',
             }}
             onContextMenu={(event) => {
                 openContextMenu(event, screenManager);
@@ -78,7 +104,12 @@ export default function ScreenPreviewerItemComp({
             }}
         >
             <ScreenPreviewerHeaderComp />
-            <div className="w-100">
+            <div
+                className="w-100 overflow-hidden"
+                style={{
+                    height: `${height}px`,
+                }}
+            >
                 <mini-screen-previewer-custom-html
                     screenId={screenManager.screenId}
                 />
