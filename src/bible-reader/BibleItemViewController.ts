@@ -14,7 +14,10 @@ import {
 import { showBibleOption } from '../bible-search/BibleSelectionComp';
 import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
-import { attemptAddingHistory } from '../bible-search/InputHistoryComp';
+import {
+    applyPendingText,
+    attemptAddingHistory,
+} from '../bible-search/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleViewComp';
 
@@ -544,6 +547,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
     }
 
     async setSearchingContentFromBibleItem(bibleItem: BibleItem) {
+        applyPendingText();
         this.setBibleKey(bibleItem.bibleKey);
         const bibleText = await bibleItem.toTitle();
         this.setInputText(bibleText);

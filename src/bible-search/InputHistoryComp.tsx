@@ -3,27 +3,31 @@ import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
 import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { genTimeoutAttempt } from '../helper/helpers';
 
 let addHistory: (text: string) => void = () => {};
-let timeoutId: any = null;
+export function applyPendingText() {
+    if (!pendingText) {
+        return;
+    }
+    addHistory(pendingText);
+    pendingText = '';
+}
+const attemptTimeout = genTimeoutAttempt(4e3);
+let pendingText = '';
 export function attemptAddingHistory(
     bibleKey: string,
     text: string,
     isQuick = false,
 ) {
-    const newText = `(${bibleKey}) ${text}`;
+    pendingText = `(${bibleKey}) ${text}`;
     if (isQuick) {
-        addHistory(newText);
+        applyPendingText();
         return;
     }
-    if (timeoutId !== null) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-    }
-    timeoutId = setTimeout(() => {
-        timeoutId = null;
-        addHistory(newText);
-    }, 4e3);
+    attemptTimeout(() => {
+        applyPendingText();
+    });
 }
 
 const HISTORY_TEXT_LIST_SETTING_NAME = 'history-text-list';
