@@ -109,7 +109,7 @@ export function initEventScreen(appController: ElectronAppController) {
     ipcMain.on(
         'main:app:set-screen-display',
         (
-            event,
+            _event,
             {
                 screenId,
                 displayId,
@@ -265,7 +265,7 @@ export function initEventOther(appController: ElectronAppController) {
     ipcMain.on(
         'main:app:convert-to-pdf',
         async (
-            event,
+            _event,
             {
                 replyEventName,
                 officeFilePath,
@@ -288,7 +288,7 @@ export function initEventOther(appController: ElectronAppController) {
     ipcMain.on(
         'main:app:pdf-to-images',
         async (
-            _,
+            _event,
             {
                 replyEventName,
                 filePath,
