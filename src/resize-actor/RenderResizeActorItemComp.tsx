@@ -34,7 +34,7 @@ export default function RenderResizeActorItemComp({
     setFlexSize,
     restoreFlexSize,
     defaultFlexSize,
-    fSizeName,
+    flexSizeName,
     dataInput,
     isDisableQuickResize,
     isHorizontal,
@@ -44,7 +44,7 @@ export default function RenderResizeActorItemComp({
     flexSize: FlexSizeType;
     restoreFlexSize: FlexSizeType;
     defaultFlexSize: FlexSizeType;
-    fSizeName: string;
+    flexSizeName: string;
     dataInput: DataInputType[];
     isDisableQuickResize: boolean;
     isHorizontal: boolean;
@@ -55,7 +55,7 @@ export default function RenderResizeActorItemComp({
         target: DisabledType,
     ) => {
         const size = setDisablingSetting(
-            fSizeName,
+            flexSizeName,
             restoreFlexSize,
             targetDataFSizeKey,
             target,
@@ -63,7 +63,7 @@ export default function RenderResizeActorItemComp({
         setFlexSize(size);
     };
     const handleSizeChecking = () => {
-        const size = genFlexSizeSetting(fSizeName, restoreFlexSize);
+        const size = genFlexSizeSetting(flexSizeName, restoreFlexSize);
         setFlexSize(size);
     };
 
@@ -75,7 +75,7 @@ export default function RenderResizeActorItemComp({
               const size = calcShowingHiddenWidget(
                   event,
                   key,
-                  fSizeName,
+                  flexSizeName,
                   restoreFlexSize,
                   flexSizeDisabled,
               );
@@ -98,7 +98,7 @@ export default function RenderResizeActorItemComp({
             {isShowingFSizeActor && (
                 <FlexResizeActorComp
                     isDisableQuickResize={isDisableQuickResize}
-                    disable={handleDisabling}
+                    disableWidget={handleDisabling}
                     checkSize={handleSizeChecking}
                     type={type}
                 />
@@ -117,7 +117,7 @@ export default function RenderResizeActorItemComp({
                 </div>
             ) : (
                 <div
-                    data-fs={keyToDataFSizeKey(fSizeName, key)}
+                    data-fs={keyToDataFSizeKey(flexSizeName, key)}
                     data-fs-default={defaultFlexSize[key][0]}
                     data-min-size={50}
                     className={`${className} overflow-hidden`}

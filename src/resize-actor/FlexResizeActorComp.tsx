@@ -5,7 +5,7 @@ import { Component, RefObject, createRef } from 'react';
 import { DisabledType } from './flexSizeHelpers';
 
 export const HIDDEN_WIDGET_CLASS = 'hidden-widget';
-export const ACTIVE_HIDDEN_WIDGET_CLASS = 'active-hidden-widget';
+export const ACTIVE_HIDDEN_WIDGET_CLASS = `active-${HIDDEN_WIDGET_CLASS}`;
 function checkIsActiveHiddenWidgetNode(node: HTMLDivElement) {
     return node.classList.contains(ACTIVE_HIDDEN_WIDGET_CLASS);
 }
@@ -15,7 +15,7 @@ export interface Props {
     type: ResizeKindType;
     isDisableQuickResize: boolean;
     checkSize: () => void;
-    disable: (dataFSizeKey: string, target: DisabledType) => void;
+    disableWidget: (dataFSizeKey: string, target: DisabledType) => void;
 }
 export default class FlexResizeActorComp extends Component<Props, {}> {
     myRef: RefObject<HTMLDivElement | null>;
@@ -33,7 +33,9 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
     constructor(props: Props) {
         super(props);
         this.myRef = createRef();
-        this.mouseMoveListener = (mm: MouseEvent) => this.onMouseMove(mm);
+        this.mouseMoveListener = (mm: MouseEvent) => {
+            this.onMouseMove(mm);
+        };
         this.mouseUpListener = (event) => {
             this.onMouseUp(event);
         };
@@ -175,11 +177,11 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
         window.removeEventListener('mouseup', this.mouseUpListener);
 
         this.currentNode.classList.remove('active');
-        if (this.preNode.classList.contains('hidden-widget')) {
+        if (this.preNode.classList.contains(HIDDEN_WIDGET_CLASS)) {
             this.quicMove('left');
             return;
         }
-        if (this.nextNode.classList.contains('hidden-widget')) {
+        if (this.nextNode.classList.contains(HIDDEN_WIDGET_CLASS)) {
             this.quicMove('right');
             return;
         }
@@ -188,16 +190,16 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
     quicMove(type: string) {
         this.init();
         const isFirst = ['left', 'up'].includes(type);
-        const dataFSizeKey = isFirst
+        const dataFlexSizeKey = isFirst
             ? this.preNode.dataset['fs']
             : this.nextNode.dataset['fs'];
-        if (dataFSizeKey !== undefined) {
+        if (dataFlexSizeKey !== undefined) {
             if (isFirst) {
                 this.nextNode.style.flexGrow = `${this.sumGrow}`;
             } else {
                 this.preNode.style.flexGrow = `${this.sumGrow}`;
             }
-            this.props.disable(dataFSizeKey, [
+            this.props.disableWidget(dataFlexSizeKey, [
                 isFirst ? 'first' : 'second',
                 isFirst ? this.previousGrow : this.nextGrow,
             ]);
