@@ -93,6 +93,7 @@ export default function RenderResizeActorItemComp({
         isShowingFlexSizeActor = true;
     }
     const type = isHorizontal ? 'h' : 'v';
+    const isWidgetHidden = onHiddenWidgetClick !== null;
     return (
         <Fragment key={index}>
             {isShowingFlexSizeActor && (
@@ -103,19 +104,7 @@ export default function RenderResizeActorItemComp({
                     type={type}
                 />
             )}
-            {onHiddenWidgetClick !== null ? (
-                <div
-                    title={`Enable ${widgetName}`}
-                    className={
-                        `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
-                        `${HIDDEN_WIDGET_CLASS} pointer bar-type-${type}`
-                    }
-                    style={{ color: 'green' }}
-                    onClick={onHiddenWidgetClick}
-                >
-                    <div className="hidden-context">{widgetName}</div>
-                </div>
-            ) : (
+            {isWidgetHidden ? null : (
                 <div
                     data-fs={keyToDataFlexSizeKey(flexSizeName, key)}
                     data-fs-default={defaultFlexSize[key][0]}
@@ -129,6 +118,21 @@ export default function RenderResizeActorItemComp({
                     {renderChildren(children)}
                 </div>
             )}
+            {isWidgetHidden ? (
+                <div
+                    title={`Enable ${widgetName}`}
+                    className={
+                        `${ACTIVE_HIDDEN_WIDGET_CLASS} ` +
+                        `${HIDDEN_WIDGET_CLASS} pointer bar-type-${type}`
+                    }
+                    style={{
+                        color: 'green',
+                    }}
+                    onClick={onHiddenWidgetClick ?? (() => {})}
+                >
+                    <div className="hidden-context">{widgetName}</div>
+                </div>
+            ) : null}
         </Fragment>
     );
 }
