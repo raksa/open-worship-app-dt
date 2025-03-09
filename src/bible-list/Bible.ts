@@ -205,8 +205,11 @@ export default class Bible extends AppDocumentSourceAbs implements DocumentInf {
                 return Bible.fromFilePath(filePath);
             }
         }
-        const defaultFS = await this.create(dir, Bible.DEFAULT_FILE_NAME);
-        const filePath = defaultFS?.filePath ?? null;
+        const defaultFileSource = await this.create(
+            dir,
+            Bible.DEFAULT_FILE_NAME,
+        );
+        const filePath = defaultFileSource?.filePath ?? null;
         const defaultBible = filePath
             ? await Bible.fromFilePath(filePath)
             : null;

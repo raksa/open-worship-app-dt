@@ -14,7 +14,7 @@ async function exitFullScreen() {
 }
 
 let onFullscreenChange: (() => void) | null = null;
-function removeFSListener() {
+function removeFullScreenListener() {
     if (onFullscreenChange === null) {
         return;
     }
@@ -41,10 +41,10 @@ export default function FullScreenButtonComp({
                         ? exitFullScreen
                         : enterFullScreen;
                     const isFulledScreenSuccess = await action();
-                    removeFSListener();
+                    removeFullScreenListener();
                     onFullscreenChange = () => {
                         setIsFullScreen(!!document.fullscreenElement);
-                        removeFSListener();
+                        removeFullScreenListener();
                     };
                     document.addEventListener(
                         'fullscreenchange',

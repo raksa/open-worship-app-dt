@@ -7,7 +7,7 @@ import FlexResizeActorComp, {
 } from './FlexResizeActorComp';
 import {
     DisabledType,
-    keyToDataFSizeKey,
+    keyToDataFlexSizeKey,
     setDisablingSetting,
     genFlexSizeSetting,
     checkIsThereNotHiddenWidget,
@@ -51,13 +51,13 @@ export default function RenderResizeActorItemComp({
     setFlexSize: (flexSize: FlexSizeType) => void;
 }>) {
     const handleDisabling = (
-        targetDataFSizeKey: string,
+        targetDataFlexSizeKey: string,
         target: DisabledType,
     ) => {
         const size = setDisablingSetting(
             flexSizeName,
             restoreFlexSize,
-            targetDataFSizeKey,
+            targetDataFlexSizeKey,
             target,
         );
         setFlexSize(size);
@@ -83,19 +83,19 @@ export default function RenderResizeActorItemComp({
           }
         : null;
 
-    let isShowingFSizeActor = false;
+    let isShowingFlexSizeActor = false;
     if (
         index !== 0 &&
         onHiddenWidgetClick === null &&
         (checkIsThereNotHiddenWidget(dataInput, flexSize, 0, index) ||
             checkIsThereNotHiddenWidget(dataInput, flexSize, index + 1))
     ) {
-        isShowingFSizeActor = true;
+        isShowingFlexSizeActor = true;
     }
     const type = isHorizontal ? 'h' : 'v';
     return (
         <Fragment key={index}>
-            {isShowingFSizeActor && (
+            {isShowingFlexSizeActor && (
                 <FlexResizeActorComp
                     isDisableQuickResize={isDisableQuickResize}
                     disableWidget={handleDisabling}
@@ -117,7 +117,7 @@ export default function RenderResizeActorItemComp({
                 </div>
             ) : (
                 <div
-                    data-fs={keyToDataFSizeKey(flexSizeName, key)}
+                    data-fs={keyToDataFlexSizeKey(flexSizeName, key)}
                     data-fs-default={defaultFlexSize[key][0]}
                     data-min-size={50}
                     className={`${className} overflow-hidden`}

@@ -40,32 +40,35 @@ export function clearWidgetSizeSetting() {
         setSetting(`${toSettingString(name)}`, '');
     });
 }
-export function toSettingString(fSizeName: string) {
-    return `${settingPrefix}-${fSizeName}`;
+export function toSettingString(flexSizeName: string) {
+    return `${settingPrefix}-${flexSizeName}`;
 }
-export function dataFSizeKeyToKey(fSizeName: string, dataFSizeKey: string) {
-    return dataFSizeKey.replace(`${fSizeName}-`, '');
+export function dataFlexSizeKeyToKey(
+    flexSizeName: string,
+    dataFlexSizeKey: string,
+) {
+    return dataFlexSizeKey.replace(`${flexSizeName}-`, '');
 }
-export function keyToDataFSizeKey(fSizeName: string, key: string) {
-    return `${fSizeName}-${key}`;
+export function keyToDataFlexSizeKey(flexSizeName: string, key: string) {
+    return `${flexSizeName}-${key}`;
 }
 
 export const setDisablingSetting = (
     flexSizeName: string,
     defaultSize: FlexSizeType,
-    dataFSizeKey: string,
+    dataFlexSizeKey: string,
     target?: DisabledType,
 ) => {
     const settingString = toSettingString(flexSizeName);
     const flexSize = getFlexSizeSetting(flexSizeName, defaultSize);
-    const key = dataFSizeKeyToKey(flexSizeName, dataFSizeKey);
+    const key = dataFlexSizeKeyToKey(flexSizeName, dataFlexSizeKey);
     flexSize[key][1] = target;
     setSetting(settingString, JSON.stringify(flexSize));
     return flexSize;
 };
 
-export function clearFlexSizeSetting(fSizeName: string) {
-    const settingString = toSettingString(fSizeName);
+export function clearFlexSizeSetting(flexSizeName: string) {
+    const settingString = toSettingString(flexSizeName);
     setSetting(settingString, '');
 }
 
@@ -79,9 +82,9 @@ export const genFlexSizeSetting = (
     const items = Array.from(collection);
     const flexSize = getFlexSizeSetting(flexSizeName, defaultSize);
     items.forEach((item) => {
-        const dataFSizeKey = item.getAttribute('data-fs');
-        if (dataFSizeKey !== null) {
-            const key = dataFSizeKeyToKey(flexSizeName, dataFSizeKey);
+        const dataFlexSizeKey = item.getAttribute('data-fs');
+        if (dataFlexSizeKey !== null) {
+            const key = dataFlexSizeKeyToKey(flexSizeName, dataFlexSizeKey);
             if (flexSize[key]) {
                 flexSize[key][0] = item.style.flex;
             }
@@ -164,8 +167,8 @@ export function calcShowingHiddenWidget(
     defaultFlexSize: FlexSizeType,
     flexSizeDisabled: DisabledType,
 ) {
-    const dataFSizeKey = keyToDataFSizeKey(flexSizeName, key);
-    setDisablingSetting(flexSizeName, defaultFlexSize, dataFSizeKey);
+    const dataFlexSizeKey = keyToDataFlexSizeKey(flexSizeName, key);
+    setDisablingSetting(flexSizeName, defaultFlexSize, dataFlexSizeKey);
     const current = event.currentTarget;
     const target = (
         flexSizeDisabled[0] === 'first'

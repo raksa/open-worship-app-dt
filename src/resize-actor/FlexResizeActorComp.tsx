@@ -15,7 +15,7 @@ export interface Props {
     type: ResizeKindType;
     isDisableQuickResize: boolean;
     checkSize: () => void;
-    disableWidget: (dataFSizeKey: string, target: DisabledType) => void;
+    disableWidget: (dataFlexSizeKey: string, target: DisabledType) => void;
 }
 export default class FlexResizeActorComp extends Component<Props, {}> {
     myRef: RefObject<HTMLDivElement | null>;
