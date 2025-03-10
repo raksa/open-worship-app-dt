@@ -18,10 +18,10 @@ let pendingText = '';
 export function attemptAddingHistory(
     bibleKey: string,
     text: string,
-    isQuick = false,
+    isImmediate = false,
 ) {
     pendingText = `(${bibleKey}) ${text}`;
-    if (isQuick) {
+    if (isImmediate) {
         applyPendingText();
         return;
     }

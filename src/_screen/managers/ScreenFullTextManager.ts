@@ -358,12 +358,12 @@ class ScreenFullTextManager extends ScreenEventHandler<ScreenFTManagerEventType>
         renderScreenFullTextManager(this);
     }
 
-    renderScroll(isQuick?: boolean) {
+    renderScroll(isImmediate?: boolean) {
         if (this.div === null) {
             return;
         }
         const scrollTop = this.scroll * this.div.scrollHeight;
-        if (isQuick) {
+        if (isImmediate) {
             this.div.scrollTop = scrollTop;
         }
         this.div.scroll({
