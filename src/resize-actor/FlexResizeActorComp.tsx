@@ -10,6 +10,22 @@ function checkIsActiveHiddenWidgetNode(node: HTMLDivElement) {
     return node.classList.contains(ACTIVE_HIDDEN_WIDGET_CLASS);
 }
 
+import imageUp from './images/up.png';
+import imageDown from './images/down.png';
+import imageLeft from './images/left.png';
+import imageRight from './images/right.png';
+
+const ICON_MAP = {
+    h: [
+        ['left', imageLeft, '0 5px 0 0'],
+        ['right', imageRight, '0 0 0 5px'],
+    ],
+    v: [
+        ['up', imageUp, '0 0 5px 0'],
+        ['down', imageDown, '5px 0 0 0'],
+    ],
+};
+
 export type ResizeKindType = 'v' | 'h';
 export interface Props {
     type: ResizeKindType;
@@ -216,22 +232,21 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
     }
     render() {
         const props = this.props;
+        const type = this.props.type;
         const moverChildren = props.isDisableQuickResize
             ? null
-            : [
-                  ['left', 'chevron-left'],
-                  ['right', 'chevron-right'],
-                  ['up', 'chevron-up'],
-                  ['down', 'chevron-down'],
-              ].map(([type, icon]) => {
+            : ICON_MAP[type].map(([direction, src, margin]) => {
                   return (
-                      <i
-                          key={type}
-                          title={`Disable ${type}`}
-                          className={`${type} bi bi-${icon}`}
+                      <img
+                          key={direction}
+                          alt={`Disable ${direction}`}
+                          src={src}
+                          title={`Disable ${direction}`}
+                          className="disabling-arrow"
+                          style={{ margin }}
                           onClick={(event) => {
                               event.stopPropagation();
-                              this.quicMove(type);
+                              this.quicMove(direction);
                           }}
                       />
                   );
@@ -239,6 +254,19 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
         return (
             <div
                 className={`flex-resize-actor ${props.type}`}
+                onMouseMove={(event) => {
+                    if (event.target !== this.currentNode) {
+                        return;
+                    }
+                    const mover = this.currentNode.querySelector(
+                        '.mover',
+                    ) as HTMLDivElement;
+                    if (type === 'v') {
+                        mover.style.left = `${event.pageX}px`;
+                    } else if (type === 'h') {
+                        mover.style.top = `${event.pageY}px`;
+                    }
+                }}
                 onDoubleClick={() => {
                     const prevDefault =
                         this.preNode.dataset['fsDefault'] ?? '1';
@@ -252,7 +280,11 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
                 }}
                 ref={this.myRef}
             >
-                <div className="mover">{moverChildren}</div>
+                <div
+                    className={`mover d-flex ${type === 'v' ? 'flex-column' : ''}`}
+                >
+                    {moverChildren}
+                </div>
             </div>
         );
     }

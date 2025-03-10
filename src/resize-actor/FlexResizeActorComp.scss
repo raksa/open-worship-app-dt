@@ -10,38 +10,27 @@ $dot-border: 1px dashed greenyellow;
   transition: padding 0.2s ease-out;
 
   .mover {
-    position: absolute;
-    cursor: pointer;
+    position: fixed;
+    transform: translate(-45%, -45%);
 
-    i {
-      opacity: 0;
-      position: absolute;
-      font-size: 25px;
-      color: $color;
-
+    .disabling-arrow {
+      transition: opacity 0.2s ease-in;
+      display: none;
+      cursor: pointer;
+      opacity: 0.1;
       &:hover {
-        color: white;
+        opacity: 0.7;
       }
     }
+  }
 
-    .left {
-      display: inline;
-      transform: translateX(-19px);
-    }
+  &:hover {
+    z-index: $z-index-resize-actor-top;
 
-    .right {
-      display: inline;
-      transform: translateX(-4px);
-    }
-
-    .up {
-      display: inline;
-      transform: translateY(-25px);
-    }
-
-    .down {
-      display: inline;
-      transform: translateY(-10px);
+    .mover {
+      .disabling-arrow {
+        display: block;
+      }
     }
   }
 
@@ -52,12 +41,6 @@ $dot-border: 1px dashed greenyellow;
       rgba(0, 0, 0, 0.1) 50%,
       rgba(255, 255, 255, 0.2) 100%
     );
-    .mover {
-      .left,
-      .right {
-        display: none;
-      }
-    }
 
     cursor: ns-resize;
     background-size: 10px;
@@ -82,12 +65,6 @@ $dot-border: 1px dashed greenyellow;
       rgba(0, 0, 0, 0.1) 50%,
       rgba(255, 255, 255, 0.2) 100%
     );
-    .mover {
-      .up,
-      .down {
-        display: none;
-      }
-    }
 
     cursor: ew-resize;
     background-size: 4px;
@@ -108,14 +85,9 @@ $dot-border: 1px dashed greenyellow;
   &.active {
     transition: padding 0.1s ease-in 0.5s;
     background-color: $color;
-  }
-
-  &:hover {
-    z-index: $z-index-resize-actor-top;
-
     .mover {
-      i {
-        opacity: 1;
+      .disabling-arrow {
+        opacity: 0;
       }
     }
   }
