@@ -277,7 +277,7 @@ function _fsWriteFile(filePath: string, data: string, options?: any) {
     );
 }
 
-export function fsMoveFile(oldPath: string, newPath: string) {
+export function fsMove(oldPath: string, newPath: string) {
     return fsFilePromise<void>(appProvider.fileUtils.rename, oldPath, newPath);
 }
 
@@ -346,28 +346,19 @@ export async function fsList(dir: string) {
     if (!dir) {
         return [];
     }
-    try {
-        const list = await _fsReaddir(dir);
-        const fileList = [];
-        for (const file of list) {
-            try {
-                const filePath = pathJoin(dir, file);
-                const fileStat = await _fsStat(filePath);
-                fileList.push({
-                    isFile: fileStat.isFile(),
-                    isDirectory: fileStat.isDirectory(),
-                    name: file,
-                    filePath,
-                });
-            } catch (error) {
-                handleError(error);
-            }
-        }
-        return fileList;
-    } catch (error) {
-        handleError(error);
-        throw new Error('Error occurred during listing file');
+    const list = await _fsReaddir(dir);
+    const fileList = [];
+    for (const file of list) {
+        const filePath = pathJoin(dir, file);
+        const fileStat = await _fsStat(filePath);
+        fileList.push({
+            isFile: fileStat.isFile(),
+            isDirectory: fileStat.isDirectory(),
+            name: file,
+            filePath,
+        });
     }
+    return fileList;
 }
 
 export async function fsListFiles(dirPath: string) {
@@ -463,7 +454,7 @@ export async function fsRenameFile(
     } else if (await fsCheckFileExist(newFilePath)) {
         throw new Error('File exist');
     }
-    return fsMoveFile(oldFilePath, newFilePath);
+    return fsMove(oldFilePath, newFilePath);
 }
 
 export async function fsDeleteFile(filePath: string) {

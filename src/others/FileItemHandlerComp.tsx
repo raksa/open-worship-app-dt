@@ -110,6 +110,7 @@ export default function FileItemHandlerComp({
     isDisabledColorNote,
     userClassName,
     isSelected,
+    renamedCallback,
 }: Readonly<{
     data: AppDocumentSourceAbs | null | undefined;
     reload: () => void;
@@ -125,6 +126,7 @@ export default function FileItemHandlerComp({
     isDisabledColorNote?: boolean;
     userClassName?: string;
     isSelected: boolean;
+    renamedCallback?: (newFileSource: FileSource) => void;
 }>) {
     const [isRenaming, setIsRenaming] = useState(false);
     useFileSourceRefreshEvents(['select']);
@@ -189,6 +191,7 @@ export default function FileItemHandlerComp({
                 <LazyRenderRenaming
                     setIsRenaming={setIsRenaming}
                     filePath={filePath}
+                    renamedCallback={renamedCallback}
                 />
             ) : (
                 <>

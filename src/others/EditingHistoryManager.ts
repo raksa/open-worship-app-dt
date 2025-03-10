@@ -10,7 +10,7 @@ import {
     fsDeleteDir,
     fsDeleteFile,
     fsListFiles,
-    fsMoveFile,
+    fsMove,
     pathBasename,
     pathJoin,
 } from '../server/fileHelpers';
@@ -21,13 +21,13 @@ import { useFileSourceEvents } from '../helper/dirSourceHelpers';
 import { parsePatch, reversePatch, applyPatch, createPatch } from 'diff';
 
 const CURRENT_FILE_SIGN = '-head';
-class FileLineHandler {
+export class FileLineHandler {
     filePath: string;
     dirPath: string;
 
-    constructor(filePath: string) {
+    constructor(filePath: string, dirPath: string) {
         this.filePath = filePath;
-        this.dirPath = `${this.filePath}.histories`;
+        this.dirPath = dirPath;
     }
 
     get fileSource() {
@@ -40,8 +40,11 @@ class FileLineHandler {
         }
         try {
             return await fsListFiles(this.dirPath);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {}
+        } catch (error) {
+            if (await fsCheckDirExist(this.dirPath)) {
+                handleError(error);
+            }
+        }
         return [];
     }
 
@@ -118,7 +121,7 @@ class FileLineHandler {
     }
 
     private async moveFile(fileFullPath: string, newFileFullPath: string) {
-        await fsMoveFile(fileFullPath, newFileFullPath);
+        await fsMove(fileFullPath, newFileFullPath);
         return newFileFullPath;
     }
 
@@ -248,7 +251,8 @@ export default class EditingHistoryManager {
 
     constructor(filePath: string) {
         this.filePath = filePath;
-        this.fileLineHandler = new FileLineHandler(this.filePath);
+        const dirPath = EditingHistoryManager.genFolderPath(this.filePath);
+        this.fileLineHandler = new FileLineHandler(this.filePath, dirPath);
     }
 
     fireEvent() {
@@ -369,6 +373,22 @@ export default class EditingHistoryManager {
             cache.set(filePath, new EditingHistoryManager(filePath));
         }
         return cache.get(filePath) as EditingHistoryManager;
+    }
+
+    static async moveFilePath(oldFilePath: string, newFilePath: string) {
+        const dirPath = EditingHistoryManager.genFolderPath(oldFilePath);
+        const newDirPath = EditingHistoryManager.genFolderPath(newFilePath);
+        if (!(await fsCheckDirExist(dirPath))) {
+            return;
+        }
+        if (await fsCheckDirExist(newDirPath)) {
+            await fsDeleteDir(newDirPath);
+        }
+        return await fsMove(dirPath, newDirPath);
+    }
+
+    static genFolderPath(filePath: string) {
+        return `${filePath}.histories`;
     }
 }
 

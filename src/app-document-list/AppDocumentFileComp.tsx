@@ -141,6 +141,18 @@ export default function AppDocumentFileComp({
         [varyAppDocument],
         filePath,
     );
+    const handleRenaming = async (newFileSource: FileSource) => {
+        await EditingHistoryManager.moveFilePath(
+            filePath,
+            newFileSource.filePath,
+        );
+        if (isSelected) {
+            const newVaryAppDocument = varyAppDocumentFromFilePath(
+                newFileSource.filePath,
+            );
+            setSelectedAppDocument(newVaryAppDocument);
+        }
+    };
 
     return (
         <FileItemHandlerComp
@@ -157,6 +169,7 @@ export default function AppDocumentFileComp({
             )}
             onTrashed={handleSlideDeleting}
             isSelected={isSelected}
+            renamedCallback={handleRenaming}
         />
     );
 }
