@@ -3,6 +3,7 @@ import './FlexResizeActorComp.scss';
 import { Component, RefObject, createRef } from 'react';
 
 import { DisabledType } from './flexSizeHelpers';
+import { genTimeoutAttempt } from '../helper/helpers';
 
 export const HIDDEN_WIDGET_CLASS = 'hidden-widget';
 export const ACTIVE_HIDDEN_WIDGET_CLASS = `active-${HIDDEN_WIDGET_CLASS}`;
@@ -46,6 +47,7 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
     sumSize: number = 0;
     mouseMoveListener: (mm: MouseEvent) => void;
     mouseUpListener: (mm: MouseEvent) => void;
+    attemptTimeout: (func: () => void, isImmediate?: boolean) => void;
     constructor(props: Props) {
         super(props);
         this.myRef = createRef();
@@ -55,6 +57,7 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
         this.mouseUpListener = (event) => {
             this.onMouseUp(event);
         };
+        this.attemptTimeout = genTimeoutAttempt(500);
     }
     private get currentNode() {
         if (this.myRef.current === null) {
@@ -254,6 +257,16 @@ export default class FlexResizeActorComp extends Component<Props, {}> {
         return (
             <div
                 className={`flex-resize-actor ${props.type}`}
+                onMouseEnter={() => {
+                    this.attemptTimeout(() => {
+                        this.currentNode.classList.add('attempt');
+                    });
+                }}
+                onMouseLeave={() => {
+                    this.attemptTimeout(() => {
+                        this.currentNode.classList.remove('attempt');
+                    }, true);
+                }}
                 onMouseMove={(event) => {
                     if (event.target !== this.currentNode) {
                         return;

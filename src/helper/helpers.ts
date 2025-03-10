@@ -277,10 +277,14 @@ export const menuTitleRealFile = `Reveal in ${
 
 export function genTimeoutAttempt(timeMilliseconds: number = 1e3) {
     let timeoutId: any = null;
-    return function (func: () => void) {
+    return function (func: () => void, isImmediate: boolean = false) {
         if (timeoutId !== null) {
             clearTimeout(timeoutId);
             timeoutId = null;
+        }
+        if (isImmediate) {
+            func();
+            return;
         }
         timeoutId = setTimeout(() => {
             timeoutId = null;
