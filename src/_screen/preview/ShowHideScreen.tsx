@@ -22,7 +22,7 @@ export default function ShowHideScreen() {
     useScreenManagerEvents(['visible'], screenManagerBase);
     return (
         <div
-            className={`d-flex show-hide pointer ${isShowing ? 'show' : ''}`}
+            className={`d-flex show-hide pointer ${isShowing ? 'showing' : ''}`}
             title={
                 'Toggle showing screen ' +
                 `[${toShortcutKey(showingScreenEventMap)}]`
@@ -32,7 +32,7 @@ export default function ShowHideScreen() {
             }}
         >
             <ShowingScreenIcon screenId={screenManagerBase.screenId} />
-            <i className="bi bi-file-slides-fill" />
+            <i className="app-showing-indicator bi bi-file-slides-fill" />
         </div>
     );
 }
