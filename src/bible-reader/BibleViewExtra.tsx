@@ -61,11 +61,10 @@ export function RenderHeaderComp({
     onClose: () => void;
 }>) {
     const fontSize = useBibleViewFontSizeContext();
-    // TODO: reduce size of the header
     return (
         <div
             className="card-header d-flex"
-            style={{ ...fontSizeToHeightStyle(fontSize) }}
+            style={{ ...fontSizeToHeightStyle(fontSize), overflowX: 'auto' }}
         >
             <RenderTitleMaterialComp onBibleKeyChange={onChange} />
             <div>
