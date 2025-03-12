@@ -95,6 +95,14 @@ export type PagePropsType = {
     experimentHomePage: string;
 };
 
+export type SQLiteDatabaseType = {
+    db: any;
+    exec: (sql: string) => void;
+    createTable: (createTableSQL: string) => void;
+    getAll: (sql: string) => any[];
+    close: () => void;
+};
+
 const appProvider = (window as any).provider as Readonly<
     PagePropsType & {
         appType: AppTypeEnum;
@@ -120,6 +128,9 @@ const appProvider = (window as any).provider as Readonly<
         appInfo: AppInfoType;
         reload: () => void;
         appUtils: AppUtilsType;
+        dbUtils: {
+            getSQLiteDBInstance: (dbName: string) => SQLiteDatabaseType;
+        };
         presenterHomePage: string;
         readerHomePage: string;
         currentHomePage: string;

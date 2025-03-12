@@ -7,6 +7,7 @@ import systemUtils from './systemUtils';
 import pathUtils from './pathUtils';
 import fontUtils from './fontUtils';
 import appUtils from './appUtils';
+import dbUtils from './dbUtils';
 
 import appInfo from '../../package.json';
 
@@ -40,4 +41,5 @@ export const provider = {
         window.location.reload();
     },
     appUtils,
+    dbUtils,
 };
