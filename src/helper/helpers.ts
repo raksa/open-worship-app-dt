@@ -6,6 +6,13 @@ import FileSource from './FileSource';
 import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { trace } from './loggerHelpers';
 import appProvider from '../server/appProvider';
+import { getUserWritablePath } from '../server/appHelpers';
+import {
+    pathJoin,
+    fsCheckFileExist,
+    fsDeleteFile,
+    fsCopyFilePathToPath,
+} from '../server/fileHelpers';
 
 export type AnyObjectType = {
     [key: string]: any;
@@ -291,4 +298,34 @@ export function genTimeoutAttempt(timeMilliseconds: number = 1e3) {
             func();
         }, timeMilliseconds);
     };
+}
+
+export function downloadFile(
+    url: string,
+    filename: string,
+    type: string,
+    isOverwrite = true,
+) {
+    return new Promise<string>((resolve, reject) => {
+        fetch(url)
+            .then((response) => response.blob())
+            .then(async (blob) => {
+                const file = new File([blob], filename, { type });
+                const userWritablePath = getUserWritablePath();
+                const dllPath = pathJoin(userWritablePath, filename);
+
+                if (isOverwrite && (await fsCheckFileExist(dllPath))) {
+                    await fsDeleteFile(dllPath);
+                }
+                if (!(await fsCheckFileExist(dllPath))) {
+                    await fsCopyFilePathToPath(
+                        file,
+                        userWritablePath,
+                        filename,
+                    );
+                }
+                resolve(dllPath);
+            })
+            .catch(reject);
+    });
 }
