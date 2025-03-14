@@ -51,7 +51,9 @@ export type PathUtilsType = {
 export type SystemUtilsType = {
     isDev: boolean;
     isWindows: boolean;
+    is64System: boolean;
     isMac: boolean;
+    isArm64: boolean;
     isLinux: boolean;
 };
 
@@ -129,7 +131,10 @@ const appProvider = (window as any).provider as Readonly<
         reload: () => void;
         appUtils: AppUtilsType;
         dbUtils: {
-            getSQLiteDBInstance: (dbName: string) => SQLiteDatabaseType;
+            getSQLiteDBInstance: (
+                dbName: string,
+                fts5ExtPath: string,
+            ) => SQLiteDatabaseType;
         };
         presenterHomePage: string;
         readerHomePage: string;

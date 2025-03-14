@@ -1,39 +1,32 @@
-import messageUtils from './messageUtils';
-
 // https://nodejs.org/docs/latest-v22.x/api/sqlite.html
+// https://sqlite.org/howtocompile.html
+// Build extension https://sqlite.org/loadext.html#build
 // Full Text Search https://sqlite.org/fts5.html
+
+// # Windows
+// > nmake /f makefile.msc sqlite3.c
+// > nmake /f makefile.msc fts5.c
+// > cl fts5.c /link -dll /out:fts5.dll
+// # Mac
+// > ./configure && make sqlite3.c && make fts5.c
+// > gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
 
 class SQLiteDatabase {
     public db: any;
-    constructor(dbName: string) {
-        if (!dbName) {
-            throw new Error('dbName is required');
+    constructor(dbPath: string, fts5ExtPath: string) {
+        if (!dbPath || !fts5ExtPath) {
+            throw new Error('dbPath and fts5ExtPath is required');
         }
         const { DatabaseSync } = require('node:sqlite');
-        const userDataPath = messageUtils.sendDataSync(
-            'main:app:get-data-path',
-        );
-        console.log(userDataPath);
-
-        const db = new DatabaseSync(`${userDataPath}/${dbName}.db`, {
+        const db = new DatabaseSync(dbPath, {
             allowExtension: true,
         });
-        // wget -c https://www.sqlite.org/src/tarball/SQLite-trunk.tgz?uuid=trunk -O SQLite-trunk.tgz
-        // tar -xzf SQLite-trunk.tgz
-        // cd SQLite-trunk
-        // ./configure --enable-fts5 && make
-        // gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
-        // # /Users/raksa/Downloads/sqlite/SQLite-trunk/fts5.dylib
-        // test.db.enableLoadExtension(true);
-        db.loadExtension(
-            '/Users/raksa/Downloads/sqlite/SQLite-trunk/fts5.dylib',
-        );
+        db.loadExtension(fts5ExtPath);
         this.db = db;
     }
     exec(sql: string) {
         this.db.exec(sql);
     }
-    // 'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)',
     createTable(createTableSQL: string) {
         this.exec(createTableSQL);
     }
@@ -47,8 +40,8 @@ class SQLiteDatabase {
 }
 
 const dbUtils = {
-    getSQLiteDBInstance(dbName: string): SQLiteDatabase {
-        return new SQLiteDatabase(dbName);
+    getSQLiteDBInstance(dbName: string, fts5ExtPath: string): SQLiteDatabase {
+        return new SQLiteDatabase(dbName, fts5ExtPath);
     },
 };
 
