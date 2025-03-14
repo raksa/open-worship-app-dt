@@ -11,6 +11,8 @@
 // > ./configure && make sqlite3.c && make fts5.c
 // > gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
 
+// SQLite3 version 3.49.1
+
 class SQLiteDatabase {
     public db: any;
     constructor(dbPath: string, fts5ExtPath: string) {
