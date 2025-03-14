@@ -182,10 +182,7 @@ export function checkIsValidUrl(urlText: string) {
     try {
         new URL(urlText);
         return true;
-    } catch (
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        error
-    ) {
+    } catch (_error) {
         return false;
     }
 }

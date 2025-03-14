@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { LanguageType } from '..';
 
 const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];

@@ -225,7 +225,10 @@ export type FileResultType = {
     filePath: string;
 };
 
-function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
+function fsFilePromise<T>(
+    fn: (...args: any) => void,
+    ...args: any
+): Promise<T> {
     return new Promise<T>((resolve, reject) => {
         args = args || [];
         args.push(function (error: any, ...args1: any) {
