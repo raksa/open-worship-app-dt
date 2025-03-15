@@ -13,7 +13,7 @@ import {
     useNextEditingBibleItem,
     useSplitBibleItemRenderer,
 } from '../bible-reader/readBibleHelpers';
-import { BibleViewTitleMaterialContext } from '../bible-reader/bibleViewExtra';
+import { BibleViewTitleMaterialContext } from '../bible-reader/BibleViewExtra';
 
 const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
