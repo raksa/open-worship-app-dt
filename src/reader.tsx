@@ -7,51 +7,9 @@ import { main } from './appInitHelpers';
 import appProvider from './server/appProvider';
 import { bibleDataReader } from './helper/bible-helpers/BibleDataReader';
 
-import { downloadFile } from './helper/helpers';
-
-import wins64Fts5Url from './assets/db-exts/fts5.dll?url';
-import winsI386Fts5Url from './assets/db-exts/fts5-i386.dll?url';
-import macArm64Fts5Url from './assets/db-exts/fts5.dylib?url';
-import macIntelFts5Url from './assets/db-exts/fts5-int.dylib?url';
-import linux64Fts5Url from './assets/db-exts/fts5.so?url';
-import linuxI386Fts5Url from './assets/db-exts/fts5-i386.so?url';
-import linuxSpellfix1Url from './assets/db-exts/spellfix1.so?url';
-import { getUserWritablePath } from './server/appHelpers';
-
-const destinationPath = getUserWritablePath();
-
 async function getDB() {
-    let fts5Url = '';
-    const systemUtils = appProvider.systemUtils;
-    if (systemUtils.isWindows) {
-        fts5Url = systemUtils.is64System ? wins64Fts5Url : winsI386Fts5Url;
-    } else if (systemUtils.isMac) {
-        fts5Url = systemUtils.isArm64 ? macArm64Fts5Url : macIntelFts5Url;
-    } else if (systemUtils.isLinux) {
-        fts5Url = systemUtils.is64System ? linux64Fts5Url : linuxI386Fts5Url;
-    } else {
-        throw new Error('Unsupported OS');
-    }
-    const extFilePath = await downloadFile(
-        fts5Url,
-        'fts5',
-        'application/x-msdownload',
-        destinationPath,
-        true,
-    );
-    const extSpellfixFilePath = await downloadFile(
-        linuxSpellfix1Url,
-        'spellfix1',
-        'application/x-msdownload',
-        destinationPath,
-        true,
-    );
     const biblePath = await bibleDataReader.getWritableBiblePath();
-    const db = appProvider.dbUtils.getSQLiteDBInstance(
-        `${biblePath}/test.db`,
-        extFilePath,
-    );
-    db.db.loadExtension(extSpellfixFilePath);
+    const db = appProvider.dbUtils.getSQLiteDBInstance(`${biblePath}/test.db`);
     return db;
 }
 

@@ -131,10 +131,7 @@ const appProvider = (window as any).provider as Readonly<
         reload: () => void;
         appUtils: AppUtilsType;
         dbUtils: {
-            getSQLiteDBInstance: (
-                dbName: string,
-                fts5ExtPath: string,
-            ) => SQLiteDatabaseType;
+            getSQLiteDBInstance: (dbName: string) => SQLiteDatabaseType;
         };
         presenterHomePage: string;
         readerHomePage: string;

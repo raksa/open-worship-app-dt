@@ -1,0 +1,40 @@
+
+SQLite3 version 3.49.1
+
+* https://sqlite.org/howtocompile.html
+* Build extension https://sqlite.org/loadext.html#build
+* Full Text Search https://sqlite.org/fts5.html
+
+### Windows
+
+```bash
+> nmake /f makefile.msc sqlite3.c
+> cl fts5.c /link -dll /out:fts5.dll
+# 32-bit (via native tool x86)
+> cl fts5.c /link -dll /out:fts5-i386.dll
+```
+
+
+### Mac
+
+```bash
+> ./configure && make sqlite3.c
+> gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
+# intel
+> gcc -g -fPIC -dynamiclib fts5.c -o fts5-int.dylib
+```
+
+
+### Unix-like
+
+```bash
+> gcc -g -fPIC -shared fts5.c -o fts5.so
+> gcc -g -fPIC -shared ./ext/misc/spellfix.c -o spellfix1.so
+# 32-bit
+> sudo apt install gcc-multilib
+> gcc -g -fPIC -shared fts5.c -m32 -o x86_fts5.so
+> gcc -g -fPIC -shared ./ext/misc/spellfix.c -m32 -o spellfix1-i386.so
+```
+
+#### check dependencies
+> ldd fts5.so
