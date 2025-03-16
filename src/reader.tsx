@@ -13,6 +13,8 @@ import wins64Fts5Url from './assets/db-exts/fts5.dll?url';
 import wins86Fts5Url from './assets/db-exts/x86_fts5.dll?url';
 import macArm64Fts5Url from './assets/db-exts/fts5.dylib?url';
 import macIntelFts5Url from './assets/db-exts/int_fts5.dylib?url';
+import linux64Fts5Url from './assets/db-exts/fts5.so?url';
+import linux86Fts5Url from './assets/db-exts/x86_fts5.so?url';
 
 async function getDB() {
     let fts5Url = '';
@@ -21,6 +23,8 @@ async function getDB() {
         fts5Url = systemUtils.is64System ? wins64Fts5Url : wins86Fts5Url;
     } else if (systemUtils.isMac) {
         fts5Url = systemUtils.isArm64 ? macArm64Fts5Url : macIntelFts5Url;
+    } else if (systemUtils.isLinux) {
+        fts5Url = systemUtils.is64System ? linux64Fts5Url : linux86Fts5Url;
     } else {
         throw new Error('Unsupported OS');
     }
