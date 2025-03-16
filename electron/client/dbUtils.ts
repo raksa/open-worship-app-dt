@@ -5,11 +5,15 @@
 
 // # Windows
 // > nmake /f makefile.msc sqlite3.c
-// > nmake /f makefile.msc fts5.c
 // > cl fts5.c /link -dll /out:fts5.dll
 // # Mac
-// > ./configure && make sqlite3.c && make fts5.c
+// > ./configure && make sqlite3.c
 // > gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
+// # Unix-like
+// > gcc -g -fPIC -shared fts5.c -m32 -o fts5.so
+// # 32-bit
+// > sudo apt install gcc-multilib
+// > gcc -g -fPIC -shared fts5.c -m32 -o x86_fts5.so
 
 // SQLite3 version 3.49.1
 
