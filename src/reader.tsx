@@ -47,6 +47,8 @@ async function getDB() {
     create: async () => {
         const db = await getDB();
         db.exec(`
+-- Create a json table.
+CREATE TABLE IF NOT EXISTS json_table(key TEXT PRIMARY KEY, verses JSON);
 -- Create a table. And an external content fts5 table to index it.
 CREATE TABLE IF NOT EXISTS t1(a VARCHAR(7) PRIMARY KEY, b TEXT);
 CREATE VIRTUAL TABLE IF NOT EXISTS fts_idx USING fts5(b, content='t1', content_rowid='a');
@@ -73,10 +75,26 @@ INSERT INTO t1 VALUES('2', 'is not gold');
 `);
         db.close();
     },
+    insertJson: async () => {
+        const db = await getDB();
+        db.exec(`
+INSERT INTO json_table VALUES('GEN 1', '{"verse": 1, "text": "In the beginning God created..."}');
+`);
+        db.close();
+    },
     find: async () => {
         const db = await getDB();
         const result = db.getAll(`
 SELECT * FROM fts_idx WHERE b MATCH 'glitters';
+`);
+        db.close();
+        return result;
+    },
+    findJson: async () => {
+        const db = await getDB();
+        const result = db.getAll(`
+-- where verses.verse = 1
+SELECT * FROM json_table, json_tree(json_table.verses) WHERE json_tree.value = 1;
 `);
         db.close();
         return result;
