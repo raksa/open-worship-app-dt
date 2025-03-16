@@ -11,6 +11,8 @@
 // > gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
 // # Unix-like
 // > gcc -g -fPIC -shared fts5.c -m32 -o fts5.so
+// # check dependencies
+// > ldd fts5.so
 // # 32-bit
 // > sudo apt install gcc-multilib
 // > gcc -g -fPIC -shared fts5.c -m32 -o x86_fts5.so
