@@ -10,11 +10,12 @@ import { bibleDataReader } from './helper/bible-helpers/BibleDataReader';
 import { downloadFile } from './helper/helpers';
 
 import wins64Fts5Url from './assets/db-exts/fts5.dll?url';
-import winsI386Fts5Url from './assets/db-exts/i386_fts5.dll?url';
+import winsI386Fts5Url from './assets/db-exts/fts5-i386.dll?url';
 import macArm64Fts5Url from './assets/db-exts/fts5.dylib?url';
-import macIntelFts5Url from './assets/db-exts/int_fts5.dylib?url';
+import macIntelFts5Url from './assets/db-exts/fts5-int.dylib?url';
 import linux64Fts5Url from './assets/db-exts/fts5.so?url';
-import linuxI386Fts5Url from './assets/db-exts/i386_fts5.so?url';
+import linuxI386Fts5Url from './assets/db-exts/fts5-i386.so?url';
+import linuxSpellfix1Url from './assets/db-exts/spellfix1.so?url';
 
 async function getDB() {
     let fts5Url = '';
@@ -28,17 +29,24 @@ async function getDB() {
     } else {
         throw new Error('Unsupported OS');
     }
-    const dllFilePath = await downloadFile(
+    const extFilePath = await downloadFile(
         fts5Url,
-        'fts5.dll',
+        'fts5',
+        'application/x-msdownload',
+        true,
+    );
+    const extSpellfixFilePath = await downloadFile(
+        linuxSpellfix1Url,
+        'spellfix1',
         'application/x-msdownload',
         true,
     );
     const biblePath = await bibleDataReader.getWritableBiblePath();
     const db = appProvider.dbUtils.getSQLiteDBInstance(
         `${biblePath}/test.db`,
-        dllFilePath,
+        extFilePath,
     );
+    db.db.loadExtension(extSpellfixFilePath);
     return db;
 }
 
@@ -47,6 +55,8 @@ async function getDB() {
     create: async () => {
         const db = await getDB();
         db.exec(`
+-- Create a json table.
+CREATE VIRTUAL TABLE IF NOT EXISTS demo USING spellfix1;
 -- Create a json table.
 CREATE TABLE IF NOT EXISTS json_table(key TEXT PRIMARY KEY, verses JSON);
 -- Create a table. And an external content fts5 table to index it.
