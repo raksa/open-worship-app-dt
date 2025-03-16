@@ -50,9 +50,9 @@ export function isVisible(elem: any) {
     }
     if (
         elem.offsetWidth +
-        elem.offsetHeight +
-        elem.getBoundingClientRect().height +
-        elem.getBoundingClientRect().width ===
+            elem.offsetHeight +
+            elem.getBoundingClientRect().height +
+            elem.getBoundingClientRect().width ===
         0
     ) {
         return false;
@@ -277,8 +277,9 @@ export function checkIsSameValues(value1: any, value2: any) {
     return value1 === value2;
 }
 
-export const menuTitleRealFile = `Reveal in ${appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
-    }`;
+export const menuTitleRealFile = `Reveal in ${
+    appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
+}`;
 
 export function genTimeoutAttempt(timeMilliseconds: number = 1e3) {
     let timeoutId: any = null;
@@ -316,11 +317,7 @@ export function downloadFile(
                     await fsDeleteFile(dllPath);
                 }
                 if (!(await fsCheckFileExist(dllPath))) {
-                    await fsCopyFilePathToPath(
-                        file,
-                        destinationPath,
-                        filename,
-                    );
+                    await fsCopyFilePathToPath(file, destinationPath, filename);
                 }
                 resolve(dllPath);
             })
