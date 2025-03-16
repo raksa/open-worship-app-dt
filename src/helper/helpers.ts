@@ -6,7 +6,6 @@ import FileSource from './FileSource';
 import AppDocumentSourceAbs from './DocumentSourceAbs';
 import { trace } from './loggerHelpers';
 import appProvider from '../server/appProvider';
-import { getUserWritablePath } from '../server/appHelpers';
 import {
     pathJoin,
     fsCheckFileExist,
@@ -51,9 +50,9 @@ export function isVisible(elem: any) {
     }
     if (
         elem.offsetWidth +
-            elem.offsetHeight +
-            elem.getBoundingClientRect().height +
-            elem.getBoundingClientRect().width ===
+        elem.offsetHeight +
+        elem.getBoundingClientRect().height +
+        elem.getBoundingClientRect().width ===
         0
     ) {
         return false;
@@ -278,9 +277,8 @@ export function checkIsSameValues(value1: any, value2: any) {
     return value1 === value2;
 }
 
-export const menuTitleRealFile = `Reveal in ${
-    appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
-}`;
+export const menuTitleRealFile = `Reveal in ${appProvider.systemUtils.isMac ? 'Finder' : 'File Explorer'
+    }`;
 
 export function genTimeoutAttempt(timeMilliseconds: number = 1e3) {
     let timeoutId: any = null;
@@ -304,6 +302,7 @@ export function downloadFile(
     url: string,
     filename: string,
     type: string,
+    destinationPath: string,
     isOverwrite = true,
 ) {
     return new Promise<string>((resolve, reject) => {
@@ -311,8 +310,7 @@ export function downloadFile(
             .then((response) => response.blob())
             .then(async (blob) => {
                 const file = new File([blob], filename, { type });
-                const userWritablePath = getUserWritablePath();
-                const dllPath = pathJoin(userWritablePath, filename);
+                const dllPath = pathJoin(destinationPath, filename);
 
                 if (isOverwrite && (await fsCheckFileExist(dllPath))) {
                     await fsDeleteFile(dllPath);
@@ -320,7 +318,7 @@ export function downloadFile(
                 if (!(await fsCheckFileExist(dllPath))) {
                     await fsCopyFilePathToPath(
                         file,
-                        userWritablePath,
+                        destinationPath,
                         filename,
                     );
                 }

@@ -16,6 +16,9 @@ import macIntelFts5Url from './assets/db-exts/fts5-int.dylib?url';
 import linux64Fts5Url from './assets/db-exts/fts5.so?url';
 import linuxI386Fts5Url from './assets/db-exts/fts5-i386.so?url';
 import linuxSpellfix1Url from './assets/db-exts/spellfix1.so?url';
+import { getUserWritablePath } from './server/appHelpers';
+
+const destinationPath = getUserWritablePath();
 
 async function getDB() {
     let fts5Url = '';
@@ -33,12 +36,14 @@ async function getDB() {
         fts5Url,
         'fts5',
         'application/x-msdownload',
+        destinationPath,
         true,
     );
     const extSpellfixFilePath = await downloadFile(
         linuxSpellfix1Url,
         'spellfix1',
         'application/x-msdownload',
+        destinationPath,
         true,
     );
     const biblePath = await bibleDataReader.getWritableBiblePath();
