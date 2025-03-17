@@ -10,15 +10,18 @@ const systemUtils = {
   isArm64: process.arch === 'arm64',
 };
 function genFileName(baseName) {
+  let fts5FileName = '';
   if (systemUtils.isWindows) {
-    return `${baseName}${systemUtils.is64System ? '' : '-i386'}.dll`;
+    fts5FileName = `${baseName}${systemUtils.is64System ? '' : '-i386'}.dll`;
+    baseName = `${baseName}.dll`;
   } else if (systemUtils.isMac) {
-    return `${baseName}${systemUtils.isArm64 ? '' : '-int'}.dylib`;
+    fts5FileName = `${baseName}${systemUtils.isArm64 ? '' : '-int'}.dylib`;
   } else if (systemUtils.isLinux) {
-    return `${baseName}${systemUtils.is64System ? '' : '-i386'}.so`;
+    fts5FileName = `${baseName}${systemUtils.is64System ? '' : '-i386'}.so`;
   } else {
     throw new Error('Unsupported OS');
   }
+  return { fts5FileName, destFileName: baseName };
 }
 const basePath = {
   source: resolve('./extra-work/db-exts'),
@@ -35,6 +38,6 @@ function copy(fileFullName, destFileFullName) {
   copyFileSync(join(basePath.source, fileFullName), destFilePath);
 }
 for (const baseName of ['fts5', 'spellfix1']) {
-  const fts5FileName = genFileName(baseName);
-  copy(fts5FileName, baseName);
+  const { fts5FileName, destFileName } = genFileName(baseName);
+  copy(fts5FileName, destFileName);
 }
