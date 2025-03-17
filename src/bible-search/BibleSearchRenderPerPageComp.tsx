@@ -1,8 +1,8 @@
 import BibleItem from '../bible-list/BibleItem';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
-import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
+import { BibleSearchOnlineType, breakItem } from './bibleSearchHelpers';
 
-export default function BibleOnlineRenderPerPageComp({
+export default function BibleSearchRenderPerPageComp({
     pageNumber,
     data,
     searchText,

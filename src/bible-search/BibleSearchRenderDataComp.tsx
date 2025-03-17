@@ -11,8 +11,8 @@ import {
     BibleSearchOnlineType,
     pageNumberToReqData,
     SelectedBookKeyType,
-} from './bibleOnlineHelpers';
-import BibleOnlineRenderPerPageComp from './BibleOnlineRenderPerPageComp';
+} from './bibleSearchHelpers';
+import BibleSearchRenderPerPageComp from './BibleSearchRenderPerPageComp';
 
 async function selectBookKey(
     event: any,
@@ -133,7 +133,7 @@ function RenderFooterComp({
     );
 }
 
-export default function BibleOnlineRenderDataComp({
+export default function BibleSearchRenderDataComp({
     text,
     allData,
     searchFor,
@@ -192,7 +192,7 @@ export default function BibleOnlineRenderDataComp({
                     }
                     const data = allData[pageNumber];
                     return (
-                        <BibleOnlineRenderPerPageComp
+                        <BibleSearchRenderPerPageComp
                             key={pageNumber}
                             searchText={text}
                             data={data}

@@ -9,8 +9,8 @@ import {
     APIDataType,
     SelectedBookKeyType,
     APIDataMapType,
-} from './bibleOnlineHelpers';
-import BibleOnlineRenderDataComp from './BibleOnlineRenderDataComp';
+} from './bibleSearchHelpers';
+import BibleSearchRenderDataComp from './BibleSearchRenderDataComp';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
 import { appApiFetch } from '../helper/networkHelpers';
@@ -32,7 +32,7 @@ async function loadApiData() {
     return null;
 }
 
-export default function BibleOnlineSearchBodyPreviewerComp() {
+export default function BibleSearchBodyPreviewerComp() {
     const [apiData, setApiData] = useState<APIDataType | null | undefined>(
         undefined,
     );
@@ -66,10 +66,10 @@ export default function BibleOnlineSearchBodyPreviewerComp() {
         );
     }
 
-    return <BibleOnlineSearchBody apiData={apiData} />;
+    return <BibleSearchBody apiData={apiData} />;
 }
 
-function BibleOnlineSearchBody({
+function BibleSearchBody({
     apiData,
 }: Readonly<{
     apiData: APIDataType;
@@ -171,7 +171,7 @@ function BibleOnlineSearchBody({
                 )}
             </div>
             {apiDataMap && (
-                <BibleOnlineRenderDataComp
+                <BibleSearchRenderDataComp
                     text={searchText}
                     allData={allData}
                     searchFor={(from: number, to: number) => {

@@ -152,7 +152,7 @@ export async function searchOnline(
             });
             return result as BibleSearchOnlineType;
         }
-        loggerHelpers.error(`Invalid bible search online ${result}`);
+        loggerHelpers.error(`Invalid bible search ${result}`);
     } catch (error) {
         showSimpleToast(
             'Fetching Bible Search Online',

@@ -14,8 +14,8 @@ import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 
-const LazyBibleOnlineLookupBodyPreviewer = lazy(() => {
-    return import('../bible-search/BibleOnlineLookupBodyPreviewerComp');
+const LazyBibleSearchBodyPreviewer = lazy(() => {
+    return import('../bible-search/BibleSearchBodyPreviewerComp');
 });
 
 const LOOKUPING_ONLINE_SETTING_NAME = 'bible-lookup-online';
@@ -72,7 +72,7 @@ export default function RenderBibleLookupComp({
             widgetName: 'Lookup',
         },
         {
-            children: LazyBibleOnlineLookupBodyPreviewer,
+            children: LazyBibleSearchBodyPreviewer,
             key: 'h1',
             widgetName: 'Bible Online Lookup',
         },
