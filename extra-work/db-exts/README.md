@@ -39,4 +39,10 @@ SQLite3 version 3.49.1
 ```
 
 #### check dependencies
+
+```bash
+# Unix-like
 > ldd fts5.so
+# Windows
+> dumpbin /dependents fts5.dll
+```
