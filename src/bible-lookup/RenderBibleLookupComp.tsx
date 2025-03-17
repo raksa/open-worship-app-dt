@@ -15,7 +15,7 @@ import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 
 const LazyBibleOnlineLookupBodyPreviewer = lazy(() => {
-    return import('./BibleOnlineLookupBodyPreviewerComp');
+    return import('../bible-search/BibleOnlineLookupBodyPreviewerComp');
 });
 
 const LOOKUPING_ONLINE_SETTING_NAME = 'bible-lookup-online';

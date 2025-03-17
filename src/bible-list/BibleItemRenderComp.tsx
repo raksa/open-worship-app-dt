@@ -4,7 +4,7 @@ import ItemReadErrorComp from '../others/ItemReadErrorComp';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { handleDragStart } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
-import { BibleSelectionMiniComp } from '../bible-loopup/BibleSelectionComp';
+import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import {
     LookupBibleItemViewController,
     useBibleItemViewControllerContext,

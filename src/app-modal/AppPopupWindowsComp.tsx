@@ -1,4 +1,4 @@
-import BibleLookupPopupComp from '../bible-loopup/BibleLookupPopupComp';
+import BibleLookupPopupComp from '../bible-lookup/BibleLookupPopupComp';
 import { useBibleLookupShowingContext } from '../others/commonButtons';
 
 export default function AppPopupWindowsComp() {

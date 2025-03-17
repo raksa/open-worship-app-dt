@@ -8,7 +8,7 @@ import LoadingComp from '../others/LoadingComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     calcPaging,
-    BibleLookupOnlineType,
+    BibleSearchOnlineType,
     pageNumberToReqData,
     SelectedBookKeyType,
 } from './bibleOnlineHelpers';
@@ -48,11 +48,11 @@ async function selectBookKey(
 function RenderPageNumberComp({
     pageNumber,
     isActive,
-    handleLookup,
+    handleSearch,
 }: Readonly<{
     pageNumber: string;
     isActive: boolean;
-    handleLookup: (pageNumber: string) => void;
+    handleSearch: (pageNumber: string) => void;
 }>) {
     return (
         <li
@@ -63,7 +63,7 @@ function RenderPageNumberComp({
                 className="page-link"
                 disabled={isActive}
                 onClick={() => {
-                    handleLookup(pageNumber);
+                    handleSearch(pageNumber);
                 }}
             >
                 {pageNumber}
@@ -72,7 +72,7 @@ function RenderPageNumberComp({
     );
 }
 
-function ShowLookupComp() {
+function ShowSearchComp() {
     return (
         <div
             className="d-flex justify-content-center"
@@ -95,11 +95,11 @@ function ShowLookupComp() {
 function RenderFooterComp({
     pages,
     allPageNumberFound,
-    lookupFor,
+    searchFor,
 }: Readonly<{
     pages: string[];
     allPageNumberFound: string[];
-    lookupFor: (pageNumber: string) => void;
+    searchFor: (pageNumber: string) => void;
 }>) {
     if (pages.length === 0) {
         return null;
@@ -123,7 +123,7 @@ function RenderFooterComp({
                                 key={pageNumber}
                                 pageNumber={pageNumber}
                                 isActive={isActive}
-                                handleLookup={lookupFor}
+                                handleSearch={searchFor}
                             />
                         );
                     })}
@@ -136,19 +136,19 @@ function RenderFooterComp({
 export default function BibleOnlineRenderDataComp({
     text,
     allData,
-    lookupFor,
+    searchFor,
     bibleKey,
     selectedBook,
     setSelectedBook,
-    isLookup,
+    isSearch,
 }: Readonly<{
     text: string;
-    allData: { [key: string]: BibleLookupOnlineType };
-    lookupFor: (from: number, to: number) => void;
+    allData: { [key: string]: BibleSearchOnlineType };
+    searchFor: (from: number, to: number) => void;
     bibleKey: string;
     selectedBook: SelectedBookKeyType;
     setSelectedBook: (_: SelectedBookKeyType) => void;
-    isLookup: boolean;
+    isSearch: boolean;
 }>) {
     useAppEffect(() => {
         setSelectedBook(null);
@@ -157,9 +157,9 @@ export default function BibleOnlineRenderDataComp({
     const pagingData = calcPaging(
         allPageNumberFound.length ? allData[allPageNumberFound[0]] : null,
     );
-    const lookupFor1 = (pageNumber: string) => {
-        const lookupForData = pageNumberToReqData(pagingData, pageNumber);
-        lookupFor(lookupForData.fromLineNumber, lookupForData.toLineNumber);
+    const searchFor1 = (pageNumber: string) => {
+        const searchForData = pageNumberToReqData(pagingData, pageNumber);
+        searchFor(searchForData.fromLineNumber, searchForData.toLineNumber);
     };
     return (
         <>
@@ -194,19 +194,19 @@ export default function BibleOnlineRenderDataComp({
                     return (
                         <BibleOnlineRenderPerPageComp
                             key={pageNumber}
-                            lookupText={text}
+                            searchText={text}
                             data={data}
                             pageNumber={pageNumber}
                             bibleKey={bibleKey}
                         />
                     );
                 })}
-                {isLookup ? <ShowLookupComp /> : null}
+                {isSearch ? <ShowSearchComp /> : null}
             </div>
             <RenderFooterComp
                 pages={pagingData.pages}
                 allPageNumberFound={allPageNumberFound}
-                lookupFor={lookupFor1}
+                searchFor={searchFor1}
             />
         </>
     );

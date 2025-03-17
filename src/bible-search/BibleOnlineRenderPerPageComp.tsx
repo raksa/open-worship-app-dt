@@ -1,16 +1,16 @@
 import BibleItem from '../bible-list/BibleItem';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
-import { BibleLookupOnlineType, breakItem } from './bibleOnlineHelpers';
+import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
 
 export default function BibleOnlineRenderPerPageComp({
     pageNumber,
     data,
-    lookupText,
+    searchText,
     bibleKey,
 }: Readonly<{
     pageNumber: string;
-    data: BibleLookupOnlineType;
-    lookupText: string;
+    data: BibleSearchOnlineType;
+    searchText: string;
     bibleKey: string;
 }>) {
     const handleClicking = (event: any, bibleItem: BibleItem) => {
@@ -30,7 +30,7 @@ export default function BibleOnlineRenderPerPageComp({
             <div className="w-100">
                 {data.content.map(({ text, uniqueKey }) => {
                     const { newItem, kjvTitle, bibleItem } = breakItem(
-                        lookupText,
+                        searchText,
                         text,
                         bibleKey,
                     );

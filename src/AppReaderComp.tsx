@@ -14,7 +14,7 @@ const LazyBibleList = lazy(() => {
     return import('./bible-list/BibleListComp');
 });
 const LazyRenderBibleLookup = lazy(() => {
-    return import('./bible-loopup/RenderBibleLookupComp');
+    return import('./bible-lookup/RenderBibleLookupComp');
 });
 
 const flexSizeDefault: FlexSizeType = {

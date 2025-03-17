@@ -11,13 +11,13 @@ import {
     ContextMenuItemType,
     genContextMenuItemShortcutKey,
 } from '../others/AppContextMenuComp';
-import { showBibleOption } from '../bible-loopup/BibleSelectionComp';
-import { genFoundBibleItemContextMenu } from '../bible-loopup/RenderActionButtonsComp';
+import { showBibleOption } from '../bible-lookup/BibleSelectionComp';
+import { genFoundBibleItemContextMenu } from '../bible-lookup/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import {
     applyPendingText,
     attemptAddingHistory,
-} from '../bible-loopup/InputHistoryComp';
+} from '../bible-lookup/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleViewComp';
 

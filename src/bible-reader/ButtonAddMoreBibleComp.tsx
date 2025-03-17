@@ -1,5 +1,5 @@
 import BibleItem from '../bible-list/BibleItem';
-import { showBibleOption } from '../bible-loopup/BibleSelectionComp';
+import { showBibleOption } from '../bible-lookup/BibleSelectionComp';
 
 export default function ButtonAddMoreBibleComp({
     bibleItems,
