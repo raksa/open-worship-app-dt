@@ -7,7 +7,7 @@ import { processSelection, userEnteringSelected } from './selectionHelpers';
 import { useChapterMatch } from '../helper/bible-helpers/serverBibleHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
-const OPTION_CLASS = 'bible-search-chapter-option';
+const OPTION_CLASS = 'bible-lookup-chapter-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 export default function RenderChapterOptionsComp({

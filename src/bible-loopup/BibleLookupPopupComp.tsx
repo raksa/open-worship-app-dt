@@ -1,8 +1,8 @@
-import './BibleSearchPopupComp.scss';
+import './BibleLookupPopupComp.scss';
 
 import { useState } from 'react';
 
-import RenderBibleSearchComp from './RenderBibleSearchComp';
+import RenderBibleLookupComp from './RenderBibleLookupComp';
 import { ModalComp } from '../app-modal/ModalComp';
 import BibleItem from '../bible-list/BibleItem';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
@@ -11,9 +11,9 @@ import { setSetting } from '../helper/settingHelpers';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
 import LoadingComp from '../others/LoadingComp';
 
-export default function BibleSearchPopupComp() {
+export default function BibleLookupPopupComp() {
     const { data } = getPopupWindowTypeData();
-    const bibleItem = BibleItem.parseBibleSearchData(data);
+    const bibleItem = BibleItem.parseBibleLookupData(data);
     const [inputText, setInputText] = useState<string | null>(
         bibleItem !== null ? null : '',
     );
@@ -34,7 +34,7 @@ export default function BibleSearchPopupComp() {
             {inputText === null ? (
                 <LoadingComp />
             ) : (
-                <RenderBibleSearchComp editorInputText={inputText} />
+                <RenderBibleLookupComp editorInputText={inputText} />
             )}
         </ModalComp>
     );

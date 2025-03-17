@@ -7,11 +7,11 @@ import {
     toInputText,
     parseChapterFromGuessing,
 } from '../helper/bible-helpers/serverBibleHelpers2';
-import RenderSearchSuggestionComp from './RenderSearchSuggestionComp';
+import RenderLookupSuggestionComp from './RenderLookupSuggestionComp';
 import { useAppEffectAsync } from '../helper/debuggerHelpers';
 import { keyToBook } from '../helper/bible-helpers/bibleInfoHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 import { getInputTrueValue, useInputTextContext } from './InputHandlerComp';
 
@@ -39,7 +39,7 @@ function checkAndSyncResult(
     syncTimeoutId = setTimeout(() => {
         syncTimeoutId = null;
         if (checkShouldSync(oldResult, newResult)) {
-            SearchBibleItemViewController.getInstance().syncBibleItems();
+            LookupBibleItemViewController.getInstance().syncBibleItems();
         }
     }, 100);
 }
@@ -146,9 +146,9 @@ function useMethods(
     };
 }
 
-export default function RenderBibleSearchBodyComp() {
+export default function RenderBibleLookupBodyComp() {
     const { inputText } = useInputTextContext();
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const bibleKey = useBibleKeyContext();
     const setInputText = viewController.setInputText;
     const extractedInput = useExtractInput(bibleKey, inputText);
@@ -158,7 +158,7 @@ export default function RenderBibleSearchBodyComp() {
         applyVerseSelectionCallback,
     } = useMethods(bibleKey, extractedInput, inputText, setInputText);
     return (
-        <RenderSearchSuggestionComp
+        <RenderLookupSuggestionComp
             bibleResult={extractedInput}
             applyChapterSelection={applyChapterSelectionCallback}
             applyVerseSelection={applyVerseSelectionCallback}

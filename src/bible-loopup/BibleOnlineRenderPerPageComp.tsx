@@ -1,24 +1,24 @@
 import BibleItem from '../bible-list/BibleItem';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
-import { BibleSearchOnlineType, breakItem } from './bibleOnlineHelpers';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { BibleLookupOnlineType, breakItem } from './bibleOnlineHelpers';
 
 export default function BibleOnlineRenderPerPageComp({
     pageNumber,
     data,
-    searchingText,
+    lookupText,
     bibleKey,
 }: Readonly<{
     pageNumber: string;
-    data: BibleSearchOnlineType;
-    searchingText: string;
+    data: BibleLookupOnlineType;
+    lookupText: string;
     bibleKey: string;
 }>) {
     const handleClicking = (event: any, bibleItem: BibleItem) => {
-        const viewController = SearchBibleItemViewController.getInstance();
+        const viewController = LookupBibleItemViewController.getInstance();
         if (event.shiftKey) {
             viewController.appendBibleItem(bibleItem);
         } else {
-            viewController.setSearchingContentFromBibleItem(bibleItem);
+            viewController.setLookupContentFromBibleItem(bibleItem);
         }
     };
     return (
@@ -30,7 +30,7 @@ export default function BibleOnlineRenderPerPageComp({
             <div className="w-100">
                 {data.content.map(({ text, uniqueKey }) => {
                     const { newItem, kjvTitle, bibleItem } = breakItem(
-                        searchingText,
+                        lookupText,
                         text,
                         bibleKey,
                     );

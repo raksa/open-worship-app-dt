@@ -19,7 +19,7 @@ export type APIDataType = {
     };
 };
 
-export type BibleSearchOnlineType = {
+export type BibleLookupOnlineType = {
     maxLineNumber: number;
     fromLineNumber: number;
     toLineNumber: number;
@@ -28,7 +28,7 @@ export type BibleSearchOnlineType = {
         uniqueKey: string;
     }[];
 };
-export type BibleSearchForType = {
+export type BibleLookupForType = {
     bookKey?: string;
     fromLineNumber?: number;
     toLineNumber?: number;
@@ -42,10 +42,10 @@ export type PagingDataTye = {
     pageSize: number;
     perPage: number;
 };
-export type AllDataType = { [key: string]: BibleSearchOnlineType };
+export type AllDataType = { [key: string]: BibleLookupOnlineType };
 
 export function checkIsCurrentPage(
-    data: BibleSearchOnlineType,
+    data: BibleLookupOnlineType,
     pageNumber: number,
     perPage: number,
 ) {
@@ -55,7 +55,7 @@ export function checkIsCurrentPage(
     }
 }
 export function findPageNumber(
-    data: BibleSearchOnlineType,
+    data: BibleLookupOnlineType,
     perPage: number,
     pages: string[],
 ) {
@@ -67,12 +67,12 @@ export function findPageNumber(
     return '0';
 }
 
-export function calcPerPage(data: BibleSearchOnlineType) {
+export function calcPerPage(data: BibleLookupOnlineType) {
     const perPage = data.toLineNumber - data.fromLineNumber + 1;
     return perPage;
 }
 
-export function calcPaging(data: BibleSearchOnlineType | null): PagingDataTye {
+export function calcPaging(data: BibleLookupOnlineType | null): PagingDataTye {
     if (data === null) {
         return { pages: [], currentPage: '0', pageSize: 0, perPage: 0 };
     }
@@ -128,10 +128,10 @@ export function pageNumberToReqData(
     };
 }
 
-export async function searchOnline(
+export async function lookupOnline(
     apiUrl: string,
     apiKey: string,
-    searchData: BibleSearchForType,
+    lookupData: BibleLookupForType,
 ) {
     try {
         const response = await fetch(apiUrl, {
@@ -140,7 +140,7 @@ export async function searchOnline(
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify(searchData),
+            body: JSON.stringify(lookupData),
         });
         const result = await response.json();
         if (result['content']) {
@@ -150,12 +150,12 @@ export async function searchOnline(
                     uniqueKey: crypto.randomUUID(),
                 };
             });
-            return result as BibleSearchOnlineType;
+            return result as BibleLookupOnlineType;
         }
-        loggerHelpers.error(`Invalid bible search online ${result}`);
+        loggerHelpers.error(`Invalid bible lookup online ${result}`);
     } catch (error) {
         showSimpleToast(
-            'Fetching Bible Search Online',
+            'Fetching Bible Lookup Online',
             'Fail to fetch bible online',
         );
         handleError(error);

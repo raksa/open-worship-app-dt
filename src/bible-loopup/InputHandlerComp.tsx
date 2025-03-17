@@ -4,13 +4,13 @@ import { useGetBookKVList } from '../helper/bible-helpers/serverBibleHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
 import BibleSelectionComp from './BibleSelectionComp';
 import {
-    BIBLE_SEARCH_INPUT_ID,
+    BIBLE_LOOKUP_INPUT_ID,
     INPUT_TEXT_CLASS,
-    checkIsBibleSearchInputFocused,
-    setBibleSearchInputFocus,
+    checkIsBibleLookupInputFocused,
+    setBibleLookupInputFocus,
 } from './selectionHelpers';
 import { useBibleItemPropsToInputText } from '../bible-list/bibleItemHelpers';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
 export const InputTextContext = createContext<{
@@ -26,7 +26,7 @@ export function useInputTextContext() {
 }
 
 export function getInputTrueValue() {
-    const input = document.getElementById(BIBLE_SEARCH_INPUT_ID);
+    const input = document.getElementById(BIBLE_LOOKUP_INPUT_ID);
     return (input as HTMLInputElement)?.value ?? null;
 }
 
@@ -37,7 +37,7 @@ export default function InputHandlerComp({
 }>) {
     const { inputText } = useInputTextContext();
     const setInputText =
-        SearchBibleItemViewController.getInstance().setInputText;
+        LookupBibleItemViewController.getInstance().setInputText;
     const bibleKey = useBibleKeyContext();
     const books = useGetBookKVList(bibleKey);
     const bookKey = books === null ? null : books['GEN'];
@@ -51,8 +51,8 @@ export default function InputHandlerComp({
     useKeyboardRegistering(
         [{ key: 'Escape' }],
         () => {
-            if (!checkIsBibleSearchInputFocused()) {
-                setBibleSearchInputFocus();
+            if (!checkIsBibleLookupInputFocused()) {
+                setBibleLookupInputFocus();
                 return;
             }
             const arr = inputText.split(' ').filter((str) => str !== '');
@@ -72,7 +72,7 @@ export default function InputHandlerComp({
                 onBibleKeyChange={onBibleKeyChange}
             />
             <input
-                id={BIBLE_SEARCH_INPUT_ID}
+                id={BIBLE_LOOKUP_INPUT_ID}
                 type="text"
                 className={`form-control ${INPUT_TEXT_CLASS}`}
                 value={inputText}

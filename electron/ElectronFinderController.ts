@@ -22,6 +22,7 @@ export default class ElectronFinderController {
                 preload: routeProps.preloadFilePath,
             },
             parent: mainWin,
+            autoHideMenuBar: true,
         });
         routeProps.loadURL(win);
         return win;

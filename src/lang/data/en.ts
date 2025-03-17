@@ -3,7 +3,7 @@ import { LanguageType } from '..';
 const numList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 const dictionary = {
-    'bible-search': 'Bible Search',
+    'bible-lookup': 'Bible Lookup',
     'bible-presenter': 'Bible Presenter',
     general: 'General',
     bible: 'Bible',

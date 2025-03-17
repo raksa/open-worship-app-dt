@@ -2,8 +2,8 @@ import { useState, useTransition } from 'react';
 
 import {
     AllDataType,
-    BibleSearchForType,
-    searchOnline,
+    BibleLookupForType,
+    lookupOnline,
     calcPaging,
     findPageNumber,
     APIDataType,
@@ -32,7 +32,7 @@ async function loadApiData() {
     return null;
 }
 
-export default function BibleOnlineSearchBodyPreviewerComp() {
+export default function BibleOnlineLookupBodyPreviewerComp() {
     const [apiData, setApiData] = useState<APIDataType | null | undefined>(
         undefined,
     );
@@ -66,10 +66,10 @@ export default function BibleOnlineSearchBodyPreviewerComp() {
         );
     }
 
-    return <BibleOnlineSearchBody apiData={apiData} />;
+    return <BibleOnlineLookupBody apiData={apiData} />;
 }
 
-function BibleOnlineSearchBody({
+function BibleOnlineLookupBody({
     apiData,
 }: Readonly<{
     apiData: APIDataType;
@@ -78,9 +78,9 @@ function BibleOnlineSearchBody({
     const [bibleKey, setBibleKey] = useState(selectedBibleKey);
     const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(null);
     const [inputText, setInputText] = useState('');
-    const [searchingText, setSearchingText] = useState('');
+    const [lookupText, setLookupText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
-    const [isSearching, startTransition] = useTransition();
+    const [isLookup, startTransition] = useTransition();
     useAppEffect(() => {
         setBibleKey(selectedBibleKey);
     }, [selectedBibleKey]);
@@ -90,19 +90,19 @@ function BibleOnlineSearchBody({
         setBibleKey(newBibleKey);
     };
 
-    const doSearching = async (
+    const doLookup = async (
         apiDataMap: APIDataMapType,
-        searchData: BibleSearchForType,
+        lookupData: BibleLookupForType,
         isFresh = false,
     ) => {
         startTransition(async () => {
             if (selectedBook !== null) {
-                searchData['bookKey'] = selectedBook.bookKey;
+                lookupData['bookKey'] = selectedBook.bookKey;
             }
-            const data = await searchOnline(
+            const data = await lookupOnline(
                 apiDataMap.apiUrl,
                 apiDataMap.apiKey,
-                searchData,
+                lookupData,
             );
             if (data !== null) {
                 const { perPage, pages } = calcPaging(data);
@@ -116,16 +116,16 @@ function BibleOnlineSearchBody({
             }
         });
     };
-    const handleSearching = (apiDataMap: APIDataMapType, isFresh = false) => {
+    const handleLookup = (apiDataMap: APIDataMapType, isFresh = false) => {
         if (!inputText) {
             return;
         }
-        setSearchingText(inputText);
+        setLookupText(inputText);
         if (isFresh) {
             setAllData({});
         }
-        const searchData: BibleSearchForType = { text: inputText };
-        doSearching(apiDataMap, searchData, isFresh);
+        const lookupData: BibleLookupForType = { text: inputText };
+        doLookup(apiDataMap, lookupData, isFresh);
     };
     const apiDataMap = apiData.mapper[bibleKey];
     return (
@@ -150,7 +150,7 @@ function BibleOnlineSearchBody({
                                 if (event.key === 'Enter') {
                                     event.preventDefault();
                                     event.stopPropagation();
-                                    alert('search');
+                                    alert('lookup');
                                 }
                             }}
                             onChange={(event) => {
@@ -160,9 +160,9 @@ function BibleOnlineSearchBody({
                         />
                         <button
                             className="btn btn-sm"
-                            disabled={isSearching || !inputText}
+                            disabled={isLookup || !inputText}
                             onClick={() => {
-                                handleSearching(apiDataMap, true);
+                                handleLookup(apiDataMap, true);
                             }}
                         >
                             <i className="bi bi-search" />
@@ -172,19 +172,19 @@ function BibleOnlineSearchBody({
             </div>
             {apiDataMap && (
                 <BibleOnlineRenderDataComp
-                    text={searchingText}
+                    text={lookupText}
                     allData={allData}
-                    searchFor={(from: number, to: number) => {
-                        doSearching(apiDataMap, {
+                    lookupFor={(from: number, to: number) => {
+                        doLookup(apiDataMap, {
                             fromLineNumber: from,
                             toLineNumber: to,
-                            text: searchingText,
+                            text: lookupText,
                         });
                     }}
                     bibleKey={bibleKey}
                     selectedBook={selectedBook}
                     setSelectedBook={setSelectedBook}
-                    isSearching={isSearching}
+                    isLookup={isLookup}
                 />
             )}
         </div>

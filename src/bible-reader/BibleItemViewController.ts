@@ -11,13 +11,13 @@ import {
     ContextMenuItemType,
     genContextMenuItemShortcutKey,
 } from '../others/AppContextMenuComp';
-import { showBibleOption } from '../bible-search/BibleSelectionComp';
-import { genFoundBibleItemContextMenu } from '../bible-search/RenderActionButtonsComp';
+import { showBibleOption } from '../bible-loopup/BibleSelectionComp';
+import { genFoundBibleItemContextMenu } from '../bible-loopup/RenderActionButtonsComp';
 import { closeCurrentEditingBibleItem } from './readBibleHelpers';
 import {
     applyPendingText,
     attemptAddingHistory,
-} from '../bible-search/InputHistoryComp';
+} from '../bible-loopup/InputHistoryComp';
 import { EventMapper } from '../event/KeyboardEventListener';
 import { finalRenderer } from './BibleViewComp';
 
@@ -496,13 +496,13 @@ class BibleItemViewController extends EventHandler<UpdateEventType> {
     }
 }
 
-let instance: SearchBibleItemViewController | null = null;
-export class SearchBibleItemViewController extends BibleItemViewController {
+let instance: LookupBibleItemViewController | null = null;
+export class LookupBibleItemViewController extends BibleItemViewController {
     private _nestedBibleItems: NestedBibleItemsType;
     selectedBibleItem: BibleItem;
     setInputText = (_: string) => {};
     setBibleKey = (_: string | null) => {};
-    onSearchAddBibleItem = () => {};
+    onLookupAddBibleItem = () => {};
 
     constructor() {
         super('');
@@ -546,7 +546,7 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         return instance;
     }
 
-    async setSearchingContentFromBibleItem(bibleItem: BibleItem) {
+    async setLookupContentFromBibleItem(bibleItem: BibleItem) {
         applyPendingText();
         this.setBibleKey(bibleItem.bibleKey);
         const bibleText = await bibleItem.toTitle();
@@ -560,13 +560,13 @@ export class SearchBibleItemViewController extends BibleItemViewController {
         const newBibleItem = bibleItem.clone(true);
         this.changeBibleItem(bibleItem, newBibleItem);
         this.selectedBibleItem = newBibleItem;
-        this.setSearchingContentFromBibleItem(newBibleItem);
+        this.setLookupContentFromBibleItem(newBibleItem);
     }
     genContextMenu(bibleItem: BibleItem): ContextMenuItemType[] {
         const isBibleItemSelected = this.checkIsBibleItemSelected(bibleItem);
         const menu1 = genFoundBibleItemContextMenu(
             bibleItem,
-            this.onSearchAddBibleItem,
+            this.onLookupAddBibleItem,
             isBibleItemSelected,
         );
         const menus2 = super.genContextMenu(bibleItem);

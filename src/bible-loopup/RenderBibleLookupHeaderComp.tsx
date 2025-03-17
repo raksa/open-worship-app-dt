@@ -1,32 +1,32 @@
 import InputHandlerComp, { useInputTextContext } from './InputHandlerComp';
 import { genInputText } from '../bible-list/bibleHelpers';
-import { setBibleSearchInputFocus } from './selectionHelpers';
+import { setBibleLookupInputFocus } from './selectionHelpers';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { getPopupWindowTypeData } from '../app-modal/helpers';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import InputHistoryComp from './InputHistoryComp';
 import appProvider from '../server/appProvider';
 import { ModalCloseButton } from '../app-modal/ModalComp';
-import { useShowBibleSearchContext } from '../others/commonButtons';
+import { useShowBibleLookupContext } from '../others/commonButtons';
 
-export default function RenderBibleSearchHeaderComp({
-    isSearchOnline,
-    setIsSearchOnline,
+export default function RenderBibleLookupHeaderComp({
+    isLookupOnline,
+    setIsLookupOnline,
     setBibleKey,
 }: Readonly<{
     editorInputText: string;
-    isSearchOnline: boolean;
-    setIsSearchOnline: (isSearchOnline: boolean) => void;
+    isLookupOnline: boolean;
+    setIsLookupOnline: (isLookupOnline: boolean) => void;
     setBibleKey: (bibleKey: string | null) => void;
 }>) {
-    const hideBibleSearchPopup = useShowBibleSearchContext(false);
+    const hideBibleLookupPopup = useShowBibleLookupContext(false);
     const { inputText, setInputText } = useInputTextContext();
     const { data } = getPopupWindowTypeData();
 
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const setInputText1 = (newText: string) => {
         setInputText(newText);
-        setBibleSearchInputFocus();
+        setBibleLookupInputFocus();
     };
     viewController.setInputText = setInputText1;
 
@@ -64,16 +64,16 @@ export default function RenderBibleSearchHeaderComp({
                 {isEditingBibleItem ? null : (
                     <div className="float-start">
                         <RenderExtraButtonsRightComp
-                            setIsSearchOnline={setIsSearchOnline}
-                            isSearchOnline={isSearchOnline}
+                            setIsLookupOnline={setIsLookupOnline}
+                            isLookupOnline={isLookupOnline}
                         />
                     </div>
                 )}
             </div>
-            {hideBibleSearchPopup === null ? null : (
+            {hideBibleLookupPopup === null ? null : (
                 <ModalCloseButton
                     close={() => {
-                        hideBibleSearchPopup();
+                        hideBibleLookupPopup();
                     }}
                 />
             )}

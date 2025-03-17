@@ -10,7 +10,7 @@ import { showAppContextMenu } from '../others/AppContextMenuComp';
 import { genDefaultBibleItemContextMenu } from '../bible-list/bibleItemHelpers';
 import {
     closeEventMapper,
-    SearchBibleItemViewController,
+    LookupBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import {
     fontSizeToHeightStyle,
@@ -27,9 +27,9 @@ export default function RenderBibleDataFoundComp({
     onVerseChange?: (verseStart?: number, verseEnd?: number) => void;
 }>) {
     const bibleItem = useBibleItemContext();
-    const isSearching = onVerseChange !== undefined;
+    const isLookup = onVerseChange !== undefined;
     useFoundActionKeyboard(bibleItem);
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     viewController.selectedBibleItem.syncData(bibleItem);
     return (
         <div
@@ -45,7 +45,7 @@ export default function RenderBibleDataFoundComp({
         >
             <RenderBibleFoundHeader />
             <div className="card-body bg-transparent border-success p-0">
-                {!isSearching ? null : (
+                {!isLookup ? null : (
                     <RenderVerseOptionsComp onVersesChange={onVerseChange} />
                 )}
                 <div className="p-2">
@@ -58,7 +58,7 @@ export default function RenderBibleDataFoundComp({
 
 function RenderBibleFoundHeader() {
     const fontSize = useBibleViewFontSizeContext();
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const handleBibleKeyChanging = async (
         oldBibleKey: string,
         newBibleKey: string,

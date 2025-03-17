@@ -1,7 +1,7 @@
 import { createContext, Fragment, use } from 'react';
 
 import BibleItem from '../bible-list/BibleItem';
-import { BibleSelectionMiniComp } from '../bible-search/BibleSelectionComp';
+import { BibleSelectionMiniComp } from '../bible-loopup/BibleSelectionComp';
 import { useGetBibleRef } from '../others/bibleRefsHelpers';
 import {
     useBibleItemRenderTitle,

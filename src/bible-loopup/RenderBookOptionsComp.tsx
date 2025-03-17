@@ -13,7 +13,7 @@ import {
 } from './selectionHelpers';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
 
-const OPTION_CLASS = 'bible-search-book-option';
+const OPTION_CLASS = 'bible-lookup-book-option';
 const OPTION_SELECTED_CLASS = 'active';
 
 function genBookOption({

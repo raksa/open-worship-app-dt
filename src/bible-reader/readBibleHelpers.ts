@@ -2,7 +2,7 @@ import BibleItem from '../bible-list/BibleItem';
 import BibleItemViewController, {
     closeEventMapper,
     ctrlShiftMetaKeys,
-    SearchBibleItemViewController,
+    LookupBibleItemViewController,
 } from './BibleItemViewController';
 import { handleError } from '../helper/errorHelpers';
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
@@ -88,7 +88,7 @@ export function applyDragged(
 function changeEditingBibleItem(
     eventKey: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
 ) {
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const allBibleItems = viewController.straightBibleItems;
     if (allBibleItems.length === 0) {
         return;
@@ -152,7 +152,7 @@ export function useSplitBibleItemRenderer() {
             return { ...ctrlShiftMetaKeys, key };
         }),
         (event) => {
-            const viewController = SearchBibleItemViewController.getInstance();
+            const viewController = LookupBibleItemViewController.getInstance();
             const bibleItem = viewController.selectedBibleItem;
             if (event.key.toLowerCase() === 's') {
                 viewController.addBibleItemLeft(bibleItem, bibleItem);
@@ -165,7 +165,7 @@ export function useSplitBibleItemRenderer() {
 }
 
 export function closeCurrentEditingBibleItem() {
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const selectedBibleItem = viewController.selectedBibleItem;
     if (viewController.straightBibleItems.length < 2) {
         return;

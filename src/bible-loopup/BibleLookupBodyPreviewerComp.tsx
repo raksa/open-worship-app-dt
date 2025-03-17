@@ -3,10 +3,10 @@ import { lazy, useMemo } from 'react';
 import BibleItem from '../bible-list/BibleItem';
 import {
     BibleItemViewControllerContext,
-    SearchBibleItemViewController,
+    LookupBibleItemViewController,
 } from '../bible-reader/BibleItemViewController';
 import BibleViewComp from '../bible-reader/BibleViewComp';
-import RenderBibleSearchBodyComp from './RenderBibleSearchBodyComp';
+import RenderBibleLookupBodyComp from './RenderBibleLookupBodyComp';
 import AppSuspenseComp from '../others/AppSuspenseComp';
 import {
     useCloseBibleItemRenderer,
@@ -19,11 +19,11 @@ const LazyBiblePreviewerRender = lazy(() => {
     return import('../bible-reader/BiblePreviewerRenderComp');
 });
 
-export default function BibleSearchBodyPreviewerComp() {
+export default function BibleLookupBodyPreviewerComp() {
     useNextEditingBibleItem();
     useCloseBibleItemRenderer();
     useSplitBibleItemRenderer();
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const contextValue = useMemo(
         () => ({
             onDBClick: (bibleItem: BibleItem) => {
@@ -35,7 +35,7 @@ export default function BibleSearchBodyPreviewerComp() {
     viewController.finalRenderer = function (bibleItem: BibleItem) {
         const isSelected = viewController.checkIsBibleItemSelected(bibleItem);
         if (isSelected) {
-            return <RenderBibleSearchBodyComp />;
+            return <RenderBibleLookupBodyComp />;
         }
         return (
             <BibleViewTitleMaterialContext value={contextValue}>

@@ -5,9 +5,9 @@ import RenderBibleDataFoundComp from './RenderBibleDataFoundComp';
 import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import { attemptAddingHistory } from './InputHistoryComp';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 
-export default function RenderSearchSuggestionComp({
+export default function RenderLookupSuggestionComp({
     bibleResult,
     applyChapterSelection,
     applyVerseSelection,
@@ -66,7 +66,7 @@ export function BibleNotAvailableComp({
 }: Readonly<{
     bibleKey: string;
 }>) {
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     const handleBibleKeyChanging = (
         _oldBibleKey: string,
         newBibleKey: string,
@@ -75,7 +75,7 @@ export function BibleNotAvailableComp({
     };
 
     return (
-        <div id="bible-search-popup" className="shadow card">
+        <div id="bible-lookup-popup" className="shadow card">
             <div className="body card-body w-100">
                 <h2>Bible key "{bibleKey}" is not available!</h2>
                 Please change bible key here:{' '}

@@ -1,14 +1,14 @@
 import Bible from './Bible';
 import BibleItemRenderComp from './BibleItemRenderComp';
 import { genDuplicatedMessage } from './bibleItemHelpers';
-import { useShowBibleSearchContext } from '../others/commonButtons';
+import { useShowBibleLookupContext } from '../others/commonButtons';
 
 export default function RenderBibleItemsComp({
     bible,
 }: Readonly<{
     bible: Bible;
 }>) {
-    const showBibleSearchPopup = useShowBibleSearchContext();
+    const showBibleLookupPopup = useShowBibleLookupContext();
     const items = bible.items;
     return (
         <ul
@@ -32,7 +32,7 @@ export default function RenderBibleItemsComp({
                     />
                 );
             })}
-            {bible.isDefault && showBibleSearchPopup !== null && (
+            {bible.isDefault && showBibleLookupPopup !== null && (
                 <button
                     type="button"
                     className={
@@ -44,7 +44,7 @@ export default function RenderBibleItemsComp({
                         fontSize: '0.8rem',
                     }}
                     onClick={() => {
-                        showBibleSearchPopup();
+                        showBibleLookupPopup();
                     }}
                 >
                     <span title="Need translation">(*T)</span>Add Bible Item

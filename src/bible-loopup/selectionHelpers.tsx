@@ -3,7 +3,7 @@ import {
     useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 
-export const INPUT_TEXT_CLASS = 'bible-search-input-text';
+export const INPUT_TEXT_CLASS = 'bible-lookup-input-text';
 
 function indexing(listLength: number, index: number, isNext: boolean) {
     return (index + (isNext ? 1 : -1) + listLength) % listLength;
@@ -125,8 +125,8 @@ export function processSelection(
 ) {
     if (
         (key === 'ArrowLeft' || key === 'ArrowRight') &&
-        checkIsBibleSearchInputFocused() &&
-        getBibleSearchInputText() !== ''
+        checkIsBibleLookupInputFocused() &&
+        getBibleLookupInputText() !== ''
     ) {
         return;
     }
@@ -164,27 +164,27 @@ export function userEnteringSelected(
     );
 }
 
-export const BIBLE_SEARCH_INPUT_ID = 'app-bible-search-input';
+export const BIBLE_LOOKUP_INPUT_ID = 'app-bible-lookup-input';
 
-export function getBibleSearchInputElement(): HTMLInputElement | null {
-    return document.getElementById(BIBLE_SEARCH_INPUT_ID) as HTMLInputElement;
+export function getBibleLookupInputElement(): HTMLInputElement | null {
+    return document.getElementById(BIBLE_LOOKUP_INPUT_ID) as HTMLInputElement;
 }
-export function getBibleSearchInputText() {
-    const inputElement = getBibleSearchInputElement();
+export function getBibleLookupInputText() {
+    const inputElement = getBibleLookupInputElement();
     if (inputElement === null) {
         return '';
     }
     return inputElement.value;
 }
-export function checkIsBibleSearchInputFocused(): boolean {
-    const inputElement = getBibleSearchInputElement();
+export function checkIsBibleLookupInputFocused(): boolean {
+    const inputElement = getBibleLookupInputElement();
     if (inputElement === null) {
         return false;
     }
     return document.activeElement === inputElement;
 }
-export function setBibleSearchInputFocus() {
-    const inputElement = getBibleSearchInputElement();
+export function setBibleLookupInputFocus() {
+    const inputElement = getBibleLookupInputElement();
     if (inputElement === null) {
         return;
     }

@@ -15,11 +15,11 @@ export function getIsKeepingPopup() {
 }
 
 export default function RenderExtraButtonsRightComp({
-    setIsSearchOnline,
-    isSearchOnline,
+    setIsLookupOnline,
+    isLookupOnline,
 }: Readonly<{
-    setIsSearchOnline: (_: boolean) => void;
-    isSearchOnline: boolean;
+    setIsLookupOnline: (_: boolean) => void;
+    isLookupOnline: boolean;
 }>) {
     const [isKeepingPopup, setIsKeepingPopup] = useStateSettingBoolean(
         CLOSE_ON_ADD_BIBLE_ITEM,
@@ -44,11 +44,11 @@ export default function RenderExtraButtonsRightComp({
             <button
                 className={
                     'btn btn-sm btn' +
-                    `-${isSearchOnline ? '' : 'outline-'}info`
+                    `-${isLookupOnline ? '' : 'outline-'}info`
                 }
-                title="Search bible online"
+                title="Lookup bible online"
                 onClick={() => {
-                    setIsSearchOnline(!isSearchOnline);
+                    setIsLookupOnline(!isLookupOnline);
                 }}
             >
                 <i className="bi bi-search" />

@@ -17,14 +17,12 @@ type CustomElement<T, K extends string> = Partial<
             children: any;
         } & CustomEvents<`on${K}`>
 >;
-declare global {
-    namespace React.JSX {
-        interface IntrinsicElements {
-            [HTML_TAG_NAME]: CustomElement<
-                CustomHTMLScreenPreviewer,
-                'FTScroll' | 'VerseHover' | 'VerseSelect'
-            >;
-        }
+declare module 'react' {
+    interface IntrinsicElements {
+        [HTML_TAG_NAME]: CustomElement<
+            CustomHTMLScreenPreviewer,
+            'FTScroll' | 'VerseHover' | 'VerseSelect'
+        >;
     }
 }
 

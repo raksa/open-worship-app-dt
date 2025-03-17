@@ -5,33 +5,33 @@ import {
     SelectedBibleKeyContext,
     useSelectedBibleKey,
 } from '../bible-list/bibleHelpers';
-import { BibleNotAvailableComp } from './RenderSearchSuggestionComp';
-import BibleSearchBodyPreviewerComp from './BibleSearchBodyPreviewerComp';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { BibleNotAvailableComp } from './RenderLookupSuggestionComp';
+import BibleLookupBodyPreviewerComp from './BibleLookupBodyPreviewerComp';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import ResizeActorComp from '../resize-actor/ResizeActorComp';
 import { MultiContextRender } from '../helper/MultiContextRender';
-import RenderBibleSearchHeaderComp from './RenderBibleSearchHeaderComp';
+import RenderBibleLookupHeaderComp from './RenderBibleLookupHeaderComp';
 import RenderExtraButtonsRightComp from './RenderExtraButtonsRightComp';
 import { useStateSettingBoolean } from '../helper/settingHelpers';
 
-const LazyBibleOnlineSearchBodyPreviewer = lazy(() => {
-    return import('./BibleOnlineSearchBodyPreviewerComp');
+const LazyBibleOnlineLookupBodyPreviewer = lazy(() => {
+    return import('./BibleOnlineLookupBodyPreviewerComp');
 });
 
-const SEARCHING_ONLINE_SETTING_NAME = 'bible-searching-online';
+const LOOKUPING_ONLINE_SETTING_NAME = 'bible-lookup-online';
 
-export default function RenderBibleSearchComp({
+export default function RenderBibleLookupComp({
     editorInputText = '',
 }: Readonly<{
     editorInputText?: string;
 }>) {
-    const [isSearchOnline, setIsSearchOnline] = useStateSettingBoolean(
-        SEARCHING_ONLINE_SETTING_NAME,
+    const [isLookupOnline, setIsLookupOnline] = useStateSettingBoolean(
+        LOOKUPING_ONLINE_SETTING_NAME,
         false,
     );
     const [inputText, setInputText] = useState<string>(editorInputText);
     const { isValid, bibleKey, setBibleKey } = useSelectedBibleKey();
-    const viewController = SearchBibleItemViewController.getInstance();
+    const viewController = LookupBibleItemViewController.getInstance();
     if (bibleKey !== null) {
         viewController.selectedBibleItem.bibleKey = bibleKey;
     }
@@ -50,8 +50,8 @@ export default function RenderBibleSearchComp({
                 <div className="d-flex">
                     <div className="flex-fill"></div>
                     <RenderExtraButtonsRightComp
-                        setIsSearchOnline={setIsSearchOnline}
-                        isSearchOnline={isSearchOnline}
+                        setIsLookupOnline={setIsLookupOnline}
+                        isLookupOnline={isLookupOnline}
                     />
                 </div>
                 <div className="flex-fill">
@@ -60,21 +60,21 @@ export default function RenderBibleSearchComp({
             </div>
         );
     }
-    const searchingBody = <BibleSearchBodyPreviewerComp />;
+    const lookupBody = <BibleLookupBodyPreviewerComp />;
     const resizeData = [
         {
             children: {
                 render: () => {
-                    return searchingBody;
+                    return lookupBody;
                 },
             },
             key: 'h2',
-            widgetName: 'Searching',
+            widgetName: 'Lookup',
         },
         {
-            children: LazyBibleOnlineSearchBodyPreviewer,
+            children: LazyBibleOnlineLookupBodyPreviewer,
             key: 'h1',
-            widgetName: 'Bible Online Search',
+            widgetName: 'Bible Online Lookup',
         },
     ];
     return (
@@ -90,24 +90,24 @@ export default function RenderBibleSearchComp({
                 },
             ]}
         >
-            <div id="bible-search-popup" className="shadow card w-100 h-100">
-                <RenderBibleSearchHeaderComp
+            <div id="bible-lookup-popup" className="shadow card w-100 h-100">
+                <RenderBibleLookupHeaderComp
                     editorInputText={editorInputText}
-                    isSearchOnline={isSearchOnline}
-                    setIsSearchOnline={setIsSearchOnline}
+                    isLookupOnline={isLookupOnline}
+                    setIsLookupOnline={setIsLookupOnline}
                     setBibleKey={setBibleKey}
                 />
                 <div className={'card-body d-flex w-100 h-100 overflow-hidden'}>
-                    {isSearchOnline ? (
+                    {isLookupOnline ? (
                         <ResizeActorComp
-                            flexSizeName="bible-search-popup-body"
+                            flexSizeName="bible-lookup-popup-body"
                             isHorizontal
                             isDisableQuickResize
                             flexSizeDefault={{ h1: ['1'], h2: ['3'] }}
                             dataInput={resizeData}
                         />
                     ) : (
-                        searchingBody
+                        lookupBody
                     )}
                 </div>
             </div>

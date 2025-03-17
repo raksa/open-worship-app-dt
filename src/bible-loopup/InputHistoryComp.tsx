@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAppEffect } from '../helper/debuggerHelpers';
 import { getSetting, setSetting } from '../helper/settingHelpers';
 import { extractBibleTitle } from '../helper/bible-helpers/serverBibleHelpers2';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { genTimeoutAttempt } from '../helper/helpers';
 
 let addHistory: (text: string) => void = () => {};
@@ -89,14 +89,14 @@ export default function InputHistoryComp({
         if (result.bibleItem === null) {
             return;
         }
-        const viewController = SearchBibleItemViewController.getInstance();
+        const viewController = LookupBibleItemViewController.getInstance();
         if (event.shiftKey) {
             viewController.addBibleItemLeft(
                 viewController.selectedBibleItem,
                 viewController.selectedBibleItem,
             );
         }
-        viewController.setSearchingContentFromBibleItem(result.bibleItem);
+        viewController.setLookupContentFromBibleItem(result.bibleItem);
     };
     return (
         <div

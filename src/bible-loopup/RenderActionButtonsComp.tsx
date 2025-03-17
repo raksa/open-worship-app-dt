@@ -13,10 +13,10 @@ import {
 } from '../others/AppContextMenuComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import { getIsKeepingPopup } from './RenderExtraButtonsRightComp';
-import { SearchBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { useBibleItemContext } from '../bible-reader/BibleItemContext';
 import appProvider from '../server/appProvider';
-import { useShowBibleSearchContext } from '../others/commonButtons';
+import { useShowBibleLookupContext } from '../others/commonButtons';
 
 const presenterEventMapper: KBEventMapper = {
     allControlKey: ['Ctrl', 'Shift'],
@@ -101,13 +101,13 @@ async function addBibleItemAndPresent(
 }
 
 export function useFoundActionKeyboard(bibleItem: BibleItem) {
-    const hideBibleSearchPopup = useShowBibleSearchContext(false);
+    const hideBibleLookupPopup = useShowBibleLookupContext(false);
     const isKeepingPopup = getIsKeepingPopup();
     const onDone =
-        !isKeepingPopup && hideBibleSearchPopup !== null
-            ? hideBibleSearchPopup
+        !isKeepingPopup && hideBibleLookupPopup !== null
+            ? hideBibleLookupPopup
             : () => false;
-    SearchBibleItemViewController.getInstance().onSearchAddBibleItem = onDone;
+    LookupBibleItemViewController.getInstance().onLookupAddBibleItem = onDone;
     useKeyboardRegistering(
         [addListEventMapper],
         async () => {

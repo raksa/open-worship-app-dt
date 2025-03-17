@@ -3,7 +3,7 @@ import { LanguageType } from '..';
 const numList = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
 
 const dictionary = {
-    'bible-search': 'ស្វែងរកខគម្ពីរ',
+    'bible-lookup': 'ស្វែងរកខគម្ពីរ',
     'bible-presenter': 'បទបង្ហាញ​ព្រះ​គម្ពីរ',
     General: 'ទូទៅ',
     Bible: 'ព្រះគម្ពីរ',
