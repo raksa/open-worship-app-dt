@@ -10,8 +10,10 @@ SQLite3 version 3.49.1
 ```bash
 > nmake /f makefile.msc sqlite3.c
 > cl fts5.c /link -dll /out:fts5.dll
+> cl /I . ext\misc\spellfix.c /link -dll /out:spellfix1.dll
 # 32-bit (via native tool x86)
 > cl fts5.c /link -dll /out:fts5-i386.dll
+> cl /I . ext\misc\spellfix.c /link -dll /out:spellfix1-i386.dll
 ```
 
 
@@ -32,7 +34,7 @@ SQLite3 version 3.49.1
 > gcc -g -fPIC -shared ./ext/misc/spellfix.c -o spellfix1.so
 # 32-bit
 > sudo apt install gcc-multilib
-> gcc -g -fPIC -shared fts5.c -m32 -o x86_fts5.so
+> gcc -g -fPIC -shared fts5.c -m32 -o fts5-i386.so
 > gcc -g -fPIC -shared ./ext/misc/spellfix.c -m32 -o spellfix1-i386.so
 ```
 
