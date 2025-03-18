@@ -25,3 +25,4 @@ release/
 electron/ow.node
 Default.owb
 .devServer/
+test.db

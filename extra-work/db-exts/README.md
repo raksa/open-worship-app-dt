@@ -22,8 +22,10 @@ SQLite3 version 3.49.1
 ```bash
 > ./configure && make sqlite3.c
 > gcc -g -fPIC -dynamiclib fts5.c -o fts5.dylib
+> gcc -I. -g -fPIC -dynamiclib ext/misc/spellfix.c -o spellfix1.dylib
 # intel
 > gcc -g -fPIC -dynamiclib fts5.c -o fts5-int.dylib
+> gcc -I. -g -fPIC -dynamiclib ext/misc/spellfix.c -o spellfix1-int.dylib
 ```
 
 
@@ -41,8 +43,10 @@ SQLite3 version 3.49.1
 #### check dependencies
 
 ```bash
-# Unix-like
-> ldd fts5.so
 # Windows
 > dumpbin /dependents fts5.dll
+# Mac
+> otool -L fts5.dylib
+# Unix-like
+> ldd fts5.so
 ```
