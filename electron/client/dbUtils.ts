@@ -1,6 +1,6 @@
 import { join, resolve } from 'node:path';
 
-import { isWindows } from '../electronHelpers';
+import { isWindows, isMac, isArm64 } from '../electronHelpers';
 
 // https://nodejs.org/docs/latest-v22.x/api/sqlite.html
 
@@ -12,7 +12,12 @@ class SQLiteDatabase {
             allowExtension: true,
         });
         const extBasePath = resolve(__dirname, '../../db-exts');
-        const suffix = isWindows ? '.dll' : '';
+        let suffix = '';
+        if (isWindows) {
+            suffix = '.dll';
+        } else if (isMac && !isArm64) {
+            suffix = '-int';
+        }
         db.loadExtension(join(extBasePath, `fts5${suffix}`));
         db.loadExtension(join(extBasePath, `spellfix1${suffix}`));
         this.db = db;

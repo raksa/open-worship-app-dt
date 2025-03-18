@@ -7,37 +7,51 @@ const systemUtils = {
   isMac: process.platform === 'darwin',
   isLinux: process.platform === 'linux',
   is64System: process.arch === 'x64',
-  isArm64: process.arch === 'arm64',
 };
+
 function genFileName(baseName) {
-  let fts5FileName = '';
+  const suffix = systemUtils.is64System ? '' : '-i386';
   if (systemUtils.isWindows) {
-    fts5FileName = `${baseName}${systemUtils.is64System ? '' : '-i386'}.dll`;
-    baseName = `${baseName}.dll`;
-  } else if (systemUtils.isMac) {
-    fts5FileName = `${baseName}${systemUtils.isArm64 ? '' : '-int'}.dylib`;
-  } else if (systemUtils.isLinux) {
-    fts5FileName = `${baseName}${systemUtils.is64System ? '' : '-i386'}.so`;
-  } else {
-    throw new Error('Unsupported OS');
+    return [
+      {
+        fts5FileName: `${baseName}${suffix}.dll`,
+        destFileName: `${baseName}.dll`,
+      },
+    ];
   }
-  return { fts5FileName, destFileName: baseName };
+  if (systemUtils.isMac) {
+    return [
+      { fts5FileName: `${baseName}.dylib`, destFileName: baseName },
+      {
+        fts5FileName: `${baseName}-int.dylib`,
+        destFileName: `${baseName}-int`,
+      },
+    ];
+  }
+  if (systemUtils.isLinux) {
+    return [
+      { fts5FileName: `${baseName}${suffix}.so`, destFileName: baseName },
+    ];
+  }
+  throw new Error('Unsupported OS');
 }
+
 const basePath = {
   source: resolve('./extra-work/db-exts'),
   destination: resolve('./electron-build/db-exts'),
 };
+
 function copy(fileFullName, destFileFullName) {
   if (!existsSync(basePath.destination)) {
     mkdirSync(basePath.destination, { recursive: true });
   }
   const destFilePath = join(basePath.destination, destFileFullName);
-  if (existsSync(destFilePath)) {
-    unlinkSync(destFilePath);
-  }
+  if (existsSync(destFilePath)) unlinkSync(destFilePath);
   copyFileSync(join(basePath.source, fileFullName), destFilePath);
 }
-for (const baseName of ['fts5', 'spellfix1']) {
-  const { fts5FileName, destFileName } = genFileName(baseName);
-  copy(fts5FileName, destFileName);
-}
+
+['fts5', 'spellfix1'].forEach((baseName) => {
+  genFileName(baseName).forEach(({ fts5FileName, destFileName }) => {
+    copy(fts5FileName, destFileName);
+  });
+});
