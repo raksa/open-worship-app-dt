@@ -6,6 +6,7 @@ import { BibleItemContext } from '../bible-reader/BibleItemContext';
 import { attemptAddingHistory } from './InputHistoryComp';
 import { BibleSelectionMiniComp } from './BibleSelectionComp';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
+import { RENDER_FOUND_CLASS } from './selectionHelpers';
 
 export default function RenderLookupSuggestionComp({
     bibleResult,
@@ -38,7 +39,15 @@ export default function RenderLookupSuggestionComp({
         );
     }
     return (
-        <div className="found w-100 h-100" style={{ overflowY: 'auto' }}>
+        <div
+            className={`found w-100 h-100 app-focusable ${RENDER_FOUND_CLASS}`}
+            style={{ overflowY: 'auto' }}
+            tabIndex={0}
+            onClick={(event) => {
+                console.log('clicking on found');
+                event.currentTarget.focus();
+            }}
+        >
             <div
                 className={
                     'w-100  d-flex flex-wrap align-items-start ' +

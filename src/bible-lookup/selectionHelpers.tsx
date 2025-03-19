@@ -4,6 +4,7 @@ import {
 } from '../event/KeyboardEventListener';
 
 export const INPUT_TEXT_CLASS = 'bible-lookup-input-text';
+export const RENDER_FOUND_CLASS = 'bible-lookup-render-found';
 
 function indexing(listLength: number, index: number, isNext: boolean) {
     return (index + (isNext ? 1 : -1) + listLength) % listLength;
@@ -118,11 +119,43 @@ function blurInputText() {
     }
 }
 
+function checkIsInputTextFocused() {
+    const inputText = document.querySelector<HTMLInputElement>(
+        `.${INPUT_TEXT_CLASS}`,
+    );
+    if (inputText) {
+        return document.activeElement === inputText;
+    }
+    return false;
+}
+
+export function focusRenderFound() {
+    const dive = document.querySelector<HTMLDivElement>(
+        `.${RENDER_FOUND_CLASS}`,
+    );
+    if (dive) {
+        dive.focus();
+    }
+}
+
+function checkIsRenderFoundFocused() {
+    const dive = document.querySelector<HTMLDivElement>(
+        `.${RENDER_FOUND_CLASS}`,
+    );
+    if (dive) {
+        return document.activeElement === dive;
+    }
+    return false;
+}
+
 export function processSelection(
     optionClass: string,
     selectedClass: string,
     key: KeyboardType,
 ) {
+    if (!checkIsRenderFoundFocused()) {
+        return;
+    }
     if (
         (key === 'ArrowLeft' || key === 'ArrowRight') &&
         checkIsBibleLookupInputFocused() &&
@@ -154,6 +187,9 @@ export function userEnteringSelected(
     useKeyboardRegistering(
         [{ key: 'Enter' }],
         () => {
+            if (!checkIsRenderFoundFocused() && !checkIsInputTextFocused()) {
+                return;
+            }
             const selectedElement = getSelectedElement(
                 optionClass,
                 selectedClass,

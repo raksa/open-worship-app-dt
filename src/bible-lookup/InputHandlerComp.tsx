@@ -7,6 +7,7 @@ import {
     BIBLE_LOOKUP_INPUT_ID,
     INPUT_TEXT_CLASS,
     checkIsBibleLookupInputFocused,
+    focusRenderFound,
     setBibleLookupInputFocus,
 } from './selectionHelpers';
 import { useBibleItemPropsToInputText } from '../bible-list/bibleItemHelpers';
@@ -78,6 +79,14 @@ export default function InputHandlerComp({
                 value={inputText}
                 autoFocus
                 placeholder={placeholder}
+                onKeyUp={(event) => {
+                    if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        event.currentTarget.blur();
+                        focusRenderFound();
+                    }
+                }}
                 onChange={(event) => {
                     const value = event.target.value;
                     setInputText(value);
