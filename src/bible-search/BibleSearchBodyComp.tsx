@@ -12,64 +12,11 @@ import {
 } from './bibleSearchHelpers';
 import BibleSearchRenderDataComp from './BibleSearchRenderDataComp';
 import { useBibleKeyContext } from '../bible-list/bibleHelpers';
-import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
-import { appApiFetch } from '../helper/networkHelpers';
-import { handleError } from '../helper/errorHelpers';
+import { useAppEffect } from '../helper/debuggerHelpers';
 import BibleSelectionComp from '../bible-lookup/BibleSelectionComp';
-import LoadingComp from '../others/LoadingComp';
+import BibleSearchHeaderComp from './BibleSearchHeaderComp';
 
-async function loadApiData() {
-    try {
-        const content = await appApiFetch('bible-online-info.json');
-        const json = await content.json();
-        if (typeof json.mapper !== 'object') {
-            throw new Error('Cannot get bible list');
-        }
-        return json as APIDataType;
-    } catch (error) {
-        handleError(error);
-    }
-    return null;
-}
-
-export default function BibleSearchBodyPreviewerComp() {
-    const [apiData, setApiData] = useState<APIDataType | null | undefined>(
-        undefined,
-    );
-    useAppEffectAsync(
-        async (methodContext) => {
-            if (apiData === undefined) {
-                const apiData1 = await loadApiData();
-                methodContext.setApiData(apiData1);
-            }
-        },
-        [apiData],
-        { setApiData },
-    );
-    if (apiData === undefined) {
-        return <LoadingComp />;
-    }
-    if (apiData === null) {
-        return (
-            <div className="alert alert-warning">
-                <i className="bi bi-info-circle" />
-                <div className="ms-2">Fail to get api data!</div>
-                <button
-                    className="btn btn-info"
-                    onClick={() => {
-                        setApiData(undefined);
-                    }}
-                >
-                    Reload
-                </button>
-            </div>
-        );
-    }
-
-    return <BibleSearchBody apiData={apiData} />;
-}
-
-function BibleSearchBody({
+export default function BibleSearchBodyComp({
     apiData,
 }: Readonly<{
     apiData: APIDataType;
@@ -141,33 +88,13 @@ function BibleSearchBody({
                         bible key
                     </span>
                 ) : (
-                    <>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={inputText}
-                            onKeyUp={(event) => {
-                                if (event.key === 'Enter') {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    alert('search');
-                                }
-                            }}
-                            onChange={(event) => {
-                                const value = event.target.value;
-                                setInputText(value);
-                            }}
-                        />
-                        <button
-                            className="btn btn-sm"
-                            disabled={isSearching || !inputText}
-                            onClick={() => {
-                                handleSearch(apiDataMap, true);
-                            }}
-                        >
-                            <i className="bi bi-search" />
-                        </button>
-                    </>
+                    <BibleSearchHeaderComp
+                        apiDataMap={apiDataMap}
+                        handleSearch={handleSearch}
+                        isSearching={isSearching}
+                        inputText={inputText}
+                        setInputText={setInputText}
+                    />
                 )}
             </div>
             {apiDataMap && (
