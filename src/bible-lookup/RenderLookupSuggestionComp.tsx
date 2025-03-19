@@ -44,7 +44,6 @@ export default function RenderLookupSuggestionComp({
             style={{ overflowY: 'auto' }}
             tabIndex={0}
             onClick={(event) => {
-                console.log('clicking on found');
                 event.currentTarget.focus();
             }}
         >

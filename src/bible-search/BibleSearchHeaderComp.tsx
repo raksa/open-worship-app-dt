@@ -23,7 +23,7 @@ export default function BibleSearchHeaderComp({
                     if (event.key === 'Enter') {
                         event.preventDefault();
                         event.stopPropagation();
-                        alert('search');
+                        handleSearch(apiDataMap, true);
                     }
                 }}
                 onChange={(event) => {
