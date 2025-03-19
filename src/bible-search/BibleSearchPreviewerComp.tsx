@@ -1,52 +1,47 @@
 import { useState } from 'react';
 
-import { APIDataType } from './bibleSearchHelpers';
-import { useAppEffectAsync } from '../helper/debuggerHelpers';
-import { appApiFetch } from '../helper/networkHelpers';
-import { handleError } from '../helper/errorHelpers';
+import { useAppEffect, useAppEffectAsync } from '../helper/debuggerHelpers';
 import LoadingComp from '../others/LoadingComp';
 import BibleSearchBodyComp from './BibleSearchBodyComp';
-
-async function loadApiData() {
-    try {
-        const content = await appApiFetch('bible-online-info.json');
-        const json = await content.json();
-        if (typeof json.mapper !== 'object') {
-            throw new Error('Cannot get bible list');
-        }
-        return json as APIDataType;
-    } catch (error) {
-        handleError(error);
-    }
-    return null;
-}
+import { useBibleKeyContext } from '../bible-list/bibleHelpers';
+import SearchController from './SearchController';
 
 export default function BibleSearchPreviewerComp() {
-    const [apiData, setApiData] = useState<APIDataType | null | undefined>(
-        undefined,
-    );
+    const selectedBibleKey = useBibleKeyContext();
+    const [bibleKey, setBibleKey] = useState(selectedBibleKey);
+    const [searchController, setSearchController] = useState<
+        SearchController | null | undefined
+    >(undefined);
+    useAppEffect(() => {
+        setBibleKey(selectedBibleKey);
+    }, [selectedBibleKey]);
+
+    const setBibleKey1 = (_: string, newBibleKey: string) => {
+        setSearchController(undefined);
+        setBibleKey(newBibleKey);
+    };
     useAppEffectAsync(
         async (methodContext) => {
-            if (apiData === undefined) {
-                const apiData1 = await loadApiData();
-                methodContext.setApiData(apiData1);
+            if (searchController === undefined) {
+                const apiData1 = await SearchController.getInstant(bibleKey);
+                methodContext.setSearchController(apiData1);
             }
         },
-        [apiData],
-        { setApiData },
+        [searchController],
+        { setSearchController },
     );
-    if (apiData === undefined) {
+    if (searchController === undefined) {
         return <LoadingComp />;
     }
-    if (apiData === null) {
+    if (searchController === null) {
         return (
             <div className="alert alert-warning">
                 <i className="bi bi-info-circle" />
-                <div className="ms-2">Fail to get api data!</div>
+                <div className="ms-2">Fail to get search controller!</div>
                 <button
                     className="btn btn-info"
                     onClick={() => {
-                        setApiData(undefined);
+                        setSearchController(undefined);
                     }}
                 >
                     Reload
@@ -55,5 +50,10 @@ export default function BibleSearchPreviewerComp() {
         );
     }
 
-    return <BibleSearchBodyComp apiData={apiData} />;
+    return (
+        <BibleSearchBodyComp
+            searchController={searchController}
+            setBibleKey={setBibleKey1}
+        />
+    );
 }

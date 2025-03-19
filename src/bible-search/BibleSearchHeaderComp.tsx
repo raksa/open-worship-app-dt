@@ -1,14 +1,10 @@
-import { APIDataMapType } from './bibleSearchHelpers';
-
 export default function BibleSearchHeaderComp({
-    apiDataMap,
     handleSearch,
     isSearching,
     inputText,
     setInputText,
 }: Readonly<{
-    apiDataMap: APIDataMapType;
-    handleSearch: (_: APIDataMapType, isFresh?: boolean) => void;
+    handleSearch: (isFresh?: boolean) => void;
     isSearching: boolean;
     inputText: string;
     setInputText: (_: string) => void;
@@ -23,7 +19,7 @@ export default function BibleSearchHeaderComp({
                     if (event.key === 'Enter') {
                         event.preventDefault();
                         event.stopPropagation();
-                        handleSearch(apiDataMap, true);
+                        handleSearch(true);
                     }
                 }}
                 onChange={(event) => {
@@ -35,7 +31,7 @@ export default function BibleSearchHeaderComp({
                 className="btn btn-sm"
                 disabled={isSearching || !inputText}
                 onClick={() => {
-                    handleSearch(apiDataMap, true);
+                    handleSearch(true);
                 }}
             >
                 <i className="bi bi-search" />
