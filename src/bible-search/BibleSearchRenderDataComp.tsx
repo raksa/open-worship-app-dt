@@ -8,7 +8,7 @@ import LoadingComp from '../others/LoadingComp';
 import { showSimpleToast } from '../toast/toastHelpers';
 import {
     calcPaging,
-    BibleSearchOnlineType,
+    BibleSearchResultType,
     pageNumberToReqData,
     SelectedBookKeyType,
 } from './bibleSearchHelpers';
@@ -143,7 +143,7 @@ export default function BibleSearchRenderDataComp({
     isSearch,
 }: Readonly<{
     text: string;
-    allData: { [key: string]: BibleSearchOnlineType };
+    allData: { [key: string]: BibleSearchResultType };
     searchFor: (from: number, to: number) => void;
     bibleKey: string;
     selectedBook: SelectedBookKeyType;

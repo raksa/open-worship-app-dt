@@ -19,7 +19,7 @@ export type APIDataType = {
     };
 };
 
-export type BibleSearchOnlineType = {
+export type BibleSearchResultType = {
     maxLineNumber: number;
     fromLineNumber: number;
     toLineNumber: number;
@@ -42,10 +42,10 @@ export type PagingDataTye = {
     pageSize: number;
     perPage: number;
 };
-export type AllDataType = { [key: string]: BibleSearchOnlineType };
+export type AllDataType = { [key: string]: BibleSearchResultType };
 
 export function checkIsCurrentPage(
-    data: BibleSearchOnlineType,
+    data: BibleSearchResultType,
     pageNumber: number,
     perPage: number,
 ) {
@@ -55,7 +55,7 @@ export function checkIsCurrentPage(
     }
 }
 export function findPageNumber(
-    data: BibleSearchOnlineType,
+    data: BibleSearchResultType,
     perPage: number,
     pages: string[],
 ) {
@@ -67,12 +67,12 @@ export function findPageNumber(
     return '0';
 }
 
-export function calcPerPage(data: BibleSearchOnlineType) {
+export function calcPerPage(data: BibleSearchResultType) {
     const perPage = data.toLineNumber - data.fromLineNumber + 1;
     return perPage;
 }
 
-export function calcPaging(data: BibleSearchOnlineType | null): PagingDataTye {
+export function calcPaging(data: BibleSearchResultType | null): PagingDataTye {
     if (data === null) {
         return { pages: [], currentPage: '0', pageSize: 0, perPage: 0 };
     }
@@ -150,7 +150,7 @@ export async function searchOnline(
                     uniqueKey: crypto.randomUUID(),
                 };
             });
-            return result as BibleSearchOnlineType;
+            return result as BibleSearchResultType;
         }
         loggerHelpers.error(`Invalid bible search ${result}`);
     } catch (error) {

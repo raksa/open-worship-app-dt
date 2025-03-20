@@ -67,7 +67,11 @@ export function readFromFile(
         const reader = new FileReader();
         reader.onload = function (event1) {
             messageCallback(null);
-            resolve(event1.target?.result?.toString() ?? null);
+            resolve(
+                typeof event1.target?.result === 'string'
+                    ? event1.target.result
+                    : null,
+            );
         };
         reader.onerror = function (error) {
             handleError(error);

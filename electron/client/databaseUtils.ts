@@ -5,10 +5,10 @@ import { isWindows, isMac, isArm64 } from '../electronHelpers';
 // https://nodejs.org/docs/latest-v22.x/api/sqlite.html
 
 class SQLiteDatabase {
-    public db: any;
-    constructor(dbPath: string) {
+    public database: any;
+    constructor(databasePath: string) {
         const { DatabaseSync } = require('node:sqlite');
-        const db = new DatabaseSync(dbPath, {
+        const database = new DatabaseSync(databasePath, {
             allowExtension: true,
         });
         const extBasePath = resolve(__dirname, '../../db-exts');
@@ -18,29 +18,29 @@ class SQLiteDatabase {
         } else if (isMac && !isArm64) {
             suffix = '-int';
         }
-        db.loadExtension(join(extBasePath, `fts5${suffix}`));
-        db.loadExtension(join(extBasePath, `spellfix1${suffix}`));
-        this.db = db;
+        database.loadExtension(join(extBasePath, `fts5${suffix}`));
+        database.loadExtension(join(extBasePath, `spellfix1${suffix}`));
+        this.database = database;
     }
     exec(sql: string) {
-        this.db.exec(sql);
+        this.database.exec(sql);
     }
     createTable(createTableSQL: string) {
         this.exec(createTableSQL);
     }
     getAll(sql: string) {
-        const query = this.db.prepare(sql);
+        const query = this.database.prepare(sql);
         return query.all();
     }
     close() {
-        this.db.close();
+        this.database.close();
     }
 }
 
-const dbUtils = {
-    getSQLiteDBInstance(dbName: string): SQLiteDatabase {
-        return new SQLiteDatabase(dbName);
+const databaseUtils = {
+    getSQLiteDatabaseInstance(databaseName: string): SQLiteDatabase {
+        return new SQLiteDatabase(databaseName);
     },
 };
 
-export default dbUtils;
+export default databaseUtils;

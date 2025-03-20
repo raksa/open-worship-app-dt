@@ -35,9 +35,6 @@ export default function BibleSearchBodyComp({
         isFresh = false,
     ) => {
         startTransition(async () => {
-            if (selectedBook !== null) {
-                searchData['bookKey'] = selectedBook.bookKey;
-            }
             const data = await searchController.doSearch(searchData);
             if (data !== null) {
                 const { perPage, pages } = calcPaging(data);

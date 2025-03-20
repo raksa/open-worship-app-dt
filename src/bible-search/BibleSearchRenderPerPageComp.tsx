@@ -1,6 +1,6 @@
 import BibleItem from '../bible-list/BibleItem';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
-import { BibleSearchOnlineType, breakItem } from './bibleSearchHelpers';
+import { BibleSearchResultType, breakItem } from './bibleSearchHelpers';
 
 export default function BibleSearchRenderPerPageComp({
     pageNumber,
@@ -9,7 +9,7 @@ export default function BibleSearchRenderPerPageComp({
     bibleKey,
 }: Readonly<{
     pageNumber: string;
-    data: BibleSearchOnlineType;
+    data: BibleSearchResultType;
     searchText: string;
     bibleKey: string;
 }>) {

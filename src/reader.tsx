@@ -9,12 +9,14 @@ import { bibleDataReader } from './helper/bible-helpers/BibleDataReader';
 
 async function getDB() {
     const biblePath = await bibleDataReader.getWritableBiblePath();
-    const db = appProvider.dbUtils.getSQLiteDBInstance(`${biblePath}/test.db`);
+    const db = appProvider.databaseUtils.getSQLiteDatabaseInstance(
+        `${biblePath}/test.db`,
+    );
     return db;
 }
 
 (window as any).dbUtils = {
-    ...appProvider.dbUtils,
+    ...appProvider.databaseUtils,
     create: async () => {
         const db = await getDB();
         db.exec(`

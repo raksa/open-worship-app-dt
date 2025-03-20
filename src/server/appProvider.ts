@@ -98,7 +98,7 @@ export type PagePropsType = {
 };
 
 export type SQLiteDatabaseType = {
-    db: any;
+    database: any;
     exec: (sql: string) => void;
     createTable: (createTableSQL: string) => void;
     getAll: (sql: string) => any[];
@@ -130,8 +130,10 @@ const appProvider = (window as any).provider as Readonly<
         appInfo: AppInfoType;
         reload: () => void;
         appUtils: AppUtilsType;
-        dbUtils: {
-            getSQLiteDBInstance: (dbName: string) => SQLiteDatabaseType;
+        databaseUtils: {
+            getSQLiteDatabaseInstance: (
+                databaseName: string,
+            ) => SQLiteDatabaseType;
         };
         presenterHomePage: string;
         readerHomePage: string;
