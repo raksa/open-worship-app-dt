@@ -22,12 +22,12 @@ export default function BibleSearchPreviewerComp() {
     };
     useAppEffectAsync(
         async (methodContext) => {
-            if (searchController === undefined) {
+            if (bibleKey !== 'Unknown' && searchController === undefined) {
                 const apiData1 = await SearchController.getInstant(bibleKey);
                 methodContext.setSearchController(apiData1);
             }
         },
-        [searchController],
+        [searchController, bibleKey],
         { setSearchController },
     );
     if (searchController === undefined) {
