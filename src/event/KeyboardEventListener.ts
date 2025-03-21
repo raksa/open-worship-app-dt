@@ -25,11 +25,18 @@ export type LinuxControlType = 'Ctrl' | 'Alt' | 'Shift';
 export type MacControlType = 'Ctrl' | 'Option' | 'Shift' | 'Meta';
 export type AllControlType = 'Ctrl' | 'Shift';
 
+export enum PlatformEnum {
+    Windows = 'Windows',
+    Mac = 'Mac',
+    Linux = 'Linux',
+}
+
 export interface EventMapper {
     wControlKey?: WindowsControlType[];
     mControlKey?: MacControlType[];
     lControlKey?: LinuxControlType[];
     allControlKey?: AllControlType[];
+    platforms?: PlatformEnum[];
     key: string;
 }
 export interface RegisteredEventMapper extends EventMapper {
@@ -138,9 +145,27 @@ export function useKeyboardRegistering(
     deps: DependencyList,
 ) {
     useAppEffect(() => {
-        const eventNames = eventMappers.map((eventMapper) => {
-            return KeyboardEventListener.toEventMapperKey(eventMapper);
-        });
+        const eventNames = eventMappers
+            .filter((eventMapper) => {
+                const { platforms } = eventMapper;
+                if (platforms) {
+                    if (
+                        (platforms.includes(PlatformEnum.Windows) &&
+                            appProvider.systemUtils.isWindows) ||
+                        (platforms.includes(PlatformEnum.Mac) &&
+                            appProvider.systemUtils.isMac) ||
+                        (platforms.includes(PlatformEnum.Linux) &&
+                            appProvider.systemUtils.isLinux)
+                    ) {
+                        return true;
+                    }
+                    return false;
+                }
+                return true;
+            })
+            .map((eventMapper) => {
+                return KeyboardEventListener.toEventMapperKey(eventMapper);
+            });
         const registeredEvents = KeyboardEventListener.registerEventListener(
             eventNames,
             listener,

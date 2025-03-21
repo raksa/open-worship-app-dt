@@ -6,7 +6,10 @@ import './others/bootstrap-override.scss';
 import './others/scrollbar.scss';
 
 import { showAppConfirm } from './popup-widget/popupWidgetHelpers';
-import { useKeyboardRegistering } from './event/KeyboardEventListener';
+import {
+    PlatformEnum,
+    useKeyboardRegistering,
+} from './event/KeyboardEventListener';
 import { getAllLocalBibleInfoList } from './helper/bible-helpers/bibleDownloadHelpers';
 import { handleError } from './helper/errorHelpers';
 import FileSourceMetaManager from './helper/FileSourceMetaManager';
@@ -97,6 +100,7 @@ export function useQuickExitBlock() {
             {
                 key: 'q',
                 mControlKey: ['Meta'],
+                platforms: [PlatformEnum.Mac],
             },
         ],
         async (event) => {
