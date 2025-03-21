@@ -237,7 +237,7 @@ async function toChapter(
     return `${book} ${
         info.numList === undefined
             ? chapterNum
-            : toLocaleNum(chapterNum, info.numList)
+            : await toLocaleNum(chapterNum, info.numList)
     }`;
 }
 

@@ -64,7 +64,7 @@ export async function toLocaleNumBible(bibleKey: string, n: number | null) {
     }
     if (localeNum === null) {
         const locale = await getBibleLocale(bibleKey);
-        localeNum = toLocaleNum(locale, n);
+        localeNum = await toLocaleNum(locale, n);
     }
     bibleLocaleNumMap.set(cacheKey, localeNum);
     return localeNum;
@@ -92,7 +92,7 @@ export async function fromLocaleNumBible(bibleKey: string, localeNum: string) {
     }
     if (num === null) {
         const locale = await getBibleLocale(bibleKey);
-        num = fromLocaleNum(locale, localeNum);
+        num = await fromLocaleNum(locale, localeNum);
     }
     bibleNumMap.set(cacheKey, num);
     return num;

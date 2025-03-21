@@ -7,7 +7,7 @@ import enLangData from './data/en';
 
 export const DEFAULT_LOCALE = 'en-US';
 
-export const allLocalesMap = {
+export const allLocalesMap: { [key: string]: string } = {
     'af-ZA': 'af',
     'am-ET': 'am',
     'ar-AE': 'ar',
@@ -290,8 +290,13 @@ export function getLang(langCodeOrLocal: string) {
 export async function getLangAsync(locale: string) {
     if (!cache.has(locale)) {
         try {
-            const langData = langDataMap[locale];
+            const langData =
+                langDataMap[locale] ?? langDataMap[allLocalesMap[locale]];
             cache.set(locale, langData);
+            const langCode = getLangCode(locale);
+            if (langCode !== null) {
+                cache.set(langCode, langData);
+            }
         } catch (error) {
             handleError(error);
         }
@@ -314,23 +319,23 @@ export function tran(text: string) {
     return dictionary[text] || text;
 }
 
-export const toStringNum = (numList: string[], n: number): string => {
+export function toStringNum(numList: string[], n: number): string {
     return `${n}`
         .split('')
         .map((n1) => {
             return numList[parseInt(n1)];
         })
         .join('');
-};
+}
 
-export const toLocaleNum = (locale: LocaleType, n: number): string => {
-    const langData = getLang(locale);
+export async function toLocaleNum(locale: LocaleType, n: number) {
+    const langData = await getLangAsync(locale);
     if (langData === null) {
         return `${n}`;
     }
     const numList = langData.numList;
     return toStringNum(numList, n);
-};
+}
 
 export function fromStringNum(numList: string[], localeNum: string) {
     const nString = `${localeNum}`
@@ -349,8 +354,8 @@ export function fromStringNum(numList: string[], localeNum: string) {
     return Number(nString);
 }
 
-export function fromLocaleNum(locale: LocaleType, localeNum: string) {
-    const langData = getLang(locale);
+export async function fromLocaleNum(locale: LocaleType, localeNum: string) {
+    const langData = await getLangAsync(locale);
     if (langData === null) {
         return null;
     }
@@ -358,10 +363,10 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
     return fromStringNum(numList, localeNum);
 }
 
-export function sanitizeSearchingText(locale: LocaleType, text: string) {
-    const langData = getLang(locale);
+export async function sanitizeSearchingText(locale: LocaleType, text: string) {
+    const langData = await getLangAsync(locale);
     if (langData === null) {
-        return text;
+        return null;
     }
     return langData.sanitizeSearchingText(text);
 }

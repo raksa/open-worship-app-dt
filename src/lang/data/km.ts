@@ -103,13 +103,13 @@ const km: LanguageType = {
             '៟',
             '​',
         ];
+        let newText = text;
         for (const char of specialChars) {
-            text = text.replace(new RegExp(char, 'g'), ' ');
+            newText = newText.replace(new RegExp(char, 'g'), ' ');
         }
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9 ]/g, ' ')
-            .replace(/\s+/g, ' ');
+        newText = newText.replace(/\s+/g, ' ');
+        newText = newText.trim();
+        return newText;
     },
 };
 
