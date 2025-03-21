@@ -97,8 +97,18 @@ export type PagePropsType = {
     experimentHomePage: string;
 };
 
+interface SQLite3DatabaseType {
+    close: () => void;
+    loadExtension: (path: string) => void;
+    enableLoadExtension: (allow: boolean) => void;
+    exec: (sql: string) => void;
+    open: () => any;
+    prepare: (sql: string) => any;
+    createSession: (options: any) => any;
+    applyChangeset: (changeset: any, options: any) => void;
+}
 export type SQLiteDatabaseType = {
-    database: any;
+    database: SQLite3DatabaseType;
     exec: (sql: string) => void;
     createTable: (createTableSQL: string) => void;
     getAll: (sql: string) => any[];

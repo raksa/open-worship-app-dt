@@ -39,7 +39,7 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
     databaseAdmin.exec(`
 CREATE TABLE info(key TEXT PRIMARY KEY, info JSON);
 CREATE TABLE chapters(key TEXT PRIMARY KEY, verses JSON);
-CREATE VIRTUAL TABLE c_idx USING fts5(bookKey, text);
+CREATE VIRTUAL TABLE v_idx USING fts5(bookKey, key, text);
 `);
     const jsonData = await getBibleXMLDataFromKey(bibleKey);
     if (jsonData === null) {
@@ -63,25 +63,22 @@ CREATE VIRTUAL TABLE c_idx USING fts5(bookKey, text);
         'INSERT INTO chapters VALUES(?, ?);',
     );
     const vChapterStatement = databaseAdmin.database.prepare(
-        'INSERT INTO c_idx VALUES(?, ?);',
+        'INSERT INTO v_idx VALUES(?, ?, ?);',
     );
     const locale = await getBibleLocale(bibleKey);
     for (const [bookKey, book] of Object.entries(jsonData.books)) {
         for (const [chapterKey, verses] of Object.entries(book)) {
-            const verseList = Object.keys(verses).map((item) => parseInt(item));
-            const startVerse = Math.min(...verseList);
-            const endVerse = Math.max(...verseList);
             chapterStatement.run(
-                `${bookKey}.${chapterKey}:${startVerse}-${endVerse}`,
+                `${bookKey}.${chapterKey}`,
                 JSON.stringify({
                     verses,
                 }),
             );
-            const text = sanitizeSearchingText(
-                locale,
-                Object.values(verses).join(' '),
-            );
-            vChapterStatement.run(bookKey, text);
+            for (const verse in verses) {
+                const text = sanitizeSearchingText(locale, verses[verse]);
+                const key = `${bookKey}.${chapterKey}:${verse}`;
+                vChapterStatement.run(bookKey, key, text);
+            }
         }
     }
     return databaseAdmin;
@@ -114,7 +111,7 @@ class DatabaseSearchHandler {
         text = sanitizeSearchingText(locale, text);
         const sqlBookKey =
             bookKey !== undefined ? ` AND bookKey = '${bookKey}'` : '';
-        let sql = `SELECT rowid, text FROM c_idx WHERE text MATCH '${text}'${sqlBookKey}`;
+        let sql = `SELECT key, text FROM v_idx WHERE text MATCH '${text}'${sqlBookKey}`;
         if (fromLineNumber == undefined || toLineNumber == undefined) {
             fromLineNumber = 1;
             toLineNumber = DEFAULT_ROW_LIMIT;
@@ -127,30 +124,15 @@ class DatabaseSearchHandler {
         }
         sql += ` LIMIT ${fromLineNumber}, ${count}`;
         const result = this.database.getAll(`${sql};`);
-        const rowidList = result.map((item) => item.rowid);
-        const chapters = this.database.getAll(
-            `SELECT rowid, key FROM chapters WHERE rowid IN (${rowidList.join(',')});`,
-        );
-        const chapterMap = new Map(
-            chapters.map((item) => {
-                return [item.rowid, item.key];
-            }),
-        );
         const foundResult = result.map((item) => {
-            const chapterKey = chapterMap.get(item.rowid);
-            if (chapterKey === undefined) {
-                throw new Error(
-                    'Cannot find chapter key row id: ' + item.rowid,
-                );
-            }
             return {
                 uniqueKey: crypto.randomUUID(),
-                text: `${chapterKey}::${item.text}`,
+                text: `${item.key}:${item.text}`,
             };
         });
         let maxLineNumber = 0;
         const countResult = this.database.getAll(
-            `SELECT COUNT(*) as count FROM c_idx WHERE text MATCH '${text}'${sqlBookKey};`,
+            `SELECT COUNT(*) as count FROM v_idx WHERE text MATCH '${text}'${sqlBookKey};`,
         );
         if (countResult.length > 0) {
             maxLineNumber = countResult[0].count;
