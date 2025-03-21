@@ -43,6 +43,7 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
     const sql = `INSERT INTO verses(text, sText) VALUES`;
     const locale = await getBibleLocale(bibleKey);
     const bucket = [];
+    const promises = [];
     for (const [bookKey, book] of Object.entries(jsonData.books)) {
         console.log(`DB: Processing ${bookKey}`);
         for (const [chapterKey, verses] of Object.entries(book)) {
@@ -53,13 +54,21 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
                 );
                 const text = `${bookKey}.${chapterKey}:${verse}=>${verses[verse]}`;
                 bucket.push(`('${text}','${sanitizedText ?? verses[verse]}')`);
-                if (bucket.length > 100) {
+                if (bucket.length >= 500) {
+                    const sqlChunk = `${sql} ${bucket.join(',')};`;
+                    promises.push(
+                        new Promise((resolve) => {
+                            databaseAdmin.exec(sqlChunk);
+                            resolve(true);
+                        }),
+                    );
                     databaseAdmin.exec(`${sql} ${bucket.join(',')};`);
                     bucket.length = 0;
                 }
             }
         }
     }
+    await Promise.all(promises);
     return databaseAdmin;
 }
 
