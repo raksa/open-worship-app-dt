@@ -258,6 +258,7 @@ export type LanguageType = {
     name: string;
     locale: LocaleType;
     flagSVG: string;
+    sanitizeSearchingText: (text: string) => string;
 };
 
 const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
@@ -355,4 +356,12 @@ export function fromLocaleNum(locale: LocaleType, localeNum: string) {
     }
     const numList = langData.numList;
     return fromStringNum(numList, localeNum);
+}
+
+export function sanitizeSearchingText(locale: LocaleType, text: string) {
+    const langData = getLang(locale);
+    if (langData === null) {
+        return text;
+    }
+    return langData.sanitizeSearchingText(text);
 }

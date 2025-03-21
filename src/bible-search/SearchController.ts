@@ -1,7 +1,9 @@
 import { BibleInfoType } from '../helper/bible-helpers/BibleDataReader';
+import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { handleError } from '../helper/errorHelpers';
 import FileSource from '../helper/FileSource';
 import { appApiFetch } from '../helper/networkHelpers';
+import { sanitizeSearchingText } from '../lang';
 import appProvider, { SQLiteDatabaseType } from '../server/appProvider';
 import { fsCheckFileExist, pathJoin } from '../server/fileHelpers';
 import { getBibleXMLDataFromKey } from '../setting/bible-setting/bibleXMLHelpers';
@@ -63,6 +65,7 @@ CREATE VIRTUAL TABLE c_idx USING fts5(bookKey, text);
     const vChapterStatement = databaseAdmin.database.prepare(
         'INSERT INTO c_idx VALUES(?, ?);',
     );
+    const locale = await getBibleLocale(bibleKey);
     for (const [bookKey, book] of Object.entries(jsonData.books)) {
         for (const [chapterKey, verses] of Object.entries(book)) {
             const verseList = Object.keys(verses).map((item) => parseInt(item));
@@ -74,11 +77,10 @@ CREATE VIRTUAL TABLE c_idx USING fts5(bookKey, text);
                     verses,
                 }),
             );
-            const text = Object.values(verses)
-                .join(' ')
-                .toLowerCase()
-                .replace(/[^a-z0-9 ]/g, ' ')
-                .replace(/\s+/g, ' ');
+            const text = sanitizeSearchingText(
+                locale,
+                Object.values(verses).join(' '),
+            );
             vChapterStatement.run(bookKey, text);
         }
     }
@@ -105,13 +107,11 @@ class DatabaseSearchHandler {
     constructor(database: SQLiteDatabaseType) {
         this.database = database;
     }
-    async doSearch(searchData: BibleSearchForType) {
+    async doSearch(bibleKey: string, searchData: BibleSearchForType) {
         const { bookKey, isFresh } = searchData;
         let { text, fromLineNumber, toLineNumber } = searchData;
-        text = text
-            .toLowerCase()
-            .replace(/[^a-z0-9 ]/g, ' ')
-            .replace(/\s+/g, ' ');
+        const locale = await getBibleLocale(bibleKey);
+        text = sanitizeSearchingText(locale, text);
         const sqlBookKey =
             bookKey !== undefined ? ` AND bookKey = '${bookKey}'` : '';
         let sql = `SELECT rowid, text FROM c_idx WHERE text MATCH '${text}'${sqlBookKey}`;
@@ -193,7 +193,10 @@ export default class SearchController {
             return await this.onlineSearchHandler.doSearch(searchData);
         }
         if (this.databaseSearchHandler !== null) {
-            return await this.databaseSearchHandler.doSearch(searchData);
+            return await this.databaseSearchHandler.doSearch(
+                this.bibleKey,
+                searchData,
+            );
         }
         return null;
     }
