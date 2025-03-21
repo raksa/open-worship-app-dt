@@ -112,10 +112,9 @@ class DatabaseSearchHandler {
             .toLowerCase()
             .replace(/[^a-z0-9 ]/g, ' ')
             .replace(/\s+/g, ' ');
-        let sql = `SELECT rowid, text FROM c_idx WHERE text MATCH '${text}'`;
-        if (bookKey !== undefined) {
-            sql += ` AND bookKey = '${bookKey}'`;
-        }
+        const sqlBookKey =
+            bookKey !== undefined ? ` AND bookKey = '${bookKey}'` : '';
+        let sql = `SELECT rowid, text FROM c_idx WHERE text MATCH '${text}'${sqlBookKey}`;
         if (fromLineNumber == undefined || toLineNumber == undefined) {
             fromLineNumber = 1;
             toLineNumber = DEFAULT_ROW_LIMIT;
@@ -151,7 +150,7 @@ class DatabaseSearchHandler {
         });
         let maxLineNumber = 0;
         const countResult = this.database.getAll(
-            `SELECT COUNT(*) as count FROM c_idx WHERE text MATCH '${text}'`,
+            `SELECT COUNT(*) as count FROM c_idx WHERE text MATCH '${text}'${sqlBookKey};`,
         );
         if (countResult.length > 0) {
             maxLineNumber = countResult[0].count;

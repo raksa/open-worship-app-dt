@@ -24,12 +24,6 @@ export default function BibleSearchBodyComp({
     const [searchText, setSearchText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
     const [isSearching, startTransition] = useTransition();
-
-    const setSelectedBook1 = (newSelectedBook: SelectedBookKeyType) => {
-        searchController.bookKey = newSelectedBook?.bookKey ?? null;
-        setSelectedBook(newSelectedBook);
-    };
-
     const doSearch = async (
         searchData: BibleSearchForType,
         isFresh = false,
@@ -47,6 +41,14 @@ export default function BibleSearchBodyComp({
                 setAllData(newAllData);
             }
         });
+    };
+    const setSelectedBook1 = (newSelectedBook: SelectedBookKeyType) => {
+        searchController.bookKey = newSelectedBook?.bookKey ?? null;
+        setAllData({});
+        setSelectedBook(newSelectedBook);
+        if (inputText) {
+            doSearch({ text: inputText }, true);
+        }
     };
     const handleSearch = (isFresh = false) => {
         if (!inputText) {
