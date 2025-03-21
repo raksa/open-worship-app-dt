@@ -26,3 +26,5 @@ electron/ow.node
 Default.owb
 .devServer/
 test.db
+experiment/bm25.exe
+experiment/bm25.pdb
