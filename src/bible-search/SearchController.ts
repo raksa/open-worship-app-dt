@@ -1,4 +1,3 @@
-import { BibleInfoType } from '../helper/bible-helpers/BibleDataReader';
 import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { handleError } from '../helper/errorHelpers';
 import FileSource from '../helper/FileSource';
@@ -36,34 +35,14 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
     const databaseUtils = appProvider.databaseUtils;
     const databaseAdmin =
         databaseUtils.getSQLiteDatabaseInstance(databaseFilePath);
-    databaseAdmin.exec(`
-CREATE TABLE info(key TEXT PRIMARY KEY, info JSON);
-CREATE TABLE verse(bookKey TEXT, chapter INTEGER, verse INT, text TEXT, sText TEXT, PRIMARY KEY(bookKey, chapter, verse));
--- CREATE VIRTUAL TABLE words USING spellfix1;
-`);
+    databaseAdmin.exec('CREATE TABLE verses(text TEXT, sText TEXT);');
     const jsonData = await getBibleXMLDataFromKey(bibleKey);
     if (jsonData === null) {
         return null;
     }
-    const bibleInfo = jsonData.info;
-    const infoStringified = JSON.stringify({
-        ...bibleInfo,
-        books: bibleInfo.booksMap,
-        numList: Array.from(
-            {
-                length: 10,
-            },
-            (_, i) => bibleInfo.numbersMap?.[i],
-        ),
-    } as BibleInfoType);
-    databaseAdmin.exec(
-        `INSERT INTO info VALUES('info', '${infoStringified}');`,
-    );
-    const verseStatement = databaseAdmin.database.prepare(
-        'INSERT INTO verse(bookKey, chapter, verse, text, sText) VALUES(?, ?, ?, ?, ?);',
-    );
+    const sql = `INSERT INTO verses(text, sText) VALUES`;
     const locale = await getBibleLocale(bibleKey);
-    // const words = new Set<string>();
+    const bucket = [];
     for (const [bookKey, book] of Object.entries(jsonData.books)) {
         console.log(`DB: Processing ${bookKey}`);
         for (const [chapterKey, verses] of Object.entries(book)) {
@@ -72,29 +51,15 @@ CREATE TABLE verse(bookKey TEXT, chapter INTEGER, verse INT, text TEXT, sText TE
                     locale,
                     verses[verse],
                 );
-                verseStatement.run(
-                    bookKey,
-                    chapterKey,
-                    verse,
-                    verses[verse] ?? '',
-                    sanitizedText ?? verses[verse] ?? '',
-                );
-                // if (sanitizedText !== null) {
-                //     for (const word of sanitizedText.split(' ')) {
-                //         words.add(word);
-                //     }
-                // }
+                const text = `${bookKey}.${chapterKey}:${verse}=>${verses[verse]}`;
+                bucket.push(`('${text}','${sanitizedText ?? verses[verse]}')`);
+                if (bucket.length > 100) {
+                    databaseAdmin.exec(`${sql} ${bucket.join(',')};`);
+                    bucket.length = 0;
+                }
             }
         }
     }
-    // TODO: Enable spellfix1 for KHMER, it doesn't work for unicode
-    // const spellStatement = databaseAdmin.database.prepare(
-    //     'INSERT INTO words(word) VALUES(?);',
-    // );
-    // console.log(`DB: Adding ${words.size} words`);
-    // for (const word of words) {
-    //     spellStatement.run(word);
-    // }
     return databaseAdmin;
 }
 
@@ -125,7 +90,8 @@ class DatabaseSearchHandler {
         const sText = (await sanitizeSearchingText(locale, text)) ?? text;
         const sqlBookKey =
             bookKey !== undefined ? ` AND bookKey = '${bookKey}'` : '';
-        let sql = `SELECT * FROM verse WHERE sText LIKE '%${sText}%'${sqlBookKey}`;
+        const sqlFrom = `FROM verses WHERE sText LIKE '%${sText}%'${sqlBookKey}`;
+        let sql = `SELECT text ${sqlFrom}`;
         if (fromLineNumber == undefined || toLineNumber == undefined) {
             fromLineNumber = 1;
             toLineNumber = DEFAULT_ROW_LIMIT;
@@ -139,15 +105,15 @@ class DatabaseSearchHandler {
         sql += ` LIMIT ${fromLineNumber}, ${count}`;
         const result = this.database.getAll(`${sql};`);
         const foundResult = result.map((item) => {
-            const key = `${item.bookKey}.${item.chapter}:${item.verse}`;
+            const splitted = item.text.split('=>');
             return {
                 uniqueKey: crypto.randomUUID(),
-                text: `${key}:${item.text}`,
+                text: `${splitted[0]}:${splitted[1]}`,
             };
         });
         let maxLineNumber = 0;
         const countResult = this.database.getAll(
-            `SELECT COUNT(*) as count FROM verse WHERE text LIKE '%${sText}%'${sqlBookKey};`,
+            `SELECT COUNT(*) as count ${sqlFrom};`,
         );
         if (countResult.length > 0) {
             maxLineNumber = countResult[0].count;
