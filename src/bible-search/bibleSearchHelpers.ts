@@ -97,11 +97,12 @@ export function breakItem(text: string, item: string, bibleKey: string) {
         );
     }
     const [bookKey, chapter] = bookKeyChapter.split('.');
+    const splitVerse = verse.split('-');
     const target = {
         bookKey: bookKey,
         chapter: parseInt(chapter),
-        verseStart: parseInt(verse),
-        verseEnd: parseInt(verse),
+        verseStart: parseInt(splitVerse[0]),
+        verseEnd: parseInt(splitVerse[1] || splitVerse[0]),
     };
     const bibleItemJson: BibleItemType = {
         id: -1,

@@ -10,8 +10,11 @@ import {
     APIDataMapType,
     APIDataType,
     BibleSearchForType,
+    BibleSearchResultType,
     searchOnline,
 } from './bibleSearchHelpers';
+
+const DEFAULT_ROW_LIMIT = 20;
 
 async function loadApiData() {
     try {
@@ -34,8 +37,7 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
     databaseAdmin.exec(`
 CREATE TABLE info(key TEXT PRIMARY KEY, info JSON);
 CREATE TABLE chapters(key TEXT PRIMARY KEY, verses JSON);
-CREATE TABLE verses(key TEXT PRIMARY KEY, text TEXT);
-CREATE VIRTUAL TABLE v_idx USING fts5(key, text);
+CREATE VIRTUAL TABLE c_idx USING fts5(bookKey, text);
 `);
     const jsonData = await getBibleXMLDataFromKey(bibleKey);
     if (jsonData === null) {
@@ -58,24 +60,26 @@ CREATE VIRTUAL TABLE v_idx USING fts5(key, text);
     const chapterStatement = databaseAdmin.database.prepare(
         'INSERT INTO chapters VALUES(?, ?);',
     );
-    const verseStatement = databaseAdmin.database.prepare(
-        'INSERT INTO v_idx VALUES(?, ?);',
+    const vChapterStatement = databaseAdmin.database.prepare(
+        'INSERT INTO c_idx VALUES(?, ?);',
     );
     for (const [bookKey, book] of Object.entries(jsonData.books)) {
-        const bookName = bibleInfo.booksMap[bookKey];
         for (const [chapterKey, verses] of Object.entries(book)) {
+            const verseList = Object.keys(verses).map((item) => parseInt(item));
+            const startVerse = Math.min(...verseList);
+            const endVerse = Math.max(...verseList);
             chapterStatement.run(
-                `${bookName} ${chapterKey}`,
+                `${bookKey}.${chapterKey}:${startVerse}-${endVerse}`,
                 JSON.stringify({
                     verses,
                 }),
             );
-            for (const [verseKey, text] of Object.entries(verses)) {
-                verseStatement.run(
-                    `${bookName} ${chapterKey}:${verseKey}`,
-                    text,
-                );
-            }
+            const text = Object.values(verses)
+                .join(' ')
+                .toLowerCase()
+                .replace(/[^a-z0-9 ]/g, ' ')
+                .replace(/\s+/g, ' ');
+            vChapterStatement.run(bookKey, text);
         }
     }
     return databaseAdmin;
@@ -102,12 +106,63 @@ class DatabaseSearchHandler {
         this.database = database;
     }
     async doSearch(searchData: BibleSearchForType) {
-        const { text } = searchData;
-        const result = this.database.getAll(
-            `SELECT * FROM v_idx WHERE text MATCH '${text}';`,
+        const { bookKey, isFresh } = searchData;
+        let { text, fromLineNumber, toLineNumber } = searchData;
+        text = text
+            .toLowerCase()
+            .replace(/[^a-z0-9 ]/g, ' ')
+            .replace(/\s+/g, ' ');
+        let sql = `SELECT rowid, text FROM c_idx WHERE text MATCH '${text}'`;
+        if (bookKey !== undefined) {
+            sql += ` AND bookKey = '${bookKey}'`;
+        }
+        if (fromLineNumber == undefined || toLineNumber == undefined) {
+            fromLineNumber = 1;
+            toLineNumber = DEFAULT_ROW_LIMIT;
+        }
+        const count = toLineNumber - fromLineNumber + 1;
+        if (count < 1) {
+            throw new Error(
+                `Invalid line number ${JSON.stringify(searchData)}`,
+            );
+        }
+        sql += ` LIMIT ${fromLineNumber}, ${count}`;
+        const result = this.database.getAll(`${sql};`);
+        const rowidList = result.map((item) => item.rowid);
+        const chapters = this.database.getAll(
+            `SELECT rowid, key FROM chapters WHERE rowid IN (${rowidList.join(',')});`,
         );
-        console.log(result);
-        return null;
+        const chapterMap = new Map(
+            chapters.map((item) => {
+                return [item.rowid, item.key];
+            }),
+        );
+        const foundResult = result.map((item) => {
+            const chapterKey = chapterMap.get(item.rowid);
+            if (chapterKey === undefined) {
+                throw new Error(
+                    'Cannot find chapter key row id: ' + item.rowid,
+                );
+            }
+            return {
+                uniqueKey: crypto.randomUUID(),
+                text: `${chapterKey}::${item.text}`,
+            };
+        });
+        let maxLineNumber = 0;
+        const countResult = this.database.getAll(
+            `SELECT COUNT(*) as count FROM c_idx WHERE text MATCH '${text}'`,
+        );
+        if (countResult.length > 0) {
+            maxLineNumber = countResult[0].count;
+        }
+        return {
+            maxLineNumber,
+            fromLineNumber,
+            toLineNumber,
+            content: foundResult,
+            isFresh,
+        } as BibleSearchResultType;
     }
 }
 
