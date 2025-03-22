@@ -128,7 +128,7 @@ export function showAppContextMenu(
 
 const APP_CONTEXT_MENU_ID = 'app-context-menu-container';
 const APP_CONTEXT_MENU_ITEM_CLASS = 'app-context-menu-item';
-const highlightClass = 'app-border-white-round';
+const highlightClass = 'app-border-whiter-round';
 
 function getDomItems() {
     const allChildren = Array.from<HTMLDivElement>(
@@ -163,7 +163,7 @@ function checkKeyUpDown(event: any) {
         event.preventDefault();
         event.stopPropagation();
     };
-    if (event.key === 'Tab') {
+    if (['Tab', 'Enter'].includes(event.key)) {
         const { selectedItem } = getDomItems();
         if (selectedItem !== null) {
             stopEvent();
@@ -237,8 +237,14 @@ function useAppContextMenuData() {
         setData(newData);
     };
     useAppEffect(() => {
-        const shouldKeystroke = !data?.options?.noKeystroke;
-        if (data?.options?.autoIndex) {
+        setDataDelegator = (newData) => {
+            setData1(newData);
+        };
+        if (data === null) {
+            return;
+        }
+        const shouldKeystroke = !data.options?.noKeystroke;
+        if (data.options?.autoIndex) {
             setTimeout(() => {
                 appKeyUpDown(false);
             }, 0);
@@ -247,9 +253,6 @@ function useAppContextMenuData() {
         if (shouldKeystroke) {
             document.addEventListener('keydown', listener);
         }
-        setDataDelegator = (newData) => {
-            setData1(newData);
-        };
         return () => {
             if (shouldKeystroke) {
                 document.removeEventListener('keydown', listener);
@@ -258,8 +261,18 @@ function useAppContextMenuData() {
         };
     }, [data]);
     useKeyboardRegistering(
-        [{ key: 'ArrowUp' }, { key: 'ArrowDown' }, { key: 'Tab' }],
-        checkKeyUpDown,
+        [
+            { key: 'ArrowUp' },
+            { key: 'ArrowDown' },
+            { key: 'Tab' },
+            { key: 'Enter' },
+        ],
+        (event) => {
+            if (data === null) {
+                return;
+            }
+            checkKeyUpDown(event);
+        },
         [data],
     );
     return data;
