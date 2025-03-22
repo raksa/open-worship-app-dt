@@ -57,7 +57,7 @@ export default class FlexResizeActorComp extends Component<Props, object> {
         this.mouseUpListener = (event) => {
             this.onMouseUp(event);
         };
-        this.attemptTimeout = genTimeoutAttempt(500);
+        this.attemptTimeout = genTimeoutAttempt(100);
     }
     private get currentNode() {
         if (this.myRef.current === null) {

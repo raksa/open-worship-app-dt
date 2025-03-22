@@ -34,7 +34,12 @@ export function RenderTitleMaterialComp({
         },
     };
     return (
-        <div className="d-flex text-nowrap w-100">
+        <div
+            className="d-flex text-nowrap w-100 h-100"
+            style={{
+                overflowX: 'auto',
+            }}
+        >
             <ItemColorNoteComp item={colorNoteHandler} />
             <div className="d-flex flex-fill">
                 <div className="d-flex ps-1">
@@ -64,7 +69,7 @@ export function RenderHeaderComp({
     return (
         <div
             className="card-header d-flex"
-            style={{ ...fontSizeToHeightStyle(fontSize), overflowX: 'auto' }}
+            style={{ ...fontSizeToHeightStyle(fontSize) }}
         >
             <RenderTitleMaterialComp onBibleKeyChange={onChange} />
             <div>
