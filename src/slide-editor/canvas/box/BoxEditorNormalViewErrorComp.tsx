@@ -12,7 +12,7 @@ export default function BoxEditorNormalViewErrorComp() {
             style={canvasItem.getBoxStyle()}
             onContextMenu={async (event) => {
                 event.stopPropagation();
-                showAppContextMenu(event as any, [
+                showAppContextMenu(event, [
                     {
                         menuTitle: 'Delete',
                         onClick: () => {

@@ -19,7 +19,7 @@ class SQLiteDatabase {
         } else if (isMac && !isArm64) {
             suffix = '-int';
         }
-        // database.loadExtension(join(extBasePath, `fts5${suffix}`));
+        database.loadExtension(join(extBasePath, `fts5${suffix}`));
         // database.loadExtension(join(extBasePath, `spellfix1${suffix}`));
         this.database = database;
     }

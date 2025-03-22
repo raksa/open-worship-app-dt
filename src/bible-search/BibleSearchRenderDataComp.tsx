@@ -13,6 +13,7 @@ import {
     SelectedBookKeyType,
 } from './bibleSearchHelpers';
 import BibleSearchRenderPerPageComp from './BibleSearchRenderPerPageComp';
+import { useBibleSearchController } from './BibleSearchController';
 
 async function selectBookKey(
     event: any,
@@ -137,7 +138,6 @@ export default function BibleSearchRenderDataComp({
     text,
     allData,
     searchFor,
-    bibleKey,
     selectedBook,
     setSelectedBook,
     isSearch,
@@ -145,14 +145,14 @@ export default function BibleSearchRenderDataComp({
     text: string;
     allData: { [key: string]: BibleSearchResultType };
     searchFor: (from: number, to: number) => void;
-    bibleKey: string;
     selectedBook: SelectedBookKeyType;
     setSelectedBook: (_: SelectedBookKeyType) => void;
     isSearch: boolean;
 }>) {
+    const bibleSearchController = useBibleSearchController();
     useAppEffect(() => {
         setSelectedBook(null);
-    }, [bibleKey]);
+    }, [bibleSearchController]);
     const allPageNumberFound = Object.keys(allData);
     const pagingData = calcPaging(
         allPageNumberFound.length ? allData[allPageNumberFound[0]] : null,
@@ -174,7 +174,7 @@ export default function BibleSearchRenderDataComp({
                             onClick={(event) => {
                                 selectBookKey(
                                     event,
-                                    bibleKey,
+                                    bibleSearchController.bibleKey,
                                     selectedBook,
                                     setSelectedBook,
                                 );
@@ -197,7 +197,7 @@ export default function BibleSearchRenderDataComp({
                             searchText={text}
                             data={data}
                             pageNumber={pageNumber}
-                            bibleKey={bibleKey}
+                            bibleKey={bibleSearchController.bibleKey}
                         />
                     );
                 })}

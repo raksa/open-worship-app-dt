@@ -10,17 +10,15 @@ import {
 import BibleSearchRenderDataComp from './BibleSearchRenderDataComp';
 import BibleSelectionComp from '../bible-lookup/BibleSelectionComp';
 import BibleSearchHeaderComp from './BibleSearchHeaderComp';
-import SearchController from './SearchController';
+import { useBibleSearchController } from './BibleSearchController';
 
 export default function BibleSearchBodyComp({
-    searchController,
     setBibleKey,
 }: Readonly<{
-    searchController: SearchController;
     setBibleKey: (_: string, newBibleKey: string) => void;
 }>) {
+    const bibleSearchController = useBibleSearchController();
     const [selectedBook, setSelectedBook] = useState<SelectedBookKeyType>(null);
-    const [inputText, setInputText] = useState('');
     const [searchText, setSearchText] = useState('');
     const [allData, setAllData] = useState<AllDataType>({});
     const [isSearching, startTransition] = useTransition();
@@ -29,7 +27,7 @@ export default function BibleSearchBodyComp({
         isFresh = false,
     ) => {
         startTransition(async () => {
-            const data = await searchController.doSearch(searchData);
+            const data = await bibleSearchController.doSearch(searchData);
             if (data !== null) {
                 const { perPage, pages } = calcPaging(data);
                 const pageNumber = findPageNumber(data, perPage, pages);
@@ -43,36 +41,37 @@ export default function BibleSearchBodyComp({
         });
     };
     const setSelectedBook1 = (newSelectedBook: SelectedBookKeyType) => {
-        searchController.bookKey = newSelectedBook?.bookKey ?? null;
+        bibleSearchController.bookKey = newSelectedBook?.bookKey ?? null;
         setAllData({});
         setSelectedBook(newSelectedBook);
-        if (inputText) {
-            doSearch({ text: inputText }, true);
+        if (bibleSearchController.searchText) {
+            doSearch({ text: bibleSearchController.searchText }, true);
         }
     };
     const handleSearch = (isFresh = false) => {
-        if (!inputText) {
+        const searchText = bibleSearchController.searchText;
+        if (!searchText) {
             return;
         }
-        setSearchText(inputText);
+        setSearchText(searchText);
         if (isFresh) {
             setAllData({});
         }
-        const searchData: BibleSearchForType = { text: inputText };
+        const searchData: BibleSearchForType = {
+            text: searchText,
+        };
         doSearch(searchData, isFresh);
     };
     return (
         <div className="card overflow-hidden w-100 h-100">
             <div className="card-header input-group overflow-hidden">
                 <BibleSelectionComp
-                    bibleKey={searchController.bibleKey}
                     onBibleKeyChange={setBibleKey}
+                    bibleKey={bibleSearchController.bibleKey}
                 />
                 <BibleSearchHeaderComp
                     handleSearch={handleSearch}
                     isSearching={isSearching}
-                    inputText={inputText}
-                    setInputText={setInputText}
                 />
             </div>
             <BibleSearchRenderDataComp
@@ -85,7 +84,6 @@ export default function BibleSearchBodyComp({
                         text: searchText,
                     });
                 }}
-                bibleKey={searchController.bibleKey}
                 selectedBook={selectedBook}
                 setSelectedBook={setSelectedBook1}
                 isSearch={isSearching}

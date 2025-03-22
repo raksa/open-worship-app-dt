@@ -20,6 +20,17 @@ export type ContextMenuItemType = {
     disabled?: boolean;
     otherChild?: ReactElement;
 };
+type OptionsType = {
+    maxHeigh?: number;
+    coord?: { x: number; y: number };
+    style?: React.CSSProperties;
+};
+
+type PropsType = {
+    event: MouseEvent;
+    items: ContextMenuItemType[];
+    options?: OptionsType;
+};
 
 export function createMouseEvent(clientX: number, clientY: number) {
     return new MouseEvent('click', {
@@ -31,7 +42,11 @@ export function createMouseEvent(clientX: number, clientY: number) {
     });
 }
 
-const setPositionMenu = (menu: HTMLElement, event: MouseEvent) => {
+const setPositionMenu = (
+    menu: HTMLElement,
+    event: MouseEvent,
+    options?: OptionsType,
+) => {
     if (menu !== null) {
         Object.assign(menu.style, {
             display: 'block',
@@ -42,8 +57,8 @@ const setPositionMenu = (menu: HTMLElement, event: MouseEvent) => {
         });
         event.preventDefault();
         event.stopPropagation();
-        const x = event.clientX;
-        const y = event.clientY;
+        const x = options?.coord?.x ?? event.clientX;
+        const y = options?.coord?.y ?? event.clientY;
         const bc = menu.getBoundingClientRect();
         const wd = getWindowDim();
         let maxWidth;
@@ -64,44 +79,52 @@ const setPositionMenu = (menu: HTMLElement, event: MouseEvent) => {
         }
         menu.style.maxWidth = `${maxWidth}px`;
         menu.style.maxHeight = `${maxHeight}px`;
+        if (options?.maxHeigh) {
+            menu.style.maxHeight = `${options.maxHeigh}px`;
+        }
+        menu.scrollTop = 0;
+        if (options?.style) {
+            Object.assign(menu.style, options.style);
+        }
     }
 };
 
-type PropsType = {
-    event: MouseEvent;
-    items: ContextMenuItemType[];
-};
 let setDataDelegator: ((data: PropsType | null) => void) | null = null;
 
 export function showAppContextMenu(
     event: MouseEvent,
     items: ContextMenuItemType[],
+    options?: OptionsType,
 ) {
     event.stopPropagation();
     if (!items.length) {
-        return Promise.resolve();
+        return {
+            promiseDone: Promise.resolve(),
+            closeMenu: () => {},
+        };
     }
-    return new Promise<void>((resolve) => {
-        setDataDelegator?.({ event, items });
+    const closeMenu = () => {
+        setDataDelegator?.(null);
+    };
+    const promise = new Promise<void>((resolve) => {
+        setDataDelegator?.({ event, items, options });
         const eventName = KeyboardEventListener.toEventMapperKey({
             key: 'Escape',
         });
         const escEvent = KeyboardEventListener.registerEventListener(
             [eventName],
             () => {
-                setDataDelegator?.(null);
+                closeMenu();
                 KeyboardEventListener.unregisterEventListener(escEvent);
                 resolve();
             },
         );
     });
+    return { promiseDone: promise, closeMenu };
 }
 
 export default function AppContextMenuComp() {
-    const [data, setData] = useState<{
-        event: MouseEvent;
-        items: ContextMenuItemType[];
-    } | null>(null);
+    const [data, setData] = useState<PropsType | null>(null);
     const setData1 = (newData: PropsType | null) => {
         WindowEventListener.fireEvent({
             widget: 'context-menu',
@@ -164,7 +187,7 @@ export default function AppContextMenuComp() {
                     if (div === null) {
                         return;
                     }
-                    setPositionMenu(div, data.event);
+                    setPositionMenu(div, data.event, data.options);
                 }}
                 className="app-context-menu"
             >
