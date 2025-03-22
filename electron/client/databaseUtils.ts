@@ -1,9 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { copyFileSync, existsSync } from 'node:fs';
 
 import { isWindows, isMac, isArm64 } from '../electronHelpers';
 
 // https://nodejs.org/docs/latest-v22.x/api/sqlite.html
+
+function getLibFilePath(databasePath: string, libName: string) {
+    const extBasePath = resolve(__dirname, '../../db-exts');
+    let suffix = '';
+    if (isWindows) {
+        suffix = '.dll';
+    } else if (isMac && !isArm64) {
+        suffix = '-int';
+    }
+    const fileFullName = `${libName}${suffix}`;
+    const libFilePath = join(extBasePath, fileFullName);
+    const databaseBasePath = dirname(databasePath);
+    const destLibFile = join(databaseBasePath, fileFullName);
+    if (!existsSync(destLibFile)) {
+        copyFileSync(libFilePath, destLibFile);
+    }
+    return destLibFile;
+}
 
 class SQLiteDatabase {
     public database: any;
@@ -12,15 +31,10 @@ class SQLiteDatabase {
         const database = new DatabaseSync(databasePath, {
             allowExtension: true,
         });
-        const extBasePath = resolve(__dirname, '../../db-exts');
-        let suffix = '';
-        if (isWindows) {
-            suffix = '.dll';
-        } else if (isMac && !isArm64) {
-            suffix = '-int';
-        }
-        database.loadExtension(join(extBasePath, `fts5${suffix}`));
-        // database.loadExtension(join(extBasePath, `spellfix1${suffix}`));
+        const destLibFile = getLibFilePath(databasePath, 'fts5');
+        database.loadExtension(destLibFile);
+        // const destLibFile = getLibFilePath(databasePath, 'spellfix1');
+        // database.loadExtension(destLibFile);
         this.database = database;
     }
     exec(sql: string) {
