@@ -15,6 +15,8 @@ import {
     BibleSearchResultType,
     searchOnline,
 } from './bibleSearchHelpers';
+import { showAppContextMenu } from '../others/AppContextMenuComp';
+import { cumulativeOffset } from '../helper/helpers';
 
 const DEFAULT_ROW_LIMIT = 20;
 
@@ -76,8 +78,6 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
         }
     }
     console.log(`DB: Inserting ${words.size} words`);
-    words.add('ឈាម');
-    words.add('ឈ្មោះ');
     databaseAdmin.exec(
         `INSERT INTO spell(text) VALUES ${Array.from(words)
             .map((word) => `('${word.split('').join(' ')}')`)
@@ -117,8 +117,10 @@ class DatabaseSearchHandler {
         let { fromLineNumber, toLineNumber } = searchData;
         const locale = await getBibleLocale(bibleKey);
         const sText = (await sanitizeSearchingText(locale, text)) ?? text;
-        const sqlBookKey =
-            bookKey !== undefined ? ` AND bookKey = '${bookKey}'` : '';
+        let sqlBookKey = '';
+        if (bookKey !== undefined) {
+            sqlBookKey = ` AND text LIKE '${bookKey}.%'`;
+        }
         const sqlFrom = `FROM verses WHERE sText LIKE '%${sText}%'${sqlBookKey}`;
         let sql = `SELECT text ${sqlFrom}`;
         if (fromLineNumber == undefined || toLineNumber == undefined) {
@@ -183,9 +185,12 @@ export default class BibleSearchController {
     databaseSearchHandler: DatabaseSearchHandler | null = null;
     private readonly _bibleKey: string;
     private _bookKey: string | null = null;
+    input: HTMLInputElement | null = null;
     private _searchText: string = '';
     locale: LocaleType;
-    contextMenuController: {
+    onTextChange: () => void = () => {};
+    private _oldInputText: string = '';
+    menuControllerSession: {
         closeMenu: () => void;
         promiseDone: Promise<void>;
     } | null = null;
@@ -202,10 +207,16 @@ export default class BibleSearchController {
     }
 
     get searchText() {
-        return this._searchText;
+        return this._searchText || (this.input?.value ?? '');
     }
-    set searchText(value: string) {
-        this._searchText = value;
+    set searchText(value: string | null) {
+        if (this.input !== null) {
+            this._searchText = value ?? '';
+            this._oldInputText = this.input.value;
+            this.input.value = value ?? '';
+            this.input.focus();
+            this.onTextChange();
+        }
     }
 
     get bibleKey() {
@@ -213,9 +224,9 @@ export default class BibleSearchController {
     }
 
     closeSuggestionMenu() {
-        if (this.contextMenuController !== null) {
-            this.contextMenuController.closeMenu();
-            this.contextMenuController = null;
+        if (this.menuControllerSession !== null) {
+            this.menuControllerSession.closeMenu();
+            this.menuControllerSession = null;
         }
     }
 
@@ -302,6 +313,79 @@ export default class BibleSearchController {
             );
         }
         return [];
+    }
+
+    private async handleDeletionSearchText(text: string) {
+        const sanitizedText = await sanitizeSearchingText(this.locale, text);
+        if (sanitizedText === null) {
+            return;
+        }
+        const splitted = sanitizedText.split(' ');
+        if (splitted.length < 2) {
+            this._searchText = '';
+            return;
+        }
+        this._searchText = splitted.slice(0, -1).join(' ');
+    }
+
+    private async checkLookupWord(event: any, lookupWord: string) {
+        const suggestWords = await this.loadSuggestionWords(lookupWord, 100);
+        if (!suggestWords.length) {
+            return;
+        }
+        const { top, left } = cumulativeOffset(this.input);
+        this.menuControllerSession = showAppContextMenu(
+            event,
+            suggestWords.map((text) => ({
+                menuTitle: text,
+                onClick: () => {
+                    this.searchText =
+                        `${this._searchText} ${text}`.trim() + ' ';
+                    this.searchText = this.searchText.replace(/\s+/g, ' ');
+                    this.input?.focus();
+                },
+            })),
+            {
+                coord: { x: left, y: top + this.input!.offsetHeight },
+                maxHeigh: 200,
+                style: {
+                    backgroundColor: 'rgba(128, 128, 128, 0.4)',
+                    backdropFilter: 'blur(5px)',
+                    opacity: 0.9,
+                },
+                noKeystroke: true,
+                autoIndex: true,
+            },
+        );
+    }
+
+    async handleKeyUp(event: any) {
+        const inputKey = event.key;
+        const newValue = this.input?.value ?? '';
+        if (this._oldInputText && this._oldInputText === newValue) {
+            return;
+        }
+        this._oldInputText = newValue;
+        this.closeSuggestionMenu();
+        if (this.input === null) {
+            return;
+        }
+        if (['Delete', 'Backspace'].includes(inputKey)) {
+            await this.handleDeletionSearchText(newValue);
+        }
+        const newTrimValue = this.input.value.trim();
+        if (newTrimValue !== newValue) {
+            return;
+        }
+        const text = this._searchText
+            ? newTrimValue.split(this._searchText)[1]
+            : newTrimValue;
+        if (!text) {
+            return;
+        }
+        const sanitizedText = await sanitizeSearchingText(this.locale, text);
+        const lookupWord = (sanitizedText ?? '').split(' ').at(-1) ?? '';
+        this.checkLookupWord(event, lookupWord);
     }
 }
 

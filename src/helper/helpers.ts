@@ -324,3 +324,17 @@ export function downloadFile(
             .catch(reject);
     });
 }
+
+export function cumulativeOffset(element: HTMLElement | null) {
+    let top = 0;
+    let left = 0;
+    do {
+        if (!element) {
+            break;
+        }
+        top += element.offsetTop ?? 0;
+        left += element.offsetLeft ?? 0;
+        element = element.offsetParent as HTMLElement;
+    } while (element);
+    return { top, left };
+}

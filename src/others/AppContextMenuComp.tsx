@@ -5,6 +5,7 @@ import { ReactElement, useState } from 'react';
 import KeyboardEventListener, {
     EventMapper,
     toShortcutKey,
+    useKeyboardRegistering,
 } from '../event/KeyboardEventListener';
 import { getWindowDim } from '../helper/helpers';
 import WindowEventListener from '../event/WindowEventListener';
@@ -24,6 +25,8 @@ type OptionsType = {
     maxHeigh?: number;
     coord?: { x: number; y: number };
     style?: React.CSSProperties;
+    noKeystroke?: boolean;
+    autoIndex?: boolean;
 };
 
 type PropsType = {
@@ -123,7 +126,108 @@ export function showAppContextMenu(
     return { promiseDone: promise, closeMenu };
 }
 
-export default function AppContextMenuComp() {
+const APP_CONTEXT_MENU_ID = 'app-context-menu-container';
+const APP_CONTEXT_MENU_ITEM_CLASS = 'app-context-menu-item';
+const highlightClass = 'app-border-white-round';
+
+function getDomItems() {
+    const allChildren = Array.from<HTMLDivElement>(
+        document.querySelectorAll(
+            `#${APP_CONTEXT_MENU_ID} .${APP_CONTEXT_MENU_ITEM_CLASS}`,
+        ),
+    );
+    const index =
+        allChildren.findIndex((item) => {
+            return item.classList.contains(highlightClass);
+        }) ?? -1;
+    return { index, allChildren, selectedItem: allChildren[index] ?? null };
+}
+function appKeyUpDown(isUp: boolean) {
+    const domData = getDomItems();
+    const { allChildren } = domData;
+    let { index } = domData;
+    index += (isUp ? -1 : 1) + allChildren.length;
+    index %= allChildren.length;
+    allChildren.forEach((item) => {
+        item.classList.remove(highlightClass);
+    });
+    allChildren[index].classList.add(highlightClass);
+    setTimeout(() => {
+        allChildren[index].scrollIntoView({
+            block: 'nearest',
+        });
+    }, 100);
+}
+function checkKeyUpDown(event: any) {
+    const stopEvent = () => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    if (event.key === 'Tab') {
+        const { selectedItem } = getDomItems();
+        if (selectedItem !== null) {
+            stopEvent();
+            selectedItem.click();
+        }
+        return;
+    }
+    stopEvent();
+    const isUp = event.key === 'ArrowUp';
+    appKeyUpDown(isUp);
+}
+
+export const escapeChars = [
+    'enter',
+    'escape',
+    'arrowup',
+    'arrowdown',
+    'arrowleft',
+    'arrowright',
+    'backspace',
+    'tab',
+    'insert',
+    'delete',
+    'home',
+    'end',
+    'pageup',
+    'pagedown',
+    'f1',
+    'f2',
+    'f3',
+    'f4',
+    'f5',
+    'f6',
+    'f7',
+    'f8',
+    'f9',
+    'f10',
+    'f11',
+    'f12',
+    'printscreen',
+    'scrolllock',
+    'pausebreak',
+    'numlock',
+    'capslock',
+    'contextmenu',
+];
+function listener(event: KeyboardEvent) {
+    if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) {
+        return;
+    }
+    const key = event.key.toLowerCase();
+    if (!key || escapeChars.includes(key)) {
+        return;
+    }
+    const { allChildren } = getDomItems();
+    for (const element of allChildren) {
+        if (element.textContent?.toLowerCase().startsWith(key)) {
+            element.scrollIntoView();
+            break;
+        }
+    }
+}
+
+function useAppContextMenuData() {
     const [data, setData] = useState<PropsType | null>(null);
     const setData1 = (newData: PropsType | null) => {
         WindowEventListener.fireEvent({
@@ -133,56 +237,49 @@ export default function AppContextMenuComp() {
         setData(newData);
     };
     useAppEffect(() => {
-        const listener = (event: KeyboardEvent) => {
-            if (
-                event.shiftKey ||
-                event.ctrlKey ||
-                event.altKey ||
-                event.metaKey
-            ) {
-                return;
-            }
-            const key = event.key.toLowerCase();
-            if (!key) {
-                return;
-            }
-            const container = document.getElementById(
-                'app-context-menu-container',
-            );
-            if (container === null) {
-                return;
-            }
-            const elements = Array.from(
-                container.querySelectorAll('.app-context-menu-item'),
-            );
-            for (const element of elements) {
-                if (element.textContent?.toLowerCase().startsWith(key)) {
-                    element.scrollIntoView();
-                    break;
-                }
-            }
-        };
-        document.addEventListener('keydown', listener);
+        const shouldKeystroke = !data?.options?.noKeystroke;
+        if (data?.options?.autoIndex) {
+            setTimeout(() => {
+                appKeyUpDown(false);
+            }, 0);
+        }
+
+        if (shouldKeystroke) {
+            document.addEventListener('keydown', listener);
+        }
         setDataDelegator = (newData) => {
             setData1(newData);
         };
         return () => {
-            document.removeEventListener('keydown', listener);
+            if (shouldKeystroke) {
+                document.removeEventListener('keydown', listener);
+            }
             setDataDelegator = null;
         };
-    }, []);
+    }, [data]);
+    useKeyboardRegistering(
+        [{ key: 'ArrowUp' }, { key: 'ArrowDown' }, { key: 'Tab' }],
+        checkKeyUpDown,
+        [data],
+    );
+    return data;
+}
+
+export default function AppContextMenuComp() {
+    const data = useAppContextMenuData();
     if (data === null) {
         return null;
     }
     return (
         <div
-            id="app-context-menu-container"
+            id={APP_CONTEXT_MENU_ID}
             onClick={(event) => {
                 event.stopPropagation();
                 setDataDelegator?.(null);
             }}
         >
             <div
+                tabIndex={0}
                 ref={(div) => {
                     if (div === null) {
                         return;
@@ -209,7 +306,7 @@ function ContextMenuItemComp({
     return (
         <div
             className={
-                'app-context-menu-item d-flex w-100 overflow-hidden' +
+                `${APP_CONTEXT_MENU_ITEM_CLASS} d-flex w-100 overflow-hidden` +
                 `${item.disabled ? ' disabled' : ''}`
             }
             title={item.title ?? item.menuTitle}

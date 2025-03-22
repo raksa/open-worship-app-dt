@@ -1,20 +1,7 @@
 import { useState } from 'react';
 import { useBibleSearchController } from './BibleSearchController';
-import { sanitizeSearchingText } from '../lang';
-import { showAppContextMenu } from '../others/AppContextMenuComp';
-function cumulativeOffset(element: HTMLElement | null) {
-    let top = 0;
-    let left = 0;
-    do {
-        if (!element) {
-            break;
-        }
-        top += element.offsetTop ?? 0;
-        left += element.offsetLeft ?? 0;
-        element = element.offsetParent as HTMLElement;
-    } while (element);
-    return { top, left };
-}
+import { useAppEffect } from '../helper/debuggerHelpers';
+
 export default function BibleSearchHeaderComp({
     handleSearch,
     isSearching,
@@ -22,60 +9,25 @@ export default function BibleSearchHeaderComp({
     handleSearch: (isFresh?: boolean) => void;
     isSearching: boolean;
 }>) {
+    const [canSearch, setCanSearch] = useState(false);
     const bibleSearchController = useBibleSearchController();
-    const [inputText, setInputText] = useState(
-        bibleSearchController.searchText,
-    );
-    const handleTextChange = async (event: any) => {
-        if (bibleSearchController.searchText === event.currentTarget.value) {
-            return;
-        }
-        setInputText(bibleSearchController.searchText);
-        bibleSearchController.closeSuggestionMenu();
-        const text = (bibleSearchController.searchText =
-            event.currentTarget.value);
-        const lookupWord =
-            (
-                (await sanitizeSearchingText(
-                    bibleSearchController.locale,
-                    text,
-                )) ?? ''
-            )
-                .split(' ')
-                .at(-1) ?? '';
-        const suggestWords = await bibleSearchController.loadSuggestionWords(
-            lookupWord,
-            100,
-        );
-        if (!suggestWords.length) {
-            return;
-        }
-        const currentTarget: HTMLInputElement = event.target;
-        const { top, left } = cumulativeOffset(currentTarget);
-        bibleSearchController.contextMenuController = showAppContextMenu(
-            event,
-            suggestWords.map((text) => ({
-                menuTitle: text,
-                onClick: () => {
-                    bibleSearchController.searchText = text;
-                    currentTarget.value = text;
-                    setInputText(bibleSearchController.searchText);
-                },
-            })),
-            {
-                coord: { x: left, y: top + currentTarget.offsetHeight },
-                maxHeigh: 200,
-                style: {
-                    backgroundColor: 'rgba(128, 128, 128, 0.4)',
-                    backdropFilter: 'blur(5px)',
-                    opacity: 0.9,
-                },
-            },
-        );
-    };
+    useAppEffect(() => {
+        bibleSearchController.onTextChange = () => {
+            setCanSearch(!!bibleSearchController.searchText);
+        };
+        return () => {
+            bibleSearchController.onTextChange = () => {};
+        };
+    }, [bibleSearchController]);
     return (
         <>
             <input
+                ref={(input) => {
+                    bibleSearchController.input = input;
+                    return () => {
+                        bibleSearchController.input = null;
+                    };
+                }}
                 type="text"
                 className="form-control"
                 onKeyUp={(event) => {
@@ -85,12 +37,12 @@ export default function BibleSearchHeaderComp({
                         handleSearch(true);
                         return;
                     }
-                    handleTextChange(event);
+                    bibleSearchController.handleKeyUp(event);
                 }}
             />
             <button
                 className="btn btn-sm"
-                disabled={isSearching || !inputText}
+                disabled={isSearching || !canSearch}
                 onClick={() => {
                     handleSearch(true);
                 }}
