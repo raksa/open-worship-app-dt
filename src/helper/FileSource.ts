@@ -135,8 +135,7 @@ export default class FileSource
             if (dataText !== null && isValidJson(dataText)) {
                 return JSON.parse(dataText) as AnyObjectType;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {}
+        } catch (_error) {}
         return null;
     }
 

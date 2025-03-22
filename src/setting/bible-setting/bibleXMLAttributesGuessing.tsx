@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { useState } from 'react';
 
 import { getLangCode } from '../../lang';

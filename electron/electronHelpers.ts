@@ -6,6 +6,8 @@ export const isWindows = process.platform === 'win32';
 export const isMac = process.platform === 'darwin';
 export const isLinux = process.platform === 'linux';
 export const isSecured = false; // TODO: make it secure
+export const is64System = process.arch === 'x64';
+export const isArm64 = process.arch === 'arm64';
 
 export function tarExtract(filePath: string, outputDir: string) {
     return (tarX as any)({ file: filePath, cwd: outputDir });

@@ -71,8 +71,7 @@ export default class Canvas {
             if (canvasItem.type !== 'error') {
                 return canvasItem;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {}
+        } catch (_error) {}
         return null;
     }
 

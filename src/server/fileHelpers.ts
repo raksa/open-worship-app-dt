@@ -225,7 +225,10 @@ export type FileResultType = {
     filePath: string;
 };
 
-function fsFilePromise<T>(fn: Function, ...args: any): Promise<T> {
+function fsFilePromise<T>(
+    fn: (...args: any) => void,
+    ...args: any
+): Promise<T> {
     return new Promise<T>((resolve, reject) => {
         args = args || [];
         args.push(function (error: any, ...args1: any) {
@@ -294,13 +297,14 @@ export function fsCloneFile(src: File | string, dest: string) {
                     writeStream.write(chunk);
                 },
                 close() {
-                    resolve();
+                    writeStream.end();
                 },
                 abort() {
-                    reject(new Error('Error during copying file'));
+                    writeStream.destroy();
                 },
             });
-            src.stream().pipeTo(writableStream).then(resolve).catch(reject);
+            writeStream.once('close', resolve);
+            src.stream().pipeTo(writableStream).catch(reject);
         });
     }
     return fsFilePromise<void>(appProvider.fileUtils.copyFile, src, dest);
@@ -418,9 +422,13 @@ export function fsCreateDir(dirPath: string, isRecursive = true) {
     return _fsMkdir(dirPath, isRecursive);
 }
 
-export async function fsWriteFile(filePath: string, txt: string) {
+export async function fsWriteFile(
+    filePath: string,
+    txt: string,
+    encoding?: string,
+) {
     await _fsWriteFile(filePath, txt, {
-        encoding: 'utf8',
+        encoding: encoding ?? 'utf8',
         flag: 'w',
     });
     return filePath;

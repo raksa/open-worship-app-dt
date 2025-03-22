@@ -30,8 +30,11 @@ export function useScreenEvents<T extends string>(
             eventHandler?.registerEventListener(events, update) ||
             Class.registerEventListener(events, update);
         return () => {
-            eventHandler?.unregisterEventListener(registeredEvents) ??
+            if (eventHandler !== undefined) {
+                eventHandler.unregisterEventListener(registeredEvents);
+            } else {
                 Class.unregisterEventListener(registeredEvents);
+            }
         };
     }, [eventHandler, callback]);
     return n;

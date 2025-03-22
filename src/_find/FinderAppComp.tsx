@@ -3,20 +3,17 @@ import './FinderAppComp.scss';
 import { useState } from 'react';
 
 import { useKeyboardRegistering } from '../event/KeyboardEventListener';
-import { SearchingOptions, findString } from './finderHelpers';
+import { LookupOptions, findString } from './finderHelpers';
 
 export default function FinderAppComp({
     onClose,
 }: Readonly<{
     onClose: () => void;
 }>) {
-    const [searchingText, setSearchingText] = useState('');
+    const [lookupText, setLookupText] = useState('');
     const [isMatchCase, setIsMatchCase] = useState(false);
-    const setSearchingText1 = (
-        text: string,
-        options: SearchingOptions = {},
-    ) => {
-        setSearchingText(text);
+    const setLookupText1 = (text: string, options: LookupOptions = {}) => {
+        setLookupText(text);
         findString(text, {
             matchCase: isMatchCase,
             ...options,
@@ -25,26 +22,26 @@ export default function FinderAppComp({
     useKeyboardRegistering(
         [{ key: 'Escape' }],
         () => {
-            if (!searchingText) {
+            if (!lookupText) {
                 onClose();
                 return;
             }
-            setSearchingText1('');
+            setLookupText1('');
         },
         [isMatchCase],
     );
     useKeyboardRegistering(
         [{ key: 'Enter' }],
         () => {
-            if (!searchingText) {
+            if (!lookupText) {
                 return;
             }
-            setSearchingText1(searchingText, {
+            setLookupText1(lookupText, {
                 forward: true,
                 findNext: true,
             });
         },
-        [searchingText, isMatchCase],
+        [lookupText, isMatchCase],
     );
 
     return (
@@ -54,7 +51,7 @@ export default function FinderAppComp({
                     <button
                         className="btn btn-info"
                         onClick={() => {
-                            setSearchingText1(searchingText, {
+                            setLookupText1(lookupText, {
                                 forward: false,
                                 findNext: true,
                             });
@@ -65,7 +62,7 @@ export default function FinderAppComp({
                     <button
                         className="btn btn-info"
                         onClick={() => {
-                            setSearchingText1(searchingText, {
+                            setLookupText1(lookupText, {
                                 forward: true,
                                 findNext: true,
                             });
@@ -77,10 +74,10 @@ export default function FinderAppComp({
                         type="text"
                         className="form-control"
                         autoFocus
-                        value={searchingText}
+                        value={lookupText}
                         onChange={(event) => {
                             const text = event.target.value;
-                            setSearchingText1(text);
+                            setLookupText1(text);
                         }}
                     />
                     <div className="input-group-text">
@@ -92,7 +89,7 @@ export default function FinderAppComp({
                             onChange={(event) => {
                                 const checked = event.target.checked;
                                 setIsMatchCase(checked);
-                                setSearchingText1(searchingText, {
+                                setLookupText1(lookupText, {
                                     matchCase: checked,
                                 });
                             }}

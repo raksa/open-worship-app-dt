@@ -16,8 +16,6 @@ Special thanks for others frameworks and tools in [npm package](./package.json)
 
 ## Install
 
-- copy .env.example to .env
-
 ```bash
 $ npm i
 ```

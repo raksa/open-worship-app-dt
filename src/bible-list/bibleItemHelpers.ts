@@ -51,7 +51,7 @@ export async function openBibleItemContextMenu(
     event: any,
     bibleItem: BibleItem,
     index: number,
-    openBibleSearch: (() => void) | null,
+    openBibleLookup: (() => void) | null,
 ) {
     const bible = bibleItem.filePath
         ? await Bible.fromFilePath(bibleItem.filePath)
@@ -62,12 +62,12 @@ export async function openBibleItemContextMenu(
     }
     const menuItem: ContextMenuItemType[] = [
         ...genDefaultBibleItemContextMenu(bibleItem),
-        ...(openBibleSearch !== null
+        ...(openBibleLookup !== null
             ? [
                   {
                       menuTitle: '(*T) ' + 'Quick Edit',
                       onClick: () => {
-                          openBibleSearch();
+                          openBibleLookup();
                       },
                   },
               ]

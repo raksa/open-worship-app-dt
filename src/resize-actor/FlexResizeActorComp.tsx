@@ -34,7 +34,7 @@ export interface Props {
     checkSize: () => void;
     disableWidget: (dataFlexSizeKey: string, target: DisabledType) => void;
 }
-export default class FlexResizeActorComp extends Component<Props, {}> {
+export default class FlexResizeActorComp extends Component<Props, object> {
     myRef: RefObject<HTMLDivElement | null>;
     lastPos: number = 0;
     previousMinSize: number = 0;

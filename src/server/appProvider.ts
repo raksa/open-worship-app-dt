@@ -51,7 +51,9 @@ export type PathUtilsType = {
 export type SystemUtilsType = {
     isDev: boolean;
     isWindows: boolean;
+    is64System: boolean;
     isMac: boolean;
+    isArm64: boolean;
     isLinux: boolean;
 };
 
@@ -95,6 +97,24 @@ export type PagePropsType = {
     experimentHomePage: string;
 };
 
+interface SQLite3DatabaseType {
+    close: () => void;
+    loadExtension: (path: string) => void;
+    enableLoadExtension: (allow: boolean) => void;
+    exec: (sql: string) => void;
+    open: () => any;
+    prepare: (sql: string) => any;
+    createSession: (options: any) => any;
+    applyChangeset: (changeset: any, options: any) => void;
+}
+export type SQLiteDatabaseType = {
+    database: SQLite3DatabaseType;
+    exec: (sql: string) => void;
+    createTable: (createTableSQL: string) => void;
+    getAll: (sql: string) => any[];
+    close: () => void;
+};
+
 const appProvider = (window as any).provider as Readonly<
     PagePropsType & {
         appType: AppTypeEnum;
@@ -120,6 +140,11 @@ const appProvider = (window as any).provider as Readonly<
         appInfo: AppInfoType;
         reload: () => void;
         appUtils: AppUtilsType;
+        databaseUtils: {
+            getSQLiteDatabaseInstance: (
+                databaseName: string,
+            ) => SQLiteDatabaseType;
+        };
         presenterHomePage: string;
         readerHomePage: string;
         currentHomePage: string;

@@ -4,9 +4,9 @@ import ItemReadErrorComp from '../others/ItemReadErrorComp';
 import { useFileSourceRefreshEvents } from '../helper/dirSourceHelpers';
 import { handleDragStart } from '../helper/dragHelpers';
 import ItemColorNoteComp from '../others/ItemColorNoteComp';
-import { BibleSelectionMiniComp } from '../bible-search/BibleSelectionComp';
+import { BibleSelectionMiniComp } from '../bible-lookup/BibleSelectionComp';
 import {
-    SearchBibleItemViewController,
+    LookupBibleItemViewController,
     useBibleItemViewControllerContext,
 } from '../bible-reader/BibleItemViewController';
 import ScreenFullTextManager from '../_screen/managers/ScreenFullTextManager';
@@ -14,7 +14,7 @@ import {
     openBibleItemContextMenu,
     useBibleItemRenderTitle,
 } from './bibleItemHelpers';
-import { useShowBibleSearchContext } from '../others/commonButtons';
+import { useShowBibleLookupContext } from '../others/commonButtons';
 import appProvider from '../server/appProvider';
 
 export default function BibleItemRenderComp({
@@ -28,7 +28,7 @@ export default function BibleItemRenderComp({
     warningMessage?: string;
     filePath?: string;
 }>) {
-    const showBibleSearchPopup = useShowBibleSearchContext();
+    const showBibleLookupPopup = useShowBibleLookupContext();
     const viewController = useBibleItemViewControllerContext();
     useFileSourceRefreshEvents(['select'], filePath);
     const title = useBibleItemRenderTitle(bibleItem);
@@ -43,23 +43,21 @@ export default function BibleItemRenderComp({
         bibleItem.save(bible);
     };
     const handleContextMenuOpening = (event: React.MouseEvent<any>) => {
-        openBibleItemContextMenu(event, bibleItem, index, showBibleSearchPopup);
+        openBibleItemContextMenu(event, bibleItem, index, showBibleLookupPopup);
     };
     const handleDoubleClicking = (event: any) => {
         if (appProvider.isPagePresenter) {
             ScreenFullTextManager.handleBibleItemSelecting(event, [bibleItem]);
         } else if (appProvider.isPageReader) {
-            const searchViewController =
-                SearchBibleItemViewController.getInstance();
+            const lookupViewController =
+                LookupBibleItemViewController.getInstance();
             if (event.shiftKey) {
-                searchViewController.addBibleItemRight(
-                    searchViewController.selectedBibleItem,
+                lookupViewController.addBibleItemRight(
+                    lookupViewController.selectedBibleItem,
                     bibleItem,
                 );
             } else {
-                searchViewController.setSearchingContentFromBibleItem(
-                    bibleItem,
-                );
+                lookupViewController.setLookupContentFromBibleItem(bibleItem);
             }
         } else {
             viewController.appendBibleItem(bibleItem);

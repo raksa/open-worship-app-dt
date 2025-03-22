@@ -1,4 +1,4 @@
-import { BrowserWindow, shell } from 'electron';
+import { BrowserWindow, Menu, MenuItem, shell } from 'electron';
 
 import { channels, ScreenMessageType } from './electronEventListener';
 import { genRoutProps } from './protocolHelpers';
@@ -40,6 +40,23 @@ export default class ElectronMainController {
         });
         win.on('closed', () => {
             process.exit(0);
+        });
+        win.webContents.on('context-menu', (_event, params) => {
+            if (!params.dictionarySuggestions.length) {
+                return;
+            }
+            const menu = new Menu();
+            for (const suggestion of params.dictionarySuggestions) {
+                menu.append(
+                    new MenuItem({
+                        label: suggestion,
+                        click: () => {
+                            win.webContents.replaceMisspelling(suggestion);
+                        },
+                    }),
+                );
+            }
+            menu.popup();
         });
         routeProps.loadURL(win);
         return win;
