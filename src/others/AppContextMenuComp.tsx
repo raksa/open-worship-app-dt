@@ -80,7 +80,7 @@ const setPositionMenu = (
             menu.style.top = `${y}px`;
             maxHeight = wd.height - y;
         }
-        menu.style.maxWidth = `${maxWidth}px`;
+        menu.style.maxWidth = `${Math.min(maxWidth, 210)}px`;
         menu.style.maxHeight = `${maxHeight}px`;
         if (options?.maxHeigh) {
             menu.style.maxHeight = `${options.maxHeigh}px`;

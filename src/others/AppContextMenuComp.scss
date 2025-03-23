@@ -17,7 +17,8 @@
     z-index: $z-index-context-menu + 1;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
     color: white;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     .app-context-menu-item {
       &.disabled {
