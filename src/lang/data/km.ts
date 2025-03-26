@@ -193,8 +193,14 @@ const km: LanguageType = {
             }
         }
         newText = newText.replace(/\s+/g, ' ');
-        newText = newText.trim();
+        newText = km.trimText(newText);
         return newText;
+    },
+    trimText: (text: string) => {
+        return text.trim().replace(/^[\u200B]+|[\u200B]+$/g, '');
+    },
+    endWord: (text: string) => {
+        return text + '\u200B';
     },
 };
 

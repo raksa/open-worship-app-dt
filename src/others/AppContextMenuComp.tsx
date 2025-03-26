@@ -26,7 +26,6 @@ type OptionsType = {
     coord?: { x: number; y: number };
     style?: React.CSSProperties;
     noKeystroke?: boolean;
-    autoIndex?: boolean;
 };
 
 type PropsType = {
@@ -127,8 +126,16 @@ export function showAppContextMenu(
 }
 
 const APP_CONTEXT_MENU_ID = 'app-context-menu-container';
+const APP_CONTEXT_MENU_CLASS = 'app-context-menu';
 const APP_CONTEXT_MENU_ITEM_CLASS = 'app-context-menu-item';
 const highlightClass = 'app-border-whiter-round';
+
+function getMenuContainer() {
+    const tableDiv = document.querySelector(
+        `#${APP_CONTEXT_MENU_ID} .${APP_CONTEXT_MENU_CLASS}`,
+    );
+    return tableDiv;
+}
 
 function getDomItems() {
     const allChildren = Array.from<HTMLDivElement>(
@@ -156,6 +163,8 @@ function appKeyUpDown(isUp: boolean) {
         allChildren[index].scrollIntoView({
             block: 'nearest',
         });
+        const tableDiv = getMenuContainer();
+        (tableDiv as any)?.focus();
     }, 100);
 }
 function checkKeyUpDown(event: any) {
@@ -163,7 +172,11 @@ function checkKeyUpDown(event: any) {
         event.preventDefault();
         event.stopPropagation();
     };
-    if (['Tab', 'Enter'].includes(event.key)) {
+    if (['Enter'].includes(event.key)) {
+        const menuContainer = getMenuContainer();
+        if (menuContainer !== document.activeElement) {
+            return;
+        }
         const { selectedItem } = getDomItems();
         if (selectedItem !== null) {
             stopEvent();
@@ -244,12 +257,6 @@ function useAppContextMenuData() {
             return;
         }
         const shouldKeystroke = !data.options?.noKeystroke;
-        if (data.options?.autoIndex) {
-            setTimeout(() => {
-                appKeyUpDown(false);
-            }, 0);
-        }
-
         if (shouldKeystroke) {
             document.addEventListener('keydown', listener);
         }
@@ -299,7 +306,7 @@ export default function AppContextMenuComp() {
                     }
                     setPositionMenu(div, data.event, data.options);
                 }}
-                className="app-context-menu"
+                className="app-context-menu app-focusable"
             >
                 {data.items.map((item) => {
                     return (

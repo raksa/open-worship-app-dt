@@ -259,6 +259,8 @@ export type LanguageType = {
     locale: LocaleType;
     flagSVG: string;
     sanitizeSearchingText: (text: string) => string;
+    trimText: (text: string) => string;
+    endWord: (text: string) => string;
 };
 
 const LANGUAGE_LOCALE_SETTING_NAME = 'language-locale';
@@ -369,4 +371,20 @@ export async function sanitizeSearchingText(locale: LocaleType, text: string) {
         return null;
     }
     return langData.sanitizeSearchingText(text);
+}
+
+export function quickTrimText(locale: LocaleType, text: string) {
+    const langData = getLang(locale);
+    if (langData === null) {
+        return text;
+    }
+    return langData.trimText(text);
+}
+
+export function quickEndWord(locale: LocaleType, text: string) {
+    const langData = getLang(locale);
+    if (langData === null) {
+        return text;
+    }
+    return langData.endWord(text);
 }

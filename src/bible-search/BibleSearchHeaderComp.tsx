@@ -31,7 +31,10 @@ export default function BibleSearchHeaderComp({
                 type="text"
                 className="form-control"
                 onKeyUp={(event) => {
-                    if (event.key === 'Enter') {
+                    if (
+                        event.key === 'Enter' &&
+                        bibleSearchController.menuControllerSession === null
+                    ) {
                         event.preventDefault();
                         event.stopPropagation();
                         handleSearch(true);

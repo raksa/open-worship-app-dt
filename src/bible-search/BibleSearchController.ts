@@ -3,7 +3,12 @@ import { getBibleLocale } from '../helper/bible-helpers/serverBibleHelpers2';
 import { handleError } from '../helper/errorHelpers';
 import FileSource from '../helper/FileSource';
 import { appApiFetch } from '../helper/networkHelpers';
-import { LocaleType, sanitizeSearchingText } from '../lang';
+import {
+    LocaleType,
+    quickEndWord,
+    quickTrimText,
+    sanitizeSearchingText,
+} from '../lang';
 import appProvider, { SQLiteDatabaseType } from '../server/appProvider';
 import { fsCheckFileExist, pathJoin } from '../server/fileHelpers';
 import { getBibleXMLDataFromKey } from '../setting/bible-setting/bibleXMLHelpers';
@@ -60,7 +65,10 @@ async function initDatabase(bibleKey: string, databaseFilePath: string) {
                 );
                 if (sanitizedText !== null) {
                     for (const word of sanitizedText.split(' ')) {
-                        const sanitizedWord = word.trim().toLowerCase();
+                        const sanitizedWord = quickTrimText(
+                            locale,
+                            word,
+                        ).toLowerCase();
                         if (sanitizedWord) {
                             words.add(sanitizedWord);
                         }
@@ -339,9 +347,13 @@ export default class BibleSearchController {
             suggestWords.map((text) => ({
                 menuTitle: text,
                 onClick: () => {
-                    this.searchText =
-                        `${this._searchText} ${text}`.trim() + ' ';
-                    this.searchText = this.searchText.replace(/\s+/g, ' ');
+                    this.searchText = quickEndWord(
+                        this.locale,
+                        quickTrimText(
+                            this.locale,
+                            `${this._searchText} ${text} `,
+                        ),
+                    );
                     this.input?.focus();
                 },
             })),
@@ -354,9 +366,18 @@ export default class BibleSearchController {
                     opacity: 0.9,
                 },
                 noKeystroke: true,
-                autoIndex: true,
             },
         );
+        this.menuControllerSession.promiseDone.then(() => {
+            if (this.input !== null) {
+                this.input.focus();
+                const value = quickTrimText(this.locale, this.input.value);
+                if (value) {
+                    this.searchText = quickEndWord(this.locale, value);
+                }
+            }
+            this.menuControllerSession = null;
+        });
     }
 
     async handleKeyUp(event: any) {
@@ -373,7 +394,7 @@ export default class BibleSearchController {
         if (['Delete', 'Backspace'].includes(inputKey)) {
             await this.handleDeletionSearchText(newValue);
         }
-        const newTrimValue = this.input.value.trim();
+        const newTrimValue = quickTrimText(this.locale, this.input.value);
         if (newTrimValue !== newValue) {
             return;
         }

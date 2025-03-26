@@ -29,6 +29,12 @@ const en: LanguageType = {
             .replace(/\s+/g, ' ')
             .trim();
     },
+    trimText: (text: string) => {
+        return text.trim();
+    },
+    endWord: (text: string) => {
+        return text + ' ';
+    },
 };
 
 export default en;
