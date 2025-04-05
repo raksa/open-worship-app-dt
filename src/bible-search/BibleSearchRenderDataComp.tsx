@@ -12,7 +12,9 @@ import {
     pageNumberToReqData,
     SelectedBookKeyType,
 } from './bibleSearchHelpers';
-import BibleSearchRenderPerPageComp from './BibleSearchRenderPerPageComp';
+import BibleSearchRenderPerPageComp, {
+    APP_FOUND_PAGE_CLASS,
+} from './BibleSearchRenderPerPageComp';
 import { useBibleSearchController } from './BibleSearchController';
 
 async function selectBookKey(
@@ -62,8 +64,18 @@ function RenderPageNumberComp({
         >
             <button
                 className="page-link"
-                disabled={isActive}
                 onClick={() => {
+                    if (isActive) {
+                        document
+                            .querySelector(
+                                `.${APP_FOUND_PAGE_CLASS}-${pageNumber}`,
+                            )
+                            ?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                            });
+                        return;
+                    }
                     handleSearch(pageNumber);
                 }}
             >

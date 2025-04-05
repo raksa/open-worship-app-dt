@@ -2,6 +2,8 @@ import BibleItem from '../bible-list/BibleItem';
 import { LookupBibleItemViewController } from '../bible-reader/BibleItemViewController';
 import { BibleSearchResultType, breakItem } from './bibleSearchHelpers';
 
+export const APP_FOUND_PAGE_CLASS = 'app-found-page';
+
 export default function BibleSearchRenderPerPageComp({
     pageNumber,
     data,
@@ -23,7 +25,7 @@ export default function BibleSearchRenderPerPageComp({
     };
     return (
         <>
-            <div className="d-flex">
+            <div className={`d-flex ${APP_FOUND_PAGE_CLASS}-${pageNumber}`}>
                 <span>{pageNumber}</span>
                 <hr className="w-100" />
             </div>
